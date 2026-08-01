@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createEnquiry } from "@/app/lib/services/crm";
 
 export async function POST(request: Request) {
   try {
@@ -8,14 +9,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    const { name, email, phone, role } = body;
+    const name = String(body.name || "").trim();
+    const email = String(body.email || "").trim();
+    const phone = String(body.phone || "").trim();
+    const role = String(body.role || "").trim();
+
     if (!name || !email || !phone || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    console.log("[careers]", { ...body, at: new Date().toISOString() });
+    await createEnquiry({
+      name,
+      email,
+      phone,
+      type: "careers",
+      subject: `Career application — ${role}`,
+      message: [
+        `Role: ${role}`,
+        body.message ? `Cover note: ${body.message}` : null,
+        body.experience ? `Experience: ${body.experience}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      source: "website",
+    });
+
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  } catch (err) {
+    console.error("[careers]", err);
+    return NextResponse.json({ error: "Could not submit application" }, { status: 500 });
   }
 }

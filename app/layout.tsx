@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Fraunces, JetBrains_Mono } from "next/font/google";
-import AiChatbot from "./components/AiChatbot";
-import Footer from "./components/Footer";
+import AppChrome from "./components/AppChrome";
 import JsonLd from "./components/JsonLd";
-import Navbar from "./components/Navbar";
 import { pharmacy } from "./lib/data";
 import "./globals.css";
 
@@ -81,12 +79,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col font-sans">
         <JsonLd />
-        <div className="mesh-bg relative flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <AiChatbot />
-        </div>
+        <AppChrome>{children}</AppChrome>
       </body>
     </html>
   );

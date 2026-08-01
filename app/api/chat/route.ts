@@ -1,5 +1,7 @@
 import Groq from "groq-sdk";
 import { buildPharmacyContext } from "../../lib/chat-context";
+import { getSessionUser } from "@/app/lib/auth";
+import { prisma } from "@/app/lib/db";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -12,6 +14,18 @@ type ChatMessage = {
 const MAX_MESSAGES = 20;
 const MAX_CONTENT_LENGTH = 2000;
 
+const ESCALATION_PHRASES = [
+  "speak to a pharmacist",
+  "talk to a pharmacist",
+  "contact the pharmacy",
+  "call the pharmacy",
+  "i'm not sure",
+  "i am not sure",
+  "escalate",
+  "cannot advise",
+  "can't advise",
+];
+
 export async function POST(request: Request) {
   const apiKey = process.env.GROQ_API_KEY?.trim();
   if (!apiKey) {
@@ -23,7 +37,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { messages?: ChatMessage[] };
+  let body: { messages?: ChatMessage[]; sessionKey?: string };
   try {
     body = await request.json();
   } catch {
@@ -45,16 +59,50 @@ export async function POST(request: Request) {
     return Response.json({ error: "Last message must be from user" }, { status: 400 });
   }
 
+  const session = await getSessionUser();
+  const sessionKey = body.sessionKey || `web-${Date.now()}`;
+
+  // Persist AI conversation for CRM analytics (best-effort)
+  let conversationId: string | null = null;
+  try {
+    const existing = body.sessionKey
+      ? await prisma.aiConversation.findFirst({
+          where: { sessionKey: body.sessionKey },
+          orderBy: { createdAt: "desc" },
+        })
+      : null;
+
+    const conv =
+      existing ??
+      (await prisma.aiConversation.create({
+        data: {
+          sessionKey,
+          channel: session?.customerId ? "portal" : "website",
+          customerId: session?.customerId ?? undefined,
+          userId: session?.id ?? undefined,
+        },
+      }));
+    conversationId = conv.id;
+
+    await prisma.aiMessage.create({
+      data: {
+        conversationId: conv.id,
+        role: "user",
+        content: last.content,
+      },
+    });
+  } catch (err) {
+    console.error("[chat persist user]", err);
+  }
+
   const modelName = (process.env.GROQ_MODEL || "llama-3.3-70b-versatile").trim();
   const client = new Groq({ apiKey });
+  const systemPrompt = await buildPharmacyContext();
 
   try {
     const stream = await client.chat.completions.create({
       model: modelName,
-      messages: [
-        { role: "system", content: buildPharmacyContext() },
-        ...trimmed,
-      ],
+      messages: [{ role: "system", content: systemPrompt }, ...trimmed],
       temperature: 0.7,
       max_completion_tokens: 1024,
       top_p: 0.9,
@@ -62,19 +110,62 @@ export async function POST(request: Request) {
     });
 
     const encoder = new TextEncoder();
+    let fullAssistant = "";
+
     const readable = new ReadableStream({
       async start(controller) {
         try {
           for await (const chunk of stream) {
             const text = chunk.choices[0]?.delta?.content || "";
             if (text) {
+              fullAssistant += text;
               controller.enqueue(encoder.encode(text));
             }
           }
+
+          if (conversationId && fullAssistant) {
+            try {
+              const lower = fullAssistant.toLowerCase();
+              const escalated = ESCALATION_PHRASES.some((p) => lower.includes(p));
+              await prisma.aiMessage.create({
+                data: {
+                  conversationId,
+                  role: "assistant",
+                  content: fullAssistant,
+                },
+              });
+              await prisma.aiConversation.update({
+                where: { id: conversationId },
+                data: {
+                  messageCount: { increment: 2 },
+                  escalated: escalated || undefined,
+                  escalatedAt: escalated ? new Date() : undefined,
+                },
+              });
+
+              if (session?.customerId) {
+                await prisma.timelineEvent.create({
+                  data: {
+                    customerId: session.customerId,
+                    userId: session.id,
+                    eventType: "ai_conversation",
+                    title: escalated ? "AI conversation escalated" : "AI conversation",
+                    description: last.content.slice(0, 120),
+                    metadata: { conversationId, escalated },
+                  },
+                });
+              }
+            } catch (err) {
+              console.error("[chat persist assistant]", err);
+            }
+          }
+
           controller.close();
         } catch (err) {
           console.error("[chat stream]", err);
-          controller.enqueue(encoder.encode("\n\nSorry — the response was interrupted. Please try again."));
+          controller.enqueue(
+            encoder.encode("\n\nSorry — the response was interrupted. Please try again."),
+          );
           controller.close();
         }
       },
@@ -85,11 +176,12 @@ export async function POST(request: Request) {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-store",
         "X-Content-Type-Options": "nosniff",
+        "X-Session-Key": sessionKey,
       },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("[chat]", err);
-    const message = err?.message || "Failed to reach Groq";
+    const message = err instanceof Error ? err.message : "Failed to reach Groq";
 
     let errorMessage = "Something went wrong talking to the assistant. Please try again.";
 

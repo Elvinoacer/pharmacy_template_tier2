@@ -10,7 +10,7 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from "react";
-import { SUGGESTED_PROMPTS } from "../lib/chat-context";
+import { SUGGESTED_PROMPTS } from "../lib/suggested-prompts";
 
 type Role = "user" | "assistant";
 
