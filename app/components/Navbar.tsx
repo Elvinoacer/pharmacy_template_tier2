@@ -96,6 +96,18 @@ export default function Navbar() {
             </svg>
           </Link>
           <Link
+            href="/login"
+            className="hidden rounded-full px-3 py-2 text-sm font-medium text-[#3d4f46] transition hover:bg-teal-900/5 hover:text-[#084c3f] sm:inline"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/portal"
+            className="hidden rounded-full border border-teal-900/10 bg-white/70 px-3 py-2 text-sm font-medium text-[#084c3f] transition hover:bg-white sm:inline"
+          >
+            Portal
+          </Link>
+          <Link
             href="/refill"
             className="btn-primary !px-4 !py-2.5 text-sm"
           >
@@ -149,6 +161,24 @@ export default function Navbar() {
             className="block rounded-xl px-3 py-2.5 text-sm font-medium text-[#0c1a14] hover:bg-teal-50"
           >
             Careers
+          </Link>
+          <Link
+            href="/login"
+            className="block rounded-xl px-3 py-2.5 text-sm font-medium text-[#0c1a14] hover:bg-teal-50"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/portal"
+            className="block rounded-xl px-3 py-2.5 text-sm font-medium text-[#0c1a14] hover:bg-teal-50"
+          >
+            Customer portal
+          </Link>
+          <Link
+            href="/admin"
+            className="block rounded-xl px-3 py-2.5 text-sm font-medium text-[#0c1a14] hover:bg-teal-50"
+          >
+            Staff CRM
           </Link>
         </div>
       )}

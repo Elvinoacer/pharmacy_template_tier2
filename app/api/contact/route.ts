@@ -1,31 +1,41 @@
 import { NextResponse } from "next/server";
+import { getSessionUser } from "@/app/lib/auth";
+import { createEnquiry } from "@/app/lib/services/crm";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Honeypot — silently accept bots
     if (body.company) {
       return NextResponse.json({ ok: true });
     }
 
-    const { name, phone, email, subject, message } = body;
+    const name = String(body.name || "").trim();
+    const phone = String(body.phone || "").trim();
+    const email = String(body.email || "").trim();
+    const subject = String(body.subject || "").trim();
+    const message = String(body.message || "").trim();
+
     if (!name || !phone || !email || !subject || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Tier 1 demo: log submission (swap for email / CMS / dashboard later)
-    console.log("[contact]", {
+    const session = await getSessionUser();
+
+    await createEnquiry({
       name,
       phone,
       email,
       subject,
       message,
-      at: new Date().toISOString(),
+      type: "contact",
+      customerId: session?.customerId ?? undefined,
+      source: "website",
     });
 
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  } catch (err) {
+    console.error("[contact]", err);
+    return NextResponse.json({ error: "Could not submit enquiry" }, { status: 500 });
   }
 }
