@@ -4,6 +4,7 @@ import { prisma } from "@/app/lib/db";
 import type { RefillStatus, EnquiryStatus, FeedbackStatus, CampaignStatus } from "@/app/generated/prisma/client";
 import { addTimelineEvent } from "@/app/lib/timeline";
 import { sendDelivery } from "@/app/lib/services/delivery";
+import { dispatchPushToUser, dispatchPushToStaff } from "@/app/lib/services/push";
 
 export async function getCustomerDashboard(customerId: string) {
   const [profile, prescriptions, refills, notifications, loyalty, reminders, timeline] =
@@ -100,6 +101,20 @@ export async function createRefillRequest(data: {
         relatedId: refill.id,
       },
     });
+
+    // Notify staff (push) about the new refill so they can act quickly.
+    const customer = await prisma.customerProfile.findUnique({
+      where: { id: data.customerId },
+      select: { fullName: true, user: { select: { id: true } } },
+    });
+    if (customer) {
+      await dispatchPushToStaff({
+        title: "New refill request",
+        body: `${customer.fullName} requested ${data.medicineName}.`,
+        url: "/admin/refills",
+        data: { tag: "refill-new", customerId: data.customerId, refillId: refill.id },
+      });
+    }
   }
 
   return refill;
@@ -139,6 +154,20 @@ export async function updateRefillStatus(
         relatedId: refill.id,
       },
     });
+
+    // Send a push notification to the customer's devices so they see the update immediately.
+    const customer = await prisma.customerProfile.findUnique({
+      where: { id: refill.customerId },
+      select: { user: { select: { id: true } } },
+    });
+    if (customer?.user) {
+      await dispatchPushToUser(customer.user.id, {
+        title: `Refill ${status.replaceAll("_", " ")}`,
+        body: `Your request for ${refill.medicineName} is now: ${status.replaceAll("_", " ")}.`,
+        url: "/portal/refills",
+        data: { tag: `refill-${refill.id}`, refillId, status },
+      });
+    }
 
     if (status === "ready_for_pickup") {
       await prisma.reminder.create({
@@ -297,6 +326,16 @@ export async function createEnquiry(data: {
     );
   }
 
+  // Push staff so they can respond quickly.
+  await dispatchPushToStaff({
+    title: "New customer enquiry",
+    body: data.subject || data.message.slice(0, 120) || "Enquiry submitted",
+    url: "/admin/enquiries",
+    data: { tag: "enquiry-new", enquiryId: enquiry.id },
+  }).catch(() => {
+    /* best-effort */
+  });
+
   return enquiry;
 }
 
@@ -363,7 +402,7 @@ export async function sendStaffMessage(data: {
 }) {
   const customer = await prisma.customerProfile.findUnique({
     where: { id: data.customerId },
-    include: { user: { select: { email: true } } },
+    include: { user: { select: { id: true, email: true } } },
   });
   const delivery =
     data.scheduledFor || !customer
@@ -414,6 +453,18 @@ export async function sendStaffMessage(data: {
       sentAt: data.scheduledFor || delivery.status === "failed" || delivery.status === "pending" ? null : new Date(),
     },
   });
+
+  // Fire a web push to the customer immediately for non-scheduled messages.
+  if (!data.scheduledFor) {
+    await dispatchPushToUser(customer?.user.id || "", {
+      title: data.subject || "Message from Aether Pharmacy",
+      body: data.body.slice(0, 200),
+      url: "/portal/messages",
+      data: { tag: `msg-${conversation.id}`, conversationId: conversation.id },
+    }).catch(() => {
+      /* push is best-effort */
+    });
+  }
 
   await addTimelineEvent(
     data.customerId,
@@ -486,7 +537,7 @@ export async function launchCampaign(campaignId: string, actorId: string) {
 export async function processDueReminders() {
   const due = await prisma.reminder.findMany({
     where: { status: "scheduled", scheduledFor: { lte: new Date() } },
-    include: { customer: { include: { user: { select: { email: true } } } } },
+    include: { customer: { include: { user: { select: { id: true, email: true } } } } },
     take: 50,
   });
 
@@ -517,6 +568,19 @@ export async function processDueReminders() {
         sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
       },
     });
+
+    // Best-effort web push for reminders so customers see them on their device.
+    if (reminder.customer?.user?.id) {
+      await dispatchPushToUser(reminder.customer.user.id, {
+        title: reminder.title,
+        body: reminder.body || reminder.title,
+        url: "/portal",
+        data: { tag: `reminder-${reminder.id}`, reminderId: reminder.id, type: reminder.type },
+      }).catch(() => {
+        /* best-effort */
+      });
+    }
+
     await addTimelineEvent(
       reminder.customerId,
       null,

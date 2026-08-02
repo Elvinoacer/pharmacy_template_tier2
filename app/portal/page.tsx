@@ -2,8 +2,26 @@ import Link from "next/link";
 import { getSessionUser } from "@/app/lib/auth";
 import { getCustomerDashboard } from "@/app/lib/services/crm";
 import { refillStatusMeta } from "@/app/lib/types";
-import PortalShell, { Badge, Panel, StatCard } from "@/app/components/portal/PortalShell";
+import {
+  PortalShell,
+  StatCard,
+  Panel,
+  Badge,
+  EmptyState,
+} from "@/app/components/portal/PortalShell";
 import { redirect } from "next/navigation";
+import {
+  FileText,
+  Pill,
+  Sparkles,
+  CalendarClock,
+  Plus,
+  ArrowRight,
+  Bell,
+  Activity,
+  CheckCircle2,
+  Clock,
+} from "lucide-react";
 
 export const metadata = { title: "My dashboard" };
 
@@ -12,49 +30,96 @@ export default async function PortalDashboardPage() {
   if (!user?.customerId) redirect("/login");
 
   const data = await getCustomerDashboard(user.customerId);
-  const activeRefills = data.refills.filter((r) =>
-    !["collected", "cancelled"].includes(r.status),
+  const activeRefills = data.refills.filter(
+    (r) => !["collected", "cancelled"].includes(r.status),
   ).length;
+  const readyForPickup = data.refills.filter((r) => r.status === "ready_for_pickup").length;
+  const firstName = data.profile?.fullName?.split(" ")[0] || "there";
 
   return (
-    <PortalShell user={user} title={`Hello, ${data.profile?.fullName?.split(" ")[0] || "there"}`}>
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Active prescriptions" value={data.prescriptions.length} />
-        <StatCard label="Open refills" value={activeRefills} />
+    <PortalShell
+      user={user}
+      title={`Hello, ${firstName}`}
+      subtitle="Here's a snapshot of your prescriptions, refills, and rewards."
+      actions={
+        <Link href="/portal/refills/new" className="btn-primary">
+          <Plus className="h-4 w-4" /> Request refill
+        </Link>
+      }
+    >
+      {/* Stat cards */}
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label="Active prescriptions"
+          value={data.prescriptions.length}
+          hint={data.prescriptions.filter((p) => p.status === "active").length + " active"}
+          icon={FileText}
+          accent="brand"
+        />
+        <StatCard
+          label="Open refills"
+          value={activeRefills}
+          hint={readyForPickup > 0 ? `${readyForPickup} ready for pickup` : "None ready yet"}
+          icon={Pill}
+          accent="info"
+        />
         <StatCard
           label="Loyalty points"
           value={data.loyalty?.points ?? 0}
-          hint={data.loyalty ? `${data.loyalty.tier} tier` : undefined}
+          hint={data.loyalty ? `${data.loyalty.tier} tier` : "Sign up to earn"}
+          icon={Sparkles}
+          accent="accent"
         />
-        <StatCard label="Upcoming reminders" value={data.reminders.length} />
+        <StatCard
+          label="Upcoming reminders"
+          value={data.reminders.length}
+          hint={data.reminders[0]?.scheduledFor
+            ? `Next: ${new Date(data.reminders[0].scheduledFor).toLocaleDateString()}`
+            : "None scheduled"}
+          icon={CalendarClock}
+          accent="neutral"
+        />
       </div>
 
+      {/* Two-column main grid */}
       <div className="grid gap-6 lg:grid-cols-2">
+        {/* Active prescriptions */}
         <Panel
           title="Active prescriptions"
+          description="Refills available on your current Rx"
           action={
-            <Link href="/portal/prescriptions" className="text-sm font-medium text-[#0d6e5a]">
-              View all
+            <Link
+              href="/portal/prescriptions"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-[#0d6e5a] hover:underline"
+            >
+              View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           }
         >
           {data.prescriptions.length === 0 ? (
-            <p className="text-sm text-[#5a6b62]">No active prescriptions on file yet.</p>
+            <EmptyState
+              icon={FileText}
+              title="No prescriptions on file"
+              description="When your doctor sends a prescription to Aether, it'll appear here."
+            />
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {data.prescriptions.slice(0, 4).map((p) => (
-                <li key={p.id} className="flex items-start justify-between gap-3 rounded-2xl bg-teal-50/50 px-3 py-3">
-                  <div>
-                    <p className="font-medium text-[#0c1a14]">{p.medicineName}</p>
-                    <p className="text-xs text-[#5a6b62]">
+                <li
+                  key={p.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] px-3.5 py-3 transition hover:border-[#0d6e5a]/30 hover:bg-[#f0faf6]"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold text-[#0c1a14]">{p.medicineName}</p>
+                    <p className="mt-0.5 text-xs text-[#5a6b62]">
                       {p.rxReference || "No Rx ref"} · {p.refillsRemaining ?? 0} refills left
                     </p>
                   </div>
                   <Link
                     href={`/portal/refills/new?prescriptionId=${p.id}&medicine=${encodeURIComponent(p.medicineName)}&rx=${encodeURIComponent(p.rxReference || "")}`}
-                    className="shrink-0 rounded-full bg-[#0d6e5a] px-3 py-1 text-xs font-semibold text-white"
+                    className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#0d6e5a] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
                   >
-                    Refill
+                    <Plus className="h-3 w-3" /> Refill
                   </Link>
                 </li>
               ))}
@@ -62,25 +127,43 @@ export default async function PortalDashboardPage() {
           )}
         </Panel>
 
+        {/* Recent refill requests */}
         <Panel
           title="Recent refill requests"
+          description="Your last 5 submitted requests"
           action={
-            <Link href="/portal/refills/new" className="text-sm font-medium text-[#0d6e5a]">
-              New request
+            <Link
+              href="/portal/refills/new"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-[#0d6e5a] hover:underline"
+            >
+              New request <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           }
         >
           {data.refills.length === 0 ? (
-            <p className="text-sm text-[#5a6b62]">No refill requests yet.</p>
+            <EmptyState
+              icon={Pill}
+              title="No refill requests yet"
+              description="Submit your first refill request and our pharmacists will get to work."
+              action={
+                <Link href="/portal/refills/new" className="btn-primary !py-2 text-sm">
+                  <Plus className="h-4 w-4" /> Request a refill
+                </Link>
+              }
+            />
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {data.refills.slice(0, 5).map((r) => {
                 const meta = refillStatusMeta(r.status);
                 return (
-                  <li key={r.id} className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-medium text-[#0c1a14]">{r.medicineName}</p>
-                      <p className="text-xs text-[#5a6b62]">
+                  <li
+                    key={r.id}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-[#e3ebe6] px-3.5 py-3 transition hover:border-[#0d6e5a]/30"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-[#0c1a14]">{r.medicineName}</p>
+                      <p className="mt-0.5 flex items-center gap-1 text-xs text-[#5a6b62]">
+                        <Clock className="h-3 w-3" />
                         {new Date(r.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -92,36 +175,74 @@ export default async function PortalDashboardPage() {
           )}
         </Panel>
 
-        <Panel title="Notifications">
+        {/* Notifications */}
+        <Panel
+          title="Notifications"
+          description="Updates from your pharmacy team"
+          action={
+            <Link
+              href="/portal/messages"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-[#0d6e5a] hover:underline"
+            >
+              View all <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          }
+        >
           {data.notifications.length === 0 ? (
-            <p className="text-sm text-[#5a6b62]">You&apos;re all caught up.</p>
+            <EmptyState
+              icon={Bell}
+              title="You're all caught up"
+              description="New refill updates and messages will land here."
+            />
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {data.notifications.map((n) => (
-                <li key={n.id} className="rounded-2xl border border-teal-900/5 px-3 py-3">
-                  <p className="text-sm font-medium text-[#0c1a14]">{n.title}</p>
-                  <p className="mt-0.5 text-xs text-[#5a6b62]">{n.body}</p>
+                <li
+                  key={n.id}
+                  className="flex items-start gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] px-3.5 py-3"
+                >
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e6f4ef] text-[#0d6e5a]">
+                    <Bell className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[#0c1a14]">{n.title}</p>
+                    <p className="mt-0.5 line-clamp-2 text-xs text-[#5a6b62]">{n.body}</p>
+                    <p className="mt-1 text-[10px] uppercase tracking-wide text-[#8a9a92]">
+                      {new Date(n.createdAt).toLocaleString()}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </Panel>
 
-        <Panel title="Activity timeline">
-          <ul className="space-y-3">
-            {data.timeline.map((e) => (
-              <li key={e.id} className="flex gap-3">
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-teal-500" />
-                <div>
-                  <p className="text-sm font-medium text-[#0c1a14]">{e.title}</p>
-                  {e.description && <p className="text-xs text-[#5a6b62]">{e.description}</p>}
-                  <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#8a9a92]">
-                    {new Date(e.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+        {/* Activity timeline */}
+        <Panel
+          title="Activity timeline"
+          description="Everything that's happened on your account"
+        >
+          {data.timeline.length === 0 ? (
+            <EmptyState icon={Activity} title="No activity yet" />
+          ) : (
+            <ol className="relative space-y-4 pl-4">
+              <span className="absolute left-1.5 top-1 bottom-1 w-px bg-[#e3ebe6]" />
+              {data.timeline.slice(0, 8).map((e) => (
+                <li key={e.id} className="relative">
+                  <span className="absolute -left-2.5 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[#0d6e5a] ring-4 ring-[#f4f7f4]">
+                    <CheckCircle2 className="h-3 w-3 text-white" />
+                  </span>
+                  <div className="ml-4">
+                    <p className="text-sm font-semibold text-[#0c1a14]">{e.title}</p>
+                    {e.description && <p className="text-xs text-[#5a6b62]">{e.description}</p>}
+                    <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#8a9a92]">
+                      {new Date(e.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
         </Panel>
       </div>
     </PortalShell>

@@ -270,8 +270,28 @@ model User {
   auditLogs           AuditLog[]
   customerNotes       CustomerNote[]
   segmentsCreated     Segment[]
+  pushDevices         PushDevice[]
 
   @@map("users")
+}
+
+/// Browser/device tokens used by firebase-admin to deliver FCM web push notifications.
+/// One user can have multiple devices (desktop, phone, tablet) — we fan out to all of them.
+model PushDevice {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  /// The FCM registration token returned by `getToken()` in the browser.
+  token     String   @unique
+  /// User-agent so the user can recognise "Chrome on Mac", "iPhone Safari", etc.
+  label     String?
+  /// Bumped on every /api/push/register call so we can prune stale devices.
+  lastSeenAt DateTime @default(now()) @map("last_seen_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_devices")
 }
 
 model Session {
