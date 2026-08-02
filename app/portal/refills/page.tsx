@@ -4,12 +4,8 @@ import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { refillStatusMeta } from "@/app/lib/types";
 import { cancelRefillAction } from "@/app/actions/portal";
-import {
-  PortalShell,
-  Panel,
-  Badge,
-  EmptyState,
-} from "@/app/components/portal/PortalShell";
+import { PortalShell } from "@/app/components/portal/PortalShell";
+import { Panel, Badge, EmptyState } from "@/app/components/portal/PortalWidgets";
 import {
   Plus,
   Pill,
