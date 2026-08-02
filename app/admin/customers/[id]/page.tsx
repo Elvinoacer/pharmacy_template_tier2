@@ -9,11 +9,8 @@ import {
   adminAssignSegmentAction,
   adminSendMessageAction,
 } from "@/app/actions/admin";
-import {
-  AdminShell,
-  AdminPanel,
-  AdminEmptyState,
-} from "@/app/components/admin/AdminShell";
+import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminShell } from "@/app/components/admin/AdminShell";
 import AdminNoteForm from "@/app/components/admin/AdminNoteForm";
 import AdminMessageForm from "@/app/components/admin/AdminMessageForm";
 import {

@@ -2,11 +2,8 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { adminCreateSegmentAction } from "@/app/actions/admin";
-import {
-  AdminShell,
-  AdminPanel,
-  AdminEmptyState,
-} from "@/app/components/admin/AdminShell";
+import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminShell } from "@/app/components/admin/AdminShell";
 import SegmentForm from "@/app/components/admin/SegmentForm";
 import { Layers, Settings2, Building2 } from "lucide-react";
 

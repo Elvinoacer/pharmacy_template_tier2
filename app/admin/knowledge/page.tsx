@@ -2,11 +2,8 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { adminKnowledgeAction } from "@/app/actions/admin";
-import {
-  AdminShell,
-  AdminPanel,
-  AdminEmptyState,
-} from "@/app/components/admin/AdminShell";
+import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminShell } from "@/app/components/admin/AdminShell";
 import KnowledgeForm from "@/app/components/admin/KnowledgeForm";
 import { BookOpen, Brain, FolderTree, CheckCircle2, FileText, Star } from "lucide-react";
 

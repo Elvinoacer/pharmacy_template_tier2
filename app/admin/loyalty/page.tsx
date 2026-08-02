@@ -2,11 +2,8 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { adminCreateCouponAction, adminLoyaltyAdjustAction } from "@/app/actions/admin";
-import {
-  AdminShell,
-  AdminPanel,
-  AdminEmptyState,
-} from "@/app/components/admin/AdminShell";
+import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminShell } from "@/app/components/admin/AdminShell";
 import LoyaltyForm from "@/app/components/admin/LoyaltyForm";
 import CouponForm from "@/app/components/admin/CouponForm";
 import { Sparkles, Tag, Gift, Award, TrendingUp, Percent, DollarSign } from "lucide-react";

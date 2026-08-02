@@ -2,11 +2,8 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { adminCreateTemplateAction } from "@/app/actions/admin";
-import {
-  AdminShell,
-  AdminPanel,
-  AdminEmptyState,
-} from "@/app/components/admin/AdminShell";
+import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminShell } from "@/app/components/admin/AdminShell";
 import TemplateForm from "@/app/components/admin/TemplateForm";
 import { FileText, Mail, MessageSquare, MessageCircle, Layout, FolderTree } from "lucide-react";
 
