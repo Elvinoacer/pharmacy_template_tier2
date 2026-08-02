@@ -61,14 +61,6 @@ export default function AuthForm({
         {state?.success && (
           <div className="rounded-2xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-900">
             {state.success}
-            {state.resetToken && (
-              <p className="mt-2 break-all text-xs">
-                Demo reset link:{" "}
-                <Link className="underline" href={`/reset-password?token=${state.resetToken}`}>
-                  /reset-password?token=…
-                </Link>
-              </p>
-            )}
           </div>
         )}
 

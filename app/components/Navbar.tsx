@@ -26,7 +26,8 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    setMenuOpen(false);
+    const t = window.setTimeout(() => setMenuOpen(false), 0);
+    return () => window.clearTimeout(t);
   }, [pathname]);
 
   const isActive = (href: string) =>

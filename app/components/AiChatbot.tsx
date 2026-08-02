@@ -69,10 +69,13 @@ export default function AiChatbot() {
 
   useEffect(() => {
     if (open) {
-      setUnread(false);
       scrollToBottom(false);
+      const unreadTimer = window.setTimeout(() => setUnread(false), 0);
       const t = window.setTimeout(() => inputRef.current?.focus(), 180);
-      return () => window.clearTimeout(t);
+      return () => {
+        window.clearTimeout(unreadTimer);
+        window.clearTimeout(t);
+      };
     }
   }, [open, scrollToBottom]);
 

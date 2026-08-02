@@ -26,6 +26,31 @@ const ESCALATION_PHRASES = [
   "can't advise",
 ];
 
+const USER_ESCALATION_PATTERNS = [
+  "chest pain",
+  "trouble breathing",
+  "difficulty breathing",
+  "shortness of breath",
+  "overdose",
+  "suicidal",
+  "self harm",
+  "severe allergic",
+  "anaphylaxis",
+  "pregnant",
+  "baby",
+  "infant",
+  "blood in",
+  "interpret my lab",
+  "lab result",
+  "diagnose",
+  "what dose",
+  "dosage",
+  "can i take",
+];
+
+const ESCALATION_RESPONSE =
+  "I need to hand this to a pharmacist before giving guidance. If this may be an emergency, call local emergency services now. Otherwise, contact the pharmacy directly so a pharmacist can review your situation.";
+
 export async function POST(request: Request) {
   const apiKey = process.env.GROQ_API_KEY?.trim();
   if (!apiKey) {
@@ -93,6 +118,56 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     console.error("[chat persist user]", err);
+  }
+
+  const userNeedsEscalation = USER_ESCALATION_PATTERNS.some((p) =>
+    last.content.toLowerCase().includes(p),
+  );
+  if (userNeedsEscalation) {
+    if (conversationId) {
+      try {
+        await prisma.aiMessage.create({
+          data: {
+            conversationId,
+            role: "assistant",
+            content: ESCALATION_RESPONSE,
+          },
+        });
+        await prisma.aiConversation.update({
+          where: { id: conversationId },
+          data: {
+            messageCount: { increment: 2 },
+            escalated: true,
+            escalatedAt: new Date(),
+            summary: last.content.slice(0, 240),
+          },
+        });
+        if (session?.customerId) {
+          await prisma.timelineEvent.create({
+            data: {
+              customerId: session.customerId,
+              userId: session.id,
+              eventType: "ai_escalation",
+              title: "AI conversation escalated",
+              description: last.content.slice(0, 120),
+              metadata: { conversationId, reason: "pre_response_guardrail" },
+            },
+          });
+        }
+      } catch (err) {
+        console.error("[chat persist escalation]", err);
+      }
+    }
+
+    return new Response(ESCALATION_RESPONSE, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Session-Key": sessionKey,
+        "X-Escalated": "true",
+      },
+    });
   }
 
   const modelName = (process.env.GROQ_MODEL || "llama-3.3-70b-versatile").trim();

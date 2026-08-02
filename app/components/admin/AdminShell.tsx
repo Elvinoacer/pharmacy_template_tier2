@@ -12,6 +12,7 @@ const LINKS = [
   { href: "/admin/segments", label: "Segments" },
   { href: "/admin/reminders", label: "Reminders" },
   { href: "/admin/notifications", label: "Notifications" },
+  { href: "/admin/ai", label: "AI Escalations" },
   { href: "/admin/loyalty", label: "Loyalty" },
   { href: "/admin/feedback", label: "Feedback" },
   { href: "/admin/knowledge", label: "AI Knowledge" },

@@ -261,6 +261,42 @@ export async function createPasswordReset(email: string): Promise<string | null>
   return token;
 }
 
+export async function createEmailVerification(userId: string): Promise<string> {
+  const token = generateToken();
+  const expiresAt = new Date();
+  expiresAt.setHours(expiresAt.getHours() + 24);
+
+  await prisma.emailVerification.create({
+    data: {
+      userId,
+      tokenHash: hashToken(token),
+      expiresAt,
+    },
+  });
+
+  return token;
+}
+
+export async function verifyEmailWithToken(token: string): Promise<boolean> {
+  const row = await prisma.emailVerification.findUnique({
+    where: { tokenHash: hashToken(token) },
+  });
+  if (!row || row.verifiedAt || row.expiresAt < new Date()) return false;
+
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: row.userId },
+      data: { emailVerified: true },
+    }),
+    prisma.emailVerification.update({
+      where: { id: row.id },
+      data: { verifiedAt: new Date() },
+    }),
+  ]);
+
+  return true;
+}
+
 export async function resetPasswordWithToken(token: string, newPassword: string): Promise<boolean> {
   const row = await prisma.passwordReset.findUnique({
     where: { tokenHash: hashToken(token) },

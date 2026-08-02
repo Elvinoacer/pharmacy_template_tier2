@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
+import { redeemCouponAction } from "@/app/actions/portal";
 import PortalShell, { Panel, StatCard } from "@/app/components/portal/PortalShell";
 
 export const metadata = { title: "Loyalty" };
@@ -16,6 +17,14 @@ export default async function PortalLoyaltyPage() {
     }),
     prisma.coupon.findMany({ where: { active: true }, orderBy: { createdAt: "desc" } }),
   ]);
+  const balance = account?.points ?? 0;
+  const now = new Date();
+  const availableCoupons = coupons.filter((c) => {
+    if (c.validFrom && c.validFrom > now) return false;
+    if (c.validUntil && c.validUntil < now) return false;
+    if (c.maxRedemptions && c.redemptions >= c.maxRedemptions) return false;
+    return true;
+  });
 
   return (
     <PortalShell user={user} title="Loyalty rewards">
@@ -37,19 +46,37 @@ export default async function PortalLoyaltyPage() {
         </Panel>
 
         <Panel title="Available coupons">
-          {coupons.length === 0 ? (
+          {availableCoupons.length === 0 ? (
             <p className="text-sm text-[#5a6b62]">No active coupons right now.</p>
           ) : (
             <ul className="space-y-3">
-              {coupons.map((c) => (
+              {availableCoupons.map((c) => {
+                const canRedeem = c.pointsCost > 0 && balance >= c.pointsCost;
+                return (
                 <li key={c.id} className="rounded-2xl bg-teal-50/60 px-3 py-3">
-                  <p className="font-mono text-sm font-semibold text-[#084c3f]">{c.code}</p>
-                  <p className="text-xs text-[#5a6b62]">{c.description}</p>
-                  {c.pointsCost > 0 && (
-                    <p className="mt-1 text-xs text-[#0d6e5a]">{c.pointsCost} points to redeem</p>
-                  )}
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-sm font-semibold text-[#084c3f]">{c.code}</p>
+                      <p className="text-xs text-[#5a6b62]">{c.description}</p>
+                      {c.pointsCost > 0 && (
+                        <p className="mt-1 text-xs text-[#0d6e5a]">{c.pointsCost} points to redeem</p>
+                      )}
+                    </div>
+                    {c.pointsCost > 0 && (
+                      <form action={redeemCouponAction}>
+                        <input type="hidden" name="couponId" value={c.id} />
+                        <button
+                          type="submit"
+                          disabled={!canRedeem}
+                          className="rounded-full bg-[#0d6e5a] px-3 py-1.5 text-xs font-semibold text-white disabled:bg-slate-300 disabled:text-slate-600"
+                        >
+                          Redeem
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 </li>
-              ))}
+              )})}
             </ul>
           )}
         </Panel>

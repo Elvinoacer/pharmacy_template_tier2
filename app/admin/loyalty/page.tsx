@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { adminLoyaltyAdjustAction } from "@/app/actions/admin";
+import { adminCreateCouponAction, adminLoyaltyAdjustAction } from "@/app/actions/admin";
 import AdminShell, { AdminPanel } from "@/app/components/admin/AdminShell";
 import LoyaltyForm from "@/app/components/admin/LoyaltyForm";
+import CouponForm from "@/app/components/admin/CouponForm";
 
 export const metadata = { title: "Loyalty" };
 
@@ -32,14 +33,26 @@ export default async function AdminLoyaltyPage() {
             }))}
           />
         </AdminPanel>
+        <AdminPanel title="Create coupon">
+          <CouponForm action={adminCreateCouponAction} />
+        </AdminPanel>
         <AdminPanel title="Coupons">
           <ul className="space-y-2 text-sm">
             {coupons.map((c) => (
               <li key={c.id} className="rounded-xl border border-white/10 px-3 py-2">
-                <span className="font-mono text-teal-200">{c.code}</span> — {c.description}{" "}
-                <span className="text-teal-100/40">({c.active ? "active" : "off"})</span>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <span className="font-mono text-teal-200">{c.code}</span> — {c.description}
+                    <p className="mt-1 text-xs text-teal-100/50">
+                      {c.pointsCost} pts · {c.redemptions}
+                      {c.maxRedemptions ? `/${c.maxRedemptions}` : ""} redeemed
+                    </p>
+                  </div>
+                  <span className="text-teal-100/40">{c.active ? "active" : "off"}</span>
+                </div>
               </li>
             ))}
+            {coupons.length === 0 && <li className="text-teal-100/50">No coupons yet.</li>}
           </ul>
         </AdminPanel>
         <AdminPanel title="Member balances">
