@@ -302,6 +302,10 @@ export async function loginWithPassword(email: string, password: string): Promis
     throw new AuthError("Invalid email or password", 401);
   }
 
+  if (!user.passwordHash) {
+    throw new AuthError("Please sign in with Google.", 401);
+  }
+
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) throw new AuthError("Invalid email or password", 401);
 
