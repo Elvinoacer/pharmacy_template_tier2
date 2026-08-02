@@ -9,7 +9,7 @@ Built with **Next.js 16**, **Prisma 7**, and **Neon Postgres**.
 | Layer | Technology |
 | --- | --- |
 | App | Next.js App Router, React 19, Tailwind CSS 4 |
-| ORM | Prisma 7 (`prisma-client` + `@prisma/adapter-neon` HTTP) |
+| ORM | Prisma 7 (`prisma-client` + `@prisma/adapter-pg`) |
 | Database | Neon Postgres |
 | Auth | Cookie sessions, bcrypt password hashes, role-based access |
 | AI | Groq (knowledge-base grounded assistant) |
@@ -40,8 +40,9 @@ Built with **Next.js 16**, **Prisma 7**, and **Neon Postgres**.
 ```bash
 npm install
 cp .env.example .env.local   # or use existing .env / .env.local
-npx prisma generate
-npx prisma db push
+npm run db:generate
+npm run db:migrate           # prisma migrate deploy
+npm run db:test              # verify DATABASE_URL (+ optional HOSTADDR)
 npm run db:seed
 npm run dev
 ```
@@ -53,6 +54,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | Variable | Purpose |
 | --- | --- |
 | `DATABASE_URL` | Neon pooled connection string (`sslmode=require`) |
+| `DATABASE_HOSTADDR` | Optional IPv4 override when Node cannot connect through DNS |
 | `AUTH_SECRET` | Session signing secret (change in production) |
 | `GROQ_API_KEY` | AI assistant |
 | `GROQ_MODEL` | Optional model override |
@@ -102,13 +104,16 @@ Password for all: **`Password123!`**
 - Schema: `prisma/schema.prisma`
 - Config: `prisma.config.ts` (Prisma 7)
 - Client output: `app/generated/prisma`
-- Client singleton: `app/lib/db/prisma.ts` (Neon **HTTP** adapter — no raw SQL in app code)
+- Client singleton: `app/lib/db/prisma.ts` (`@prisma/adapter-pg`)
+- Migrations: `prisma/migrations`
 
 ```bash
-npm run db:generate   # prisma generate
-npm run db:push       # push schema
-npm run db:seed       # demo data
-npm run db:studio     # Prisma Studio
+npm run db:generate         # prisma generate
+npm run db:migrate          # prisma migrate deploy
+npm run db:migrate:status   # migration status
+npm run db:test             # connectivity smoke test
+npm run db:seed             # demo data
+npm run db:studio           # Prisma Studio
 ```
 
 ## AI safety

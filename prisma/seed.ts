@@ -1,17 +1,19 @@
-import "dotenv/config";
+import path from "node:path";
+import { config as loadEnv } from "dotenv";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "../app/generated/prisma/client";
-import { PrismaNeonHttp } from "@prisma/adapter-neon";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { buildPostgresConfig } from "../app/lib/db/config";
+
+loadEnv({ path: path.resolve(process.cwd(), ".env") });
+loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true });
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error("DATABASE_URL is required for seeding");
 }
 
-const adapter = new PrismaNeonHttp(connectionString, {
-  arrayMode: false,
-  fullResults: true,
-});
+const adapter = new PrismaPg(buildPostgresConfig(connectionString));
 const prisma = new PrismaClient({ adapter });
 
 async function hash(password: string) {
