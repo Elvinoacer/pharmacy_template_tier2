@@ -11,10 +11,10 @@ import { Sparkles, Tag, Gift, Award, TrendingUp, Percent, DollarSign } from "luc
 export const metadata = { title: "Loyalty" };
 
 const TIER_COLOR: Record<string, string> = {
-  bronze: "bg-amber-500/15 text-amber-300",
+  bronze: "bg-amber-500/15 text-amber-700",
   silver: "bg-slate-300/15 text-slate-200",
   gold: "bg-yellow-400/15 text-yellow-300",
-  platinum: "bg-cyan-400/15 text-cyan-300",
+  platinum: "bg-cyan-400/15 text-cyan-700",
 };
 
 export default async function AdminLoyaltyPage() {
@@ -42,31 +42,31 @@ export default async function AdminLoyaltyPage() {
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Active points</p>
-            <Sparkles className="h-3.5 w-3.5 text-[#2dd4bf]" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Active points</p>
+            <Sparkles className="h-3.5 w-3.5 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-white">{Number(totalPoints).toLocaleString()}</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{Number(totalPoints).toLocaleString()}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Lifetime points</p>
-            <TrendingUp className="h-3.5 w-3.5 text-[#2dd4bf]" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Lifetime points</p>
+            <TrendingUp className="h-3.5 w-3.5 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-white">{Number(totalLifetime).toLocaleString()}</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{Number(totalLifetime).toLocaleString()}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Active coupons</p>
-            <Tag className="h-3.5 w-3.5 text-[#2dd4bf]" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Active coupons</p>
+            <Tag className="h-3.5 w-3.5 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-white">{coupons.filter((c) => c.active).length}</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{coupons.filter((c) => c.active).length}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Members</p>
-            <Award className="h-3.5 w-3.5 text-[#2dd4bf]" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Members</p>
+            <Award className="h-3.5 w-3.5 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-white">{accounts.length}</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{accounts.length}</p>
         </div>
       </div>
 
@@ -97,19 +97,19 @@ export default async function AdminLoyaltyPage() {
               {coupons.map((c) => (
                 <li
                   key={c.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm font-bold text-[#2dd4bf]">{c.code}</span>
-                      <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${c.active ? "bg-emerald-500/15 text-emerald-300" : "bg-slate-500/15 text-slate-400"}`}>
+                      <span className="font-mono text-sm font-bold admin-accent-text">{c.code}</span>
+                      <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${c.active ? "bg-emerald-500/15 text-emerald-700" : "bg-slate-500/15 text-slate-500"}`}>
                         {c.active ? "active" : "off"}
                       </span>
                     </div>
-                    <p className="mt-0.5 truncate text-xs text-[#ecfdf5]/55">
+                    <p className="mt-0.5 truncate text-xs admin-muted">
                       {c.description || "No description"}
                     </p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-[#ecfdf5]/55">
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
                       <span className="inline-flex items-center gap-0.5">
                         {c.discountType === "percent" ? <Percent className="h-2.5 w-2.5" /> : <DollarSign className="h-2.5 w-2.5" />}
                         {Number(c.discountValue)}
@@ -140,17 +140,17 @@ export default async function AdminLoyaltyPage() {
               {accounts.slice(0, 20).map((a) => (
                 <li
                   key={a.id}
-                  className="flex items-center justify-between gap-2 rounded-lg bg-white/[0.03] px-3 py-2"
+                  className="flex items-center justify-between gap-2 rounded-lg bg-[var(--admin-inset)] px-3 py-2"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-white">{a.customer.fullName}</p>
-                    <p className="text-[10px] text-[#ecfdf5]/45">
+                    <p className="truncate text-sm font-medium admin-text">{a.customer.fullName}</p>
+                    <p className="text-[10px] admin-soft">
                       Lifetime: {a.lifetimePoints} · Referral: {a.referralCode}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-white">{a.points}</span>
-                    <span className="text-[10px] text-[#ecfdf5]/45">pts</span>
+                    <span className="font-bold admin-text">{a.points}</span>
+                    <span className="text-[10px] admin-soft">pts</span>
                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${TIER_COLOR[a.tier]}`}>
                       {a.tier}
                     </span>

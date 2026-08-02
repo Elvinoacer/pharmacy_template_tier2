@@ -32,12 +32,12 @@ export default function ReminderForm({
   return (
     <form action={formAction} className="space-y-4">
       {state?.error && (
-        <div className="flex items-start gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+        <div className="admin-alert-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
         </div>
       )}
       {state?.success && (
-        <div className="flex items-start gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-200">
+        <div className="admin-alert-success">
           <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.success}</span>
         </div>
       )}
@@ -45,11 +45,11 @@ export default function ReminderForm({
       <div>
         <label className="label-admin">Customer *</label>
         <div className="relative">
-          <Users className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#ecfdf5]/30" />
+          <Users className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <select name="customerId" required className="input-admin pl-9" defaultValue="">
-            <option value="" className="bg-[#122620]">Select customer…</option>
+            <option value="">Select customer…</option>
             {customers.map((c) => (
-              <option key={c.id} value={c.id} className="bg-[#122620]">
+              <option key={c.id} value={c.id}>
                 {c.fullName}
               </option>
             ))}
@@ -62,7 +62,7 @@ export default function ReminderForm({
           <label className="label-admin">Type</label>
           <select name="type" className="input-admin" defaultValue="custom">
             {TYPES.map((t) => (
-              <option key={t.value} value={t.value} className="bg-[#122620]">
+              <option key={t.value} value={t.value}>
                 {t.label}
               </option>
             ))}
@@ -72,7 +72,7 @@ export default function ReminderForm({
           <label className="label-admin">Channel</label>
           <select name="channel" className="input-admin" defaultValue="email">
             {CHANNELS.map((c) => (
-              <option key={c.value} value={c.value} className="bg-[#122620]">
+              <option key={c.value} value={c.value}>
                 {c.value === "in_app" ? "In-app" : c.value.charAt(0).toUpperCase() + c.value.slice(1)}
               </option>
             ))}
@@ -83,7 +83,7 @@ export default function ReminderForm({
       <div>
         <label className="label-admin">Title *</label>
         <div className="relative">
-          <Type className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#ecfdf5]/30" />
+          <Type className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input name="title" required placeholder="e.g. Time to refill your medication" className="input-admin pl-9" />
         </div>
       </div>
@@ -91,7 +91,7 @@ export default function ReminderForm({
       <div>
         <label className="label-admin">Body</label>
         <div className="relative">
-          <FileText className="pointer-events-none absolute left-3 top-3 h-3.5 w-3.5 text-[#ecfdf5]/30" />
+          <FileText className="pointer-events-none absolute left-3 top-3 h-3.5 w-3.5 admin-soft" />
           <textarea name="body" rows={3} placeholder="Reminder message…" className="input-admin resize-y pl-9" />
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function ReminderForm({
       <div>
         <label className="label-admin">Schedule for *</label>
         <div className="relative">
-          <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#ecfdf5]/30" />
+          <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input name="scheduledFor" type="datetime-local" required className="input-admin pl-9" />
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function ReminderForm({
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] px-4 py-2.5 text-sm font-semibold text-[#042f2e] transition hover:brightness-110 disabled:opacity-50"
+        className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50"
       >
         {pending ? <><span className="typing-dot" /> Saving…</> : <><CalendarClock className="h-4 w-4" /> Schedule reminder</>}
       </button>

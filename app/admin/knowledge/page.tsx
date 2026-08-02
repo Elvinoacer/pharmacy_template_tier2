@@ -34,41 +34,41 @@ export default async function AdminKnowledgePage() {
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Total articles</p>
-            <FileText className="h-3.5 w-3.5 text-[#2dd4bf]" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total articles</p>
+            <FileText className="h-3.5 w-3.5 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-white">{stats.total}</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{stats.total}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Approved</p>
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Approved</p>
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-emerald-300">{stats.approved}</p>
+          <p className="mt-1 text-2xl font-bold text-emerald-700">{stats.approved}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Drafts</p>
-            <FileText className="h-3.5 w-3.5 text-amber-300" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Drafts</p>
+            <FileText className="h-3.5 w-3.5 text-amber-700" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-amber-300">{stats.drafts}</p>
+          <p className="mt-1 text-2xl font-bold text-amber-700">{stats.drafts}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Categories</p>
-            <FolderTree className="h-3.5 w-3.5 text-[#2dd4bf]" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Categories</p>
+            <FolderTree className="h-3.5 w-3.5 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-white">{stats.categories}</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{stats.categories}</p>
         </div>
       </div>
 
-      <div className="mb-4 flex items-start gap-3 rounded-xl border border-[#2dd4bf]/15 bg-[#2dd4bf]/[0.04] p-4">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#2dd4bf]/15 text-[#2dd4bf]">
+      <div className="mb-4 flex items-start gap-3 rounded-xl border border-[var(--admin-accent)]/20 bg-[var(--admin-accent)]/[0.04] p-4">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
           <Brain className="h-5 w-5" />
         </span>
         <div>
-          <p className="text-sm font-semibold text-white">How AI knowledge works</p>
-          <p className="mt-0.5 text-xs text-[#ecfdf5]/65">
+          <p className="text-sm font-semibold admin-text">How AI knowledge works</p>
+          <p className="mt-0.5 text-xs admin-muted">
             The virtual assistant searches approved articles first, then falls back to general pharmacy
             knowledge. Mark articles as approved to make them available to the assistant.
           </p>
@@ -91,23 +91,23 @@ export default async function AdminKnowledgePage() {
               {articles.map((a) => (
                 <li
                   key={a.id}
-                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 transition hover:border-white/[0.12]"
+                  className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition hover:border-[var(--admin-border-2)]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-white">{a.title}</p>
+                        <p className="font-semibold admin-text">{a.title}</p>
                         {a.isApproved ? (
-                          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
                             <CheckCircle2 className="h-2.5 w-2.5" /> approved
                           </span>
                         ) : (
-                          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
                             draft
                           </span>
                         )}
                       </div>
-                      <p className="mt-0.5 text-xs text-[#ecfdf5]/55">
+                      <p className="mt-0.5 text-xs admin-muted">
                         <FolderTree className="mr-1 inline h-2.5 w-2.5" />
                         {a.category}
                         {a.priority > 0 && (
@@ -116,7 +116,7 @@ export default async function AdminKnowledgePage() {
                           </span>
                         )}
                       </p>
-                      <p className="mt-1.5 line-clamp-3 text-sm text-[#ecfdf5]/75">{a.content}</p>
+                      <p className="mt-1.5 line-clamp-3 text-sm admin-text/75">{a.content}</p>
                     </div>
                   </div>
                 </li>

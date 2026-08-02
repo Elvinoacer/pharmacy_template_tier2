@@ -42,7 +42,7 @@ export default async function AdminDashboardPage() {
       actions={
         <Link
           href="/admin/refills"
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] px-4 py-2 text-sm font-semibold text-[#042f2e] transition hover:brightness-110"
+          className="btn-admin"
         >
           <Pill className="h-4 w-4" /> Refill queue
         </Link>
@@ -95,7 +95,7 @@ export default async function AdminDashboardPage() {
           description="Distribution of all refill requests by status"
           className="lg:col-span-2"
           action={
-            <Link href="/admin/refills" className="inline-flex items-center gap-1 text-xs font-semibold text-[#2dd4bf] hover:underline">
+            <Link href="/admin/refills" className="inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline">
               Manage <ArrowRight className="h-3 w-3" />
             </Link>
           }
@@ -120,18 +120,18 @@ export default async function AdminDashboardPage() {
                 return (
                   <div key={status} className="flex items-center gap-3">
                     <div className="w-32 shrink-0">
-                      <span className="text-xs font-medium text-[#ecfdf5]/70">{meta.label}</span>
+                      <span className="text-xs font-medium admin-muted">{meta.label}</span>
                     </div>
                     <div className="flex-1">
-                      <div className="h-2 overflow-hidden rounded-full bg-white/[0.05]">
+                      <div className="admin-progress">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] transition-all"
+                          className="admin-progress-bar transition-all"
                           style={{ width: `${Math.max(pct, 3)}%` }}
                         />
                       </div>
                     </div>
                     <div className="w-12 shrink-0 text-right">
-                      <span className="font-bold text-white">{row._count}</span>
+                      <span className="font-bold admin-text">{row._count}</span>
                     </div>
                   </div>
                 );
@@ -143,21 +143,21 @@ export default async function AdminDashboardPage() {
         {/* Quick stats */}
         <AdminPanel title="Customer growth & retention" description="Last 30 days">
           <dl className="space-y-3 text-sm">
-            <div className="flex justify-between border-b border-white/[0.05] pb-2">
-              <dt className="text-[#ecfdf5]/55">Active customer records</dt>
-              <dd className="font-bold text-white">{a.totalCustomers}</dd>
+            <div className="flex justify-between border-b border-[var(--admin-border)] pb-2">
+              <dt className="admin-muted">Active customer records</dt>
+              <dd className="font-bold admin-text">{a.totalCustomers}</dd>
             </div>
-            <div className="flex justify-between border-b border-white/[0.05] pb-2">
-              <dt className="text-[#ecfdf5]/55">New registrations (30d)</dt>
-              <dd className="font-bold text-emerald-400">+{a.newCustomers}</dd>
+            <div className="flex justify-between border-b border-[var(--admin-border)] pb-2">
+              <dt className="admin-muted">New registrations (30d)</dt>
+              <dd className="font-bold text-emerald-600">+{a.newCustomers}</dd>
             </div>
-            <div className="flex justify-between border-b border-white/[0.05] pb-2">
-              <dt className="text-[#ecfdf5]/55">Avg feedback rating</dt>
-              <dd className="font-bold text-white">{avgRating} <span className="text-xs text-[#ecfdf5]/45">({a.feedbackCount})</span></dd>
+            <div className="flex justify-between border-b border-[var(--admin-border)] pb-2">
+              <dt className="admin-muted">Avg feedback rating</dt>
+              <dd className="font-bold admin-text">{avgRating} <span className="text-xs admin-soft">({a.feedbackCount})</span></dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-[#ecfdf5]/55">Cancelled refills</dt>
-              <dd className="font-bold text-rose-400">{a.cancelledRefills}</dd>
+              <dt className="admin-muted">Cancelled refills</dt>
+              <dd className="font-bold text-rose-500">{a.cancelledRefills}</dd>
             </div>
           </dl>
         </AdminPanel>
@@ -165,22 +165,22 @@ export default async function AdminDashboardPage() {
         {/* AI assistant */}
         <AdminPanel title="AI assistant" description="Customer self-service usage">
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-white/[0.04] p-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">
+            <div className="rounded-xl bg-[var(--admin-inset)] p-3">
+              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide admin-muted">
                 <Brain className="h-3 w-3" /> Conversations
               </div>
-              <p className="mt-1 text-2xl font-bold text-white">{a.aiConversations}</p>
+              <p className="mt-1 text-2xl font-bold admin-text">{a.aiConversations}</p>
             </div>
-            <div className="rounded-xl bg-white/[0.04] p-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">
+            <div className="rounded-xl bg-[var(--admin-inset)] p-3">
+              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide admin-muted">
                 <TrendingUp className="h-3 w-3" /> Escalations
               </div>
-              <p className="mt-1 text-2xl font-bold text-amber-400">{a.aiEscalations}</p>
+              <p className="mt-1 text-2xl font-bold text-amber-500">{a.aiEscalations}</p>
             </div>
           </div>
           <Link
             href="/admin/ai"
-            className="mt-3 flex items-center justify-between rounded-xl bg-white/[0.04] px-3 py-2 text-xs font-medium text-[#2dd4bf] transition hover:bg-white/[0.08]"
+            className="mt-3 flex items-center justify-between rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-xs font-medium admin-accent-text transition hover:bg-[var(--admin-inset-2)]"
           >
             View escalations <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -189,17 +189,17 @@ export default async function AdminDashboardPage() {
         {/* Campaigns */}
         <AdminPanel title="Campaigns" description="Marketing activity">
           <div className="flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-[#042f2e]">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-[var(--admin-btn-fg)]">
               <Megaphone className="h-7 w-7" />
             </div>
             <div>
-              <p className="text-3xl font-bold text-white">{a.campaigns}</p>
-              <p className="text-xs text-[#ecfdf5]/55">Total campaigns created</p>
+              <p className="text-3xl font-bold admin-text">{a.campaigns}</p>
+              <p className="text-xs admin-muted">Total campaigns created</p>
             </div>
           </div>
           <Link
             href="/admin/campaigns"
-            className="mt-3 flex items-center justify-between rounded-xl bg-white/[0.04] px-3 py-2 text-xs font-medium text-[#2dd4bf] transition hover:bg-white/[0.08]"
+            className="mt-3 flex items-center justify-between rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-xs font-medium admin-accent-text transition hover:bg-[var(--admin-inset-2)]"
           >
             Manage campaigns <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -208,16 +208,16 @@ export default async function AdminDashboardPage() {
         {/* Quick links */}
         <AdminPanel title="Quick actions" description="Jump to common tasks">
           <div className="grid grid-cols-2 gap-2">
-            <Link href="/admin/customers" className="flex items-center gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 text-xs font-medium text-[#ecfdf5]/80 transition hover:bg-white/[0.08] hover:text-white">
+            <Link href="/admin/customers" className="flex items-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2.5 text-xs font-medium admin-text transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]">
               <Users className="h-4 w-4" /> Customers
             </Link>
-            <Link href="/admin/messages" className="flex items-center gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 text-xs font-medium text-[#ecfdf5]/80 transition hover:bg-white/[0.08] hover:text-white">
+            <Link href="/admin/messages" className="flex items-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2.5 text-xs font-medium admin-text transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]">
               <MessageSquare className="h-4 w-4" /> Messages
             </Link>
-            <Link href="/admin/feedback" className="flex items-center gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 text-xs font-medium text-[#ecfdf5]/80 transition hover:bg-white/[0.08] hover:text-white">
+            <Link href="/admin/feedback" className="flex items-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2.5 text-xs font-medium admin-text transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]">
               <Star className="h-4 w-4" /> Feedback
             </Link>
-            <Link href="/admin/reminders" className="flex items-center gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 text-xs font-medium text-[#ecfdf5]/80 transition hover:bg-white/[0.08] hover:text-white">
+            <Link href="/admin/reminders" className="flex items-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2.5 text-xs font-medium admin-text transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]">
               <Clock className="h-4 w-4" /> Reminders
             </Link>
           </div>

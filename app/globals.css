@@ -155,6 +155,42 @@ html[data-admin-theme="dark"] .shell-grid-admin {
   }
 }
 
+
+/* Force light tokens when staff picks light (overrides system dark preference) */
+.shell-grid-admin[data-theme="light"] {
+  --admin-bg: #f3f6f4;
+  --admin-panel: #ffffff;
+  --admin-card: #ffffff;
+  --admin-card-2: #f8faf9;
+  --admin-border: rgba(12, 26, 20, 0.08);
+  --admin-border-2: rgba(12, 26, 20, 0.14);
+  --admin-text: #0c1a14;
+  --admin-text-muted: #5a6b62;
+  --admin-text-soft: #8a9a92;
+  --admin-accent: #0d6e5a;
+  --admin-accent-2: #0f766e;
+  --admin-accent-soft: rgba(13, 110, 90, 0.1);
+  --admin-accent-text: #084c3f;
+  --admin-gold: #c9a227;
+  --admin-gold-soft: rgba(201, 162, 39, 0.14);
+  --admin-inset: rgba(12, 26, 20, 0.035);
+  --admin-inset-2: rgba(12, 26, 20, 0.06);
+  --admin-hover: rgba(13, 110, 90, 0.08);
+  --admin-shadow: 0 1px 2px rgba(8, 40, 32, 0.04), 0 4px 16px rgba(8, 40, 32, 0.06);
+  --admin-shadow-md: 0 8px 28px rgba(8, 40, 32, 0.1);
+  --admin-input-bg: #ffffff;
+  --admin-nav-active-bg: linear-gradient(135deg, rgba(13, 110, 90, 0.1), rgba(45, 212, 191, 0.08));
+  --admin-nav-active-bar: linear-gradient(180deg, #0d6e5a, #2dd4bf);
+  --admin-stat-bar: linear-gradient(90deg, #0d6e5a, #c9a227);
+  --admin-btn-fg: #ffffff;
+  --admin-scrollbar: rgba(13, 110, 90, 0.22);
+  --admin-mesh-1: rgba(13, 110, 90, 0.08);
+  --admin-mesh-2: rgba(201, 162, 39, 0.06);
+  --admin-danger-soft: rgba(239, 68, 68, 0.1);
+  --admin-success-soft: rgba(16, 185, 129, 0.1);
+  color-scheme: light;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -1207,8 +1243,10 @@ select:focus-visible {
 .admin-progress-bar {
   display: block;
   height: 100%;
+  min-width: 0;
   border-radius: 9999px;
   background: linear-gradient(90deg, var(--admin-accent), var(--admin-accent-2));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--admin-accent) 35%, transparent);
 }
 
 .admin-sidebar-surface {

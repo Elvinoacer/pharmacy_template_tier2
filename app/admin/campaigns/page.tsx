@@ -17,11 +17,11 @@ const CHANNEL_ICON: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-slate-500/15 text-slate-300",
-  scheduled: "bg-amber-500/15 text-amber-300",
-  sending: "bg-blue-500/15 text-blue-300",
-  sent: "bg-emerald-500/15 text-emerald-300",
-  cancelled: "bg-rose-500/15 text-rose-300",
+  draft: "bg-slate-500/15 text-slate-600",
+  scheduled: "bg-amber-500/15 text-amber-700",
+  sending: "bg-blue-500/15 text-blue-700",
+  sent: "bg-emerald-500/15 text-emerald-700",
+  cancelled: "bg-rose-500/15 text-rose-600",
 };
 
 export default async function AdminCampaignsPage() {
@@ -52,13 +52,13 @@ export default async function AdminCampaignsPage() {
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          { label: "Total", value: stats.total, color: "text-white" },
-          { label: "Drafts", value: stats.drafts, color: "text-slate-300" },
-          { label: "Scheduled", value: stats.scheduled, color: "text-amber-300" },
-          { label: "Sent", value: stats.sent, color: "text-emerald-300" },
+          { label: "Total", value: stats.total, color: "admin-text" },
+          { label: "Drafts", value: stats.drafts, color: "text-slate-600" },
+          { label: "Scheduled", value: stats.scheduled, color: "text-amber-700" },
+          { label: "Sent", value: stats.sent, color: "text-emerald-700" },
         ].map((s) => (
           <div key={s.label} className="admin-stat p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">{s.label}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{s.label}</p>
             <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
           </div>
         ))}
@@ -91,20 +91,20 @@ export default async function AdminCampaignsPage() {
                 return (
                   <li
                     key={c.id}
-                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition hover:border-white/[0.12]"
+                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 transition hover:border-[var(--admin-border-2)]"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2dd4bf]/15 text-[#2dd4bf]">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--admin-accent-soft)] admin-accent-text">
                             <ChannelIcon className="h-3.5 w-3.5" />
                           </span>
-                          <p className="font-semibold text-white">{c.name}</p>
+                          <p className="font-semibold admin-text">{c.name}</p>
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLOR[c.status]}`}>
                             {c.status}
                           </span>
                         </div>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] text-[#ecfdf5]/55">
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
                           <span className="inline-flex items-center gap-1">
                             <Users className="h-2.5 w-2.5" />
                             {c.segment?.name || "All customers"}
@@ -122,22 +122,22 @@ export default async function AdminCampaignsPage() {
                           )}
                         </div>
                         {c.description && (
-                          <p className="mt-1 text-xs text-[#ecfdf5]/65">{c.description}</p>
+                          <p className="mt-1 text-xs admin-muted">{c.description}</p>
                         )}
-                        <p className="mt-1.5 line-clamp-2 text-xs text-[#ecfdf5]/55">{c.body}</p>
+                        <p className="mt-1.5 line-clamp-2 text-xs admin-muted">{c.body}</p>
                         {stats && (
                           <div className="mt-2 flex flex-wrap gap-2 text-[10px]">
                             {typeof stats.sent === "number" && (
-                              <span className="rounded bg-white/[0.05] px-1.5 py-0.5 text-[#ecfdf5]/70">Sent: {stats.sent}</span>
+                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Sent: {stats.sent}</span>
                             )}
                             {typeof stats.delivered === "number" && (
-                              <span className="rounded bg-white/[0.05] px-1.5 py-0.5 text-[#ecfdf5]/70">Delivered: {stats.delivered}</span>
+                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Delivered: {stats.delivered}</span>
                             )}
                             {typeof stats.opened === "number" && (
-                              <span className="rounded bg-white/[0.05] px-1.5 py-0.5 text-[#ecfdf5]/70">Opened: {stats.opened}</span>
+                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Opened: {stats.opened}</span>
                             )}
                             {typeof stats.clicked === "number" && (
-                              <span className="rounded bg-white/[0.05] px-1.5 py-0.5 text-[#ecfdf5]/70">Clicked: {stats.clicked}</span>
+                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Clicked: {stats.clicked}</span>
                             )}
                           </div>
                         )}
@@ -147,7 +147,7 @@ export default async function AdminCampaignsPage() {
                           <input type="hidden" name="id" value={c.id} />
                           <button
                             type="submit"
-                            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] px-3 py-1.5 text-xs font-semibold text-[#042f2e] transition hover:brightness-110"
+                            className="btn-admin-sm"
                           >
                             <Rocket className="h-3 w-3" /> Launch
                           </button>

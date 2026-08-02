@@ -76,7 +76,7 @@ export default async function AdminRefillsPage({
             description="Try clearing the status filter or search query."
           />
         ) : (
-          <div className="overflow-x-auto scroll-thin-dark">
+          <div className="overflow-x-auto scroll-admin">
             <table className="table-admin">
               <thead>
                 <tr>
@@ -94,10 +94,10 @@ export default async function AdminRefillsPage({
                   return (
                     <tr key={r.id}>
                       <td>
-                        <p className="font-semibold text-white">
+                        <p className="font-semibold admin-text">
                           {r.customerName || r.customer?.fullName || "Guest"}
                         </p>
-                        <div className="mt-0.5 flex flex-wrap gap-2 text-[10px] text-[#ecfdf5]/45">
+                        <div className="mt-0.5 flex flex-wrap gap-2 text-[10px] admin-soft">
                           {r.phone && (
                             <span className="inline-flex items-center gap-0.5">
                               <Phone className="h-2.5 w-2.5" /> {r.phone}
@@ -111,15 +111,15 @@ export default async function AdminRefillsPage({
                         </div>
                       </td>
                       <td>
-                        <p className="font-medium text-white">{r.medicineName}</p>
-                        <p className="font-mono text-[10px] text-[#ecfdf5]/45">{r.rxReference || "—"}</p>
+                        <p className="font-medium admin-text">{r.medicineName}</p>
+                        <p className="font-mono text-[10px] admin-soft">{r.rxReference || "—"}</p>
                       </td>
                       <td>
-                        <span className="inline-flex items-center rounded-full bg-white/[0.05] px-2 py-0.5 text-[10px] font-medium capitalize text-[#ecfdf5]/70">
+                        <span className="inline-flex items-center rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-medium capitalize admin-muted">
                           {r.source}
                         </span>
                       </td>
-                      <td className="text-xs text-[#ecfdf5]/55">
+                      <td className="text-xs admin-muted">
                         <span className="inline-flex items-center gap-1">
                           <Clock className="h-2.5 w-2.5" />
                           {new Date(r.createdAt).toLocaleString()}
@@ -136,17 +136,17 @@ export default async function AdminRefillsPage({
                           <select
                             name="status"
                             defaultValue={r.status}
-                            className="rounded-lg border border-white/[0.1] bg-white/[0.04] px-2 py-1 text-xs text-white focus:border-[#2dd4bf]/60 focus:outline-none"
+                            className="rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2 py-1 text-xs admin-text focus:border-[var(--admin-accent)] focus:outline-none"
                           >
                             {REFILL_STATUSES.map((s) => (
-                              <option key={s.value} value={s.value} className="bg-[#122620]">
+                              <option key={s.value} value={s.value}>
                                 {s.label}
                               </option>
                             ))}
                           </select>
                           <button
                             type="submit"
-                            className="inline-flex items-center gap-1 rounded-lg bg-[#2dd4bf]/20 px-2 py-1 text-[10px] font-semibold text-[#2dd4bf] transition hover:bg-[#2dd4bf]/30"
+                            className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-2 py-1 text-[10px] font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)]"
                             title="Save status"
                           >
                             <Save className="h-3 w-3" />

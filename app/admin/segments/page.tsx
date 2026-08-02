@@ -29,18 +29,18 @@ export default async function AdminSegmentsPage() {
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Total segments</p>
-          <p className="mt-1 text-2xl font-bold text-white">{segments.length}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total segments</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{segments.length}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">System segments</p>
-          <p className="mt-1 text-2xl font-bold text-[#2dd4bf]">
+          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">System segments</p>
+          <p className="mt-1 text-2xl font-bold admin-accent-text">
             {segments.filter((s) => s.isSystem).length}
           </p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Total memberships</p>
-          <p className="mt-1 text-2xl font-bold text-white">{totalMembers}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total memberships</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{totalMembers}</p>
         </div>
       </div>
 
@@ -60,25 +60,25 @@ export default async function AdminSegmentsPage() {
               {segments.map((s) => (
                 <li
                   key={s.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 transition hover:border-white/[0.12]"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition hover:border-[var(--admin-border-2)]"
                 >
                   <div className="flex items-start gap-3 min-w-0 flex-1">
-                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${s.isSystem ? "bg-[#2dd4bf]/15 text-[#2dd4bf]" : "bg-amber-400/15 text-amber-300"}`}>
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${s.isSystem ? "bg-[var(--admin-accent-soft)] admin-accent-text" : "bg-amber-400/15 text-amber-700"}`}>
                       {s.isSystem ? <Building2 className="h-4 w-4" /> : <Settings2 className="h-4 w-4" />}
                     </span>
                     <div className="min-w-0">
-                      <p className="font-semibold text-white">{s.name}</p>
-                      <p className="line-clamp-1 text-xs text-[#ecfdf5]/55">
+                      <p className="font-semibold admin-text">{s.name}</p>
+                      <p className="line-clamp-1 text-xs admin-muted">
                         {s.description || "No description"}
                       </p>
-                      <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">
+                      <p className="mt-0.5 text-[10px] uppercase tracking-wide admin-soft">
                         {s.isSystem ? "System segment" : "Custom"}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-bold text-white">{s._count.members}</p>
-                    <p className="text-[10px] text-[#ecfdf5]/45">members</p>
+                    <p className="text-lg font-bold admin-text">{s._count.members}</p>
+                    <p className="text-[10px] admin-soft">members</p>
                   </div>
                 </li>
               ))}

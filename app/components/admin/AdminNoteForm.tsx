@@ -18,18 +18,18 @@ export default function AdminNoteForm({
       <input type="hidden" name="customerId" value={customerId} />
 
       {state?.error && (
-        <div className="flex items-start gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+        <div className="admin-alert-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
         </div>
       )}
       {state?.success && (
-        <div className="flex items-start gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-200">
+        <div className="admin-alert-success">
           <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.success}</span>
         </div>
       )}
 
       <div className="relative">
-        <StickyNote className="pointer-events-none absolute left-3 top-3 h-3.5 w-3.5 text-[#ecfdf5]/30" />
+        <StickyNote className="pointer-events-none absolute left-3 top-3 h-3.5 w-3.5 admin-soft" />
         <textarea
           name="body"
           required
@@ -40,18 +40,18 @@ export default function AdminNoteForm({
       </div>
 
       <div className="flex items-center justify-between gap-3">
-        <label className="flex cursor-pointer items-center gap-2 text-xs text-[#ecfdf5]/65 hover:text-white">
+        <label className="flex cursor-pointer items-center gap-2 text-xs admin-muted hover:text-[var(--admin-text)]">
           <input
             type="checkbox"
             name="isPinned"
-            className="h-3.5 w-3.5 rounded border-white/20 bg-white/[0.04] text-[#2dd4bf] focus:ring-[#2dd4bf]"
+            className="h-3.5 w-3.5 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text focus:ring-[var(--admin-accent)]"
           />
           <Pin className="h-3 w-3" /> Pin to top
         </label>
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] px-3 py-1.5 text-xs font-semibold text-[#042f2e] transition hover:brightness-110 disabled:opacity-50"
+          className="btn-admin-sm disabled:opacity-50"
         >
           {pending ? <><span className="typing-dot" /> Saving…</> : <><Save className="h-3.5 w-3.5" /> Add note</>}
         </button>

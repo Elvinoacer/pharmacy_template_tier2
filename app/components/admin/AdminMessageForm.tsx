@@ -25,12 +25,12 @@ export default function AdminMessageForm({
       <input type="hidden" name="customerId" value={customerId} />
 
       {state?.error && (
-        <div className="flex items-start gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+        <div className="admin-alert-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
         </div>
       )}
       {state?.success && (
-        <div className="flex items-start gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-200">
+        <div className="admin-alert-success">
           <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.success}</span>
         </div>
       )}
@@ -44,7 +44,7 @@ export default function AdminMessageForm({
             return (
               <label
                 key={c.value}
-                className="flex cursor-pointer flex-col items-center gap-1 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-2 text-[10px] font-semibold text-[#ecfdf5]/65 transition hover:border-[#2dd4bf]/40 hover:text-white has-[:checked]:border-[#2dd4bf] has-[:checked]:bg-[#2dd4bf]/10 has-[:checked]:text-[#2dd4bf]"
+                className="flex cursor-pointer flex-col items-center gap-1 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2 py-2 text-[10px] font-semibold admin-muted transition hover:border-[var(--admin-accent)] hover:text-[var(--admin-text)] has-[:checked]:border-[var(--admin-accent)] has-[:checked]:bg-[var(--admin-accent-soft)] has-[:checked]:admin-accent-text"
               >
                 <input type="radio" name="channel" value={c.value} defaultChecked={c.value === "email"} className="sr-only" />
                 <Icon className="h-4 w-4" />
@@ -58,7 +58,7 @@ export default function AdminMessageForm({
       <div>
         <label className="label-admin">Subject</label>
         <div className="relative">
-          <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#ecfdf5]/30" />
+          <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input name="subject" placeholder="Subject line" className="input-admin pl-9" />
         </div>
       </div>
@@ -77,16 +77,16 @@ export default function AdminMessageForm({
       <div>
         <label className="label-admin">Schedule (optional)</label>
         <div className="relative">
-          <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#ecfdf5]/30" />
+          <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input name="scheduledFor" type="datetime-local" className="input-admin pl-9" />
         </div>
-        <p className="mt-1 text-[10px] text-[#ecfdf5]/45">Leave empty to send immediately.</p>
+        <p className="mt-1 text-[10px] admin-soft">Leave empty to send immediately.</p>
       </div>
 
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] px-4 py-2.5 text-sm font-semibold text-[#042f2e] transition hover:brightness-110 disabled:opacity-50"
+        className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50"
       >
         {pending ? (
           <><span className="typing-dot" /> Sending…</>

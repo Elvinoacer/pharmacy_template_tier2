@@ -37,12 +37,12 @@ const typeIcon: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  pending: "bg-amber-500/15 text-amber-300",
-  sent: "bg-blue-500/15 text-blue-300",
-  delivered: "bg-emerald-500/15 text-emerald-300",
-  failed: "bg-rose-500/15 text-rose-300",
-  opened: "bg-cyan-500/15 text-cyan-300",
-  clicked: "bg-violet-500/15 text-violet-300",
+  pending: "bg-amber-500/15 text-amber-700",
+  sent: "bg-blue-500/15 text-blue-700",
+  delivered: "bg-emerald-500/15 text-emerald-700",
+  failed: "bg-rose-500/15 text-rose-600",
+  opened: "bg-cyan-500/15 text-cyan-700",
+  clicked: "bg-violet-500/15 text-violet-700",
 };
 
 export default async function AdminNotificationsPage() {
@@ -76,11 +76,11 @@ export default async function AdminNotificationsPage() {
         {counts.map((c) => (
           <div key={c.status} className="admin-stat px-4 py-3">
             <div className="flex items-center gap-2">
-              <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${STATUS_COLOR[c.status] || "bg-slate-500/15 text-slate-300"}`}>
+              <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${STATUS_COLOR[c.status] || "bg-slate-500/15 text-slate-600"}`}>
                 {c.status}
               </span>
             </div>
-            <p className="mt-1 text-2xl font-bold text-white">{c._count}</p>
+            <p className="mt-1 text-2xl font-bold admin-text">{c._count}</p>
           </div>
         ))}
       </div>
@@ -95,7 +95,7 @@ export default async function AdminNotificationsPage() {
           {notifications.length === 0 ? (
             <AdminEmptyState icon={Bell} title="No notifications sent yet" />
           ) : (
-            <div className="overflow-x-auto scroll-thin-dark">
+            <div className="overflow-x-auto scroll-admin">
               <table className="table-admin">
                 <thead>
                   <tr>
@@ -113,27 +113,27 @@ export default async function AdminNotificationsPage() {
                     return (
                       <tr key={n.id}>
                         <td>
-                          <p className="font-medium text-white">{n.customer?.fullName || "—"}</p>
-                          <p className="text-[10px] capitalize text-[#ecfdf5]/45">{n.type}</p>
+                          <p className="font-medium admin-text">{n.customer?.fullName || "—"}</p>
+                          <p className="text-[10px] capitalize admin-soft">{n.type}</p>
                         </td>
                         <td>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.05] px-2 py-0.5 text-[10px] font-medium capitalize text-[#ecfdf5]/70">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-medium capitalize admin-muted">
                             <ChannelIcon className="h-2.5 w-2.5" /> {n.channel}
                           </span>
                         </td>
                         <td>
-                          <p className="flex items-center gap-1.5 text-sm text-white">
-                            <TypeIcon className="h-3 w-3 text-[#2dd4bf]" />
+                          <p className="flex items-center gap-1.5 text-sm admin-text">
+                            <TypeIcon className="h-3 w-3 admin-accent-text" />
                             <span className="truncate">{n.title}</span>
                           </p>
-                          <p className="truncate text-xs text-[#ecfdf5]/55">{n.body}</p>
+                          <p className="truncate text-xs admin-muted">{n.body}</p>
                         </td>
                         <td>
-                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLOR[n.status] || "bg-slate-500/15 text-slate-300"}`}>
+                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLOR[n.status] || "bg-slate-500/15 text-slate-600"}`}>
                             {n.status}
                           </span>
                         </td>
-                        <td className="text-xs text-[#ecfdf5]/55">
+                        <td className="text-xs admin-muted">
                           {new Date(n.createdAt).toLocaleString()}
                         </td>
                       </tr>

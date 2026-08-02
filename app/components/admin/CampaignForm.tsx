@@ -16,12 +16,12 @@ export default function CampaignForm({
   return (
     <form action={formAction} className="space-y-4">
       {state?.error && (
-        <div className="flex items-start gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+        <div className="admin-alert-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
         </div>
       )}
       {state?.success && (
-        <div className="flex items-start gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-200">
+        <div className="admin-alert-success">
           <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.success}</span>
         </div>
       )}
@@ -29,7 +29,7 @@ export default function CampaignForm({
       <div>
         <label className="label-admin">Campaign name *</label>
         <div className="relative">
-          <Megaphone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#ecfdf5]/30" />
+          <Megaphone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input name="name" required placeholder="e.g. Flu season vaccination drive" className="input-admin pl-9" />
         </div>
       </div>
@@ -43,18 +43,18 @@ export default function CampaignForm({
         <div>
           <label className="label-admin">Channel</label>
           <select name="channel" className="input-admin" defaultValue="email">
-            <option value="email" className="bg-[#122620]">📧 Email</option>
-            <option value="sms" className="bg-[#122620]">💬 SMS</option>
-            <option value="whatsapp" className="bg-[#122620]">📱 WhatsApp</option>
-            <option value="multi" className="bg-[#122620]">⚡ Multi-channel</option>
+            <option value="email">📧 Email</option>
+            <option value="sms">💬 SMS</option>
+            <option value="whatsapp">📱 WhatsApp</option>
+            <option value="multi">⚡ Multi-channel</option>
           </select>
         </div>
         <div>
           <label className="label-admin">Target segment</label>
           <select name="segmentId" className="input-admin" defaultValue="">
-            <option value="" className="bg-[#122620]">All customers</option>
+            <option value="">All customers</option>
             {segments.map((s) => (
-              <option key={s.id} value={s.id} className="bg-[#122620]">
+              <option key={s.id} value={s.id}>
                 {s.name}
               </option>
             ))}
@@ -65,7 +65,7 @@ export default function CampaignForm({
       <div>
         <label className="label-admin">Subject (email only)</label>
         <div className="relative">
-          <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#ecfdf5]/30" />
+          <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input name="subject" placeholder="Your flu shot is waiting…" className="input-admin pl-9" />
         </div>
       </div>
@@ -73,22 +73,22 @@ export default function CampaignForm({
       <div>
         <label className="label-admin">Message body *</label>
         <textarea name="body" required rows={5} placeholder="Hi {{name}}, …" className="input-admin resize-y" />
-        <p className="mt-1 text-[10px] text-[#ecfdf5]/45">Use &#123;&#123;name&#125;&#125; for personalisation.</p>
+        <p className="mt-1 text-[10px] admin-soft">Use &#123;&#123;name&#125;&#125; for personalisation.</p>
       </div>
 
       <div>
         <label className="label-admin">Schedule (optional)</label>
         <div className="relative">
-          <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#ecfdf5]/30" />
+          <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input name="scheduledFor" type="datetime-local" className="input-admin pl-9" />
         </div>
-        <p className="mt-1 text-[10px] text-[#ecfdf5]/45">Leave empty to save as draft.</p>
+        <p className="mt-1 text-[10px] admin-soft">Leave empty to save as draft.</p>
       </div>
 
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] px-4 py-2.5 text-sm font-semibold text-[#042f2e] transition hover:brightness-110 disabled:opacity-50"
+        className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50"
       >
         {pending ? (
           <><span className="typing-dot" /> Saving…</>
