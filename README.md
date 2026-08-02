@@ -59,6 +59,20 @@ Open [http://localhost:3000](http://localhost:3000).
 | `GROQ_API_KEY` | AI assistant |
 | `GROQ_MODEL` | Optional model override |
 | `NEXT_PUBLIC_APP_URL` | Public app URL |
+| `CRON_SECRET` | Bearer token for `/api/cron/reminders` (required in production) |
+
+### Scheduled jobs (GitHub Actions)
+
+Reminders are processed hourly by [`.github/workflows/cron-reminders.yml`](.github/workflows/cron-reminders.yml), which `POST`s the deployed `/api/cron/reminders` endpoint.
+
+Set these **repository secrets** (Settings → Secrets and variables → Actions):
+
+| Secret | Value |
+| --- | --- |
+| `APP_URL` | Public base URL of the deployment (e.g. `https://your-app.example.com`) |
+| `CRON_SECRET` | Same value as the app’s `CRON_SECRET` env var |
+
+You can also run the workflow manually via **Actions → Cron — process reminders → Run workflow**. Scheduled workflows only run from the default branch.
 
 ### Demo accounts
 

@@ -1,0 +1,53 @@
+# Process due reminders by calling the deployed app's cron endpoint.
+# Requires repository secrets:
+#   APP_URL     — public base URL of the deployed app (e.g. https://example.com)
+#   CRON_SECRET — same value as CRON_SECRET on the deployment
+name: Cron — process reminders
+
+on:
+  schedule:
+    # Every hour at minute 0 (same schedule as the previous Vercel cron)
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  process-reminders:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call reminders cron endpoint
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${APP_URL:-}" ]; then
+            echo "::error::Missing repository secret APP_URL (e.g. https://your-app.example.com)"
+            exit 1
+          fi
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::Missing repository secret CRON_SECRET (must match deployment CRON_SECRET)"
+            exit 1
+          fi
+
+          # Strip trailing slash so we don't double-slash the path
+          BASE_URL="${APP_URL%/}"
+          URL="${BASE_URL}/api/cron/reminders"
+
+          echo "POST ${URL}"
+          HTTP_CODE=$(curl -sS -o /tmp/cron-response.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "Content-Type: application/json" \
+            --max-time 60 \
+            "${URL}")
+
+          echo "HTTP ${HTTP_CODE}"
+          cat /tmp/cron-response.json || true
+          echo
+
+          if [ "${HTTP_CODE}" -lt 200 ] || [ "${HTTP_CODE}" -ge 300 ]; then
+            echo "::error::Cron endpoint returned HTTP ${HTTP_CODE}"
+            exit 1
+          fi
