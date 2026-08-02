@@ -2,13 +2,8 @@ import Link from "next/link";
 import { getSessionUser } from "@/app/lib/auth";
 import { getCustomerDashboard } from "@/app/lib/services/crm";
 import { refillStatusMeta } from "@/app/lib/types";
-import {
-  PortalShell,
-  StatCard,
-  Panel,
-  Badge,
-  EmptyState,
-} from "@/app/components/portal/PortalShell";
+import { PortalShell } from "@/app/components/portal/PortalShell";
+import { StatCard, Panel, Badge, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { redirect } from "next/navigation";
 import {
   FileText,

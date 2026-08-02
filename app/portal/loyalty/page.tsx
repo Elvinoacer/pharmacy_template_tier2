@@ -2,12 +2,8 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { redeemCouponAction } from "@/app/actions/portal";
-import {
-  PortalShell,
-  Panel,
-  StatCard,
-  EmptyState,
-} from "@/app/components/portal/PortalShell";
+import { PortalShell } from "@/app/components/portal/PortalShell";
+import { Panel, StatCard, EmptyState } from "@/app/components/portal/PortalWidgets";
 import {
   Sparkles,
   Gift,

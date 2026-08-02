@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { PortalShell, EmptyState } from "@/app/components/portal/PortalShell";
+import { PortalShell } from "@/app/components/portal/PortalShell";
+import { EmptyState } from "@/app/components/portal/PortalWidgets";
 import { CaregiversView } from "@/app/components/portal/CaregiversView";
 import { HeartHandshake } from "lucide-react";
 

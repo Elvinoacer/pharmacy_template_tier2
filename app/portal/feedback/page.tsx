@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
-import { PortalShell, Panel } from "@/app/components/portal/PortalShell";
+import { PortalShell } from "@/app/components/portal/PortalShell";
+import { Panel } from "@/app/components/portal/PortalWidgets";
 import FeedbackForm from "@/app/components/portal/FeedbackForm";
 import { Star, Lightbulb, AlertTriangle, Smile } from "lucide-react";
 

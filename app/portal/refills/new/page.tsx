@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { portalRefillAction } from "@/app/actions/portal";
-import { PortalShell, Panel } from "@/app/components/portal/PortalShell";
+import { PortalShell } from "@/app/components/portal/PortalShell";
+import { Panel } from "@/app/components/portal/PortalWidgets";
 import PortalRefillForm from "@/app/components/portal/PortalRefillForm";
 import { Info, Clock, Truck, Store } from "lucide-react";
 
