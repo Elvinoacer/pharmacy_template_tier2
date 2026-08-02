@@ -101,21 +101,35 @@ export async function createRefillRequest(data: {
         relatedId: refill.id,
       },
     });
-
-    // Notify staff (push) about the new refill so they can act quickly.
-    const customer = await prisma.customerProfile.findUnique({
-      where: { id: data.customerId },
-      select: { fullName: true, user: { select: { id: true } } },
-    });
-    if (customer) {
-      await dispatchPushToStaff({
-        title: "New refill request",
-        body: `${customer.fullName} requested ${data.medicineName}.`,
-        url: "/admin/refills",
-        data: { tag: "refill-new", customerId: data.customerId, refillId: refill.id },
-      });
-    }
   }
+
+  // Always alert staff — including guest / website refills without a customer profile.
+  const who =
+    data.customerName ||
+    (data.customerId
+      ? (
+          await prisma.customerProfile.findUnique({
+            where: { id: data.customerId },
+            select: { fullName: true },
+          })
+        )?.fullName
+      : null) ||
+    data.email ||
+    data.phone ||
+    "A customer";
+
+  await dispatchPushToStaff({
+    title: "New refill request",
+    body: `${who} requested ${data.medicineName}.`,
+    url: "/admin/refills",
+    data: {
+      tag: "refill-new",
+      ...(data.customerId ? { customerId: data.customerId } : {}),
+      refillId: refill.id,
+    },
+  }).catch(() => {
+    /* push is best-effort */
+  });
 
   return refill;
 }
@@ -366,7 +380,7 @@ export async function createFeedback(data: {
   body: string;
   customerId?: string;
 }) {
-  return prisma.feedback.create({
+  const feedback = await prisma.feedback.create({
     data: {
       name: data.name,
       email: data.email,
@@ -377,10 +391,25 @@ export async function createFeedback(data: {
       customerId: data.customerId,
     },
   });
+
+  // Staff should see complaints / low ratings immediately.
+  const type = data.type ?? "review";
+  if (type === "complaint" || (typeof data.rating === "number" && data.rating <= 2)) {
+    await dispatchPushToStaff({
+      title: type === "complaint" ? "New customer complaint" : "Low feedback rating",
+      body: data.title || data.body.slice(0, 120) || "New feedback submitted",
+      url: "/admin/feedback",
+      data: { tag: "feedback-new", feedbackId: feedback.id, type },
+    }).catch(() => {
+      /* best-effort */
+    });
+  }
+
+  return feedback;
 }
 
 export async function respondToFeedback(id: string, response: string, responderId: string, isPublic = false) {
-  return prisma.feedback.update({
+  const feedback = await prisma.feedback.update({
     where: { id },
     data: {
       staffResponse: response,
@@ -389,7 +418,23 @@ export async function respondToFeedback(id: string, response: string, responderI
       status: "responded" as FeedbackStatus,
       isPublic,
     },
+    include: {
+      customer: { include: { user: { select: { id: true } } } },
+    },
   });
+
+  if (feedback.customer?.user?.id) {
+    await dispatchPushToUser(feedback.customer.user.id, {
+      title: "Pharmacy response to your feedback",
+      body: response.slice(0, 200),
+      url: "/portal/feedback",
+      data: { tag: `feedback-${feedback.id}`, feedbackId: feedback.id },
+    }).catch(() => {
+      /* best-effort */
+    });
+  }
+
+  return feedback;
 }
 
 export async function getApprovedKnowledge() {
@@ -462,8 +507,8 @@ export async function sendStaffMessage(data: {
   });
 
   // Fire a web push to the customer immediately for non-scheduled messages.
-  if (!data.scheduledFor) {
-    await dispatchPushToUser(customer?.user.id || "", {
+  if (!data.scheduledFor && customer?.user?.id) {
+    await dispatchPushToUser(customer.user.id, {
       title: data.subject || "Message from Aether Pharmacy",
       body: data.body.slice(0, 200),
       url: "/portal/messages",
@@ -498,7 +543,7 @@ export async function launchCampaign(campaignId: string, actorId: string) {
     (await prisma.customerProfile.findMany({ select: { id: true } })).map((c) => c.id);
   const customers = await prisma.customerProfile.findMany({
     where: { id: { in: memberIds } },
-    include: { user: { select: { email: true } } },
+    include: { user: { select: { id: true, email: true } } },
   });
 
   let sent = 0;
@@ -525,6 +570,19 @@ export async function launchCampaign(campaignId: string, actorId: string) {
         relatedId: campaign.id,
       },
     });
+
+    // Always fan out a web push so registered customer devices see the campaign,
+    // even when the primary channel is email/SMS/WhatsApp.
+    if (customer.user?.id) {
+      const push = await dispatchPushToUser(customer.user.id, {
+        title: campaign.subject || campaign.name,
+        body: campaign.body.slice(0, 200),
+        url: "/portal/messages",
+        data: { tag: `campaign-${campaign.id}`, campaignId: campaign.id },
+      }).catch(() => ({ sent: 0, failed: 0, pruned: 0 }));
+      if (push.sent > 0) delivered += push.sent;
+    }
+
     if (delivery.status === "sent" || delivery.status === "delivered") sent += 1;
     if (delivery.status === "delivered") delivered += 1;
     if (delivery.status === "failed") failed += 1;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSessionUser } from "@/app/lib/auth";
+import { getSessionUser, isStaff } from "@/app/lib/auth";
 import { dispatchPushToUser } from "@/app/lib/services/push";
 
 export const runtime = "nodejs";
@@ -12,10 +12,14 @@ export async function POST() {
     return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
   }
 
+  const home = isStaff(user.role) ? "/admin/notifications" : "/portal/messages";
+
   const result = await dispatchPushToUser(user.id, {
     title: "Test notification",
-    body: "If you can read this, push notifications are wired up correctly.",
-    url: typeof window === "undefined" ? "/portal" : "/portal",
+    body: isStaff(user.role)
+      ? "Staff push is working — you will get alerts for refills, enquiries, and escalations."
+      : "Customer push is working — you will get refill updates and pharmacy messages.",
+    url: home,
     data: { tag: "test-push" },
   });
 

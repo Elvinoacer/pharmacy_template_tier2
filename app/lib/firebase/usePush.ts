@@ -13,8 +13,24 @@ type Status = "unsupported" | "default" | "granted" | "denied" | "requesting";
  */
 export function usePushNotifications() {
   const [status, setStatus] = useState<Status>("default");
-  const [lastMessage, setLastMessage] = useState<{ title?: string; body?: string; data?: Record<string, string> } | null>(null);
+  const [lastMessage, setLastMessage] = useState<{
+    title?: string;
+    body?: string;
+    data?: Record<string, string>;
+  } | null>(null);
   const [registered, setRegistered] = useState(false);
+
+  const registerToken = useCallback(async (token: string) => {
+    const res = await fetch("/api/push/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    if (!res.ok) {
+      throw new Error(`register_failed_${res.status}`);
+    }
+    setRegistered(true);
+  }, []);
 
   useEffect(() => {
     // Defer state updates to a microtask so we don't call setState synchronously
@@ -34,22 +50,18 @@ export function usePushNotifications() {
 
       if (perm !== "granted") return;
 
+      // Permission already granted — refresh/register the token quietly.
       requestFcmToken()
         .then(async (token) => {
           if (cancelled || !token) return;
           try {
-            await fetch("/api/push/register", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ token }),
-            });
-            setRegistered(true);
+            await registerToken(token);
           } catch {
-            /* best-effort */
+            /* best-effort — user can retry via enable() */
           }
         })
         .catch(() => {
-          /* swallow — user will see a retry button via enable() */
+          /* swallow */
         });
 
       onForegroundPush((payload) => {
@@ -63,7 +75,7 @@ export function usePushNotifications() {
       cancelled = true;
       if (unsubscribe) unsubscribe();
     };
-  }, []);
+  }, [registerToken]);
 
   const enable = useCallback(async () => {
     if (!isPushSupported()) return false;
@@ -74,25 +86,20 @@ export function usePushNotifications() {
       return false;
     }
     try {
-      await fetch("/api/push/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      setRegistered(true);
+      await registerToken(token);
       setStatus("granted");
       return true;
     } catch {
-      setStatus("default");
+      setStatus(Notification.permission === "granted" ? "granted" : "default");
       return false;
     }
-  }, []);
+  }, [registerToken]);
 
   const sendTest = useCallback(async () => {
     try {
       const r = await fetch("/api/push/test", { method: "POST" });
       const j = await r.json();
-      return j;
+      return j as { sent?: number; failed?: number; error?: string };
     } catch {
       return { error: "request_failed" };
     }

@@ -5,6 +5,7 @@
 // visitors who never enable notifications.
 
 let messagingPromise: Promise<import("firebase/messaging").Messaging | null> | null = null;
+let swRegistrationPromise: Promise<ServiceWorkerRegistration | null> | null = null;
 
 function isClientConfigured(): boolean {
   return Boolean(
@@ -18,11 +19,40 @@ function isClientConfigured(): boolean {
 export function isPushSupported(): boolean {
   if (typeof window === "undefined") return false;
   return (
-    typeof window !== "undefined" &&
     "Notification" in window &&
     "serviceWorker" in navigator &&
+    "PushManager" in window &&
     isClientConfigured()
   );
+}
+
+/** Register (or reuse) the FCM service worker at the site root. */
+export async function getPushServiceWorker(): Promise<ServiceWorkerRegistration | null> {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) return null;
+
+  if (!swRegistrationPromise) {
+    swRegistrationPromise = (async () => {
+      try {
+        // Prefer an existing registration for this script if the browser already has one.
+        const existing = await navigator.serviceWorker.getRegistration("/");
+        if (existing?.active?.scriptURL?.includes("firebase-messaging-sw")) {
+          return existing;
+        }
+
+        const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js", {
+          scope: "/",
+        });
+        // Wait until the SW is ready so getToken can attach to it.
+        await navigator.serviceWorker.ready;
+        return registration;
+      } catch (err) {
+        console.error("[firebase/client] Service worker registration failed:", err);
+        return null;
+      }
+    })();
+  }
+
+  return swRegistrationPromise;
 }
 
 export async function getMessaging(): Promise<import("firebase/messaging").Messaging | null> {
@@ -33,6 +63,9 @@ export async function getMessaging(): Promise<import("firebase/messaging").Messa
   if (!messagingPromise) {
     messagingPromise = (async () => {
       try {
+        // Ensure SW is registered before messaging initialises.
+        await getPushServiceWorker();
+
         const { initializeApp, getApps } = await import("firebase/app");
         const { getMessaging: _getMessaging } = await import("firebase/messaging");
 
@@ -69,9 +102,11 @@ export async function requestFcmToken(): Promise<string | null> {
     const permission = await Notification.requestPermission();
     if (permission !== "granted") return null;
 
+    const registration = await getPushServiceWorker();
     const { getToken } = await import("firebase/messaging");
     const token = await getToken(messaging, {
       vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY!,
+      ...(registration ? { serviceWorkerRegistration: registration } : {}),
     });
     return token || null;
   } catch (err) {

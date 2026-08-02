@@ -34,10 +34,11 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
     setResult(null);
     const r = await sendTest();
     setSending(false);
-    if (r && r.sent > 0) {
-      setResult({ ok: true, msg: `Test push delivered to ${r.sent} device${r.sent === 1 ? "" : "s"}.` });
-    } else if (r && r.error) {
-      setResult({ ok: false, msg: r.error });
+    const sent = typeof r?.sent === "number" ? r.sent : 0;
+    if (sent > 0) {
+      setResult({ ok: true, msg: `Test push delivered to ${sent} device${sent === 1 ? "" : "s"}.` });
+    } else if (r?.error) {
+      setResult({ ok: false, msg: String(r.error) });
     } else {
       setResult({ ok: false, msg: "No registered devices. Enable push first." });
     }
@@ -66,7 +67,7 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs text-[#ecfdf5]/55">Status</span>
-          <PushStatusPill status={status} />
+          <PushStatusPill status={status} dark />
         </div>
 
         <p className="text-xs text-[#ecfdf5]/55">

@@ -12,6 +12,27 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Serve the FCM service worker from an API route that injects Firebase env
+  // config at runtime. Static /public SW files cannot read process.env.
+  async rewrites() {
+    return [
+      {
+        source: "/firebase-messaging-sw.js",
+        destination: "/api/firebase-messaging-sw",
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/firebase-messaging-sw.js",
+        headers: [
+          { key: "Service-Worker-Allowed", value: "/" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
