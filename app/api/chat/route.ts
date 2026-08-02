@@ -2,6 +2,7 @@ import Groq from "groq-sdk";
 import { buildPharmacyContext } from "../../lib/chat-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
+import { dispatchPushToStaff } from "@/app/lib/services/push";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -154,6 +155,19 @@ export async function POST(request: Request) {
             },
           });
         }
+
+        await dispatchPushToStaff({
+          title: "AI conversation escalated",
+          body: last.content.slice(0, 140) || "A customer needs a human pharmacist.",
+          url: "/admin/ai",
+          data: {
+            tag: "ai-escalation",
+            conversationId,
+            reason: "pre_response_guardrail",
+          },
+        }).catch(() => {
+          /* best-effort */
+        });
       } catch (err) {
         console.error("[chat persist escalation]", err);
       }
@@ -228,6 +242,21 @@ export async function POST(request: Request) {
                     description: last.content.slice(0, 120),
                     metadata: { conversationId, escalated },
                   },
+                });
+              }
+
+              if (escalated) {
+                await dispatchPushToStaff({
+                  title: "AI conversation escalated",
+                  body: last.content.slice(0, 140) || "The assistant handed off to a pharmacist.",
+                  url: "/admin/ai",
+                  data: {
+                    tag: "ai-escalation",
+                    conversationId,
+                    reason: "model_response",
+                  },
+                }).catch(() => {
+                  /* best-effort */
                 });
               }
             } catch (err) {

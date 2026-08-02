@@ -28,7 +28,7 @@ import {
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
 import { useSidebarCollapsed, useUnreadCount, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
-import { PushNotificationCenter } from "@/app/components/PushNotificationCenter";
+import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 
 export const ADMIN_LINKS = [
   { href: "/admin", label: "Analytics", icon: BarChart3 },
@@ -219,6 +219,7 @@ export function AdminShell({
         </div>
 
         <div className="ml-auto flex items-center gap-1.5">
+          <PushEnableChip audience="admin" />
           <AdminBellButton unread={unread} />
           <AdminUserMenu user={user} />
         </div>
@@ -247,7 +248,7 @@ export function AdminShell({
         </div>
       </main>
 
-      <PushNotificationCenter />
+      <PushNotificationCenter audience="admin" />
     </div>
   );
 }

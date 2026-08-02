@@ -19,7 +19,7 @@ export async function dispatchPushToUser(
     data?: Record<string, string>;
   },
 ): Promise<{ sent: number; failed: number; pruned: number }> {
-  if (!isFirebaseConfigured()) {
+  if (!userId || !isFirebaseConfigured()) {
     return { sent: 0, failed: 0, pruned: 0 };
   }
 

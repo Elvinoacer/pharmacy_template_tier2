@@ -24,7 +24,7 @@ import {
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
 import { useSidebarCollapsed, useUnreadCount, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
-import { PushNotificationCenter } from "@/app/components/PushNotificationCenter";
+import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 
 export const PORTAL_LINKS = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard },
@@ -194,6 +194,7 @@ export function PortalShell({
         </div>
 
         <div className="ml-auto flex items-center gap-1.5">
+          <PushEnableChip audience="portal" />
           <BellButton unread={unread} />
           <Link href="/" className="btn-icon hidden sm:inline-flex" title="View website" aria-label="View website">
             <Home className="h-[18px] w-[18px]" />
@@ -225,7 +226,7 @@ export function PortalShell({
         </div>
       </main>
 
-      <PushNotificationCenter />
+      <PushNotificationCenter audience="portal" />
     </div>
   );
 }

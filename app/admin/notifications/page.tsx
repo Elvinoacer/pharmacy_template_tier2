@@ -4,6 +4,7 @@ import { prisma } from "@/app/lib/db";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { PushSettingsPanel } from "@/app/components/admin/PushSettingsPanel";
+import { PushEnablePanel } from "@/app/components/PushNotificationCenter";
 import {
   Bell,
   Mail,
@@ -144,8 +145,11 @@ export default async function AdminNotificationsPage() {
           )}
         </AdminPanel>
 
-        {/* Push settings */}
-        <PushSettingsPanel devices={pushDevices} />
+        {/* Push settings — explicit staff registration hotspot */}
+        <div className="space-y-4">
+          <PushEnablePanel audience="admin" />
+          <PushSettingsPanel devices={pushDevices} />
+        </div>
       </div>
     </AdminShell>
   );

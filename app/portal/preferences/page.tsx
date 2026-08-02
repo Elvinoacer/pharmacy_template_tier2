@@ -4,7 +4,8 @@ import { prisma } from "@/app/lib/db";
 import { updatePreferencesAction } from "@/app/actions/portal";
 import { PortalShell, Panel } from "@/app/components/portal/PortalShell";
 import PreferencesForm from "@/app/components/portal/PreferencesForm";
-import { Settings, Bell, MessageSquare, Heart, Cake } from "lucide-react";
+import { PushEnablePanel } from "@/app/components/PushNotificationCenter";
+import { Settings, Bell, MessageSquare, Heart, Cake, Smartphone } from "lucide-react";
 
 export const metadata = { title: "Preferences" };
 
@@ -40,6 +41,13 @@ export default async function PortalPreferencesPage() {
           <Panel>
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-2.5">
+                <Smartphone className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
+                <div>
+                  <p className="font-medium text-[#0c1a14]">Browser push</p>
+                  <p className="text-xs text-[#5a6b62]">Register this device for alerts</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2.5">
                 <Bell className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
                 <div>
                   <p className="font-medium text-[#0c1a14]">Channel toggles</p>
@@ -71,7 +79,14 @@ export default async function PortalPreferencesPage() {
           </Panel>
         </aside>
 
-        <div className="lg:col-span-2">
+        <div className="space-y-6 lg:col-span-2">
+          <Panel
+            title="Device push notifications"
+            description="This is separate from email/SMS — it registers this browser for Firebase Cloud Messaging."
+          >
+            <PushEnablePanel audience="portal" />
+          </Panel>
+
           <Panel
             title="Channels & consent"
             description="Marketing messages require explicit consent. Refill and pickup reminders only send when reminder consent is enabled."
