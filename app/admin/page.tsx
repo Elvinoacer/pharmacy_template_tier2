@@ -1,12 +1,8 @@
 import { getSessionUser } from "@/app/lib/auth";
 import { getAdminAnalytics } from "@/app/lib/services/crm";
 import { refillStatusMeta } from "@/app/lib/types";
-import {
-  AdminShell,
-  AdminCard,
-  AdminPanel,
-  AdminEmptyState,
-} from "@/app/components/admin/AdminShell";
+import { AdminCard, AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminShell } from "@/app/components/admin/AdminShell";
 import { redirect } from "next/navigation";
 import {
   Users,

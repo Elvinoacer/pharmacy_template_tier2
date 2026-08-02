@@ -3,11 +3,8 @@ import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { REFILL_STATUSES, refillStatusMeta } from "@/app/lib/types";
 import { adminUpdateRefillAction } from "@/app/actions/admin";
-import {
-  AdminShell,
-  AdminPanel,
-  AdminEmptyState,
-} from "@/app/components/admin/AdminShell";
+import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminShell } from "@/app/components/admin/AdminShell";
 import {
   Pill,
   Clock,

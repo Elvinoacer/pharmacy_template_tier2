@@ -11,7 +11,7 @@ import {
   Trash2,
   Info,
 } from "lucide-react";
-import { AdminPanel } from "@/app/components/admin/AdminShell";
+import { AdminPanel } from "@/app/components/admin/AdminUI";
 import { PushStatusPill } from "@/app/components/PushNotificationCenter";
 import { usePushNotifications } from "@/app/lib/firebase/usePush";
 
