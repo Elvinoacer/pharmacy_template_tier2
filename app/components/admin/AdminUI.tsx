@@ -15,25 +15,25 @@ export function AdminCard({
 }) {
   const accentClass =
     accent === "accent"
-      ? "from-amber-400 to-amber-600"
+      ? "from-amber-400 to-amber-600 text-amber-950"
       : accent === "info"
-        ? "from-blue-400 to-blue-600"
+        ? "from-sky-400 to-blue-600 text-white"
         : accent === "danger"
-          ? "from-rose-400 to-rose-600"
+          ? "from-rose-400 to-rose-600 text-white"
           : accent === "neutral"
-            ? "from-slate-400 to-slate-600"
-            : "from-[#2dd4bf] to-[#0f766e]";
+            ? "from-slate-400 to-slate-600 text-white"
+            : "from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[var(--admin-btn-fg)]";
 
   return (
     <div className="admin-stat">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#ecfdf5]/55">{label}</p>
-          <p className="mt-1.5 text-2xl font-bold tracking-tight text-white">{value}</p>
-          {hint && <p className="mt-1 text-xs text-[#ecfdf5]/45">{hint}</p>}
+          <p className="text-[11px] font-semibold uppercase tracking-wider admin-muted">{label}</p>
+          <p className="mt-1.5 text-2xl font-bold tracking-tight admin-text">{value}</p>
+          {hint && <p className="mt-1 text-xs admin-soft">{hint}</p>}
         </div>
         {icon && (
-          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${accentClass} text-[#042f2e] shadow-md`}>
+          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${accentClass} shadow-md`}>
             {(() => {
               const Icon = icon;
               return <Icon className="h-5 w-5" />;
@@ -63,8 +63,8 @@ export function AdminPanel({
       {(title || action) && (
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>
-            {title && <h2 className="text-sm font-semibold text-white">{title}</h2>}
-            {description && <p className="mt-0.5 text-xs text-[#ecfdf5]/55">{description}</p>}
+            {title && <h2 className="text-sm font-semibold admin-text">{title}</h2>}
+            {description && <p className="mt-0.5 text-xs admin-muted">{description}</p>}
           </div>
           {action}
         </div>
@@ -104,12 +104,12 @@ export function AdminEmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.08] px-6 py-10 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] text-[#2dd4bf]">
+    <div className="admin-empty">
+      <span className="admin-icon-well flex h-12 w-12">
         <Icon className="h-6 w-6" />
       </span>
-      <p className="mt-3 text-sm font-semibold text-white">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-xs text-[#ecfdf5]/55">{description}</p>}
+      <p className="mt-3 text-sm font-semibold admin-text">{title}</p>
+      {description && <p className="mt-1 max-w-sm text-xs admin-muted">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

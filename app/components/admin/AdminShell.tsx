@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   Users,
@@ -24,6 +24,9 @@ import {
   X,
   Home,
   ChevronRight,
+  Moon,
+  Sun,
+  Monitor,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -47,6 +50,56 @@ export const ADMIN_LINKS = [
   { href: "/admin/templates", label: "Templates", icon: FileText },
 ] as const;
 
+type ThemeMode = "light" | "dark" | "system";
+const THEME_KEY = "aether-admin-theme";
+
+function resolveTheme(mode: ThemeMode): "light" | "dark" {
+  if (mode === "light" || mode === "dark") return mode;
+  if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return "dark";
+  }
+  return "light";
+}
+
+function useAdminTheme() {
+  const [mode, setMode] = useState<ThemeMode>("system");
+  const [resolved, setResolved] = useState<"light" | "dark">("light");
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const stored = (localStorage.getItem(THEME_KEY) as ThemeMode | null) || "system";
+    const next = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+    setMode(next);
+    setResolved(resolveTheme(next));
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const apply = () => setResolved(resolveTheme(mode));
+    apply();
+    if (mode !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => apply();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [mode, hydrated]);
+
+  const setTheme = (next: ThemeMode) => {
+    setMode(next);
+    localStorage.setItem(THEME_KEY, next);
+    setResolved(resolveTheme(next));
+  };
+
+  const cycle = () => {
+    const order: ThemeMode[] = ["light", "dark", "system"];
+    const i = order.indexOf(mode);
+    setTheme(order[(i + 1) % order.length]);
+  };
+
+  return { mode, resolved, setTheme, cycle, hydrated };
+}
+
 export function AdminShell({
   user,
   children,
@@ -64,23 +117,23 @@ export function AdminShell({
   const [mobileOpen, setMobileOpen] = useState(false);
   const unread = useUnreadCount();
   const pathname = useActivePath();
+  const theme = useAdminTheme();
 
   return (
     <div
-      className="shell-grid-admin bg-[#0a1612] text-[#ecfdf5]"
+      className="shell-grid-admin"
       data-collapsed={hydrated && collapsed ? "true" : "false"}
+      data-theme={theme.hydrated ? theme.resolved : undefined}
     >
       {/* Desktop sidebar */}
-      <aside className="shell-sidebar hidden lg:flex lg:flex-col border-r border-white/[0.06] bg-[#0f1f19]">
-        <div className="flex h-16 items-center gap-2.5 px-4 border-b border-white/[0.06]">
+      <aside className="shell-sidebar admin-sidebar-surface hidden lg:flex lg:flex-col border-r">
+        <div className="flex h-16 items-center gap-2.5 px-4 border-b admin-border">
           <Link href="/admin" className="flex items-center gap-2.5 min-w-0">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-300 to-teal-600 text-sm font-bold text-[#042f2e] shadow-md shadow-teal-500/20">
-              A
-            </span>
+            <span className="admin-brand-mark">A</span>
             {!collapsed && (
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold leading-tight text-white">Aether CRM</p>
-                <p className="truncate text-[10px] uppercase tracking-wider text-teal-200/50">
+                <p className="truncate text-sm font-semibold leading-tight admin-text">Aether CRM</p>
+                <p className="truncate text-[10px] uppercase tracking-wider admin-soft">
                   {user.role}
                 </p>
               </div>
@@ -88,7 +141,7 @@ export function AdminShell({
           </Link>
         </div>
 
-        <nav className="flex-1 overflow-y-auto scroll-thin-dark px-3 py-4">
+        <nav className="flex-1 overflow-y-auto scroll-admin px-3 py-4">
           <ul className="space-y-1">
             {ADMIN_LINKS.map((l) => {
               const Icon = l.icon;
@@ -112,7 +165,7 @@ export function AdminShell({
           </ul>
         </nav>
 
-        <div className="border-t border-white/[0.06] p-3 space-y-1">
+        <div className="border-t admin-border p-3 space-y-1">
           <Link href="/" className={`nav-link-admin ${collapsed ? "justify-center px-2" : ""}`} title={collapsed ? "View website" : undefined}>
             <Home className="h-[18px] w-[18px]" />
             {!collapsed && <span>View website</span>}
@@ -120,7 +173,7 @@ export function AdminShell({
           <form action={logoutAction}>
             <button
               type="submit"
-              className={`nav-link-admin w-full !text-rose-300 hover:!bg-rose-500/10 ${collapsed ? "justify-center px-2" : ""}`}
+              className={`nav-link-admin w-full !text-rose-500 hover:!bg-rose-500/10 ${collapsed ? "justify-center px-2" : ""}`}
               title={collapsed ? "Sign out" : undefined}
             >
               <LogOut className="h-[18px] w-[18px]" />
@@ -143,27 +196,25 @@ export function AdminShell({
       {mobileOpen && (
         <>
           <div className="sidebar-backdrop lg:hidden" onClick={() => setMobileOpen(false)} />
-          <aside className="sidebar-drawer lg:hidden flex flex-col bg-[#0f1f19]">
-            <div className="flex h-16 items-center justify-between gap-2.5 px-4 border-b border-white/[0.06]">
+          <aside className="sidebar-drawer admin-sidebar-surface lg:hidden flex flex-col">
+            <div className="flex h-16 items-center justify-between gap-2.5 px-4 border-b admin-border">
               <Link href="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-300 to-teal-600 text-sm font-bold text-[#042f2e]">
-                  A
-                </span>
+                <span className="admin-brand-mark">A</span>
                 <div>
-                  <p className="text-sm font-semibold leading-tight text-white">Aether CRM</p>
-                  <p className="text-[10px] uppercase tracking-wider text-teal-200/50">{user.role}</p>
+                  <p className="text-sm font-semibold leading-tight admin-text">Aether CRM</p>
+                  <p className="text-[10px] uppercase tracking-wider admin-soft">{user.role}</p>
                 </div>
               </Link>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="btn-icon-dark"
+                className="btn-icon-admin"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto scroll-thin-dark px-3 py-4">
+            <nav className="flex-1 overflow-y-auto scroll-admin px-3 py-4">
               <ul className="space-y-1">
                 {ADMIN_LINKS.map((l) => {
                   const Icon = l.icon;
@@ -183,12 +234,12 @@ export function AdminShell({
                 })}
               </ul>
             </nav>
-            <div className="border-t border-white/[0.06] p-3 space-y-1">
+            <div className="border-t admin-border p-3 space-y-1">
               <Link href="/" onClick={() => setMobileOpen(false)} className="nav-link-admin">
                 <Home className="h-[18px] w-[18px]" /> <span>View website</span>
               </Link>
               <form action={logoutAction}>
-                <button type="submit" className="nav-link-admin w-full !text-rose-300 hover:!bg-rose-500/10">
+                <button type="submit" className="nav-link-admin w-full !text-rose-500 hover:!bg-rose-500/10">
                   <LogOut className="h-[18px] w-[18px]" /> <span>Sign out</span>
                 </button>
               </form>
@@ -198,27 +249,28 @@ export function AdminShell({
       )}
 
       {/* Header */}
-      <header className="shell-header flex items-center gap-3 border-b border-white/[0.06] bg-[#0a1612]/95 px-4 backdrop-blur sm:px-6 z-20">
+      <header className="shell-header admin-header-surface flex items-center gap-3 border-b px-4 sm:px-6 z-20">
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
-          className="btn-icon-dark lg:hidden"
+          className="btn-icon-admin lg:hidden"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
         </button>
 
-        <div className="hidden md:flex items-center gap-1.5 text-xs text-[#ecfdf5]/45">
-          <Link href="/admin" className="hover:text-[#2dd4bf]">CRM</Link>
+        <div className="hidden md:flex items-center gap-1.5 text-xs admin-soft">
+          <Link href="/admin" className="hover:text-[var(--admin-accent)] transition-colors">CRM</Link>
           {pathname !== "/admin" && (
             <>
               <ChevronRight className="h-3 w-3" />
-              <span className="text-white font-medium">{title || pathname.split("/").pop()}</span>
+              <span className="admin-text font-medium">{title || pathname.split("/").pop()}</span>
             </>
           )}
         </div>
 
         <div className="ml-auto flex items-center gap-1.5">
+          <ThemeToggle mode={theme.mode} resolved={theme.resolved} onCycle={theme.cycle} />
           <PushEnableChip audience="admin" />
           <AdminBellButton unread={unread} />
           <AdminUserMenu user={user} />
@@ -226,20 +278,20 @@ export function AdminShell({
       </header>
 
       {/* Main scroll area */}
-      <main className="shell-main scroll-thin-dark">
+      <main className="shell-main scroll-admin">
         <div className="page-container-admin">
           {(title || actions) && (
             <div className="mb-6 flex flex-wrap items-start justify-between gap-3 animate-fade-up">
               <div>
                 {title && (
                   <h1
-                    className="text-2xl font-bold tracking-tight text-white sm:text-3xl"
+                    className="text-2xl font-bold tracking-tight admin-text sm:text-3xl"
                     style={{ fontFamily: "var(--font-display), serif" }}
                   >
                     {title}
                   </h1>
                 )}
-                {subtitle && <p className="mt-1 text-sm text-[#ecfdf5]/55">{subtitle}</p>}
+                {subtitle && <p className="mt-1 text-sm admin-muted">{subtitle}</p>}
               </div>
               {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
             </div>
@@ -253,11 +305,41 @@ export function AdminShell({
   );
 }
 
+function ThemeToggle({
+  mode,
+  resolved,
+  onCycle,
+}: {
+  mode: ThemeMode;
+  resolved: "light" | "dark";
+  onCycle: () => void;
+}) {
+  const label =
+    mode === "system"
+      ? `Theme: system (${resolved})`
+      : mode === "dark"
+        ? "Theme: dark"
+        : "Theme: light";
+  const Icon = mode === "system" ? Monitor : resolved === "dark" ? Moon : Sun;
+
+  return (
+    <button
+      type="button"
+      onClick={onCycle}
+      className="btn-icon-admin"
+      aria-label={label}
+      title={`${label} — click to cycle`}
+    >
+      <Icon className="h-[18px] w-[18px]" />
+    </button>
+  );
+}
+
 function AdminBellButton({ unread }: { unread: number }) {
   return (
     <Link
       href="/admin/notifications"
-      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full text-[#ecfdf5]/55 transition hover:bg-white/[0.06] hover:text-white"
+      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full admin-muted transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
       aria-label={`Notifications${unread ? ` · ${unread} unread` : ""}`}
     >
       <Bell className="h-[18px] w-[18px]" />
@@ -283,44 +365,42 @@ function AdminUserMenu({ user }: { user: SessionUser }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-full p-1 pr-2 transition hover:bg-white/[0.06]"
+        className="flex items-center gap-2 rounded-full p-1 pr-2 transition hover:bg-[var(--admin-hover)]"
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-teal-300 to-teal-600 text-xs font-bold text-[#042f2e]">
-          {initials || "S"}
-        </span>
+        <span className="admin-brand-mark !h-8 !w-8 text-xs">{initials || "S"}</span>
         <span className="hidden text-left sm:block">
-          <span className="block max-w-[160px] truncate text-xs font-semibold text-white">
+          <span className="block max-w-[160px] truncate text-xs font-semibold admin-text">
             {user.fullName || "Staff"}
           </span>
-          <span className="block max-w-[160px] truncate text-[11px] text-[#ecfdf5]/45">{user.email}</span>
+          <span className="block max-w-[160px] truncate text-[11px] admin-soft">{user.email}</span>
         </span>
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full z-40 mt-2 w-64 origin-top-right rounded-2xl border border-white/10 bg-[#122620] p-2 shadow-xl animate-scale-in">
-            <div className="px-3 py-2 border-b border-white/[0.06]">
-              <p className="truncate text-sm font-semibold text-white">{user.fullName || "Staff"}</p>
-              <p className="truncate text-xs text-[#ecfdf5]/55">{user.email}</p>
-              <p className="mt-1 inline-block rounded-full bg-teal-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-teal-200">
+          <div className="admin-menu absolute right-0 top-full z-40 mt-2 w-64 origin-top-right p-2 animate-scale-in">
+            <div className="px-3 py-2 border-b admin-border">
+              <p className="truncate text-sm font-semibold admin-text">{user.fullName || "Staff"}</p>
+              <p className="truncate text-xs admin-muted">{user.email}</p>
+              <p className="mt-1 inline-block rounded-full admin-chip-accent px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                 {user.role}
               </p>
             </div>
             <Link
               href="/"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[#ecfdf5]/80 hover:bg-white/[0.06]"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm admin-muted hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
             >
               <Home className="h-4 w-4" /> View website
             </Link>
-            <div className="my-1 h-px bg-white/[0.06]" />
+            <div className="my-1 h-px bg-[var(--admin-border)]" />
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-rose-300 hover:bg-rose-500/10"
+                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-rose-500 hover:bg-rose-500/10"
               >
                 <LogOut className="h-4 w-4" /> Sign out
               </button>
@@ -331,5 +411,3 @@ function AdminUserMenu({ user }: { user: SessionUser }) {
     </div>
   );
 }
-
-
