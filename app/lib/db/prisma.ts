@@ -1,5 +1,6 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
-import { PrismaNeonHttp } from "@prisma/adapter-neon";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { buildPostgresConfig } from "@/app/lib/db/config";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -11,11 +12,7 @@ function createPrismaClient() {
     throw new Error("DATABASE_URL is not set. Add it to .env.local");
   }
 
-  // HTTP adapter works reliably with Neon pooler (no raw TCP / WS required)
-  const adapter = new PrismaNeonHttp(connectionString, {
-    arrayMode: false,
-    fullResults: true,
-  });
+  const adapter = new PrismaPg(buildPostgresConfig(connectionString));
 
   return new PrismaClient({
     adapter,
