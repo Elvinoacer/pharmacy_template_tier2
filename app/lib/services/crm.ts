@@ -3,6 +3,7 @@ import "server-only";
 import { prisma } from "@/app/lib/db";
 import type { RefillStatus, EnquiryStatus, FeedbackStatus, CampaignStatus } from "@/app/generated/prisma/client";
 import { addTimelineEvent } from "@/app/lib/timeline";
+import { sendDelivery } from "@/app/lib/services/delivery";
 
 export async function getCustomerDashboard(customerId: string) {
   const [profile, prescriptions, refills, notifications, loyalty, reminders, timeline] =
@@ -360,6 +361,20 @@ export async function sendStaffMessage(data: {
   staffId: string;
   scheduledFor?: Date;
 }) {
+  const customer = await prisma.customerProfile.findUnique({
+    where: { id: data.customerId },
+    include: { user: { select: { email: true } } },
+  });
+  const delivery =
+    data.scheduledFor || !customer
+      ? { status: data.scheduledFor ? ("pending" as const) : ("failed" as const), error: customer ? undefined : "Customer not found" }
+      : await sendDelivery({
+          channel: data.channel,
+          recipient: { email: customer.user.email, phone: customer.phone },
+          subject: data.subject,
+          body: data.body,
+        });
+
   const conversation = await prisma.conversation.create({
     data: {
       customerId: data.customerId,
@@ -375,8 +390,13 @@ export async function sendStaffMessage(data: {
           senderId: data.staffId,
           body: data.body,
           subject: data.subject,
-          status: data.scheduledFor ? "scheduled" : "sent",
+          status: data.scheduledFor ? "scheduled" : delivery.status === "delivered" ? "delivered" : delivery.status === "failed" ? "failed" : "sent",
           scheduledFor: data.scheduledFor,
+          metadata: {
+            provider: delivery.provider,
+            providerMessageId: delivery.providerMessageId,
+            deliveryError: delivery.error,
+          },
         },
       },
     },
@@ -390,8 +410,8 @@ export async function sendStaffMessage(data: {
       type: "message",
       title: data.subject || "Message from Aether Pharmacy",
       body: data.body,
-      status: data.scheduledFor ? "pending" : "sent",
-      sentAt: data.scheduledFor ? null : new Date(),
+      status: data.scheduledFor ? "pending" : delivery.status,
+      sentAt: data.scheduledFor || delivery.status === "failed" || delivery.status === "pending" ? null : new Date(),
     },
   });
 
@@ -418,23 +438,38 @@ export async function launchCampaign(campaignId: string, actorId: string) {
   const memberIds =
     campaign.segment?.members.map((m) => m.customerId) ??
     (await prisma.customerProfile.findMany({ select: { id: true } })).map((c) => c.id);
+  const customers = await prisma.customerProfile.findMany({
+    where: { id: { in: memberIds } },
+    include: { user: { select: { email: true } } },
+  });
 
   let sent = 0;
-  for (const customerId of memberIds) {
+  let delivered = 0;
+  let failed = 0;
+  for (const customer of customers) {
+    const channel = campaign.channel === "multi" ? "email" : campaign.channel;
+    const delivery = await sendDelivery({
+      channel,
+      recipient: { email: customer.user.email, phone: customer.phone },
+      subject: campaign.subject || campaign.name,
+      body: campaign.body,
+    });
     await prisma.notification.create({
       data: {
-        customerId,
-        channel: campaign.channel === "multi" ? "email" : campaign.channel,
+        customerId: customer.id,
+        channel,
         type: "campaign",
         title: campaign.subject || campaign.name,
         body: campaign.body,
-        status: "sent",
-        sentAt: new Date(),
+        status: delivery.status,
+        sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
         relatedType: "campaign",
         relatedId: campaign.id,
       },
     });
-    sent += 1;
+    if (delivery.status === "sent" || delivery.status === "delivered") sent += 1;
+    if (delivery.status === "delivered") delivered += 1;
+    if (delivery.status === "failed") failed += 1;
   }
 
   return prisma.campaign.update({
@@ -442,7 +477,7 @@ export async function launchCampaign(campaignId: string, actorId: string) {
     data: {
       status: "sent" as CampaignStatus,
       sentAt: new Date(),
-      stats: { sent, delivered: sent, opened: 0, clicked: 0, replied: 0 },
+      stats: { sent, delivered, failed, opened: 0, clicked: 0, replied: 0 },
       createdById: actorId,
     },
   });
@@ -451,10 +486,17 @@ export async function launchCampaign(campaignId: string, actorId: string) {
 export async function processDueReminders() {
   const due = await prisma.reminder.findMany({
     where: { status: "scheduled", scheduledFor: { lte: new Date() } },
+    include: { customer: { include: { user: { select: { email: true } } } } },
     take: 50,
   });
 
   for (const reminder of due) {
+    const delivery = await sendDelivery({
+      channel: reminder.channel,
+      recipient: { email: reminder.customer.user.email, phone: reminder.customer.phone },
+      subject: reminder.title,
+      body: reminder.body || reminder.title,
+    });
     await prisma.notification.create({
       data: {
         customerId: reminder.customerId,
@@ -462,15 +504,18 @@ export async function processDueReminders() {
         type: reminder.type,
         title: reminder.title,
         body: reminder.body || reminder.title,
-        status: "sent",
-        sentAt: new Date(),
+        status: delivery.status,
+        sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
         relatedType: "reminder",
         relatedId: reminder.id,
       },
     });
     await prisma.reminder.update({
       where: { id: reminder.id },
-      data: { status: "sent", sentAt: new Date() },
+      data: {
+        status: delivery.status === "failed" ? "failed" : delivery.status === "pending" ? "scheduled" : "sent",
+        sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
+      },
     });
     await addTimelineEvent(
       reminder.customerId,

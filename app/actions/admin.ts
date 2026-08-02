@@ -43,6 +43,7 @@ export async function adminEnquiryAction(formData: FormData) {
   const status = String(formData.get("status") || "") as "new" | "in_progress" | "resolved" | "closed";
   const staffNotes = String(formData.get("staffNotes") || "") || undefined;
   await updateEnquiryStatus(id, status, staffNotes, user.id);
+  await writeAuditLog(user.id, "enquiry_status_update", "enquiry", id, { status });
   revalidatePath("/admin/enquiries");
 }
 
@@ -56,6 +57,7 @@ export async function adminFeedbackRespondAction(
   if (!response) return { error: "Response required." };
   const isPublic = formData.get("isPublic") === "on";
   await respondToFeedback(id, response, user.id, isPublic);
+  await writeAuditLog(user.id, "feedback_response_saved", "feedback", id, { isPublic });
   revalidatePath("/admin/feedback");
   return { success: "Response saved." };
 }
@@ -69,7 +71,7 @@ export async function adminSendMessageAction(
   const body = String(formData.get("body") || "").trim();
   if (!customerId || !body) return { error: "Customer and message required." };
 
-  await sendStaffMessage({
+  const message = await sendStaffMessage({
     customerId,
     channel: (String(formData.get("channel") || "email") as "email" | "sms" | "whatsapp" | "portal"),
     subject: String(formData.get("subject") || "") || undefined,
@@ -78,6 +80,10 @@ export async function adminSendMessageAction(
     scheduledFor: formData.get("scheduledFor")
       ? new Date(String(formData.get("scheduledFor")))
       : undefined,
+  });
+  await writeAuditLog(user.id, "staff_message_sent", "conversation", message.id, {
+    customerId,
+    channel: String(formData.get("channel") || "email"),
   });
 
   revalidatePath("/admin/messages");
@@ -94,7 +100,7 @@ export async function adminAddNoteAction(
   const body = String(formData.get("body") || "").trim();
   if (!customerId || !body) return { error: "Note required." };
 
-  await prisma.customerNote.create({
+  const note = await prisma.customerNote.create({
     data: {
       customerId,
       authorId: user.id,
@@ -102,6 +108,7 @@ export async function adminAddNoteAction(
       isPinned: formData.get("isPinned") === "on",
     },
   });
+  await writeAuditLog(user.id, "customer_note_added", "customer_note", note.id, { customerId });
   revalidatePath(`/admin/customers/${customerId}`);
   return { success: "Note added." };
 }
@@ -116,7 +123,7 @@ export async function adminCreateCampaignAction(
     const body = String(formData.get("body") || "").trim();
     if (!name || !body) return { error: "Name and body required." };
 
-    await prisma.campaign.create({
+    const campaign = await prisma.campaign.create({
       data: {
         name,
         description: String(formData.get("description") || "") || null,
@@ -131,6 +138,7 @@ export async function adminCreateCampaignAction(
         createdById: user.id,
       },
     });
+    await writeAuditLog(user.id, "campaign_created", "campaign", campaign.id);
     revalidatePath("/admin/campaigns");
     return { success: "Campaign created." };
   } catch (e) {
@@ -155,7 +163,7 @@ export async function adminCreateSegmentAction(
     const user = requireManager(await getSessionUser());
     const name = String(formData.get("name") || "").trim();
     if (!name) return { error: "Name required." };
-    await prisma.segment.create({
+    const segment = await prisma.segment.create({
       data: {
         name,
         description: String(formData.get("description") || "") || null,
@@ -163,6 +171,7 @@ export async function adminCreateSegmentAction(
         createdById: user.id,
       },
     });
+    await writeAuditLog(user.id, "segment_created", "segment", segment.id);
     revalidatePath("/admin/segments");
     return { success: "Segment created." };
   } catch (e) {
@@ -193,8 +202,9 @@ export async function adminKnowledgeAction(
         updatedById: user.id,
       },
     });
+    await writeAuditLog(user.id, "knowledge_article_updated", "knowledge_article", id);
   } else {
-    await prisma.knowledgeArticle.create({
+    const article = await prisma.knowledgeArticle.create({
       data: {
         title,
         content,
@@ -205,6 +215,7 @@ export async function adminKnowledgeAction(
         updatedById: user.id,
       },
     });
+    await writeAuditLog(user.id, "knowledge_article_created", "knowledge_article", article.id);
   }
   revalidatePath("/admin/knowledge");
   return { success: "Knowledge article saved." };
@@ -219,7 +230,7 @@ export async function adminCreateReminderAction(
   const title = String(formData.get("title") || "").trim();
   if (!customerId || !title) return { error: "Customer and title required." };
 
-  await prisma.reminder.create({
+  const reminder = await prisma.reminder.create({
     data: {
       customerId,
       type: (String(formData.get("type") || "custom") as
@@ -241,6 +252,7 @@ export async function adminCreateReminderAction(
       createdById: user.id,
     },
   });
+  await writeAuditLog(user.id, "reminder_created", "reminder", reminder.id, { customerId });
   revalidatePath("/admin/reminders");
   return { success: "Reminder scheduled." };
 }
@@ -262,7 +274,7 @@ export async function adminCreateTemplateAction(
   const body = String(formData.get("body") || "").trim();
   if (!name || !body) return { error: "Name and body required." };
 
-  await prisma.messageTemplate.create({
+  const template = await prisma.messageTemplate.create({
     data: {
       name,
       channel: (String(formData.get("channel") || "email") as "email" | "sms" | "whatsapp" | "portal" | "ai"),
@@ -272,6 +284,7 @@ export async function adminCreateTemplateAction(
       createdById: user.id,
     },
   });
+  await writeAuditLog(user.id, "message_template_created", "message_template", template.id);
   revalidatePath("/admin/templates");
   return { success: "Template saved." };
 }
@@ -296,6 +309,7 @@ export async function adminAssignSegmentAction(formData: FormData) {
     { segmentId },
     user.id,
   );
+  await writeAuditLog(user.id, "segment_assigned", "customer_profile", customerId, { segmentId });
   revalidatePath(`/admin/customers/${customerId}`);
   revalidatePath("/admin/segments");
 }
@@ -334,8 +348,49 @@ export async function adminLoyaltyAdjustAction(
       },
     }),
   ]);
+  await writeAuditLog(user.id, "loyalty_points_adjusted", "loyalty_account", account.id, {
+    customerId,
+    points,
+    description,
+  });
 
   revalidatePath("/admin/loyalty");
   revalidatePath(`/admin/customers/${customerId}`);
   return { success: "Points updated." };
+}
+
+export async function adminCreateCouponAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = requireManager(await getSessionUser());
+  const code = String(formData.get("code") || "").trim().toUpperCase();
+  const discountType = String(formData.get("discountType") || "percent") as "percent" | "fixed" | "points";
+  const discountValue = Number(formData.get("discountValue") || 0);
+  const pointsCost = Number(formData.get("pointsCost") || 0);
+
+  if (!code || !discountValue) return { error: "Code and discount value are required." };
+  if (!["percent", "fixed", "points"].includes(discountType)) return { error: "Invalid discount type." };
+  if (pointsCost < 0) return { error: "Points cost cannot be negative." };
+
+  try {
+    const coupon = await prisma.coupon.create({
+      data: {
+        code,
+        description: String(formData.get("description") || "") || null,
+        discountType,
+        discountValue,
+        pointsCost,
+        maxRedemptions: Number(formData.get("maxRedemptions") || 0) || null,
+        validUntil: formData.get("validUntil") ? new Date(String(formData.get("validUntil"))) : null,
+        active: formData.get("active") !== "off",
+      },
+    });
+    await writeAuditLog(user.id, "coupon_created", "coupon", coupon.id, { code, pointsCost });
+    revalidatePath("/admin/loyalty");
+    return { success: "Coupon created." };
+  } catch (e) {
+    console.error(e);
+    return { error: "Could not create coupon. The code may already exist." };
+  }
 }

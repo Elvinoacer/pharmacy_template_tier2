@@ -209,3 +209,68 @@ export async function portalFeedbackAction(
   revalidatePath("/portal/feedback");
   return { success: "Thank you — your feedback was submitted." };
 }
+
+export async function redeemCouponAction(formData: FormData) {
+  const user = await getSessionUser();
+  if (!user?.customerId) return;
+
+  const couponId = String(formData.get("couponId") || "");
+  if (!couponId) return;
+
+  const result = await prisma.$transaction(async (tx) => {
+    const [account, coupon] = await Promise.all([
+      tx.loyaltyAccount.findUnique({ where: { customerId: user.customerId! } }),
+      tx.coupon.findUnique({ where: { id: couponId } }),
+    ]);
+
+    const now = new Date();
+    if (!account || !coupon || !coupon.active) return { ok: false };
+    if (coupon.validFrom && coupon.validFrom > now) return { ok: false };
+    if (coupon.validUntil && coupon.validUntil < now) return { ok: false };
+    if (coupon.maxRedemptions && coupon.redemptions >= coupon.maxRedemptions) return { ok: false };
+    if (coupon.pointsCost <= 0 || account.points < coupon.pointsCost) return { ok: false };
+
+    const newPoints = account.points - coupon.pointsCost;
+    await tx.loyaltyAccount.update({
+      where: { id: account.id },
+      data: {
+        points: newPoints,
+        tier:
+          newPoints >= 1000 ? "platinum" : newPoints >= 400 ? "gold" : newPoints >= 150 ? "silver" : "bronze",
+      },
+    });
+    await tx.loyaltyTransaction.create({
+      data: {
+        accountId: account.id,
+        points: -coupon.pointsCost,
+        type: "redeem",
+        description: `Redeemed coupon ${coupon.code}`,
+      },
+    });
+    await tx.coupon.update({
+      where: { id: coupon.id },
+      data: { redemptions: { increment: 1 } },
+    });
+    await tx.timelineEvent.create({
+      data: {
+        customerId: user.customerId,
+        userId: user.id,
+        eventType: "coupon_redeemed",
+        title: "Coupon redeemed",
+        description: coupon.code,
+        metadata: { couponId: coupon.id, pointsCost: coupon.pointsCost },
+        createdById: user.id,
+      },
+    });
+    return { ok: true, accountId: account.id, couponCode: coupon.code, pointsCost: coupon.pointsCost };
+  });
+
+  if (result.ok) {
+    await writeAuditLog(user.id, "coupon_redeemed", "loyalty_account", result.accountId, {
+      couponCode: result.couponCode,
+      pointsCost: result.pointsCost,
+    });
+  }
+
+  revalidatePath("/portal/loyalty");
+}
