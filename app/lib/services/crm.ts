@@ -223,10 +223,17 @@ export async function getAdminAnalytics() {
     prisma.feedback.aggregate({ _avg: { rating: true }, _count: true }),
   ]);
 
-  const refillByStatus = await prisma.refillRequest.groupBy({
+  const rawRefillByStatus = await prisma.refillRequest.groupBy({
     by: ["status"],
-    _count: true,
+    _count: {
+      _all: true,
+    },
   });
+
+  const refillByStatus = rawRefillByStatus.map(r => ({
+    status: r.status,
+    _count: r._count._all,
+  }));
 
   return {
     totalCustomers,
