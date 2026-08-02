@@ -7,10 +7,11 @@ export const metadata = { title: "Sign in" };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; error?: string }>;
 }) {
   const sp = await searchParams;
   const next = sp.next || "";
+  const error = sp.error || "";
 
   return (
     <div className="mesh-bg flex min-h-screen items-center justify-center px-4 py-12">
@@ -20,6 +21,8 @@ export default async function LoginPage({
         subtitle="Sign in to your Aether customer portal or staff CRM."
         submitLabel="Sign in"
         hiddenFields={next ? { next } : undefined}
+        showGoogleAuth
+        initialError={error}
         footer={
           <>
             <p>

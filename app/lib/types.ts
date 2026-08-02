@@ -14,6 +14,14 @@ export type SessionUser = {
   customerId: string | null;
 };
 
+/**
+ * Two audience surfaces:
+ * - Customer portal: customer + caregiver (self-service)
+ * - Staff CRM (/admin): pharmacist + staff + manager (never public self-serve signup)
+ */
+export const CUSTOMER_ROLES: UserRole[] = ["customer", "caregiver"];
+export const STAFF_ROLES: UserRole[] = ["pharmacist", "staff", "manager"];
+
 export const REFILL_STATUSES: { value: RefillStatus; label: string; color: string }[] = [
   { value: "submitted", label: "Submitted", color: "bg-slate-100 text-slate-700" },
   { value: "under_review", label: "Under Review", color: "bg-amber-100 text-amber-800" },
@@ -23,8 +31,6 @@ export const REFILL_STATUSES: { value: RefillStatus; label: string; color: strin
   { value: "collected", label: "Collected", color: "bg-emerald-100 text-emerald-800" },
   { value: "cancelled", label: "Cancelled", color: "bg-rose-100 text-rose-800" },
 ];
-
-export const STAFF_ROLES: UserRole[] = ["pharmacist", "staff", "manager"];
 
 export function refillStatusMeta(status: string) {
   return (
