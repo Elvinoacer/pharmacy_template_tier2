@@ -83,7 +83,7 @@ export function PushEnableChip({ audience = "portal" }: { audience?: Audience })
       <span
         className={
           audience === "admin"
-            ? "hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-[#ecfdf5]/40"
+            ? "hidden sm:inline-flex items-center gap-1 rounded-full border border-[var(--admin-border-2)] px-2.5 py-1 text-[11px] admin-soft"
             : "hidden sm:inline-flex items-center gap-1 rounded-full border border-[#e3ebe6] px-2.5 py-1 text-[11px] text-[#8a9a92]"
         }
         title="Push is not supported in this browser"
@@ -99,7 +99,7 @@ export function PushEnableChip({ audience = "portal" }: { audience?: Audience })
       <span
         className={
           audience === "admin"
-            ? "hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-300"
+            ? "hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-600"
             : "hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700"
         }
         title="Push notifications enabled on this device"
@@ -115,7 +115,7 @@ export function PushEnableChip({ audience = "portal" }: { audience?: Audience })
       <span
         className={
           audience === "admin"
-            ? "hidden sm:inline-flex items-center gap-1 rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-1 text-[11px] font-medium text-rose-300"
+            ? "hidden sm:inline-flex items-center gap-1 rounded-full border border-rose-500/25 bg-rose-500/10 px-2.5 py-1 text-[11px] font-medium text-rose-600"
             : "hidden sm:inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-medium text-rose-700"
         }
         title="Notifications blocked — enable them in browser settings"
@@ -142,7 +142,7 @@ export function PushEnableChip({ audience = "portal" }: { audience?: Audience })
       }}
       className={
         audience === "admin"
-          ? "inline-flex items-center gap-1.5 rounded-full border border-teal-400/30 bg-teal-400/10 px-2.5 py-1 text-[11px] font-semibold text-teal-200 transition hover:bg-teal-400/20 disabled:opacity-60"
+          ? "inline-flex items-center gap-1.5 rounded-full border border-teal-400/30 bg-teal-400/10 px-2.5 py-1 text-[11px] font-semibold admin-accent-text transition hover:bg-teal-400/20 disabled:opacity-60"
           : "inline-flex items-center gap-1.5 rounded-full border border-[#0d6e5a]/25 bg-[#e6f4ef] px-2.5 py-1 text-[11px] font-semibold text-[#0d6e5a] transition hover:bg-[#d5efe6] disabled:opacity-60"
       }
       title="Enable push notifications on this device"
@@ -164,12 +164,12 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
 
   const isAdmin = audience === "admin";
   const card = isAdmin
-    ? "rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5"
+    ? "rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-5"
     : "rounded-2xl border border-[#e3ebe6] bg-white p-5";
-  const titleCls = isAdmin ? "text-sm font-semibold text-white" : "text-sm font-semibold text-[#0c1a14]";
-  const bodyCls = isAdmin ? "text-xs text-[#ecfdf5]/55" : "text-xs text-[#5a6b62]";
+  const titleCls = isAdmin ? "text-sm font-semibold admin-text" : "text-sm font-semibold text-[#0c1a14]";
+  const bodyCls = isAdmin ? "text-xs admin-muted" : "text-xs text-[#5a6b62]";
   const iconWrap = isAdmin
-    ? "flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#2dd4bf] to-[#0f766e] text-[#042f2e]"
+    ? "flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[var(--admin-btn-fg)]"
     : "flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white";
 
   const copy =
@@ -215,7 +215,7 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
                 }}
                 className={
                   isAdmin
-                    ? "inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] px-3.5 py-1.5 text-xs font-semibold text-[#042f2e] transition hover:brightness-110 disabled:opacity-60"
+                    ? "btn-admin"
                     : "inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#084c3f] disabled:opacity-60"
                 }
               >
@@ -245,7 +245,7 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
                 }}
                 className={
                   isAdmin
-                    ? "inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/[0.1] disabled:opacity-60"
+                    ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3.5 py-1.5 text-xs font-semibold admin-text transition hover:bg-[var(--admin-inset-2)] disabled:opacity-60"
                     : "inline-flex items-center gap-1.5 rounded-full border border-[#e3ebe6] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#0c1a14] transition hover:bg-[#f4f7f4] disabled:opacity-60"
                 }
               >
@@ -268,7 +268,7 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
           </div>
 
           {testMsg && (
-            <p className={`mt-2 text-xs ${isAdmin ? "text-teal-200" : "text-[#0d6e5a]"}`}>{testMsg}</p>
+            <p className={`mt-2 text-xs ${isAdmin ? "admin-accent-text" : "text-[#0d6e5a]"}`}>{testMsg}</p>
           )}
         </div>
       </div>
@@ -290,18 +290,18 @@ function EnableBanner({
     <div
       className={
         isAdmin
-          ? "pointer-events-auto fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] items-start gap-3 rounded-2xl border border-white/10 bg-[#122620] p-4 shadow-xl shadow-black/40 animate-fade-up"
+          ? "pointer-events-auto fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] items-start gap-3 rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-4 shadow-xl shadow-black/40 animate-fade-up"
           : "pointer-events-auto fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] items-start gap-3 rounded-2xl border border-teal-900/10 bg-white p-4 shadow-xl shadow-teal-900/10 animate-fade-up"
       }
     >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white">
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${isAdmin ? "from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[var(--admin-btn-fg)]" : "from-[#0d6e5a] to-[#084c3f] text-white"}`}>
         <Bell className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className={isAdmin ? "text-sm font-semibold text-white" : "text-sm font-semibold text-[#0c1a14]"}>
+        <p className={isAdmin ? "text-sm font-semibold admin-text" : "text-sm font-semibold text-[#0c1a14]"}>
           {isAdmin ? "Enable staff alerts" : "Stay in the loop"}
         </p>
-        <p className={isAdmin ? "mt-0.5 text-xs text-[#ecfdf5]/55" : "mt-0.5 text-xs text-[#5a6b62]"}>
+        <p className={isAdmin ? "mt-0.5 text-xs admin-muted" : "mt-0.5 text-xs text-[#5a6b62]"}>
           {isAdmin
             ? "Get push alerts for new refills, enquiries and AI escalations on this device."
             : "Get refill updates, pickup reminders and staff messages as push notifications."}
@@ -310,7 +310,7 @@ function EnableBanner({
           <button
             type="button"
             onClick={() => onEnable()}
-            className="inline-flex items-center gap-1 rounded-full bg-[#0d6e5a] px-3 py-1 text-xs font-semibold text-white hover:bg-[#084c3f]"
+            className={isAdmin ? "btn-admin-sm" : "inline-flex items-center gap-1 rounded-full bg-[#0d6e5a] px-3 py-1 text-xs font-semibold text-white hover:bg-[#084c3f]"}
           >
             <Check className="h-3.5 w-3.5" /> Enable
           </button>
@@ -319,7 +319,7 @@ function EnableBanner({
             onClick={onDismiss}
             className={
               isAdmin
-                ? "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium text-[#ecfdf5]/55 hover:bg-white/[0.06] hover:text-white"
+                ? "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium admin-muted hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
                 : "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium text-[#5a6b62] hover:bg-teal-50 hover:text-[#0c1a14]"
             }
           >
@@ -333,7 +333,7 @@ function EnableBanner({
         aria-label="Dismiss"
         className={
           isAdmin
-            ? "rounded-full p-1 text-[#ecfdf5]/40 hover:bg-white/[0.06] hover:text-white"
+            ? "rounded-full p-1 admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
             : "rounded-full p-1 text-[#8a9a92] hover:bg-teal-50 hover:text-[#0c1a14]"
         }
       >
@@ -361,23 +361,23 @@ function PushToast({
     <div
       className={
         isAdmin
-          ? "pointer-events-auto fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] items-start gap-3 rounded-2xl border border-white/10 bg-[#122620] p-4 shadow-xl shadow-black/40 animate-fade-up"
+          ? "pointer-events-auto fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] items-start gap-3 rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-4 shadow-xl shadow-black/40 animate-fade-up"
           : "pointer-events-auto fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] items-start gap-3 rounded-2xl border border-teal-900/10 bg-white p-4 shadow-xl shadow-teal-900/10 animate-fade-up"
       }
     >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white">
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${isAdmin ? "from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[var(--admin-btn-fg)]" : "from-[#0d6e5a] to-[#084c3f] text-white"}`}>
         <Bell className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className={isAdmin ? "text-sm font-semibold text-white" : "text-sm font-semibold text-[#0c1a14]"}>{title}</p>
-        <p className={isAdmin ? "mt-0.5 line-clamp-3 text-xs text-[#ecfdf5]/55" : "mt-0.5 line-clamp-3 text-xs text-[#5a6b62]"}>
+        <p className={isAdmin ? "text-sm font-semibold admin-text" : "text-sm font-semibold text-[#0c1a14]"}>{title}</p>
+        <p className={isAdmin ? "mt-0.5 line-clamp-3 text-xs admin-muted" : "mt-0.5 line-clamp-3 text-xs text-[#5a6b62]"}>
           {body}
         </p>
         {url && (
           <a
             href={url}
             onClick={onClose}
-            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#2dd4bf] hover:underline"
+            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline"
           >
             View <Zap className="h-3 w-3" />
           </a>
@@ -389,7 +389,7 @@ function PushToast({
         aria-label="Dismiss"
         className={
           isAdmin
-            ? "rounded-full p-1 text-[#ecfdf5]/40 hover:bg-white/[0.06] hover:text-white"
+            ? "rounded-full p-1 admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
             : "rounded-full p-1 text-[#8a9a92] hover:bg-teal-50 hover:text-[#0c1a14]"
         }
       >
@@ -412,7 +412,7 @@ export function PushStatusPill({
       <span
         className={
           dark
-            ? "inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-[#ecfdf5]/55"
+            ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-xs font-medium admin-muted"
             : "inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
         }
       >
@@ -463,7 +463,7 @@ export function PushStatusPill({
     <span
       className={
         dark
-          ? "inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-[#ecfdf5]/55"
+          ? "inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-xs font-medium admin-muted"
           : "inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
       }
     >

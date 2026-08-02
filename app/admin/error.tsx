@@ -18,21 +18,21 @@ export default function AdminError({
   }, [error]);
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4 py-32 text-center">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">
+    <div className="flex min-h-[60vh] flex-1 flex-col items-center justify-center bg-[var(--background)] px-4 py-32 text-center">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand)]">
         Admin
       </p>
       <h1
-        className="mt-3 text-3xl font-semibold text-[#0c1a14] sm:text-4xl"
+        className="mt-3 text-3xl font-semibold text-[var(--foreground)] sm:text-4xl"
         style={{ fontFamily: "var(--font-display), serif" }}
       >
         Something went wrong
       </h1>
-      <p className="mt-3 max-w-md text-sm text-[#5a6b62]">
+      <p className="mt-3 max-w-md text-sm text-[var(--muted)]">
         The admin area hit an unexpected error. This is usually temporary —
         try again, or head back and sign in fresh.
         {error.digest ? (
-          <span className="mt-1 block text-xs text-[#8a9a92]">
+          <span className="mt-1 block text-xs text-[var(--muted-2)]">
             Reference: {error.digest}
           </span>
         ) : null}

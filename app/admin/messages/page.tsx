@@ -26,10 +26,10 @@ const CHANNEL_ICON: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  open: "bg-emerald-500/15 text-emerald-300",
-  pending: "bg-amber-500/15 text-amber-300",
-  resolved: "bg-blue-500/15 text-blue-300",
-  closed: "bg-slate-500/15 text-slate-300",
+  open: "bg-emerald-500/15 text-emerald-700",
+  pending: "bg-amber-500/15 text-amber-700",
+  resolved: "bg-blue-500/15 text-blue-700",
+  closed: "bg-slate-500/15 text-slate-600",
 };
 
 export default async function AdminMessagesPage() {
@@ -60,18 +60,18 @@ export default async function AdminMessagesPage() {
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Total threads</p>
-          <p className="mt-1 text-2xl font-bold text-white">{conversations.length}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total threads</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{conversations.length}</p>
         </div>
         {["email", "sms", "whatsapp", "portal"].map((ch) => {
           const Icon = CHANNEL_ICON[ch] || MessageSquare;
           return (
             <div key={ch} className="admin-stat p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">{ch}</p>
-                <Icon className="h-3.5 w-3.5 text-[#2dd4bf]" />
+                <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{ch}</p>
+                <Icon className="h-3.5 w-3.5 admin-accent-text" />
               </div>
-              <p className="mt-1 text-2xl font-bold text-white">{byChannel[ch] || 0}</p>
+              <p className="mt-1 text-2xl font-bold admin-text">{byChannel[ch] || 0}</p>
             </div>
           );
         })}
@@ -83,7 +83,7 @@ export default async function AdminMessagesPage() {
         action={
           <Link
             href="/admin/customers"
-            className="inline-flex items-center gap-1 rounded-full bg-[#2dd4bf]/15 px-3 py-1 text-xs font-semibold text-[#2dd4bf] transition hover:bg-[#2dd4bf]/25"
+            className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-3 py-1 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-hover)]"
           >
             <User className="h-3 w-3" /> Open CRM
           </Link>
@@ -103,34 +103,34 @@ export default async function AdminMessagesPage() {
                 <Link
                   key={c.id}
                   href={c.customerId ? `/admin/customers/${c.customerId}` : "/admin/messages"}
-                  className="group flex flex-wrap items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition hover:border-[#2dd4bf]/30 hover:bg-white/[0.04]"
+                  className="group flex flex-wrap items-center gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 py-3 transition hover:border-[var(--admin-accent)] hover:bg-[var(--admin-inset)]"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2dd4bf]/20 to-[#0f766e]/20 text-[#2dd4bf]">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--admin-accent-soft)] to-[var(--admin-accent-soft)] admin-accent-text">
                     <Icon className="h-5 w-5" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold text-white">
+                      <p className="font-semibold admin-text">
                         {c.customer?.fullName || "Unknown customer"}
                       </p>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_COLOR[c.status] || "bg-slate-500/15 text-slate-300"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_COLOR[c.status] || "bg-slate-500/15 text-slate-600"}`}>
                         {c.status}
                       </span>
                       {c.assignedTo && (
-                        <span className="text-[10px] text-[#ecfdf5]/45">
+                        <span className="text-[10px] admin-soft">
                           Assigned to {c.assignedTo.email}
                         </span>
                       )}
                     </div>
-                    <p className="mt-0.5 truncate text-sm text-[#ecfdf5]/65">
+                    <p className="mt-0.5 truncate text-sm admin-muted">
                       {c.subject || c.messages[0]?.body?.slice(0, 100) || "No messages"}
                     </p>
-                    <p className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wide text-[#ecfdf5]/35">
+                    <p className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wide admin-soft">
                       <Clock className="h-2.5 w-2.5" />
                       {c.lastMessageAt ? new Date(c.lastMessageAt).toLocaleString() : "—"}
                     </p>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-[#ecfdf5]/30 transition group-hover:translate-x-0.5 group-hover:text-[#2dd4bf]" />
+                  <ArrowRight className="h-4 w-4 admin-soft transition group-hover:translate-x-0.5 group-hover:admin-accent-text" />
                 </Link>
               );
             })}

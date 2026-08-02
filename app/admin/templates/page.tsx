@@ -37,18 +37,18 @@ export default async function AdminTemplatesPage() {
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Total</p>
-          <p className="mt-1 text-2xl font-bold text-white">{templates.length}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{templates.length}</p>
         </div>
         {["email", "sms", "whatsapp", "portal"].map((ch) => {
           const Icon = CHANNEL_ICON[ch] || FileText;
           return (
             <div key={ch} className="admin-stat p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">{ch}</p>
-                <Icon className="h-3 w-3 text-[#2dd4bf]" />
+                <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{ch}</p>
+                <Icon className="h-3 w-3 admin-accent-text" />
               </div>
-              <p className="mt-1 text-2xl font-bold text-white">{byChannel[ch] || 0}</p>
+              <p className="mt-1 text-2xl font-bold admin-text">{byChannel[ch] || 0}</p>
             </div>
           );
         })}
@@ -72,15 +72,15 @@ export default async function AdminTemplatesPage() {
                 return (
                   <li
                     key={t.id}
-                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 transition hover:border-white/[0.12]"
+                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition hover:border-[var(--admin-border-2)]"
                   >
                     <div className="flex items-start gap-3">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#2dd4bf]/15 text-[#2dd4bf]">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-accent-soft)] admin-accent-text">
                         <Icon className="h-4 w-4" />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-white">{t.name}</p>
-                        <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] text-[#ecfdf5]/55">
+                        <p className="font-semibold admin-text">{t.name}</p>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
                           <span className="capitalize">{t.channel}</span>
                           <span>·</span>
                           <span className="inline-flex items-center gap-0.5">
@@ -88,9 +88,9 @@ export default async function AdminTemplatesPage() {
                           </span>
                         </div>
                         {t.subject && (
-                          <p className="mt-1.5 text-sm font-medium text-[#ecfdf5]/85">{t.subject}</p>
+                          <p className="mt-1.5 text-sm font-medium admin-text">{t.subject}</p>
                         )}
-                        <p className="mt-1 line-clamp-2 text-xs text-[#ecfdf5]/65">{t.body}</p>
+                        <p className="mt-1 line-clamp-2 text-xs admin-muted">{t.body}</p>
                       </div>
                     </div>
                   </li>

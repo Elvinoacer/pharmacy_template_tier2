@@ -59,7 +59,7 @@ export default async function AdminCustomerDetailPage({
       <div className="mb-6 flex flex-wrap items-start gap-3">
         <Link
           href="/admin/customers"
-          className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.05] px-3 py-1.5 text-xs font-semibold text-[#2dd4bf] transition hover:bg-white/[0.1]"
+          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-inset-2)]"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> All customers
         </Link>
@@ -69,50 +69,50 @@ export default async function AdminCustomerDetailPage({
         {/* Profile card */}
         <AdminPanel title="Profile">
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2dd4bf] to-[#0f766e] text-lg font-bold text-[#042f2e]">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-lg font-bold text-[var(--admin-btn-fg)]">
               {initials || "?"}
             </div>
             <div className="min-w-0">
-              <p className="truncate font-semibold text-white">{customer.fullName}</p>
-              <p className="truncate text-xs text-[#ecfdf5]/55">{customer.user.email}</p>
+              <p className="truncate font-semibold admin-text">{customer.fullName}</p>
+              <p className="truncate text-xs admin-muted">{customer.user.email}</p>
             </div>
           </div>
           <dl className="space-y-2.5 text-sm">
             <div className="flex items-start gap-2">
-              <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#2dd4bf]" />
+              <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Email</p>
-                <p className="truncate text-white">{customer.user.email}</p>
+                <p className="text-[10px] uppercase tracking-wide admin-soft">Email</p>
+                <p className="truncate admin-text">{customer.user.email}</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#2dd4bf]" />
+              <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
-                <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Phone</p>
-                <p className="text-white">{customer.phone || "—"}</p>
+                <p className="text-[10px] uppercase tracking-wide admin-soft">Phone</p>
+                <p className="admin-text">{customer.phone || "—"}</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Calendar className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#2dd4bf]" />
+              <Calendar className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
-                <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Date of birth</p>
-                <p className="text-white">
+                <p className="text-[10px] uppercase tracking-wide admin-soft">Date of birth</p>
+                <p className="admin-text">
                   {customer.dateOfBirth ? new Date(customer.dateOfBirth).toLocaleDateString() : "—"}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#2dd4bf]" />
+              <Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
-                <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Branch</p>
-                <p className="text-white">{customer.preferredBranch}</p>
+                <p className="text-[10px] uppercase tracking-wide admin-soft">Branch</p>
+                <p className="admin-text">{customer.preferredBranch}</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#2dd4bf]" />
+              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
-                <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Address</p>
-                <p className="text-white">
+                <p className="text-[10px] uppercase tracking-wide admin-soft">Address</p>
+                <p className="admin-text">
                   {[customer.addressLine1, customer.city, customer.zip].filter(Boolean).join(", ") || "—"}
                 </p>
               </div>
@@ -125,19 +125,19 @@ export default async function AdminCustomerDetailPage({
           title="Segments"
           description="Group this customer for campaigns"
           action={
-            <span className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">
+            <span className="text-[10px] uppercase tracking-wide admin-soft">
               {customer.segments.length} active
             </span>
           }
         >
           <div className="mb-3 flex flex-wrap gap-1.5">
             {customer.segments.length === 0 && (
-              <p className="text-xs text-[#ecfdf5]/45">No segments assigned.</p>
+              <p className="text-xs admin-soft">No segments assigned.</p>
             )}
             {customer.segments.map((s) => (
               <span
                 key={s.segmentId}
-                className="inline-flex items-center gap-1 rounded-full bg-[#2dd4bf]/15 px-2 py-0.5 text-[10px] font-medium text-[#2dd4bf]"
+                className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2 py-0.5 text-[10px] font-medium admin-accent-text"
               >
                 <Layers className="h-2.5 w-2.5" /> {s.segment.name}
               </span>
@@ -150,16 +150,16 @@ export default async function AdminCustomerDetailPage({
               className="input-admin flex-1"
               defaultValue=""
             >
-              <option value="" className="bg-[#122620]">Choose a segment…</option>
+              <option value="">Choose a segment…</option>
               {segments.map((s) => (
-                <option key={s.id} value={s.id} className="bg-[#122620]">
+                <option key={s.id} value={s.id}>
                   {s.name}
                 </option>
               ))}
             </select>
             <button
               type="submit"
-              className="inline-flex items-center gap-1 rounded-xl bg-[#2dd4bf]/20 px-3 py-2 text-xs font-semibold text-[#2dd4bf] transition hover:bg-[#2dd4bf]/30"
+              className="inline-flex items-center gap-1 rounded-xl bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)]"
             >
               <Plus className="h-3.5 w-3.5" /> Add
             </button>
@@ -172,23 +172,23 @@ export default async function AdminCustomerDetailPage({
             <div>
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-3xl font-bold text-white">{customer.loyaltyAccount.points}</p>
-                  <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Points balance</p>
+                  <p className="text-3xl font-bold admin-text">{customer.loyaltyAccount.points}</p>
+                  <p className="text-[10px] uppercase tracking-wide admin-soft">Points balance</p>
                 </div>
-                <span className="rounded-full bg-gradient-to-br from-amber-400 to-amber-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#042f2e]">
+                <span className="rounded-full bg-gradient-to-br from-amber-400 to-amber-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--admin-btn-fg)]">
                   {customer.loyaltyAccount.tier}
                 </span>
               </div>
-              <div className="mt-3 rounded-xl bg-white/[0.04] p-3">
-                <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Referral code</p>
-                <p className="font-mono text-lg font-bold text-[#2dd4bf]">{customer.loyaltyAccount.referralCode}</p>
+              <div className="mt-3 rounded-xl bg-[var(--admin-inset)] p-3">
+                <p className="text-[10px] uppercase tracking-wide admin-soft">Referral code</p>
+                <p className="font-mono text-lg font-bold admin-accent-text">{customer.loyaltyAccount.referralCode}</p>
               </div>
-              <p className="mt-2 text-xs text-[#ecfdf5]/55">
-                Lifetime: <strong className="text-white">{customer.loyaltyAccount.lifetimePoints}</strong> pts
+              <p className="mt-2 text-xs admin-muted">
+                Lifetime: <strong className="admin-text">{customer.loyaltyAccount.lifetimePoints}</strong> pts
               </p>
             </div>
           ) : (
-            <p className="text-sm text-[#ecfdf5]/45">No loyalty account.</p>
+            <p className="text-sm admin-soft">No loyalty account.</p>
           )}
         </AdminPanel>
       </div>
@@ -199,7 +199,7 @@ export default async function AdminCustomerDetailPage({
           title="Customer timeline"
           description="Most recent activity"
           action={
-            <span className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">
+            <span className="text-[10px] uppercase tracking-wide admin-soft">
               {customer.timelineEvents.length} events
             </span>
           }
@@ -207,17 +207,17 @@ export default async function AdminCustomerDetailPage({
           {customer.timelineEvents.length === 0 ? (
             <AdminEmptyState icon={Activity} title="No activity yet" />
           ) : (
-            <ol className="relative max-h-96 space-y-3 overflow-y-auto scroll-thin-dark pl-4">
-              <span className="absolute left-1.5 top-1 bottom-1 w-px bg-white/[0.06]" />
+            <ol className="relative max-h-96 space-y-3 overflow-y-auto scroll-admin pl-4">
+              <span className="absolute left-1.5 top-1 bottom-1 w-px bg-[var(--admin-inset-2)]" />
               {customer.timelineEvents.slice(0, 30).map((e) => (
                 <li key={e.id} className="relative">
-                  <span className="absolute -left-2.5 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[#2dd4bf] ring-4 ring-[#0a1612]">
+                  <span className="absolute -left-2.5 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[var(--admin-accent)] ring-4 ring-[var(--admin-bg)]">
                     <span className="h-1.5 w-1.5 rounded-full bg-white" />
                   </span>
                   <div className="ml-4">
-                    <p className="text-sm font-semibold text-white">{e.title}</p>
-                    {e.description && <p className="text-xs text-[#ecfdf5]/55">{e.description}</p>}
-                    <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#ecfdf5]/35">
+                    <p className="text-sm font-semibold admin-text">{e.title}</p>
+                    {e.description && <p className="text-xs admin-muted">{e.description}</p>}
+                    <p className="mt-0.5 text-[10px] uppercase tracking-wide admin-soft">
                       {new Date(e.createdAt).toLocaleString()}
                     </p>
                   </div>
@@ -240,14 +240,14 @@ export default async function AdminCustomerDetailPage({
           action={
             <Link
               href="/admin/refills"
-              className="text-xs font-semibold text-[#2dd4bf] hover:underline"
+              className="text-xs font-semibold admin-accent-text hover:underline"
             >
               View all
             </Link>
           }
         >
           {customer.refillRequests.length === 0 ? (
-            <p className="py-4 text-center text-xs text-[#ecfdf5]/45">No refills yet.</p>
+            <p className="py-4 text-center text-xs admin-soft">No refills yet.</p>
           ) : (
             <ul className="space-y-2">
               {customer.refillRequests.slice(0, 8).map((r) => {
@@ -255,11 +255,11 @@ export default async function AdminCustomerDetailPage({
                 return (
                   <li
                     key={r.id}
-                    className="flex items-center justify-between gap-2 rounded-xl bg-white/[0.03] px-3 py-2 text-sm"
+                    className="flex items-center justify-between gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-sm"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-white">{r.medicineName}</p>
-                      <p className="text-[10px] text-[#ecfdf5]/45">
+                      <p className="truncate font-medium admin-text">{r.medicineName}</p>
+                      <p className="text-[10px] admin-soft">
                         {new Date(r.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -278,21 +278,21 @@ export default async function AdminCustomerDetailPage({
           description={`${customer.prescriptions.length} on file`}
         >
           {customer.prescriptions.length === 0 ? (
-            <p className="py-4 text-center text-xs text-[#ecfdf5]/45">No prescriptions.</p>
+            <p className="py-4 text-center text-xs admin-soft">No prescriptions.</p>
           ) : (
             <ul className="space-y-2">
               {customer.prescriptions.slice(0, 8).map((p) => (
                 <li
                   key={p.id}
-                  className="rounded-xl bg-white/[0.03] px-3 py-2 text-sm"
+                  className="rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-sm"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="truncate font-medium text-white">{p.medicineName}</p>
-                    <span className="shrink-0 rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] capitalize text-[#ecfdf5]/70">
+                    <p className="truncate font-medium admin-text">{p.medicineName}</p>
+                    <span className="shrink-0 rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] capitalize admin-muted">
                       {p.status.replace("_", " ")}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-[10px] text-[#ecfdf5]/45">
+                  <p className="mt-0.5 text-[10px] admin-soft">
                     {p.rxReference || "No ref"} · {p.refillsRemaining ?? 0} refills left
                   </p>
                 </li>
@@ -306,23 +306,23 @@ export default async function AdminCustomerDetailPage({
           description={`${customer.caregivers.length} linked`}
         >
           {customer.caregivers.length === 0 ? (
-            <p className="py-4 text-center text-xs text-[#ecfdf5]/45">No caregivers.</p>
+            <p className="py-4 text-center text-xs admin-soft">No caregivers.</p>
           ) : (
             <ul className="space-y-2">
               {customer.caregivers.map((c) => (
                 <li
                   key={c.id}
-                  className="flex items-center justify-between gap-2 rounded-xl bg-white/[0.03] px-3 py-2 text-sm"
+                  className="flex items-center justify-between gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-sm"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-white">{c.caregiverName}</p>
-                    <p className="text-[10px] text-[#ecfdf5]/45">{c.relationship || "Caregiver"}</p>
+                    <p className="truncate font-medium admin-text">{c.caregiverName}</p>
+                    <p className="text-[10px] admin-soft">{c.relationship || "Caregiver"}</p>
                   </div>
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                       c.status === "active"
-                        ? "bg-emerald-500/15 text-emerald-300"
-                        : "bg-rose-500/15 text-rose-300"
+                        ? "bg-emerald-500/15 text-emerald-700"
+                        : "bg-rose-500/15 text-rose-600"
                     }`}
                   >
                     {c.status}
@@ -345,16 +345,16 @@ export default async function AdminCustomerDetailPage({
                 <li
                   key={n.id}
                   className={`rounded-xl px-3 py-2.5 text-sm ${
-                    n.isPinned ? "bg-amber-400/10 border border-amber-400/20" : "bg-white/[0.03]"
+                    n.isPinned ? "bg-amber-400/10 border border-amber-400/20" : "bg-[var(--admin-inset)]"
                   }`}
                 >
                   {n.isPinned && (
-                    <span className="mb-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-amber-300">
+                    <span className="mb-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">
                       <Pin className="h-2.5 w-2.5" /> Pinned
                     </span>
                   )}
-                  <p className="whitespace-pre-wrap text-[#ecfdf5]/90">{n.body}</p>
-                  <p className="mt-1 text-[10px] text-[#ecfdf5]/45">
+                  <p className="whitespace-pre-wrap admin-text/90">{n.body}</p>
+                  <p className="mt-1 text-[10px] admin-soft">
                     {n.author?.email} · {new Date(n.createdAt).toLocaleString()}
                   </p>
                 </li>
@@ -365,27 +365,27 @@ export default async function AdminCustomerDetailPage({
 
         <AdminPanel title="Quick stats">
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-white/[0.04] p-3">
-              <Pill className="h-4 w-4 text-[#2dd4bf]" />
-              <p className="mt-2 text-2xl font-bold text-white">{customer.refillRequests.length}</p>
-              <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Total refills</p>
+            <div className="rounded-xl bg-[var(--admin-inset)] p-3">
+              <Pill className="h-4 w-4 admin-accent-text" />
+              <p className="mt-2 text-2xl font-bold admin-text">{customer.refillRequests.length}</p>
+              <p className="text-[10px] uppercase tracking-wide admin-soft">Total refills</p>
             </div>
-            <div className="rounded-xl bg-white/[0.04] p-3">
-              <FileText className="h-4 w-4 text-[#2dd4bf]" />
-              <p className="mt-2 text-2xl font-bold text-white">{customer.prescriptions.length}</p>
-              <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Prescriptions</p>
+            <div className="rounded-xl bg-[var(--admin-inset)] p-3">
+              <FileText className="h-4 w-4 admin-accent-text" />
+              <p className="mt-2 text-2xl font-bold admin-text">{customer.prescriptions.length}</p>
+              <p className="text-[10px] uppercase tracking-wide admin-soft">Prescriptions</p>
             </div>
-            <div className="rounded-xl bg-white/[0.04] p-3">
-              <HeartHandshake className="h-4 w-4 text-[#2dd4bf]" />
-              <p className="mt-2 text-2xl font-bold text-white">{customer.caregivers.length}</p>
-              <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Caregivers</p>
+            <div className="rounded-xl bg-[var(--admin-inset)] p-3">
+              <HeartHandshake className="h-4 w-4 admin-accent-text" />
+              <p className="mt-2 text-2xl font-bold admin-text">{customer.caregivers.length}</p>
+              <p className="text-[10px] uppercase tracking-wide admin-soft">Caregivers</p>
             </div>
-            <div className="rounded-xl bg-white/[0.04] p-3">
-              <Sparkles className="h-4 w-4 text-[#2dd4bf]" />
-              <p className="mt-2 text-2xl font-bold text-white">
+            <div className="rounded-xl bg-[var(--admin-inset)] p-3">
+              <Sparkles className="h-4 w-4 admin-accent-text" />
+              <p className="mt-2 text-2xl font-bold admin-text">
                 {customer.loyaltyAccount?.points ?? 0}
               </p>
-              <p className="text-[10px] uppercase tracking-wide text-[#ecfdf5]/45">Loyalty pts</p>
+              <p className="text-[10px] uppercase tracking-wide admin-soft">Loyalty pts</p>
             </div>
           </div>
         </AdminPanel>

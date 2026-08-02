@@ -32,11 +32,11 @@ export function RefillFilter({
         href={`/admin/refills${search ? `?q=${encodeURIComponent(search)}` : ""}`}
         className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
           active === "all"
-            ? "bg-[#2dd4bf] text-[#042f2e]"
-            : "bg-white/[0.04] text-[#ecfdf5]/70 hover:bg-white/[0.08] hover:text-white"
+            ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)]"
+            : "bg-[var(--admin-inset)] admin-muted hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
         }`}
       >
-        All <span className="rounded-full bg-black/20 px-1.5 text-[10px]">{total}</span>
+        All <span className="rounded-full bg-black/15 px-1.5 text-[10px]">{total}</span>
       </Link>
       {REFILL_STATUSES.map((s) => {
         const Icon = ICONS[s.value] || Pill;
@@ -48,13 +48,13 @@ export function RefillFilter({
             href={`/admin/refills?status=${s.value}${searchParam}`}
             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               isActive
-                ? "bg-[#2dd4bf] text-[#042f2e]"
-                : "bg-white/[0.04] text-[#ecfdf5]/70 hover:bg-white/[0.08] hover:text-white"
+                ? "bg-[var(--admin-accent)] text-[var(--admin-btn-fg)]"
+                : "bg-[var(--admin-inset)] admin-muted hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
             }`}
           >
             <Icon className="h-3 w-3" />
             {s.label}
-            <span className="rounded-full bg-black/20 px-1.5 text-[10px]">{count}</span>
+            <span className="rounded-full bg-black/15 px-1.5 text-[10px]">{count}</span>
           </Link>
         );
       })}

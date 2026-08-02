@@ -66,11 +66,11 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
     >
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs text-[#ecfdf5]/55">Status</span>
+          <span className="text-xs admin-muted">Status</span>
           <PushStatusPill status={status} dark />
         </div>
 
-        <p className="text-xs text-[#ecfdf5]/55">
+        <p className="text-xs admin-muted">
           Enable browser push to receive real-time alerts when customers submit refills, escalations, or
           enquiries — even when this tab is in the background.
         </p>
@@ -81,7 +81,7 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
             <button
               type="button"
               onClick={() => enable()}
-              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0f766e] px-3 py-1.5 text-xs font-semibold text-[#042f2e] transition hover:brightness-110"
+              className="btn-admin-sm"
             >
               <Bell className="h-3.5 w-3.5" /> Enable push
             </button>
@@ -90,7 +90,7 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
             type="button"
             onClick={onSendTest}
             disabled={sending || status !== "granted"}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-1.5 text-xs font-semibold admin-text transition hover:bg-[var(--admin-inset-2)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
             Send test
@@ -102,8 +102,8 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
           <div
             className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-xs ${
               result.ok
-                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
-                : "border-rose-500/30 bg-rose-500/10 text-rose-200"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
+                : "border-rose-500/30 bg-rose-500/10 text-rose-700"
             }`}
           >
             {result.ok ? (
@@ -118,18 +118,18 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
         {/* Device list */}
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/45">
+            <span className="text-[10px] font-semibold uppercase tracking-wide admin-soft">
               Registered devices
             </span>
-            <span className="rounded-full bg-white/[0.05] px-2 py-0.5 text-[10px] text-[#ecfdf5]/70">
+            <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] admin-muted">
               {devices.length}
             </span>
           </div>
           {devices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.08] px-4 py-6 text-center">
-              <Smartphone className="h-6 w-6 text-[#ecfdf5]/30" />
-              <p className="mt-2 text-xs text-[#ecfdf5]/55">No devices registered yet.</p>
-              <p className="mt-0.5 text-[10px] text-[#ecfdf5]/35">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[var(--admin-border)] px-4 py-6 text-center">
+              <Smartphone className="h-6 w-6 admin-soft" />
+              <p className="mt-2 text-xs admin-muted">No devices registered yet.</p>
+              <p className="mt-0.5 text-[10px] admin-soft">
                 Enable push on this device to add it to the list.
               </p>
             </div>
@@ -138,15 +138,15 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
               {devices.map((d) => (
                 <li
                   key={d.id}
-                  className="flex items-center justify-between gap-2 rounded-lg bg-white/[0.03] px-3 py-2"
+                  className="flex items-center justify-between gap-2 rounded-lg bg-[var(--admin-inset)] px-3 py-2"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium text-white">
+                    <p className="truncate text-xs font-medium admin-text">
                       <Smartphone className="mr-1 inline h-3 w-3" />
                       {d.label || "Device"}
                     </p>
-                    <p className="truncate font-mono text-[10px] text-[#ecfdf5]/35">{d.token.slice(0, 24)}…</p>
-                    <p className="mt-0.5 text-[10px] text-[#ecfdf5]/45">
+                    <p className="truncate font-mono text-[10px] admin-soft">{d.token.slice(0, 24)}…</p>
+                    <p className="mt-0.5 text-[10px] admin-soft">
                       Last seen {new Date(d.lastSeenAt).toLocaleString()}
                     </p>
                   </div>
@@ -154,7 +154,7 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
                     type="button"
                     onClick={() => onUnregister(d.token)}
                     disabled={unregistering === d.token}
-                    className="rounded-full p-1.5 text-[#ecfdf5]/40 transition hover:bg-rose-500/10 hover:text-rose-300"
+                    className="rounded-full p-1.5 admin-soft transition hover:bg-rose-500/10 hover:text-rose-600"
                     title="Remove device"
                     aria-label="Remove device"
                   >
@@ -170,11 +170,11 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
           )}
         </div>
 
-        <div className="rounded-lg bg-white/[0.03] p-3 text-xs text-[#ecfdf5]/55">
+        <div className="rounded-lg bg-[var(--admin-inset)] p-3 text-xs admin-muted">
           <div className="flex items-start gap-2">
-            <Info className="mt-0.5 h-3 w-3 shrink-0 text-[#2dd4bf]" />
+            <Info className="mt-0.5 h-3 w-3 shrink-0 admin-accent-text" />
             <div>
-              <p className="font-medium text-[#ecfdf5]/80">How it works</p>
+              <p className="font-medium admin-text">How it works</p>
               <p className="mt-0.5">
                 When a customer submits a refill or enquiry, this device receives a push via Firebase
                 Cloud Messaging — no need to refresh the page.

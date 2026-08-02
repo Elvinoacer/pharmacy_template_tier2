@@ -39,10 +39,10 @@ const CHANNEL_ICON: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  scheduled: "bg-amber-500/15 text-amber-300",
-  sent: "bg-emerald-500/15 text-emerald-300",
-  cancelled: "bg-slate-500/15 text-slate-300",
-  failed: "bg-rose-500/15 text-rose-300",
+  scheduled: "bg-amber-500/15 text-amber-700",
+  sent: "bg-emerald-500/15 text-emerald-700",
+  cancelled: "bg-slate-500/15 text-slate-600",
+  failed: "bg-rose-500/15 text-rose-600",
 };
 
 export default async function AdminRemindersPage() {
@@ -86,16 +86,16 @@ export default async function AdminRemindersPage() {
       {/* Stats */}
       <div className="mb-6 grid grid-cols-3 gap-3">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Scheduled</p>
-          <p className="mt-1 text-2xl font-bold text-amber-300">{stats.scheduled}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Scheduled</p>
+          <p className="mt-1 text-2xl font-bold text-amber-700">{stats.scheduled}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Sent</p>
-          <p className="mt-1 text-2xl font-bold text-emerald-300">{stats.sent}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Sent</p>
+          <p className="mt-1 text-2xl font-bold text-emerald-700">{stats.sent}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#ecfdf5]/55">Failed</p>
-          <p className="mt-1 text-2xl font-bold text-rose-300">{stats.failed}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Failed</p>
+          <p className="mt-1 text-2xl font-bold text-rose-600">{stats.failed}</p>
         </div>
       </div>
 
@@ -122,17 +122,17 @@ export default async function AdminRemindersPage() {
                 return (
                   <li
                     key={r.id}
-                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 transition hover:border-white/[0.12]"
+                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition hover:border-[var(--admin-border-2)]"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#2dd4bf]/15 text-[#2dd4bf]">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-accent-soft)] admin-accent-text">
                           <TypeIcon className="h-4 w-4" />
                         </span>
                         <div className="min-w-0">
-                          <p className="font-semibold text-white">{r.title}</p>
-                          <p className="text-xs text-[#ecfdf5]/55">{r.customer.fullName}</p>
-                          <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-[#ecfdf5]/45">
+                          <p className="font-semibold admin-text">{r.title}</p>
+                          <p className="text-xs admin-muted">{r.customer.fullName}</p>
+                          <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] admin-soft">
                             <span className="inline-flex items-center gap-0.5 capitalize">
                               <ChannelIcon className="h-2.5 w-2.5" /> {r.channel}
                             </span>
