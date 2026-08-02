@@ -8,6 +8,10 @@ import type { SessionUser, UserRole } from "@/app/lib/types";
 import { STAFF_ROLES } from "@/app/lib/types";
 import { UserRole as PrismaUserRole } from "@/app/generated/prisma/client";
 import { addTimelineEvent, writeAuditLog } from "@/app/lib/timeline";
+import {
+  SESSION_CLAIM_COOKIE,
+  signSessionClaim,
+} from "@/app/lib/session-claim";
 
 export { addTimelineEvent, writeAuditLog };
 
@@ -39,7 +43,7 @@ export async function createSession(
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + SESSION_DAYS);
 
-  await prisma.session.create({
+  const session = await prisma.session.create({
     data: {
       userId,
       tokenHash,
@@ -47,16 +51,52 @@ export async function createSession(
       ipAddress: meta?.ip ?? null,
       userAgent: meta?.userAgent ?? null,
     },
+    include: {
+      user: {
+        include: { profile: true },
+      },
+    },
   });
 
+  const user = session.user;
+  const isSecure = process.env.NODE_ENV === "production";
   const cookieStore = await cookies();
+
+  // 1) DB-backed opaque session token — the source of truth.
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isSecure,
     sameSite: "lax",
     path: "/",
     expires: expiresAt,
   });
+
+  // 2) Signed JWT claim — used by proxy.ts for fast (DB-free) auth checks.
+  //    The DB lookup still happens in the layout (getSessionUser) for fresh data.
+  try {
+    const claim = await signSessionClaim(
+      {
+        sub: user.id,
+        role: user.role as string,
+        customerId: user.profile?.id ?? null,
+      },
+      expiresAt,
+    );
+    cookieStore.set(SESSION_CLAIM_COOKIE, claim, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      path: "/",
+      expires: expiresAt,
+    });
+  } catch {
+    // AUTH_SECRET missing in dev — log and continue with DB-only auth.
+    // Production should fail loudly via getAuthSecret() at startup.
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("AUTH_SECRET is required in production.");
+    }
+    console.warn("[auth] AUTH_SECRET not set — skipping session-claim cookie (dev only).");
+  }
 
   await prisma.user.update({
     where: { id: userId },
@@ -70,9 +110,14 @@ export async function destroySession(): Promise<void> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (token) {
-    await prisma.session.deleteMany({ where: { tokenHash: hashToken(token) } });
+    try {
+      await prisma.session.deleteMany({ where: { tokenHash: hashToken(token) } });
+    } catch {
+      // Best-effort cleanup; cookie is cleared regardless.
+    }
   }
   cookieStore.delete(SESSION_COOKIE);
+  cookieStore.delete(SESSION_CLAIM_COOKIE);
 }
 
 export async function getSessionUserByToken(token: string): Promise<SessionUser | null> {
@@ -87,7 +132,7 @@ export async function getSessionUserByToken(token: string): Promise<SessionUser 
 
   if (!session) return null;
   if (session.expiresAt < new Date()) {
-    await prisma.session.delete({ where: { id: session.id } });
+    await prisma.session.delete({ where: { id: session.id } }).catch(() => {});
     return null;
   }
   if (session.user.status !== "active") return null;
@@ -226,7 +271,18 @@ export async function registerGoogleCustomer(input: {
   fullName: string;
 }): Promise<{ userId: string; customerId: string }> {
   const email = input.email.toLowerCase().trim();
-  
+
+  // Defensive: re-check for race condition where user was created between
+  // the callback's findFirst and this call.
+  const existing = await prisma.user.findFirst({
+    where: {
+      OR: [{ email }, { googleId: input.googleId }],
+    },
+  });
+  if (existing) {
+    throw new AuthError("An account with this email already exists", 409);
+  }
+
   const result = await prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
       data: {
@@ -398,4 +454,16 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
   ]);
 
   return true;
+}
+
+// Validate that AUTH_SECRET is configured. Called eagerly from app startup
+// (see app/lib/ensure-env.ts). Throws on misconfiguration so the app fails
+// loudly rather than at the first sign-in attempt.
+export function assertAuthSecretConfigured(): void {
+  const secret = process.env.AUTH_SECRET?.trim();
+  if (!secret || secret.length < 16) {
+    throw new Error(
+      "AUTH_SECRET is missing or too short (need >= 16 chars). Generate one with `openssl rand -base64 32` and set it in .env.local.",
+    );
+  }
 }

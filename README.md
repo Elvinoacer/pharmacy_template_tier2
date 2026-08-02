@@ -51,15 +51,41 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Environment
 
+Copy `.env.example` to `.env.local` and fill in real values:
+
+```bash
+cp .env.example .env.local
+# Generate secrets:
+openssl rand -base64 32  # → AUTH_SECRET
+openssl rand -base64 32  # → NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+openssl rand -hex 32     # → CRON_SECRET
+```
+
 | Variable | Purpose |
 | --- | --- |
-| `DATABASE_URL` | Neon pooled connection string (`sslmode=require`) |
+| `DATABASE_URL` | Neon pooled connection string (`sslmode=require`) — **required** |
+| `DIRECT_URL` | Same as `DATABASE_URL`, used by Prisma CLI for migrations |
 | `DATABASE_HOSTADDR` | Optional IPv4 override when Node cannot connect through DNS |
-| `AUTH_SECRET` | Session signing secret (change in production) |
+| `AUTH_SECRET` | Signs the session-claim JWT cookie. ≥16 chars. **Required.** |
+| `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` | Required by Next.js 16 to encrypt Server Action payloads (login, register, password reset). ≥16 chars. **Required.** |
+| `NEXT_PUBLIC_APP_URL` | Public app URL — used for OAuth redirect URI, email links. Must match your production domain exactly. |
+| `CRON_SECRET` | Bearer token for `/api/cron/reminders` (required in production) |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID (Google Cloud Console → Credentials) |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 | `GROQ_API_KEY` | AI assistant |
 | `GROQ_MODEL` | Optional model override |
-| `NEXT_PUBLIC_APP_URL` | Public app URL |
-| `CRON_SECRET` | Bearer token for `/api/cron/reminders` (required in production) |
+
+#### Google OAuth setup
+
+1. Go to **[Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials)**.
+2. Create an **OAuth client ID** (type: *Web application*).
+3. Under **Authorized redirect URIs**, add:
+   - Dev: `http://localhost:3000/api/auth/google/callback`
+   - Prod: `https://YOUR_DOMAIN/api/auth/google/callback`
+4. Copy the **Client ID** and **Client Secret** into `.env.local` as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+5. Make sure `NEXT_PUBLIC_APP_URL` matches the host used in the redirect URI exactly (incl. `https`).
+
+The callback verifies the Google ID token, checks that `email_verified` is true, then either signs the user in (if their email matches an existing account) or creates a new customer account linked to their Google ID.
 
 ### Scheduled jobs (GitHub Actions)
 
