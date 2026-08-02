@@ -75,11 +75,7 @@ export async function destroySession(): Promise<void> {
   cookieStore.delete(SESSION_COOKIE);
 }
 
-export async function getSessionUser(): Promise<SessionUser | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
-
+export async function getSessionUserByToken(token: string): Promise<SessionUser | null> {
   const session = await prisma.session.findUnique({
     where: { tokenHash: hashToken(token) },
     include: {
@@ -103,6 +99,14 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     fullName: session.user.profile?.fullName ?? null,
     customerId: session.user.profile?.id ?? null,
   };
+}
+
+export async function getSessionUser(): Promise<SessionUser | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+
+  return getSessionUserByToken(token);
 }
 
 export function isStaff(role: UserRole): boolean {
@@ -199,6 +203,78 @@ export async function registerCustomer(input: {
         eventType: "registered",
         title: "Account registered",
         description: "Customer created an online account",
+        createdById: user.id,
+      },
+    });
+
+    const newSegment = await tx.segment.findUnique({ where: { name: "New customers" } });
+    if (newSegment) {
+      await tx.customerSegment.create({
+        data: { customerId: profile.id, segmentId: newSegment.id },
+      });
+    }
+
+    return { userId: user.id, customerId: profile.id };
+  });
+
+  return result;
+}
+
+export async function registerGoogleCustomer(input: {
+  email: string;
+  googleId: string;
+  fullName: string;
+}): Promise<{ userId: string; customerId: string }> {
+  const email = input.email.toLowerCase().trim();
+  
+  const result = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        email,
+        googleId: input.googleId,
+        role: PrismaUserRole.customer,
+        emailVerified: true,
+      },
+    });
+
+    const profile = await tx.customerProfile.create({
+      data: {
+        userId: user.id,
+        fullName: input.fullName.trim(),
+      },
+    });
+
+    await tx.customerPreference.create({
+      data: { customerId: profile.id },
+    });
+
+    const referral = `AE${profile.id.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
+    const loyalty = await tx.loyaltyAccount.create({
+      data: {
+        customerId: profile.id,
+        points: 50,
+        lifetimePoints: 50,
+        referralCode: referral,
+        tier: "bronze",
+      },
+    });
+
+    await tx.loyaltyTransaction.create({
+      data: {
+        accountId: loyalty.id,
+        points: 50,
+        type: "bonus",
+        description: "Welcome bonus points",
+      },
+    });
+
+    await tx.timelineEvent.create({
+      data: {
+        customerId: profile.id,
+        userId: user.id,
+        eventType: "registered",
+        title: "Account registered",
+        description: "Customer created an online account via Google",
         createdById: user.id,
       },
     });

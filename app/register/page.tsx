@@ -12,6 +12,7 @@ export default function RegisterPage() {
         title="Create your account"
         subtitle="Track refills, caregivers, reminders, and loyalty rewards."
         submitLabel="Create account"
+        showGoogleAuth
         footer={
           <p>
             Already registered?{" "}

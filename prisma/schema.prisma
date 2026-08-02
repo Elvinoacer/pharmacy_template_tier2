@@ -233,7 +233,10 @@ enum AiChannel {
 model User {
   id               String     @id @default(uuid()) @db.Uuid
   email            String     @unique
-  passwordHash     String     @map("password_hash")
+  /// Null for OAuth-only accounts (e.g. Google sign-in).
+  passwordHash     String?    @map("password_hash")
+  /// Google subject (`sub`) when the account is linked to Google.
+  googleId         String?    @unique @map("google_id")
   role             UserRole   @default(customer)
   emailVerified    Boolean    @default(false) @map("email_verified")
   phoneVerified    Boolean    @default(false) @map("phone_verified")
