@@ -576,7 +576,7 @@ body {
   border-color: var(--admin-accent);
   box-shadow: 0 0 0 3px var(--admin-accent-soft);
 }
-.input-admin option {
+select.input-admin option, select.admin-text option {
   background: var(--admin-card);
   color: var(--admin-text);
 }
