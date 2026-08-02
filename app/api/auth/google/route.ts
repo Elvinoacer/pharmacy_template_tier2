@@ -2,38 +2,45 @@ import { NextResponse } from 'next/server';
 import { OAuth2Client } from 'google-auth-library';
 import { cookies } from 'next/headers';
 import { randomBytes } from 'crypto';
+import { appBaseUrl } from '@/app/lib/env';
+
+export const runtime = 'nodejs';
 
 export async function GET(request: Request) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  if (!clientId) {
-    return NextResponse.json({ error: "Google OAuth not configured." }, { status: 500 });
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    return NextResponse.json(
+      { error: "Google OAuth is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET." },
+      { status: 500 },
+    );
   }
 
-  const url = new URL(request.url);
-  const redirectUri = `${url.origin}/api/auth/google/callback`;
+  const origin = appBaseUrl(request);
+  const redirectUri = `${origin}/api/auth/google/callback`;
 
-  const client = new OAuth2Client(
-    clientId,
-    process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri
-  );
+  const client = new OAuth2Client(clientId, clientSecret, redirectUri);
 
+  // State protects against CSRF. 16 random bytes hex = 32 chars.
   const state = randomBytes(16).toString('hex');
   const cookieStore = await cookies();
   cookieStore.set('google_oauth_state', state, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 10,
+    sameSite: 'lax',
+    maxAge: 60 * 10, // 10 minutes
     path: '/',
   });
 
   const authorizeUrl = client.generateAuthUrl({
-    access_type: 'offline',
+    access_type: 'online', // we don't need refresh tokens for sign-in
+    prompt: 'select_account', // let users pick which Google account to use
     scope: [
       'https://www.googleapis.com/auth/userinfo.profile',
       'https://www.googleapis.com/auth/userinfo.email',
     ],
     state,
+    redirect_uri: redirectUri,
   });
 
   return NextResponse.redirect(authorizeUrl);

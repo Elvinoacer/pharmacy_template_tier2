@@ -3,7 +3,12 @@ import { DM_Sans, Fraunces, JetBrains_Mono } from "next/font/google";
 import AppChrome from "./components/AppChrome";
 import JsonLd from "./components/JsonLd";
 import { pharmacy } from "./lib/data";
+import { ensureEnvConfigured } from "./lib/ensure-env";
 import "./globals.css";
+
+// Validate critical env vars (DATABASE_URL, AUTH_SECRET, NEXT_SERVER_ACTIONS_ENCRYPTION_KEY)
+// eagerly at startup. Throws in dev, warns in production.
+ensureEnvConfigured();
 
 const dmSans = DM_Sans({
   variable: "--font-sans",

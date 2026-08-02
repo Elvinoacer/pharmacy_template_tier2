@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { checkRateLimit } from "@/app/lib/rate-limit";
 import { getRequestMeta } from "@/app/lib/request-meta";
 import { emailVerificationBody, passwordResetBody, sendDelivery } from "@/app/lib/services/delivery";
@@ -15,7 +16,7 @@ import {
   createSession,
   writeAuditLog,
 } from "@/app/lib/auth";
-import { isStaff } from "@/app/lib/auth";
+import { resolvePostLoginPath } from "@/app/lib/session-claim";
 
 export type AuthActionState = {
   error?: string;
@@ -48,15 +49,17 @@ export async function registerAction(
     return { error: `Too many registration attempts. Try again in ${limited.retryAfterSeconds} seconds.` };
   }
 
+  let userId: string | null = null;
   try {
-    const { userId } = await registerCustomer({
+    const created = await registerCustomer({
       email,
       password,
       fullName,
       phone: phone || undefined,
       dateOfBirth: dateOfBirth || undefined,
     });
-    await createSession(userId);
+    userId = created.userId;
+    await createSession(userId, { ip: meta.ip, userAgent: meta.userAgent });
     const verifyToken = await createEmailVerification(userId);
     const verification = await sendDelivery({
       channel: "email",
@@ -69,11 +72,14 @@ export async function registerAction(
     }
     await writeAuditLog(userId, "register", "user", userId);
   } catch (e) {
+    if (isRedirectError(e)) throw e;
     if (e instanceof AuthError) return { error: e.message };
-    console.error(e);
+    console.error("[registerAction]", e);
     return { error: "Could not create account. Please try again." };
   }
 
+  // redirect() MUST be outside try/catch — it throws a NEXT_REDIRECT error
+  // that Next.js handles at the action boundary. If caught, the redirect is lost.
   redirect("/portal");
 }
 
@@ -99,18 +105,24 @@ export async function loginAction(
     return { error: "Too many sign-in attempts. Please wait before trying again." };
   }
 
+  let postLoginPath: string | null = null;
   try {
     const user = await loginWithPassword(email, password);
     await writeAuditLog(user.id, "login", "user", user.id);
-
-    if (next.startsWith("/")) redirect(next);
-    if (isStaff(user.role)) redirect("/admin");
-    redirect("/portal");
+    postLoginPath = resolvePostLoginPath(
+      { role: user.role, customerId: user.customerId },
+      next || null,
+    );
   } catch (e) {
+    if (isRedirectError(e)) throw e;
     if (e instanceof AuthError) return { error: e.message };
-    console.error(e);
+    console.error("[loginAction]", e);
     return { error: "Login failed. Please try again." };
   }
+
+  // redirect() MUST be outside try/catch — it throws a NEXT_REDIRECT error
+  // that Next.js handles at the action boundary. If caught, the redirect is lost.
+  redirect(postLoginPath ?? "/portal");
 }
 
 export async function logoutAction(): Promise<void> {
