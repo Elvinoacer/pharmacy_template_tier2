@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { getSessionUser, isStaff } from "@/app/lib/auth";
 
+// Portal is always request-time (session cookie + profile checks).
+export const dynamic = "force-dynamic";
+
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/portal");

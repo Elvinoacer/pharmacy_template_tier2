@@ -6,6 +6,7 @@ import { adminCreateMedicationAction, adminDeleteMedicationAction } from "@/app/
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationForm from "@/app/components/admin/MedicationForm";
+import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
 import { Pagination, parsePageParam } from "@/app/components/Pagination";
 import { formatDateTime } from "@/app/lib/time";
 import { Pill, Plus, Search, X, Tag, Package, Pencil, Trash2, Boxes } from "lucide-react";
@@ -78,8 +79,8 @@ export default async function AdminMedicationsPage({
         </Link>
       }
     >
-      {/* Search + filter */}
-      <form className="mb-4 flex flex-wrap items-center gap-2">
+      {/* Search + filter — pure form submit (no client handlers on this RSC page) */}
+      <form className="mb-4 flex flex-wrap items-center gap-2" method="get">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
           <input
@@ -90,7 +91,7 @@ export default async function AdminMedicationsPage({
           />
           {q && (
             <Link
-              href={category ? `/admin/medications?category=${category}` : "/admin/medications"}
+              href={category ? `/admin/medications?category=${encodeURIComponent(category)}` : "/admin/medications"}
               className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
             >
               <X className="h-4 w-4" />
@@ -100,12 +101,6 @@ export default async function AdminMedicationsPage({
         <select
           name="category"
           defaultValue={category || ""}
-          onChange={(e) => {
-            const v = e.target.value;
-            window.location.href = v
-              ? `/admin/medications?category=${v}${q ? `&q=${encodeURIComponent(q)}` : ""}`
-              : q ? `/admin/medications?q=${encodeURIComponent(q)}` : "/admin/medications";
-          }}
           className="input-admin !w-auto"
         >
           <option value="">All categories</option>
@@ -201,16 +196,13 @@ export default async function AdminMedicationsPage({
                       </Link>
                       <form action={adminDeleteMedicationAction}>
                         <input type="hidden" name="id" value={m.id} />
-                        <button
-                          type="submit"
-                          className="rounded-full p-1 admin-soft transition hover:bg-rose-500/10 hover:text-rose-600"
+                        <ConfirmSubmitButton
+                          message={`Delete ${m.name}?`}
                           title="Delete"
-                          onClick={(e) => {
-                            if (!confirm(`Delete ${m.name}?`)) e.preventDefault();
-                          }}
+                          className="rounded-full p-1 admin-soft transition hover:bg-rose-500/10 hover:text-rose-600"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        </ConfirmSubmitButton>
                       </form>
                     </div>
                   </li>

@@ -429,7 +429,9 @@ export async function adminCreateCouponAction(
           pointsCost,
           maxRedemptions: Number(formData.get("maxRedemptions") || 0) || null,
           validUntil: formData.get("validUntil") ? new Date(String(formData.get("validUntil"))) : null,
-          active: formData.get("active") !== "off",
+          // Hidden "off" + checkbox "on" both submit; get() returns the first
+          // value ("off"), so use getAll and treat active as on if "on" is present.
+          active: formData.getAll("active").includes("on"),
         },
       });
       await writeAuditLog(user.id, "coupon_updated", "coupon", updated.id, { code });
@@ -445,7 +447,7 @@ export async function adminCreateCouponAction(
         pointsCost,
         maxRedemptions: Number(formData.get("maxRedemptions") || 0) || null,
         validUntil: formData.get("validUntil") ? new Date(String(formData.get("validUntil"))) : null,
-        active: formData.get("active") !== "off",
+        active: formData.getAll("active").includes("on"),
       },
     });
     await writeAuditLog(user.id, "coupon_created", "coupon", coupon.id, { code, pointsCost });
@@ -551,7 +553,9 @@ export async function adminCreateMedicationAction(
     stockQty: Number(formData.get("stockQty") || 0),
     lowStockThreshold: Number(formData.get("lowStockThreshold") || 10),
     imageUrl: String(formData.get("imageUrl") || "") || null,
-    active: formData.get("active") !== "off",
+    // Hidden "off" + checkbox "on" both submit; get() returns the first value
+    // ("off"), so use getAll and treat active as on if "on" is present.
+    active: formData.getAll("active").includes("on"),
   };
 
   try {
@@ -578,8 +582,23 @@ export async function adminDeleteMedicationAction(formData: FormData) {
   const user = await staff();
   const id = String(formData.get("id") || "");
   if (!id) return;
-  await prisma.medication.delete({ where: { id } });
-  await writeAuditLog(user.id, "medication_deleted", "medication", id);
+  try {
+    // Soft-prefer: if order line items still reference this med, deactivate instead
+    // of hard-deleting so history stays intact and the FK doesn't blow up.
+    const linked = await prisma.orderItem.count({ where: { medicationId: id } });
+    if (linked > 0) {
+      await prisma.medication.update({
+        where: { id },
+        data: { active: false, publicListing: false },
+      });
+      await writeAuditLog(user.id, "medication_deactivated", "medication", id, { linkedOrders: linked });
+    } else {
+      await prisma.medication.delete({ where: { id } });
+      await writeAuditLog(user.id, "medication_deleted", "medication", id);
+    }
+  } catch (e) {
+    console.error("[adminDeleteMedicationAction]", e);
+  }
   revalidatePath("/admin/medications");
   revalidatePath("/medicines");
 }
