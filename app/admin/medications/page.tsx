@@ -7,13 +7,57 @@ import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationForm from "@/app/components/admin/MedicationForm";
 import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
-import { Pagination, parsePageParam } from "@/app/components/Pagination";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
 import { formatDateTime } from "@/app/lib/time";
 import { Pill, Plus, Search, X, Tag, Package, Pencil, Trash2, Boxes } from "lucide-react";
 
 export const metadata = { title: "Medications" };
 
 const PAGE_SIZE = 25;
+
+/** Plain JSON-safe row for RSC rendering (no Prisma Decimal instances). */
+type MedRow = {
+  id: string;
+  name: string;
+  category: string;
+  sku: string | null;
+  price: number;
+  stockQty: number;
+  lowStockThreshold: number;
+  overTheCounter: boolean;
+  publicListing: boolean;
+  active: boolean;
+  syncedAt: Date | null;
+};
+
+function toMedRow(m: {
+  id: string;
+  name: string;
+  category: string;
+  sku: string | null;
+  price: unknown;
+  stockQty: number;
+  lowStockThreshold: number;
+  overTheCounter: boolean;
+  publicListing: boolean;
+  active: boolean;
+  syncedAt: Date | null;
+}): MedRow {
+  return {
+    id: m.id,
+    name: m.name,
+    category: m.category || "general",
+    sku: m.sku,
+    price: Number(m.price ?? 0),
+    stockQty: m.stockQty ?? 0,
+    lowStockThreshold: m.lowStockThreshold ?? 10,
+    overTheCounter: Boolean(m.overTheCounter),
+    publicListing: Boolean(m.publicListing),
+    active: Boolean(m.active),
+    syncedAt: m.syncedAt,
+  };
+}
 
 export default async function AdminMedicationsPage({
   searchParams,
@@ -39,31 +83,53 @@ export default async function AdminMedicationsPage({
       : {}),
   };
 
-  const [total, medications, categories] = await Promise.all([
-    prisma.medication.count({ where }),
-    prisma.medication.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      take: PAGE_SIZE,
-    }),
-    prisma.medication.findMany({
-      where: { active: true },
-      select: { category: true },
-      distinct: ["category"],
-    }),
-  ]);
+  // Defensive: if the medications table is missing or the DB is briefly
+  // unreachable, render an empty catalog instead of the admin error page.
+  // (Public /medicines already used this pattern.)
+  let total = 0;
+  let medications: MedRow[] = [];
+  let categoryList: string[] = [];
+  let loadError: string | null = null;
+
+  try {
+    const [count, rows, categories] = await Promise.all([
+      prisma.medication.count({ where }),
+      prisma.medication.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: PAGE_SIZE,
+      }),
+      prisma.medication.findMany({
+        where: { active: true },
+        select: { category: true },
+        distinct: ["category"],
+      }),
+    ]);
+    total = count;
+    medications = rows.map(toMedRow);
+    categoryList = categories.map((c) => c.category).filter(Boolean).sort();
+  } catch (err) {
+    console.error("[admin/medications] Failed to load catalog:", err);
+    loadError =
+      "Could not load the medication catalog. If this is a fresh deploy, run `npm run db:migrate` against production.";
+  }
 
   const page = parsePageParam(sp.page, total, PAGE_SIZE);
-  const paged = page === 1
-    ? medications
-    : await prisma.medication.findMany({
+  let paged = medications;
+  if (!loadError && page > 1) {
+    try {
+      const rows = await prisma.medication.findMany({
         where,
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
         skip: (page - 1) * PAGE_SIZE,
       });
-
-  const categoryList = categories.map((c) => c.category).sort();
+      paged = rows.map(toMedRow);
+    } catch (err) {
+      console.error("[admin/medications] Failed to load page:", err);
+      paged = [];
+    }
+  }
 
   return (
     <AdminShell
@@ -79,7 +145,13 @@ export default async function AdminMedicationsPage({
         </Link>
       }
     >
-      {/* Search + filter — pure form submit (no client handlers on this RSC page) */}
+      {loadError && (
+        <div className="admin-alert-error mb-4">
+          <span>{loadError}</span>
+        </div>
+      )}
+
+      {/* Search + filter — pure GET form (no client handlers on this RSC page) */}
       <form className="mb-4 flex flex-wrap items-center gap-2" method="get">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
@@ -98,14 +170,12 @@ export default async function AdminMedicationsPage({
             </Link>
           )}
         </div>
-        <select
-          name="category"
-          defaultValue={category || ""}
-          className="input-admin !w-auto"
-        >
+        <select name="category" defaultValue={category || ""} className="input-admin !w-auto">
           <option value="">All categories</option>
           {categoryList.map((c) => (
-            <option key={c} value={c}>{c.replace(/-/g, " ")}</option>
+            <option key={c} value={c}>
+              {c.replace(/-/g, " ")}
+            </option>
           ))}
         </select>
         <button
@@ -126,7 +196,8 @@ export default async function AdminMedicationsPage({
           <p className="mt-0.5 text-xs admin-muted">
             To automatically sync medications, stock counts, images, and descriptions from your pharmacy POS,
             contact <strong className="admin-text">0790670542</strong> for integration setup. Once configured,
-            POST to <code className="md-code">/api/integrations/pos</code> with your <code className="md-code">POS_API_KEY</code> to upsert medications.
+            POST to <code className="md-code">/api/integrations/pos</code> with your{" "}
+            <code className="md-code">POS_API_KEY</code> to upsert medications.
           </p>
         </div>
       </div>
@@ -153,7 +224,7 @@ export default async function AdminMedicationsPage({
                     className="flex items-start gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <p className="font-semibold admin-text">{m.name}</p>
                         {m.overTheCounter && (
                           <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
@@ -173,7 +244,7 @@ export default async function AdminMedicationsPage({
                       </div>
                       <p className="mt-0.5 text-xs admin-muted">{m.category.replace(/-/g, " ")}</p>
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
-                        <span className="font-bold admin-text">KES {Number(m.price)}</span>
+                        <span className="font-bold admin-text">KES {m.price}</span>
                         <span>·</span>
                         <span className={lowStock ? "text-rose-600 font-semibold" : ""}>
                           {m.stockQty} in stock {lowStock && "(low!)"}

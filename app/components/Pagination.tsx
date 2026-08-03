@@ -131,13 +131,7 @@ export function Pagination({
   );
 }
 
-/**
- * Server-side helper: clamp a `?page=` query param to a valid range.
- * Returns 1 if missing/invalid.
- */
-export function parsePageParam(value: string | undefined, total: number, pageSize: number): number {
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const n = Number(value);
-  if (!Number.isFinite(n) || n < 1) return 1;
-  return Math.min(Math.floor(n), totalPages);
-}
+// Re-export for convenience; prefer importing from `@/app/lib/pagination`
+// in Server Components so they do not pull this "use client" module just
+// for a pure helper.
+export { parsePageParam } from "@/app/lib/pagination";

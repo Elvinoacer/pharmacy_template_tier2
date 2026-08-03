@@ -21,18 +21,32 @@ export default async function PrescriptionDetailPage({
   if (!user) redirect("/login");
   const { id } = await params;
 
-  const prescription = await prisma.prescription.findUnique({
-    where: { id },
-    include: {
-      customer: { select: { id: true, fullName: true } },
-      refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
-      adherence: { orderBy: { takenOn: "desc" }, take: 30 },
-    },
-  });
+  // Prefer full include (with adherence). If prescription_adherence is missing
+  // on an older DB, fall back so the detail page still renders.
+  let prescription = await prisma.prescription
+    .findUnique({
+      where: { id },
+      include: {
+        customer: { select: { id: true, fullName: true } },
+        refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
+        adherence: { orderBy: { takenOn: "desc" }, take: 30 },
+      },
+    })
+    .catch(async () => {
+      const base = await prisma.prescription.findUnique({
+        where: { id },
+        include: {
+          customer: { select: { id: true, fullName: true } },
+          refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
+        },
+      });
+      if (!base) return null;
+      return { ...base, adherence: [] as { id: string; status: string; takenOn: Date; notes: string | null }[] };
+    });
   if (!prescription) notFound();
 
   // Compute adherence rate from the last 30 days of logs.
-  const last30 = prescription.adherence.slice(0, 30);
+  const last30 = (prescription.adherence ?? []).slice(0, 30);
   const taken = last30.filter((a) => a.status === "taken").length;
   const missed = last30.filter((a) => a.status === "missed").length;
   const skipped = last30.filter((a) => a.status === "skipped").length;

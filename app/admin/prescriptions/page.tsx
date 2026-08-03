@@ -5,7 +5,8 @@ import { prisma } from "@/app/lib/db";
 import type { Prisma } from "@/app/generated/prisma/client";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { Pagination, parsePageParam } from "@/app/components/Pagination";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
 import { formatDate } from "@/app/lib/time";
 import { FileText, Plus, Search, X, Activity, DollarSign } from "lucide-react";
 
@@ -45,24 +46,19 @@ export default async function AdminPrescriptionsPage({
       : {}),
   };
 
-  const [total, prescriptions, statusCounts] = await Promise.all([
-    prisma.prescription.count({ where }),
-    prisma.prescription.findMany({
-      where,
-      include: {
-        customer: { select: { id: true, fullName: true } },
-        _count: { select: { refillRequests: true, adherence: true } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: PAGE_SIZE,
-    }),
-    prisma.prescription.groupBy({ by: ["status"], _count: true }),
-  ]);
+  // Adherence is a newer relation — fall back gracefully if the table is missing.
+  const includeBase = {
+    customer: { select: { id: true, fullName: true } },
+    _count: { select: { refillRequests: true } },
+  } as const;
 
-  const page = parsePageParam(sp.page, total, PAGE_SIZE);
-  const paged = page === 1
-    ? prescriptions
-    : await prisma.prescription.findMany({
+  let total = 0;
+  let prescriptions: Awaited<ReturnType<typeof loadPrescriptions>> = [];
+  let counts: Record<string, number> = {};
+
+  async function loadPrescriptions(skip = 0) {
+    try {
+      return await prisma.prescription.findMany({
         where,
         include: {
           customer: { select: { id: true, fullName: true } },
@@ -70,11 +66,42 @@ export default async function AdminPrescriptionsPage({
         },
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
-        skip: (page - 1) * PAGE_SIZE,
+        skip,
       });
+    } catch {
+      // Older DBs without prescription_adherence still list prescriptions.
+      const rows = await prisma.prescription.findMany({
+        where,
+        include: includeBase,
+        orderBy: { createdAt: "desc" },
+        take: PAGE_SIZE,
+        skip,
+      });
+      return rows.map((r) => ({
+        ...r,
+        _count: { refillRequests: r._count.refillRequests, adherence: 0 },
+      }));
+    }
+  }
 
-  const counts: Record<string, number> = {};
-  for (const s of statusCounts) counts[s.status] = s._count;
+  try {
+    const [count, rows, statusCounts] = await Promise.all([
+      prisma.prescription.count({ where }),
+      loadPrescriptions(0),
+      prisma.prescription.groupBy({ by: ["status"], _count: true }),
+    ]);
+    total = count;
+    prescriptions = rows;
+    for (const s of statusCounts) counts[s.status] = s._count;
+  } catch (err) {
+    console.error("[admin/prescriptions] Failed to load:", err);
+  }
+
+  const page = parsePageParam(sp.page, total, PAGE_SIZE);
+  const paged =
+    page === 1
+      ? prescriptions
+      : await loadPrescriptions((page - 1) * PAGE_SIZE).catch(() => []);
 
   return (
     <AdminShell

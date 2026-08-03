@@ -5,7 +5,8 @@ import { prisma } from "@/app/lib/db";
 import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { PortalNotificationsPanel, type NotifRow } from "@/app/components/portal/PortalNotificationsPanel";
-import { Pagination, parsePageParam } from "@/app/components/Pagination";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
 import { formatDateTime } from "@/app/lib/time";
 import {
   MessageSquare,

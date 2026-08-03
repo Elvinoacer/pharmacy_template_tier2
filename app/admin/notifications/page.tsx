@@ -7,7 +7,8 @@ import { AdminShell } from "@/app/components/admin/AdminShell";
 import { PushSettingsPanel } from "@/app/components/admin/PushSettingsPanel";
 import { PushEnablePanel } from "@/app/components/PushNotificationCenter";
 import { AdminNotificationsPanel, type NotifRow } from "@/app/components/admin/AdminNotificationsPanel";
-import { Pagination, parsePageParam } from "@/app/components/Pagination";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
 
 export const metadata = { title: "Notifications" };
 
