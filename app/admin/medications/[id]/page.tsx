@@ -17,9 +17,13 @@ export default async function EditMedicationPage({
   if (!user) redirect("/login");
   const { id } = await params;
 
-  const med = await prisma.medication.findUnique({ where: { id } });
+  const med = await prisma.medication.findUnique({ where: { id } }).catch((err) => {
+    console.error("[admin/medications/[id]] lookup failed:", err);
+    return null;
+  });
   if (!med) notFound();
 
+  // Pass only plain strings/booleans into the client form (no Prisma Decimal).
   const defaults = {
     id: med.id,
     name: med.name,
@@ -32,14 +36,14 @@ export default async function EditMedicationPage({
     sideEffects: med.sideEffects || "",
     contraindications: med.contraindications || "",
     storage: med.storage || "",
-    price: String(med.price),
-    overTheCounter: med.overTheCounter,
-    publicListing: med.publicListing,
-    prescriptionRequired: med.prescriptionRequired,
-    stockQty: String(med.stockQty),
-    lowStockThreshold: String(med.lowStockThreshold),
+    price: String(Number(med.price ?? 0)),
+    overTheCounter: Boolean(med.overTheCounter),
+    publicListing: Boolean(med.publicListing),
+    prescriptionRequired: Boolean(med.prescriptionRequired),
+    stockQty: String(med.stockQty ?? 0),
+    lowStockThreshold: String(med.lowStockThreshold ?? 10),
     imageUrl: med.imageUrl || "",
-    active: med.active,
+    active: Boolean(med.active),
   };
 
   return (

@@ -7,7 +7,8 @@ import { AdminShell } from "@/app/components/admin/AdminShell";
 import { Pill } from "lucide-react";
 import { RefillFilter } from "@/app/components/admin/RefillFilter";
 import { RefillRow } from "@/app/components/admin/RefillRow";
-import { Pagination, parsePageParam } from "@/app/components/Pagination";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
 
 export const metadata = { title: "Refill management" };
 

@@ -4,7 +4,8 @@ import { prisma } from "@/app/lib/db";
 import { adminCreateOrderAction, adminWaiveOrderAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { Pagination, parsePageParam } from "@/app/components/Pagination";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
 import { formatDateTime, formatDate } from "@/app/lib/time";
 import { BarChart3, DollarSign, TrendingUp, ShoppingCart, AlertTriangle } from "lucide-react";
 import OrderForm from "@/app/components/admin/OrderForm";
@@ -14,6 +15,32 @@ import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
 export const metadata = { title: "Orders & Revenue" };
 
 const PAGE_SIZE = 25;
+
+type OrderRow = {
+  id: string;
+  status: string;
+  source: string;
+  total: number;
+  createdAt: Date;
+  customer: { id: string; fullName: string } | null;
+  items: { quantity: number; name: string }[];
+  payments: { providerRef: string | null }[];
+};
+
+type MedOption = {
+  id: string;
+  name: string;
+  price: number;
+  stockQty: number;
+  overTheCounter: boolean;
+};
+
+type CustomerOption = {
+  id: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+};
 
 export default async function AdminOrdersPage({
   searchParams,
@@ -35,36 +62,78 @@ export default async function AdminOrdersPage({
   else if (period === "quarter") since.setMonth(now.getMonth() - 3);
   else if (period === "year") since.setFullYear(now.getFullYear() - 1);
 
-  const [allPayments, allOrders, recentOrders, medications, customers] = await Promise.all([
-    prisma.payment.findMany({
-      where: { status: "completed", createdAt: { gte: since } },
-      select: { amount: true, createdAt: true },
-    }),
-    prisma.order.findMany({
-      where: { createdAt: { gte: since } },
-      select: { id: true, total: true, status: true, source: true, createdAt: true },
-    }),
-    prisma.order.findMany({
-      where: status ? { status } : undefined,
-      include: {
-        customer: { select: { id: true, fullName: true } },
-        items: true,
-        payments: { orderBy: { createdAt: "desc" }, take: 1 },
-      },
-      orderBy: { createdAt: "desc" },
-      take: PAGE_SIZE,
-    }),
-    prisma.medication.findMany({
-      where: { active: true },
-      select: { id: true, name: true, price: true, stockQty: true, overTheCounter: true },
-      orderBy: { name: "asc" },
-    }),
-    prisma.customerProfile.findMany({
-      select: { id: true, fullName: true, user: { select: { email: true } }, phone: true },
-      orderBy: { fullName: "asc" },
-      take: 100,
-    }),
-  ]);
+  let allPayments: { amount: unknown; createdAt: Date }[] = [];
+  let allOrders: { id: string; total: unknown; status: string; source: string; createdAt: Date }[] = [];
+  let recentOrders: OrderRow[] = [];
+  let medications: MedOption[] = [];
+  let customers: CustomerOption[] = [];
+  let total = 0;
+  let loadError: string | null = null;
+
+  try {
+    const [payments, orders, recent, meds, custs, orderCount] = await Promise.all([
+      prisma.payment.findMany({
+        where: { status: "completed", createdAt: { gte: since } },
+        select: { amount: true, createdAt: true },
+      }),
+      prisma.order.findMany({
+        where: { createdAt: { gte: since } },
+        select: { id: true, total: true, status: true, source: true, createdAt: true },
+      }),
+      prisma.order.findMany({
+        where: status ? { status } : undefined,
+        include: {
+          customer: { select: { id: true, fullName: true } },
+          items: true,
+          payments: { orderBy: { createdAt: "desc" }, take: 1 },
+        },
+        orderBy: { createdAt: "desc" },
+        take: PAGE_SIZE,
+      }),
+      prisma.medication.findMany({
+        where: { active: true },
+        select: { id: true, name: true, price: true, stockQty: true, overTheCounter: true },
+        orderBy: { name: "asc" },
+      }),
+      prisma.customerProfile.findMany({
+        select: { id: true, fullName: true, user: { select: { email: true } }, phone: true },
+        orderBy: { fullName: "asc" },
+        take: 100,
+      }),
+      prisma.order.count({ where: status ? { status } : undefined }),
+    ]);
+
+    allPayments = payments;
+    allOrders = orders;
+    total = orderCount;
+    recentOrders = recent.map((o) => ({
+      id: o.id,
+      status: o.status,
+      source: o.source,
+      total: Number(o.total),
+      createdAt: o.createdAt,
+      customer: o.customer,
+      items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
+      payments: o.payments.map((p) => ({ providerRef: p.providerRef })),
+    }));
+    medications = meds.map((m) => ({
+      id: m.id,
+      name: m.name,
+      price: Number(m.price),
+      stockQty: m.stockQty,
+      overTheCounter: m.overTheCounter,
+    }));
+    customers = custs.map((c) => ({
+      id: c.id,
+      fullName: c.fullName,
+      email: c.user.email,
+      phone: c.phone ?? undefined,
+    }));
+  } catch (err) {
+    console.error("[admin/orders] Failed to load:", err);
+    loadError =
+      "Could not load orders. If this is a fresh deploy, run `npm run db:migrate` against production.";
+  }
 
   const totalRevenue = allPayments.reduce((s, p) => s + Number(p.amount), 0);
   const orderCount = allOrders.length;
@@ -81,11 +150,11 @@ export default async function AdminOrdersPage({
   const dayKeys = Object.keys(byDay).sort();
   const maxDay = Math.max(...Object.values(byDay), 1);
 
-  const total = await prisma.order.count({ where: status ? { status } : undefined });
   const page = parsePageParam(sp.page, total, PAGE_SIZE);
-  const paged = page === 1
-    ? recentOrders
-    : await prisma.order.findMany({
+  let paged = recentOrders;
+  if (!loadError && page > 1) {
+    try {
+      const extra = await prisma.order.findMany({
         where: status ? { status } : undefined,
         include: {
           customer: { select: { id: true, fullName: true } },
@@ -96,6 +165,21 @@ export default async function AdminOrdersPage({
         take: PAGE_SIZE,
         skip: (page - 1) * PAGE_SIZE,
       });
+      paged = extra.map((o) => ({
+        id: o.id,
+        status: o.status,
+        source: o.source,
+        total: Number(o.total),
+        createdAt: o.createdAt,
+        customer: o.customer,
+        items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
+        payments: o.payments.map((p) => ({ providerRef: p.providerRef })),
+      }));
+    } catch (err) {
+      console.error("[admin/orders] Failed to load page:", err);
+      paged = [];
+    }
+  }
 
   return (
     <AdminShell
@@ -108,6 +192,12 @@ export default async function AdminOrdersPage({
         </div>
       }
     >
+      {loadError && (
+        <div className="admin-alert-error mb-4">
+          <span>{loadError}</span>
+        </div>
+      )}
+
       {/* Revenue stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
@@ -170,19 +260,8 @@ export default async function AdminOrdersPage({
         >
           <OrderForm
             action={adminCreateOrderAction}
-            medications={medications.map((m) => ({
-              id: m.id,
-              name: m.name,
-              price: Number(m.price),
-              stockQty: m.stockQty,
-              overTheCounter: m.overTheCounter,
-            }))}
-            customers={customers.map((c) => ({
-              id: c.id,
-              fullName: c.fullName,
-              email: c.user.email,
-              phone: c.phone ?? undefined,
-            }))}
+            medications={medications}
+            customers={customers}
           />
         </AdminPanel>
 
@@ -231,7 +310,7 @@ export default async function AdminOrdersPage({
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold admin-text">KES {Number(o.total).toLocaleString()}</p>
+                      <p className="font-bold admin-text">KES {o.total.toLocaleString()}</p>
                       {o.status === "pending" && (
                         <form action={adminWaiveOrderAction} className="mt-1">
                           <input type="hidden" name="id" value={o.id} />
