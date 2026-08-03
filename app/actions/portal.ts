@@ -16,28 +16,32 @@ export async function portalRefillAction(
   const user = await getSessionUser();
   if (!user?.customerId) return { error: "Please sign in." };
 
-  const medicineName = String(formData.get("medicineName") || "").trim();
-  if (!medicineName) return { error: "Medicine name is required." };
-
-  const prescriptionId = String(formData.get("prescriptionId") || "") || undefined;
-
-  // If the customer has active prescriptions, require one to be selected.
-  // (Per the spec: "creating a new refill request without prescriptions should not occur".)
+  const prescriptionId = String(formData.get("prescriptionId") || "").trim();
   if (!prescriptionId) {
-    const activePrescriptions = await prisma.prescription.count({
-      where: { customerId: user.customerId, status: "active" },
-    });
-    if (activePrescriptions > 0) {
-      return {
-        error: "Please select a prescription from your file. If you need to add a new medication, contact the pharmacy.",
-      };
-    }
+    return {
+      error:
+        "Please select a prescription from your file. If you need a new medication added, contact the pharmacy.",
+    };
+  }
+
+  // Always re-derive medicine details from the prescription on file.
+  // Never trust client-supplied medicineName/rxReference.
+  const rx = await prisma.prescription.findFirst({
+    where: { id: prescriptionId, customerId: user.customerId, status: "active" },
+  });
+  if (!rx) {
+    return { error: "Selected prescription was not found on your account." };
+  }
+  if ((rx.refillsRemaining ?? 0) <= 0) {
+    return {
+      error: "This prescription has no refills remaining. Contact the pharmacy or your doctor for a renewal.",
+    };
   }
 
   await createRefillRequest({
     customerId: user.customerId,
-    medicineName,
-    rxReference: String(formData.get("rxReference") || "") || undefined,
+    medicineName: rx.medicineName,
+    rxReference: rx.rxReference || undefined,
     customerName: user.fullName || undefined,
     phone: String(formData.get("phone") || "") || undefined,
     email: user.email,
@@ -45,7 +49,7 @@ export async function portalRefillAction(
     preferredDate: String(formData.get("preferredDate") || "") || undefined,
     preferredTime: String(formData.get("preferredTime") || "") || undefined,
     notes: String(formData.get("notes") || "") || undefined,
-    prescriptionId,
+    prescriptionId: rx.id,
     source: "portal",
   });
 
@@ -501,4 +505,174 @@ export async function portalReplyAction(
 
   revalidatePath("/portal/messages");
   return { success: "Reply sent." };
+}
+
+// ── Portal OTC order ──────────────────────────────────────────
+
+export async function portalCreateOrderAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await getSessionUser();
+  if (!user?.customerId) return { error: "Please sign in." };
+
+  const medicationId = String(formData.get("medicationId") || "").trim();
+  const quantity = Math.max(1, Number(formData.get("quantity") || 1));
+  const couponCode = String(formData.get("couponCode") || "").trim().toUpperCase() || null;
+
+  if (!medicationId) return { error: "Please select a product." };
+
+  const med = await prisma.medication.findFirst({
+    where: { id: medicationId, active: true, overTheCounter: true },
+  });
+  if (!med) return { error: "Product not available for online order." };
+  if (med.stockQty < quantity) {
+    return { error: `Only ${med.stockQty} unit(s) in stock.` };
+  }
+
+  let discount = 0;
+  let couponId: string | null = null;
+  if (couponCode) {
+    const coupon = await prisma.coupon.findUnique({ where: { code: couponCode } });
+    if (!coupon || !coupon.active) return { error: "Invalid or inactive coupon." };
+    const now = new Date();
+    if (coupon.validFrom && coupon.validFrom > now) return { error: "Coupon not yet valid." };
+    if (coupon.validUntil && coupon.validUntil < now) return { error: "Coupon expired." };
+    if (coupon.maxRedemptions && coupon.redemptions >= coupon.maxRedemptions) {
+      return { error: "Coupon fully redeemed." };
+    }
+    const perCustomerLimit = coupon.maxRedemptionsPerCustomer ?? 1;
+    const prior = await prisma.orderItem.count({
+      where: { couponId: coupon.id, order: { customerId: user.customerId } },
+    });
+    if (prior >= perCustomerLimit) return { error: "You have already used this coupon." };
+
+    couponId = coupon.id;
+    if (coupon.discountType === "percent") {
+      discount = Number(med.price) * quantity * (Number(coupon.discountValue) / 100);
+    } else if (coupon.discountType === "fixed") {
+      discount = Number(coupon.discountValue) * quantity;
+    }
+  }
+
+  const unitPrice = Number(med.price);
+  const total = Math.max(0, unitPrice * quantity - discount);
+
+  const order = await prisma.$transaction(async (tx) => {
+    const o = await tx.order.create({
+      data: {
+        customerId: user.customerId,
+        source: "portal",
+        status: "pending",
+        total,
+        notes: String(formData.get("phone") || "")
+          ? `M-Pesa phone: ${String(formData.get("phone"))}`
+          : null,
+        items: {
+          create: {
+            medicationId,
+            name: med.name,
+            quantity,
+            unitPrice,
+            discountApplied: discount,
+            couponId,
+          },
+        },
+      },
+    });
+    await tx.medication.update({
+      where: { id: medicationId },
+      data: { stockQty: { decrement: quantity } },
+    });
+    if (couponId) {
+      await tx.coupon.update({
+        where: { id: couponId },
+        data: { redemptions: { increment: 1 } },
+      });
+    }
+    return o;
+  });
+
+  await addTimelineEvent(
+    user.customerId,
+    user.id,
+    "order_placed",
+    "OTC order placed",
+    `${med.name} × ${quantity} — KES ${total}`,
+    { orderId: order.id },
+    user.id,
+  );
+
+  const { recordAdminNotification } = await import("@/app/lib/services/admin-notifications");
+  await recordAdminNotification({
+    type: "enquiry_new",
+    title: "New portal OTC order",
+    body: `${user.fullName || user.email} ordered ${quantity}× ${med.name} (KES ${total})`,
+    severity: "info",
+    relatedType: "order",
+    relatedId: order.id,
+  });
+
+  revalidatePath("/portal");
+  revalidatePath("/portal/orders");
+  revalidatePath("/medicines");
+  redirect(`/portal/orders?placed=${order.id}`);
+}
+
+/** Create a payable order from an approved/ready refill so coupons & Daraja apply. */
+export async function portalPayRefillAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await getSessionUser();
+  if (!user?.customerId) return { error: "Please sign in." };
+
+  const refillId = String(formData.get("refillId") || "").trim();
+  if (!refillId) return { error: "Refill required." };
+
+  const refill = await prisma.refillRequest.findFirst({
+    where: { id: refillId, customerId: user.customerId },
+    include: { prescription: true },
+  });
+  if (!refill) return { error: "Refill not found." };
+  if (!["approved", "preparing", "ready_for_pickup"].includes(refill.status)) {
+    return { error: "This refill is not ready for payment yet." };
+  }
+
+  // Idempotent: reuse existing order for this refill.
+  const existing = await prisma.order.findFirst({
+    where: { refillId, customerId: user.customerId },
+  });
+  if (existing) {
+    redirect(`/portal/orders?orderId=${existing.id}`);
+  }
+
+  const unitPrice = Number(refill.prescription?.unitPrice ?? 0);
+  const qty = refill.prescription?.quantity ?? 1;
+  const total = Math.max(0, unitPrice * qty);
+  if (total <= 0) {
+    return { error: "No price set for this prescription — pay at the counter or contact the pharmacy." };
+  }
+
+  const order = await prisma.order.create({
+    data: {
+      customerId: user.customerId,
+      source: "refill",
+      refillId,
+      status: "pending",
+      total,
+      items: {
+        create: {
+          medicationId: refill.prescription?.medicationId || null,
+          name: refill.medicineName,
+          quantity: qty,
+          unitPrice,
+        },
+      },
+    },
+  });
+
+  revalidatePath("/portal/orders");
+  revalidatePath("/portal/refills");
+  redirect(`/portal/orders?orderId=${order.id}`);
 }

@@ -18,7 +18,16 @@ import { verifySessionClaim, claimIsStaff, isSafeInternalPath } from '@/app/lib/
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (!pathname.startsWith('/portal') && !pathname.startsWith('/admin')) {
+  if (
+    !pathname.startsWith('/portal') &&
+    !pathname.startsWith('/admin') &&
+    !pathname.startsWith('/caregiver')
+  ) {
+    return NextResponse.next();
+  }
+
+  // Public accept page must stay reachable without a session.
+  if (pathname.startsWith('/caregiver/accept')) {
     return NextResponse.next();
   }
 
@@ -65,6 +74,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/portal', request.url));
   }
 
+  // Caregivers use /caregiver (and limited portal refill flows). Staff without a
+  // customer profile go to /admin. Pure caregivers hitting /portal land on /caregiver.
+  if (pathname.startsWith('/portal') && role === 'caregiver') {
+    // Allow refill request flow for caregivers acting on behalf of patients.
+    const allowedForCaregiver =
+      pathname.startsWith('/portal/refills') ||
+      pathname.startsWith('/portal/onboarding');
+    if (!allowedForCaregiver) {
+      return NextResponse.redirect(new URL('/caregiver', request.url));
+    }
+  }
+
   // Customer portal: staff without a customer profile go to /admin.
   if (pathname.startsWith('/portal') && staff && !customerId) {
     return NextResponse.redirect(new URL('/admin', request.url));
@@ -97,5 +118,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/portal/:path*', '/admin/:path*'],
+  matcher: ['/portal/:path*', '/admin/:path*', '/caregiver', '/caregiver/:path*'],
 }

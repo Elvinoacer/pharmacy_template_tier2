@@ -1,17 +1,25 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import type { ActionState } from "@/app/actions/admin";
+import { toast } from "@/app/components/Toaster";
 import { MessageSquare, Globe, AlertCircle, Check, Send } from "lucide-react";
 
 export default function FeedbackRespondForm({
   action,
   id,
+  isPublic = false,
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   id: string;
+  isPublic?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
+
+  useEffect(() => {
+    if (state?.success) toast.success(state.success);
+    if (state?.error) toast.error(state.error);
+  }, [state]);
 
   return (
     <form action={formAction} className="space-y-3">
@@ -44,6 +52,7 @@ export default function FeedbackRespondForm({
           <input
             type="checkbox"
             name="isPublic"
+            defaultChecked={isPublic}
             className="h-3.5 w-3.5 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text focus:ring-[var(--admin-accent)]"
           />
           <Globe className="h-3 w-3" /> Display publicly on website

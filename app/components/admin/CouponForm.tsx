@@ -4,6 +4,7 @@ import { useActionState, useState, useTransition } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Tag, Sparkles, Hash, Calendar, AlertCircle, Check, Save, RefreshCw, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import { formatDateTime } from "@/app/lib/time";
 
 type ExistingCoupon = {
   id: string;
@@ -81,7 +82,12 @@ export default function CouponForm({
           body: JSON.stringify({ id: c.id, active: !c.active }),
         });
         if (!r.ok) throw new Error();
-        toast.success(`Coupon ${c.code} ${!c.active ? "activated" : "deactivated"}.`);
+        // Archive = deactivate (active=false). Reactivate restores it.
+        toast.success(
+          !c.active
+            ? `Coupon ${c.code} restored.`
+            : `Coupon ${c.code} archived (inactive).`,
+        );
         window.location.reload();
       } catch {
         toast.error("Could not update coupon.");
@@ -211,14 +217,14 @@ export default function CouponForm({
                           ? "bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25"
                           : "bg-slate-500/15 text-slate-500 hover:bg-slate-500/25"
                       }`}
-                      title={c.active ? "Click to deactivate" : "Click to activate"}
+                      title={c.active ? "Archive coupon" : "Restore archived coupon"}
                     >
-                      {c.active ? "active" : "off"}
+                      {c.active ? "active" : "archived"}
                     </button>
                   </div>
                   <p className="mt-0.5 truncate text-xs admin-muted">{c.description || "No description"}</p>
                   <p className="mt-0.5 text-[10px] admin-soft">
-                    Updated {new Date(c.updatedAt).toLocaleString()} · {c.redemptions}
+                    Updated {formatDateTime(c.updatedAt)} · {c.redemptions}
                     {c.maxRedemptions ? `/${c.maxRedemptions}` : ""} redeemed
                   </p>
                 </div>

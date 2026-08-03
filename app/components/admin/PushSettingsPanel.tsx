@@ -14,6 +14,7 @@ import {
 import { AdminPanel } from "@/app/components/admin/AdminUI";
 import { PushStatusPill } from "@/app/components/PushNotificationCenter";
 import { usePushNotifications } from "@/app/lib/firebase/usePush";
+import { formatDateTime } from "@/app/lib/time";
 
 type Device = {
   id: string;
@@ -147,7 +148,7 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
                     </p>
                     <p className="truncate font-mono text-[10px] admin-soft">{d.token.slice(0, 24)}…</p>
                     <p className="mt-0.5 text-[10px] admin-soft">
-                      Last seen {new Date(d.lastSeenAt).toLocaleString()}
+                      Last seen {formatDateTime(d.lastSeenAt)}
                     </p>
                   </div>
                   <button

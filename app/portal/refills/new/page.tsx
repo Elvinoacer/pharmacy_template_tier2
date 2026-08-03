@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
+import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { prisma } from "@/app/lib/db";
 import { portalRefillAction } from "@/app/actions/portal";
 import { PortalShell } from "@/app/components/portal/PortalShell";
@@ -16,6 +17,8 @@ export default async function NewRefillPage({
 }) {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  // Spec-named QA page — must enforce onboarding like every other portal route.
+  await requireOnboarded();
   const sp = await searchParams;
 
   const profile = await prisma.customerProfile.findUnique({ where: { id: user.customerId } });
@@ -99,7 +102,11 @@ export default async function NewRefillPage({
         <div className="lg:col-span-2">
           <Panel
             title="Refill details"
-            description={prescriptions.length > 0 ? "Pick a prescription on file, or enter details manually" : "Enter the medication details below"}
+            description={
+              prescriptions.length > 0
+                ? "Select a prescription on file — medicine details are locked to your record"
+                : "A prescription on file is required before you can request a refill"
+            }
           >
             <PortalRefillForm
               action={portalRefillAction}
@@ -107,6 +114,7 @@ export default async function NewRefillPage({
                 id: p.id,
                 medicineName: p.medicineName,
                 rxReference: p.rxReference,
+                refillsRemaining: p.refillsRemaining,
               }))}
               defaults={{
                 prescriptionId: sp.prescriptionId || "",

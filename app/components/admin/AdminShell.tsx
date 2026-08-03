@@ -11,6 +11,7 @@ import {
   Megaphone,
   Layers,
   Bell,
+  Inbox,
   Brain,
   Sparkles,
   Star,
@@ -43,7 +44,8 @@ export const ADMIN_LINKS = [
   { href: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
   { href: "/admin/segments", label: "Segments", icon: Layers },
   { href: "/admin/reminders", label: "Reminders", icon: CalendarClock },
-  { href: "/admin/notifications", label: "Notifications", icon: Bell },
+  { href: "/admin/inbox", label: "Inbox", icon: Inbox },
+  { href: "/admin/notifications", label: "Outbound Log", icon: Bell },
   { href: "/admin/ai", label: "AI Escalations", icon: Brain },
   { href: "/admin/loyalty", label: "Loyalty", icon: Sparkles },
   { href: "/admin/feedback", label: "Feedback", icon: Star },
@@ -341,7 +343,7 @@ function ThemeToggle({
 function AdminBellButton({ unread }: { unread: number }) {
   return (
     <Link
-      href="/admin/notifications"
+      href="/admin/inbox"
       className="relative inline-flex h-9 w-9 items-center justify-center rounded-full admin-muted transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
       aria-label={`Notifications${unread ? ` · ${unread} unread` : ""}`}
     >

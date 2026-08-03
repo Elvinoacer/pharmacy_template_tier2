@@ -9,6 +9,10 @@ export type DeliveryRecipient = {
     emailEnabled?: boolean;
     smsEnabled?: boolean;
     whatsappEnabled?: boolean;
+    /** When false, marketing/campaign sends are blocked. */
+    marketingConsent?: boolean;
+    /** When false, reminder sends are blocked. */
+    reminderConsent?: boolean;
   } | null;
 };
 
@@ -17,6 +21,8 @@ export type DeliveryPayload = {
   recipient: DeliveryRecipient;
   subject?: string | null;
   body: string;
+  /** "marketing" enforces marketingConsent; "reminder" enforces reminderConsent. */
+  purpose?: "transactional" | "marketing" | "reminder";
 };
 
 export type DeliveryResult = {
@@ -302,6 +308,16 @@ async function sendWhatsapp(payload: DeliveryPayload): Promise<DeliveryResult> {
 
 export async function sendDelivery(payload: DeliveryPayload): Promise<DeliveryResult> {
   try {
+    // Consent gates — marketing campaigns and reminders respect opt-out toggles.
+    // Transactional messages (order confirmations, staff replies, etc.) always go through
+    // channel-level opt-outs only.
+    if (payload.purpose === "marketing" && payload.recipient.preferences?.marketingConsent === false) {
+      return { status: "failed", error: "Customer has opted out of marketing" };
+    }
+    if (payload.purpose === "reminder" && payload.recipient.preferences?.reminderConsent === false) {
+      return { status: "failed", error: "Customer has opted out of reminders" };
+    }
+
     if (payload.channel === "portal" || payload.channel === "in_app" || payload.channel === "push") {
       return { status: "delivered", provider: "portal" };
     }

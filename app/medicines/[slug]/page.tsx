@@ -121,16 +121,34 @@ export default async function CategoryDetailPage({ params }: Props) {
   const med = await prisma.medication.findUnique({ where: { slug } }).catch(() => null);
   if (!med) notFound();
 
-  // Pull related medications in the same category.
-  const related = await prisma.medication.findMany({
-    where: {
-      category: med.category,
-      id: { not: med.id },
-      active: true,
-      OR: [{ publicListing: true }, { overTheCounter: true }],
-    },
-    take: 4,
-  }).catch(() => []);
+  // Prefer explicitly linked alternatives; fall back to same-category meds.
+  const altIds = (med.alternativeIds || "")
+    .split(/[,\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const alternatives =
+    altIds.length > 0
+      ? await prisma.medication
+          .findMany({
+            where: { id: { in: altIds }, active: true },
+            take: 6,
+          })
+          .catch(() => [])
+      : [];
+  const related =
+    alternatives.length > 0
+      ? alternatives
+      : await prisma.medication
+          .findMany({
+            where: {
+              category: med.category,
+              id: { not: med.id },
+              active: true,
+              OR: [{ publicListing: true }, { overTheCounter: true }],
+            },
+            take: 4,
+          })
+          .catch(() => []);
 
   return (
     <div>
@@ -235,7 +253,10 @@ export default async function CategoryDetailPage({ params }: Props) {
                     Request refill
                   </Link>
                 ) : (
-                  <Link href="/portal/orders/new" className="btn-primary !py-2 text-xs">
+                  <Link
+                    href={`/portal/orders/new?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}
+                    className="btn-primary !py-2 text-xs"
+                  >
                     Buy now
                   </Link>
                 )}
@@ -256,7 +277,7 @@ export default async function CategoryDetailPage({ params }: Props) {
         <section className="px-4 pb-16 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <h2 className="mb-4 text-xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
-              Related in {med.category.replace(/-/g, " ")}
+              {altIds.length > 0 ? "Equivalent / alternative medications" : `Related in ${med.category.replace(/-/g, " ")}`}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((r) => (

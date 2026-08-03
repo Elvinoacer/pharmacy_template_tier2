@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -5,9 +6,15 @@ import { adminCreateCampaignAction, adminLaunchCampaignAction } from "@/app/acti
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import CampaignForm from "@/app/components/admin/CampaignForm";
-import { Megaphone, Rocket, Mail, MessageSquare, MessageCircle, Zap, Calendar, Users } from "lucide-react";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
+import { Megaphone, Rocket, Mail, MessageSquare, MessageCircle, Zap, Calendar, Users, Search, X } from "lucide-react";
+import { formatDateTime } from "@/app/lib/time";
+import type { Prisma } from "@/app/generated/prisma/client";
 
 export const metadata = { title: "Campaigns" };
+
+const PAGE_SIZE = 25;
 
 const CHANNEL_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   email: Mail,
@@ -24,24 +31,49 @@ const STATUS_COLOR: Record<string, string> = {
   cancelled: "bg-rose-500/15 text-rose-600",
 };
 
-export default async function AdminCampaignsPage() {
+export default async function AdminCampaignsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; page?: string }>;
+}) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const sp = await searchParams;
 
-  const [campaigns, segments] = await Promise.all([
-    prisma.campaign.findMany({
-      include: { segment: true },
-      orderBy: { createdAt: "desc" },
-    }),
+  const where: Prisma.CampaignWhereInput = sp.q
+    ? {
+        OR: [
+          { name: { contains: sp.q, mode: "insensitive" } },
+          { body: { contains: sp.q, mode: "insensitive" } },
+          { description: { contains: sp.q, mode: "insensitive" } },
+          { subject: { contains: sp.q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+
+  const [total, statusGroups, segments] = await Promise.all([
+    prisma.campaign.count({ where }),
+    prisma.campaign.groupBy({ by: ["status"], _count: true }),
     prisma.segment.findMany({ orderBy: { name: "asc" } }),
   ]);
 
+  const page = parsePageParam(sp.page, total, PAGE_SIZE);
+  const campaigns = await prisma.campaign.findMany({
+    where,
+    include: { segment: true },
+    orderBy: { createdAt: "desc" },
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
+  });
+
   const stats = {
-    total: campaigns.length,
-    drafts: campaigns.filter((c) => c.status === "draft").length,
-    scheduled: campaigns.filter((c) => c.status === "scheduled").length,
-    sent: campaigns.filter((c) => c.status === "sent").length,
+    total: statusGroups.reduce((s, g) => s + g._count, 0),
+    drafts: statusGroups.find((g) => g.status === "draft")?._count ?? 0,
+    scheduled: statusGroups.find((g) => g.status === "scheduled")?._count ?? 0,
+    sent: statusGroups.find((g) => g.status === "sent")?._count ?? 0,
   };
+
+  const queryParams: Record<string, string | undefined> = { q: sp.q };
 
   return (
     <AdminShell
@@ -74,20 +106,40 @@ export default async function AdminCampaignsPage() {
 
         <AdminPanel
           title="All campaigns"
-          description={`${campaigns.length} created`}
+          description={`${total} matching`}
         >
+          <form className="mb-4 flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[180px]">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+              <input
+                name="q"
+                defaultValue={sp.q || ""}
+                placeholder="Search campaigns…"
+                className="w-full rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2 pl-9 pr-3 text-xs admin-text placeholder:admin-soft focus:border-[var(--admin-accent)] focus:outline-none"
+              />
+            </div>
+            <button type="submit" className="btn-admin-sm">
+              <Search className="h-3 w-3" /> Search
+            </button>
+            {sp.q && (
+              <Link href="/admin/campaigns" className="btn-admin-sm !bg-[var(--admin-inset-2)]">
+                <X className="h-3 w-3" /> Clear
+              </Link>
+            )}
+          </form>
+
           {campaigns.length === 0 ? (
             <AdminEmptyState
               icon={Megaphone}
               title="No campaigns yet"
-              description="Create your first campaign to start engaging customers."
+              description={sp.q ? "Try a different search term." : "Create your first campaign to start engaging customers."}
             />
           ) : (
             <ul className="space-y-3">
               {campaigns.map((c) => {
                 const ChannelIcon = CHANNEL_ICON[c.channel] || Mail;
                 const canLaunch = (c.status === "draft" || c.status === "scheduled") && user.role === "manager";
-                const stats = c.stats as { sent?: number; delivered?: number; failed?: number; opened?: number; clicked?: number } | null;
+                const cStats = c.stats as { sent?: number; delivered?: number; failed?: number; opened?: number; clicked?: number } | null;
                 return (
                   <li
                     key={c.id}
@@ -116,7 +168,7 @@ export default async function AdminCampaignsPage() {
                               <span>·</span>
                               <span className="inline-flex items-center gap-1">
                                 <Calendar className="h-2.5 w-2.5" />
-                                {new Date(c.scheduledFor).toLocaleString()}
+                                {formatDateTime(c.scheduledFor)}
                               </span>
                             </>
                           )}
@@ -125,19 +177,19 @@ export default async function AdminCampaignsPage() {
                           <p className="mt-1 text-xs admin-muted">{c.description}</p>
                         )}
                         <p className="mt-1.5 line-clamp-2 text-xs admin-muted">{c.body}</p>
-                        {stats && (
+                        {cStats && (
                           <div className="mt-2 flex flex-wrap gap-2 text-[10px]">
-                            {typeof stats.sent === "number" && (
-                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Sent: {stats.sent}</span>
+                            {typeof cStats.sent === "number" && (
+                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Sent: {cStats.sent}</span>
                             )}
-                            {typeof stats.delivered === "number" && (
-                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Delivered: {stats.delivered}</span>
+                            {typeof cStats.delivered === "number" && (
+                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Delivered: {cStats.delivered}</span>
                             )}
-                            {typeof stats.opened === "number" && (
-                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Opened: {stats.opened}</span>
+                            {typeof cStats.opened === "number" && (
+                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Opened: {cStats.opened}</span>
                             )}
-                            {typeof stats.clicked === "number" && (
-                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Clicked: {stats.clicked}</span>
+                            {typeof cStats.clicked === "number" && (
+                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Clicked: {cStats.clicked}</span>
                             )}
                           </div>
                         )}
@@ -145,10 +197,7 @@ export default async function AdminCampaignsPage() {
                       {canLaunch && (
                         <form action={adminLaunchCampaignAction}>
                           <input type="hidden" name="id" value={c.id} />
-                          <button
-                            type="submit"
-                            className="btn-admin-sm"
-                          >
+                          <button type="submit" className="btn-admin-sm">
                             <Rocket className="h-3 w-3" /> Launch
                           </button>
                         </form>
@@ -159,6 +208,14 @@ export default async function AdminCampaignsPage() {
               })}
             </ul>
           )}
+          <Pagination
+            page={page}
+            total={total}
+            pageSize={PAGE_SIZE}
+            basePath="/admin/campaigns"
+            queryParams={queryParams}
+            variant="admin"
+          />
         </AdminPanel>
       </div>
     </AdminShell>

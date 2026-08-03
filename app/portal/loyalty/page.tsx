@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { CopyButton } from "@/app/components/portal/CopyButton";
 import { RedeemCouponForm } from "@/app/components/portal/RedeemCouponForm";
+import { formatDate } from "@/app/lib/time";
 
 export const metadata = { title: "Loyalty" };
 
@@ -212,7 +213,7 @@ export default async function PortalLoyaltyPage() {
                           {t.description || t.type}
                         </p>
                         <p className="text-xs capitalize text-[#5a6b62]">
-                          {t.type.replace("_", " ")} · {new Date(t.createdAt).toLocaleDateString()}
+                          {t.type.replace("_", " ")} · {formatDate(t.createdAt)}
                         </p>
                       </div>
                     </div>

@@ -1,9 +1,12 @@
+import { formatDateTime } from "@/app/lib/time";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
 import {
   MessageSquare,
   Mail,
@@ -13,9 +16,14 @@ import {
   Clock,
   ArrowRight,
   User,
+  Search,
+  X,
 } from "lucide-react";
+import type { Prisma } from "@/app/generated/prisma/client";
 
 export const metadata = { title: "Communication center" };
+
+const PAGE_SIZE = 25;
 
 const CHANNEL_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   email: Mail,
@@ -32,24 +40,46 @@ const STATUS_COLOR: Record<string, string> = {
   closed: "bg-slate-500/15 text-slate-600",
 };
 
-export default async function AdminMessagesPage() {
+export default async function AdminMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; page?: string }>;
+}) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const sp = await searchParams;
 
+  const where: Prisma.ConversationWhereInput = sp.q
+    ? {
+        OR: [
+          { subject: { contains: sp.q, mode: "insensitive" } },
+          { customer: { fullName: { contains: sp.q, mode: "insensitive" } } },
+          { customer: { user: { email: { contains: sp.q, mode: "insensitive" } } } },
+          { messages: { some: { body: { contains: sp.q, mode: "insensitive" } } } },
+        ],
+      }
+    : {};
+
+  const [total, channelGroups] = await Promise.all([
+    prisma.conversation.count({ where }),
+    prisma.conversation.groupBy({ by: ["channel"], _count: true }),
+  ]);
+
+  const page = parsePageParam(sp.page, total, PAGE_SIZE);
   const conversations = await prisma.conversation.findMany({
+    where,
     include: {
       customer: true,
       messages: { orderBy: { createdAt: "desc" }, take: 1 },
       assignedTo: { select: { email: true } },
     },
     orderBy: { lastMessageAt: "desc" },
-    take: 50,
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
   });
 
-  const byChannel = conversations.reduce<Record<string, number>>((acc, c) => {
-    acc[c.channel] = (acc[c.channel] || 0) + 1;
-    return acc;
-  }, {});
+  const byChannel = Object.fromEntries(channelGroups.map((g) => [g.channel, g._count]));
+  const queryParams: Record<string, string | undefined> = { q: sp.q };
 
   return (
     <AdminShell
@@ -61,7 +91,7 @@ export default async function AdminMessagesPage() {
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total threads</p>
-          <p className="mt-1 text-2xl font-bold admin-text">{conversations.length}</p>
+          <p className="mt-1 text-2xl font-bold admin-text">{total}</p>
         </div>
         {["email", "sms", "whatsapp", "portal"].map((ch) => {
           const Icon = CHANNEL_ICON[ch] || MessageSquare;
@@ -89,11 +119,31 @@ export default async function AdminMessagesPage() {
           </Link>
         }
       >
+        <form className="mb-4 flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[180px] max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+            <input
+              name="q"
+              defaultValue={sp.q || ""}
+              placeholder="Search by customer, subject, or message…"
+              className="w-full rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2 pl-9 pr-3 text-xs admin-text placeholder:admin-soft focus:border-[var(--admin-accent)] focus:outline-none"
+            />
+          </div>
+          <button type="submit" className="btn-admin-sm">
+            <Search className="h-3 w-3" /> Search
+          </button>
+          {sp.q && (
+            <Link href="/admin/messages" className="btn-admin-sm !bg-[var(--admin-inset-2)]">
+              <X className="h-3 w-3" /> Clear
+            </Link>
+          )}
+        </form>
+
         {conversations.length === 0 ? (
           <AdminEmptyState
             icon={Inbox}
             title="No conversations yet"
-            description="When staff message a customer from their CRM record, the thread appears here."
+            description={sp.q ? "Try a different search term." : "When staff message a customer from their CRM record, the thread appears here."}
           />
         ) : (
           <div className="space-y-2">
@@ -127,7 +177,7 @@ export default async function AdminMessagesPage() {
                     </p>
                     <p className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wide admin-soft">
                       <Clock className="h-2.5 w-2.5" />
-                      {c.lastMessageAt ? new Date(c.lastMessageAt).toLocaleString() : "—"}
+                      {c.lastMessageAt ? formatDateTime(c.lastMessageAt) : "—"}
                     </p>
                   </div>
                   <ArrowRight className="h-4 w-4 admin-soft transition group-hover:translate-x-0.5 group-hover:admin-accent-text" />
@@ -136,6 +186,14 @@ export default async function AdminMessagesPage() {
             })}
           </div>
         )}
+        <Pagination
+          page={page}
+          total={total}
+          pageSize={PAGE_SIZE}
+          basePath="/admin/messages"
+          queryParams={queryParams}
+          variant="admin"
+        />
       </AdminPanel>
     </AdminShell>
   );

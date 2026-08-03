@@ -103,18 +103,17 @@ export async function GET(req: Request) {
     }
 
     const q = parsed.q?.trim() ?? "";
-    if (q.length < 1) {
-      return NextResponse.json({ medications: [] });
-    }
-
-    const where = {
-      active: true,
-      OR: [
-        { name: { contains: q, mode: "insensitive" as const } },
-        { sku: { contains: q, mode: "insensitive" as const } },
-        { category: { contains: q, mode: "insensitive" as const } },
-      ],
-    };
+    // Empty query: return initial alphabetical page so the dropdown is useful on open.
+    const where = q.length < 1
+      ? { active: true }
+      : {
+          active: true,
+          OR: [
+            { name: { contains: q, mode: "insensitive" as const } },
+            { sku: { contains: q, mode: "insensitive" as const } },
+            { category: { contains: q, mode: "insensitive" as const } },
+          ],
+        };
 
     const rows = await prisma.medication.findMany({
       where,
@@ -122,12 +121,14 @@ export async function GET(req: Request) {
       take: parsed.limit,
     });
 
-    const sorted = rows.sort((a, b) => {
-      const aStarts = a.name.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
-      const bStarts = b.name.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
-      if (aStarts !== bStarts) return aStarts - bStarts;
-      return a.name.localeCompare(b.name);
-    });
+    const sorted = q.length < 1
+      ? rows
+      : rows.sort((a, b) => {
+          const aStarts = a.name.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
+          const bStarts = b.name.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
+          if (aStarts !== bStarts) return aStarts - bStarts;
+          return a.name.localeCompare(b.name);
+        });
 
     return NextResponse.json({
       medications: sorted.map((m) => ({
@@ -148,20 +149,22 @@ export async function GET(req: Request) {
   }
 
   const q = parsed.q?.trim() ?? "";
-  if (q.length < 1) {
-    return NextResponse.json({ customers: [] });
-  }
-
-  // Filter: only customers (not staff/admins/etc).
-  const where = {
-    role: "customer" as const,
-    status: "active" as const,
-    OR: [
-      { profile: { fullName: { contains: q, mode: "insensitive" as const } } },
-      { email: { contains: q, mode: "insensitive" as const } },
-      { profile: { phone: { contains: q, mode: "insensitive" as const } } },
-    ],
-  };
+  // Empty query: initial alphabetical page so the picker is useful on open.
+  const where = q.length < 1
+    ? {
+        role: "customer" as const,
+        status: "active" as const,
+        profile: { isNot: null },
+      }
+    : {
+        role: "customer" as const,
+        status: "active" as const,
+        OR: [
+          { profile: { fullName: { contains: q, mode: "insensitive" as const } } },
+          { email: { contains: q, mode: "insensitive" as const } },
+          { profile: { phone: { contains: q, mode: "insensitive" as const } } },
+        ],
+      };
 
   const rows = await prisma.user.findMany({
     where,

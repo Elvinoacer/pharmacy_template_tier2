@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import {
   getSessionUser,
   requireStaff,
@@ -19,7 +20,9 @@ import {
   processDueReminders,
 } from "@/app/lib/services/crm";
 import { parseLocalDatetimeInput } from "@/app/lib/time";
+import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
 import type { RefillStatus } from "@/app/generated/prisma/client";
+import { createHash, randomBytes } from "crypto";
 
 export type ActionState = { error?: string; success?: string };
 
@@ -38,14 +41,23 @@ export async function adminUpdateRefillAction(formData: FormData) {
   revalidatePath("/admin/customers");
 }
 
-export async function adminEnquiryAction(formData: FormData) {
-  const user = await staff();
-  const id = String(formData.get("id") || "");
-  const status = String(formData.get("status") || "") as "new" | "in_progress" | "resolved" | "closed";
-  const staffNotes = String(formData.get("staffNotes") || "") || undefined;
-  await updateEnquiryStatus(id, status, staffNotes, user.id);
-  await writeAuditLog(user.id, "enquiry_status_update", "enquiry", id, { status });
-  revalidatePath("/admin/enquiries");
+export async function adminEnquiryAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const id = String(formData.get("id") || "");
+    if (!id) return { error: "Enquiry id required." };
+    const status = String(formData.get("status") || "") as "new" | "in_progress" | "resolved" | "closed";
+    const staffNotes = String(formData.get("staffNotes") || "") || undefined;
+    await updateEnquiryStatus(id, status, staffNotes, user.id);
+    await writeAuditLog(user.id, "enquiry_status_update", "enquiry", id, { status });
+    revalidatePath("/admin/enquiries");
+    return { success: "Enquiry updated." };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to update enquiry." };
+  }
 }
 
 export async function adminFeedbackRespondAction(
@@ -281,12 +293,28 @@ export async function adminCreateReminderAction(
   return { success: "Reminder scheduled." };
 }
 
-export async function adminProcessRemindersAction() {
-  const user = await staff();
-  const result = await processDueReminders();
-  await writeAuditLog(user.id, "reminders_processed", "reminder", undefined, result);
-  revalidatePath("/admin/reminders");
-  revalidatePath("/admin/notifications");
+export async function adminProcessRemindersAction(
+  _prev?: ActionState,
+  _formData?: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const result = await processDueReminders();
+    await writeAuditLog(user.id, "reminders_processed", "reminder", undefined, result);
+    revalidatePath("/admin/reminders");
+    revalidatePath("/admin/notifications");
+    const processed = result.processedCount ?? 0;
+    const failed = result.failedCount ?? 0;
+    if (failed > 0) {
+      return {
+        success: `Processed ${processed} reminder(s); ${failed} failed.`,
+        error: result.errors?.slice(0, 3).join("; "),
+      };
+    }
+    return { success: `Processed ${processed} due reminder(s).` };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to process reminders." };
+  }
 }
 
 export async function adminCreateTemplateAction(
@@ -499,6 +527,7 @@ export async function adminCreatePrescriptionAction(
     prescriber: String(formData.get("prescriber") || "") || null,
     unitPrice: formData.get("unitPrice") ? Number(formData.get("unitPrice")) : null,
     status: (String(formData.get("status") || "active") as "active" | "on_hold" | "expired" | "discontinued"),
+    startDate: formData.get("startDate") ? new Date(String(formData.get("startDate"))) : null,
     endDate: formData.get("endDate") ? new Date(String(formData.get("endDate"))) : null,
     nextRefillDue: formData.get("nextRefillDue") ? new Date(String(formData.get("nextRefillDue"))) : null,
     notes: String(formData.get("notes") || "") || null,
@@ -526,7 +555,9 @@ export async function adminCreatePrescriptionAction(
   await writeAuditLog(user.id, "prescription_created", "prescription", rx.id, { customerId, medicationId });
   revalidatePath("/admin/prescriptions");
   revalidatePath(`/admin/customers/${customerId}`);
-  return { success: "Prescription created. Stock will be deducted when you dispatch it." };
+  // Redirect to the new record so the form doesn't keep stale values.
+  // redirect() throws NEXT_REDIRECT — must not be caught by callers.
+  redirect(`/admin/prescriptions/${rx.id}`);
 }
 
 /**
@@ -556,8 +587,9 @@ export async function adminDispatchPrescriptionAction(formData: FormData) {
   }
 
   const qty = rx.quantity ?? 1;
+  const shouldDecrementRefills = (rx.refillsRemaining ?? 0) > 0;
 
-  // If linked to a medication, decrement stock (transactional).
+  // Atomic: stock decrement + dispatch mark + refillsRemaining all in one transaction.
   if (rx.medicationId && rx.medication) {
     const med = rx.medication;
     if (med.stockQty < qty) {
@@ -576,26 +608,20 @@ export async function adminDispatchPrescriptionAction(formData: FormData) {
           dispatchedAt: new Date(),
           dispatchedById: user.id,
           lastFilledAt: new Date(),
+          ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
         },
       });
     });
   } else {
-    // No linked medication — just mark dispatched.
+    // No linked medication — still atomic for dispatch + refill decrement.
     await prisma.prescription.update({
       where: { id },
       data: {
         dispatchedAt: new Date(),
         dispatchedById: user.id,
         lastFilledAt: new Date(),
+        ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
       },
-    });
-  }
-
-  // Decrement refills remaining (if any) — dispatching consumes one refill.
-  if ((rx.refillsRemaining ?? 0) > 0) {
-    await prisma.prescription.update({
-      where: { id },
-      data: { refillsRemaining: { decrement: 1 } },
     });
   }
 
@@ -639,6 +665,20 @@ export async function adminCreateMedicationAction(
   const slug = String(formData.get("slug") || "").trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   const id = String(formData.get("id") || "");
+  let overTheCounter = formData.get("overTheCounter") === "on";
+  let prescriptionRequired = formData.get("prescriptionRequired") === "on";
+  // Mutual exclusivity: OTC and prescription-required cannot both be true.
+  if (overTheCounter && prescriptionRequired) {
+    prescriptionRequired = false;
+  }
+  if (!overTheCounter && !prescriptionRequired) {
+    // Default to Rx-required when neither is selected.
+    prescriptionRequired = true;
+  }
+
+  const imageUrlsRaw = String(formData.get("imageUrls") || "").trim();
+  const alternativeIdsRaw = String(formData.get("alternativeIds") || "").trim();
+
   const data = {
     name,
     slug,
@@ -651,12 +691,14 @@ export async function adminCreateMedicationAction(
     contraindications: String(formData.get("contraindications") || "") || null,
     storage: String(formData.get("storage") || "") || null,
     price: Number(formData.get("price") || 0),
-    overTheCounter: formData.get("overTheCounter") === "on",
+    overTheCounter,
     publicListing: formData.get("publicListing") === "on",
-    prescriptionRequired: formData.get("prescriptionRequired") === "on",
+    prescriptionRequired,
     stockQty: Number(formData.get("stockQty") || 0),
     lowStockThreshold: Number(formData.get("lowStockThreshold") || 10),
     imageUrl: String(formData.get("imageUrl") || "") || null,
+    imageUrls: imageUrlsRaw || null,
+    alternativeIds: alternativeIdsRaw || null,
     // Hidden "off" + checkbox "on" both submit; get() returns the first value
     // ("off"), so use getAll and treat active as on if "on" is present.
     active: formData.getAll("active").includes("on"),
@@ -675,8 +717,10 @@ export async function adminCreateMedicationAction(
     await writeAuditLog(user.id, "medication_created", "medication", med.id);
     revalidatePath("/admin/medications");
     revalidatePath("/medicines");
-    return { success: "Medication created." };
+    redirect("/admin/medications");
   } catch (e) {
+    // redirect() throws a special NEXT_REDIRECT error — rethrow it.
+    if (e && typeof e === "object" && "digest" in e) throw e;
     console.error(e);
     return { error: "Could not save medication. The slug or SKU may already exist." };
   }
@@ -738,7 +782,7 @@ export async function adminCreateOrderAction(
     if (existingUser?.profile) {
       finalCustomerId = existingUser.profile.id;
     } else {
-      // Create a customer + profile + loyalty + preferences.
+      // Create a customer + profile + loyalty + preferences, then email onboarding invite.
       const fullName = String(formData.get("customerName") || customerEmail.split("@")[0] || "Walk-in customer");
       const result = await prisma.$transaction(async (tx) => {
         const u = await tx.user.create({
@@ -775,9 +819,33 @@ export async function adminCreateOrderAction(
             source: "counter",
           },
         });
-        return p.id;
+        return { profileId: p.id, userId: u.id, email: u.email };
       });
-      finalCustomerId = result;
+      finalCustomerId = result.profileId;
+
+      // Send onboarding / email-verification invite so the new customer can log in.
+      try {
+        const token = randomBytes(32).toString("hex");
+        const tokenHash = createHash("sha256").update(token).digest("hex");
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
+        await prisma.emailVerification.create({
+          data: { userId: result.userId, tokenHash, expiresAt },
+        });
+        await sendDelivery({
+          channel: "email",
+          purpose: "transactional",
+          recipient: { email: result.email },
+          subject: "Welcome to Aether Pharmacy — complete your account",
+          body:
+            `Hi ${fullName},\n\n` +
+            `Your account was created at our pharmacy counter. Verify your email and finish setup:\n\n` +
+            emailVerificationBody(token) +
+            `\n\nAfter verifying, sign in at the portal to manage refills, prescriptions, and loyalty rewards.`,
+        });
+      } catch (err) {
+        console.error("[adminCreateOrder] onboarding email failed:", err);
+      }
     }
   }
 
@@ -861,16 +929,21 @@ export async function adminCreateOrderAction(
 
   const unitPrice = Number(med.price);
   const total = Math.max(0, unitPrice * quantity - discount);
+  // Counter sales default to cash paid so revenue analytics count them.
+  // Portal/refill orders stay pending until Daraja or explicit mark-paid.
+  const paymentMethod = String(formData.get("paymentMethod") || "cash") as "cash" | "daraja" | "card" | "other";
+  const markPaid = formData.get("markPaid") !== "off" && paymentMethod === "cash";
+  const dosage = String(formData.get("dosage") || "").trim() || null;
 
-  // Create the order in a transaction.
+  // Create the order in a transaction — cash path creates a completed Payment.
   const order = await prisma.$transaction(async (tx) => {
     const o = await tx.order.create({
       data: {
         customerId: finalCustomerId,
         source,
-        status: "pending",
+        status: markPaid ? "paid" : "pending",
         total,
-        notes,
+        notes: [notes, dosage ? `Dosage: ${dosage}` : null].filter(Boolean).join("\n") || null,
         servedById: user.id,
         items: {
           create: {
@@ -889,19 +962,97 @@ export async function adminCreateOrderAction(
       where: { id: medicationId },
       data: { stockQty: { decrement: quantity } },
     });
+
+    if (markPaid) {
+      await tx.payment.create({
+        data: {
+          orderId: o.id,
+          customerId: finalCustomerId,
+          amount: total,
+          provider: "cash",
+          status: "completed",
+          providerRef: `CASH-${o.id.slice(0, 8).toUpperCase()}`,
+        },
+      });
+    }
+
+    // If Rx-required med sold at counter, optionally create a prescription record.
+    if (med.prescriptionRequired && finalCustomerId && formData.get("createPrescription") === "on") {
+      await tx.prescription.create({
+        data: {
+          customerId: finalCustomerId,
+          medicationId,
+          medicineName: med.name,
+          dosage: dosage || med.dosage,
+          quantity,
+          unitPrice,
+          refillsRemaining: Number(formData.get("refillsRemaining") || 0),
+          status: "active",
+          notes: "Created from counter OTC/Rx sale",
+        },
+      });
+    }
+
     return o;
   });
+
+  if (couponId) {
+    await prisma.coupon.update({
+      where: { id: couponId },
+      data: { redemptions: { increment: 1 } },
+    });
+  }
 
   await writeAuditLog(user.id, "order_created", "order", order.id, {
     customerId: finalCustomerId,
     medicationId,
     quantity,
     total,
+    paymentMethod,
+    markPaid,
   });
   revalidatePath("/admin/orders");
   revalidatePath("/admin/medications");
   if (finalCustomerId) revalidatePath(`/admin/customers/${finalCustomerId}`);
-  return { success: `Order created. Total: ${total}.` };
+  return {
+    success: markPaid
+      ? `Sale recorded & paid (cash). Total: KES ${total}.`
+      : `Order created (pending payment). Total: KES ${total}.`,
+  };
+}
+
+export async function adminMarkOrderPaidAction(formData: FormData) {
+  const user = await staff();
+  const id = String(formData.get("id") || "");
+  const provider = (String(formData.get("provider") || "cash") as "cash" | "card" | "other" | "daraja");
+  if (!id) return { error: "Order id required." };
+
+  const order = await prisma.order.findUnique({ where: { id } });
+  if (!order) return { error: "Order not found." };
+  if (order.status === "paid" || order.status === "waived") {
+    return { error: "Order already settled." };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { id },
+      data: { status: "paid" },
+    });
+    await tx.payment.create({
+      data: {
+        orderId: id,
+        customerId: order.customerId,
+        amount: order.total,
+        provider,
+        status: "completed",
+        providerRef: `${provider.toUpperCase()}-${id.slice(0, 8).toUpperCase()}`,
+      },
+    });
+  });
+
+  await writeAuditLog(user.id, "order_marked_paid", "order", id, { provider });
+  revalidatePath("/admin/orders");
+  return { success: "Order marked as paid." };
 }
 
 export async function adminWaiveOrderAction(formData: FormData) {
@@ -921,6 +1072,23 @@ export async function adminWaiveOrderAction(formData: FormData) {
       status: "waived",
     },
   });
+  // Record a waived payment so revenue reports stay consistent.
+  const order = await prisma.order.findUnique({ where: { id } });
+  if (order) {
+    await prisma.payment.create({
+      data: {
+        orderId: id,
+        customerId: order.customerId,
+        amount: order.total,
+        provider: "other",
+        status: "waived",
+        providerRef: `WAIVE-${id.slice(0, 8).toUpperCase()}`,
+        failureReason: reason,
+      },
+    }).catch(() => {
+      /* may already exist */
+    });
+  }
   await writeAuditLog(user.id, "order_waived", "order", id, { scope, reason });
   revalidatePath("/admin/orders");
 }

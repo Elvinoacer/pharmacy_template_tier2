@@ -1,3 +1,4 @@
+import { formatDate } from "@/app/lib/time";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
@@ -75,7 +76,7 @@ export default async function PortalRefillsPage() {
                     <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#5a6b62]">
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {new Date(r.createdAt).toLocaleDateString()}
+                        {formatDate(r.createdAt)}
                       </span>
                       <span className="flex items-center gap-1 capitalize">
                         <MapPin className="h-3 w-3" />
@@ -132,7 +133,7 @@ export default async function PortalRefillsPage() {
                         <p className="font-semibold text-[#0c1a14]">{r.medicineName}</p>
                         <p className="text-xs text-[#5a6b62]">{r.rxReference || "—"}</p>
                       </td>
-                      <td className="text-[#5a6b62]">{new Date(r.createdAt).toLocaleDateString()}</td>
+                      <td className="text-[#5a6b62]">{formatDate(r.createdAt)}</td>
                       <td className="capitalize text-[#5a6b62]">{r.pickupPreference}</td>
                       <td>
                         <Badge className={meta.color}>{meta.label}</Badge>

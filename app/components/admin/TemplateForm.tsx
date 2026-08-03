@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { FileText, FolderTree, Type, AlertCircle, Check, Save, Wand2, Trash2, Pencil, X } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
@@ -15,6 +15,8 @@ type ExistingTemplate = {
   category: string;
 };
 
+const VARS = ["{{name}}", "{{medicine}}", "{{branch}}", "{{refillId}}", "{{points}}", "{{tier}}"];
+
 export default function TemplateForm({
   action,
   templates = [],
@@ -23,13 +25,27 @@ export default function TemplateForm({
   templates?: ExistingTemplate[];
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
+  const [name, setName] = useState("");
+  const [channel, setChannel] = useState("email");
+  const [category, setCategory] = useState("general");
+  const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editChannel, setEditChannel] = useState("email");
-  const [editCategory, setEditCategory] = useState("general");
-  const [editSubject, setEditSubject] = useState("");
+
+  useEffect(() => {
+    if (state?.success) {
+      toast.success(state.success);
+      if (!editingId) {
+        setName("");
+        setChannel("email");
+        setCategory("general");
+        setSubject("");
+        setBody("");
+      }
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state, editingId]);
 
   async function aiDraft() {
     setAiLoading(true);
@@ -46,8 +62,8 @@ export default function TemplateForm({
     }
   }
 
-  async function deleteTemplate(id: string, name: string) {
-    if (!confirm(`Delete template "${name}"?`)) return;
+  async function deleteTemplate(id: string, tName: string) {
+    if (!confirm(`Delete template "${tName}"?`)) return;
     try {
       const r = await fetch("/api/admin/templates/delete", {
         method: "POST",
@@ -64,21 +80,25 @@ export default function TemplateForm({
 
   function startEdit(t: ExistingTemplate) {
     setEditingId(t.id);
-    setEditName(t.name);
-    setEditChannel(t.channel);
-    setEditCategory(t.category);
-    setEditSubject(t.subject || "");
+    setName(t.name);
+    setChannel(t.channel);
+    setCategory(t.category);
+    setSubject(t.subject || "");
     setBody(t.body);
     toast.info(`Editing "${t.name}" — update fields and submit.`);
   }
 
   function cancelEdit() {
     setEditingId(null);
-    setEditName("");
-    setEditChannel("email");
-    setEditCategory("general");
-    setEditSubject("");
+    setName("");
+    setChannel("email");
+    setCategory("general");
+    setSubject("");
     setBody("");
+  }
+
+  function insertVar(v: string) {
+    setBody((b) => b + (b && !b.endsWith(" ") ? " " : "") + v);
   }
 
   return (
@@ -104,8 +124,8 @@ export default function TemplateForm({
             <input
               name="name"
               required
-              value={editingId ? editName : undefined}
-              onChange={(e) => editingId && setEditName(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Refill ready for pickup"
               className="input-admin pl-9"
             />
@@ -118,9 +138,8 @@ export default function TemplateForm({
             <select
               name="channel"
               className="input-admin"
-              defaultValue="email"
-              value={editingId ? editChannel : undefined}
-              onChange={(e) => editingId && setEditChannel(e.target.value)}
+              value={channel}
+              onChange={(e) => setChannel(e.target.value)}
             >
               <option value="email">Email</option>
               <option value="sms">SMS</option>
@@ -134,9 +153,8 @@ export default function TemplateForm({
               <FolderTree className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input
                 name="category"
-                defaultValue="general"
-                value={editingId ? editCategory : undefined}
-                onChange={(e) => editingId && setEditCategory(e.target.value)}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
                 className="input-admin pl-9"
               />
             </div>
@@ -150,8 +168,8 @@ export default function TemplateForm({
             <input
               name="subject"
               placeholder="Your prescription is ready…"
-              value={editingId ? editSubject : undefined}
-              onChange={(e) => editingId && setEditSubject(e.target.value)}
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
               className="input-admin pl-9"
             />
           </div>
@@ -179,10 +197,18 @@ export default function TemplateForm({
             placeholder="Hi {{name}}, your prescription {{medicine}} is ready for pickup at {{branch}}."
             className="input-admin resize-y"
           />
-          <p className="mt-1 text-[10px] admin-soft">
-            Variables: &#123;&#123;name&#125;&#125;, &#123;&#123;medicine&#125;&#125;, &#123;&#123;branch&#125;&#125;, &#123;&#123;refillId&#125;&#125;,
-            &#123;&#123;points&#125;&#125;, &#123;&#123;tier&#125;&#125;. Markdown supported.
-          </p>
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {VARS.map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => insertVar(v)}
+                className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
+              >
+                {v}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -209,7 +235,6 @@ export default function TemplateForm({
         </div>
       </form>
 
-      {/* Template library with edit/delete */}
       {templates.length > 0 && (
         <div className="border-t border-[var(--admin-border)] pt-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide admin-soft">Manage templates</p>

@@ -276,26 +276,39 @@ export async function getAdminAnalytics() {
   };
 }
 
-export async function listCustomers(search?: string) {
-  return prisma.customerProfile.findMany({
-    where: search
-      ? {
-          OR: [
-            { fullName: { contains: search, mode: "insensitive" } },
-            { phone: { contains: search, mode: "insensitive" } },
-            { user: { email: { contains: search, mode: "insensitive" } } },
-          ],
-        }
-      : undefined,
-    include: {
-      user: { select: { email: true, lastLoginAt: true, status: true } },
-      loyaltyAccount: true,
-      segments: { include: { segment: true } },
-      _count: { select: { refillRequests: true, prescriptions: true } },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
+export async function listCustomers(
+  search?: string,
+  opts?: { take?: number; skip?: number },
+) {
+  const where = search
+    ? {
+        OR: [
+          { fullName: { contains: search, mode: "insensitive" as const } },
+          { phone: { contains: search, mode: "insensitive" as const } },
+          { user: { email: { contains: search, mode: "insensitive" as const } } },
+        ],
+      }
+    : undefined;
+
+  const include = {
+    user: { select: { email: true, lastLoginAt: true, status: true } },
+    loyaltyAccount: true,
+    segments: { include: { segment: true } },
+    _count: { select: { refillRequests: true, prescriptions: true } },
+  } as const;
+
+  const [total, customers] = await Promise.all([
+    prisma.customerProfile.count({ where }),
+    prisma.customerProfile.findMany({
+      where,
+      include,
+      orderBy: { createdAt: "desc" },
+      take: opts?.take ?? 25,
+      skip: opts?.skip ?? 0,
+    }),
+  ]);
+
+  return { total, customers };
 }
 
 export async function getCustomerDetail(customerId: string) {
@@ -670,6 +683,12 @@ export async function launchCampaign(campaignId: string, actorId: string) {
   let delivered = 0;
   let failed = 0;
   for (const customer of customers) {
+    // Skip customers who opted out of marketing.
+    if (customer.preferences?.marketingConsent === false) {
+      failed += 1;
+      continue;
+    }
+
     const channel = campaign.channel === "multi" ? "email" : campaign.channel;
     // Per-customer variable interpolation.
     const vars = await buildCustomerVars(customer);
@@ -680,6 +699,7 @@ export async function launchCampaign(campaignId: string, actorId: string) {
 
     const delivery = await sendDelivery({
       channel,
+      purpose: "marketing",
       recipient: {
         email: customer.user.email,
         phone: customer.phone,
@@ -688,6 +708,8 @@ export async function launchCampaign(campaignId: string, actorId: string) {
               emailEnabled: customer.preferences.emailEnabled,
               smsEnabled: customer.preferences.smsEnabled,
               whatsappEnabled: customer.preferences.whatsappEnabled,
+              marketingConsent: customer.preferences.marketingConsent,
+              reminderConsent: customer.preferences.reminderConsent,
             }
           : null,
       },
@@ -750,8 +772,19 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
 
   for (const reminder of due) {
     try {
+      // Honour reminderConsent — skip opted-out customers without failing the batch.
+      if (reminder.customer.preferences?.reminderConsent === false) {
+        await prisma.reminder.update({
+          where: { id: reminder.id },
+          data: { status: "cancelled" },
+        });
+        processedCount += 1;
+        continue;
+      }
+
       const delivery = await sendDelivery({
         channel: reminder.channel,
+        purpose: "reminder",
         recipient: {
           email: reminder.customer.user.email,
           phone: reminder.customer.phone,
@@ -760,6 +793,8 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
                 emailEnabled: reminder.customer.preferences.emailEnabled,
                 smsEnabled: reminder.customer.preferences.smsEnabled,
                 whatsappEnabled: reminder.customer.preferences.whatsappEnabled,
+                marketingConsent: reminder.customer.preferences.marketingConsent,
+                reminderConsent: reminder.customer.preferences.reminderConsent,
               }
             : null,
         },

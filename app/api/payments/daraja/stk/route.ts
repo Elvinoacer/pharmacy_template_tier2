@@ -76,6 +76,26 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "order_already_settled" }, { status: 400 });
   }
 
+  // Guard against double-click / concurrent pending STK pushes for the same order.
+  const existingPending = await prisma.payment.findFirst({
+    where: {
+      orderId: order.id,
+      provider: "daraja",
+      status: "pending",
+      createdAt: { gte: new Date(Date.now() - 5 * 60 * 1000) }, // last 5 minutes
+    },
+  });
+  if (existingPending) {
+    return NextResponse.json(
+      {
+        error: "pending_payment_exists",
+        message: "A payment request is already in progress for this order. Check your phone or wait a few minutes.",
+        paymentId: existingPending.id,
+      },
+      { status: 409 },
+    );
+  }
+
   // Create a pending Payment row.
   const payment = await prisma.payment.create({
     data: {

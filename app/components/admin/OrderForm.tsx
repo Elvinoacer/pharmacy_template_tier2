@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
-import { Hash, DollarSign, User, Mail, Phone, Tag, AlertCircle, Check, Save } from "lucide-react";
+import { toast } from "@/app/components/Toaster";
+import { Hash, DollarSign, User, Mail, Phone, Tag, AlertCircle, Check, Save, FileText } from "lucide-react";
 import { CustomerPicker } from "@/app/components/CustomerPicker";
 
 type Medication = {
@@ -11,6 +12,7 @@ type Medication = {
   price: number;
   stockQty: number;
   overTheCounter: boolean;
+  prescriptionRequired?: boolean;
 };
 
 type Customer = {
@@ -34,11 +36,26 @@ export default function OrderForm({
   const [medicationId, setMedicationId] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [couponCode, setCouponCode] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "daraja" | "card">("cash");
+  const [createRx, setCreateRx] = useState(false);
 
   const selected = medications.find((m) => m.id === medicationId);
   const total = selected ? selected.price * quantity : 0;
 
   void _customers;
+
+  useEffect(() => {
+    if (state?.success) {
+      toast.success(state.success);
+      setCustomerId("");
+      setMedicationId("");
+      setQuantity(1);
+      setCouponCode("");
+      setPaymentMethod("cash");
+      setCreateRx(false);
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state]);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -55,6 +72,7 @@ export default function OrderForm({
 
       <input type="hidden" name="source" value="counter" />
       <input type="hidden" name="customerId" value={customerId} />
+      <input type="hidden" name="paymentMethod" value={paymentMethod} />
 
       <div>
         <label className="label-admin">Customer (optional — leave blank for walk-in)</label>
@@ -66,7 +84,7 @@ export default function OrderForm({
         />
         <p className="mt-1 text-[10px] admin-soft">
           If left blank and an email is given below, a customer account is created automatically
-          and an invite email is sent so they can complete their profile.
+          and an onboarding email is sent.
         </p>
       </div>
 
@@ -102,13 +120,17 @@ export default function OrderForm({
           name="medicationId"
           required
           value={medicationId}
-          onChange={(e) => setMedicationId(e.target.value)}
+          onChange={(e) => {
+            setMedicationId(e.target.value);
+            const m = medications.find((x) => x.id === e.target.value);
+            if (m?.prescriptionRequired) setCreateRx(true);
+          }}
           className="input-admin"
         >
           <option value="">Select medication…</option>
           {medications.map((m) => (
             <option key={m.id} value={m.id} disabled={m.stockQty <= 0}>
-              {m.name} — KES {m.price} ({m.stockQty} in stock){m.overTheCounter ? " · OTC" : ""}
+              {m.name} — KES {m.price} ({m.stockQty} in stock){m.overTheCounter ? " · OTC" : " · Rx"}
             </option>
           ))}
         </select>
@@ -145,7 +167,57 @@ export default function OrderForm({
         </div>
       </div>
 
-      {/* Total preview */}
+      <div>
+        <label className="label-admin">Dosage (optional)</label>
+        <div className="relative">
+          <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+          <input name="dosage" placeholder="1 tablet twice daily" className="input-admin pl-9" />
+        </div>
+      </div>
+
+      <div>
+        <label className="label-admin">Payment method</label>
+        <div className="flex flex-wrap gap-2">
+          {([
+            { value: "cash", label: "Cash (mark paid)" },
+            { value: "daraja", label: "M-Pesa (pending)" },
+            { value: "card", label: "Card (pending)" },
+          ] as const).map((m) => (
+            <label
+              key={m.value}
+              className={`flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-xs ${
+                paymentMethod === m.value
+                  ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text"
+                  : "border-[var(--admin-border)] admin-muted"
+              }`}
+            >
+              <input
+                type="radio"
+                name="paymentMethodRadio"
+                checked={paymentMethod === m.value}
+                onChange={() => setPaymentMethod(m.value)}
+                className="sr-only"
+              />
+              {m.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {selected?.prescriptionRequired && (
+        <label className="flex cursor-pointer items-center gap-2 text-xs admin-muted">
+          <input
+            type="checkbox"
+            name="createPrescription"
+            checked={createRx}
+            onChange={(e) => setCreateRx(e.target.checked)}
+            className="h-3.5 w-3.5 rounded"
+          />
+          Also create a prescription record for this customer
+        </label>
+      )}
+      {createRx && <input type="hidden" name="createPrescription" value="on" />}
+
       <div className="rounded-xl bg-[var(--admin-inset)] p-3">
         <div className="flex items-center justify-between">
           <p className="text-xs admin-muted">Total</p>
@@ -154,8 +226,9 @@ export default function OrderForm({
           </p>
         </div>
         <p className="mt-1 text-[10px] admin-soft">
-          Payment is recorded as pending. Customer can pay via M-Pesa (Daraja STK push)
-          from /portal/orders, or staff can mark as cash / waived.
+          {paymentMethod === "cash"
+            ? "Cash sales are marked paid immediately and counted in revenue."
+            : "Non-cash sales stay pending until M-Pesa callback or manual mark-paid."}
         </p>
       </div>
 
@@ -169,4 +242,3 @@ export default function OrderForm({
     </form>
   );
 }
-
