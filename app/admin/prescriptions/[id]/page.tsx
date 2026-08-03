@@ -2,13 +2,17 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { adminDeletePrescriptionAction } from "@/app/actions/admin";
+import {
+  adminDeletePrescriptionAction,
+  adminDispatchPrescriptionAction,
+} from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { formatDateTime, formatDate } from "@/app/lib/time";
 import { Markdown } from "@/app/components/Markdown";
-import { ArrowLeft, Pill, FileText, Calendar, DollarSign, Activity, Trash2, Sparkles } from "lucide-react";
+import { ArrowLeft, Pill, FileText, Calendar, DollarSign, Activity, Trash2, Sparkles, Truck, Check } from "lucide-react";
 import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
+import { PendingSubmitButton } from "@/app/components/PendingSubmitButton";
 
 export const metadata = { title: "Prescription detail" };
 
@@ -23,13 +27,15 @@ export default async function PrescriptionDetailPage({
 
   // Prefer full include (with adherence). If prescription_adherence is missing
   // on an older DB, fall back so the detail page still renders.
-  let prescription = await prisma.prescription
+  const prescription = await prisma.prescription
     .findUnique({
       where: { id },
       include: {
         customer: { select: { id: true, fullName: true } },
         refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
         adherence: { orderBy: { takenOn: "desc" }, take: 30 },
+        medication: true,
+        dispatchedBy: { select: { id: true, email: true } },
       },
     })
     .catch(async () => {
@@ -38,6 +44,8 @@ export default async function PrescriptionDetailPage({
         include: {
           customer: { select: { id: true, fullName: true } },
           refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
+          medication: true,
+          dispatchedBy: { select: { id: true, email: true } },
         },
       });
       if (!base) return null;
@@ -87,7 +95,33 @@ export default async function PrescriptionDetailPage({
             <FileText className="h-3.5 w-3.5" /> Customer profile
           </Link>
         )}
-        <form action={adminDeletePrescriptionAction} className="ml-auto">
+
+        {/* Dispatch button — only shown if not already dispatched. */}
+        {!prescription.dispatchedAt && (
+          <form action={adminDispatchPrescriptionAction} className="ml-auto">
+            <input type="hidden" name="id" value={prescription.id} />
+            <PendingSubmitButton
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-110 disabled:cursor-wait disabled:opacity-70"
+              pendingChildren={
+                <>
+                  <Truck className="h-3.5 w-3.5 animate-pulse" /> Dispatching…
+                </>
+              }
+            >
+              <Truck className="h-3.5 w-3.5" /> Dispatch & deduct stock
+            </PendingSubmitButton>
+          </form>
+        )}
+        {prescription.dispatchedAt && (
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+            <Check className="h-3.5 w-3.5" /> Dispatched {formatDateTime(prescription.dispatchedAt)}
+            {prescription.dispatchedBy && (
+              <span className="opacity-70">by {prescription.dispatchedBy.email}</span>
+            )}
+          </span>
+        )}
+
+        <form action={adminDeletePrescriptionAction}>
           <input type="hidden" name="id" value={prescription.id} />
           <ConfirmSubmitButton
             message="Delete this prescription? Adherence logs will also be removed."
@@ -108,6 +142,14 @@ export default async function PrescriptionDetailPage({
                 <p className="text-[10px] uppercase tracking-wide admin-soft">Medicine</p>
                 <p className="admin-text">{prescription.medicineName}</p>
                 {prescription.dosage && <p className="text-xs admin-muted">{prescription.dosage}</p>}
+                {prescription.medication && (
+                  <Link
+                    href={`/admin/medications/${prescription.medication.id}`}
+                    className="mt-0.5 inline-flex items-center gap-0.5 text-[10px] font-semibold admin-accent-text hover:underline"
+                  >
+                    <Pill className="h-2.5 w-2.5" /> Linked: {prescription.medication.name}
+                  </Link>
+                )}
               </div>
             </div>
             <div className="flex items-start gap-2">

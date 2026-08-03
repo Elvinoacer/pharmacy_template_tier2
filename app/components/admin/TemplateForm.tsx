@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { FileText, FolderTree, Type, AlertCircle, Check, Save, Wand2, Trash2, Pencil, X } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import { callAiDraft } from "@/app/lib/ai-form-helper";
 
 type ExistingTemplate = {
   id: string;
@@ -23,6 +24,7 @@ export default function TemplateForm({
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [body, setBody] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editChannel, setEditChannel] = useState("email");
@@ -30,32 +32,17 @@ export default function TemplateForm({
   const [editSubject, setEditSubject] = useState("");
 
   async function aiDraft() {
+    setAiLoading(true);
     try {
-      const r = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a pharmacy communication assistant. Draft a reusable message template body for the staff. Use {{name}} as the customer name placeholder. Keep it warm, professional, and concise (2-4 sentences). Output only the body text.",
-            },
-            { role: "user", content: body || "Draft a refill-ready-for-pickup template." },
-          ],
-        }),
+      await callAiDraft({
+        systemPrompt:
+          "You are a pharmacy communication assistant. Draft a reusable message template body for the staff. Use {{name}} as the customer name placeholder. Keep it warm, professional, and concise (2-4 sentences). Output only the body text.",
+        userPrompt: body || "Draft a refill-ready-for-pickup template.",
+        onResult: setBody,
+        successMessage: "AI drafted a template body.",
       });
-      if (!r.ok) throw new Error();
-      const j = (await r.json()) as { reply?: string; content?: string };
-      const suggestion = j.reply || j.content || "";
-      if (suggestion) {
-        setBody(suggestion.trim());
-        toast.success("AI drafted a template body.");
-      } else {
-        toast.error("AI did not return a suggestion.");
-      }
-    } catch {
-      toast.error("AI helper unavailable.");
+    } finally {
+      setAiLoading(false);
     }
   }
 
@@ -176,10 +163,11 @@ export default function TemplateForm({
             <button
               type="button"
               onClick={aiDraft}
-              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110"
+              disabled={aiLoading}
+              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
               title="Let AI draft the body"
             >
-              <Wand2 className="h-2.5 w-2.5" /> AI draft
+              <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
             </button>
           </div>
           <textarea

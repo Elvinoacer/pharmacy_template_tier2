@@ -10,6 +10,9 @@ const Query = z.object({
   q: z.string().trim().optional(),
   id: z.string().uuid().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(20),
+  /// Optional resource selector — when `resource=medications`, this endpoint
+  /// returns medications instead of customers. Used by MedicationPicker.
+  resource: z.enum(["customers", "medications"]).default("customers"),
 });
 
 /**
@@ -32,6 +35,7 @@ export async function GET(req: Request) {
       q: url.searchParams.get("q") || undefined,
       id: url.searchParams.get("id") || undefined,
       limit: url.searchParams.get("limit") || "20",
+      resource: url.searchParams.get("resource") || "customers",
     });
   } catch {
     return NextResponse.json({ error: "invalid_query" }, { status: 400 });
@@ -67,6 +71,80 @@ export async function GET(req: Request) {
 
   if (!isStaff(user.role)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  // ── Medication search ─────────────────────────────────────────
+  // Used by MedicationPicker (prescription form). Returns active medications
+  // matching name, SKU, or category. Sorted alphabetically with starts-with
+  // matches first.
+  if (parsed.resource === "medications") {
+    // Lookup by id — used to resolve the display name of a pre-selected medication.
+    if (parsed.id) {
+      const m = await prisma.medication.findUnique({
+        where: { id: parsed.id },
+      });
+      if (!m) return NextResponse.json({ medication: null });
+      return NextResponse.json({
+        medication: {
+          id: m.id,
+          name: m.name,
+          slug: m.slug,
+          sku: m.sku,
+          category: m.category,
+          price: Number(m.price),
+          stockQty: m.stockQty,
+          lowStockThreshold: m.lowStockThreshold,
+          overTheCounter: m.overTheCounter,
+          prescriptionRequired: m.prescriptionRequired,
+          dosage: m.dosage,
+          description: m.description,
+        },
+      });
+    }
+
+    const q = parsed.q?.trim() ?? "";
+    if (q.length < 1) {
+      return NextResponse.json({ medications: [] });
+    }
+
+    const where = {
+      active: true,
+      OR: [
+        { name: { contains: q, mode: "insensitive" as const } },
+        { sku: { contains: q, mode: "insensitive" as const } },
+        { category: { contains: q, mode: "insensitive" as const } },
+      ],
+    };
+
+    const rows = await prisma.medication.findMany({
+      where,
+      orderBy: { name: "asc" },
+      take: parsed.limit,
+    });
+
+    const sorted = rows.sort((a, b) => {
+      const aStarts = a.name.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
+      const bStarts = b.name.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
+      if (aStarts !== bStarts) return aStarts - bStarts;
+      return a.name.localeCompare(b.name);
+    });
+
+    return NextResponse.json({
+      medications: sorted.map((m) => ({
+        id: m.id,
+        name: m.name,
+        slug: m.slug,
+        sku: m.sku,
+        category: m.category,
+        price: Number(m.price),
+        stockQty: m.stockQty,
+        lowStockThreshold: m.lowStockThreshold,
+        overTheCounter: m.overTheCounter,
+        prescriptionRequired: m.prescriptionRequired,
+        dosage: m.dosage,
+        description: m.description,
+      })),
+    });
   }
 
   const q = parsed.q?.trim() ?? "";
