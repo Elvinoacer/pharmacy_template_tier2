@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { refillStatusMeta } from "@/app/lib/types";
@@ -19,6 +20,7 @@ export const metadata = { title: "My refills" };
 export default async function PortalRefillsPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  await requireOnboarded();
 
   const refills = await prisma.refillRequest.findMany({
     where: { customerId: user.customerId },

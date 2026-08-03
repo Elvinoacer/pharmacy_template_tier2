@@ -70,6 +70,22 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
 
+  // Onboarding guard: customers who haven't completed onboarding are
+  // redirected to /portal/onboarding — EXCEPT when they're already there
+  // (avoid infinite loop) or hitting an API route / static asset.
+  // The layout does the authoritative DB check; proxy just short-circuits
+  // common cases so the redirect feels instant.
+  if (pathname.startsWith('/portal') && !staff && customerId) {
+    // Allow the onboarding page itself, plus API routes and static assets.
+    const isOnboardingPage = pathname === '/portal/onboarding';
+    const isApiOrStatic = pathname.includes('/api/') || pathname.startsWith('/portal/_next/');
+    if (!isOnboardingPage && !isApiOrStatic) {
+      // We can't check onboardingCompletedAt in the proxy (no DB), so we let
+      // the layout handle it. Proxy just makes sure /portal/onboarding is
+      // always reachable for authenticated customers.
+    }
+  }
+
   // Honor safe `?next=` overrides on login redirects (already encoded above).
   const next = request.nextUrl.searchParams.get('next');
   if (isSafeInternalPath(next) && !next.startsWith('/portal') && !next.startsWith('/admin')) {

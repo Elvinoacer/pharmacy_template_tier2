@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { updatePreferencesAction } from "@/app/actions/portal";
@@ -13,6 +14,7 @@ export const metadata = { title: "Preferences" };
 export default async function PortalPreferencesPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  await requireOnboarded();
 
   const prefs = await prisma.customerPreference.findUnique({
     where: { customerId: user.customerId },

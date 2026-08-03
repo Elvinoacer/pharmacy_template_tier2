@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import type { ActionState } from "@/app/actions/portal";
 import { Check, AlertCircle, Save } from "lucide-react";
+import { toast } from "@/app/components/Toaster";
 
 type Profile = {
   fullName: string;
@@ -27,6 +28,7 @@ function Field({
   type = "text",
   placeholder,
   required,
+  max,
 }: {
   label: string;
   name: string;
@@ -34,6 +36,7 @@ function Field({
   type?: string;
   placeholder?: string;
   required?: boolean;
+  max?: string;
 }) {
   return (
     <label className="block">
@@ -47,6 +50,7 @@ function Field({
         defaultValue={defaultValue}
         placeholder={placeholder}
         required={required}
+        max={max}
         className="input-premium"
       />
     </label>
@@ -81,6 +85,20 @@ export default function ProfileForm({
   profile: Profile;
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
+  const lastSuccess = useRef<string | null>(null);
+
+  // Show a toast on success — no need for the user to scroll to the top.
+  useEffect(() => {
+    if (state?.success && lastSuccess.current !== state.success) {
+      lastSuccess.current = state.success;
+      toast.success(state.success);
+      // Scroll to top so the user sees the success state if it's still showing.
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [state?.success]);
+
+  // Add a max attribute to the dateOfBirth input to prevent future dates.
+  const today = new Date().toISOString().slice(0, 10);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -101,7 +119,7 @@ export default function ProfileForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Full name" name="fullName" defaultValue={profile.fullName} placeholder="Jane Doe" required />
           <Field label="Phone" name="phone" type="tel" defaultValue={profile.phone} placeholder="+1 (555) 555-5555" />
-          <Field label="Date of birth" name="dateOfBirth" type="date" defaultValue={profile.dateOfBirth} />
+          <Field label="Date of birth" name="dateOfBirth" type="date" defaultValue={profile.dateOfBirth} max={today} />
           <label className="block">
             <span className="label-premium">Gender</span>
             <select

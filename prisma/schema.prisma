@@ -257,7 +257,8 @@ model User {
   timelineCreated     TimelineEvent[]        @relation("TimelineCreator")
   assignedConversations Conversation[]       @relation("ConversationAssignee")
   messagesSent        Message[]
-  templatesCreated    MessageTemplate[]
+  templatesCreated    MessageTemplate[]     @relation("TemplateCreator")
+  templatesUpdated    MessageTemplate[]     @relation("TemplateUpdater")
   notifications       Notification[]
   remindersCreated    Reminder[]
   campaignsCreated    Campaign[]
@@ -337,6 +338,9 @@ model EmailVerification {
 
 // ── Customers ─────────────────────────────────────────────────
 
+/// Onboarding stage — customer must complete profile before fully accessing the portal.
+/// proxy.ts allows /portal/onboarding through; everything else under /portal redirects there
+/// until `onboardingCompletedAt` is set.
 model CustomerProfile {
   id                      String       @id @default(uuid()) @db.Uuid
   userId                  String       @unique @map("user_id") @db.Uuid
@@ -355,6 +359,10 @@ model CustomerProfile {
   preferredBranch         String?      @default("Main Branch") @map("preferred_branch")
   notes                   String?
   tags                    String[]     @default([])
+  /// Auto-tagged age segment: infant | child | teen | young_adult | adult | senior
+  ageSegment              String?      @map("age_segment")
+  /// Marks the moment the customer finished the onboarding wizard. Null = still onboarding.
+  onboardingCompletedAt   DateTime?    @map("onboarding_completed_at")
   createdAt               DateTime     @default(now()) @map("created_at")
   updatedAt               DateTime     @updatedAt @map("updated_at")
 
@@ -374,7 +382,11 @@ model CustomerProfile {
   feedback        Feedback[]
   aiConversations AiConversation[]
   staffNotes      CustomerNote[]
+  adherenceLogs   PrescriptionAdherence[]
+  orders          Order[]
+  payments        Payment[]
 
+  @@index([ageSegment])
   @@map("customer_profiles")
 }
 
@@ -393,6 +405,7 @@ model Caregiver {
 
   customer      CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
   caregiverUser User?           @relation("CaregiverUser", fields: [caregiverUserId], references: [id], onDelete: SetNull)
+  invites       CaregiverInvite[]
 
   @@index([customerId])
   @@map("caregivers")
@@ -422,20 +435,30 @@ model Prescription {
   medicineName     String             @map("medicine_name")
   rxReference      String?            @map("rx_reference")
   dosage           String?
+  /// Free-text schedule like "1 tablet twice daily after meals". AI uses this to predict refill dates.
+  schedule         String?
   quantity         Int?
+  /// Days of supply per fill (used to predict next refill date).
+  daysSupply       Int?               @map("days_supply")
   refillsRemaining Int?               @default(0) @map("refills_remaining")
   lastFilledAt     DateTime?          @map("last_filled_at") @db.Date
   nextRefillDue    DateTime?          @map("next_refill_due") @db.Date
+  /// When the prescription should be terminated (e.g. 6-month course ended).
+  endDate          DateTime?          @db.Date
   prescriber       String?
+  /// Admin-set price the customer pays per refill (used by payment system).
+  unitPrice        Decimal?           @db.Decimal(10, 2) @map("unit_price")
   status           PrescriptionStatus @default(active)
   notes            String?
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
 
-  customer       CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer       CustomerProfile      @relation(fields: [customerId], references: [id], onDelete: Cascade)
   refillRequests RefillRequest[]
+  adherence      PrescriptionAdherence[]
 
   @@index([customerId])
+  @@index([status])
   @@map("prescriptions")
 }
 
@@ -569,10 +592,12 @@ model MessageTemplate {
   body        String
   category    String               @default("general")
   createdById String?              @map("created_by") @db.Uuid
+  updatedById String?              @map("updated_by") @db.Uuid
   createdAt   DateTime             @default(now()) @map("created_at")
   updatedAt   DateTime             @updatedAt @map("updated_at")
 
-  createdBy User? @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy User? @relation("TemplateCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User? @relation("TemplateUpdater", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@map("message_templates")
 }
@@ -590,6 +615,10 @@ model Notification {
   status      NotificationStatus  @default(pending)
   relatedType String?             @map("related_type")
   relatedId   String?             @map("related_id") @db.Uuid
+  /// Full body for modal view (longer than `body`, which is the truncated list preview).
+  fullBody    String?             @map("full_body")
+  /// Whether the customer has dismissed this notification from their feed.
+  deletedAt   DateTime?           @map("deleted_at")
   sentAt      DateTime?           @map("sent_at")
   openedAt    DateTime?           @map("opened_at")
   createdAt   DateTime            @default(now()) @map("created_at")
@@ -597,8 +626,9 @@ model Notification {
   customer CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: Cascade)
   user     User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([customerId])
+  @@index([customerId, deletedAt])
   @@index([userId])
+  @@index([status])
   @@map("notifications")
 }
 
@@ -674,12 +704,15 @@ model LoyaltyTransaction {
   points      Int
   type        LoyaltyTxType
   description String?
+  /// What triggered this transaction: manual | cron | rule:refill_completed | etc.
+  source      String?       @default("manual")
   createdById String?       @map("created_by") @db.Uuid
   createdAt   DateTime      @default(now()) @map("created_at")
 
   account   LoyaltyAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
   createdBy User?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
 
+  @@index([accountId, createdAt(sort: Desc)])
   @@map("loyalty_transactions")
 }
 
@@ -691,11 +724,16 @@ model Coupon {
   discountValue   Decimal      @map("discount_value") @db.Decimal(10, 2)
   pointsCost      Int          @default(0) @map("points_cost")
   maxRedemptions  Int?         @map("max_redemptions")
+  /// Per-customer limit. Default 1 — a customer can't redeem the same coupon multiple times.
+  maxRedemptionsPerCustomer Int? @default(1) @map("max_redemptions_per_customer")
   redemptions     Int          @default(0)
   validFrom       DateTime?    @default(now()) @map("valid_from")
   validUntil      DateTime?    @map("valid_until")
   active          Boolean      @default(true)
   createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  orderItems OrderItem[]
 
   @@map("coupons")
 }
@@ -824,10 +862,226 @@ model CustomerNote {
   authorId   String?  @map("author_id") @db.Uuid
   body       String
   isPinned   Boolean  @default(false) @map("is_pinned")
+  /// Manual ordering for drag-and-drop. Lower = higher in the list. Pinned notes always come first.
+  sortOrder  Int      @default(0) @map("sort_order")
   createdAt  DateTime @default(now()) @map("created_at")
 
   customer CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
   author   User?           @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
+  @@index([customerId, sortOrder])
   @@map("customer_notes")
+}
+
+// ── Prescription adherence tracking ───────────────────────────
+/// Daily log of whether a customer took their medication. Customers log this from the portal;
+/// AI uses it to generate adherence insights and refill-date predictions.
+model PrescriptionAdherence {
+  id            String   @id @default(uuid()) @db.Uuid
+  customerId    String   @map("customer_id") @db.Uuid
+  prescriptionId String  @map("prescription_id") @db.Uuid
+  /// Local YYYY-MM-DD of the dose being recorded (no timezone surprises).
+  takenOn       DateTime @map("taken_on") @db.Date
+  status        String   @default("taken") // taken | missed | skipped | late
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  customer    CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  prescription Prescription    @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([prescriptionId, takenOn])
+  @@index([customerId, takenOn])
+  @@map("prescription_adherence")
+}
+
+// ── Medication catalog (stock + shop) ─────────────────────────
+/// Drug catalog. Synced from the pharmacy POS via the /api/integrations/pos/route.ts endpoint
+/// (POST guarded by POS_API_KEY). Admins can also create/edit entries directly.
+model Medication {
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String
+  slug            String   @unique
+  sku             String?  @unique
+  category        String   @default("general")
+  description     String?
+  /// Markdown-rendered on the public detail page. Includes uses, dosage, side effects,
+  /// contraindications, storage — gives customers a complete picture without staff time.
+  indications     String?
+  dosage          String?
+  sideEffects     String?  @map("side_effects")
+  contraindications String?
+  storage         String?
+  price           Decimal  @default(0) @db.Decimal(10, 2)
+  /// If true, customers can buy it OTC without a prescription.
+  overTheCounter  Boolean  @default(false) @map("over_the_counter")
+  /// If true, shown on the public catalog without login. If false, only logged-in customers see it.
+  publicListing   Boolean  @default(false) @map("public_listing")
+  prescriptionRequired Boolean @default(true) @map("prescription_required")
+  stockQty        Int      @default(0) @map("stock_qty")
+  lowStockThreshold Int    @default(10) @map("low_stock_threshold")
+  imageUrl        String?  @map("image_url")
+  active          Boolean  @default(true)
+  /// Last time the POS sync touched this row.
+  syncedAt        DateTime? @map("synced_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  orderItems OrderItem[]
+
+  @@index([category])
+  @@index([overTheCounter])
+  @@index([publicListing])
+  @@map("medications")
+}
+
+// ── Orders & Payments (POS / OTC / Refills) ──────────────────
+/// An order ties together a customer, line items, and a payment. Used for OTC counter sales,
+/// refill payments, and the portal shop. Created by staff at the counter, or by customers from the portal.
+model Order {
+  id           String   @id @default(uuid()) @db.Uuid
+  customerId   String?  @map("customer_id") @db.Uuid
+  /// Where the order originated: counter (staff at POS), portal (customer online), refill (linked to a RefillRequest).
+  source       String   @default("counter")
+  refillId     String?  @map("refill_id") @db.Uuid
+  status       String   @default("pending") // pending | paid | fulfilled | cancelled | waived
+  total        Decimal  @default(0) @db.Decimal(10, 2)
+  /// Admin can waive the payment — captured here so revenue reports stay accurate.
+  waived       Boolean  @default(false)
+  waivedReason String?  @map("waived_reason")
+  /// If waived = one_time, the customer still pays on subsequent refills. If recurring_until, waived until `waivedUntil`.
+  waivedScope  String?  @map("waived_scope") // one_time | recurring_until | recurring_permanent
+  waivedUntil  DateTime? @map("waived_until")
+  /// Free-text staff notes about this order.
+  notes        String?
+  servedById   String?  @map("served_by") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  customer  CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items     OrderItem[]
+  payments  Payment[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid()) @db.Uuid
+  orderId     String   @map("order_id") @db.Uuid
+  medicationId String? @map("medication_id") @db.Uuid
+  /// Snapshot of the medicine name (so historical orders don't break if the medication is renamed).
+  name        String
+  quantity    Int      @default(1)
+  unitPrice   Decimal  @default(0) @db.Decimal(10, 2)
+  /// If the customer used a coupon on this line, the discount applied.
+  discountApplied Decimal @default(0) @map("discount_applied") @db.Decimal(10, 2)
+  couponId    String?  @map("coupon_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  order      Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  medication Medication? @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+  coupon     Coupon?    @relation(fields: [couponId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
+  waived
+}
+
+enum PaymentProvider {
+  daraja
+  cash
+  card
+  other
+}
+
+model Payment {
+  id           String         @id @default(uuid()) @db.Uuid
+  orderId      String         @map("order_id") @db.Uuid
+  customerId   String?        @map("customer_id") @db.Uuid
+  amount       Decimal        @db.Decimal(10, 2)
+  provider     PaymentProvider @default(daraja)
+  status       PaymentStatus  @default(pending)
+  /// Provider reference (Daraja checkout request ID, etc.)
+  providerRef  String?        @map("provider_ref")
+  /// Phone number used for M-Pesa STK push.
+  phone        String?
+  failureReason String?       @map("failure_reason")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  order    Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  customer CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([status])
+  @@map("payments")
+}
+
+// ── Loyalty automation rules ─────────────────────────────────
+/// Configurable rules so loyalty points are earned automatically without manual taps.
+/// e.g. "Earn 10 points for every completed refill", "Earn 1 point per KES 100 spent".
+/// A cron job (or event hook) reads these and credits points accordingly.
+model LoyaltyRule {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  trigger     String   // refill_completed | order_paid | first_order | birthday | referral_completed
+  points      Int      @default(0)
+  /// Optional multiplier: for order_paid, points = floor(amount * multiplier / 100).
+  multiplier  Decimal? @db.Decimal(10, 4)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("loyalty_rules")
+}
+
+// ── Caregiver invitations ────────────────────────────────────
+/// Token-based invite links emailed to a caregiver so they can finish setting up their own account
+/// and link back to the patient. One token per invite, single-use, expires in 7 days.
+model CaregiverInvite {
+  id          String   @id @default(uuid()) @db.Uuid
+  caregiverId String   @map("caregiver_id") @db.Uuid
+  email       String
+  tokenHash   String   @unique @map("token_hash")
+  expiresAt   DateTime @map("expires_at")
+  acceptedAt  DateTime? @map("accepted_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  caregiver Caregiver @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
+
+  @@map("caregiver_invites")
+}
+
+// ── Inbound admin notifications ───────────────────────────────
+/// A separate model from Notification (which is outbound to customers). AdminNotification is
+/// for inbound events the staff team needs to see: new refill, new enquiry, low feedback, etc.
+/// Has its own read/unread state, severity, and a `retry` action when applicable.
+model AdminNotification {
+  id         String   @id @default(uuid()) @db.Uuid
+  /// Type of event: refill_new | enquiry_new | feedback_low | ai_escalation | stock_low | payment_failed | campaign_failed | reminder_failed
+  type       String
+  title      String
+  body       String
+  severity   String   @default("info") // info | warning | critical
+  relatedType String? @map("related_type")
+  relatedId   String?  @map("related_id") @db.Uuid
+  isRead     Boolean  @default(false) @map("is_read")
+  readAt     DateTime? @map("read_at")
+  /// For retryable events (failed sends), the action that should be retried.
+  retryAction String? @map("retry_action")
+  retryPayload Json?  @map("retry_payload")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([isRead])
+  @@index([createdAt(sort: Desc)])
+  @@map("admin_notifications")
 }

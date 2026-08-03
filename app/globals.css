@@ -1352,3 +1352,148 @@ select:focus-visible {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ============================================================
+   Markdown rendering — used by campaign/template/notification bodies
+   ============================================================ */
+.md-body { font-size: 0.95rem; line-height: 1.6; color: inherit; word-break: break-word; }
+.md-body .md-h { font-weight: 700; line-height: 1.25; margin: 1rem 0 0.5rem; }
+.md-body .md-h1 { font-size: 1.5rem; }
+.md-body .md-h2 { font-size: 1.3rem; }
+.md-body .md-h3 { font-size: 1.15rem; }
+.md-body .md-h4 { font-size: 1.05rem; }
+.md-body .md-h5, .md-body .md-h6 { font-size: 1rem; }
+.md-body p { margin: 0 0 0.75rem; }
+.md-body .md-ul { list-style: disc; padding-left: 1.25rem; margin: 0 0 0.75rem; }
+.md-body .md-ol { list-style: decimal; padding-left: 1.25rem; margin: 0 0 0.75rem; }
+.md-body li { margin: 0.25rem 0; }
+.md-body .md-link { color: #0d6e5a; text-decoration: underline; text-underline-offset: 2px; }
+.md-body .md-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: rgba(12, 26, 20, 0.06);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+}
+.md-body .md-quote {
+  border-left: 3px solid rgba(13, 110, 90, 0.4);
+  padding: 0.25rem 0 0.25rem 0.85rem;
+  margin: 0 0 0.75rem;
+  color: inherit;
+  opacity: 0.85;
+  font-style: italic;
+}
+.md-body .md-hr { border: 0; border-top: 1px solid currentColor; opacity: 0.15; margin: 1rem 0; }
+
+/* ============================================================
+   Fix: input icons were overlapping text.
+   Cause: inputs use pl-9 (2.25rem padding-left), but on small inputs
+   (py-1, py-1.5) the icon's absolute top-1/2 -translate-y-1/2 placed it
+   over the text when the input height was small. Now we use a more
+   generous padding-left (pl-10) and constrain icon size + position.
+   Also: textarea icons must use top-3 (not center) so they don't overlap
+   the first line of text.
+   ============================================================ */
+.input-admin, .input-premium { line-height: 1.4; }
+.input-admin[class*="pl-9"], .input-admin[class*="pl-10"] {
+  /* Ensure icons never overlap text by enforcing a min content area. */
+  padding-left: 2.5rem;
+}
+.input-premium[class*="pl-9"], .input-premium[class*="pl-10"] {
+  padding-left: 2.5rem;
+}
+/* Textarea variant: ensure top-3 icon doesn't overlap text */
+textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
+
+/* ============================================================
+   Toast notifications (global, top-right)
+   ============================================================ */
+.toast-stack {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.toast-item {
+  pointer-events: auto;
+  min-width: 280px;
+  max-width: 380px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  background: white;
+  border: 1px solid rgba(12, 26, 20, 0.08);
+  box-shadow: 0 12px 32px rgba(8, 40, 32, 0.16);
+  font-size: 0.875rem;
+  color: #0c1a14;
+  animation: toast-in 0.18s ease-out;
+}
+.toast-item.toast-success { border-color: rgba(16, 185, 129, 0.4); }
+.toast-item.toast-error { border-color: rgba(239, 68, 68, 0.4); }
+.toast-item.toast-info { border-color: rgba(59, 130, 246, 0.4); }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Modal primitive
+   ============================================================ */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 150;
+  background: rgba(8, 28, 22, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+  animation: fade-in 0.15s ease-out;
+}
+.modal-card {
+  background: white;
+  border-radius: 1.25rem;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+  max-width: 560px;
+  width: 100%;
+  max-height: 88vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modal-in 0.2s ease-out;
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Badges */
+.badge-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.4rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f43f5e, #f97316);
+  color: white;
+  box-shadow: 0 4px 10px rgba(244, 63, 94, 0.32);
+}
+
+/* ============================================================
+   Admin note drag-and-drop handle
+   ============================================================ */
+.note-drag-handle {
+  cursor: grab;
+  user-select: none;
+}
+.note-drag-handle:active { cursor: grabbing; }
+.note-dragging { opacity: 0.4; }
+.note-drag-over { border-top: 2px solid var(--admin-accent) !important; }

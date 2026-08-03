@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/app/lib/auth";
 import { createEnquiry } from "@/app/lib/services/crm";
 
@@ -32,6 +33,9 @@ export async function POST(request: Request) {
       customerId: session?.customerId ?? undefined,
       source: "website",
     });
+
+    // Force the admin enquiries page to re-render so the new enquiry appears.
+    revalidatePath("/admin/enquiries");
 
     return NextResponse.json({ ok: true });
   } catch (err) {

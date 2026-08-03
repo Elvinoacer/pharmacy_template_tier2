@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { updateProfileAction } from "@/app/actions/portal";
@@ -12,6 +13,7 @@ export const metadata = { title: "My profile" };
 export default async function PortalProfilePage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  await requireOnboarded();
 
   const profile = await prisma.customerProfile.findUnique({
     where: { id: user.customerId },

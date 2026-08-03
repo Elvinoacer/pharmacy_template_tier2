@@ -5,6 +5,7 @@ import { refillStatusMeta } from "@/app/lib/types";
 import { PortalShell } from "@/app/components/portal/PortalShell";
 import { StatCard, Panel, Badge, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { redirect } from "next/navigation";
+import { requireOnboarded } from "@/app/lib/require-onboarded";
 import {
   FileText,
   Pill,
@@ -23,6 +24,7 @@ export const metadata = { title: "My dashboard" };
 export default async function PortalDashboardPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  await requireOnboarded();
 
   const data = await getCustomerDashboard(user.customerId);
   const activeRefills = data.refills.filter(

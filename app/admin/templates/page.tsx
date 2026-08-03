@@ -55,8 +55,18 @@ export default async function AdminTemplatesPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <AdminPanel title="Create template" description="Add a reusable message template">
-          <TemplateForm action={adminCreateTemplateAction} />
+        <AdminPanel title="Create / manage template" description="Add or edit a reusable message template">
+          <TemplateForm
+            action={adminCreateTemplateAction}
+            templates={templates.map((t) => ({
+              id: t.id,
+              name: t.name,
+              channel: t.channel,
+              subject: t.subject,
+              body: t.body,
+              category: t.category,
+            }))}
+          />
         </AdminPanel>
 
         <AdminPanel

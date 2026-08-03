@@ -4,6 +4,7 @@ import { getSessionUser } from "@/app/lib/auth";
 import { getCustomerDetail } from "@/app/lib/services/crm";
 import { prisma } from "@/app/lib/db";
 import { refillStatusMeta } from "@/app/lib/types";
+import { formatDateTime, formatDate } from "@/app/lib/time";
 import {
   adminAddNoteAction,
   adminAssignSegmentAction,
@@ -13,6 +14,7 @@ import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import AdminNoteForm from "@/app/components/admin/AdminNoteForm";
 import AdminMessageForm from "@/app/components/admin/AdminMessageForm";
+import { StaffNotesList } from "@/app/components/admin/StaffNotesList";
 import {
   ArrowLeft,
   Mail,
@@ -21,7 +23,6 @@ import {
   MapPin,
   Building2,
   Plus,
-  Pin,
   Pill,
   FileText,
   HeartHandshake,
@@ -97,7 +98,7 @@ export default async function AdminCustomerDetailPage({
               <div>
                 <p className="text-[10px] uppercase tracking-wide admin-soft">Date of birth</p>
                 <p className="admin-text">
-                  {customer.dateOfBirth ? new Date(customer.dateOfBirth).toLocaleDateString() : "—"}
+                  {customer.dateOfBirth ? formatDate(customer.dateOfBirth) : "—"}
                 </p>
               </div>
             </div>
@@ -218,7 +219,7 @@ export default async function AdminCustomerDetailPage({
                     <p className="text-sm font-semibold admin-text">{e.title}</p>
                     {e.description && <p className="text-xs admin-muted">{e.description}</p>}
                     <p className="mt-0.5 text-[10px] uppercase tracking-wide admin-soft">
-                      {new Date(e.createdAt).toLocaleString()}
+                      {formatDateTime(e.createdAt)}
                     </p>
                   </div>
                 </li>
@@ -260,7 +261,7 @@ export default async function AdminCustomerDetailPage({
                     <div className="min-w-0">
                       <p className="truncate font-medium admin-text">{r.medicineName}</p>
                       <p className="text-[10px] admin-soft">
-                        {new Date(r.createdAt).toLocaleDateString()}
+                        {formatDate(r.createdAt)}
                       </p>
                     </div>
                     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${meta.color}`}>
@@ -335,32 +336,21 @@ export default async function AdminCustomerDetailPage({
 
         <AdminPanel
           title="Staff notes"
-          description={`${customer.staffNotes.length} notes`}
+          description={`${customer.staffNotes.length} notes · drag to reorder`}
           className="lg:col-span-2"
         >
           <AdminNoteForm action={adminAddNoteAction} customerId={customer.id} />
-          {customer.staffNotes.length > 0 && (
-            <ul className="mt-4 space-y-2">
-              {customer.staffNotes.map((n) => (
-                <li
-                  key={n.id}
-                  className={`rounded-xl px-3 py-2.5 text-sm ${
-                    n.isPinned ? "bg-amber-400/10 border border-amber-400/20" : "bg-[var(--admin-inset)]"
-                  }`}
-                >
-                  {n.isPinned && (
-                    <span className="mb-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">
-                      <Pin className="h-2.5 w-2.5" /> Pinned
-                    </span>
-                  )}
-                  <p className="whitespace-pre-wrap admin-text/90">{n.body}</p>
-                  <p className="mt-1 text-[10px] admin-soft">
-                    {n.author?.email} · {new Date(n.createdAt).toLocaleString()}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
+          <StaffNotesList
+            notes={customer.staffNotes.map((n) => ({
+              id: n.id,
+              body: n.body,
+              isPinned: n.isPinned,
+              sortOrder: n.sortOrder ?? 0,
+              createdAt: n.createdAt.toISOString(),
+              authorEmail: n.author?.email ?? null,
+            }))}
+            customerId={customer.id}
+          />
         </AdminPanel>
 
         <AdminPanel title="Quick stats">

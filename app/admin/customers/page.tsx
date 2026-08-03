@@ -11,6 +11,7 @@ import {
   Phone,
   Pill,
   FileText,
+  X,
 } from "lucide-react";
 
 export const metadata = { title: "Customers" };
@@ -38,17 +39,41 @@ export default async function AdminCustomersPage({
       title="Customer CRM"
       subtitle={`${customers.length} customer${customers.length === 1 ? "" : "s"} on file`}
     >
-      {/* Search bar */}
-      <form className="mb-6">
-        <div className="relative max-w-md">
+      {/* Search bar with explicit submit + clear buttons */}
+      <form className="mb-6 flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 max-w-md">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 admin-soft" />
           <input
             name="q"
             defaultValue={sp.q || ""}
             placeholder="Search name, email, or phone…"
-            className="w-full rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2.5 pl-10 pr-4 text-sm admin-text placeholder:admin-soft focus:border-[var(--admin-accent)] focus:bg-[var(--admin-inset-2)] focus:outline-none"
+            className="w-full rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2.5 pl-10 pr-10 text-sm admin-text placeholder:admin-soft focus:border-[var(--admin-accent)] focus:bg-[var(--admin-inset-2)] focus:outline-none"
           />
+          {sp.q && (
+            <Link
+              href="/admin/customers"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 admin-soft transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
+              aria-label="Clear search"
+              title="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </Link>
+          )}
         </div>
+        <button
+          type="submit"
+          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-accent)] px-4 py-2 text-xs font-semibold text-[var(--admin-btn-fg)] transition hover:brightness-110"
+        >
+          <Search className="h-3.5 w-3.5" /> Search
+        </button>
+        {sp.q && (
+          <Link
+            href="/admin/customers"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-3 py-2 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset)] hover:text-[var(--admin-text)]"
+          >
+            <X className="h-3 w-3" /> Clear
+          </Link>
+        )}
       </form>
 
       <AdminPanel>
