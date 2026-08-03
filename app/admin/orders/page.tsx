@@ -8,6 +8,8 @@ import { Pagination, parsePageParam } from "@/app/components/Pagination";
 import { formatDateTime, formatDate } from "@/app/lib/time";
 import { BarChart3, DollarSign, TrendingUp, ShoppingCart, AlertTriangle } from "lucide-react";
 import OrderForm from "@/app/components/admin/OrderForm";
+import PeriodSelect from "@/app/components/admin/PeriodSelect";
+import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
 
 export const metadata = { title: "Orders & Revenue" };
 
@@ -101,22 +103,9 @@ export default async function AdminOrdersPage({
       title="Orders & Revenue"
       subtitle="OTC counter sales, refill payments, and revenue analytics"
       actions={
-        <form className="flex items-center gap-2">
-          <select
-            name="period"
-            defaultValue={period}
-            onChange={(e) => {
-              window.location.href = `/admin/orders?period=${e.target.value}${status ? `&status=${status}` : ""}`;
-            }}
-            className="input-admin !w-auto"
-          >
-            <option value="today">Today</option>
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="quarter">This quarter</option>
-            <option value="year">Last year</option>
-          </select>
-        </form>
+        <div className="flex items-center gap-2">
+          <PeriodSelect period={period} status={status} />
+        </div>
       }
     >
       {/* Revenue stats */}
@@ -247,15 +236,12 @@ export default async function AdminOrdersPage({
                         <form action={adminWaiveOrderAction} className="mt-1">
                           <input type="hidden" name="id" value={o.id} />
                           <input type="hidden" name="scope" value="one_time" />
-                          <button
-                            type="submit"
+                          <ConfirmSubmitButton
+                            message="Waive this payment?"
                             className="text-[10px] font-semibold text-amber-700 hover:underline"
-                            onClick={(e) => {
-                              if (!confirm("Waive this payment?")) e.preventDefault();
-                            }}
                           >
                             Waive
-                          </button>
+                          </ConfirmSubmitButton>
                         </form>
                       )}
                     </div>

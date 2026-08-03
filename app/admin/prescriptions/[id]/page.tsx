@@ -8,6 +8,7 @@ import { AdminShell } from "@/app/components/admin/AdminShell";
 import { formatDateTime, formatDate } from "@/app/lib/time";
 import { Markdown } from "@/app/components/Markdown";
 import { ArrowLeft, Pill, FileText, Calendar, DollarSign, Activity, Trash2, Sparkles } from "lucide-react";
+import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
 
 export const metadata = { title: "Prescription detail" };
 
@@ -74,17 +75,12 @@ export default async function PrescriptionDetailPage({
         )}
         <form action={adminDeletePrescriptionAction} className="ml-auto">
           <input type="hidden" name="id" value={prescription.id} />
-          <button
-            type="submit"
+          <ConfirmSubmitButton
+            message="Delete this prescription? Adherence logs will also be removed."
             className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-500/20"
-            onClick={(e) => {
-              if (!confirm("Delete this prescription? Adherence logs will also be removed.")) {
-                e.preventDefault();
-              }
-            }}
           >
             <Trash2 className="h-3.5 w-3.5" /> Delete
-          </button>
+          </ConfirmSubmitButton>
         </form>
       </div>
 
