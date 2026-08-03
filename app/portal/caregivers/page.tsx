@@ -19,6 +19,10 @@ export default async function PortalCaregiversPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const caregiverRows = caregivers.map((caregiver) => ({
+    ...caregiver,
+    cooldownRemainingSeconds: caregiver.lastInviteSentAt ? 60 : 0,
+  }));
   const active = caregivers.filter((c) => c.status === "active");
 
   return (
@@ -52,7 +56,7 @@ export default async function PortalCaregiversPage() {
               </p>
             </div>
           </div>
-          <CaregiversView caregivers={caregivers} />
+          <CaregiversView caregivers={caregiverRows} />
         </>
       )}
     </PortalShell>
