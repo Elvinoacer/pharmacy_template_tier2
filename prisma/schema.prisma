@@ -272,6 +272,7 @@ model User {
   customerNotes       CustomerNote[]
   segmentsCreated     Segment[]
   pushDevices         PushDevice[]
+  dispatchedPrescriptions Prescription[] @relation("PrescriptionDispatcher")
 
   @@map("users")
 }
@@ -452,15 +453,25 @@ model Prescription {
   unitPrice        Decimal?           @db.Decimal(10, 2) @map("unit_price")
   status           PrescriptionStatus @default(active)
   notes            String?
+  /// Optional link to a Medication catalogue row. When set, dispatching this
+  /// prescription decrements the medication's stock by `quantity`.
+  /// Nullable so legacy free-text prescriptions still work.
+  medicationId     String?            @map("medication_id") @db.Uuid
+  /// Set when an admin clicks "Dispatch" on the prescription. Null = pending.
+  dispatchedAt     DateTime?          @map("dispatched_at")
+  dispatchedById   String?            @map("dispatched_by_id") @db.Uuid
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
 
-  customer       CustomerProfile      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer      CustomerProfile      @relation(fields: [customerId], references: [id], onDelete: Cascade)
   refillRequests RefillRequest[]
-  adherence      PrescriptionAdherence[]
+  adherence     PrescriptionAdherence[]
+  medication    Medication?          @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+  dispatchedBy  User?                @relation("PrescriptionDispatcher", fields: [dispatchedById], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([status])
+  @@index([medicationId])
   @@map("prescriptions")
 }
 
@@ -929,6 +940,7 @@ model Medication {
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   orderItems OrderItem[]
+  prescriptions Prescription[]
 
   @@index([category])
   @@index([overTheCounter])

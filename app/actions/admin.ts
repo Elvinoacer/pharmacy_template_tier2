@@ -471,8 +471,24 @@ export async function adminCreatePrescriptionAction(
   if (!customerId || !medicineName) return { error: "Customer and medicine name are required." };
 
   const id = String(formData.get("id") || "");
+  const medicationId = String(formData.get("medicationId") || "") || null;
+
+  // If a medication is linked, verify it exists and pull its current price
+  // if the admin didn't override unitPrice.
+  let linkedMed: { id: string; price: unknown; stockQty: number; name: string } | null = null;
+  if (medicationId) {
+    linkedMed = await prisma.medication.findUnique({
+      where: { id: medicationId },
+      select: { id: true, price: true, stockQty: true, name: true },
+    });
+    if (!linkedMed) {
+      return { error: "Linked medication not found. Refresh the page and try again." };
+    }
+  }
+
   const data = {
     customerId,
+    medicationId,
     medicineName,
     rxReference: String(formData.get("rxReference") || "") || null,
     dosage: String(formData.get("dosage") || "") || null,
@@ -490,7 +506,7 @@ export async function adminCreatePrescriptionAction(
 
   if (id) {
     await prisma.prescription.update({ where: { id }, data });
-    await writeAuditLog(user.id, "prescription_updated", "prescription", id, { customerId });
+    await writeAuditLog(user.id, "prescription_updated", "prescription", id, { customerId, medicationId });
     revalidatePath("/admin/prescriptions");
     revalidatePath(`/admin/prescriptions/${id}`);
     revalidatePath(`/admin/customers/${customerId}`);
@@ -504,13 +520,101 @@ export async function adminCreatePrescriptionAction(
     "prescription_created",
     "Prescription added",
     `${medicineName} — ${data.refillsRemaining ?? 0} refills`,
-    { prescriptionId: rx.id },
+    { prescriptionId: rx.id, medicationId },
     user.id,
   );
-  await writeAuditLog(user.id, "prescription_created", "prescription", rx.id, { customerId });
+  await writeAuditLog(user.id, "prescription_created", "prescription", rx.id, { customerId, medicationId });
   revalidatePath("/admin/prescriptions");
   revalidatePath(`/admin/customers/${customerId}`);
-  return { success: "Prescription created." };
+  return { success: "Prescription created. Stock will be deducted when you dispatch it." };
+}
+
+/**
+ * Dispatch a prescription — deducts stock from the linked medication.
+ *
+ * Per the spec: prescriptions must NOT affect inventory at creation time.
+ * Only when an admin explicitly clicks "Dispatch" should stock be deducted.
+ *
+ * Idempotent: if the prescription is already dispatched, returns success
+ * without re-decrementing stock.
+ */
+export async function adminDispatchPrescriptionAction(formData: FormData) {
+  const user = await staff();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+
+  const rx = await prisma.prescription.findUnique({
+    where: { id },
+    include: { medication: true, customer: { select: { id: true, fullName: true } } },
+  });
+  if (!rx) return;
+
+  // Idempotent — already dispatched.
+  if (rx.dispatchedAt) {
+    revalidatePath(`/admin/prescriptions/${id}`);
+    return;
+  }
+
+  const qty = rx.quantity ?? 1;
+
+  // If linked to a medication, decrement stock (transactional).
+  if (rx.medicationId && rx.medication) {
+    const med = rx.medication;
+    if (med.stockQty < qty) {
+      throw new Error(
+        `Insufficient stock for ${med.name}. Available: ${med.stockQty}, required: ${qty}.`,
+      );
+    }
+    await prisma.$transaction(async (tx) => {
+      await tx.medication.update({
+        where: { id: med.id },
+        data: { stockQty: { decrement: qty } },
+      });
+      await tx.prescription.update({
+        where: { id },
+        data: {
+          dispatchedAt: new Date(),
+          dispatchedById: user.id,
+          lastFilledAt: new Date(),
+        },
+      });
+    });
+  } else {
+    // No linked medication — just mark dispatched.
+    await prisma.prescription.update({
+      where: { id },
+      data: {
+        dispatchedAt: new Date(),
+        dispatchedById: user.id,
+        lastFilledAt: new Date(),
+      },
+    });
+  }
+
+  // Decrement refills remaining (if any) — dispatching consumes one refill.
+  if ((rx.refillsRemaining ?? 0) > 0) {
+    await prisma.prescription.update({
+      where: { id },
+      data: { refillsRemaining: { decrement: 1 } },
+    });
+  }
+
+  await addTimelineEvent(
+    rx.customerId,
+    user.id,
+    "prescription_dispatched",
+    "Prescription dispatched",
+    `${rx.medicineName} — ${qty} units`,
+    { prescriptionId: id, medicationId: rx.medicationId, quantity: qty },
+    user.id,
+  );
+  await writeAuditLog(user.id, "prescription_dispatched", "prescription", id, {
+    medicationId: rx.medicationId,
+    quantity: qty,
+  });
+  revalidatePath(`/admin/prescriptions/${id}`);
+  revalidatePath(`/admin/customers/${rx.customerId}`);
+  revalidatePath("/admin/medications");
 }
 
 export async function adminDeletePrescriptionAction(formData: FormData) {
@@ -677,19 +781,82 @@ export async function adminCreateOrderAction(
     }
   }
 
-  // Apply coupon if given.
+  // Apply coupon if given — with full validation.
+  // The previous code only checked `active` and silently ignored invalid
+  // coupons, which created abuse opportunities (expired coupons, over-limit
+  // redemptions, coupons that didn't belong to the customer).
+  // Now we validate existence, active state, validity window, global
+  // redemption cap, and per-customer redemption cap. We also try to match
+  // the coupon to the customer's email when the customer isn't selected.
   let discount = 0;
   let couponId: string | null = null;
   if (couponCode) {
-    const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
-    if (coupon && coupon.active) {
-      couponId = coupon.id;
-      if (coupon.discountType === "percent") {
-        discount = Number(med.price) * quantity * (Number(coupon.discountValue) / 100);
-      } else if (coupon.discountType === "fixed") {
-        discount = Number(coupon.discountValue) * quantity;
+    const coupon = await prisma.coupon.findUnique({
+      where: { code: couponCode.toUpperCase() },
+    });
+    if (!coupon) {
+      return { error: `Coupon "${couponCode.toUpperCase()}" does not exist.` };
+    }
+    if (!coupon.active) {
+      return { error: `Coupon ${coupon.code} is inactive.` };
+    }
+    const now = new Date();
+    if (coupon.validFrom && coupon.validFrom > now) {
+      return { error: `Coupon ${coupon.code} is not valid yet (starts ${coupon.validFrom.toISOString().slice(0, 10)}).` };
+    }
+    if (coupon.validUntil && coupon.validUntil < now) {
+      return { error: `Coupon ${coupon.code} expired on ${coupon.validUntil.toISOString().slice(0, 10)}.` };
+    }
+    if (coupon.maxRedemptions && coupon.redemptions >= coupon.maxRedemptions) {
+      return { error: `Coupon ${coupon.code} has reached its redemption limit (${coupon.maxRedemptions}).` };
+    }
+
+    // Per-customer limit (default 1). Walk-in customers (no customerId) skip this.
+    if (finalCustomerId) {
+      const perCustomerLimit = coupon.maxRedemptionsPerCustomer ?? 1;
+      const customerRedemptions = await prisma.orderItem.count({
+        where: {
+          couponId: coupon.id,
+          order: { customerId: finalCustomerId },
+        },
+      });
+      if (customerRedemptions >= perCustomerLimit) {
+        return {
+          error: `Customer has already redeemed ${coupon.code} ${customerRedemptions} time(s). Limit: ${perCustomerLimit}.`,
+        };
+      }
+    } else if (customerEmail) {
+      // Walk-in case: try to match against any prior order under this email.
+      const perCustomerLimit = coupon.maxRedemptionsPerCustomer ?? 1;
+      const customerRedemptions = await prisma.orderItem.count({
+        where: {
+          couponId: coupon.id,
+          order: {
+            customer: { user: { email: customerEmail.toLowerCase() } },
+          },
+        },
+      });
+      if (customerRedemptions >= perCustomerLimit) {
+        return {
+          error: `Email ${customerEmail} has already redeemed ${coupon.code}. Limit: ${perCustomerLimit}.`,
+        };
       }
     }
+
+    couponId = coupon.id;
+    if (coupon.discountType === "percent") {
+      discount = Number(med.price) * quantity * (Number(coupon.discountValue) / 100);
+    } else if (coupon.discountType === "fixed") {
+      discount = Number(coupon.discountValue) * quantity;
+    }
+    // "points" discount type is handled at loyalty redemption time, not here.
+  }
+
+  // Verify stock is sufficient — fail loudly instead of going negative.
+  if (med.stockQty < quantity) {
+    return {
+      error: `Insufficient stock for ${med.name}. Available: ${med.stockQty}, requested: ${quantity}.`,
+    };
   }
 
   const unitPrice = Number(med.price);

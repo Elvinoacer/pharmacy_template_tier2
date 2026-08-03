@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Megaphone, FileText, Calendar, AlertCircle, Check, Save, Wand2, Zap } from "lucide-react";
-import { toast } from "@/app/components/Toaster";
+import { callAiDraft } from "@/app/lib/ai-form-helper";
 
 export default function CampaignForm({
   action,
@@ -14,35 +14,21 @@ export default function CampaignForm({
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [body, setBody] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
   const [sendNow, setSendNow] = useState(false);
 
   async function aiDraft() {
+    setAiLoading(true);
     try {
-      const r = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a pharmacy marketing assistant. Draft a campaign message body. Use {{name}} as the customer name placeholder. Keep it warm, professional, and concise (3-5 sentences). Markdown is supported. Output only the body.",
-            },
-            { role: "user", content: body || "Draft a flu season vaccination reminder campaign." },
-          ],
-        }),
+      await callAiDraft({
+        systemPrompt:
+          "You are a pharmacy marketing assistant. Draft a campaign message body. Use {{name}} as the customer name placeholder. Keep it warm, professional, and concise (3-5 sentences). Markdown is supported. Output only the body.",
+        userPrompt: body || "Draft a flu season vaccination reminder campaign.",
+        onResult: setBody,
+        successMessage: "AI drafted a campaign body.",
       });
-      if (!r.ok) throw new Error();
-      const j = (await r.json()) as { reply?: string; content?: string };
-      const suggestion = j.reply || j.content || "";
-      if (suggestion) {
-        setBody(suggestion.trim());
-        toast.success("AI drafted a campaign body.");
-      } else {
-        toast.error("AI did not return a suggestion.");
-      }
-    } catch {
-      toast.error("AI helper unavailable.");
+    } finally {
+      setAiLoading(false);
     }
   }
 
@@ -109,10 +95,11 @@ export default function CampaignForm({
           <button
             type="button"
             onClick={aiDraft}
-            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110"
+            disabled={aiLoading}
+            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
             title="Let AI draft the body"
           >
-            <Wand2 className="h-2.5 w-2.5" /> AI draft
+            <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
           </button>
         </div>
         <textarea

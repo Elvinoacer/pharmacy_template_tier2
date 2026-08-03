@@ -5,6 +5,7 @@ import type { ActionState } from "@/app/actions/admin";
 import { CalendarClock, Mail, MessageSquare, MessageCircle, Bell, Type, FileText, Calendar, AlertCircle, Check, Send, Zap, Wand2 } from "lucide-react";
 import { CustomerPicker } from "@/app/components/CustomerPicker";
 import { toast } from "@/app/components/Toaster";
+import { callAiDraft } from "@/app/lib/ai-form-helper";
 
 const TYPES = [
   { value: "refill", label: "Refill" },
@@ -32,38 +33,24 @@ export default function ReminderForm({
   const [sendNow, setSendNow] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   async function aiDraft() {
     if (!title.trim()) {
       toast.info("Add a title first.");
       return;
     }
+    setAiLoading(true);
     try {
-      const r = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a pharmacy assistant drafting a short reminder message to a customer. The reminder title is given. Write a warm, concise body (1-3 sentences) including any relevant next step. Output only the body, no preamble.",
-            },
-            { role: "user", content: `Reminder title: ${title}` },
-          ],
-        }),
+      await callAiDraft({
+        systemPrompt:
+          "You are a pharmacy assistant drafting a short reminder message to a customer. The reminder title is given. Write a warm, concise body (1-3 sentences) including any relevant next step. Output only the body, no preamble.",
+        userPrompt: `Reminder title: ${title}`,
+        onResult: setBody,
+        successMessage: "AI drafted the reminder body.",
       });
-      if (!r.ok) throw new Error();
-      const j = (await r.json()) as { reply?: string; content?: string };
-      const suggestion = j.reply || j.content || "";
-      if (suggestion) {
-        setBody(suggestion.trim());
-        toast.success("AI drafted the reminder body.");
-      } else {
-        toast.error("AI did not return a suggestion.");
-      }
-    } catch {
-      toast.error("AI helper unavailable.");
+    } finally {
+      setAiLoading(false);
     }
   }
 
@@ -133,9 +120,10 @@ export default function ReminderForm({
           <button
             type="button"
             onClick={aiDraft}
-            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110"
+            disabled={aiLoading}
+            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
           >
-            <Wand2 className="h-2.5 w-2.5" /> AI draft
+            <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
           </button>
         </div>
         <div className="relative">
