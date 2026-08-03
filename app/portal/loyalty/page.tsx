@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { redeemCouponAction } from "@/app/actions/portal";
 import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel, StatCard, EmptyState } from "@/app/components/portal/PortalWidgets";
 import {
@@ -11,11 +10,11 @@ import {
   Tag,
   TrendingUp,
   Award,
-  Check,
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
 import { CopyButton } from "@/app/components/portal/CopyButton";
+import { RedeemCouponForm } from "@/app/components/portal/RedeemCouponForm";
 
 export const metadata = { title: "Loyalty" };
 
@@ -146,7 +145,10 @@ export default async function PortalLoyaltyPage() {
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2">
               {availableCoupons.map((c) => {
-                const canRedeem = c.pointsCost > 0 && balance >= c.pointsCost;
+                const alreadyRedeemed = Boolean(account?.transactions.some(
+                  (t) => t.type === "redeem" && t.description?.includes(c.code),
+                ));
+                const canRedeem = c.pointsCost > 0 && balance >= c.pointsCost && !alreadyRedeemed;
                 return (
                   <li
                     key={c.id}
@@ -166,22 +168,12 @@ export default async function PortalLoyaltyPage() {
                         <span className="badge badge-accent">
                           <Sparkles className="h-3 w-3" /> {c.pointsCost} pts
                         </span>
-                        <form action={redeemCouponAction}>
-                          <input type="hidden" name="couponId" value={c.id} />
-                          <button
-                            type="submit"
-                            disabled={!canRedeem}
-                            className="inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#084c3f] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
-                          >
-                            {canRedeem ? (
-                              <>
-                                <Check className="h-3.5 w-3.5" /> Redeem
-                              </>
-                            ) : (
-                              `Need ${c.pointsCost - balance} more`
-                            )}
-                          </button>
-                        </form>
+                        <RedeemCouponForm
+                          couponId={c.id}
+                          canRedeem={canRedeem}
+                          pointsShort={Math.max(0, c.pointsCost - balance)}
+                          alreadyRedeemed={alreadyRedeemed}
+                        />
                       </div>
                     ) : (
                       <p className="text-xs font-medium text-[#0d6e5a]">Free with any purchase</p>

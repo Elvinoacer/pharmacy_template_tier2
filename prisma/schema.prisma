@@ -401,6 +401,8 @@ model Caregiver {
   canRequestRefills             Boolean         @default(true) @map("can_request_refills")
   canReceivePickupNotifications Boolean         @default(true) @map("can_receive_pickup_notifications")
   status                        CaregiverStatus @default(active)
+  lastInviteSentAt              DateTime?       @map("last_invite_sent_at")
+  inviteSendCount               Int             @default(0) @map("invite_send_count")
   createdAt                     DateTime        @default(now()) @map("created_at")
 
   customer      CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
