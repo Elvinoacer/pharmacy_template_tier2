@@ -89,7 +89,7 @@ export async function createRefillRequest(data: {
       { refillId: refill.id },
     );
 
-    await prisma.notification.create({
+      await prisma.notification.create({
       data: {
         customerId: data.customerId,
         channel: "in_app",
@@ -164,7 +164,7 @@ export async function updateRefillStatus(
       actorId,
     );
 
-    await prisma.notification.create({
+      await prisma.notification.create({
       data: {
         customerId: refill.customerId,
         channel: "in_app",
@@ -459,7 +459,7 @@ export async function respondToFeedback(id: string, response: string, responderI
 
   // Notify the customer that staff responded — both in-app notification and push.
   if (feedback.customer) {
-    await prisma.notification.create({
+      await prisma.notification.create({
       data: {
         customerId: feedback.customer.id,
         channel: "in_app",
@@ -694,7 +694,7 @@ export async function launchCampaign(campaignId: string, actorId: string) {
       subject: personalizedSubject,
       body: personalizedBody,
     });
-    await prisma.notification.create({
+      await prisma.notification.create({
       data: {
         customerId: customer.id,
         channel,
@@ -737,72 +737,87 @@ export async function launchCampaign(campaignId: string, actorId: string) {
   });
 }
 
-export async function processDueReminders() {
+export async function processDueReminders(): Promise<{ processedCount: number; failedCount: number; errors: string[] }> {
   const due = await prisma.reminder.findMany({
     where: { status: "scheduled", scheduledFor: { lte: new Date() } },
     include: { customer: { include: { user: { select: { id: true, email: true } }, preferences: true } } },
     take: 50,
   });
 
+  let processedCount = 0;
+  let failedCount = 0;
+  const errors: string[] = [];
+
   for (const reminder of due) {
-    const delivery = await sendDelivery({
-      channel: reminder.channel,
-      recipient: {
-        email: reminder.customer.user.email,
-        phone: reminder.customer.phone,
-        preferences: reminder.customer.preferences
-          ? {
-              emailEnabled: reminder.customer.preferences.emailEnabled,
-              smsEnabled: reminder.customer.preferences.smsEnabled,
-              whatsappEnabled: reminder.customer.preferences.whatsappEnabled,
-            }
-          : null,
-      },
-      subject: reminder.title,
-      body: reminder.body || reminder.title,
-    });
-    await prisma.notification.create({
-      data: {
-        customerId: reminder.customerId,
+    try {
+      const delivery = await sendDelivery({
         channel: reminder.channel,
-        type: reminder.type,
-        title: reminder.title,
+        recipient: {
+          email: reminder.customer.user.email,
+          phone: reminder.customer.phone,
+          preferences: reminder.customer.preferences
+            ? {
+                emailEnabled: reminder.customer.preferences.emailEnabled,
+                smsEnabled: reminder.customer.preferences.smsEnabled,
+                whatsappEnabled: reminder.customer.preferences.whatsappEnabled,
+              }
+            : null,
+        },
+        subject: reminder.title,
         body: reminder.body || reminder.title,
-        status: delivery.status,
-        sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
-        relatedType: "reminder",
-        relatedId: reminder.id,
-      },
-    });
-    await prisma.reminder.update({
-      where: { id: reminder.id },
-      data: {
-        status: delivery.status === "failed" ? "failed" : delivery.status === "pending" ? "scheduled" : "sent",
-        sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
-      },
-    });
-
-    // Best-effort web push for reminders so customers see them on their device.
-    if (reminder.customer?.user?.id) {
-      await dispatchPushToUser(reminder.customer.user.id, {
-        title: reminder.title,
-        body: reminder.body || reminder.title,
-        url: "/portal",
-        data: { tag: `reminder-${reminder.id}`, reminderId: reminder.id, type: reminder.type },
-      }).catch(() => {
-        /* best-effort */
       });
-    }
 
-    await addTimelineEvent(
-      reminder.customerId,
-      null,
-      "reminder_sent",
-      reminder.title,
-      reminder.body || undefined,
-      { reminderId: reminder.id },
-    );
+      await prisma.notification.create({
+        data: {
+          customerId: reminder.customerId,
+          channel: reminder.channel,
+          type: reminder.type,
+          title: reminder.title,
+          body: reminder.body || reminder.title,
+          status: delivery.status,
+          sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
+          relatedType: "reminder",
+          relatedId: reminder.id,
+        },
+      });
+
+      await prisma.reminder.update({
+        where: { id: reminder.id },
+        data: {
+          status: delivery.status === "failed" ? "failed" : delivery.status === "pending" ? "scheduled" : "sent",
+          sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
+        },
+      });
+
+      // Best-effort web push for reminders so customers see them on their device.
+      if (reminder.customer?.user?.id) {
+        await dispatchPushToUser(reminder.customer.user.id, {
+          title: reminder.title,
+          body: reminder.body || reminder.title,
+          url: "/portal",
+          data: { tag: `reminder-${reminder.id}`, reminderId: reminder.id, type: reminder.type },
+        }).catch(() => {
+          /* best-effort */
+        });
+      }
+
+      await addTimelineEvent(
+        reminder.customerId,
+        null,
+        "reminder_sent",
+        reminder.title,
+        reminder.body || undefined,
+        { reminderId: reminder.id },
+      );
+
+      processedCount += 1;
+      if (delivery.status === "failed") failedCount += 1;
+    } catch (error) {
+      failedCount += 1;
+      errors.push(error instanceof Error ? error.message : "Unknown reminder processing error");
+      await prisma.reminder.update({ where: { id: reminder.id }, data: { status: "failed" } }).catch(() => {});
+    }
   }
 
-  return due.length;
+  return { processedCount, failedCount, errors };
 }

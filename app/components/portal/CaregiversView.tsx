@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { addCaregiverAction, removeCaregiverAction, restoreCaregiverAction, inviteCaregiverAction, type ActionState } from "@/app/actions/portal";
+import { addCaregiverAction, removeCaregiverAction, restoreCaregiverAction, type ActionState } from "@/app/actions/portal";
 import { Panel } from "@/app/components/portal/PortalShell";
 import {
   UserPlus,
@@ -14,8 +14,8 @@ import {
   Check,
   AlertCircle,
   RotateCcw,
-  Send,
 } from "lucide-react";
+import { InviteCaregiverForm } from "@/app/components/portal/InviteCaregiverForm";
 
 type Caregiver = {
   id: string;
@@ -26,6 +26,8 @@ type Caregiver = {
   canRequestRefills: boolean;
   canReceivePickupNotifications: boolean;
   status: string;
+  cooldownRemainingSeconds?: number;
+  inviteSendCount?: number;
 };
 
 const AVATAR_COLORS = [
@@ -115,16 +117,10 @@ export function CaregiversView({ caregivers }: { caregivers: Caregiver[] }) {
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {c.caregiverEmail && (
-                        <form action={inviteCaregiverAction}>
-                          <input type="hidden" name="id" value={c.id} />
-                          <button
-                            type="submit"
-                            className="inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-2 py-0.5 text-[10px] font-semibold text-[#0d6e5a] transition hover:bg-[#d5efe6]"
-                            title="Send invite email so they can set up their caregiver account"
-                          >
-                            <Send className="h-2.5 w-2.5" /> Send invite link
-                          </button>
-                        </form>
+                        <InviteCaregiverForm
+                          caregiverId={c.id}
+                          cooldownRemainingSeconds={c.cooldownRemainingSeconds}
+                        />
                       )}
                     </div>
                   </div>

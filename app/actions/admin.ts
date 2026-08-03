@@ -283,8 +283,8 @@ export async function adminCreateReminderAction(
 
 export async function adminProcessRemindersAction() {
   const user = await staff();
-  const count = await processDueReminders();
-  await writeAuditLog(user.id, "reminders_processed", "reminder", undefined, { count });
+  const result = await processDueReminders();
+  await writeAuditLog(user.id, "reminders_processed", "reminder", undefined, result);
   revalidatePath("/admin/reminders");
   revalidatePath("/admin/notifications");
 }

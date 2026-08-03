@@ -4,6 +4,7 @@ import { prisma } from "@/app/lib/db";
 import { adminCreateReminderAction, adminProcessRemindersAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
+import { PendingSubmitButton } from "@/app/components/PendingSubmitButton";
 import ReminderForm from "@/app/components/admin/ReminderForm";
 import { formatDateTime } from "@/app/lib/time";
 import {
@@ -70,12 +71,16 @@ export default async function AdminRemindersPage() {
       subtitle="Schedule and dispatch refill, pickup, and wellness reminders"
       actions={
         <form action={adminProcessRemindersAction}>
-          <button
-            type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 px-4 py-2 text-sm font-semibold text-[#422006] transition hover:brightness-110"
+          <PendingSubmitButton
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 px-4 py-2 text-sm font-semibold text-[#422006] transition hover:brightness-110 disabled:cursor-wait disabled:opacity-70"
+            pendingChildren={
+              <>
+                <span className="typing-dot" /> Processing…
+              </>
+            }
           >
             <Zap className="h-4 w-4" /> Process due now
-          </button>
+          </PendingSubmitButton>
         </form>
       }
     >

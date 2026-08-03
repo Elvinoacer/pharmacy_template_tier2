@@ -272,6 +272,15 @@ export async function inviteCaregiverAction(formData: FormData) {
   });
   if (!caregiver || !caregiver.caregiverEmail) return;
 
+  const cooldownMs = Number(process.env.CAREGIVER_INVITE_COOLDOWN_SECONDS || 60) * 1000;
+  if (caregiver.lastInviteSentAt) {
+    const remainingMs = cooldownMs - (Date.now() - caregiver.lastInviteSentAt.getTime());
+    if (remainingMs > 0) {
+      console.warn(`[caregiverInvite] cooldown active for ${caregiver.id}; ${Math.ceil(remainingMs / 1000)}s remaining`);
+      return;
+    }
+  }
+
   // Generate a token-based invite link.
   const { randomBytes, createHash } = await import("crypto");
   const token = randomBytes(32).toString("hex");
@@ -297,6 +306,11 @@ export async function inviteCaregiverAction(formData: FormData) {
     recipient: { email: caregiver.caregiverEmail },
     subject: `${user.fullName || "A patient"} invited you to be their caregiver`,
     body: `Hi ${caregiver.caregiverName},\n\n${user.fullName || "A patient"} has invited you to be their caregiver on Aether Pharmacy. As a caregiver, you can:\n\n- Request refills on their behalf\n- Receive pickup notifications\n- View their medication schedule\n\nClick the link below to accept the invitation and set up your account:\n\n${inviteUrl}\n\nThis link expires in 7 days.\n\n— Aether Pharmacy`,
+  });
+
+  await prisma.caregiver.update({
+    where: { id: caregiver.id },
+    data: { lastInviteSentAt: new Date(), inviteSendCount: { increment: 1 } },
   });
 
   await writeAuditLog(user.id, "caregiver_invited", "caregiver", caregiver.id, { email: caregiver.caregiverEmail });
@@ -327,12 +341,15 @@ export async function portalFeedbackAction(
   return { success: "Thank you — your feedback was submitted." };
 }
 
-export async function redeemCouponAction(formData: FormData) {
+export async function redeemCouponAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const user = await getSessionUser();
-  if (!user?.customerId) return;
+  if (!user?.customerId) return { error: "Please sign in." };
 
   const couponId = String(formData.get("couponId") || "");
-  if (!couponId) return;
+  if (!couponId) return { error: "Coupon is required." };
 
   const result = await prisma.$transaction(async (tx) => {
     const [account, coupon] = await Promise.all([
@@ -404,12 +421,14 @@ export async function redeemCouponAction(formData: FormData) {
       couponCode: result.couponCode,
       pointsCost: result.pointsCost,
     });
-  } else if ("reason" in result && result.reason) {
-    // Best-effort: surface the reason via a server-thrown error message.
-    console.warn(`[redeemCoupon] blocked: ${result.reason}`);
+    revalidatePath("/portal/loyalty");
+    return { success: `Coupon ${result.couponCode} redeemed! Your reward has been applied.` };
   }
 
+  const reason = "reason" in result && result.reason ? result.reason : "Could not redeem coupon.";
+  console.warn(`[redeemCoupon] blocked: ${reason}`);
   revalidatePath("/portal/loyalty");
+  return { error: reason };
 }
 
 // ── Portal message reply ──────────────────────────────────────
