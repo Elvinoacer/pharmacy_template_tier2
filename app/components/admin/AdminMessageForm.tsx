@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Mail, MessageSquare, MessageCircle, Layout, FileText, Calendar, AlertCircle, Check, Send, Wand2 } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
@@ -23,12 +23,22 @@ export default function AdminMessageForm({
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [channel, setChannel] = useState<string>("email");
   const [body, setBody] = useState("");
+  const [subject, setSubject] = useState("");
+  const [scheduledFor, setScheduledFor] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
   const current = CHANNELS.find((c) => c.value === channel) || CHANNELS[0];
 
-  // AI helper — uses the same /api/chat endpoint as the customer-facing chatbot.
-  // Generates a suggested message body based on a short intent string.
+  useEffect(() => {
+    if (state?.success) {
+      toast.success(state.success);
+      setBody("");
+      setSubject("");
+      setScheduledFor("");
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state]);
+
   async function aiDraft() {
     if (!body.trim()) {
       toast.info("Add a quick note about what you want to say first, then AI can expand it.");
@@ -91,17 +101,21 @@ export default function AdminMessageForm({
         </div>
       </div>
 
-      {/* Subject — only relevant for email */}
       {current.hasSubject && (
         <div>
           <label className="label-admin">Subject</label>
           <div className="relative">
             <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input name="subject" placeholder="Subject line" className="input-admin pl-9" />
+            <input
+              name="subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Subject line"
+              className="input-admin pl-9"
+            />
           </div>
         </div>
       )}
-      {/* Hidden placeholder so server action still gets an empty subject for non-email channels */}
       {!current.hasSubject && (
         <input type="hidden" name="subject" value="" />
       )}
@@ -134,11 +148,17 @@ export default function AdminMessageForm({
         <label className="label-admin">Schedule (optional)</label>
         <div className="relative">
           <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input name="scheduledFor" type="datetime-local" className="input-admin pl-9" />
+          <input
+            name="scheduledFor"
+            type="datetime-local"
+            value={scheduledFor}
+            onChange={(e) => setScheduledFor(e.target.value)}
+            className="input-admin pl-9"
+          />
         </div>
         <p className="mt-1 text-[10px] admin-soft">
-          Leave empty to send immediately. Times are in your local timezone. A cron job
-          will deliver scheduled messages at the right moment — no manual launch needed.
+          Leave empty to send immediately. Times are in Africa/Nairobi. A cron job
+          will deliver scheduled messages at the right moment.
         </p>
       </div>
 
@@ -156,4 +176,3 @@ export default function AdminMessageForm({
     </form>
   );
 }
-

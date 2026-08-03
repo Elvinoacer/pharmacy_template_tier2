@@ -446,6 +446,8 @@ model Prescription {
   refillsRemaining Int?               @default(0) @map("refills_remaining")
   lastFilledAt     DateTime?          @map("last_filled_at") @db.Date
   nextRefillDue    DateTime?          @map("next_refill_due") @db.Date
+  /// Explicit course start date (admin-settable; falls back to createdAt when null).
+  startDate        DateTime?          @map("start_date") @db.Date
   /// When the prescription should be terminated (e.g. 6-month course ended).
   endDate          DateTime?          @db.Date
   prescriber       String?
@@ -933,6 +935,10 @@ model Medication {
   stockQty        Int      @default(0) @map("stock_qty")
   lowStockThreshold Int    @default(10) @map("low_stock_threshold")
   imageUrl        String?  @map("image_url")
+  /// Extra gallery image URLs (comma-separated or JSON array stored as text).
+  imageUrls       String?  @map("image_urls")
+  /// Optional list of equivalent/alternative medication IDs (comma-separated UUIDs).
+  alternativeIds  String?  @map("alternative_ids")
   active          Boolean  @default(true)
   /// Last time the POS sync touched this row.
   syncedAt        DateTime? @map("synced_at")

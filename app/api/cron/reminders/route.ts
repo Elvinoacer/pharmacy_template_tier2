@@ -14,14 +14,14 @@ function authorized(request: NextRequest) {
 }
 
 /**
- * Hourly cron — runs three jobs:
+ * 5-minute cron — runs three jobs:
  *
  * 1. processDueReminders — fires any reminder whose scheduledFor has passed.
  * 2. processScheduledCampaigns — launches any scheduled campaign whose time has come.
  * 3. processScheduledMessages — sends any message whose scheduledFor has passed.
  *
  * Call via: `curl -H "Authorization: Bearer $CRON_SECRET" https://…/api/cron/reminders`
- * Configure a system cron (Vercel cron, systemd timer, etc.) to hit this every hour.
+ * Configure a system cron (Vercel cron, systemd timer, etc.) to hit this every 5 minutes.
  */
 
 async function processScheduledCampaigns(): Promise<number> {
@@ -119,23 +119,79 @@ async function processScheduledMessages(): Promise<number> {
   return sent;
 }
 
+/**
+ * Proactively alert pharmacists when adherence drops below 70% over the last
+ * 14 logged days. Rate-limited to one AdminNotification per prescription per 7 days.
+ */
+async function processLowAdherenceAlerts(): Promise<number> {
+  const since = new Date();
+  since.setDate(since.getDate() - 14);
+
+  const activeRx = await prisma.prescription.findMany({
+    where: { status: "active" },
+    select: {
+      id: true,
+      medicineName: true,
+      customerId: true,
+      customer: { select: { fullName: true } },
+      adherence: {
+        where: { takenOn: { gte: since } },
+        select: { status: true },
+      },
+    },
+    take: 200,
+  });
+
+  let alerted = 0;
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+  for (const rx of activeRx) {
+    if (rx.adherence.length < 5) continue; // need enough data
+    const ok = rx.adherence.filter((a) => a.status === "taken" || a.status === "late").length;
+    const rate = Math.round((ok / rx.adherence.length) * 100);
+    if (rate >= 70) continue;
+
+    const existing = await prisma.adminNotification.findFirst({
+      where: {
+        type: "adherence_low",
+        relatedId: rx.id,
+        createdAt: { gte: weekAgo },
+      },
+    });
+    if (existing) continue;
+
+    await recordAdminNotification({
+      type: "adherence_low",
+      title: `Low adherence: ${rx.medicineName}`,
+      body: `${rx.customer?.fullName || "Customer"} is at ${rate}% adherence over the last ${rx.adherence.length} logged days for ${rx.medicineName}. Review the prescription detail page.`,
+      severity: rate < 50 ? "critical" : "warning",
+      relatedType: "prescription",
+      relatedId: rx.id,
+    });
+    alerted += 1;
+  }
+  return alerted;
+}
+
 export async function GET(request: NextRequest) {
   if (!authorized(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [reminders, campaigns, messages] = await Promise.all([
+  const [reminders, campaigns, messages, adherenceAlerts] = await Promise.all([
     processDueReminders(),
     processScheduledCampaigns(),
     processScheduledMessages(),
+    processLowAdherenceAlerts(),
   ]);
 
   await writeAuditLog(null, "cron_reminders_processed", "reminder", undefined, {
     reminders,
     campaigns,
     messages,
+    adherenceAlerts,
   });
-  return Response.json({ reminders, campaigns, messages });
+  return Response.json({ reminders, campaigns, messages, adherenceAlerts });
 }
 
 export async function POST(request: NextRequest) {

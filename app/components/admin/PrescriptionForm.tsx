@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
+import { toast } from "@/app/components/Toaster";
 import { Pill, FileText, Calendar, DollarSign, AlertCircle, Check, Save, Hash, Boxes, Tag } from "lucide-react";
 import { CustomerPicker } from "@/app/components/CustomerPicker";
 import { MedicationPicker, type MedicationOption } from "@/app/components/MedicationPicker";
@@ -35,6 +36,7 @@ export default function PrescriptionForm({
     refillsRemaining: number | null;
     unitPrice: number | null;
     status: string;
+    startDate: string | null;
     nextRefillDue: string | null;
     endDate: string | null;
     prescriber: string | null;
@@ -48,6 +50,21 @@ export default function PrescriptionForm({
   const [rxReference, setRxReference] = useState(initial?.rxReference ?? "");
   const [dosage, setDosage] = useState(initial?.dosage ?? "");
   const [unitPrice, setUnitPrice] = useState(initial?.unitPrice?.toString() ?? "");
+
+  useEffect(() => {
+    if (state?.success) {
+      toast.success(state.success);
+      if (!initial?.id) {
+        setCustomerId("");
+        setMedicationId("");
+        setMedicineName("");
+        setRxReference("");
+        setDosage("");
+        setUnitPrice("");
+      }
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state, initial?.id]);
 
   function onMedicationSelected(m: MedicationOption | null) {
     if (!m) {
@@ -191,7 +208,7 @@ export default function PrescriptionForm({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <label className="label-admin">Status</label>
           <select name="status" className="input-admin" defaultValue={initial?.status ?? "active"}>
@@ -200,6 +217,13 @@ export default function PrescriptionForm({
             <option value="expired">Expired</option>
             <option value="discontinued">Discontinued</option>
           </select>
+        </div>
+        <div>
+          <label className="label-admin">Start date</label>
+          <div className="relative">
+            <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+            <input name="startDate" type="date" defaultValue={initial?.startDate?.slice(0, 10) ?? ""} className="input-admin pl-9" />
+          </div>
         </div>
         <div>
           <label className="label-admin">Next refill due</label>

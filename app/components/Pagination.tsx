@@ -23,6 +23,8 @@ export type PaginationProps = {
   queryParams?: Record<string, string | undefined>;
   /** Dark admin theme vs light portal theme. */
   variant?: "admin" | "portal";
+  /** Query string key for the page number (default `page`). Use e.g. `cpage` when two pagers share a page. */
+  pageParam?: string;
 };
 
 export function Pagination({
@@ -32,6 +34,7 @@ export function Pagination({
   basePath,
   queryParams = {},
   variant = "admin",
+  pageParam = "page",
 }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   if (total <= pageSize) return null; // no pager needed for single-page results
@@ -41,9 +44,9 @@ export function Pagination({
   const buildUrl = (p: number) => {
     const params = new URLSearchParams();
     for (const [k, v] of Object.entries(queryParams)) {
-      if (v) params.set(k, v);
+      if (v && k !== pageParam) params.set(k, v);
     }
-    params.set("page", String(p));
+    params.set(pageParam, String(p));
     const qs = params.toString();
     return `${basePath}${qs ? `?${qs}` : ""}`;
   };

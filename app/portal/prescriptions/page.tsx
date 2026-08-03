@@ -120,6 +120,21 @@ export default async function PortalPrescriptionsPage() {
                         <span>Due {formatDate(p.nextRefillDue)}</span>
                       </div>
                     )}
+                    {(() => {
+                      // Course completion estimate from startDate/createdAt + daysSupply × fills.
+                      const start = p.startDate || p.createdAt;
+                      const days = p.daysSupply;
+                      if (!days || days <= 0) return null;
+                      const fills = 1 + Math.max(0, p.refillsRemaining ?? 0);
+                      const end = new Date(start);
+                      end.setDate(end.getDate() + days * fills);
+                      return (
+                        <div className="flex items-center gap-1.5 text-[#5a6b62]">
+                          <CalendarClock className="h-3 w-3" />
+                          <span>Course finishes ~ {formatDate(end)}</span>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Adherence rate + graph */}

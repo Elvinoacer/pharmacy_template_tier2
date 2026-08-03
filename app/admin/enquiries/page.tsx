@@ -1,12 +1,19 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { adminEnquiryAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { Mail, Clock, Save, Inbox, User } from "lucide-react";
+import { EnquiryUpdateForm } from "@/app/components/admin/EnquiryUpdateForm";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
+import { Mail, Clock, Inbox, User, Search, X } from "lucide-react";
+import { formatDateTime } from "@/app/lib/time";
+import type { Prisma } from "@/app/generated/prisma/client";
 
 export const metadata = { title: "Enquiries" };
+
+const PAGE_SIZE = 25;
 
 const STATUS_COLOR: Record<string, string> = {
   new: "bg-rose-500/15 text-rose-600",
@@ -24,28 +31,55 @@ const TYPE_ICON: Record<string, string> = {
   other: "❓",
 };
 
-export default async function AdminEnquiriesPage() {
+export default async function AdminEnquiriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; page?: string }>;
+}) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const sp = await searchParams;
 
+  const where: Prisma.EnquiryWhereInput = sp.q
+    ? {
+        OR: [
+          { name: { contains: sp.q, mode: "insensitive" } },
+          { email: { contains: sp.q, mode: "insensitive" } },
+          { phone: { contains: sp.q, mode: "insensitive" } },
+          { subject: { contains: sp.q, mode: "insensitive" } },
+          { message: { contains: sp.q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+
+  const [total, statusGroups] = await Promise.all([
+    prisma.enquiry.count({ where }),
+    prisma.enquiry.groupBy({ by: ["status"], _count: true }),
+  ]);
+
+  const page = parsePageParam(sp.page, total, PAGE_SIZE);
   const enquiries = await prisma.enquiry.findMany({
+    where,
     orderBy: { createdAt: "desc" },
-    take: 100,
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
     include: { customer: { select: { fullName: true } } },
   });
 
   const counts = {
-    new: enquiries.filter((e) => e.status === "new").length,
-    in_progress: enquiries.filter((e) => e.status === "in_progress").length,
-    resolved: enquiries.filter((e) => e.status === "resolved").length,
-    closed: enquiries.filter((e) => e.status === "closed").length,
+    new: statusGroups.find((g) => g.status === "new")?._count ?? 0,
+    in_progress: statusGroups.find((g) => g.status === "in_progress")?._count ?? 0,
+    resolved: statusGroups.find((g) => g.status === "resolved")?._count ?? 0,
+    closed: statusGroups.find((g) => g.status === "closed")?._count ?? 0,
   };
+
+  const queryParams: Record<string, string | undefined> = { q: sp.q };
 
   return (
     <AdminShell
       user={user}
       title="Online enquiries"
-      subtitle={`${enquiries.length} enquiry ${enquiries.length === 1 ? "" : "entries"} from website, portal, and AI`}
+      subtitle={`${total} enquir${total === 1 ? "y" : "ies"} from website, portal, and AI`}
     >
       {/* Quick stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -60,11 +94,31 @@ export default async function AdminEnquiriesPage() {
       </div>
 
       <AdminPanel>
+        <form className="mb-4 flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[180px] max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+            <input
+              name="q"
+              defaultValue={sp.q || ""}
+              placeholder="Search name, email, subject, message…"
+              className="w-full rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2 pl-9 pr-3 text-xs admin-text placeholder:admin-soft focus:border-[var(--admin-accent)] focus:outline-none"
+            />
+          </div>
+          <button type="submit" className="btn-admin-sm">
+            <Search className="h-3 w-3" /> Search
+          </button>
+          {sp.q && (
+            <Link href="/admin/enquiries" className="btn-admin-sm !bg-[var(--admin-inset-2)]">
+              <X className="h-3 w-3" /> Clear
+            </Link>
+          )}
+        </form>
+
         {enquiries.length === 0 ? (
           <AdminEmptyState
             icon={Inbox}
             title="No enquiries yet"
-            description="Customer enquiries from the website contact form will land here."
+            description={sp.q ? "Try a different search term." : "Customer enquiries from the website contact form will land here."}
           />
         ) : (
           <div className="space-y-3">
@@ -103,7 +157,7 @@ export default async function AdminEnquiriesPage() {
                       <span>·</span>
                       <span className="inline-flex items-center gap-1">
                         <Clock className="h-2.5 w-2.5" />
-                        {new Date(e.createdAt).toLocaleString()}
+                        {formatDateTime(e.createdAt)}
                       </span>
                     </p>
                     {e.subject && (
@@ -117,42 +171,23 @@ export default async function AdminEnquiriesPage() {
                     )}
                   </div>
                 </div>
-                <form action={adminEnquiryAction} className="mt-3 flex flex-wrap items-end gap-2 border-t border-[var(--admin-border)] pt-3">
-                  <input type="hidden" name="id" value={e.id} />
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-wide admin-soft">Status</label>
-                    <select
-                      name="status"
-                      defaultValue={e.status}
-                      className="rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2.5 py-1.5 text-xs admin-text focus:border-[var(--admin-accent)] focus:outline-none"
-                    >
-                      {["new", "in_progress", "resolved", "closed"].map((s) => (
-                        <option key={s} value={s}>
-                          {s.replace("_", " ")}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex-1 min-w-[180px]">
-                    <label className="block text-[10px] uppercase tracking-wide admin-soft">Staff notes</label>
-                    <input
-                      name="staffNotes"
-                      defaultValue={e.staffNotes || ""}
-                      placeholder="Add internal notes…"
-                      className="input-admin"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)]"
-                  >
-                    <Save className="h-3.5 w-3.5" /> Update
-                  </button>
-                </form>
+                <EnquiryUpdateForm
+                  id={e.id}
+                  status={e.status}
+                  staffNotes={e.staffNotes || ""}
+                />
               </div>
             ))}
           </div>
         )}
+        <Pagination
+          page={page}
+          total={total}
+          pageSize={PAGE_SIZE}
+          basePath="/admin/enquiries"
+          queryParams={queryParams}
+          variant="admin"
+        />
       </AdminPanel>
     </AdminShell>
   );

@@ -1,4 +1,5 @@
 "use client";
+import { formatDateTime } from "@/app/lib/time";
 
 /**
  * Admin notifications panel.
@@ -32,7 +33,6 @@ import {
   MessageSquare,
   Trash2,
   RefreshCw,
-  CheckCheck,
   Search,
   X,
   AlertTriangle,
@@ -101,23 +101,6 @@ export function AdminNotificationsPanel({
 
   const openModal = async (n: NotifRow) => {
     setSelected(n);
-    // Best-effort mark as read for the admin inbox equivalent (notifications log).
-    // We don't have a per-row read state for outbound notifications — the inbound
-    // admin inbox uses the separate AdminNotification model.
-  };
-
-  const markAllRead = async () => {
-    try {
-      const r = await fetch("/api/admin/notifications/read", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ all: true }),
-      });
-      if (!r.ok) throw new Error();
-      toast.success("All admin inbox items marked as read.");
-    } catch {
-      toast.error("Could not mark items as read.");
-    }
   };
 
   const retryAllFailed = async () => {
@@ -219,13 +202,6 @@ export function AdminNotificationsPanel({
             Retry all failed ({failedCount})
           </button>
         )}
-        <button
-          type="button"
-          onClick={markAllRead}
-          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
-        >
-          <CheckCheck className="h-3 w-3" /> Mark all read
-        </button>
       </div>
 
       {/* Active filter chips */}
@@ -311,7 +287,7 @@ export function AdminNotificationsPanel({
                       )}
                     </td>
                     <td className="text-xs admin-muted">
-                      {new Date(n.createdAt).toLocaleString()}
+                      {formatDateTime(n.createdAt)}
                     </td>
                     <td className="text-right">
                       <button
@@ -384,7 +360,7 @@ export function AdminNotificationsPanel({
               {selected.customerName && (
                 <span className="admin-muted">→ {selected.customerName}</span>
               )}
-              <span className="admin-soft">· {new Date(selected.createdAt).toLocaleString()}</span>
+              <span className="admin-soft">· {formatDateTime(selected.createdAt)}</span>
             </div>
             <Markdown>{selected.fullBody || selected.body}</Markdown>
           </div>

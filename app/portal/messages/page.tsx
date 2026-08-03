@@ -5,6 +5,7 @@ import { prisma } from "@/app/lib/db";
 import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { PortalNotificationsPanel, type NotifRow } from "@/app/components/portal/PortalNotificationsPanel";
+import { PortalReplyForm } from "@/app/components/portal/PortalReplyForm";
 import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
 import { formatDateTime } from "@/app/lib/time";
@@ -173,6 +174,9 @@ export default async function PortalMessagesPage({
                         );
                       })}
                     </ul>
+                    {c.status !== "closed" && (
+                      <PortalReplyForm conversationId={c.id} />
+                    )}
                   </div>
                 );
               })}

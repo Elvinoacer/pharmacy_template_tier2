@@ -4,6 +4,8 @@ import { getSessionUser } from "@/app/lib/auth";
 import { listCustomers } from "@/app/lib/services/crm";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
+import { Pagination } from "@/app/components/Pagination";
+import { parsePageParam } from "@/app/lib/pagination";
 import {
   Users,
   Search,
@@ -16,6 +18,8 @@ import {
 
 export const metadata = { title: "Customers" };
 
+const PAGE_SIZE = 25;
+
 const TIER_COLOR: Record<string, string> = {
   bronze: "bg-amber-500/15 text-amber-700",
   silver: "bg-slate-300/15 text-slate-200",
@@ -26,18 +30,28 @@ const TIER_COLOR: Record<string, string> = {
 export default async function AdminCustomersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
   const sp = await searchParams;
-  const customers = await listCustomers(sp.q);
+
+  // Count first so we can clamp the page, then load the page slice.
+  const countResult = await listCustomers(sp.q, { take: 1, skip: 0 });
+  const total = countResult.total;
+  const page = parsePageParam(sp.page, total, PAGE_SIZE);
+  const { customers } = await listCustomers(sp.q, {
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
+  });
+
+  const queryParams: Record<string, string | undefined> = { q: sp.q };
 
   return (
     <AdminShell
       user={user}
       title="Customer CRM"
-      subtitle={`${customers.length} customer${customers.length === 1 ? "" : "s"} on file`}
+      subtitle={`${total} customer${total === 1 ? "" : "s"} on file`}
     >
       {/* Search bar with explicit submit + clear buttons */}
       <form className="mb-6 flex flex-wrap items-center gap-2">
@@ -185,6 +199,14 @@ export default async function AdminCustomersPage({
             </table>
           </div>
         )}
+        <Pagination
+          page={page}
+          total={total}
+          pageSize={PAGE_SIZE}
+          basePath="/admin/customers"
+          queryParams={queryParams}
+          variant="admin"
+        />
       </AdminPanel>
     </AdminShell>
   );

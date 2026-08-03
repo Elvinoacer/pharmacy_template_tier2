@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { adminCreateOrderAction, adminWaiveOrderAction } from "@/app/actions/admin";
+import { adminCreateOrderAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { Pagination } from "@/app/components/Pagination";
@@ -10,7 +10,7 @@ import { formatDateTime, formatDate } from "@/app/lib/time";
 import { BarChart3, DollarSign, TrendingUp, ShoppingCart, AlertTriangle } from "lucide-react";
 import OrderForm from "@/app/components/admin/OrderForm";
 import PeriodSelect from "@/app/components/admin/PeriodSelect";
-import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
+import { OrderSettleActions } from "@/app/components/admin/WaiveOrderForm";
 
 export const metadata = { title: "Orders & Revenue" };
 
@@ -33,6 +33,7 @@ type MedOption = {
   price: number;
   stockQty: number;
   overTheCounter: boolean;
+  prescriptionRequired?: boolean;
 };
 
 type CustomerOption = {
@@ -92,7 +93,14 @@ export default async function AdminOrdersPage({
       }),
       prisma.medication.findMany({
         where: { active: true },
-        select: { id: true, name: true, price: true, stockQty: true, overTheCounter: true },
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          stockQty: true,
+          overTheCounter: true,
+          prescriptionRequired: true,
+        },
         orderBy: { name: "asc" },
       }),
       prisma.customerProfile.findMany({
@@ -122,6 +130,7 @@ export default async function AdminOrdersPage({
       price: Number(m.price),
       stockQty: m.stockQty,
       overTheCounter: m.overTheCounter,
+      prescriptionRequired: m.prescriptionRequired,
     }));
     customers = custs.map((c) => ({
       id: c.id,
@@ -312,16 +321,7 @@ export default async function AdminOrdersPage({
                     <div className="text-right">
                       <p className="font-bold admin-text">KES {o.total.toLocaleString()}</p>
                       {o.status === "pending" && (
-                        <form action={adminWaiveOrderAction} className="mt-1">
-                          <input type="hidden" name="id" value={o.id} />
-                          <input type="hidden" name="scope" value="one_time" />
-                          <ConfirmSubmitButton
-                            message="Waive this payment?"
-                            className="text-[10px] font-semibold text-amber-700 hover:underline"
-                          >
-                            Waive
-                          </ConfirmSubmitButton>
-                        </form>
+                        <OrderSettleActions orderId={o.id} />
                       )}
                     </div>
                   </div>

@@ -1,9 +1,11 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Check, Loader2, AlertCircle } from "lucide-react";
 import { redeemCouponAction, type ActionState } from "@/app/actions/portal";
 import { PendingSubmitButton } from "@/app/components/PendingSubmitButton";
+import { toast } from "@/app/components/Toaster";
 
 export function RedeemCouponForm({
   couponId,
@@ -18,12 +20,17 @@ export function RedeemCouponForm({
 }) {
   const [state, formAction] = useActionState(redeemCouponAction, {} as ActionState);
   const redeemed = alreadyRedeemed || Boolean(state?.success);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!state?.success) return;
-    const timer = window.setTimeout(() => window.location.reload(), 900);
-    return () => window.clearTimeout(timer);
-  }, [state?.success]);
+    if (state?.success) {
+      toast.success(state.success);
+      // Prefer soft refresh over full page reload.
+      const t = window.setTimeout(() => router.refresh(), 400);
+      return () => window.clearTimeout(t);
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state, router]);
 
   return (
     <form action={formAction} className="space-y-2">

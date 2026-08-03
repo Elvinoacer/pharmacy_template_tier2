@@ -8,7 +8,7 @@
  *
  * Fix: every timestamp rendered to the user goes through `formatDateTime` /
  * `formatDate` / `formatTimeAgo`, which forces the Intl formatter to use the
- * project timezone (Asia/Shanghai by default; override via TZ env).
+ * the project timezone (Africa/Nairobi by default; override via TZ env).
  *
  * For scheduling, `toLocalDatetimeInputValue` converts a Date into the
  * `YYYY-MM-DDTHH:mm` string that `<input type="datetime-local">` expects in

@@ -1,3 +1,4 @@
+import { formatDateTime } from "@/app/lib/time";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -113,7 +114,7 @@ export default async function AdminFeedbackPage() {
                     <p className="mt-2 text-sm admin-text">{f.body}</p>
                     <p className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wide admin-soft">
                       <Clock className="h-2.5 w-2.5" />
-                      {new Date(f.createdAt).toLocaleString()}
+                      {formatDateTime(f.createdAt)}
                       {f.email && <span className="ml-2 normal-case admin-muted">· {f.email}</span>}
                     </p>
 
@@ -131,7 +132,11 @@ export default async function AdminFeedbackPage() {
 
                     {f.status !== "responded" && (
                       <div className="mt-3 border-t border-[var(--admin-border)] pt-3">
-                        <FeedbackRespondForm action={adminFeedbackRespondAction} id={f.id} />
+                        <FeedbackRespondForm
+                          action={adminFeedbackRespondAction}
+                          id={f.id}
+                          isPublic={f.isPublic}
+                        />
                       </div>
                     )}
                   </div>

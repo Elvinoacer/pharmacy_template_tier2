@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
+import { toast } from "@/app/components/Toaster";
 import { Pill, Tag, Hash, DollarSign, Package, AlertCircle, Check, Save, FileText, Boxes } from "lucide-react";
 
 const CATEGORIES = [
@@ -30,8 +31,40 @@ export default function MedicationForm({
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [otc, setOtc] = useState(false);
+  const [rxRequired, setRxRequired] = useState(true);
 
-  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  // Keep slug in sync with name until the user edits it manually.
+  useEffect(() => {
+    if (!slugTouched) {
+      setSlug(name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+    }
+  }, [name, slugTouched]);
+
+  useEffect(() => {
+    if (state?.success) {
+      toast.success(state.success);
+      setName("");
+      setSlug("");
+      setSlugTouched(false);
+      setOtc(false);
+      setRxRequired(true);
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state]);
+
+  function setOtcChecked(checked: boolean) {
+    setOtc(checked);
+    // Mutual exclusivity: OTC means no prescription required, and vice versa.
+    if (checked) setRxRequired(false);
+  }
+
+  function setRxChecked(checked: boolean) {
+    setRxRequired(checked);
+    if (checked) setOtc(false);
+  }
 
   return (
     <form action={formAction} className="space-y-4">
@@ -63,7 +96,16 @@ export default function MedicationForm({
         </div>
         <div>
           <label className="label-admin">Slug (auto)</label>
-          <input name="slug" defaultValue={slug} placeholder={slug || "paracetamol-500mg"} className="input-admin font-mono" />
+          <input
+            name="slug"
+            value={slug}
+            onChange={(e) => {
+              setSlugTouched(true);
+              setSlug(e.target.value);
+            }}
+            placeholder={slug || "paracetamol-500mg"}
+            className="input-admin font-mono"
+          />
         </div>
       </div>
 
@@ -140,12 +182,42 @@ export default function MedicationForm({
 
       <div>
         <label className="label-admin">Image URL</label>
-        <input name="imageUrl" placeholder="/images/otc/pain-relief.webp" className="input-admin" />
+        <input name="imageUrl" placeholder="/images/otc/pain-relief.webp or R2 URL" className="input-admin" />
+        <p className="mt-1 text-[10px] admin-soft">
+          Paste a public image URL (Cloudflare R2, CDN, or /public path). Upload tooling can be wired via R2 env vars.
+        </p>
+      </div>
+
+      <div>
+        <label className="label-admin">Additional image URLs (gallery)</label>
+        <input
+          name="imageUrls"
+          placeholder="Comma-separated extra image URLs"
+          className="input-admin"
+        />
+      </div>
+
+      <div>
+        <label className="label-admin">Alternative medication IDs</label>
+        <input
+          name="alternativeIds"
+          placeholder="Comma-separated UUIDs of equivalent/alternative meds"
+          className="input-admin font-mono text-xs"
+        />
+        <p className="mt-1 text-[10px] admin-soft">
+          Optional list of catalogue IDs shown as alternatives on the public detail page.
+        </p>
       </div>
 
       <div className="space-y-2">
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
-          <input type="checkbox" name="overTheCounter" className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
+          <input
+            type="checkbox"
+            name="overTheCounter"
+            checked={otc}
+            onChange={(e) => setOtcChecked(e.target.checked)}
+            className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text"
+          />
           <Boxes className="h-4 w-4" /> Available over the counter (no prescription needed)
         </label>
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
@@ -153,8 +225,14 @@ export default function MedicationForm({
           <Tag className="h-4 w-4" /> Show on public catalog (no login required)
         </label>
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
-          <input type="checkbox" name="prescriptionRequired" defaultChecked className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
-          <FileText className="h-4 w-4" /> Prescription required (default)
+          <input
+            type="checkbox"
+            name="prescriptionRequired"
+            checked={rxRequired}
+            onChange={(e) => setRxChecked(e.target.checked)}
+            className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text"
+          />
+          <FileText className="h-4 w-4" /> Prescription required
         </label>
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
           <input type="hidden" name="active" value="off" />
@@ -173,4 +251,3 @@ export default function MedicationForm({
     </form>
   );
 }
-

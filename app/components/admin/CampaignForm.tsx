@@ -1,9 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
+import { toast } from "@/app/components/Toaster";
 import { Megaphone, FileText, Calendar, AlertCircle, Check, Save, Wand2, Zap } from "lucide-react";
 import { callAiDraft } from "@/app/lib/ai-form-helper";
+
+type ScheduleMode = "draft" | "schedule" | "now";
 
 export default function CampaignForm({
   action,
@@ -14,8 +17,27 @@ export default function CampaignForm({
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [body, setBody] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [subject, setSubject] = useState("");
+  const [scheduledFor, setScheduledFor] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
-  const [sendNow, setSendNow] = useState(false);
+  const [mode, setMode] = useState<ScheduleMode>("draft");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state?.success) {
+      toast.success(state.success);
+      setBody("");
+      setName("");
+      setDescription("");
+      setSubject("");
+      setScheduledFor("");
+      setMode("draft");
+      formRef.current?.reset();
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state]);
 
   async function aiDraft() {
     setAiLoading(true);
@@ -33,7 +55,7 @@ export default function CampaignForm({
   }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form ref={formRef} action={formAction} className="space-y-4">
       {state?.error && (
         <div className="admin-alert-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
@@ -49,13 +71,26 @@ export default function CampaignForm({
         <label className="label-admin">Campaign name *</label>
         <div className="relative">
           <Megaphone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input name="name" required placeholder="e.g. Flu season vaccination drive" className="input-admin pl-9" />
+          <input
+            name="name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Flu season vaccination drive"
+            className="input-admin pl-9"
+          />
         </div>
       </div>
 
       <div>
         <label className="label-admin">Description</label>
-        <input name="description" placeholder="Internal notes about this campaign" className="input-admin" />
+        <input
+          name="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Internal notes about this campaign"
+          className="input-admin"
+        />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -85,7 +120,13 @@ export default function CampaignForm({
         <label className="label-admin">Subject (email only)</label>
         <div className="relative">
           <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input name="subject" placeholder="Your flu shot is waiting…" className="input-admin pl-9" />
+          <input
+            name="subject"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="Your flu shot is waiting…"
+            className="input-admin pl-9"
+          />
         </div>
       </div>
 
@@ -111,11 +152,18 @@ export default function CampaignForm({
           placeholder="Hi {{name}}, ..."
           className="input-admin resize-y font-mono text-xs"
         />
-        <p className="mt-1 text-[10px] admin-soft">
-          Variables: &#123;&#123;name&#125;&#125;, &#123;&#123;email&#125;&#125;, &#123;&#123;tier&#125;&#125;, &#123;&#123;points&#125;&#125;.
-          Markdown supported (headings, **bold**, lists, links). The body is interpolated per-customer
-          at send time, so each recipient sees their own name and details.
-        </p>
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {["{{name}}", "{{email}}", "{{tier}}", "{{points}}"].map((v) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setBody((b) => b + (b && !b.endsWith(" ") ? " " : "") + v)}
+              className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
+            >
+              {v}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div>
@@ -126,8 +174,8 @@ export default function CampaignForm({
               type="radio"
               name="scheduleMode"
               value="draft"
-              checked={!sendNow}
-              onChange={() => setSendNow(false)}
+              checked={mode === "draft"}
+              onChange={() => setMode("draft")}
               className="accent-[var(--admin-accent)]"
             />
             <Calendar className="h-3 w-3" /> Save as draft
@@ -137,10 +185,9 @@ export default function CampaignForm({
               type="radio"
               name="scheduleMode"
               value="schedule"
-              checked={false}
-              onChange={() => setSendNow(false)}
+              checked={mode === "schedule"}
+              onChange={() => setMode("schedule")}
               className="accent-[var(--admin-accent)]"
-              disabled
             />
             <Calendar className="h-3 w-3" /> Schedule
           </label>
@@ -149,29 +196,41 @@ export default function CampaignForm({
               type="radio"
               name="scheduleMode"
               value="now"
-              checked={sendNow}
-              onChange={() => setSendNow(true)}
+              checked={mode === "now"}
+              onChange={() => setMode("now")}
               className="accent-[var(--admin-accent)]"
             />
             <Zap className="h-3 w-3" /> Send immediately
           </label>
         </div>
-        {!sendNow && (
+        {mode === "schedule" && (
           <div className="relative">
             <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input name="scheduledFor" type="datetime-local" className="input-admin pl-9" />
+            <input
+              name="scheduledFor"
+              type="datetime-local"
+              required
+              value={scheduledFor}
+              onChange={(e) => setScheduledFor(e.target.value)}
+              className="input-admin pl-9"
+            />
             <p className="mt-1 text-[10px] admin-soft">
-              Leave empty to save as draft. When scheduled, the cron job will auto-launch at the right time.
+              Cron will auto-launch this campaign at the scheduled time (Africa/Nairobi).
             </p>
           </div>
         )}
-        {sendNow && (
+        {mode === "now" && (
           <>
             <input type="hidden" name="sendNow" value="true" />
             <p className="text-[10px] admin-soft">
               Campaign will launch immediately on submit. Each recipient gets a personalized message.
             </p>
           </>
+        )}
+        {mode === "draft" && (
+          <p className="text-[10px] admin-soft">
+            Saved as draft — launch later from the campaigns list.
+          </p>
         )}
       </div>
 
@@ -182,8 +241,10 @@ export default function CampaignForm({
       >
         {pending ? (
           <><span className="typing-dot" /> Saving…</>
-        ) : sendNow ? (
+        ) : mode === "now" ? (
           <><Zap className="h-4 w-4" /> Launch campaign now</>
+        ) : mode === "schedule" ? (
+          <><Calendar className="h-4 w-4" /> Schedule campaign</>
         ) : (
           <><Save className="h-4 w-4" /> Create campaign</>
         )}

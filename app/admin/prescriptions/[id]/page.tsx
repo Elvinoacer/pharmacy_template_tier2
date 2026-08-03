@@ -54,25 +54,32 @@ export default async function PrescriptionDetailPage({
   if (!prescription) notFound();
 
   // Compute adherence rate from the last 30 days of logs.
+  // "taken" + "late" both count as dose received for the adherence numerator.
   const last30 = (prescription.adherence ?? []).slice(0, 30);
-  const taken = last30.filter((a) => a.status === "taken").length;
+  const taken = last30.filter((a) => a.status === "taken" || a.status === "late").length;
   const missed = last30.filter((a) => a.status === "missed").length;
   const skipped = last30.filter((a) => a.status === "skipped").length;
+  const lateCount = last30.filter((a) => a.status === "late").length;
   const adherenceRate = last30.length > 0 ? Math.round((taken / last30.length) * 100) : null;
+  const recentStatuses = last30.slice(0, 14).map((a) => a.status).reverse();
 
-  // AI-style analysis: deterministic summary based on the adherence data.
-  // (Real LLM call would be added if GROQ_API_KEY is set; here we generate a
-  // concise observation the pharmacist can act on.)
-  const analysis = generateAdherenceAnalysis({
+  const analysisInput = {
     medicineName: prescription.medicineName,
     adherenceRate,
     missedCount: missed,
     skippedCount: skipped,
+    lateCount,
     logCount: last30.length,
     daysSupply: prescription.daysSupply,
     nextRefillDue: prescription.nextRefillDue,
     refillsRemaining: prescription.refillsRemaining ?? 0,
-  });
+    dosage: prescription.dosage,
+    schedule: prescription.schedule,
+    recentStatuses,
+  };
+
+  // Prefer Groq when configured; fall back to deterministic summary.
+  const analysis = await analyzeAdherenceWithAi(analysisInput);
 
   return (
     <AdminShell
@@ -172,12 +179,32 @@ export default async function PrescriptionDetailPage({
                 <p className="admin-text">{prescription.nextRefillDue ? formatDate(prescription.nextRefillDue) : "—"}</p>
               </div>
             </div>
+            {prescription.startDate && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wide admin-soft">Start date</p>
+                <p className="admin-text">{formatDate(prescription.startDate)}</p>
+              </div>
+            )}
             {prescription.endDate && (
               <div>
                 <p className="text-[10px] uppercase tracking-wide admin-soft">Course ends</p>
                 <p className="admin-text">{formatDate(prescription.endDate)}</p>
               </div>
             )}
+            {(() => {
+              const start = prescription.startDate || prescription.createdAt;
+              const days = prescription.daysSupply;
+              if (!days || days <= 0) return null;
+              const fills = 1 + Math.max(0, prescription.refillsRemaining ?? 0);
+              const end = new Date(start);
+              end.setDate(end.getDate() + days * fills);
+              return (
+                <div>
+                  <p className="text-[10px] uppercase tracking-wide admin-soft">Est. course finish</p>
+                  <p className="admin-text">~ {formatDate(end)}</p>
+                </div>
+              );
+            })()}
             <div className="flex items-start gap-2">
               <DollarSign className="mt-0.5 h-3.5 w-3.5 admin-accent-text" />
               <div>
@@ -302,33 +329,72 @@ export default async function PrescriptionDetailPage({
   );
 }
 
+async function analyzeAdherenceWithAi(
+  input: Parameters<typeof generateAdherenceAnalysis>[0],
+): Promise<string> {
+  const fallback = generateAdherenceAnalysis(input);
+  const apiKey = process.env.GROQ_API_KEY?.trim();
+  if (!apiKey || input.logCount === 0) return fallback;
+
+  try {
+    const Groq = (await import("groq-sdk")).default;
+    const groq = new Groq({ apiKey });
+    const model = (process.env.GROQ_MODEL || "llama-3.3-70b-versatile").trim();
+    const completion = await groq.chat.completions.create({
+      model,
+      temperature: 0.3,
+      max_tokens: 700,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a clinical pharmacy assistant. Write a concise markdown adherence analysis for a pharmacist. Include: summary, dosage/schedule trends if provided, observation, tiered recommendations, and refill notes. No preamble. Do not invent clinical diagnoses.",
+        },
+        {
+          role: "user",
+          content: JSON.stringify(input, null, 2),
+        },
+      ],
+    });
+    const text = completion.choices[0]?.message?.content?.trim();
+    return text || fallback;
+  } catch (err) {
+    console.error("[adherence AI]", err);
+    return fallback;
+  }
+}
+
 /**
- * Generate a markdown-formatted AI-style analysis of the customer's adherence.
- *
- * This is a deterministic summary — it doesn't call an LLM (which would require
- * API keys and async handling) but produces the kind of observation a pharmacist
- * would write. The output is rendered with the Markdown component so headings,
- * bold, lists, etc. are formatted.
+ * Deterministic fallback adherence analysis. Used when GROQ_API_KEY is unset
+ * or the LLM call fails. Same output shape as the optional Groq path.
  */
 function generateAdherenceAnalysis(input: {
   medicineName: string;
   adherenceRate: number | null;
   missedCount: number;
   skippedCount: number;
+  lateCount?: number;
   logCount: number;
   daysSupply: number | null;
   nextRefillDue: Date | null;
   refillsRemaining: number;
+  dosage?: string | null;
+  schedule?: string | null;
+  recentStatuses?: string[];
 }): string {
   const {
     medicineName,
     adherenceRate,
     missedCount,
     skippedCount,
+    lateCount = 0,
     logCount,
     daysSupply,
     nextRefillDue,
     refillsRemaining,
+    dosage,
+    schedule,
+    recentStatuses,
   } = input;
 
   if (logCount === 0) {
@@ -338,8 +404,16 @@ function generateAdherenceAnalysis(input: {
   const lines: string[] = [];
   lines.push(`### Adherence summary`);
   lines.push(
-    `Over the last **${logCount} day${logCount === 1 ? "" : "s"}**, the customer took **${medicineName}** with an adherence rate of **${adherenceRate}%** (${logCount - missedCount - skippedCount} taken, ${missedCount} missed, ${skippedCount} skipped).`,
+    `Over the last **${logCount} day${logCount === 1 ? "" : "s"}**, the customer took **${medicineName}** with an adherence rate of **${adherenceRate}%** (${logCount - missedCount - skippedCount} taken/late, ${missedCount} missed, ${skippedCount} skipped${lateCount ? `, ${lateCount} late` : ""}).`,
   );
+  if (dosage || schedule) {
+    lines.push("");
+    lines.push(`**Regimen:** ${[dosage, schedule].filter(Boolean).join(" · ")}`);
+  }
+  if (recentStatuses && recentStatuses.length > 0) {
+    lines.push("");
+    lines.push(`**Recent dose trend:** \`${recentStatuses.join(" → ")}\``);
+  }
   lines.push("");
 
   if (adherenceRate !== null && adherenceRate >= 90) {

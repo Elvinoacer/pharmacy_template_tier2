@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { adminCreateReminderAction, adminProcessRemindersAction } from "@/app/actions/admin";
+import { adminCreateReminderAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { PendingSubmitButton } from "@/app/components/PendingSubmitButton";
 import ReminderForm from "@/app/components/admin/ReminderForm";
+import { ProcessRemindersButton } from "@/app/components/admin/ProcessRemindersButton";
 import { formatDateTime } from "@/app/lib/time";
 import {
   CalendarClock,
@@ -69,20 +69,7 @@ export default async function AdminRemindersPage() {
       user={user}
       title="Reminder engine"
       subtitle="Schedule and dispatch refill, pickup, and wellness reminders"
-      actions={
-        <form action={adminProcessRemindersAction}>
-          <PendingSubmitButton
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 px-4 py-2 text-sm font-semibold text-[#422006] transition hover:brightness-110 disabled:cursor-wait disabled:opacity-70"
-            pendingChildren={
-              <>
-                <span className="typing-dot" /> Processing…
-              </>
-            }
-          >
-            <Zap className="h-4 w-4" /> Process due now
-          </PendingSubmitButton>
-        </form>
-      }
+      actions={<ProcessRemindersButton />}
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-3 gap-3">
@@ -100,64 +87,70 @@ export default async function AdminRemindersPage() {
         </div>
       </div>
 
-      {/* AI auto-reminders banner */}
+      {/* Honest automation status — only claim what the code actually does */}
       <AdminPanel
-        title="Automated reminders"
-        description="Triggered by cron jobs — no manual scheduling needed"
+        title="What the cron actually does"
+        description="Live behaviours wired in /api/cron/reminders (every 5 minutes)"
         className="mb-6"
         action={
-          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf]/20 to-[#0d6e5a]/20 px-2 py-0.5 text-[10px] font-semibold admin-accent-text">
-            <Sparkles className="h-2.5 w-2.5" /> AI-assisted
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+            <Zap className="h-2.5 w-2.5" /> Live
           </span>
         }
       >
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
-            <Pill className="h-4 w-4 admin-accent-text" />
-            <p className="mt-2 text-sm font-semibold admin-text">Refill due in 3 days</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              For every active prescription with nextRefillDue in 3 days, send a refill reminder.
-            </p>
-          </div>
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
-            <Truck className="h-4 w-4 admin-accent-text" />
-            <p className="mt-2 text-sm font-semibold admin-text">Pickup ready for 24h</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              For refills in ready_for_pickup status for over 24h, send a pickup reminder.
-            </p>
-          </div>
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
-            <HeartPulse className="h-4 w-4 admin-accent-text" />
-            <p className="mt-2 text-sm font-semibold admin-text">Adherence follow-up</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              If a customer has missed doses for 3+ days, AI drafts a wellness check-in for staff approval.
-            </p>
-          </div>
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
-            <Cake className="h-4 w-4 admin-accent-text" />
-            <p className="mt-2 text-sm font-semibold admin-text">Birthday greeting</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              On the customer&apos;s birthday, send a personalized greeting (+25 loyalty points).
-            </p>
-          </div>
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
             <CalendarClock className="h-4 w-4 admin-accent-text" />
-            <p className="mt-2 text-sm font-semibold admin-text">Prescription expiring</p>
+            <p className="mt-2 text-sm font-semibold admin-text">Due scheduled reminders</p>
             <p className="mt-1 text-[10px] admin-soft">
-              7 days before a prescription&apos;s endDate, remind the customer to consult their prescriber.
+              Fires any Reminder row with status=scheduled whose scheduledFor has passed (honours reminderConsent).
             </p>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
           </div>
           <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
             <Sparkles className="h-4 w-4 admin-accent-text" />
-            <p className="mt-2 text-sm font-semibold admin-text">AI promotion messages</p>
+            <p className="mt-2 text-sm font-semibold admin-text">Scheduled campaigns</p>
             <p className="mt-1 text-[10px] admin-soft">
-              Monthly, AI suggests promotions for staff approval (flu season, allergy season, etc.).
+              Auto-launches campaigns with status=scheduled when scheduledFor is due (honours marketingConsent).
             </p>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
+          </div>
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <Mail className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">Scheduled staff messages</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              Sends Message rows with status=scheduled once scheduledFor passes.
+            </p>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
+          </div>
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <HeartPulse className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">Low adherence staff alerts</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              Creates AdminNotification when adherence drops below 70% over 14 days (max once per Rx / 7 days).
+            </p>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
+          </div>
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <Cake className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">Birthday greeting + points</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              Runs in the separate loyalty cron (/api/cron/loyalty), not this reminders endpoint.
+            </p>
+            <span className="mt-2 inline-block rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-blue-700">Loyalty cron</span>
+          </div>
+          <div className="rounded-xl border border-dashed border-[var(--admin-border)] bg-[var(--admin-inset)]/50 p-3 opacity-70">
+            <Pill className="h-4 w-4 admin-soft" />
+            <p className="mt-2 text-sm font-semibold admin-muted">Auto refill / pickup / promo</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              Not auto-generated. Schedule these manually with the form, or extend the cron later.
+            </p>
+            <span className="mt-2 inline-block rounded-full bg-slate-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-slate-500">Not automated</span>
           </div>
         </div>
         <p className="mt-3 text-[10px] admin-soft">
-          The cron endpoint <code className="md-code">/api/cron/reminders</code> runs every hour and
-          dispatches any due reminders. The AI promotion cron runs daily at 06:00.
+          GitHub Action hits <code className="md-code">/api/cron/reminders</code> every 5 minutes.
+          Use <strong>Process due now</strong> to run the same jobs immediately.
         </p>
       </AdminPanel>
 

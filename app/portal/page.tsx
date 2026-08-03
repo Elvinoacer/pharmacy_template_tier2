@@ -1,3 +1,4 @@
+import { formatDateTime, formatDate } from "@/app/lib/time";
 import Link from "next/link";
 import { getSessionUser } from "@/app/lib/auth";
 import { getCustomerDashboard } from "@/app/lib/services/crm";
@@ -71,7 +72,7 @@ export default async function PortalDashboardPage() {
           label="Upcoming reminders"
           value={data.reminders.length}
           hint={data.reminders[0]?.scheduledFor
-            ? `Next: ${new Date(data.reminders[0].scheduledFor).toLocaleDateString()}`
+            ? `Next: ${formatDate(data.reminders[0].scheduledFor)}`
             : "None scheduled"}
           icon={CalendarClock}
           accent="neutral"
@@ -161,7 +162,7 @@ export default async function PortalDashboardPage() {
                       <p className="truncate font-semibold text-[#0c1a14]">{r.medicineName}</p>
                       <p className="mt-0.5 flex items-center gap-1 text-xs text-[#5a6b62]">
                         <Clock className="h-3 w-3" />
-                        {new Date(r.createdAt).toLocaleDateString()}
+                        {formatDate(r.createdAt)}
                       </p>
                     </div>
                     <Badge className={meta.color}>{meta.label}</Badge>
@@ -205,7 +206,7 @@ export default async function PortalDashboardPage() {
                     <p className="text-sm font-semibold text-[#0c1a14]">{n.title}</p>
                     <p className="mt-0.5 line-clamp-2 text-xs text-[#5a6b62]">{n.body}</p>
                     <p className="mt-1 text-[10px] uppercase tracking-wide text-[#8a9a92]">
-                      {new Date(n.createdAt).toLocaleString()}
+                      {formatDateTime(n.createdAt)}
                     </p>
                   </div>
                 </li>
@@ -233,7 +234,7 @@ export default async function PortalDashboardPage() {
                     <p className="text-sm font-semibold text-[#0c1a14]">{e.title}</p>
                     {e.description && <p className="text-xs text-[#5a6b62]">{e.description}</p>}
                     <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#8a9a92]">
-                      {new Date(e.createdAt).toLocaleString()}
+                      {formatDateTime(e.createdAt)}
                     </p>
                   </div>
                 </li>

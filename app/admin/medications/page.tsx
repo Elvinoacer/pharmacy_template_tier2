@@ -10,6 +10,7 @@ import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
 import { formatDateTime } from "@/app/lib/time";
 import { Pill, Plus, Search, X, Tag, Package, Pencil, Trash2, Boxes } from "lucide-react";
+import { MedicationBulkActions } from "@/app/components/admin/MedicationBulkActions";
 
 export const metadata = { title: "Medications" };
 
@@ -136,14 +137,22 @@ export default async function AdminMedicationsPage({
       title="Medication catalog"
       subtitle={`${total} medications · OTC, prescription, and stock sync`}
       actions={
-        <Link
-          href="/admin/medications/new"
-          className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 ring-1 ring-white/20 transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40"
-        >
-          <div className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-          <Plus className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" /> 
-          <span>New Medication</span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/medications/categories"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
+          >
+            <Tag className="h-3.5 w-3.5" /> Categories
+          </Link>
+          <Link
+            href="/admin/medications/new"
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 ring-1 ring-white/20 transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40"
+          >
+            <div className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <Plus className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
+            <span>New Medication</span>
+          </Link>
+        </div>
       }
     >
       {loadError && (
@@ -215,6 +224,15 @@ export default async function AdminMedicationsPage({
               description="Click the 'New Medication' button above to add your first drug to the catalog."
             />
           ) : (
+            <>
+            <MedicationBulkActions
+              rows={paged.map((m) => ({
+                id: m.id,
+                name: m.name,
+                active: m.active,
+                publicListing: m.publicListing,
+              }))}
+            />
             <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {paged.map((m) => {
                 const lowStock = m.stockQty <= m.lowStockThreshold;
@@ -288,6 +306,7 @@ export default async function AdminMedicationsPage({
                 );
               })}
             </ul>
+            </>
           )}
         </AdminPanel>
       </div>
