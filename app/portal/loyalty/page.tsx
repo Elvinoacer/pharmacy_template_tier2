@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { redeemCouponAction } from "@/app/actions/portal";
@@ -28,6 +29,7 @@ const TIER_META: Record<string, { color: string; bg: string; ring: string; next?
 export default async function PortalLoyaltyPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  await requireOnboarded();
 
   const [account, coupons] = await Promise.all([
     prisma.loyaltyAccount.findUnique({

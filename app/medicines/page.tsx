@@ -3,58 +3,231 @@ import Image from "next/image";
 import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
+import { Pagination, parsePageParam } from "../components/Pagination";
 import { categories, pharmacy } from "../lib/data";
+import { prisma } from "../lib/db";
+import { formatPrice } from "../lib/format";
 
 export const metadata: Metadata = {
   title: "Medicines & Health Categories",
-  description: `Browse OTC health categories at ${pharmacy.name}. Educational guidance only — not an online pharmacy checkout.`,
+  description: `Browse OTC health categories at ${pharmacy.name}. Educational guidance plus live stock for OTC products.`,
   alternates: { canonical: "/medicines" },
 };
 
-export default function MedicinesPage() {
+const PAGE_SIZE = 24;
+
+export default async function MedicinesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; category?: string; page?: string }>;
+}) {
+  const sp = await searchParams;
+  const q = sp.q?.trim() || undefined;
+  const category = sp.category || undefined;
+
+  // Pull public-listed medications (admin marks these as visible without login).
+  const where = {
+    publicListing: true,
+    active: true,
+    ...(category && category !== "all" ? { category } : {}),
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" as const } },
+            { description: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+
+  const [total, medications] = await Promise.all([
+    prisma.medication.count({ where }).catch(() => 0),
+    prisma.medication
+      .findMany({
+        where,
+        orderBy: [{ stockQty: "desc" }, { name: "asc" }],
+        take: PAGE_SIZE,
+      })
+      .catch(() => []),
+  ]);
+
+  const page = parsePageParam(sp.page, total, PAGE_SIZE);
+  const paged =
+    page === 1
+      ? medications
+      : await prisma.medication
+          .findMany({
+            where,
+            orderBy: [{ stockQty: "desc" }, { name: "asc" }],
+            take: PAGE_SIZE,
+            skip: (page - 1) * PAGE_SIZE,
+          })
+          .catch(() => []);
+
+  // Build the category list from existing categories + any from the DB.
+  const dbCategories = await prisma.medication
+    .findMany({
+      where: { publicListing: true, active: true },
+      select: { category: true },
+      distinct: ["category"],
+    })
+    .catch(() => []);
+  const dbCategorySlugs = dbCategories.map((c) => c.category);
+
   return (
     <div>
       <PageHero
         eyebrow="Medicines & health"
         title="Categories to help you find the right care"
-        description="This is not an online pharmacy. Explore educational categories, featured brands we commonly stock, and tips from our pharmacists. Always ask us before combining products with prescriptions."
+        description="Browse our stocked OTC products and educational categories. Sign in to the portal for the full catalog and to purchase over-the-counter medications."
         crumbs={[{ label: "Medicines" }]}
       />
 
+      {/* Search + filter */}
       <section className="px-4 pb-6 sm:px-6">
-        <div className="mx-auto max-w-6xl rounded-2xl border border-amber-200/80 bg-amber-50/80 px-5 py-4 text-sm text-amber-950">
-          <strong className="font-semibold">Please note:</strong> No online checkout or direct medicine sales through
-          this website. Visit the pharmacy or call us for availability and personalised advice.
+        <div className="mx-auto max-w-6xl">
+          <form className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[200px]">
+              <input
+                name="q"
+                defaultValue={q || ""}
+                placeholder="Search medications by name or description…"
+                className="w-full rounded-full border border-[#e3ebe6] bg-white py-2.5 pl-4 pr-4 text-sm text-[#0c1a14] shadow-sm outline-none focus:border-[#0d6e5a]/40 focus:ring-2 focus:ring-[#0d6e5a]/20"
+              />
+            </div>
+            <select
+              name="category"
+              defaultValue={category || "all"}
+              onChange={(e) => {
+                const v = e.target.value;
+                window.location.href = v === "all"
+                  ? q ? `/medicines?q=${encodeURIComponent(q)}` : "/medicines"
+                  : `/medicines?category=${v}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+              }}
+              className="rounded-full border border-[#e3ebe6] bg-white py-2.5 pl-4 pr-8 text-sm text-[#0c1a14]"
+            >
+              <option value="all">All categories</option>
+              {dbCategorySlugs.map((c) => (
+                <option key={c} value={c}>{c.replace(/-/g, " ")}</option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
+            >
+              Search
+            </button>
+          </form>
         </div>
       </section>
 
-      <section className="px-4 pb-16 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/medicines/${c.slug}`}
-              className="card-lift group overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm"
+      {/* Live OTC catalog */}
+      {paged.length > 0 && (
+        <section className="px-4 pb-12 sm:px-6">
+          <div className="mx-auto max-w-6xl">
+            <h2
+              className="mb-4 text-xl font-semibold text-[#0c1a14]"
+              style={{ fontFamily: "var(--font-display), serif" }}
             >
-              <div className="relative h-40 overflow-hidden">
-                <Image
-                  src={c.image}
-                  alt={c.title}
-                  fill
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 25vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <h2
-                  className="absolute bottom-3 left-3 right-3 text-lg font-semibold text-white"
-                  style={{ fontFamily: "var(--font-display), serif" }}
+              Available now ({total})
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {paged.map((m) => (
+                <Link
+                  key={m.id}
+                  href={`/medicines/${m.slug}`}
+                  className="card-lift group overflow-hidden rounded-2xl border border-[#e3ebe6] bg-white shadow-sm transition hover:shadow-md"
                 >
-                  {c.title}
-                </h2>
-              </div>
-              <p className="p-4 text-sm leading-relaxed text-[#5a6b62] line-clamp-3">{c.description}</p>
-            </Link>
-          ))}
+                  <div className="relative h-32 overflow-hidden bg-[#f4f7f4]">
+                    {m.imageUrl ? (
+                      <Image
+                        src={m.imageUrl}
+                        alt={m.name}
+                        fill
+                        className="object-cover transition duration-700 group-hover:scale-105"
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-3xl">💊</div>
+                    )}
+                    {m.overTheCounter && (
+                      <span className="absolute left-2 top-2 rounded-full bg-emerald-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                        OTC
+                      </span>
+                    )}
+                    {m.prescriptionRequired && !m.overTheCounter && (
+                      <span className="absolute left-2 top-2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                        Rx required
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#0d6e5a]">
+                      {m.category.replace(/-/g, " ")}
+                    </p>
+                    <h3 className="mt-1 text-sm font-semibold text-[#0c1a14]">{m.name}</h3>
+                    {m.description && (
+                      <p className="mt-1 line-clamp-2 text-xs text-[#5a6b62]">{m.description}</p>
+                    )}
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="font-bold text-[#0c1a14]">KES {formatPrice(Number(m.price))}</span>
+                      <span className={`text-[10px] ${m.stockQty > 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                        {m.stockQty > 0 ? `${m.stockQty} in stock` : "out of stock"}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <Pagination
+              page={page}
+              total={total}
+              pageSize={PAGE_SIZE}
+              basePath="/medicines"
+              queryParams={{ q, category }}
+              variant="portal"
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Educational categories */}
+      <section className="px-4 pb-16 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          <h2
+            className="mb-4 text-xl font-semibold text-[#0c1a14]"
+            style={{ fontFamily: "var(--font-display), serif" }}
+          >
+            Browse by category
+          </h2>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {categories.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/medicines/${c.slug}`}
+                className="card-lift group overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm"
+              >
+                <div className="relative h-40 overflow-hidden">
+                  <Image
+                    src={c.image}
+                    alt={c.title}
+                    fill
+                    className="object-cover transition duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <h3
+                    className="absolute bottom-3 left-3 right-3 text-lg font-semibold text-white"
+                    style={{ fontFamily: "var(--font-display), serif" }}
+                  >
+                    {c.title}
+                  </h3>
+                </div>
+                <p className="p-4 text-sm leading-relaxed text-[#5a6b62] line-clamp-3">{c.description}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

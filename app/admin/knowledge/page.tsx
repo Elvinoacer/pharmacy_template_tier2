@@ -76,8 +76,18 @@ export default async function AdminKnowledgePage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <AdminPanel title="Add / edit article" description="Create a new knowledge article">
-          <KnowledgeForm action={adminKnowledgeAction} />
+        <AdminPanel title="Add / edit article" description="Create or edit a knowledge article">
+          <KnowledgeForm
+            action={adminKnowledgeAction}
+            articles={articles.map((a) => ({
+              id: a.id,
+              title: a.title,
+              category: a.category,
+              content: a.content,
+              priority: a.priority,
+              isApproved: a.isApproved,
+            }))}
+          />
         </AdminPanel>
 
         <AdminPanel

@@ -1,14 +1,16 @@
 import { redirect } from "next/navigation";
+import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel, EmptyState } from "@/app/components/portal/PortalWidgets";
+import { PortalNotificationsPanel, type NotifRow } from "@/app/components/portal/PortalNotificationsPanel";
+import { Pagination, parsePageParam } from "@/app/components/Pagination";
+import { formatDateTime } from "@/app/lib/time";
 import {
   MessageSquare,
   Bell,
   Inbox,
-  CheckCheck,
-  Clock,
   Mail,
   Phone,
   MessageCircle,
@@ -19,6 +21,8 @@ import {
 } from "lucide-react";
 
 export const metadata = { title: "Messages" };
+
+const PAGE_SIZE = 20;
 
 const channelIcon: Record<string, React.ComponentType<{ className?: string }>> = {
   email: Mail,
@@ -37,22 +41,65 @@ const typeIcon: Record<string, React.ComponentType<{ className?: string }>> = {
   loyalty: Sparkles,
 };
 
-export default async function PortalMessagesPage() {
+export default async function PortalMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; page?: string }>;
+}) {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  await requireOnboarded();
+  const sp = await searchParams;
+  const q = sp.q?.trim() || undefined;
 
-  const [conversations, notifications] = await Promise.all([
+  const where = {
+    customerId: user.customerId,
+    deletedAt: null,
+    ...(q
+      ? {
+          OR: [
+            { title: { contains: q, mode: "insensitive" as const } },
+            { body: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+
+  const [total, rawNotifications, conversations] = await Promise.all([
+    prisma.notification.count({ where }),
+    prisma.notification.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: PAGE_SIZE,
+    }),
     prisma.conversation.findMany({
       where: { customerId: user.customerId },
       include: { messages: { orderBy: { createdAt: "asc" } } },
       orderBy: { lastMessageAt: "desc" },
     }),
-    prisma.notification.findMany({
-      where: { customerId: user.customerId },
-      orderBy: { createdAt: "desc" },
-      take: 30,
-    }),
   ]);
+
+  const page = parsePageParam(sp.page, total, PAGE_SIZE);
+  const paged = page === 1
+    ? rawNotifications
+    : await prisma.notification.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: PAGE_SIZE,
+        skip: (page - 1) * PAGE_SIZE,
+      });
+
+  const notifications: NotifRow[] = paged.map((n) => ({
+    id: n.id,
+    channel: n.channel,
+    type: n.type,
+    title: n.title,
+    body: n.body,
+    fullBody: n.fullBody,
+    status: n.status,
+    openedAt: n.openedAt?.toISOString() ?? null,
+    createdAt: n.createdAt.toISOString(),
+  }));
 
   return (
     <PortalShell
@@ -118,7 +165,7 @@ export default async function PortalMessagesPage() {
                           >
                             <p className="mb-0.5 flex items-center justify-between gap-2 text-[10px] uppercase tracking-wide text-[#8a9a92]">
                               <span>{m.senderType}</span>
-                              <span>{new Date(m.createdAt).toLocaleString()}</span>
+                              <span>{formatDateTime(m.createdAt)}</span>
                             </p>
                             <p className="whitespace-pre-wrap">{m.body}</p>
                           </li>
@@ -132,54 +179,27 @@ export default async function PortalMessagesPage() {
           )}
         </Panel>
 
-        {/* Notification feed */}
+        {/* Notification feed with full features */}
         <Panel
           title="Notification feed"
-          description="All activity on your account, newest first"
+          description={`${total} total · searchable, paginated`}
         >
-          {notifications.length === 0 ? (
-            <EmptyState
-              icon={Bell}
-              title="No notifications"
-              description="Refill updates, reminders and messages will land here."
-            />
-          ) : (
-            <ul className="space-y-2.5">
-              {notifications.map((n) => {
-                const TypeIcon = typeIcon[n.type] || Bell;
-                const ChannelIcon = channelIcon[n.channel] || Bell;
-                return (
-                  <li
-                    key={n.id}
-                    className="flex items-start gap-3 rounded-xl border border-[#e3ebe6] bg-[#fafbfa] px-3.5 py-3 transition hover:border-[#0d6e5a]/30"
-                  >
-                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e6f4ef] text-[#0d6e5a]">
-                      <TypeIcon className="h-4 w-4" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-semibold text-[#0c1a14]">{n.title}</p>
-                        <span className="flex shrink-0 items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#8a9a92]">
-                          <ChannelIcon className="h-2.5 w-2.5" />
-                          {n.channel}
-                        </span>
-                      </div>
-                      <p className="mt-0.5 line-clamp-2 text-xs text-[#5a6b62]">{n.body}</p>
-                      <p className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wide text-[#8a9a92]">
-                        <Clock className="h-2.5 w-2.5" />
-                        {new Date(n.createdAt).toLocaleString()}
-                        {n.status === "delivered" && (
-                          <span className="ml-1 inline-flex items-center gap-0.5 text-emerald-600">
-                            <CheckCheck className="h-2.5 w-2.5" /> delivered
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+          <PortalNotificationsPanel
+            initial={notifications}
+            total={total}
+            page={page}
+            pageSize={PAGE_SIZE}
+            basePath="/portal/messages"
+            queryParams={{ q }}
+          />
+          <Pagination
+            page={page}
+            total={total}
+            pageSize={PAGE_SIZE}
+            basePath="/portal/messages"
+            queryParams={{ q }}
+            variant="portal"
+          />
         </Panel>
       </div>
     </PortalShell>

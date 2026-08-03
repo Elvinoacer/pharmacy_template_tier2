@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
 import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel } from "@/app/components/portal/PortalWidgets";
@@ -10,6 +11,7 @@ export const metadata = { title: "Feedback" };
 export default async function PortalFeedbackPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
+  await requireOnboarded();
 
   return (
     <PortalShell

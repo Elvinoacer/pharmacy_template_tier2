@@ -3,7 +3,8 @@ import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { Brain, AlertCircle, MessageSquare, Mail, Phone, Clock, ChevronDown, User, Zap } from "lucide-react";
+import { formatDateTime } from "@/app/lib/time";
+import { Brain, AlertCircle, MessageSquare, Mail, Phone, Clock, ChevronDown, User, Zap, Activity, Sparkles } from "lucide-react";
 
 export const metadata = { title: "AI Escalations" };
 
@@ -11,15 +12,38 @@ export default async function AdminAiEscalationsPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
-  const conversations = await prisma.aiConversation.findMany({
-    where: { escalated: true },
-    include: {
-      customer: { select: { id: true, fullName: true, phone: true, user: { select: { email: true } } } },
-      messages: { orderBy: { createdAt: "asc" } },
-    },
-    orderBy: { escalatedAt: "desc" },
-    take: 50,
-  });
+  const [conversations, aiStats, lowAdherence] = await Promise.all([
+    prisma.aiConversation.findMany({
+      where: { escalated: true },
+      include: {
+        customer: { select: { id: true, fullName: true, phone: true, user: { select: { email: true } } } },
+        messages: { orderBy: { createdAt: "asc" } },
+      },
+      orderBy: { escalatedAt: "desc" },
+      take: 50,
+    }),
+    prisma.aiConversation.aggregate({
+      _count: true,
+    }),
+    prisma.prescription.findMany({
+      where: { status: "active" },
+      include: {
+        customer: { select: { id: true, fullName: true } },
+        adherence: { orderBy: { takenOn: "desc" }, take: 14 },
+      },
+      take: 50,
+    }),
+  ]);
+
+  // Compute low-adherence prescriptions (below 70% in last 14 days).
+  const adherenceAlerts = lowAdherence
+    .map((p) => {
+      const taken = p.adherence.filter((a) => a.status === "taken").length;
+      const rate = p.adherence.length > 0 ? (taken / p.adherence.length) * 100 : null;
+      return { prescription: p, rate, logCount: p.adherence.length };
+    })
+    .filter((a) => a.rate !== null && a.rate < 70 && a.logCount >= 3)
+    .map((a) => ({ ...a, rate: a.rate as number }));
 
   return (
     <AdminShell
@@ -28,13 +52,20 @@ export default async function AdminAiEscalationsPage() {
       subtitle="Conversations the assistant flagged for human review"
     >
       {/* Stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Open escalations</p>
             <AlertCircle className="h-3.5 w-3.5 text-amber-700" />
           </div>
           <p className="mt-1 text-2xl font-bold text-amber-700">{conversations.length}</p>
+        </div>
+        <div className="admin-stat p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total AI convos</p>
+            <Sparkles className="h-3.5 w-3.5 admin-accent-text" />
+          </div>
+          <p className="mt-1 text-2xl font-bold admin-text">{aiStats._count}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
@@ -47,14 +78,51 @@ export default async function AdminAiEscalationsPage() {
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Anonymous</p>
-            <MessageSquare className="h-3.5 w-3.5 admin-accent-text" />
+            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Adherence alerts</p>
+            <Activity className="h-3.5 w-3.5 text-rose-600" />
           </div>
-          <p className="mt-1 text-2xl font-bold admin-text">
-            {conversations.filter((c) => !c.customer).length}
-          </p>
+          <p className="mt-1 text-2xl font-bold text-rose-600">{adherenceAlerts.length}</p>
         </div>
       </div>
+
+      {/* AI adherence alerts */}
+      {adherenceAlerts.length > 0 && (
+        <AdminPanel
+          title="Adherence alerts"
+          description="Customers with adherence below 70% in the last 14 days — AI suggests a follow-up"
+          className="mb-6"
+          action={
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf]/20 to-[#0d6e5a]/20 px-2 py-0.5 text-[10px] font-semibold admin-accent-text">
+              <Sparkles className="h-2.5 w-2.5" /> AI-analyzed
+            </span>
+          }
+        >
+          <ul className="space-y-2">
+            {adherenceAlerts.map(({ prescription, rate, logCount }) => (
+              <li
+                key={prescription.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-rose-500/20 bg-rose-500/[0.04] p-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold admin-text">{prescription.medicineName}</p>
+                  <p className="text-xs admin-muted">
+                    {prescription.customer?.fullName} · {logCount} logs in last 14 days
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-rose-600">{Math.round(rate)}%</span>
+                  <a
+                    href={`/admin/prescriptions/${prescription.id}`}
+                    className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-semibold admin-accent-text hover:bg-[var(--admin-inset-2)]"
+                  >
+                    Review →
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </AdminPanel>
+      )}
 
       <AdminPanel
         title="Escalated conversations"
@@ -97,7 +165,7 @@ export default async function AdminAiEscalationsPage() {
                               </span>
                             )}
                             <span className="inline-flex items-center gap-0.5">
-                              <Clock className="h-2.5 w-2.5" /> {conv.escalatedAt?.toLocaleString() || "Escalated"}
+                              <Clock className="h-2.5 w-2.5" /> {conv.escalatedAt ? formatDateTime(conv.escalatedAt) : "Escalated"}
                             </span>
                           </div>
                         </div>

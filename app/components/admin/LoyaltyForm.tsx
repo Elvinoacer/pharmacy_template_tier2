@@ -1,17 +1,19 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
-import { Users, Sparkles, FileText, AlertCircle, Check, Save } from "lucide-react";
+import { Sparkles, FileText, AlertCircle, Check, Save, Wand2 } from "lucide-react";
+import { CustomerPicker } from "@/app/components/CustomerPicker";
+import { toast } from "@/app/components/Toaster";
 
 export default function LoyaltyForm({
   action,
-  customers,
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
-  customers: { id: string; fullName: string; points: number }[];
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
+  const [customerId, setCustomerId] = useState("");
+  const [description, setDescription] = useState("");
 
   return (
     <form action={formAction} className="space-y-4">
@@ -28,17 +30,16 @@ export default function LoyaltyForm({
 
       <div>
         <label className="label-admin">Customer *</label>
-        <div className="relative">
-          <Users className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <select name="customerId" required className="input-admin pl-9" defaultValue="">
-            <option value="">Select customer…</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.fullName} ({c.points} pts)
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomerPicker
+          name="customerId"
+          value={customerId}
+          onChange={setCustomerId}
+          variant="admin"
+          required
+        />
+        <p className="mt-1 text-[10px] admin-soft">
+          Searchable by name, email, or phone. Only customer accounts appear.
+        </p>
       </div>
 
       <div>
@@ -59,10 +60,33 @@ export default function LoyaltyForm({
       </div>
 
       <div>
-        <label className="label-admin">Reason</label>
+        <div className="flex items-center justify-between">
+          <label className="label-admin">Reason</label>
+          <button
+            type="button"
+            onClick={() => {
+              if (!customerId) {
+                toast.info("Pick a customer first.");
+                return;
+              }
+              setDescription("Manual adjustment — compensation for delayed refill");
+              toast.success("Reason template filled.");
+            }}
+            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110"
+            title="Use a reason template"
+          >
+            <Wand2 className="h-2.5 w-2.5" /> Template
+          </button>
+        </div>
         <div className="relative">
           <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input name="description" placeholder="e.g. Compensation for delayed refill" className="input-admin pl-9" />
+          <input
+            name="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="e.g. Compensation for delayed refill"
+            className="input-admin pl-9"
+          />
         </div>
       </div>
 

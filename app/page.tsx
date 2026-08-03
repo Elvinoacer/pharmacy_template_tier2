@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import CtaBanner from "./components/CtaBanner";
+import { PublicTestimonials } from "./components/PublicTestimonials";
 import Reveal from "./components/Reveal";
 import SectionHeading from "./components/SectionHeading";
 import {
@@ -483,6 +484,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <PublicTestimonials />
 
       <CtaBanner />
     </div>

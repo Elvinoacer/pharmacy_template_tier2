@@ -5,6 +5,7 @@ import type { RefillStatus, EnquiryStatus, FeedbackStatus, CampaignStatus } from
 import { addTimelineEvent } from "@/app/lib/timeline";
 import { sendDelivery } from "@/app/lib/services/delivery";
 import { dispatchPushToUser, dispatchPushToStaff } from "@/app/lib/services/push";
+import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
 
 export async function getCustomerDashboard(customerId: string) {
   const [profile, prescriptions, refills, notifications, loyalty, reminders, timeline] =
@@ -131,6 +132,14 @@ export async function createRefillRequest(data: {
     /* push is best-effort */
   });
 
+  await recordAdminNotification({
+    type: "refill_new",
+    title: "New refill request",
+    body: `${who} requested ${data.medicineName}.`,
+    relatedType: "refill_request",
+    relatedId: refill.id,
+  });
+
   return refill;
 }
 
@@ -162,6 +171,7 @@ export async function updateRefillStatus(
         type: "refill",
         title: `Refill ${status.replaceAll("_", " ")}`,
         body: `Your request for ${refill.medicineName} is now: ${status.replaceAll("_", " ")}.`,
+        fullBody: `Your refill request for **${refill.medicineName}** has been updated to **${status.replaceAll("_", " ")}**.\n\nReference: ${refill.rxReference || "—"}\n\nView your refill history in the portal for more details.`,
         status: "delivered",
         sentAt: new Date(),
         relatedType: "refill_request",
@@ -302,7 +312,7 @@ export async function getCustomerDetail(customerId: string) {
       notifications: { orderBy: { createdAt: "desc" }, take: 20 },
       reminders: { orderBy: { scheduledFor: "desc" }, take: 20 },
       loyaltyAccount: { include: { transactions: { orderBy: { createdAt: "desc" }, take: 10 } } },
-      staffNotes: { include: { author: { select: { email: true } } }, orderBy: { createdAt: "desc" } },
+      staffNotes: { include: { author: { select: { email: true } } }, orderBy: [{ isPinned: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }] },
       conversations: {
         include: { messages: { orderBy: { createdAt: "asc" } } },
         orderBy: { lastMessageAt: "desc" },
@@ -357,6 +367,14 @@ export async function createEnquiry(data: {
     /* best-effort */
   });
 
+  await recordAdminNotification({
+    type: "enquiry_new",
+    title: "New customer enquiry",
+    body: `${data.name}: ${data.subject || data.message.slice(0, 120)}`,
+    relatedType: "enquiry",
+    relatedId: enquiry.id,
+  });
+
   return enquiry;
 }
 
@@ -403,6 +421,22 @@ export async function createFeedback(data: {
     }).catch(() => {
       /* best-effort */
     });
+    await recordAdminNotification({
+      type: "feedback_low",
+      title: type === "complaint" ? "New customer complaint" : "Low feedback rating",
+      body: `${data.name || "Anonymous"}: ${data.title || data.body.slice(0, 120)}`,
+      severity: "warning",
+      relatedType: "feedback",
+      relatedId: feedback.id,
+    });
+  } else {
+    await recordAdminNotification({
+      type: "feedback_new",
+      title: "New customer feedback",
+      body: `${data.name || "Anonymous"}: ${data.title || data.body.slice(0, 120)}`,
+      relatedType: "feedback",
+      relatedId: feedback.id,
+    });
   }
 
   return feedback;
@@ -419,19 +453,37 @@ export async function respondToFeedback(id: string, response: string, responderI
       isPublic,
     },
     include: {
-      customer: { include: { user: { select: { id: true } } } },
+      customer: { include: { user: { select: { id: true, email: true } } } },
     },
   });
 
-  if (feedback.customer?.user?.id) {
-    await dispatchPushToUser(feedback.customer.user.id, {
-      title: "Pharmacy response to your feedback",
-      body: response.slice(0, 200),
-      url: "/portal/feedback",
-      data: { tag: `feedback-${feedback.id}`, feedbackId: feedback.id },
-    }).catch(() => {
-      /* best-effort */
-    });
+  // Notify the customer that staff responded — both in-app notification and push.
+  if (feedback.customer) {
+    await prisma.notification.create({
+      data: {
+        customerId: feedback.customer.id,
+        channel: "in_app",
+        type: "feedback",
+        title: "Pharmacy responded to your feedback",
+        body: response.slice(0, 280),
+        fullBody: response,
+        status: "delivered",
+        sentAt: new Date(),
+        relatedType: "feedback",
+        relatedId: feedback.id,
+      },
+    }).catch(() => {/* best-effort */});
+
+    if (feedback.customer.user?.id) {
+      await dispatchPushToUser(feedback.customer.user.id, {
+        title: "Pharmacy response to your feedback",
+        body: response.slice(0, 200),
+        url: "/portal/feedback",
+        data: { tag: `feedback-${feedback.id}`, feedbackId: feedback.id },
+      }).catch(() => {
+        /* best-effort */
+      });
+    }
   }
 
   return feedback;
@@ -454,23 +506,50 @@ export async function sendStaffMessage(data: {
 }) {
   const customer = await prisma.customerProfile.findUnique({
     where: { id: data.customerId },
-    include: { user: { select: { id: true, email: true } } },
+    include: {
+      user: { select: { id: true, email: true } },
+      loyaltyAccount: { select: { points: true, tier: true } },
+      preferences: true,
+    },
   });
+  // Per-customer variable interpolation: {{name}}, {{tier}}, etc.
+  const vars = customer
+    ? {
+        name: customer.fullName,
+        fullName: customer.fullName,
+        email: customer.user.email,
+        points: customer.loyaltyAccount?.points ?? 0,
+        tier: customer.loyaltyAccount?.tier ?? "bronze",
+      }
+    : {};
+  const personalizedSubject = data.subject ? interpolateTemplate(data.subject, vars) : undefined;
+  const personalizedBody = interpolateTemplate(data.body, vars);
+
   const delivery =
     data.scheduledFor || !customer
       ? { status: data.scheduledFor ? ("pending" as const) : ("failed" as const), error: customer ? undefined : "Customer not found" }
       : await sendDelivery({
           channel: data.channel,
-          recipient: { email: customer.user.email, phone: customer.phone },
-          subject: data.subject,
-          body: data.body,
+          recipient: {
+            email: customer.user.email,
+            phone: customer.phone,
+            preferences: customer.preferences
+              ? {
+                  emailEnabled: customer.preferences.emailEnabled,
+                  smsEnabled: customer.preferences.smsEnabled,
+                  whatsappEnabled: customer.preferences.whatsappEnabled,
+                }
+              : null,
+          },
+          subject: personalizedSubject,
+          body: personalizedBody,
         });
 
   const conversation = await prisma.conversation.create({
     data: {
       customerId: data.customerId,
       channel: data.channel === "portal" ? "portal" : data.channel,
-      subject: data.subject,
+      subject: personalizedSubject,
       status: data.scheduledFor ? "pending" : "open",
       assignedToId: data.staffId,
       messages: {
@@ -479,8 +558,8 @@ export async function sendStaffMessage(data: {
           channel: data.channel === "portal" ? "portal" : data.channel,
           senderType: "staff",
           senderId: data.staffId,
-          body: data.body,
-          subject: data.subject,
+          body: personalizedBody,
+          subject: personalizedSubject,
           status: data.scheduledFor ? "scheduled" : delivery.status === "delivered" ? "delivered" : delivery.status === "failed" ? "failed" : "sent",
           scheduledFor: data.scheduledFor,
           metadata: {
@@ -499,18 +578,21 @@ export async function sendStaffMessage(data: {
       customerId: data.customerId,
       channel: data.channel === "portal" ? "in_app" : data.channel,
       type: "message",
-      title: data.subject || "Message from Aether Pharmacy",
-      body: data.body,
+      title: personalizedSubject || "Message from Aether Pharmacy",
+      body: personalizedBody.slice(0, 280),
+      fullBody: personalizedBody,
       status: data.scheduledFor ? "pending" : delivery.status,
       sentAt: data.scheduledFor || delivery.status === "failed" || delivery.status === "pending" ? null : new Date(),
+      relatedType: "conversation",
+      relatedId: conversation.id,
     },
   });
 
   // Fire a web push to the customer immediately for non-scheduled messages.
   if (!data.scheduledFor && customer?.user?.id) {
     await dispatchPushToUser(customer.user.id, {
-      title: data.subject || "Message from Aether Pharmacy",
-      body: data.body.slice(0, 200),
+      title: personalizedSubject || "Message from Aether Pharmacy",
+      body: personalizedBody.slice(0, 200),
       url: "/portal/messages",
       data: { tag: `msg-${conversation.id}`, conversationId: conversation.id },
     }).catch(() => {
@@ -523,12 +605,46 @@ export async function sendStaffMessage(data: {
     data.staffId,
     "message_sent",
     "Staff message sent",
-    data.subject || data.channel,
+    personalizedSubject || data.channel,
     { conversationId: conversation.id },
     data.staffId,
   );
 
   return conversation;
+}
+
+/**
+ * Interpolate template variables: {{name}}, {{email}}, {{tier}}, {{points}}, etc.
+ * Used by campaigns, message templates, and reminders so each recipient sees
+ * their own data. Unknown variables are left as-is (so staff can spot typos).
+ */
+export function interpolateTemplate(
+  template: string,
+  vars: Record<string, string | number | undefined | null>,
+): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+    const v = vars[key];
+    return v === undefined || v === null ? match : String(v);
+  });
+}
+
+/**
+ * Build the per-customer variable map for template interpolation.
+ */
+async function buildCustomerVars(customer: {
+  id: string;
+  fullName: string;
+  user: { email: string };
+  loyaltyAccount?: { points: number; tier: string } | null;
+}): Promise<Record<string, string | number>> {
+  return {
+    name: customer.fullName,
+    fullName: customer.fullName,
+    email: customer.user.email,
+    points: customer.loyaltyAccount?.points ?? 0,
+    tier: customer.loyaltyAccount?.tier ?? "bronze",
+    customerId: customer.id,
+  };
 }
 
 export async function launchCampaign(campaignId: string, actorId: string) {
@@ -543,7 +659,11 @@ export async function launchCampaign(campaignId: string, actorId: string) {
     (await prisma.customerProfile.findMany({ select: { id: true } })).map((c) => c.id);
   const customers = await prisma.customerProfile.findMany({
     where: { id: { in: memberIds } },
-    include: { user: { select: { id: true, email: true } } },
+    include: {
+      user: { select: { id: true, email: true } },
+      loyaltyAccount: { select: { points: true, tier: true } },
+      preferences: true,
+    },
   });
 
   let sent = 0;
@@ -551,19 +671,37 @@ export async function launchCampaign(campaignId: string, actorId: string) {
   let failed = 0;
   for (const customer of customers) {
     const channel = campaign.channel === "multi" ? "email" : campaign.channel;
+    // Per-customer variable interpolation.
+    const vars = await buildCustomerVars(customer);
+    const personalizedSubject = campaign.subject
+      ? interpolateTemplate(campaign.subject, vars)
+      : campaign.name;
+    const personalizedBody = interpolateTemplate(campaign.body, vars);
+
     const delivery = await sendDelivery({
       channel,
-      recipient: { email: customer.user.email, phone: customer.phone },
-      subject: campaign.subject || campaign.name,
-      body: campaign.body,
+      recipient: {
+        email: customer.user.email,
+        phone: customer.phone,
+        preferences: customer.preferences
+          ? {
+              emailEnabled: customer.preferences.emailEnabled,
+              smsEnabled: customer.preferences.smsEnabled,
+              whatsappEnabled: customer.preferences.whatsappEnabled,
+            }
+          : null,
+      },
+      subject: personalizedSubject,
+      body: personalizedBody,
     });
     await prisma.notification.create({
       data: {
         customerId: customer.id,
         channel,
         type: "campaign",
-        title: campaign.subject || campaign.name,
-        body: campaign.body,
+        title: personalizedSubject,
+        body: personalizedBody.slice(0, 280),
+        fullBody: personalizedBody,
         status: delivery.status,
         sentAt: delivery.status === "sent" || delivery.status === "delivered" ? new Date() : null,
         relatedType: "campaign",
@@ -575,8 +713,8 @@ export async function launchCampaign(campaignId: string, actorId: string) {
     // even when the primary channel is email/SMS/WhatsApp.
     if (customer.user?.id) {
       const push = await dispatchPushToUser(customer.user.id, {
-        title: campaign.subject || campaign.name,
-        body: campaign.body.slice(0, 200),
+        title: personalizedSubject,
+        body: personalizedBody.slice(0, 200),
         url: "/portal/messages",
         data: { tag: `campaign-${campaign.id}`, campaignId: campaign.id },
       }).catch(() => ({ sent: 0, failed: 0, pruned: 0 }));
@@ -602,14 +740,24 @@ export async function launchCampaign(campaignId: string, actorId: string) {
 export async function processDueReminders() {
   const due = await prisma.reminder.findMany({
     where: { status: "scheduled", scheduledFor: { lte: new Date() } },
-    include: { customer: { include: { user: { select: { id: true, email: true } } } } },
+    include: { customer: { include: { user: { select: { id: true, email: true } }, preferences: true } } },
     take: 50,
   });
 
   for (const reminder of due) {
     const delivery = await sendDelivery({
       channel: reminder.channel,
-      recipient: { email: reminder.customer.user.email, phone: reminder.customer.phone },
+      recipient: {
+        email: reminder.customer.user.email,
+        phone: reminder.customer.phone,
+        preferences: reminder.customer.preferences
+          ? {
+              emailEnabled: reminder.customer.preferences.emailEnabled,
+              smsEnabled: reminder.customer.preferences.smsEnabled,
+              whatsappEnabled: reminder.customer.preferences.whatsappEnabled,
+            }
+          : null,
+      },
       subject: reminder.title,
       body: reminder.body || reminder.title,
     });

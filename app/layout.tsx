@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Fraunces, JetBrains_Mono } from "next/font/google";
 import AppChrome from "./components/AppChrome";
+import { Toaster } from "./components/Toaster";
 import JsonLd from "./components/JsonLd";
 import { pharmacy } from "./lib/data";
 import { ensureEnvConfigured } from "./lib/ensure-env";
@@ -85,6 +86,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col font-sans">
         <JsonLd />
         <AppChrome>{children}</AppChrome>
+        <Toaster />
       </body>
     </html>
   );

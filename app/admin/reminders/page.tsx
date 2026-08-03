@@ -5,6 +5,7 @@ import { adminCreateReminderAction, adminProcessRemindersAction } from "@/app/ac
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import ReminderForm from "@/app/components/admin/ReminderForm";
+import { formatDateTime } from "@/app/lib/time";
 import {
   CalendarClock,
   Zap,
@@ -17,6 +18,7 @@ import {
   HeartPulse,
   Cake,
   Type,
+  Sparkles,
 } from "lucide-react";
 
 export const metadata = { title: "Reminders" };
@@ -49,17 +51,11 @@ export default async function AdminRemindersPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
-  const [reminders, customers] = await Promise.all([
-    prisma.reminder.findMany({
-      include: { customer: { select: { fullName: true } } },
-      orderBy: { scheduledFor: "desc" },
-      take: 50,
-    }),
-    prisma.customerProfile.findMany({
-      select: { id: true, fullName: true },
-      orderBy: { fullName: "asc" },
-    }),
-  ]);
+  const reminders = await prisma.reminder.findMany({
+    include: { customer: { select: { fullName: true } } },
+    orderBy: { scheduledFor: "desc" },
+    take: 50,
+  });
 
   const stats = {
     scheduled: reminders.filter((r) => r.status === "scheduled").length,
@@ -99,9 +95,70 @@ export default async function AdminRemindersPage() {
         </div>
       </div>
 
+      {/* AI auto-reminders banner */}
+      <AdminPanel
+        title="Automated reminders"
+        description="Triggered by cron jobs — no manual scheduling needed"
+        className="mb-6"
+        action={
+          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf]/20 to-[#0d6e5a]/20 px-2 py-0.5 text-[10px] font-semibold admin-accent-text">
+            <Sparkles className="h-2.5 w-2.5" /> AI-assisted
+          </span>
+        }
+      >
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <Pill className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">Refill due in 3 days</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              For every active prescription with nextRefillDue in 3 days, send a refill reminder.
+            </p>
+          </div>
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <Truck className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">Pickup ready for 24h</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              For refills in ready_for_pickup status for over 24h, send a pickup reminder.
+            </p>
+          </div>
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <HeartPulse className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">Adherence follow-up</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              If a customer has missed doses for 3+ days, AI drafts a wellness check-in for staff approval.
+            </p>
+          </div>
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <Cake className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">Birthday greeting</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              On the customer&apos;s birthday, send a personalized greeting (+25 loyalty points).
+            </p>
+          </div>
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <CalendarClock className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">Prescription expiring</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              7 days before a prescription&apos;s endDate, remind the customer to consult their prescriber.
+            </p>
+          </div>
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+            <Sparkles className="h-4 w-4 admin-accent-text" />
+            <p className="mt-2 text-sm font-semibold admin-text">AI promotion messages</p>
+            <p className="mt-1 text-[10px] admin-soft">
+              Monthly, AI suggests promotions for staff approval (flu season, allergy season, etc.).
+            </p>
+          </div>
+        </div>
+        <p className="mt-3 text-[10px] admin-soft">
+          The cron endpoint <code className="md-code">/api/cron/reminders</code> runs every hour and
+          dispatches any due reminders. The AI promotion cron runs daily at 06:00.
+        </p>
+      </AdminPanel>
+
       <div className="grid gap-6 lg:grid-cols-2">
-        <AdminPanel title="Schedule reminder" description="Send a reminder to a customer at a specific time">
-          <ReminderForm action={adminCreateReminderAction} customers={customers} />
+        <AdminPanel title="Schedule / send reminder" description="Pick a customer and channel">
+          <ReminderForm action={adminCreateReminderAction} />
         </AdminPanel>
 
         <AdminPanel
@@ -139,7 +196,7 @@ export default async function AdminRemindersPage() {
                             <span>·</span>
                             <span className="capitalize">{r.type.replace("_", " ")}</span>
                             <span>·</span>
-                            <span>{new Date(r.scheduledFor).toLocaleString()}</span>
+                            <span>{formatDateTime(r.scheduledFor)}</span>
                           </div>
                         </div>
                       </div>

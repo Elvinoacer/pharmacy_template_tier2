@@ -5,6 +5,11 @@ type DeliveryChannel = "email" | "sms" | "whatsapp" | "portal" | "in_app" | "pus
 export type DeliveryRecipient = {
   email?: string | null;
   phone?: string | null;
+  preferences?: {
+    emailEnabled?: boolean;
+    smsEnabled?: boolean;
+    whatsappEnabled?: boolean;
+  } | null;
 };
 
 export type DeliveryPayload = {
@@ -25,30 +30,141 @@ function appUrl() {
   return process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "http://localhost:3000";
 }
 
-function buildEmailHtml(subject: string, bodyText: string) {
-  const formattedBody = bodyText
-    .split('\n')
-    .map(p => p.trim())
-    .filter(p => p.length > 0)
-    .map(p => {
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      if (p.match(urlRegex)) {
-        return `<p style="margin: 0 0 16px 0; font-size: 16px; line-height: 26px; color: #334155;">` +
-          p.replace(urlRegex, `</p><table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin: 32px 0;"><tr><td align="center"><a href="$1" style="display: inline-block; padding: 14px 32px; background-color: #0F172A; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">Access Link</a></td></tr></table><p style="margin: 0 0 16px 0; font-size: 16px; line-height: 26px; color: #334155;">`) +
-          `</p>`;
-      }
-      return `<p style="margin: 0 0 16px 0; font-size: 16px; line-height: 26px; color: #334155;">` + p + `</p>`;
-    })
-    .join('');
+/**
+ * The support email shown in every outbound email footer. Override via
+ * SUPPORT_EMAIL env if needed. Default is support@gtss.software.
+ */
+function supportEmail() {
+  return process.env.SUPPORT_EMAIL?.trim() || "support@gtss.software";
+}
 
-  const cleanedBody = formattedBody.replace(/<p[^>]*><\/p>/g, '');
+function supportPhone() {
+  return process.env.SUPPORT_PHONE?.trim() || "0790670542";
+}
+
+/**
+ * Convert a (potentially) Markdown body into safe HTML for email.
+ * Implements the same subset as the client-side Markdown component so what
+ * staff compose in the campaign/template editor is what customers see in
+ * their inbox.
+ *
+ * Why not pull in `marked`? Adding deps would change package.json + lockfile
+ * (and the user explicitly wants .git untouched). This renderer covers:
+ * headings, bold, italic, inline code, links, lists, blockquotes, hr, paragraphs.
+ */
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderInline(text: string): string {
+  let t = escapeHtml(text);
+  t = t.replace(/`([^`]+)`/g, '<code style="background:#f1f5f9;padding:2px 5px;border-radius:4px;font-family:ui-monospace,monospace;font-size:0.9em;">$1</code>');
+  t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  t = t.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+  t = t.replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
+  t = t.replace(/(^|[^_])_([^_]+)_/g, "$1<em>$2</em>");
+  t = t.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)/g,
+    '<a href="$2" style="color:#0d6e5a;text-decoration:underline;font-weight:600;">$1</a>',
+  );
+  t = t.replace(/~~([^~]+)~~/g, "<del>$1</del>");
+  return t;
+}
+
+function renderMarkdownToEmailHtml(src: string): string {
+  if (!src) return "";
+  const lines = src.replace(/\r\n/g, "\n").split("\n");
+  const out: string[] = [];
+  let i = 0;
+  let inUl = false;
+  let inOl = false;
+  let paragraph: string[] = [];
+
+  const flushParagraph = () => {
+    if (paragraph.length > 0) {
+      out.push(`<p style="margin:0 0 14px 0;font-size:15px;line-height:24px;color:#334155;">${renderInline(paragraph.join(" "))}</p>`);
+      paragraph = [];
+    }
+  };
+  const closeLists = () => {
+    if (inUl) { out.push("</ul>"); inUl = false; }
+    if (inOl) { out.push("</ol>"); inOl = false; }
+  };
+
+  while (i < lines.length) {
+    const line = lines[i];
+    if (/^\s*$/.test(line)) {
+      flushParagraph();
+      closeLists();
+      i++;
+      continue;
+    }
+    if (/^\s*([-*]){3,}\s*$/.test(line)) {
+      flushParagraph();
+      closeLists();
+      out.push('<hr style="border:0;border-top:1px solid #e2e8f0;margin:24px 0;" />');
+      i++;
+      continue;
+    }
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    if (h) {
+      flushParagraph();
+      closeLists();
+      const level = h[1].length;
+      const sizes = ["26px", "22px", "19px", "17px", "16px", "15px"];
+      out.push(`<h${level} style="margin:20px 0 10px 0;font-size:${sizes[level - 1]};font-weight:700;color:#0c1a14;letter-spacing:-0.3px;">${renderInline(h[2])}</h${level}>`);
+      i++;
+      continue;
+    }
+    if (/^\s*>\s?/.test(line)) {
+      flushParagraph();
+      closeLists();
+      out.push(`<blockquote style="border-left:3px solid #0d6e5a;margin:0 0 14px 0;padding:6px 0 6px 14px;color:#475569;font-style:italic;">${renderInline(line.replace(/^\s*>\s?/, ""))}</blockquote>`);
+      i++;
+      continue;
+    }
+    if (/^\s*[-*]\s+/.test(line)) {
+      flushParagraph();
+      if (inOl) { out.push("</ol>"); inOl = false; }
+      if (!inUl) { out.push('<ul style="margin:0 0 14px 0;padding-left:22px;font-size:15px;line-height:24px;color:#334155;">'); inUl = true; }
+      out.push(`<li style="margin:4px 0;">${renderInline(line.replace(/^\s*[-*]\s+/, ""))}</li>`);
+      i++;
+      continue;
+    }
+    if (/^\s*\d+\.\s+/.test(line)) {
+      flushParagraph();
+      if (inUl) { out.push("</ul>"); inUl = false; }
+      if (!inOl) { out.push('<ol style="margin:0 0 14px 0;padding-left:22px;font-size:15px;line-height:24px;color:#334155;">'); inOl = true; }
+      out.push(`<li style="margin:4px 0;">${renderInline(line.replace(/^\s*\d+\.\s+/, ""))}</li>`);
+      i++;
+      continue;
+    }
+    closeLists();
+    paragraph.push(line);
+    i++;
+  }
+  flushParagraph();
+  closeLists();
+  return out.join("\n");
+}
+
+function buildEmailHtml(subject: string, bodyText: string) {
+  const renderedBody = renderMarkdownToEmailHtml(bodyText);
+  const support = supportEmail();
+  const phone = supportPhone();
+  const year = new Date().getFullYear();
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${subject}</title>
+  <title>${escapeHtml(subject)}</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F8FAFC; color: #0F172A;">
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #F8FAFC; padding: 60px 20px;">
@@ -56,38 +172,27 @@ function buildEmailHtml(subject: string, bodyText: string) {
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; background-color: #FFFFFF; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); overflow: hidden;">
           <tr>
-            <td style="padding: 48px 48px 32px 48px; text-align: center; border-bottom: 1px solid #F1F5F9; background: linear-gradient(to bottom, #FFFFFF, #F8FAFC);">
-              <div style="margin-bottom: 24px;">
-                <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
-                  <tr>
-                    <td style="background-color: #F0F9FF; padding: 16px; border-radius: 20px;">
-                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
-                        <path d="m8.5 8.5 7 7"/>
-                      </svg>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A; letter-spacing: -0.5px;">Aether Pharmacy</h1>
+            <td style="padding: 36px 36px 24px 36px; text-align: center; border-bottom: 1px solid #F1F5F9; background: linear-gradient(135deg, #0d6e5a, #084c3f);">
+              <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: -0.3px;">Aether Pharmacy</h1>
+              <p style="margin: 4px 0 0 0; font-size: 12px; color: rgba(255,255,255,0.85);">Your trusted health partner</p>
             </td>
           </tr>
           <tr>
-            <td style="padding: 48px;">
-              <h2 style="margin: 0 0 24px 0; font-size: 22px; font-weight: 700; color: #0F172A;">${subject}</h2>
-              <div style="font-size: 16px; line-height: 26px; color: #475569;">
-                ${cleanedBody}
+            <td style="padding: 36px;">
+              <h2 style="margin: 0 0 20px 0; font-size: 20px; font-weight: 700; color: #0c1a14;">${escapeHtml(subject)}</h2>
+              <div style="font-size: 15px; line-height: 24px; color: #334155;">
+                ${renderedBody}
               </div>
             </td>
           </tr>
           <tr>
-            <td style="padding: 32px 48px; background-color: #F8FAFC; text-align: center; border-top: 1px solid #E2E8F0;">
-              <p style="margin: 0; font-size: 14px; color: #64748B; font-weight: 500;">
-                &copy; ${new Date().getFullYear()} Aether Pharmacy. All rights reserved.
+            <td style="padding: 24px 36px; background-color: #F8FAFC; text-align: center; border-top: 1px solid #E2E8F0;">
+              <p style="margin: 0; font-size: 13px; color: #64748B; font-weight: 500;">
+                &copy; ${year} Aether Pharmacy. All rights reserved.
               </p>
-              <p style="margin: 12px 0 0 0; font-size: 14px; color: #94A3B8;">
-                123 Health Avenue, Wellness District<br>
-                Need help? <a href="mailto:support@aetherpharmacy.com" style="color: #0EA5E9; text-decoration: none; font-weight: 500;">Contact Support</a>
+              <p style="margin: 8px 0 0 0; font-size: 13px; color: #94A3B8;">
+                Need help? <a href="mailto:${support}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${support}</a><br>
+                Or call <a href="tel:${phone.replace(/\s/g, "")}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${phone}</a>
               </p>
             </td>
           </tr>
@@ -98,6 +203,8 @@ function buildEmailHtml(subject: string, bodyText: string) {
 </body>
 </html>`;
 }
+
+void appUrl;
 
 async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
   if (!payload.recipient.email) return { status: "failed", error: "Customer email is missing" };
@@ -198,6 +305,18 @@ export async function sendDelivery(payload: DeliveryPayload): Promise<DeliveryRe
     if (payload.channel === "portal" || payload.channel === "in_app" || payload.channel === "push") {
       return { status: "delivered", provider: "portal" };
     }
+    // Enforce customer communication preferences — if they've disabled a channel,
+    // we never send via it. Caller is expected to have populated `recipient.preferences`
+    // (we don't fetch it here to keep sendDelivery pure; the calling service does that).
+    if (payload.channel === "email" && payload.recipient.preferences?.emailEnabled === false) {
+      return { status: "failed", error: "Customer has disabled email" };
+    }
+    if (payload.channel === "sms" && payload.recipient.preferences?.smsEnabled === false) {
+      return { status: "failed", error: "Customer has disabled SMS" };
+    }
+    if (payload.channel === "whatsapp" && payload.recipient.preferences?.whatsappEnabled === false) {
+      return { status: "failed", error: "Customer has disabled WhatsApp" };
+    }
     if (payload.channel === "email") return sendEmail(payload);
     if (payload.channel === "sms") return sendSms(payload);
     if (payload.channel === "whatsapp") return sendWhatsapp(payload);
@@ -211,9 +330,9 @@ export async function sendDelivery(payload: DeliveryPayload): Promise<DeliveryRe
 }
 
 export function passwordResetBody(token: string) {
-  return `Use this password reset link: ${appUrl()}/reset-password?token=${token}\n\nIf you did not request this, ignore this message.`;
+  return `Use this password reset link: ${appUrl()}/reset-password?token=${token}\n\nIf you did not request this, ignore this message.\n\n— Aether Pharmacy (${supportEmail()})`;
 }
 
 export function emailVerificationBody(token: string) {
-  return `Verify your email address: ${appUrl()}/api/verify-email?token=${token}\n\nIf you did not create an Aether Pharmacy account, ignore this message.`;
+  return `Verify your email address: ${appUrl()}/api/verify-email?token=${token}\n\nIf you did not create an Aether Pharmacy account, ignore this message.\n\n— Aether Pharmacy (${supportEmail()})`;
 }

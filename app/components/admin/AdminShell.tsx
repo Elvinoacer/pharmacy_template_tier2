@@ -37,6 +37,7 @@ export const ADMIN_LINKS = [
   { href: "/admin", label: "Analytics", icon: BarChart3 },
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/refills", label: "Refills", icon: Pill },
+  { href: "/admin/prescriptions", label: "Prescriptions", icon: FileText },
   { href: "/admin/enquiries", label: "Enquiries", icon: Mail },
   { href: "/admin/messages", label: "Communication", icon: MessageSquare },
   { href: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
@@ -48,6 +49,8 @@ export const ADMIN_LINKS = [
   { href: "/admin/feedback", label: "Feedback", icon: Star },
   { href: "/admin/knowledge", label: "AI Knowledge", icon: BookOpen },
   { href: "/admin/templates", label: "Templates", icon: FileText },
+  { href: "/admin/medications", label: "Medications", icon: Pill },
+  { href: "/admin/orders", label: "Orders & Revenue", icon: BarChart3 },
 ] as const;
 
 type ThemeMode = "light" | "dark" | "system";

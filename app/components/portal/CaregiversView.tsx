@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { addCaregiverAction, removeCaregiverAction, type ActionState } from "@/app/actions/portal";
+import { addCaregiverAction, removeCaregiverAction, restoreCaregiverAction, inviteCaregiverAction, type ActionState } from "@/app/actions/portal";
 import { Panel } from "@/app/components/portal/PortalShell";
 import {
   UserPlus,
@@ -13,6 +13,8 @@ import {
   X,
   Check,
   AlertCircle,
+  RotateCcw,
+  Send,
 } from "lucide-react";
 
 type Caregiver = {
@@ -44,6 +46,7 @@ function avatarColor(name: string) {
 export function CaregiversView({ caregivers }: { caregivers: Caregiver[] }) {
   const [state, formAction, pending] = useActionState(addCaregiverAction, {} as ActionState);
   const active = caregivers.filter((c) => c.status === "active");
+  const revoked = caregivers.filter((c) => c.status === "revoked");
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -110,6 +113,20 @@ export function CaregiversView({ caregivers }: { caregivers: Caregiver[] }) {
                         icon={Bell}
                       />
                     </div>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {c.caregiverEmail && (
+                        <form action={inviteCaregiverAction}>
+                          <input type="hidden" name="id" value={c.id} />
+                          <button
+                            type="submit"
+                            className="inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-2 py-0.5 text-[10px] font-semibold text-[#0d6e5a] transition hover:bg-[#d5efe6]"
+                            title="Send invite email so they can set up their caregiver account"
+                          >
+                            <Send className="h-2.5 w-2.5" /> Send invite link
+                          </button>
+                        </form>
+                      )}
+                    </div>
                   </div>
                   <form action={removeCaregiverAction}>
                     <input type="hidden" name="id" value={c.id} />
@@ -126,6 +143,40 @@ export function CaregiversView({ caregivers }: { caregivers: Caregiver[] }) {
               );
             })}
           </ul>
+        )}
+
+        {/* Revoked caregivers — with undo */}
+        {revoked.length > 0 && (
+          <div className="mt-6 border-t border-[#e3ebe6] pt-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#8a9a92]">
+              Revoked ({revoked.length})
+            </p>
+            <ul className="space-y-2">
+              {revoked.map((c) => (
+                <li
+                  key={c.id}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-dashed border-[#e3ebe6] bg-[#fafbfa] px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-[#5a6b62] line-through">{c.caregiverName}</p>
+                    {c.caregiverEmail && (
+                      <p className="truncate text-[10px] text-[#8a9a92]">{c.caregiverEmail}</p>
+                    )}
+                  </div>
+                  <form action={restoreCaregiverAction}>
+                    <input type="hidden" name="id" value={c.id} />
+                    <button
+                      type="submit"
+                      className="inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-2 py-1 text-[10px] font-semibold text-[#0d6e5a] transition hover:bg-[#d5efe6]"
+                      title="Restore caregiver"
+                    >
+                      <RotateCcw className="h-3 w-3" /> Restore
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </Panel>
 

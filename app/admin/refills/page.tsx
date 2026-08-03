@@ -2,24 +2,21 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { REFILL_STATUSES, refillStatusMeta } from "@/app/lib/types";
-import { adminUpdateRefillAction } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import {
-  Pill,
-  Clock,
-  Phone,
-  Mail,
-  Save,
-} from "lucide-react";
+import { Pill } from "lucide-react";
 import { RefillFilter } from "@/app/components/admin/RefillFilter";
+import { RefillRow } from "@/app/components/admin/RefillRow";
+import { Pagination, parsePageParam } from "@/app/components/Pagination";
 
 export const metadata = { title: "Refill management" };
+
+const PAGE_SIZE = 25;
 
 export default async function AdminRefillsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; q?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; page?: string }>;
 }) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
@@ -29,47 +26,65 @@ export default async function AdminRefillsPage({
     ? (sp.status as typeof REFILL_STATUSES[number]["value"])
     : undefined;
 
-  const refills = await prisma.refillRequest.findMany({
-    where: {
-      ...(statusFilter ? { status: statusFilter } : {}),
-      ...(sp.q
-        ? {
-            OR: [
-              { medicineName: { contains: sp.q, mode: "insensitive" } },
-              { rxReference: { contains: sp.q, mode: "insensitive" } },
-              { customerName: { contains: sp.q, mode: "insensitive" } },
-              { customer: { fullName: { contains: sp.q, mode: "insensitive" } } },
-            ],
-          }
-        : {}),
-    },
-    include: {
-      customer: true,
-      assignedTo: { select: { email: true } },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
+  const where = {
+    ...(statusFilter ? { status: statusFilter } : {}),
+    ...(sp.q
+      ? {
+          OR: [
+            { medicineName: { contains: sp.q, mode: "insensitive" as const } },
+            { rxReference: { contains: sp.q, mode: "insensitive" as const } },
+            { customerName: { contains: sp.q, mode: "insensitive" as const } },
+            { customer: { fullName: { contains: sp.q, mode: "insensitive" as const } } },
+          ],
+        }
+      : {}),
+  };
 
-  // Status counts for the filter chips
-  const allRefills = await prisma.refillRequest.groupBy({
-    by: ["status"],
-    _count: true,
-  });
+  const [total, refills, allRefills] = await Promise.all([
+    prisma.refillRequest.count({ where }),
+    prisma.refillRequest.findMany({
+      where,
+      include: {
+        customer: true,
+        assignedTo: { select: { email: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: PAGE_SIZE,
+      skip: 0,
+    }),
+    prisma.refillRequest.groupBy({ by: ["status"], _count: true }),
+  ]);
+
+  const page = parsePageParam(sp.page, total, PAGE_SIZE);
+  const paged = page === 1
+    ? refills
+    : await prisma.refillRequest.findMany({
+        where,
+        include: { customer: true, assignedTo: { select: { email: true } } },
+        orderBy: { createdAt: "desc" },
+        take: PAGE_SIZE,
+        skip: (page - 1) * PAGE_SIZE,
+      });
+
   const counts: Record<string, number> = {};
   for (const r of allRefills) counts[r.status] = r._count;
+
+  const queryParams: Record<string, string | undefined> = {
+    q: sp.q,
+    status: statusFilter,
+  };
 
   return (
     <AdminShell
       user={user}
       title="Refill management"
-      subtitle={`${refills.length} request${refills.length === 1 ? "" : "s"}${statusFilter ? ` · ${refillStatusMeta(statusFilter).label}` : ""}`}
+      subtitle={`${total} request${total === 1 ? "" : "s"}${statusFilter ? ` · ${refillStatusMeta(statusFilter).label}` : ""}`}
     >
-      {/* Filter chips */}
+      {/* Filter chips + search */}
       <RefillFilter counts={counts} active={statusFilter || "all"} search={sp.q} />
 
       <AdminPanel>
-        {refills.length === 0 ? (
+        {paged.length === 0 ? (
           <AdminEmptyState
             icon={Pill}
             title="No refills match your filters"
@@ -89,78 +104,38 @@ export default async function AdminRefillsPage({
                 </tr>
               </thead>
               <tbody>
-                {refills.map((r) => {
-                  const meta = refillStatusMeta(r.status);
-                  return (
-                    <tr key={r.id}>
-                      <td>
-                        <p className="font-semibold admin-text">
-                          {r.customerName || r.customer?.fullName || "Guest"}
-                        </p>
-                        <div className="mt-0.5 flex flex-wrap gap-2 text-[10px] admin-soft">
-                          {r.phone && (
-                            <span className="inline-flex items-center gap-0.5">
-                              <Phone className="h-2.5 w-2.5" /> {r.phone}
-                            </span>
-                          )}
-                          {r.email && (
-                            <span className="inline-flex items-center gap-0.5">
-                              <Mail className="h-2.5 w-2.5" /> {r.email}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <p className="font-medium admin-text">{r.medicineName}</p>
-                        <p className="font-mono text-[10px] admin-soft">{r.rxReference || "—"}</p>
-                      </td>
-                      <td>
-                        <span className="inline-flex items-center rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-medium capitalize admin-muted">
-                          {r.source}
-                        </span>
-                      </td>
-                      <td className="text-xs admin-muted">
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="h-2.5 w-2.5" />
-                          {new Date(r.createdAt).toLocaleString()}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${meta.color}`}>
-                          {meta.label}
-                        </span>
-                      </td>
-                      <td>
-                        <form action={adminUpdateRefillAction} className="flex items-center gap-1.5">
-                          <input type="hidden" name="id" value={r.id} />
-                          <select
-                            name="status"
-                            defaultValue={r.status}
-                            className="rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2 py-1 text-xs admin-text focus:border-[var(--admin-accent)] focus:outline-none"
-                          >
-                            {REFILL_STATUSES.map((s) => (
-                              <option key={s.value} value={s.value}>
-                                {s.label}
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            type="submit"
-                            className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-2 py-1 text-[10px] font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)]"
-                            title="Save status"
-                          >
-                            <Save className="h-3 w-3" />
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {paged.map((r) => (
+                  <RefillRow
+                    key={r.id}
+                    refill={{
+                      id: r.id,
+                      status: r.status,
+                      medicineName: r.medicineName,
+                      rxReference: r.rxReference,
+                      source: r.source,
+                      customerName: r.customerName,
+                      customerFullName: r.customer?.fullName ?? null,
+                      customerId: r.customerId,
+                      phone: r.phone,
+                      email: r.email,
+                      createdAt: r.createdAt,
+                    }}
+                  />
+                ))}
               </tbody>
             </table>
           </div>
         )}
       </AdminPanel>
+
+      <Pagination
+        page={page}
+        total={total}
+        pageSize={PAGE_SIZE}
+        basePath="/admin/refills"
+        queryParams={queryParams}
+        variant="admin"
+      />
     </AdminShell>
   );
 }
