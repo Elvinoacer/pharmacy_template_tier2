@@ -4,6 +4,14 @@ import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { adminCreateMedicationAction } from "@/app/actions/admin";
 import { listActiveCategoryOptions } from "@/app/lib/medication-categories";
+import {
+  listDosageForms,
+  listRoutes,
+  listPregnancyCategories,
+  listManufacturers,
+  listActiveIngredients,
+  listClinicalTags,
+} from "@/app/lib/medication-lookups";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationFormWithDefaults from "./MedicationFormWithDefaults";
 import { ArrowLeft, Pill } from "lucide-react";
@@ -19,21 +27,54 @@ export default async function EditMedicationPage({
   if (!user) redirect("/login");
   const { id } = await params;
 
-  const [med, categories] = await Promise.all([
-    prisma.medication.findUnique({ where: { id } }).catch((err) => {
-      console.error("[admin/medications/[id]] lookup failed:", err);
-      return null;
-    }),
-    listActiveCategoryOptions(),
-  ]);
-  if (!med) notFound();
+  // `id` is a PharmacyInventory id (the admin list links to /admin/medications/[id]).
+  const [inv, categories, dosageForms, routes, pregnancyCategories, manufacturers, activeIngredients, clinicalTags] =
+    await Promise.all([
+      prisma.pharmacyInventory
+        .findUnique({
+          where: { id },
+          include: {
+            medicationMaster: {
+              include: {
+                activeIngredients: { select: { activeIngredientId: true } },
+                clinicalTags: { select: { clinicalTagId: true } },
+              },
+            },
+          },
+        })
+        .catch((err) => {
+          console.error("[admin/medications/[id]] lookup failed:", err);
+          return null;
+        }),
+      listActiveCategoryOptions(),
+      listDosageForms(),
+      listRoutes(),
+      listPregnancyCategories(),
+      listManufacturers(),
+      listActiveIngredients(),
+      listClinicalTags(),
+    ]);
+  if (!inv) notFound();
+  const med = inv.medicationMaster;
 
   // Pass only plain strings/booleans into the client form (no Prisma Decimal).
   const defaults = {
-    id: med.id,
+    inventoryId: inv.id,
+    masterId: med.id,
     name: med.name,
-    slug: med.slug,
-    sku: med.sku || "",
+    slug: inv.slug,
+    genericName: med.genericName,
+    brandName: med.brandName || "",
+    strengthValue: med.strengthValue != null ? String(med.strengthValue) : "",
+    strengthUnit: med.strengthUnit || "",
+    strengthDisplay: med.strengthDisplay || "",
+    packSize: med.packSize || "",
+    dosageFormId: med.dosageFormId || "",
+    routeId: med.routeId || "",
+    pregnancyCategoryId: med.pregnancyCategoryId || "",
+    manufacturerId: med.manufacturerId || "",
+    countryOfOrigin: med.countryOfOrigin || "",
+    barcode: med.barcode || "",
     category: med.category,
     description: med.description || "",
     indications: med.indications || "",
@@ -41,15 +82,31 @@ export default async function EditMedicationPage({
     sideEffects: med.sideEffects || "",
     contraindications: med.contraindications || "",
     storage: med.storage || "",
-    price: String(Number(med.price ?? 0)),
-    overTheCounter: Boolean(med.overTheCounter),
-    publicListing: Boolean(med.publicListing),
-    prescriptionRequired: Boolean(med.prescriptionRequired),
-    stockQty: String(med.stockQty ?? 0),
-    lowStockThreshold: String(med.lowStockThreshold ?? 10),
+    clinicalNotes: med.clinicalNotes || "",
     imageUrl: med.imageUrl || "",
     imageUrls: med.imageUrls || "",
-    active: Boolean(med.active),
+    alternativeIds: med.alternativeIds || "",
+    controlledDrug: med.controlledDrug,
+    controlledDrugSchedule: med.controlledDrugSchedule || "",
+    pediatricUse: med.pediatricUse,
+    requiresRefrigeration: med.requiresRefrigeration,
+    // Inventory
+    sku: inv.sku || "",
+    price: String(Number(inv.price ?? 0)),
+    purchasePrice: inv.purchasePrice != null ? String(inv.purchasePrice) : "",
+    currentStock: String(inv.currentStock ?? 0),
+    lowStockThreshold: String(inv.lowStockThreshold ?? 10),
+    supplier: inv.supplier || "",
+    shelfLocation: inv.shelfLocation || "",
+    promotions: inv.promotions || "",
+    overTheCounter: inv.overTheCounter,
+    publicListing: inv.publicListing,
+    prescriptionRequired: inv.prescriptionRequired,
+    active: inv.active,
+    // Relational
+    activeIngredientIds: med.activeIngredients.map((ai) => ai.activeIngredientId),
+    clinicalTagIds: med.clinicalTags.map((ct) => ct.clinicalTagId),
+    acquisitionMethod: med.acquisitionMethod,
   };
 
   return (
@@ -63,7 +120,7 @@ export default async function EditMedicationPage({
         </Link>
       </div>
 
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <div className="relative overflow-hidden rounded-3xl border border-gray-200/60 bg-white/40 shadow-2xl shadow-emerald-500/10 ring-1 ring-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/20 dark:ring-white/10">
           <div className="pointer-events-none absolute -inset-px rounded-3xl opacity-20 transition-opacity duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-transparent to-teal-500/20" />
@@ -76,16 +133,24 @@ export default async function EditMedicationPage({
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit Medication</h2>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{med.name} · {med.category.replace(/-/g, " ")}</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {med.name} · {med.category.replace(/-/g, " ")} · Enrichment: {med.enrichmentScore}% ({med.enrichmentStatus})
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="relative p-8">
+          <div className="relative p-6 sm:p-8">
             <MedicationFormWithDefaults
               action={adminCreateMedicationAction}
               defaults={defaults}
               categories={categories}
+              dosageForms={dosageForms}
+              routes={routes}
+              pregnancyCategories={pregnancyCategories}
+              manufacturers={manufacturers}
+              activeIngredients={activeIngredients}
+              clinicalTags={clinicalTags}
             />
           </div>
         </div>

@@ -91,17 +91,12 @@ export default async function AdminOrdersPage({
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
       }),
-      prisma.medication.findMany({
+      prisma.pharmacyInventory.findMany({
         where: { active: true },
-        select: {
-          id: true,
-          name: true,
-          price: true,
-          stockQty: true,
-          overTheCounter: true,
-          prescriptionRequired: true,
+        include: {
+          medicationMaster: { select: { name: true } },
         },
-        orderBy: { name: "asc" },
+        orderBy: { medicationMaster: { name: "asc" } },
       }),
       prisma.customerProfile.findMany({
         select: { id: true, fullName: true, user: { select: { email: true } }, phone: true },
@@ -126,9 +121,9 @@ export default async function AdminOrdersPage({
     }));
     medications = meds.map((m) => ({
       id: m.id,
-      name: m.name,
+      name: m.medicationMaster.name,
       price: Number(m.price),
-      stockQty: m.stockQty,
+      stockQty: m.currentStock,
       overTheCounter: m.overTheCounter,
       prescriptionRequired: m.prescriptionRequired,
     }));

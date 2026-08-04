@@ -32,7 +32,7 @@ export async function POST(req: Request) {
           ? { publicListing: false }
           : { publicListing: true };
 
-  const result = await prisma.medication.updateMany({
+  const result = await prisma.pharmacyInventory.updateMany({
     where: { id: { in: parsed.ids } },
     data,
   });

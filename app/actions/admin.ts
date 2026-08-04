@@ -24,7 +24,16 @@ import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery
 import type { RefillStatus } from "@/app/generated/prisma/client";
 import { createHash, randomBytes } from "crypto";
 
-export type ActionState = { error?: string; success?: string };
+export type ActionState = {
+  error?: string;
+  success?: string;
+  /** Set when the medication form must show a review screen before final commit (Phase 4.2). */
+  needsConfirmation?: boolean;
+  /** Validation result payload (pass/flag/fail checks) surfaced to the review UI. */
+  validation?: Record<string, unknown>;
+  /** Optional redirect target (used by AI/CSV import flows). */
+  redirectTo?: string;
+};
 
 async function staff() {
   const user = await getSessionUser();
@@ -503,11 +512,17 @@ export async function adminCreatePrescriptionAction(
 
   // If a medication is linked, verify it exists and pull its current price
   // if the admin didn't override unitPrice.
-  let linkedMed: { id: string; price: unknown; stockQty: number; name: string } | null = null;
+  // NOTE: medicationId now points at PharmacyInventory (per Phase 0 split).
+  let linkedMed: { id: string; price: unknown; currentStock: number; medicationMaster: { name: string } } | null = null;
   if (medicationId) {
-    linkedMed = await prisma.medication.findUnique({
+    linkedMed = await prisma.pharmacyInventory.findUnique({
       where: { id: medicationId },
-      select: { id: true, price: true, stockQty: true, name: true },
+      select: {
+        id: true,
+        price: true,
+        currentStock: true,
+        medicationMaster: { select: { name: true } },
+      },
     });
     if (!linkedMed) {
       return { error: "Linked medication not found. Refresh the page and try again." };
@@ -590,7 +605,10 @@ export async function adminDispatchPrescriptionAction(formData: FormData) {
 
   const rx = await prisma.prescription.findUnique({
     where: { id },
-    include: { medication: true, customer: { select: { id: true, fullName: true } } },
+    include: {
+      medication: { include: { medicationMaster: { select: { name: true } } } },
+      customer: { select: { id: true, fullName: true } },
+    },
   });
   if (!rx) return;
 
@@ -604,17 +622,19 @@ export async function adminDispatchPrescriptionAction(formData: FormData) {
   const shouldDecrementRefills = (rx.refillsRemaining ?? 0) > 0;
 
   // Atomic: stock decrement + dispatch mark + refillsRemaining all in one transaction.
+  // NOTE: rx.medication is now a PharmacyInventory row; clinical name lives on medicationMaster.
   if (rx.medicationId && rx.medication) {
-    const med = rx.medication;
-    if (med.stockQty < qty) {
+    const inv = rx.medication;
+    const medName = inv.medicationMaster?.name ?? "this medication";
+    if (inv.currentStock < qty) {
       throw new Error(
-        `Insufficient stock for ${med.name}. Available: ${med.stockQty}, required: ${qty}.`,
+        `Insufficient stock for ${medName}. Available: ${inv.currentStock}, required: ${qty}.`,
       );
     }
     await prisma.$transaction(async (tx) => {
-      await tx.medication.update({
-        where: { id: med.id },
-        data: { stockQty: { decrement: qty } },
+      await tx.pharmacyInventory.update({
+        where: { id: inv.id },
+        data: { currentStock: { decrement: qty } },
       });
       await tx.prescription.update({
         where: { id },
@@ -666,101 +686,279 @@ export async function adminDeletePrescriptionAction(formData: FormData) {
   revalidatePath("/admin/prescriptions");
 }
 
-// ── Medications (drug catalog) ────────────────────────────────
+// ── Medications (drug catalog — split into MedicationMaster + PharmacyInventory per Phase 0) ──
 
+/**
+ * Create or update a medication. Per Phase 0 split:
+ *   - clinical fields → MedicationMaster (create or update)
+ *   - commercial fields → PharmacyInventory (create or update, linked to master)
+ *   - relational fields (active ingredients, clinical tags, interactions) → join tables
+ *
+ * Per Phase 4: runs the shared validation service before save. If `fail` checks exist,
+ * returns errors without saving. If only `flag` checks exist and `confirmed !== "true"`,
+ * returns `needsConfirmation` so the client can show a review modal (Decision D22).
+ *
+ * Per Phase 5: computes enrichmentScore + enrichmentStatus on every save (Decision D14).
+ */
 export async function adminCreateMedicationAction(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
   const user = await staff();
-  const name = String(formData.get("name") || "").trim();
-  if (!name) return { error: "Medication name is required." };
+  const { parseMedicationFormData } = await import("@/app/lib/services/medication-form-data");
+  const { validateMedication, computeEnrichmentScore } = await import(
+    "@/app/lib/services/medication-validation"
+  );
 
-  const slug = String(formData.get("slug") || "").trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const parsed = parseMedicationFormData(formData);
+  const inventoryId = String(formData.get("inventoryId") || "") || undefined;
+  const masterId = String(formData.get("masterId") || "") || undefined;
+  const confirmed = String(formData.get("confirmed") || "") === "true";
 
-  const id = String(formData.get("id") || "");
-  let overTheCounter = formData.get("overTheCounter") === "on";
-  let prescriptionRequired = formData.get("prescriptionRequired") === "on";
-  // Mutual exclusivity: OTC and prescription-required cannot both be true.
-  if (overTheCounter && prescriptionRequired) {
-    prescriptionRequired = false;
+  if (!parsed.master.name) return { error: "Medication name is required." };
+  if (!parsed.master.genericName) return { error: "Generic name is required (Phase 4 rule)." };
+  if (!parsed.master.dosageFormId) return { error: "Dosage form is required (Phase 4 rule)." };
+
+  // Run the shared validation service.
+  const validation = await validateMedication(
+    {
+      id: masterId,
+      name: parsed.master.name,
+      genericName: parsed.master.genericName,
+      brandName: parsed.master.brandName,
+      strengthValue: parsed.master.strengthValue,
+      strengthUnit: parsed.master.strengthUnit,
+      strengthDisplay: parsed.master.strengthDisplay,
+      dosageFormId: parsed.master.dosageFormId,
+      routeId: parsed.master.routeId,
+      barcode: parsed.master.barcode,
+      controlledDrug: parsed.master.controlledDrug,
+      controlledDrugSchedule: parsed.master.controlledDrugSchedule,
+      interactionIds: parsed.interactionIds,
+    },
+    {
+      id: inventoryId,
+      medicationMasterId: masterId,
+      slug: parsed.inventory.slug,
+      sku: parsed.inventory.sku,
+      price: parsed.inventory.price,
+      overTheCounter: parsed.inventory.overTheCounter,
+      prescriptionRequired: parsed.inventory.prescriptionRequired,
+    },
+    { existingMasterId: masterId, existingInventoryId: inventoryId },
+  );
+
+  if (validation.counts.fail > 0) {
+    return {
+      error: `Validation failed: ${validation.checks
+        .filter((c) => c.severity === "fail")
+        .map((c) => c.message)
+        .join(" ")}`,
+      validation: validation as unknown as Record<string, unknown>,
+    };
   }
-  if (!overTheCounter && !prescriptionRequired) {
-    // Default to Rx-required when neither is selected.
-    prescriptionRequired = true;
+
+  if (validation.hasIssues && !confirmed) {
+    return {
+      needsConfirmation: true,
+      validation: validation as unknown as Record<string, unknown>,
+      success: undefined,
+    };
   }
 
-  const imageUrlsRaw = String(formData.get("imageUrls") || "").trim();
-  const alternativeIdsRaw = String(formData.get("alternativeIds") || "").trim();
+  // Compute enrichment (Phase 5).
+  const enrichment = computeEnrichmentScore({
+    genericName: parsed.master.genericName,
+    activeIngredients: parsed.activeIngredientIds,
+    strengthDisplay: parsed.master.strengthDisplay,
+    strengthValue: parsed.master.strengthValue,
+    dosageFormId: parsed.master.dosageFormId,
+    routeId: parsed.master.routeId,
+    indications: parsed.master.indications,
+    sideEffects: parsed.master.sideEffects,
+    contraindications: parsed.master.contraindications,
+    manufacturerId: parsed.master.manufacturerId,
+    pregnancyCategoryId: parsed.master.pregnancyCategoryId,
+    barcode: parsed.master.barcode,
+    imageUrl: parsed.master.imageUrl,
+  });
 
-  const data = {
-    name,
-    slug,
-    sku: String(formData.get("sku") || "") || null,
-    category: String(formData.get("category") || "general"),
-    description: String(formData.get("description") || "") || null,
-    indications: String(formData.get("indications") || "") || null,
-    dosage: String(formData.get("dosage") || "") || null,
-    sideEffects: String(formData.get("sideEffects") || "") || null,
-    contraindications: String(formData.get("contraindications") || "") || null,
-    storage: String(formData.get("storage") || "") || null,
-    price: Number(formData.get("price") || 0),
-    overTheCounter,
-    publicListing: formData.get("publicListing") === "on",
-    prescriptionRequired,
-    stockQty: Number(formData.get("stockQty") || 0),
-    lowStockThreshold: Number(formData.get("lowStockThreshold") || 10),
-    imageUrl: String(formData.get("imageUrl") || "") || null,
-    imageUrls: imageUrlsRaw || null,
-    alternativeIds: alternativeIdsRaw || null,
-    // Hidden "off" + checkbox "on" both submit; get() returns the first value
-    // ("off"), so use getAll and treat active as on if "on" is present.
-    active: formData.getAll("active").includes("on"),
+  const masterData = {
+    name: parsed.master.name,
+    slug: parsed.master.slug,
+    genericName: parsed.master.genericName,
+    brandName: parsed.master.brandName,
+    strengthValue: parsed.master.strengthValue,
+    strengthUnit: parsed.master.strengthUnit,
+    strengthDisplay: parsed.master.strengthDisplay,
+    packSize: parsed.master.packSize,
+    dosageFormId: parsed.master.dosageFormId,
+    routeId: parsed.master.routeId,
+    pregnancyCategoryId: parsed.master.pregnancyCategoryId,
+    manufacturerId: parsed.master.manufacturerId,
+    countryOfOrigin: parsed.master.countryOfOrigin,
+    barcode: parsed.master.barcode,
+    category: parsed.master.category,
+    description: parsed.master.description,
+    indications: parsed.master.indications,
+    dosage: parsed.master.dosage,
+    sideEffects: parsed.master.sideEffects,
+    contraindications: parsed.master.contraindications,
+    storage: parsed.master.storage,
+    clinicalNotes: parsed.master.clinicalNotes,
+    imageUrl: parsed.master.imageUrl,
+    imageUrls: parsed.master.imageUrls,
+    alternativeIds: parsed.master.alternativeIds,
+    controlledDrug: parsed.master.controlledDrug,
+    controlledDrugSchedule: parsed.master.controlledDrugSchedule,
+    pediatricUse: parsed.master.pediatricUse,
+    requiresRefrigeration: parsed.master.requiresRefrigeration,
+    enrichmentStatus: enrichment.status,
+    enrichmentScore: enrichment.score,
+    enrichedAt: enrichment.status === "complete" ? new Date() : null,
+    acquisitionMethod: parsed.master.acquisitionMethod,
+  };
+
+  const inventoryData = {
+    slug: parsed.inventory.slug,
+    sku: parsed.inventory.sku,
+    price: parsed.inventory.price,
+    purchasePrice: parsed.inventory.purchasePrice,
+    currentStock: parsed.inventory.currentStock,
+    lowStockThreshold: parsed.inventory.lowStockThreshold,
+    supplier: parsed.inventory.supplier,
+    shelfLocation: parsed.inventory.shelfLocation,
+    promotions: parsed.inventory.promotions,
+    overTheCounter: parsed.inventory.overTheCounter,
+    prescriptionRequired: parsed.inventory.prescriptionRequired,
+    publicListing: parsed.inventory.publicListing,
+    active: parsed.inventory.active,
   };
 
   try {
-    if (id) {
-      await prisma.medication.update({ where: { id }, data });
-      await writeAuditLog(user.id, "medication_updated", "medication", id);
+    if (masterId && inventoryId) {
+      // Update both models in a transaction.
+      await prisma.$transaction(async (tx) => {
+        await tx.medicationMaster.update({ where: { id: masterId }, data: masterData });
+        await tx.pharmacyInventory.update({ where: { id: inventoryId }, data: inventoryData });
+
+        // Sync relational fields (replace strategy).
+        if (parsed.activeIngredientIds.length > 0) {
+          await tx.medicationActiveIngredient.deleteMany({ where: { medicationMasterId: masterId } });
+          await tx.medicationActiveIngredient.createMany({
+            data: parsed.activeIngredientIds.map((id) => ({
+              medicationMasterId: masterId,
+              activeIngredientId: id,
+            })),
+            skipDuplicates: true,
+          });
+        } else {
+          await tx.medicationActiveIngredient.deleteMany({ where: { medicationMasterId: masterId } });
+        }
+
+        if (parsed.clinicalTagIds.length > 0) {
+          await tx.medicationClinicalTag.deleteMany({ where: { medicationMasterId: masterId } });
+          await tx.medicationClinicalTag.createMany({
+            data: parsed.clinicalTagIds.map((id) => ({
+              medicationMasterId: masterId,
+              clinicalTagId: id,
+            })),
+            skipDuplicates: true,
+          });
+        } else {
+          await tx.medicationClinicalTag.deleteMany({ where: { medicationMasterId: masterId } });
+        }
+      });
+      await writeAuditLog(user.id, "medication_updated", "medication_master", masterId, {
+        inventoryId,
+        enrichmentScore: enrichment.score,
+      });
       revalidatePath("/admin/medications");
-      revalidatePath(`/admin/medications/${id}`);
+      revalidatePath(`/admin/medications/${inventoryId}`);
       revalidatePath("/medicines");
-      return { success: "Medication updated." };
+      return {
+        success: `Medication updated. Enrichment: ${enrichment.score}% (${enrichment.status}).${
+          validation.counts.flag > 0 ? ` ${validation.counts.flag} flag(s) acknowledged.` : ""
+        }`,
+      };
     }
-    const med = await prisma.medication.create({ data });
-    await writeAuditLog(user.id, "medication_created", "medication", med.id);
+
+    // Create: master first, then inventory linked to it.
+    const newMaster = await prisma.medicationMaster.create({ data: masterData });
+
+    // Sync relational fields on the new master.
+    if (parsed.activeIngredientIds.length > 0) {
+      await prisma.medicationActiveIngredient.createMany({
+        data: parsed.activeIngredientIds.map((id) => ({
+          medicationMasterId: newMaster.id,
+          activeIngredientId: id,
+        })),
+        skipDuplicates: true,
+      });
+    }
+    if (parsed.clinicalTagIds.length > 0) {
+      await prisma.medicationClinicalTag.createMany({
+        data: parsed.clinicalTagIds.map((id) => ({
+          medicationMasterId: newMaster.id,
+          clinicalTagId: id,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    const newInventory = await prisma.pharmacyInventory.create({
+      data: { ...inventoryData, medicationMasterId: newMaster.id },
+    });
+
+    await writeAuditLog(user.id, "medication_created", "medication_master", newMaster.id, {
+      inventoryId: newInventory.id,
+      acquisitionMethod: parsed.master.acquisitionMethod,
+      enrichmentScore: enrichment.score,
+    });
     revalidatePath("/admin/medications");
     revalidatePath("/medicines");
     redirect("/admin/medications");
   } catch (e) {
-    // redirect() throws a special NEXT_REDIRECT error — rethrow it.
     if (e && typeof e === "object" && "digest" in e) throw e;
     console.error(e);
-    return { error: "Could not save medication. The slug or SKU may already exist." };
+    return { error: "Could not save medication. The slug, SKU, or barcode may already exist." };
   }
 }
 
 export async function adminDeleteMedicationAction(formData: FormData) {
   const user = await staff();
-  const id = String(formData.get("id") || "");
-  if (!id) return;
+  // inventoryId is what the admin UI passes (it lists PharmacyInventory rows).
+  const inventoryId = String(formData.get("id") || "");
+  if (!inventoryId) return;
   try {
-    // Soft-prefer: if order line items or prescriptions still reference this med, deactivate instead
-    // of hard-deleting so history stays intact and the FK doesn't blow up.
+    // Soft-prefer: if order line items or prescriptions still reference this inventory row,
+    // deactivate instead of hard-deleting so history stays intact and the FK doesn't blow up.
     const [linkedOrders, linkedPrescriptions] = await Promise.all([
-      prisma.orderItem.count({ where: { medicationId: id } }),
-      prisma.prescription.count({ where: { medicationId: id } }),
+      prisma.orderItem.count({ where: { medicationId: inventoryId } }),
+      prisma.prescription.count({ where: { medicationId: inventoryId } }),
     ]);
     const linked = linkedOrders + linkedPrescriptions;
     if (linked > 0) {
-      await prisma.medication.update({
-        where: { id },
+      await prisma.pharmacyInventory.update({
+        where: { id: inventoryId },
         data: { active: false, publicListing: false },
       });
-      await writeAuditLog(user.id, "medication_deactivated", "medication", id, { linkedOrders, linkedPrescriptions });
+      await writeAuditLog(user.id, "medication_deactivated", "pharmacy_inventory", inventoryId, {
+        linkedOrders,
+        linkedPrescriptions,
+      });
     } else {
-      await prisma.medication.delete({ where: { id } });
-      await writeAuditLog(user.id, "medication_deleted", "medication", id);
+      // Hard delete: remove inventory + master (master cascades via FK ON DELETE CASCADE).
+      const inv = await prisma.pharmacyInventory.findUnique({
+        where: { id: inventoryId },
+        select: { medicationMasterId: true },
+      });
+      if (inv) {
+        await prisma.pharmacyInventory.delete({ where: { id: inventoryId } });
+        // Delete the master too (only this pharmacy stocked it).
+        await prisma.medicationMaster.deleteMany({ where: { id: inv.medicationMasterId } }).catch(() => {});
+        await writeAuditLog(user.id, "medication_deleted", "pharmacy_inventory", inventoryId);
+      }
     }
   } catch (e) {
     console.error("[adminDeleteMedicationAction]", e);
@@ -785,8 +983,19 @@ export async function adminCreateOrderAction(
 
   if (!medicationId || quantity < 1) return { error: "Medication and quantity are required." };
 
-  // Look up the medication to get the current price.
-  const med = await prisma.medication.findUnique({ where: { id: medicationId } });
+  // Look up the medication (PharmacyInventory row) to get the current price.
+  // medicationId now points at PharmacyInventory (per Phase 0 split).
+  const med = await prisma.pharmacyInventory.findUnique({
+    where: { id: medicationId },
+    select: {
+      id: true,
+      price: true,
+      currentStock: true,
+      overTheCounter: true,
+      prescriptionRequired: true,
+      medicationMaster: { select: { name: true } },
+    },
+  });
   if (!med) return { error: "Medication not found." };
 
   // If a customer email is given instead of an ID, create the customer account on the fly.
@@ -939,9 +1148,10 @@ export async function adminCreateOrderAction(
   }
 
   // Verify stock is sufficient — fail loudly instead of going negative.
-  if (med.stockQty < quantity) {
+  const medName = med.medicationMaster?.name ?? "this medication";
+  if (med.currentStock < quantity) {
     return {
-      error: `Insufficient stock for ${med.name}. Available: ${med.stockQty}, requested: ${quantity}.`,
+      error: `Insufficient stock for ${medName}. Available: ${med.currentStock}, requested: ${quantity}.`,
     };
   }
 
@@ -966,7 +1176,7 @@ export async function adminCreateOrderAction(
         items: {
           create: {
             medicationId,
-            name: med.name,
+            name: medName,
             quantity,
             unitPrice,
             discountApplied: discount,
@@ -975,10 +1185,10 @@ export async function adminCreateOrderAction(
         },
       },
     });
-    // Decrement stock.
-    await tx.medication.update({
+    // Decrement stock (Phase 0: stock lives on PharmacyInventory.currentStock).
+    await tx.pharmacyInventory.update({
       where: { id: medicationId },
-      data: { stockQty: { decrement: quantity } },
+      data: { currentStock: { decrement: quantity } },
     });
 
     if (markPaid) {
@@ -1000,8 +1210,8 @@ export async function adminCreateOrderAction(
         data: {
           customerId: finalCustomerId,
           medicationId,
-          medicineName: med.name,
-          dosage: dosage || med.dosage,
+          medicineName: medName,
+          dosage: dosage || null,
           quantity,
           unitPrice,
           refillsRemaining: Number(formData.get("refillsRemaining") || 0),

@@ -34,7 +34,7 @@ export default async function PrescriptionDetailPage({
         customer: { select: { id: true, fullName: true } },
         refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
         adherence: { orderBy: { takenOn: "desc" }, take: 30 },
-        medication: true,
+        medication: { include: { medicationMaster: { select: { name: true } } } },
         dispatchedBy: { select: { id: true, email: true } },
       },
     })
@@ -44,7 +44,7 @@ export default async function PrescriptionDetailPage({
         include: {
           customer: { select: { id: true, fullName: true } },
           refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
-          medication: true,
+          medication: { include: { medicationMaster: { select: { name: true } } } },
           dispatchedBy: { select: { id: true, email: true } },
         },
       });
@@ -154,7 +154,7 @@ export default async function PrescriptionDetailPage({
                     href={`/admin/medications/${prescription.medication.id}`}
                     className="mt-0.5 inline-flex items-center gap-0.5 text-[10px] font-semibold admin-accent-text hover:underline"
                   >
-                    <Pill className="h-2.5 w-2.5" /> Linked: {prescription.medication.name}
+                    <Pill className="h-2.5 w-2.5" /> Linked: {prescription.medication.medicationMaster?.name || "medication"}
                   </Link>
                 )}
               </div>

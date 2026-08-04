@@ -22,18 +22,21 @@ export default async function PortalNewOrderPage({
   const sp = await searchParams;
 
   const med = sp.medicationId
-    ? await prisma.medication.findFirst({
+    ? await prisma.pharmacyInventory.findFirst({
         where: { id: sp.medicationId, active: true, overTheCounter: true },
+        include: { medicationMaster: { select: { name: true } } },
       })
     : sp.slug
-      ? await prisma.medication.findFirst({
+      ? await prisma.pharmacyInventory.findFirst({
           where: { slug: sp.slug, active: true, overTheCounter: true },
+          include: { medicationMaster: { select: { name: true } } },
         })
       : null;
 
-  const otcMeds = await prisma.medication.findMany({
-    where: { active: true, overTheCounter: true, stockQty: { gt: 0 } },
-    orderBy: { name: "asc" },
+  const otcMeds = await prisma.pharmacyInventory.findMany({
+    where: { active: true, overTheCounter: true, currentStock: { gt: 0 } },
+    include: { medicationMaster: { select: { name: true, description: true } } },
+    orderBy: { medicationMaster: { name: "asc" } },
     take: 100,
   });
 
@@ -70,9 +73,9 @@ export default async function PortalNewOrderPage({
             </div>
             {med && (
               <div className="mt-4 rounded-xl bg-[#f4f7f4] p-3 text-sm">
-                <p className="font-semibold text-[#0c1a14]">{med.name}</p>
+                <p className="font-semibold text-[#0c1a14]">{med.medicationMaster.name}</p>
                 <p className="mt-1 text-xs text-[#5a6b62]">
-                  {formatPrice(Number(med.price))} · {med.stockQty} in stock
+                  {formatPrice(Number(med.price))} · {med.currentStock} in stock
                 </p>
               </div>
             )}
@@ -84,9 +87,9 @@ export default async function PortalNewOrderPage({
             <PortalOrderForm
               medications={otcMeds.map((m) => ({
                 id: m.id,
-                name: m.name,
+                name: m.medicationMaster.name,
                 price: Number(m.price),
-                stockQty: m.stockQty,
+                stockQty: m.currentStock,
               }))}
               defaultMedicationId={med?.id || sp.medicationId || ""}
               defaultPhone={profile?.phone || ""}

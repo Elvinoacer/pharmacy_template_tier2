@@ -10,7 +10,7 @@ import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
 import { listActiveCategoryOptions } from "@/app/lib/medication-categories";
 import { formatDateTime } from "@/app/lib/time";
-import { Pill, Plus, Search, X, Tag, Package, Pencil, Trash2, Boxes } from "lucide-react";
+import { Pill, Plus, Search, X, Tag, Package, Pencil, Trash2, Boxes, AlertTriangle, TrendingUp } from "lucide-react";
 import { MedicationBulkActions } from "@/app/components/admin/MedicationBulkActions";
 
 export const metadata = { title: "Medications" };
@@ -24,7 +24,7 @@ type MedRow = {
   category: string;
   sku: string | null;
   price: number;
-  stockQty: number;
+  currentStock: number;
   lowStockThreshold: number;
   overTheCounter: boolean;
   publicListing: boolean;
@@ -34,24 +34,23 @@ type MedRow = {
 
 function toMedRow(m: {
   id: string;
-  name: string;
-  category: string;
   sku: string | null;
   price: unknown;
-  stockQty: number;
+  currentStock: number;
   lowStockThreshold: number;
   overTheCounter: boolean;
   publicListing: boolean;
   active: boolean;
   syncedAt: Date | null;
+  medicationMaster: { name: string; category: string };
 }): MedRow {
   return {
     id: m.id,
-    name: m.name,
-    category: m.category || "general",
+    name: m.medicationMaster.name,
+    category: m.medicationMaster.category || "general",
     sku: m.sku,
     price: Number(m.price ?? 0),
-    stockQty: m.stockQty ?? 0,
+    currentStock: m.currentStock ?? 0,
     lowStockThreshold: m.lowStockThreshold ?? 10,
     overTheCounter: Boolean(m.overTheCounter),
     publicListing: Boolean(m.publicListing),
@@ -72,17 +71,25 @@ export default async function AdminMedicationsPage({
   const category = sp.category || undefined;
 
   const where = {
-    ...(category ? { category } : {}),
+    ...(category ? { medicationMaster: { category } } : {}),
     ...(q
       ? {
           OR: [
-            { name: { contains: q, mode: "insensitive" as const } },
             { sku: { contains: q, mode: "insensitive" as const } },
-            { description: { contains: q, mode: "insensitive" as const } },
+            {
+              medicationMaster: {
+                OR: [
+                  { name: { contains: q, mode: "insensitive" as const } },
+                  { description: { contains: q, mode: "insensitive" as const } },
+                ],
+              },
+            },
           ],
         }
       : {}),
   };
+
+  const include = { medicationMaster: { select: { name: true, category: true } } };
 
   // Defensive: if the medications table is missing or the DB is briefly
   // unreachable, render an empty catalog instead of the admin error page.
@@ -94,9 +101,10 @@ export default async function AdminMedicationsPage({
 
   try {
     const [count, rows, categories] = await Promise.all([
-      prisma.medication.count({ where }),
-      prisma.medication.findMany({
+      prisma.pharmacyInventory.count({ where }),
+      prisma.pharmacyInventory.findMany({
         where,
+        include,
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
       }),
@@ -115,8 +123,9 @@ export default async function AdminMedicationsPage({
   let paged = medications;
   if (!loadError && page > 1) {
     try {
-      const rows = await prisma.medication.findMany({
+      const rows = await prisma.pharmacyInventory.findMany({
         where,
+        include,
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
         skip: (page - 1) * PAGE_SIZE,
@@ -136,18 +145,32 @@ export default async function AdminMedicationsPage({
       actions={
         <div className="flex flex-wrap items-center gap-2">
           <Link
+            href="/admin/medications/incomplete"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
+            title="Incomplete medications (Phase 5 enrichment queue)"
+          >
+            <AlertTriangle className="h-3.5 w-3.5" /> Incomplete
+          </Link>
+          <Link
+            href="/admin/medications/metrics"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
+            title="Acquisition method metrics (Phase 6)"
+          >
+            <TrendingUp className="h-3.5 w-3.5" /> Metrics
+          </Link>
+          <Link
             href="/admin/medications/categories"
             className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
           >
             <Tag className="h-3.5 w-3.5" /> Categories
           </Link>
           <Link
-            href="/admin/medications/new"
+            href="/admin/medications/add"
             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 ring-1 ring-white/20 transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40"
           >
             <div className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             <Plus className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
-            <span>New Medication</span>
+            <span>Add Medication</span>
           </Link>
         </div>
       }
@@ -235,7 +258,7 @@ export default async function AdminMedicationsPage({
             />
             <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {paged.map((m) => {
-                const lowStock = m.stockQty <= m.lowStockThreshold;
+                const lowStock = m.currentStock <= m.lowStockThreshold;
                 return (
                   <li
                     key={m.id}
@@ -293,7 +316,7 @@ export default async function AdminMedicationsPage({
                       </span>
                       <div className="text-right">
                         <span className={`block text-xs font-bold ${lowStock ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
-                          {m.stockQty} in stock
+                          {m.currentStock} in stock
                         </span>
                         {m.sku && (
                           <span className="block font-mono text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">

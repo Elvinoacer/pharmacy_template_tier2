@@ -523,12 +523,13 @@ export async function portalCreateOrderAction(
 
   if (!medicationId) return { error: "Please select a product." };
 
-  const med = await prisma.medication.findFirst({
+  const med = await prisma.pharmacyInventory.findFirst({
     where: { id: medicationId, active: true, overTheCounter: true },
+    include: { medicationMaster: { select: { name: true } } },
   });
   if (!med) return { error: "Product not available for online order." };
-  if (med.stockQty < quantity) {
-    return { error: `Only ${med.stockQty} unit(s) in stock.` };
+  if (med.currentStock < quantity) {
+    return { error: `Only ${med.currentStock} unit(s) in stock.` };
   }
 
   let discount = 0;
@@ -572,7 +573,7 @@ export async function portalCreateOrderAction(
         items: {
           create: {
             medicationId,
-            name: med.name,
+            name: med.medicationMaster.name,
             quantity,
             unitPrice,
             discountApplied: discount,
@@ -581,9 +582,9 @@ export async function portalCreateOrderAction(
         },
       },
     });
-    await tx.medication.update({
+    await tx.pharmacyInventory.update({
       where: { id: medicationId },
-      data: { stockQty: { decrement: quantity } },
+      data: { currentStock: { decrement: quantity } },
     });
     if (couponId) {
       await tx.coupon.update({
@@ -599,7 +600,7 @@ export async function portalCreateOrderAction(
     user.id,
     "order_placed",
     "OTC order placed",
-    `${med.name} × ${quantity} — KES ${total}`,
+    `${med.medicationMaster.name} × ${quantity} — KES ${total}`,
     { orderId: order.id },
     user.id,
   );
@@ -608,7 +609,7 @@ export async function portalCreateOrderAction(
   await recordAdminNotification({
     type: "enquiry_new",
     title: "New portal OTC order",
-    body: `${user.fullName || user.email} ordered ${quantity}× ${med.name} (KES ${total})`,
+    body: `${user.fullName || user.email} ordered ${quantity}× ${med.medicationMaster.name} (KES ${total})`,
     severity: "info",
     relatedType: "order",
     relatedId: order.id,
