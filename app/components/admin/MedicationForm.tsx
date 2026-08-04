@@ -6,30 +6,34 @@ import { toast } from "@/app/components/Toaster";
 import { Pill, Tag, Hash, DollarSign, Package, AlertCircle, Check, Save, FileText, Boxes } from "lucide-react";
 import ImageUploadField from "@/app/components/admin/ImageUploadField";
 
-const CATEGORIES = [
-  "general",
-  "pain-relief",
-  "antibiotics",
-  "cardiovascular",
-  "diabetes",
-  "respiratory",
-  "vitamins",
-  "first-aid",
-  "cold-flu",
-  "skin-care",
-  "baby-care",
-  "womens-health",
-  "mens-health",
-  "mental-health",
-  "digestive",
-  "allergy",
+const FALLBACK_CATEGORIES = [
+  { slug: "general", name: "General" },
+  { slug: "pain-relief", name: "Pain Relief" },
+  { slug: "antibiotics", name: "Antibiotics" },
+  { slug: "cardiovascular", name: "Cardiovascular" },
+  { slug: "diabetes", name: "Diabetes" },
+  { slug: "respiratory", name: "Respiratory" },
+  { slug: "vitamins", name: "Vitamins" },
+  { slug: "first-aid", name: "First Aid" },
+  { slug: "cold-flu", name: "Cold Flu" },
+  { slug: "skin-care", name: "Skin Care" },
+  { slug: "baby-care", name: "Baby Care" },
+  { slug: "womens-health", name: "Womens Health" },
+  { slug: "mens-health", name: "Mens Health" },
+  { slug: "mental-health", name: "Mental Health" },
+  { slug: "digestive", name: "Digestive" },
+  { slug: "allergy", name: "Allergy" },
 ];
 
 export default function MedicationForm({
   action,
+  categories,
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
+  /** Live categories from the registry (Admin → Categories). */
+  categories?: Array<{ slug: string; name: string }>;
 }) {
+  const categoryOptions = categories?.length ? categories : FALLBACK_CATEGORIES;
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -121,8 +125,8 @@ export default function MedicationForm({
         <div>
           <label className="label-admin">Category</label>
           <select name="category" className="input-admin" defaultValue="general">
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c.replace(/-/g, " ")}</option>
+            {categoryOptions.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.name}</option>
             ))}
           </select>
         </div>

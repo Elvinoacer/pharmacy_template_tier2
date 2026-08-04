@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { adminCreateMedicationAction } from "@/app/actions/admin";
+import { listActiveCategoryOptions } from "@/app/lib/medication-categories";
 import { AdminPanel } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationFormWithDefaults from "./MedicationFormWithDefaults";
@@ -17,10 +18,13 @@ export default async function EditMedicationPage({
   if (!user) redirect("/login");
   const { id } = await params;
 
-  const med = await prisma.medication.findUnique({ where: { id } }).catch((err) => {
-    console.error("[admin/medications/[id]] lookup failed:", err);
-    return null;
-  });
+  const [med, categories] = await Promise.all([
+    prisma.medication.findUnique({ where: { id } }).catch((err) => {
+      console.error("[admin/medications/[id]] lookup failed:", err);
+      return null;
+    }),
+    listActiveCategoryOptions(),
+  ]);
   if (!med) notFound();
 
   // Pass only plain strings/booleans into the client form (no Prisma Decimal).
@@ -51,7 +55,11 @@ export default async function EditMedicationPage({
     <AdminShell user={user} title={`Edit: ${med.name}`} subtitle={med.category}>
       <div className="max-w-2xl">
         <AdminPanel>
-          <MedicationFormWithDefaults action={adminCreateMedicationAction} defaults={defaults} />
+          <MedicationFormWithDefaults
+            action={adminCreateMedicationAction}
+            defaults={defaults}
+            categories={categories}
+          />
         </AdminPanel>
       </div>
     </AdminShell>
