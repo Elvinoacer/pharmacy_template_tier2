@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
  * Persisted sidebar collapse state for desktop. Stored in localStorage so the
  * user's preference survives across sessions.
  */
-export function useSidebarCollapsed(storageKey: "portal" | "admin") {
+export function useSidebarCollapsed(storageKey: "portal" | "admin" | "caregiver") {
   const key = `aether:sidebar:${storageKey}`;
   const [collapsed, setCollapsed] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -97,7 +97,7 @@ export function useActivePath(): string {
  */
 export function isLinkActive(pathname: string, href: string): boolean {
   if (href === pathname) return true;
-  if (href === "/portal" || href === "/admin") {
+  if (href === "/portal" || href === "/admin" || href === "/caregiver") {
     // Root link is active only on exact match (so /portal/refills doesn't highlight Dashboard)
     return false;
   }

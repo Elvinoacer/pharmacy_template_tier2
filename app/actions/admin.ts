@@ -536,6 +536,13 @@ export async function adminCreatePrescriptionAction(
   if (id) {
     await prisma.prescription.update({ where: { id }, data });
     await writeAuditLog(user.id, "prescription_updated", "prescription", id, { customerId, medicationId });
+    // Regenerate medication schedule from the (possibly updated) dosage/schedule text.
+    try {
+      const { generateScheduleForPrescription } = await import("@/app/lib/services/medication-schedule");
+      await generateScheduleForPrescription(id);
+    } catch (err) {
+      console.warn("[adminCreatePrescription] schedule generation failed:", err);
+    }
     revalidatePath("/admin/prescriptions");
     revalidatePath(`/admin/prescriptions/${id}`);
     revalidatePath(`/admin/customers/${customerId}`);
@@ -543,6 +550,13 @@ export async function adminCreatePrescriptionAction(
   }
 
   const rx = await prisma.prescription.create({ data });
+  // Generate the initial medication schedule from the dosage/schedule text.
+  try {
+    const { generateScheduleForPrescription } = await import("@/app/lib/services/medication-schedule");
+    await generateScheduleForPrescription(rx.id);
+  } catch (err) {
+    console.warn("[adminCreatePrescription] schedule generation failed:", err);
+  }
   await addTimelineEvent(
     customerId,
     user.id,

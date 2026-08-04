@@ -2,7 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { formatDate } from "@/app/lib/time";
+import { formatDate, formatDateTime, formatTime } from "@/app/lib/time";
+import { CaregiverShell } from "@/app/components/caregiver/CaregiverShell";
+import { DoseConfirmButton } from "@/app/components/caregiver/DoseConfirmButton";
+import { getAdherenceStatsForCustomer, getAdherencePerPrescription } from "@/app/lib/services/adherence";
+import { getTodaysDosesForCustomer } from "@/app/lib/services/medication-schedule";
 import {
   HeartHandshake,
   Pill,
@@ -11,16 +15,30 @@ import {
   FileText,
   Plus,
   User,
+  Clock,
+  Check,
+  X,
+  TrendingUp,
+  CalendarDays,
 } from "lucide-react";
 
-export const metadata = { title: "Caregiver portal" };
+export const metadata = { title: "Caregiver dashboard" };
 
 /**
- * Dedicated caregiver dashboard.
- * Shows patients the caregiver is linked to, with actions for:
- * - request refills
- * - view pickup-ready notifications
- * - view medication / adherence summaries
+ * Caregiver dashboard. Shows:
+ *   - Patients the caregiver supports (with quick stats)
+ *   - Today's dose checklist across all patients
+ *   - Active refill requests for linked patients
+ *   - Pickup-ready notifications
+ *   - Adherence summary tile per patient
+ *
+ * Caregivers have NO access to customer profile editing, CRM, loyalty, campaigns,
+ * or admin functions. They can only:
+ *   - View patients + their medications
+ *   - Request refills (if canRequestRefills = true)
+ *   - Log adherence (if canLogAdherence = true)
+ *   - Receive pickup notifications (if canReceivePickupNotifications = true)
+ *   - View medication reminders + adherence summary (always read-only)
  */
 export default async function CaregiverPortalPage() {
   const user = await getSessionUser();
@@ -38,7 +56,7 @@ export default async function CaregiverPortalPage() {
           prescriptions: {
             where: { status: "active" },
             orderBy: { medicineName: "asc" },
-            take: 20,
+            take: 30,
           },
           refillRequests: {
             where: { status: { in: ["submitted", "under_review", "approved", "preparing", "ready_for_pickup"] } },
@@ -48,54 +66,183 @@ export default async function CaregiverPortalPage() {
           notifications: {
             where: { deletedAt: null, type: { in: ["refill", "pickup", "reminder"] } },
             orderBy: { createdAt: "desc" },
-            take: 10,
+            take: 8,
           },
-          adherenceLogs: {
-            orderBy: { takenOn: "desc" },
-            take: 14,
+          reminders: {
+            where: {
+              status: { in: ["scheduled", "sent"] },
+              scheduledFor: { gte: new Date() },
+            },
+            orderBy: { scheduledFor: "asc" },
+            take: 5,
           },
         },
       },
     },
   });
 
-  // Staff who also have caregiver links, or pure caregivers.
   if (links.length === 0 && user.role !== "caregiver") {
-    // Not a caregiver — send customers to portal, staff to admin.
     if (user.role === "customer" || user.customerId) redirect("/portal");
     redirect("/admin");
   }
 
+  // Fetch adherence stats + today's doses for each linked patient in parallel.
+  const patientData = await Promise.all(
+    links.map(async (link) => {
+      const [stats, perRx, todaysDoses] = await Promise.all([
+        getAdherenceStatsForCustomer(link.customerId, 14),
+        getAdherencePerPrescription(link.customerId, 14),
+        getTodaysDosesForCustomer(link.customerId),
+      ]);
+      return { link, stats, perRx, todaysDoses };
+    }),
+  );
+
+  // Aggregate metrics across all patients.
+  const totalPatients = links.length;
+  const totalOpenRefills = links.reduce(
+    (sum, l) => sum + l.customer.refillRequests.filter((r) => r.status !== "ready_for_pickup").length,
+    0,
+  );
+  const totalReadyPickups = links.reduce(
+    (sum, l) => sum + l.customer.refillRequests.filter((r) => r.status === "ready_for_pickup").length,
+    0,
+  );
+  const totalDosesToday = patientData.reduce(
+    (sum, p) => sum + p.todaysDoses.length,
+    0,
+  );
+  const totalDosesPendingToday = patientData.reduce(
+    (sum, p) => sum + p.todaysDoses.filter((d) => !d.doseLog).length,
+    0,
+  );
+
   return (
-    <main className="min-h-screen bg-[#f4f7f4]">
-      <header className="border-b border-[#e3ebe6] bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
-              <HeartHandshake className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-sm font-bold text-[#0c1a14]">Caregiver portal</p>
-              <p className="text-xs text-[#5a6b62]">{user.email}</p>
-            </div>
+    <CaregiverShell
+      user={user}
+      title="Caregiver dashboard"
+      subtitle="Track medications, request refills, and log adherence on behalf of your patients."
+    >
+      {/* Stat cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCardLink
+          href="/caregiver/patients"
+          icon={User}
+          label="Patients supported"
+          value={totalPatients}
+          accent="brand"
+        />
+        <StatCardLink
+          href="/caregiver/refills"
+          icon={Pill}
+          label="Open refill requests"
+          value={totalOpenRefills}
+          accent="info"
+        />
+        <StatCardLink
+          href="/caregiver/notifications"
+          icon={Bell}
+          label="Ready for pickup"
+          value={totalReadyPickups}
+          accent="accent"
+        />
+        <StatCardLink
+          href="/caregiver/adherence"
+          icon={Activity}
+          label="Doses pending today"
+          value={`${totalDosesPendingToday}/${totalDosesToday}`}
+          accent="neutral"
+        />
+      </div>
+
+      {/* Today's dose checklist (across all patients) */}
+      <section className="mt-6 card-premium p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="flex items-center gap-2 text-base font-semibold text-[#0c1a14]">
+              <CalendarDays className="h-4 w-4 text-[#0d6e5a]" /> Today's dose checklist
+            </h2>
+            <p className="mt-0.5 text-xs text-[#5a6b62]">
+              Tap "Taken" / "Missed" to log doses on behalf of patients who granted you adherence permission.
+            </p>
           </div>
-          <form action="/api/auth/logout" method="post">
-            <Link href="/login" className="text-xs font-semibold text-[#0d6e5a] hover:underline">
-              Sign out via login
-            </Link>
-          </form>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-        <div>
-          <h1 className="text-2xl font-bold text-[#0c1a14]">Patients you support</h1>
-          <p className="mt-1 text-sm text-[#5a6b62]">
-            Request refills, track adherence, and receive pickup notifications on their behalf.
-          </p>
+          <Link
+            href="/caregiver/adherence"
+            className="text-xs font-semibold text-[#0d6e5a] hover:underline"
+          >
+            View adherence →
+          </Link>
         </div>
 
-        {links.length === 0 ? (
+        {totalDosesToday === 0 ? (
+          <div className="rounded-xl border border-dashed border-[#e3ebe6] px-4 py-6 text-center">
+            <Check className="mx-auto h-8 w-8 text-[#8a9a92]" />
+            <p className="mt-1 text-sm text-[#5a6b62]">No scheduled doses for today.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {patientData.map(({ link, todaysDoses }) => (
+              <div key={link.id} className="rounded-xl border border-[#e3ebe6] bg-[#fafbfa] p-3.5">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-[#0c1a14]">{link.customer.fullName}</p>
+                    <p className="text-[10px] text-[#5a6b62]">
+                      {link.relationship || "Caregiver"}
+                      {!link.canLogAdherence && " · Read-only (no adherence permission)"}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/caregiver/patients/${link.customerId}`}
+                    className="text-[10px] font-semibold text-[#0d6e5a] hover:underline"
+                  >
+                    View patient →
+                  </Link>
+                </div>
+                <ul className="space-y-1.5">
+                  {todaysDoses.map((d) => (
+                    <li
+                      key={d.scheduleId}
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white px-3 py-2"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-[#0c1a14]">
+                          {d.medicineName}
+                          {d.label ? <span className="ml-1 text-[#8a9a92]">· {d.label}</span> : null}
+                        </p>
+                        <p className="text-[10px] text-[#5a6b62]">
+                          {d.timeOfDay}
+                          {d.dosage ? ` · ${d.dosage}` : ""}
+                          {d.doseLog ? ` · already logged as ${d.doseLog.status}` : ""}
+                        </p>
+                      </div>
+                      {link.canLogAdherence && (
+                        <DoseConfirmButton
+                          actor="caregiver"
+                          customerId={link.customerId}
+                          prescriptionId={d.prescriptionId}
+                          scheduleId={d.scheduleId}
+                          scheduledTime={d.timeOfDay}
+                          medicineName={d.medicineName}
+                          initialStatus={
+                            d.doseLog?.status === "taken" || d.doseLog?.status === "missed" || d.doseLog?.status === "skipped" || d.doseLog?.status === "late"
+                              ? (d.doseLog.status as "taken" | "missed" | "skipped" | "late")
+                              : null
+                          }
+                        />
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Patients list with adherence + medications */}
+      <section className="mt-6 space-y-4">
+        <h2 className="text-base font-semibold text-[#0c1a14]">Patients you support</h2>
+        {patientData.length === 0 ? (
           <div className="rounded-2xl border border-[#e3ebe6] bg-white p-8 text-center">
             <User className="mx-auto h-10 w-10 text-[#8a9a92]" />
             <p className="mt-3 font-semibold text-[#0c1a14]">No linked patients yet</p>
@@ -104,41 +251,93 @@ export default async function CaregiverPortalPage() {
             </p>
           </div>
         ) : (
-          links.map((link) => {
+          patientData.map(({ link, stats, perRx }) => {
             const patient = link.customer;
             const readyPickups = patient.refillRequests.filter((r) => r.status === "ready_for_pickup");
-            const recentAdherence = patient.adherenceLogs;
-            const taken = recentAdherence.filter((a) => a.status === "taken" || a.status === "late").length;
-            const rate =
-              recentAdherence.length > 0
-                ? Math.round((taken / recentAdherence.length) * 100)
-                : null;
 
             return (
               <section
                 key={link.id}
-                className="rounded-2xl border border-[#e3ebe6] bg-white p-6 shadow-sm"
+                className="card-premium p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-bold text-[#0c1a14]">{patient.fullName}</h2>
+                    <h3 className="text-lg font-bold text-[#0c1a14]">{patient.fullName}</h3>
                     <p className="text-xs text-[#5a6b62]">
                       Relationship: {link.relationship || "Caregiver"}
                       {link.canRequestRefills ? " · Can request refills" : ""}
+                      {link.canLogAdherence ? " · Can log adherence" : ""}
                       {link.canReceivePickupNotifications ? " · Pickup alerts on" : ""}
                     </p>
                   </div>
-                  {rate !== null && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-3 py-1 text-xs font-semibold text-[#0d6e5a]">
-                      <Activity className="h-3 w-3" /> Adherence ~{rate}%
-                    </span>
-                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {stats.adherenceRate !== null && (
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
+                          stats.adherenceRate >= 80
+                            ? "bg-emerald-100 text-emerald-700"
+                            : stats.adherenceRate >= 60
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-rose-100 text-rose-700"
+                        }`}
+                      >
+                        <Activity className="h-3 w-3" /> {stats.adherenceRate}% adherence
+                      </span>
+                    )}
+                    <Link
+                      href={`/caregiver/patients/${patient.id}`}
+                      className="inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-3 py-1 text-xs font-semibold text-[#0d6e5a] hover:bg-[#d5efe6]"
+                    >
+                      View patient →
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Adherence mini-stats */}
+                <div className="mt-4 grid gap-3 sm:grid-cols-4">
+                  <div className="rounded-lg bg-[#f4f7f4] px-3 py-2">
+                    <p className="text-[10px] uppercase tracking-wide text-[#8a9a92]">14-day rate</p>
+                    <p className="text-sm font-bold text-[#0c1a14]">{stats.adherenceRate}%</p>
+                  </div>
+                  <div className="rounded-lg bg-[#f4f7f4] px-3 py-2">
+                    <p className="text-[10px] uppercase tracking-wide text-[#8a9a92]">Taken</p>
+                    <p className="text-sm font-bold text-emerald-700">{stats.takenCount}</p>
+                  </div>
+                  <div className="rounded-lg bg-[#f4f7f4] px-3 py-2">
+                    <p className="text-[10px] uppercase tracking-wide text-[#8a9a92]">Missed</p>
+                    <p className="text-sm font-bold text-rose-700">{stats.missedCount}</p>
+                  </div>
+                  <div className="rounded-lg bg-[#f4f7f4] px-3 py-2">
+                    <p className="text-[10px] uppercase tracking-wide text-[#8a9a92]">Streak</p>
+                    <p className="text-sm font-bold text-[#0d6e5a]">{stats.currentStreakDays}d</p>
+                  </div>
+                </div>
+
+                {/* Last 7 days mini-calendar */}
+                <div className="mt-3 flex gap-1">
+                  {stats.last7Days.map((d) => {
+                    const colors: Record<string, string> = {
+                      taken: "bg-emerald-500",
+                      late: "bg-orange-400",
+                      missed: "bg-rose-500",
+                      skipped: "bg-amber-400",
+                      unknown: "bg-slate-400",
+                      none: "bg-slate-200",
+                    };
+                    return (
+                      <div
+                        key={d.date}
+                        title={`${d.date}: ${d.status}`}
+                        className={`h-2 flex-1 rounded-full ${colors[d.status]}`}
+                      />
+                    );
+                  })}
                 </div>
 
                 {/* Prescriptions */}
                 <div className="mt-5">
                   <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a9a92]">
-                    <FileText className="h-3 w-3" /> Medications
+                    <FileText className="h-3 w-3" /> Active medications
                   </p>
                   {patient.prescriptions.length === 0 ? (
                     <p className="text-sm text-[#5a6b62]">No active prescriptions on file.</p>
@@ -158,7 +357,7 @@ export default async function CaregiverPortalPage() {
                           </div>
                           {link.canRequestRefills && (p.refillsRemaining ?? 0) > 0 && (
                             <Link
-                              href={`/portal/refills/new?prescriptionId=${p.id}`}
+                              href={`/caregiver/refills/new?customerId=${patient.id}&prescriptionId=${p.id}`}
                               className="inline-flex items-center gap-1 rounded-full bg-[#0d6e5a] px-3 py-1 text-[10px] font-semibold text-white hover:bg-[#084c3f]"
                             >
                               <Plus className="h-3 w-3" /> Request refill
@@ -170,7 +369,7 @@ export default async function CaregiverPortalPage() {
                   )}
                 </div>
 
-                {/* Active refills / pickups */}
+                {/* Active refills + pickup notifications */}
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
                   <div>
                     <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a9a92]">
@@ -208,7 +407,7 @@ export default async function CaregiverPortalPage() {
                       </ul>
                     ) : patient.notifications.length > 0 ? (
                       <ul className="space-y-1.5">
-                        {patient.notifications.slice(0, 5).map((n) => (
+                        {patient.notifications.slice(0, 4).map((n) => (
                           <li key={n.id} className="rounded-lg bg-[#f4f7f4] px-3 py-2 text-xs text-[#5a6b62]">
                             {n.title}
                           </li>
@@ -219,11 +418,65 @@ export default async function CaregiverPortalPage() {
                     )}
                   </div>
                 </div>
+
+                {/* Upcoming reminders */}
+                {patient.reminders.length > 0 && (
+                  <div className="mt-5">
+                    <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a9a92]">
+                      <Clock className="h-3 w-3" /> Upcoming reminders
+                    </p>
+                    <ul className="space-y-1.5">
+                      {patient.reminders.map((r) => (
+                        <li key={r.id} className="flex items-center justify-between rounded-lg bg-[#f4f7f4] px-3 py-2 text-xs">
+                          <span className="font-medium text-[#0c1a14]">{r.title}</span>
+                          <span className="text-[#5a6b62]">{formatDateTime(r.scheduledFor)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </section>
             );
           })
         )}
+      </section>
+    </CaregiverShell>
+  );
+}
+
+function StatCardLink({
+  href,
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string | number;
+  accent?: "brand" | "accent" | "info" | "neutral";
+}) {
+  const accentClass =
+    accent === "accent"
+      ? "from-amber-400 to-amber-600"
+      : accent === "info"
+        ? "from-blue-400 to-blue-600"
+        : accent === "neutral"
+          ? "from-slate-400 to-slate-600"
+          : "from-[#0d6e5a] to-[#084c3f]";
+
+  return (
+    <Link href={href} className="card-stat block transition hover:shadow-lg">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#5a6b62]">{label}</p>
+          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#0c1a14]">{value}</p>
+        </div>
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${accentClass} text-white shadow-md`}>
+          <Icon className="h-5 w-5" />
+        </span>
       </div>
-    </main>
+    </Link>
   );
 }

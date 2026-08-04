@@ -173,16 +173,185 @@ async function processLowAdherenceAlerts(): Promise<number> {
   return alerted;
 }
 
+/**
+ * Escalate unconfirmed dose reminders.
+ *
+ * For each medication_dose reminder that was sent but not answered:
+ *   - After 15 minutes with no response → send a follow-up reminder.
+ *   - After 30 minutes with no response → mark the dose as "unknown" in the
+ *     DoseLog and notify the patient's active caregivers (if any).
+ *
+ * This closes the loop: reminder → no response → escalate → caregiver sees it.
+ */
+async function processAdherenceEscalations(): Promise<number> {
+  const now = new Date();
+  const fifteenMinAgo = new Date(now.getTime() - 15 * 60 * 1000);
+  const thirtyMinAgo = new Date(now.getTime() - 30 * 60 * 1000);
+
+  // Step 2 escalations: reminders sent >15 min ago, not answered, no follow-up yet.
+  const step2Candidates = await prisma.reminder.findMany({
+    where: {
+      type: "medication_dose",
+      status: "sent",
+      sentAt: { lte: fifteenMinAgo },
+      scheduledFor: { gte: thirtyMinAgo }, // don't escalate ancient reminders
+    },
+    take: 50,
+  });
+
+  let escalated = 0;
+  for (const r of step2Candidates) {
+    // Check if we already recorded a follow-up_sent escalation.
+    const existingFollowUp = await prisma.adherenceEscalation.findFirst({
+      where: { reminderId: r.id, action: "follow_up_sent" },
+    });
+    if (existingFollowUp) continue;
+
+    // Send a follow-up reminder notification (in-app + push).
+    await prisma.notification.create({
+      data: {
+        customerId: r.customerId,
+        channel: "in_app",
+        type: "reminder",
+        title: `Reminder: ${r.title}`,
+        body: r.body || "Your medication dose is still pending. Tap to confirm.",
+        status: "delivered",
+        sentAt: new Date(),
+        relatedType: "reminder",
+        relatedId: r.id,
+      },
+    });
+
+    await prisma.adherenceEscalation.create({
+      data: {
+        prescriptionId: r.relatedId || "00000000-0000-0000-0000-000000000000",
+        customerId: r.customerId,
+        reminderId: r.id,
+        scheduledDate: new Date(r.scheduledFor.toISOString().slice(0, 10) + "T00:00:00Z"),
+        scheduledTime: r.scheduledFor.toISOString().slice(11, 16),
+        step: 2,
+        action: "follow_up_sent",
+      },
+    });
+
+    escalated += 1;
+  }
+
+  // Step 3 escalations: reminders sent >30 min ago, still not answered.
+  const step3Candidates = await prisma.reminder.findMany({
+    where: {
+      type: "medication_dose",
+      status: "sent",
+      sentAt: { lte: thirtyMinAgo },
+      scheduledFor: { gte: thirtyMinAgo },
+    },
+    take: 50,
+  });
+
+  for (const r of step3Candidates) {
+    const existingMarked = await prisma.adherenceEscalation.findFirst({
+      where: { reminderId: r.id, action: "marked_unknown" },
+    });
+    if (existingMarked) continue;
+
+    // Mark the corresponding DoseLog as "unknown".
+    const scheduledDate = new Date(r.scheduledFor.toISOString().slice(0, 10) + "T00:00:00Z");
+    const scheduledTime = r.scheduledFor.toISOString().slice(11, 16);
+
+    // Try to find a DoseLog for this reminder's prescription + date + time.
+    if (r.relatedId) {
+      const doseLog = await prisma.doseLog.findUnique({
+        where: {
+          prescriptionId_scheduledDate_scheduledTime: {
+            prescriptionId: r.relatedId,
+            scheduledDate,
+            scheduledTime,
+          },
+        },
+      }).catch(() => null);
+
+      if (doseLog && doseLog.status !== "taken" && doseLog.status !== "late") {
+        await prisma.doseLog.update({
+          where: { id: doseLog.id },
+          data: { status: "unknown", recordedBy: "system" },
+        });
+      }
+    }
+
+    await prisma.reminder.update({
+      where: { id: r.id },
+      data: { status: "escalated" },
+    });
+
+    await prisma.adherenceEscalation.create({
+      data: {
+        prescriptionId: r.relatedId || "00000000-0000-0000-0000-000000000000",
+        customerId: r.customerId,
+        reminderId: r.id,
+        scheduledDate,
+        scheduledTime,
+        step: 3,
+        action: "marked_unknown",
+      },
+    });
+
+    // Notify the patient's active caregivers (those with canLogAdherence or canReceivePickupNotifications).
+    const caregivers = await prisma.caregiver.findMany({
+      where: {
+        customerId: r.customerId,
+        status: "active",
+        OR: [{ canLogAdherence: true }, { canReceivePickupNotifications: true }],
+      },
+      include: { caregiverUser: { select: { id: true } } },
+    });
+
+    for (const cg of caregivers) {
+      if (cg.caregiverUser) {
+        await prisma.notification.create({
+          data: {
+            userId: cg.caregiverUser.id,
+            channel: "in_app",
+            type: "reminder",
+            title: `Missed dose: ${r.title}`,
+            body: `${r.customerId ? "" : ""}A scheduled dose was not confirmed in time. Please check on the patient.`,
+            status: "delivered",
+            sentAt: new Date(),
+            relatedType: "reminder",
+            relatedId: r.id,
+          },
+        });
+      }
+    }
+
+    await prisma.adherenceEscalation.create({
+      data: {
+        prescriptionId: r.relatedId || "00000000-0000-0000-0000-000000000000",
+        customerId: r.customerId,
+        reminderId: r.id,
+        scheduledDate,
+        scheduledTime,
+        step: 3,
+        action: "caregiver_notified",
+      },
+    });
+
+    escalated += 1;
+  }
+
+  return escalated;
+}
+
 export async function GET(request: NextRequest) {
   if (!authorized(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [reminders, campaigns, messages, adherenceAlerts] = await Promise.all([
+  const [reminders, campaigns, messages, adherenceAlerts, escalations] = await Promise.all([
     processDueReminders(),
     processScheduledCampaigns(),
     processScheduledMessages(),
     processLowAdherenceAlerts(),
+    processAdherenceEscalations(),
   ]);
 
   await writeAuditLog(null, "cron_reminders_processed", "reminder", undefined, {
@@ -190,8 +359,9 @@ export async function GET(request: NextRequest) {
     campaigns,
     messages,
     adherenceAlerts,
+    escalations,
   });
-  return Response.json({ reminders, campaigns, messages, adherenceAlerts });
+  return Response.json({ reminders, campaigns, messages, adherenceAlerts, escalations });
 }
 
 export async function POST(request: NextRequest) {

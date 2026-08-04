@@ -147,6 +147,7 @@ enum ReminderType {
   wellness
   birthday
   custom
+  medication_dose
 }
 
 enum ReminderStatus {
@@ -154,6 +155,8 @@ enum ReminderStatus {
   sent
   cancelled
   failed
+  answered
+  escalated
 }
 
 enum CampaignChannel {
@@ -384,6 +387,9 @@ model CustomerProfile {
   aiConversations AiConversation[]
   staffNotes      CustomerNote[]
   adherenceLogs   PrescriptionAdherence[]
+  medicationSchedules MedicationSchedule[]
+  doseLogs        DoseLog[]
+  adherenceEscalations AdherenceEscalation[]
   orders          Order[]
   payments        Payment[]
 
@@ -401,6 +407,9 @@ model Caregiver {
   relationship                  String?
   canRequestRefills             Boolean         @default(true) @map("can_request_refills")
   canReceivePickupNotifications Boolean         @default(true) @map("can_receive_pickup_notifications")
+  /// Whether the caregiver can log medication adherence on the patient's behalf.
+  /// Patients grant this when they want a family member to mark doses as taken/missed.
+  canLogAdherence               Boolean         @default(true) @map("can_log_adherence")
   status                        CaregiverStatus @default(active)
   lastInviteSentAt              DateTime?       @map("last_invite_sent_at")
   inviteSendCount               Int             @default(0) @map("invite_send_count")
@@ -470,6 +479,9 @@ model Prescription {
   adherence     PrescriptionAdherence[]
   medication    Medication?          @relation(fields: [medicationId], references: [id], onDelete: SetNull)
   dispatchedBy  User?                @relation("PrescriptionDispatcher", fields: [dispatchedById], references: [id], onDelete: SetNull)
+  doseSchedule  MedicationSchedule[]
+  doseLogs      DoseLog[]
+  escalations   AdherenceEscalation[]
 
   @@index([customerId])
   @@index([status])
@@ -899,6 +911,10 @@ model PrescriptionAdherence {
   takenOn       DateTime @map("taken_on") @db.Date
   status        String   @default("taken") // taken | missed | skipped | late
   notes         String?
+  /// Who recorded this entry: "customer" (self) or "caregiver" (delegated).
+  recordedBy    String   @default("customer") @map("recorded_by")
+  /// When a caregiver logged the dose, this is the caregiver row's id.
+  caregiverId   String?  @map("caregiver_id") @db.Uuid
   createdAt     DateTime @default(now()) @map("created_at")
 
   customer    CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -907,6 +923,92 @@ model PrescriptionAdherence {
   @@unique([prescriptionId, takenOn])
   @@index([customerId, takenOn])
   @@map("prescription_adherence")
+}
+
+// ── Per-dose medication schedule ──────────────────────────────
+/// A scheduled dose slot for a prescription. Generated from the prescription's
+/// dosage/frequency text (e.g. "1 tablet twice daily" → two slots: 08:00, 20:00).
+/// One MedicationSchedule row per (prescription, time-of-day). Used by the
+/// reminder cron to fire dose reminders and by the adherence escalation cron
+/// to follow up on unconfirmed doses.
+model MedicationSchedule {
+  id             String   @id @default(uuid()) @db.Uuid
+  prescriptionId String   @map("prescription_id") @db.Uuid
+  customerId     String   @map("customer_id") @db.Uuid
+  /// Time-of-day in HH:mm (24h, project timezone). E.g. "08:00", "20:00".
+  timeOfDay      String   @map("time_of_day")
+  /// How many doses per day this slot represents (used for daily-frequency meds).
+  /// For a once-daily med there is one row with quantity 1; twice-daily two rows of 1, etc.
+  doseQuantity   Decimal  @default(1) @map("dose_quantity") @db.Decimal(10, 2)
+  /// Optional label like "Morning", "Evening", "With food".
+  label          String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  customer     CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  doseLogs     DoseLog[]
+
+  @@unique([prescriptionId, timeOfDay])
+  @@index([customerId])
+  @@map("medication_schedules")
+}
+
+// ── Per-dose log (granular) ───────────────────────────────────
+/// A single dose confirmation. Unlike PrescriptionAdherence (one record per day),
+/// DoseLog records each individual scheduled dose with its actual time + responder.
+/// When the patient/caregiver taps "I took it" from a reminder, a DoseLog is created.
+model DoseLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  prescriptionId String   @map("prescription_id") @db.Uuid
+  customerId     String   @map("customer_id") @db.Uuid
+  scheduleId     String?  @map("schedule_id") @db.Uuid
+  /// The date the dose was scheduled for (local YYYY-MM-DD).
+  scheduledDate  DateTime @map("scheduled_date") @db.Date
+  /// Time-of-day the dose was scheduled for (HH:mm), or null for ad-hoc.
+  scheduledTime  String?  @map("scheduled_time")
+  /// When the dose was actually confirmed. Null = pending.
+  confirmedAt    DateTime? @map("confirmed_at")
+  /// taken | missed | skipped | late | unknown
+  status         String   @default("taken")
+  /// customer | caregiver | system (system = auto-marked unknown after escalation)
+  recordedBy     String   @default("customer") @map("recorded_by")
+  caregiverId    String?  @map("caregiver_id") @db.Uuid
+  notes          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  customer     CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  schedule     MedicationSchedule? @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+
+  @@unique([prescriptionId, scheduledDate, scheduledTime])
+  @@index([customerId, scheduledDate])
+  @@index([status])
+  @@map("dose_logs")
+}
+
+// ── Adherence escalation chain ────────────────────────────────
+/// Records each escalation step when a dose reminder goes unconfirmed.
+/// Step 1 = first reminder sent; Step 2 = follow-up after 15 min; Step 3 = mark unknown + alert caregiver.
+model AdherenceEscalation {
+  id             String   @id @default(uuid()) @db.Uuid
+  prescriptionId String   @map("prescription_id") @db.Uuid
+  customerId     String   @map("customer_id") @db.Uuid
+  reminderId     String?  @map("reminder_id") @db.Uuid
+  doseLogId      String?  @map("dose_log_id") @db.Uuid
+  scheduledDate  DateTime @map("scheduled_date") @db.Date
+  scheduledTime  String?  @map("scheduled_time")
+  step           Int      @default(1)
+  /// What this escalation did: reminder_sent | follow_up_sent | marked_unknown | caregiver_notified
+  action         String
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  customer     CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([prescriptionId, scheduledDate])
+  @@map("adherence_escalations")
 }
 
 // ── Medication categories (taxonomy registry) ─────────────────

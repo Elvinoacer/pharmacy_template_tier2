@@ -27,6 +27,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/login?next=/admin");
   }
   if (!user) redirect("/login?next=/admin");
-  if (!isStaff(user.role)) redirect("/portal");
+  if (!isStaff(user.role)) {
+    // Caregivers go to /caregiver; everyone else non-staff goes to /portal.
+    if (user.role === "caregiver") redirect("/caregiver");
+    redirect("/portal");
+  }
   return <>{children}</>;
 }

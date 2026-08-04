@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
+import { logDose, markReminderAnswered } from "@/app/lib/services/adherence";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,11 @@ const Body = z.object({
   status: z.enum(["taken", "missed", "skipped", "late"]),
   takenOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD
   notes: z.string().optional(),
+  /// Optional schedule slot time (HH:mm) when tied to a MedicationSchedule row.
+  scheduledTime: z.string().regex(/^\d{2}:\d{2}$/).nullable().optional(),
+  scheduleId: z.string().uuid().nullable().optional(),
+  /// When this log answers a reminder, the reminder is marked "answered".
+  reminderId: z.string().uuid().nullable().optional(),
 });
 
 export async function POST(req: Request) {
@@ -33,28 +39,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  // Upsert the adherence log (one per prescription per day).
-  const takenOn = new Date(parsed.takenOn + "T00:00:00Z");
-  const existing = await prisma.prescriptionAdherence.findUnique({
-    where: { prescriptionId_takenOn: { prescriptionId: parsed.prescriptionId, takenOn } },
+  // Use the unified logDose helper — writes both DoseLog (granular) and
+  // PrescriptionAdherence (daily summary).
+  const result = await logDose({
+    customerId: user.customerId,
+    prescriptionId: parsed.prescriptionId,
+    status: parsed.status,
+    scheduledDate: new Date(parsed.takenOn + "T00:00:00Z"),
+    scheduledTime: parsed.scheduledTime ?? null,
+    scheduleId: parsed.scheduleId ?? null,
+    notes: parsed.notes,
+    recordedBy: "customer",
   });
 
-  if (existing) {
-    await prisma.prescriptionAdherence.update({
-      where: { id: existing.id },
-      data: { status: parsed.status, notes: parsed.notes ?? existing.notes },
-    });
-    return NextResponse.json({ ok: true, updated: true });
+  if (parsed.reminderId) {
+    await markReminderAnswered(parsed.reminderId);
   }
 
-  await prisma.prescriptionAdherence.create({
-    data: {
-      customerId: user.customerId,
-      prescriptionId: parsed.prescriptionId,
-      takenOn,
-      status: parsed.status,
-      notes: parsed.notes,
-    },
-  });
-  return NextResponse.json({ ok: true, created: true });
+  return NextResponse.json({ ok: true, doseLogId: result.doseLogId });
 }

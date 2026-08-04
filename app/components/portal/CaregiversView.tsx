@@ -14,6 +14,7 @@ import {
   Check,
   AlertCircle,
   RotateCcw,
+  Activity,
 } from "lucide-react";
 import { InviteCaregiverForm } from "@/app/components/portal/InviteCaregiverForm";
 
@@ -25,6 +26,7 @@ type Caregiver = {
   relationship: string | null;
   canRequestRefills: boolean;
   canReceivePickupNotifications: boolean;
+  canLogAdherence: boolean;
   status: string;
   cooldownRemainingSeconds?: number;
   inviteSendCount?: number;
@@ -113,6 +115,12 @@ export function CaregiversView({ caregivers }: { caregivers: Caregiver[] }) {
                         okLabel="Pickup alerts"
                         notOkLabel="No pickup alerts"
                         icon={Bell}
+                      />
+                      <PermissionChip
+                        ok={c.canLogAdherence}
+                        okLabel="Can log adherence"
+                        notOkLabel="No adherence logging"
+                        icon={Activity}
                       />
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
@@ -257,6 +265,19 @@ export function CaregiversView({ caregivers }: { caregivers: Caregiver[] }) {
               <span>
                 <span className="font-medium text-[#0c1a14]">Pickup notifications</span>
                 <span className="block text-xs text-[#5a6b62]">Receive alerts when your prescription is ready</span>
+              </span>
+            </label>
+            <label className="flex cursor-pointer items-center gap-3 text-sm">
+              <input
+                type="checkbox"
+                name="canLogAdherence"
+                defaultChecked
+                className="h-4 w-4 rounded border-[#5a6b62] text-[#0d6e5a] focus:ring-[#0d6e5a]"
+              />
+              <Activity className="h-4 w-4 text-[#0d6e5a]" />
+              <span>
+                <span className="font-medium text-[#0c1a14]">Log adherence</span>
+                <span className="block text-xs text-[#5a6b62]">Mark your doses as taken/missed on your behalf</span>
               </span>
             </label>
           </div>

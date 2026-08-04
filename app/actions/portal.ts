@@ -210,6 +210,7 @@ export async function addCaregiverAction(
       relationship: String(formData.get("relationship") || "") || null,
       canRequestRefills: formData.get("canRequestRefills") === "on",
       canReceivePickupNotifications: formData.get("canReceivePickupNotifications") === "on",
+      canLogAdherence: formData.get("canLogAdherence") === "on",
     },
   });
 
