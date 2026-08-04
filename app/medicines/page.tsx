@@ -29,22 +29,21 @@ export default async function MedicinesPage({
   // Pull public-listed medications (admin marks these as visible without login).
   // Category + name/description live on MedicationMaster; everything else stays
   // on PharmacyInventory. We build a nested where + include.
+  const masterWhere: Record<string, unknown> = {};
+  if (category && category !== "all") {
+    masterWhere.category = category;
+  }
+  if (q) {
+    masterWhere.OR = [
+      { name: { contains: q, mode: "insensitive" as const } },
+      { description: { contains: q, mode: "insensitive" as const } },
+    ];
+  }
+
   const where = {
     publicListing: true,
     active: true,
-    ...(category && category !== "all"
-      ? { medicationMaster: { category } }
-      : {}),
-    ...(q
-      ? {
-          medicationMaster: {
-            OR: [
-              { name: { contains: q, mode: "insensitive" as const } },
-              { description: { contains: q, mode: "insensitive" as const } },
-            ],
-          },
-        }
-      : {}),
+    ...(Object.keys(masterWhere).length > 0 ? { medicationMaster: masterWhere } : {}),
   };
 
   const masterInclude = {
@@ -56,7 +55,7 @@ export default async function MedicinesPage({
         imageUrl: true,
       },
     },
-  } as const;
+  };
 
   const [total, medications] = await Promise.all([
     prisma.pharmacyInventory.count({ where }).catch(() => 0),
@@ -64,7 +63,7 @@ export default async function MedicinesPage({
       .findMany({
         where,
         include: masterInclude,
-        orderBy: [{ currentStock: "desc" }, { medicationMaster: { name: "asc" } }],
+        orderBy: [{ currentStock: "desc" }],
         take: PAGE_SIZE,
       })
       .catch(() => []),
@@ -78,7 +77,7 @@ export default async function MedicinesPage({
           .findMany({
             where,
             include: masterInclude,
-            orderBy: [{ currentStock: "desc" }, { medicationMaster: { name: "asc" } }],
+            orderBy: [{ currentStock: "desc" }],
             take: PAGE_SIZE,
             skip: (page - 1) * PAGE_SIZE,
           })
@@ -94,7 +93,7 @@ export default async function MedicinesPage({
       distinct: ["category"],
     })
     .catch(() => []);
-  const dbCategorySlugs = dbCategories.map((c) => c.category);
+  const dbCategorySlugs = dbCategories.map((c) => c.category).filter(Boolean);
 
   return (
     <div>
@@ -154,52 +153,56 @@ export default async function MedicinesPage({
               Available now ({total})
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {paged.map((m) => (
-                <Link
-                  key={m.id}
-                  href={`/medicines/${m.slug}`}
-                  className="card-lift group overflow-hidden rounded-2xl border border-[#e3ebe6] bg-white shadow-sm transition hover:shadow-md"
-                >
-                  <div className="relative h-32 overflow-hidden bg-[#f4f7f4]">
-                    {m.medicationMaster.imageUrl ? (
-                      <Image
-                        src={m.medicationMaster.imageUrl}
-                        alt={m.medicationMaster.name}
-                        fill
-                        className="object-cover transition duration-700 group-hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-3xl">💊</div>
-                    )}
-                    {m.overTheCounter && (
-                      <span className="absolute left-2 top-2 rounded-full bg-emerald-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
-                        OTC
-                      </span>
-                    )}
-                    {m.prescriptionRequired && !m.overTheCounter && (
-                      <span className="absolute left-2 top-2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
-                        Rx required
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#0d6e5a]">
-                      {m.medicationMaster.category.replace(/-/g, " ")}
-                    </p>
-                    <h3 className="mt-1 text-sm font-semibold text-[#0c1a14]">{m.medicationMaster.name}</h3>
-                    {m.medicationMaster.description && (
-                      <p className="mt-1 line-clamp-2 text-xs text-[#5a6b62]">{m.medicationMaster.description}</p>
-                    )}
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="font-bold text-[#0c1a14]">KES {formatPrice(Number(m.price))}</span>
-                      <span className={`text-[10px] ${m.currentStock > 0 ? "text-emerald-700" : "text-rose-600"}`}>
-                        {m.currentStock > 0 ? `${m.currentStock} in stock` : "out of stock"}
-                      </span>
+              {paged.map((m) => {
+                const master = m.medicationMaster;
+                if (!master) return null;
+                return (
+                  <Link
+                    key={m.id}
+                    href={`/medicines/${m.slug}`}
+                    className="card-lift group overflow-hidden rounded-2xl border border-[#e3ebe6] bg-white shadow-sm transition hover:shadow-md"
+                  >
+                    <div className="relative h-32 overflow-hidden bg-[#f4f7f4]">
+                      {master.imageUrl ? (
+                        <Image
+                          src={master.imageUrl}
+                          alt={master.name}
+                          fill
+                          className="object-cover transition duration-700 group-hover:scale-105"
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-3xl">💊</div>
+                      )}
+                      {m.overTheCounter && (
+                        <span className="absolute left-2 top-2 rounded-full bg-emerald-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                          OTC
+                        </span>
+                      )}
+                      {m.prescriptionRequired && !m.overTheCounter && (
+                        <span className="absolute left-2 top-2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                          Rx required
+                        </span>
+                      )}
                     </div>
-                  </div>
-                </Link>
-              ))}
+                    <div className="p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#0d6e5a]">
+                        {master.category ? master.category.replace(/-/g, " ") : "general"}
+                      </p>
+                      <h3 className="mt-1 text-sm font-semibold text-[#0c1a14]">{master.name}</h3>
+                      {master.description && (
+                        <p className="mt-1 line-clamp-2 text-xs text-[#5a6b62]">{master.description}</p>
+                      )}
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="font-bold text-[#0c1a14]">KES {formatPrice(Number(m.price ?? 0))}</span>
+                        <span className={`text-[10px] ${(m.currentStock ?? 0) > 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                          {(m.currentStock ?? 0) > 0 ? `${m.currentStock} in stock` : "out of stock"}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
 
             <Pagination
