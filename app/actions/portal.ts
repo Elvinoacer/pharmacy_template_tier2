@@ -528,9 +528,6 @@ export async function portalCreateOrderAction(
     include: { medicationMaster: { select: { name: true } } },
   });
   if (!med) return { error: "Product not available for online order." };
-  if (med.currentStock < quantity) {
-    return { error: `Only ${med.currentStock} unit(s) in stock.` };
-  }
 
   let discount = 0;
   let couponId: string | null = null;
@@ -559,41 +556,61 @@ export async function portalCreateOrderAction(
 
   const unitPrice = Number(med.price);
   const total = Math.max(0, unitPrice * quantity - discount);
+  const {
+    applyStockChange,
+    notifyStockThreshold,
+    InsufficientStockError,
+  } = await import("@/app/lib/services/stock");
 
-  const order = await prisma.$transaction(async (tx) => {
-    const o = await tx.order.create({
-      data: {
-        customerId: user.customerId,
-        source: "portal",
-        status: "pending",
-        total,
-        notes: String(formData.get("phone") || "")
-          ? `M-Pesa phone: ${String(formData.get("phone"))}`
-          : null,
-        items: {
-          create: {
-            medicationId,
-            name: med.medicationMaster.name,
-            quantity,
-            unitPrice,
-            discountApplied: discount,
-            couponId,
+  let orderId = "";
+  try {
+    const { order, stockResult } = await prisma.$transaction(async (tx) => {
+      const o = await tx.order.create({
+        data: {
+          customerId: user.customerId,
+          source: "portal",
+          status: "pending",
+          total,
+          notes: String(formData.get("phone") || "")
+            ? `M-Pesa phone: ${String(formData.get("phone"))}`
+            : null,
+          items: {
+            create: {
+              medicationId,
+              name: med.medicationMaster.name,
+              quantity,
+              unitPrice,
+              discountApplied: discount,
+              couponId,
+            },
           },
         },
-      },
-    });
-    await tx.pharmacyInventory.update({
-      where: { id: medicationId },
-      data: { currentStock: { decrement: quantity } },
-    });
-    if (couponId) {
-      await tx.coupon.update({
-        where: { id: couponId },
-        data: { redemptions: { increment: 1 } },
       });
+      const stockResult = await applyStockChange(tx, {
+        inventoryId: medicationId,
+        quantityDelta: -quantity,
+        reason: "sale",
+        notes: `Portal OTC order × ${quantity}`,
+        relatedType: "order",
+        relatedId: o.id,
+        actorId: user.id,
+      });
+      if (couponId) {
+        await tx.coupon.update({
+          where: { id: couponId },
+          data: { redemptions: { increment: 1 } },
+        });
+      }
+      return { order: o, stockResult };
+    });
+    orderId = order.id;
+    await notifyStockThreshold(stockResult);
+  } catch (e) {
+    if (e instanceof InsufficientStockError) {
+      return { error: `Only ${e.available} unit(s) in stock.` };
     }
-    return o;
-  });
+    throw e;
+  }
 
   await addTimelineEvent(
     user.customerId,
@@ -601,7 +618,7 @@ export async function portalCreateOrderAction(
     "order_placed",
     "OTC order placed",
     `${med.medicationMaster.name} × ${quantity} — KES ${total}`,
-    { orderId: order.id },
+    { orderId },
     user.id,
   );
 
@@ -612,13 +629,13 @@ export async function portalCreateOrderAction(
     body: `${user.fullName || user.email} ordered ${quantity}× ${med.medicationMaster.name} (KES ${total})`,
     severity: "info",
     relatedType: "order",
-    relatedId: order.id,
+    relatedId: orderId,
   });
 
   revalidatePath("/portal");
   revalidatePath("/portal/orders");
   revalidatePath("/medicines");
-  redirect(`/portal/orders?placed=${order.id}`);
+  redirect(`/portal/orders?placed=${orderId}`);
 }
 
 /** Create a payable order from an approved/ready refill so coupons & Daraja apply. */

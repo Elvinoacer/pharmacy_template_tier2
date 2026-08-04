@@ -109,6 +109,12 @@ export default function Navbar() {
             Portal
           </Link>
           <Link
+            href="/order"
+            className="hidden rounded-full border border-teal-900/10 bg-white/70 px-3 py-2 text-sm font-medium text-[#084c3f] transition hover:bg-white sm:inline"
+          >
+            Order OTC
+          </Link>
+          <Link
             href="/refill"
             className="btn-primary !px-4 !py-2.5 text-sm"
           >
@@ -134,6 +140,12 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="mx-4 mt-2 rounded-2xl border border-white/60 bg-white/95 p-3 shadow-xl backdrop-blur-xl lg:hidden">
+          <Link
+            href="/order"
+            className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-[#0d6e5a]"
+          >
+            Order OTC
+          </Link>
           {LINKS.map((l) => (
             <Link
               key={l.href}

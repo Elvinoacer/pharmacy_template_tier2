@@ -62,12 +62,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_body", detail: e instanceof Error ? e.message : undefined }, { status: 400 });
   }
 
+  const { setAbsoluteStock, applyStockChange, notifyStockThresholds } = await import(
+    "@/app/lib/services/stock"
+  );
+  type StockResult = Awaited<ReturnType<typeof setAbsoluteStock>>;
+  const stockResults: StockResult[] = [];
+
   let upserted = 0;
   let lowStockAlerts = 0;
   for (const m of parsed.medications) {
     const slug = m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     // Find by SKU (preferred) or slug — these live on PharmacyInventory now.
-    // Include medicationMaster so we can preserve the link if found.
     const existing = m.sku
       ? await prisma.pharmacyInventory
           .findUnique({
@@ -83,27 +88,32 @@ export async function POST(req: Request) {
           .catch(() => null);
 
     if (existing) {
-      // Update inventory commercial fields only — clinical fields stay on
-      // the linked MedicationMaster and are NOT overwritten by POS sync.
-      await prisma.pharmacyInventory.update({
-        where: { id: existing.id },
-        data: {
-          price: m.price,
-          currentStock: m.stockQty,
-          lowStockThreshold: m.lowStockThreshold,
-          syncedAt: new Date(),
-        },
+      // Commercial fields only — never overwrite clinical master data from POS.
+      const result = await prisma.$transaction(async (tx) => {
+        await tx.pharmacyInventory.update({
+          where: { id: existing.id },
+          data: {
+            price: m.price,
+            lowStockThreshold: m.lowStockThreshold,
+            syncedAt: new Date(),
+          },
+        });
+        return setAbsoluteStock(tx, {
+          inventoryId: existing.id,
+          newStock: m.stockQty,
+          reason: "pos_sync",
+          notes: "POS absolute stock sync",
+          relatedType: "pos_sync",
+        });
       });
+      stockResults.push(result);
     } else {
-      // Create a MedicationMaster (clinical shell) + PharmacyInventory (commercial
-      // row) in a transaction. POS sync is best-effort enrichment — the master
-      // starts minimal and can be enriched later via the admin UI.
+      // Create master (minimal) + inventory, then log opening stock movement.
       await prisma.$transaction(async (tx) => {
         const master = await tx.medicationMaster.create({
           data: {
             name: m.name,
             slug,
-            // Best-effort generic name fallback (POS payload doesn't split it out).
             genericName: m.name.split(" ")[0] || m.name,
             category: m.category,
             description: m.description || null,
@@ -118,13 +128,13 @@ export async function POST(req: Request) {
             enrichmentScore: 30,
           },
         });
-        await tx.pharmacyInventory.create({
+        const inv = await tx.pharmacyInventory.create({
           data: {
             medicationMasterId: master.id,
             slug,
             sku: m.sku || null,
             price: m.price,
-            currentStock: m.stockQty,
+            currentStock: 0,
             lowStockThreshold: m.lowStockThreshold,
             overTheCounter: m.overTheCounter,
             publicListing: m.publicListing,
@@ -133,11 +143,24 @@ export async function POST(req: Request) {
             syncedAt: new Date(),
           },
         });
+        if (m.stockQty > 0) {
+          const result = await applyStockChange(tx, {
+            inventoryId: inv.id,
+            quantityDelta: m.stockQty,
+            reason: "pos_sync",
+            notes: "POS opening stock",
+            relatedType: "pos_sync",
+            skipLots: true,
+          });
+          stockResults.push(result);
+        }
       });
     }
     upserted++;
     if (m.stockQty <= m.lowStockThreshold) lowStockAlerts++;
   }
+
+  await notifyStockThresholds(stockResults);
 
   if (lowStockAlerts > 0) {
     await recordAdminNotification({

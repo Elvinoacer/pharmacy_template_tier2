@@ -101,7 +101,7 @@ export default async function MedicinesPage({
       <PageHero
         eyebrow="Medicines & health"
         title="Categories to help you find the right care"
-        description="Browse our stocked OTC products and educational categories. Sign in to the portal for the full catalog and to purchase over-the-counter medications."
+        description="Browse stocked OTC products and educational categories. Reserve OTC online with no account, or sign in for M-Pesa checkout, refills, and loyalty."
         crumbs={[{ label: "Medicines" }]}
       />
 

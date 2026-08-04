@@ -44,10 +44,22 @@ export async function adminUpdateRefillAction(formData: FormData) {
   const user = await staff();
   const id = String(formData.get("id") || "");
   const status = String(formData.get("status") || "") as RefillStatus;
-  await updateRefillStatus(id, status, user.id);
+  try {
+    await updateRefillStatus(id, status, user.id);
+  } catch (e) {
+    const { InsufficientStockError } = await import("@/app/lib/services/stock");
+    if (e instanceof InsufficientStockError) {
+      // Surface as thrown error for API route; server-action callers should catch.
+      throw new Error(e.message);
+    }
+    throw e;
+  }
   await writeAuditLog(user.id, "refill_status_update", "refill_request", id, { status });
   revalidatePath("/admin/refills");
   revalidatePath("/admin/customers");
+  revalidatePath("/admin/medications");
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin/inventory");
 }
 
 export async function adminEnquiryAction(
@@ -596,7 +608,8 @@ export async function adminCreatePrescriptionAction(
  * Only when an admin explicitly clicks "Dispatch" should stock be deducted.
  *
  * Idempotent: if the prescription is already dispatched, returns success
- * without re-decrementing stock.
+ * without re-decrementing stock. Also skips stock if a linked refill already
+ * deducted inventory for this prescription fill.
  */
 export async function adminDispatchPrescriptionAction(formData: FormData) {
   const user = await staff();
@@ -620,44 +633,67 @@ export async function adminDispatchPrescriptionAction(formData: FormData) {
 
   const qty = rx.quantity ?? 1;
   const shouldDecrementRefills = (rx.refillsRemaining ?? 0) > 0;
+  const {
+    applyStockChange,
+    notifyStockThreshold,
+    InsufficientStockError,
+  } = await import("@/app/lib/services/stock");
 
-  // Atomic: stock decrement + dispatch mark + refillsRemaining all in one transaction.
-  // NOTE: rx.medication is now a PharmacyInventory row; clinical name lives on medicationMaster.
-  if (rx.medicationId && rx.medication) {
-    const inv = rx.medication;
-    const medName = inv.medicationMaster?.name ?? "this medication";
-    if (inv.currentStock < qty) {
-      throw new Error(
-        `Insufficient stock for ${medName}. Available: ${inv.currentStock}, required: ${qty}.`,
-      );
-    }
-    await prisma.$transaction(async (tx) => {
-      await tx.pharmacyInventory.update({
-        where: { id: inv.id },
-        data: { currentStock: { decrement: qty } },
+  // If any refill already deducted stock for this Rx, don't double-count.
+  const priorRefillMovement = await prisma.stockMovement.findFirst({
+    where: {
+      relatedType: "prescription",
+      relatedId: id,
+      reason: { in: ["dispatch", "refill"] },
+      quantityDelta: { lt: 0 },
+    },
+    select: { id: true },
+  });
+
+  let stockResult = null as Awaited<ReturnType<typeof applyStockChange>> | null;
+
+  try {
+    if (rx.medicationId && rx.medication && !priorRefillMovement) {
+      stockResult = await prisma.$transaction(async (tx) => {
+        const result = await applyStockChange(tx, {
+          inventoryId: rx.medicationId!,
+          quantityDelta: -qty,
+          reason: "dispatch",
+          notes: `Prescription dispatch: ${rx.medicineName}`,
+          relatedType: "prescription",
+          relatedId: id,
+          actorId: user.id,
+        });
+        await tx.prescription.update({
+          where: { id },
+          data: {
+            dispatchedAt: new Date(),
+            dispatchedById: user.id,
+            lastFilledAt: new Date(),
+            ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
+          },
+        });
+        return result;
       });
-      await tx.prescription.update({
+    } else {
+      await prisma.prescription.update({
         where: { id },
         data: {
           dispatchedAt: new Date(),
           dispatchedById: user.id,
           lastFilledAt: new Date(),
-          ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
+          ...(shouldDecrementRefills && !priorRefillMovement
+            ? { refillsRemaining: { decrement: 1 } }
+            : {}),
         },
       });
-    });
-  } else {
-    // No linked medication — still atomic for dispatch + refill decrement.
-    await prisma.prescription.update({
-      where: { id },
-      data: {
-        dispatchedAt: new Date(),
-        dispatchedById: user.id,
-        lastFilledAt: new Date(),
-        ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
-      },
-    });
+    }
+  } catch (e) {
+    if (e instanceof InsufficientStockError) throw e;
+    throw e;
   }
+
+  if (stockResult) await notifyStockThreshold(stockResult);
 
   await addTimelineEvent(
     rx.customerId,
@@ -1147,14 +1183,7 @@ export async function adminCreateOrderAction(
     // "points" discount type is handled at loyalty redemption time, not here.
   }
 
-  // Verify stock is sufficient — fail loudly instead of going negative.
   const medName = med.medicationMaster?.name ?? "this medication";
-  if (med.currentStock < quantity) {
-    return {
-      error: `Insufficient stock for ${medName}. Available: ${med.currentStock}, requested: ${quantity}.`,
-    };
-  }
-
   const unitPrice = Number(med.price);
   const total = Math.max(0, unitPrice * quantity - discount);
   // Counter sales default to cash paid so revenue analytics count them.
@@ -1163,75 +1192,99 @@ export async function adminCreateOrderAction(
   const markPaid = formData.get("markPaid") !== "off" && paymentMethod === "cash";
   const dosage = String(formData.get("dosage") || "").trim() || null;
 
-  // Create the order in a transaction — cash path creates a completed Payment.
-  const order = await prisma.$transaction(async (tx) => {
-    const o = await tx.order.create({
-      data: {
-        customerId: finalCustomerId,
-        source,
-        status: markPaid ? "paid" : "pending",
-        total,
-        notes: [notes, dosage ? `Dosage: ${dosage}` : null].filter(Boolean).join("\n") || null,
-        servedById: user.id,
-        items: {
-          create: {
-            medicationId,
-            name: medName,
-            quantity,
-            unitPrice,
-            discountApplied: discount,
-            couponId,
+  const {
+    applyStockChange,
+    notifyStockThreshold,
+    InsufficientStockError,
+  } = await import("@/app/lib/services/stock");
+
+  let stockResult: Awaited<ReturnType<typeof applyStockChange>> | null = null;
+  let orderId = "";
+
+  try {
+    const order = await prisma.$transaction(async (tx) => {
+      const o = await tx.order.create({
+        data: {
+          customerId: finalCustomerId,
+          source,
+          status: markPaid ? "paid" : "pending",
+          total,
+          notes: [notes, dosage ? `Dosage: ${dosage}` : null].filter(Boolean).join("\n") || null,
+          servedById: user.id,
+          items: {
+            create: {
+              medicationId,
+              name: medName,
+              quantity,
+              unitPrice,
+              discountApplied: discount,
+              couponId,
+            },
           },
         },
-      },
-    });
-    // Decrement stock (Phase 0: stock lives on PharmacyInventory.currentStock).
-    await tx.pharmacyInventory.update({
-      where: { id: medicationId },
-      data: { currentStock: { decrement: quantity } },
-    });
-
-    if (markPaid) {
-      await tx.payment.create({
-        data: {
-          orderId: o.id,
-          customerId: finalCustomerId,
-          amount: total,
-          provider: "cash",
-          status: "completed",
-          providerRef: `CASH-${o.id.slice(0, 8).toUpperCase()}`,
-        },
       });
-    }
-
-    // If Rx-required med sold at counter, optionally create a prescription record.
-    if (med.prescriptionRequired && finalCustomerId && formData.get("createPrescription") === "on") {
-      await tx.prescription.create({
-        data: {
-          customerId: finalCustomerId,
-          medicationId,
-          medicineName: medName,
-          dosage: dosage || null,
-          quantity,
-          unitPrice,
-          refillsRemaining: Number(formData.get("refillsRemaining") || 0),
-          status: "active",
-          notes: "Created from counter OTC/Rx sale",
-        },
+      stockResult = await applyStockChange(tx, {
+        inventoryId: medicationId,
+        quantityDelta: -quantity,
+        reason: "sale",
+        notes: `Counter/OTC sale × ${quantity}`,
+        relatedType: "order",
+        relatedId: o.id,
+        actorId: user.id,
       });
-    }
 
-    return o;
-  });
+      if (markPaid) {
+        await tx.payment.create({
+          data: {
+            orderId: o.id,
+            customerId: finalCustomerId,
+            amount: total,
+            provider: "cash",
+            status: "completed",
+            providerRef: `CASH-${o.id.slice(0, 8).toUpperCase()}`,
+          },
+        });
+      }
 
-  if (couponId) {
-    await prisma.coupon.update({
-      where: { id: couponId },
-      data: { redemptions: { increment: 1 } },
+      // If Rx-required med sold at counter, optionally create a prescription record.
+      if (med.prescriptionRequired && finalCustomerId && formData.get("createPrescription") === "on") {
+        await tx.prescription.create({
+          data: {
+            customerId: finalCustomerId,
+            medicationId,
+            medicineName: medName,
+            dosage: dosage || null,
+            quantity,
+            unitPrice,
+            refillsRemaining: Number(formData.get("refillsRemaining") || 0),
+            status: "active",
+            notes: "Created from counter OTC/Rx sale",
+          },
+        });
+      }
+
+      if (couponId) {
+        await tx.coupon.update({
+          where: { id: couponId },
+          data: { redemptions: { increment: 1 } },
+        });
+      }
+
+      return o;
     });
+    orderId = order.id;
+  } catch (e) {
+    if (e instanceof InsufficientStockError) {
+      return {
+        error: `Insufficient stock for ${e.medicationName}. Available: ${e.available}, requested: ${e.required}.`,
+      };
+    }
+    throw e;
   }
 
-  await writeAuditLog(user.id, "order_created", "order", order.id, {
+  if (stockResult) await notifyStockThreshold(stockResult);
+
+  await writeAuditLog(user.id, "order_created", "order", orderId, {
     customerId: finalCustomerId,
     medicationId,
     quantity,
@@ -1319,4 +1372,205 @@ export async function adminWaiveOrderAction(formData: FormData) {
   }
   await writeAuditLog(user.id, "order_waived", "order", id, { scope, reason });
   revalidatePath("/admin/orders");
+}
+
+// ── Inventory ops: receive / adjust / lots ────────────────────
+
+/** Receive stock (goods-in) — increments inventory + optional lot (batch/expiry). */
+export async function adminReceiveStockAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await staff();
+  const inventoryId = String(formData.get("inventoryId") || "");
+  const quantity = Math.max(0, Number(formData.get("quantity") || 0));
+  const batchNumber = String(formData.get("batchNumber") || "").trim() || undefined;
+  const expiryRaw = String(formData.get("expiryDate") || "").trim();
+  const notes = String(formData.get("notes") || "").trim() || null;
+  const purchasePriceRaw = String(formData.get("purchasePrice") || "").trim();
+
+  if (!inventoryId) return { error: "Inventory id required." };
+  if (quantity < 1) return { error: "Quantity must be at least 1." };
+  if (batchNumber && !expiryRaw) return { error: "Expiry date is required when a batch number is set." };
+
+  const expiryDate = expiryRaw ? new Date(expiryRaw) : undefined;
+  if (expiryDate && Number.isNaN(expiryDate.getTime())) {
+    return { error: "Invalid expiry date." };
+  }
+
+  const { applyStockChange, notifyStockThreshold } = await import("@/app/lib/services/stock");
+
+  const result = await prisma.$transaction(async (tx) => {
+    if (purchasePriceRaw !== "" && !Number.isNaN(Number(purchasePriceRaw))) {
+      await tx.pharmacyInventory.update({
+        where: { id: inventoryId },
+        data: { purchasePrice: Number(purchasePriceRaw) },
+      });
+    }
+    return applyStockChange(tx, {
+      inventoryId,
+      quantityDelta: quantity,
+      reason: "receive",
+      notes: notes ?? `Goods received × ${quantity}`,
+      relatedType: "manual",
+      actorId: user.id,
+      batchNumber,
+      expiryDate,
+    });
+  });
+
+  await notifyStockThreshold(result);
+  await writeAuditLog(user.id, "stock_received", "pharmacy_inventory", inventoryId, {
+    quantity,
+    batchNumber,
+    balanceAfter: result.newStock,
+  });
+  revalidatePath("/admin/medications");
+  revalidatePath(`/admin/medications/${inventoryId}`);
+  revalidatePath("/admin/inventory");
+  return {
+    success: `Received ${quantity} unit(s). Stock is now ${result.newStock}.`,
+  };
+}
+
+/** Adjust stock (stocktake / correction / write-off). Signed quantity or absolute set. */
+export async function adminAdjustStockAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await staff();
+  const inventoryId = String(formData.get("inventoryId") || "");
+  const mode = String(formData.get("mode") || "delta"); // delta | absolute
+  const quantityRaw = Number(formData.get("quantity") || 0);
+  const notes = String(formData.get("notes") || "").trim();
+  const reason = (String(formData.get("reason") || "adjust") as "adjust" | "write_off" | "return");
+
+  if (!inventoryId) return { error: "Inventory id required." };
+  if (!notes) return { error: "A reason/note is required for stock adjustments (audit)." };
+
+  const {
+    applyStockChange,
+    setAbsoluteStock,
+    notifyStockThreshold,
+    InsufficientStockError,
+  } = await import("@/app/lib/services/stock");
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      if (mode === "absolute") {
+        if (quantityRaw < 0) throw new Error("Absolute stock cannot be negative.");
+        return setAbsoluteStock(tx, {
+          inventoryId,
+          newStock: Math.floor(quantityRaw),
+          reason: "adjust",
+          notes,
+          relatedType: "manual",
+          actorId: user.id,
+        });
+      }
+      const delta = Math.trunc(quantityRaw);
+      if (delta === 0) throw new Error("Adjustment quantity cannot be zero.");
+      return applyStockChange(tx, {
+        inventoryId,
+        quantityDelta: delta,
+        reason: delta < 0 && reason === "write_off" ? "write_off" : delta > 0 && reason === "return" ? "return" : "adjust",
+        notes,
+        relatedType: "manual",
+        actorId: user.id,
+        skipLots: delta > 0, // positive adjust without lot unless receive flow used
+      });
+    });
+
+    await notifyStockThreshold(result);
+    await writeAuditLog(user.id, "stock_adjusted", "pharmacy_inventory", inventoryId, {
+      mode,
+      quantity: quantityRaw,
+      balanceAfter: result.newStock,
+      notes,
+    });
+    revalidatePath("/admin/medications");
+    revalidatePath(`/admin/medications/${inventoryId}`);
+    revalidatePath("/admin/inventory");
+    return {
+      success: `Stock updated. Balance is now ${result.newStock} (Δ ${result.quantityDelta}).`,
+    };
+  } catch (e) {
+    if (e instanceof InsufficientStockError) {
+      return {
+        error: `Cannot adjust: only ${e.available} available (tried to remove ${e.required}).`,
+      };
+    }
+    return { error: e instanceof Error ? e.message : "Adjustment failed." };
+  }
+}
+
+/** Deactivate an empty or expired lot (does not change aggregate stock — use adjust for that). */
+export async function adminDeactivateLotAction(formData: FormData) {
+  const user = await staff();
+  const lotId = String(formData.get("lotId") || "");
+  const inventoryId = String(formData.get("inventoryId") || "");
+  if (!lotId) return;
+  await prisma.inventoryLot.update({
+    where: { id: lotId },
+    data: { active: false },
+  });
+  await writeAuditLog(user.id, "lot_deactivated", "inventory_lot", lotId, { inventoryId });
+  revalidatePath(`/admin/medications/${inventoryId}`);
+  revalidatePath("/admin/inventory");
+}
+
+/** Write off remaining quantity on an expired lot (deducts aggregate + zeroes lot). */
+export async function adminWriteOffLotAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await staff();
+  const lotId = String(formData.get("lotId") || "");
+  const inventoryId = String(formData.get("inventoryId") || "");
+  const notes = String(formData.get("notes") || "").trim() || "Expired lot write-off";
+  if (!lotId || !inventoryId) return { error: "Lot and inventory required." };
+
+  const lot = await prisma.inventoryLot.findUnique({ where: { id: lotId } });
+  if (!lot || lot.pharmacyInventoryId !== inventoryId) return { error: "Lot not found." };
+  if (lot.quantity <= 0) {
+    await prisma.inventoryLot.update({ where: { id: lotId }, data: { active: false } });
+    return { success: "Lot already empty — deactivated." };
+  }
+
+  const { applyStockChange, notifyStockThreshold, InsufficientStockError } = await import(
+    "@/app/lib/services/stock"
+  );
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const r = await applyStockChange(tx, {
+        inventoryId,
+        quantityDelta: -lot.quantity,
+        reason: "write_off",
+        notes: `${notes} (batch ${lot.batchNumber})`,
+        relatedType: "inventory_lot",
+        relatedId: lotId,
+        actorId: user.id,
+        skipLots: true, // we zero this lot explicitly
+      });
+      await tx.inventoryLot.update({
+        where: { id: lotId },
+        data: { quantity: 0, active: false },
+      });
+      return r;
+    });
+    await notifyStockThreshold(result);
+    await writeAuditLog(user.id, "lot_written_off", "inventory_lot", lotId, {
+      quantity: lot.quantity,
+      inventoryId,
+    });
+    revalidatePath(`/admin/medications/${inventoryId}`);
+    revalidatePath("/admin/inventory");
+    return { success: `Wrote off ${lot.quantity} unit(s) from batch ${lot.batchNumber}.` };
+  } catch (e) {
+    if (e instanceof InsufficientStockError) {
+      return { error: e.message };
+    }
+    return { error: "Write-off failed." };
+  }
 }

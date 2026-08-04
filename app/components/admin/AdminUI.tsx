@@ -51,15 +51,17 @@ export function AdminPanel({
   children,
   action,
   className = "",
+  id,
 }: {
   title?: string;
   description?: string;
   children: React.ReactNode;
   action?: React.ReactNode;
   className?: string;
+  id?: string;
 }) {
   return (
-    <section className={`admin-card p-5 ${className}`}>
+    <section id={id} className={`admin-card p-5 ${className}`}>
       {(title || action) && (
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>

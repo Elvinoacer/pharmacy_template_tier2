@@ -47,7 +47,18 @@ export function RefillRow({ refill }: { refill: RefillRowData }) {
           method: "POST",
           body: formData,
         });
-        if (!r.ok) throw new Error();
+        const body = (await r.json().catch(() => ({}))) as {
+          error?: string;
+          message?: string;
+        };
+        if (!r.ok) {
+          if (body.error === "insufficient_stock" || body.message?.toLowerCase().includes("stock")) {
+            toast.error(body.message || "Insufficient stock to fulfill this refill.");
+          } else {
+            toast.error(body.message || "Could not update status — please try again.");
+          }
+          return;
+        }
         const label = REFILL_STATUSES.find((s) => s.value === newStatus)?.label || newStatus;
         toast.success(`Refill status updated to "${label}"`);
         setSavedStatus(newStatus);

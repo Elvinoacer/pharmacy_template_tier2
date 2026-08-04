@@ -13,6 +13,7 @@ import {
   listClinicalTags,
 } from "@/app/lib/medication-lookups";
 import { AdminShell } from "@/app/components/admin/AdminShell";
+import { InventoryOpsPanel } from "@/app/components/admin/InventoryOpsPanel";
 import MedicationFormWithDefaults from "./MedicationFormWithDefaults";
 import { ArrowLeft, Pill } from "lucide-react";
 
@@ -28,7 +29,7 @@ export default async function EditMedicationPage({
   const { id } = await params;
 
   // `id` is a PharmacyInventory id (the admin list links to /admin/medications/[id]).
-  const [inv, categories, dosageForms, routes, pregnancyCategories, manufacturers, activeIngredients, clinicalTags] =
+  const [inv, categories, dosageForms, routes, pregnancyCategories, manufacturers, activeIngredients, clinicalTags, lots, movements] =
     await Promise.all([
       prisma.pharmacyInventory
         .findUnique({
@@ -53,6 +54,19 @@ export default async function EditMedicationPage({
       listManufacturers(),
       listActiveIngredients(),
       listClinicalTags(),
+      prisma.inventoryLot
+        .findMany({
+          where: { pharmacyInventoryId: id },
+          orderBy: [{ active: "desc" }, { expiryDate: "asc" }],
+        })
+        .catch(() => []),
+      prisma.stockMovement
+        .findMany({
+          where: { pharmacyInventoryId: id },
+          orderBy: { createdAt: "desc" },
+          take: 50,
+        })
+        .catch(() => []),
     ]);
   if (!inv) notFound();
   const med = inv.medicationMaster;
@@ -187,6 +201,29 @@ export default async function EditMedicationPage({
             />
           </div>
         </div>
+
+        <InventoryOpsPanel
+          inventoryId={inv.id}
+          currentStock={inv.currentStock}
+          lowStockThreshold={inv.lowStockThreshold}
+          lots={lots.map((l) => ({
+            id: l.id,
+            batchNumber: l.batchNumber,
+            expiryDate: l.expiryDate.toISOString(),
+            quantity: l.quantity,
+            active: l.active,
+            receivedAt: l.receivedAt.toISOString(),
+          }))}
+          movements={movements.map((m) => ({
+            id: m.id,
+            reason: m.reason,
+            quantityDelta: m.quantityDelta,
+            balanceAfter: m.balanceAfter,
+            notes: m.notes,
+            relatedType: m.relatedType,
+            createdAt: m.createdAt.toISOString(),
+          }))}
+        />
       </div>
     </AdminShell>
   );

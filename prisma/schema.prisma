@@ -1141,6 +1141,7 @@ model PharmacyInventory {
 
   medicationMaster MedicationMaster @relation(fields: [medicationMasterId], references: [id], onDelete: Cascade)
   lots            InventoryLot[]
+  movements       StockMovement[]
   orderItems      OrderItem[]
   prescriptions   Prescription[]
 
@@ -1148,6 +1149,7 @@ model PharmacyInventory {
   @@index([overTheCounter])
   @@index([publicListing])
   @@index([active])
+  @@index([currentStock])
   @@map("pharmacy_inventory")
 }
 
@@ -1166,11 +1168,43 @@ model InventoryLot {
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   pharmacyInventory PharmacyInventory @relation(fields: [pharmacyInventoryId], references: [id], onDelete: Cascade)
+  movements       StockMovement[]
 
   @@index([pharmacyInventoryId])
   @@index([expiryDate])
   @@index([active])
   @@map("inventory_lots")
+}
+
+// ── Stock movement ledger (audit trail for every stock change) ──
+/// Every sale, receive, adjust, dispatch, refill, and POS sync writes a row here.
+/// quantityDelta is signed: positive = stock in, negative = stock out.
+model StockMovement {
+  id                    String   @id @default(uuid()) @db.Uuid
+  pharmacyInventoryId   String   @map("pharmacy_inventory_id") @db.Uuid
+  inventoryLotId        String?  @map("inventory_lot_id") @db.Uuid
+  /// sale | receive | adjust | dispatch | refill | pos_sync | return | write_off
+  reason                String
+  /// Signed delta applied to currentStock (e.g. -3 for a sale of 3).
+  quantityDelta         Int      @map("quantity_delta")
+  /// Stock level after this movement.
+  balanceAfter          Int      @map("balance_after")
+  /// Optional human note (adjustment reason, supplier invoice, etc.).
+  notes                 String?
+  /// Polymorphic link: order | prescription | refill_request | pos_sync | manual
+  relatedType           String?  @map("related_type")
+  relatedId             String?  @map("related_id") @db.Uuid
+  actorId               String?  @map("actor_id") @db.Uuid
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  pharmacyInventory PharmacyInventory @relation(fields: [pharmacyInventoryId], references: [id], onDelete: Cascade)
+  inventoryLot      InventoryLot?     @relation(fields: [inventoryLotId], references: [id], onDelete: SetNull)
+
+  @@index([pharmacyInventoryId, createdAt(sort: Desc)])
+  @@index([reason])
+  @@index([relatedType, relatedId])
+  @@index([createdAt(sort: Desc)])
+  @@map("stock_movements")
 }
 
 // ── Active ingredients (relational, many-to-many, Phase 1.2) ────

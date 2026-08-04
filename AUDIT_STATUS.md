@@ -305,9 +305,29 @@ Run: `npx prisma migrate deploy` (or `db:migrate`) on each environment.
 
 ---
 
+## Inventory production close-out (2026-08-05)
+
+| Item | Status | Notes |
+|---|---|---|
+| Central stock service (atomic + FEFO + ledger) | ✅ | `app/lib/services/stock.ts` |
+| `StockMovement` ledger | ✅ | Migration `20260805140000_stock_movements_inventory_ops` |
+| Inventory lots receive / write-off / FEFO sales | ✅ | Medication edit **Inventory operations** panel |
+| Low-stock alerts on every decrement path | ✅ | + daily/6h inventory cron `/api/cron/inventory` |
+| Refill → stock + refillsRemaining + order | ✅ | On preparing/ready/collected; cancel restocks |
+| Guest OTC order (no account) | ✅ | `/order` + `guestCreateOrderAction` |
+| Admin inventory health + reorder suggestions | ✅ | `/admin/inventory` + dashboard KPI strip |
+| POS sync commercial-only + movement log | ✅ | Does not overwrite clinical master |
+
+See `INVENTORY_PRODUCTION.md` for go-live checklist.
+
+---
+
 ## Remaining known limitations (not bugs)
 
 - **R2 multipart upload UI** — paste CDN/R2 public URLs; no browser upload widget without bucket credentials.
 - **Feedback multi-message threading** — single `staffResponse` field by design; history + response shown in portal.
 - **Platform-wide device audit list** — personal device panel remains; not a full fleet console.
 - **LoyaltyRule cron evaluation of custom DB rules** — UI shows rules; core bonuses still the three hard-coded cron paths (extend cron to read `LoyaltyRule` if desired).
+- **Guest OTC is reserve + pay later** — live M-Pesa remains portal checkout.
+- **Cancel restock returns to aggregate** — FEFO lot quantities are not reconstructed on refill cancel (v1).
+- **Reorder list is advisory** — no formal purchase-order document workflow yet.

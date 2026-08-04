@@ -313,6 +313,13 @@ export default async function AdminMedicationsPage({
       actions={
         <div className="flex flex-wrap items-center gap-2">
           <Link
+            href="/admin/inventory"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
+            title="Inventory health, expiry, reorder"
+          >
+            <Package className="h-3.5 w-3.5" /> Inventory health
+          </Link>
+          <Link
             href="/admin/medications/incomplete"
             className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
             title="Incomplete medications (enrichment queue)"

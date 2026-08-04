@@ -1,5 +1,6 @@
 import { getSessionUser } from "@/app/lib/auth";
 import { getAdminAnalytics } from "@/app/lib/services/crm";
+import { getInventoryHealth } from "@/app/lib/services/stock";
 import { refillStatusMeta } from "@/app/lib/types";
 import { AdminCard, AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
@@ -16,6 +17,10 @@ import {
   ArrowRight,
   Activity,
   Clock,
+  Package,
+  AlertTriangle,
+  PackageX,
+  Truck,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -25,7 +30,10 @@ export default async function AdminDashboardPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
-  const a = await getAdminAnalytics();
+  const [a, inv] = await Promise.all([
+    getAdminAnalytics(),
+    getInventoryHealth({ expiryDays: 30, salesLookbackDays: 30 }),
+  ]);
   const avgRating = a.feedbackAvg ? Number(a.feedbackAvg).toFixed(1) : "—";
   const totalRefills = a.refillByStatus.reduce((s, r) => s + r._count, 0);
   const pipelinePct = (status: string) => {
@@ -38,16 +46,60 @@ export default async function AdminDashboardPage() {
     <AdminShell
       user={user}
       title="Engagement analytics"
-      subtitle="Live snapshot of customers, refills, and engagement across Aether Pharmacy."
+      subtitle="Live snapshot of customers, refills, inventory, and engagement across Aether Pharmacy."
       actions={
-        <Link
-          href="/admin/refills"
-          className="btn-admin"
-        >
-          <Pill className="h-4 w-4" /> Refill queue
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/inventory" className="btn-admin">
+            <Package className="h-4 w-4" /> Inventory
+          </Link>
+          <Link href="/admin/refills" className="btn-admin">
+            <Pill className="h-4 w-4" /> Refill queue
+          </Link>
+        </div>
       }
     >
+      {/* Inventory health strip */}
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Link href="/admin/inventory#low" className="block">
+          <AdminCard
+            label="Low stock"
+            value={inv.counts.lowStock}
+            hint="At or below threshold"
+            icon={AlertTriangle}
+            accent={inv.counts.lowStock > 0 ? "danger" : "neutral"}
+          />
+        </Link>
+        <Link href="/admin/inventory#out" className="block">
+          <AdminCard
+            label="Out of stock"
+            value={inv.counts.outOfStock}
+            hint={`${inv.counts.totalActive} active SKUs`}
+            icon={PackageX}
+            accent={inv.counts.outOfStock > 0 ? "danger" : "neutral"}
+          />
+        </Link>
+        <Link href="/admin/inventory#expiry" className="block">
+          <AdminCard
+            label="Expiring ≤30d"
+            value={inv.counts.expiringLots}
+            hint={`${inv.counts.expiredLots} expired lots`}
+            icon={Clock}
+            accent={
+              inv.counts.expiredLots > 0 || inv.counts.expiringLots > 0 ? "danger" : "neutral"
+            }
+          />
+        </Link>
+        <Link href="/admin/inventory#reorder" className="block">
+          <AdminCard
+            label="Reorder now"
+            value={inv.counts.reorder}
+            hint="Velocity + threshold"
+            icon={Truck}
+            accent={inv.counts.reorder > 0 ? "accent" : "neutral"}
+          />
+        </Link>
+      </div>
+
       {/* KPI cards */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <AdminCard
