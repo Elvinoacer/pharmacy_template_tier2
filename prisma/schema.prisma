@@ -477,7 +477,7 @@ model Prescription {
   customer      CustomerProfile      @relation(fields: [customerId], references: [id], onDelete: Cascade)
   refillRequests RefillRequest[]
   adherence     PrescriptionAdherence[]
-  medication    Medication?          @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+  medication    PharmacyInventory?   @relation(fields: [medicationId], references: [id], onDelete: SetNull)
   dispatchedBy  User?                @relation("PrescriptionDispatcher", fields: [dispatchedById], references: [id], onDelete: SetNull)
   doseSchedule  MedicationSchedule[]
   doseLogs      DoseLog[]
@@ -1031,50 +1031,263 @@ model MedicationCategory {
   @@map("medication_categories")
 }
 
-// ── Medication catalog (stock + shop) ─────────────────────────
-/// Drug catalog. Synced from the pharmacy POS via the /api/integrations/pos/route.ts endpoint
-/// (POST guarded by POS_API_KEY). Admins can also create/edit entries directly.
-model Medication {
+// ── Medication master (shared clinical registry) ──────────────
+/// Universal clinical drug data — shared across all pharmacies (the "shared library").
+/// Per Phase 0 of MEDICATION_MODULE_IMPLEMENTATION.md + DECISIONS.md D1-D4:
+/// clinical/universal fields live here; commercial/inventory fields live on PharmacyInventory.
+/// OTC/Prescription flags are on PharmacyInventory (can vary by pharmacy jurisdiction).
+model MedicationMaster {
   id              String   @id @default(uuid()) @db.Uuid
   name            String
-  slug            String   @unique
-  sku             String?  @unique
+  /// Display slug. NOT unique on the master (master is shared; unique slugs are per-pharmacy on PharmacyInventory).
+  slug            String
+  /// INN / generic name, e.g. "Paracetamol". Required (Phase 4 validation).
+  genericName     String   @map("generic_name")
+  /// Comma-separated brand equivalents, e.g. "Panadol, Calpol, Tylenol". V1 text (Decision D5).
+  brandName       String?  @map("brand_name")
+  /// Structured strength value for sorting/filtering (nullable for combination drugs).
+  strengthValue   Decimal? @db.Decimal(10, 4) @map("strength_value")
+  strengthUnit    String?  @map("strength_unit")
+  /// Human-readable strength; supports combos like "500 mg + 65 mg".
+  strengthDisplay String?  @map("strength_display")
+  /// Pack size free text, e.g. "10 tablets", "100ml bottle", "5 ampoules".
+  packSize        String?  @map("pack_size")
+  /// FK to MedicationLookup where kind=dosage_form. Required (Phase 4 validation).
+  dosageFormId    String?  @map("dosage_form_id") @db.Uuid
+  /// FK to MedicationLookup where kind=route.
+  routeId         String?  @map("route_id") @db.Uuid
+  /// FK to MedicationLookup where kind=pregnancy_category.
+  pregnancyCategoryId String? @map("pregnancy_category_id") @db.Uuid
+  /// FK to Manufacturer.
+  manufacturerId  String?  @map("manufacturer_id") @db.Uuid
+  countryOfOrigin String?  @map("country_of_origin")
+  /// Unique product barcode (EAN/GTIN). Unique-indexed for Phase 3.2 lookup + Phase 4 validation.
+  barcode         String?  @unique
   /// Matches MedicationCategory.slug when managed via admin categories.
   category        String   @default("general")
   description     String?
-  /// Markdown-rendered on the public detail page. Includes uses, dosage, side effects,
-  /// contraindications, storage — gives customers a complete picture without staff time.
+  /// Markdown-rendered on the public detail page.
   indications     String?
   dosage          String?
   sideEffects     String?  @map("side_effects")
   contraindications String?
   storage         String?
-  price           Decimal  @default(0) @db.Decimal(10, 2)
-  /// If true, customers can buy it OTC without a prescription.
-  overTheCounter  Boolean  @default(false) @map("over_the_counter")
-  /// If true, shown on the public catalog without login. If false, only logged-in customers see it.
-  publicListing   Boolean  @default(false) @map("public_listing")
-  prescriptionRequired Boolean @default(true) @map("prescription_required")
-  stockQty        Int      @default(0) @map("stock_qty")
-  lowStockThreshold Int    @default(10) @map("low_stock_threshold")
+  /// Extra clinical notes / pharmacology details.
+  clinicalNotes   String?  @map("clinical_notes")
   imageUrl        String?  @map("image_url")
-  /// Extra gallery image URLs (comma-separated or JSON array stored as text).
+  /// Extra gallery image URLs (comma-separated).
   imageUrls       String?  @map("image_urls")
-  /// Optional list of equivalent/alternative medication IDs (comma-separated UUIDs).
+  /// Optional list of equivalent MedicationMaster IDs (comma-separated UUIDs).
   alternativeIds  String?  @map("alternative_ids")
-  active          Boolean  @default(true)
-  /// Last time the POS sync touched this row.
-  syncedAt        DateTime? @map("synced_at")
+  controlledDrug  Boolean  @default(false) @map("controlled_drug")
+  /// Required when controlledDrug=true (Phase 4 validation). Kenya PPB schedules 1-5.
+  controlledDrugSchedule String? @map("controlled_drug_schedule")
+  pediatricUse    Boolean  @default(false) @map("pediatric_use")
+  requiresRefrigeration Boolean @default(false) @map("requires_refrigeration")
+  /// Phase 5 enrichment tracking (Decision D14).
+  enrichmentStatus String  @default("minimal") @map("enrichment_status")
+  enrichmentScore Int      @default(0) @map("enrichment_score")
+  enrichedAt      DateTime? @map("enriched_at")
+  /// Phase 6 acquisition tracking (Decision D15).
+  acquisitionMethod String @default("unknown") @map("acquisition_method")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  orderItems OrderItem[]
-  prescriptions Prescription[]
+  dosageForm      MedicationLookup? @relation("MedicationDosageForm", fields: [dosageFormId], references: [id], onDelete: SetNull)
+  route           MedicationLookup? @relation("MedicationRoute", fields: [routeId], references: [id], onDelete: SetNull)
+  pregnancyCategory MedicationLookup? @relation("MedicationPregnancyCategory", fields: [pregnancyCategoryId], references: [id], onDelete: SetNull)
+  manufacturer    Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+  activeIngredients MedicationActiveIngredient[]
+  clinicalTags    MedicationClinicalTag[]
+  interactionsA   MedicationInteraction[] @relation("InteractionA")
+  interactionsB   MedicationInteraction[] @relation("InteractionB")
+  pharmacyInventory PharmacyInventory[]
 
+  @@index([genericName])
   @@index([category])
+  @@index([controlledDrug])
+  @@index([enrichmentStatus])
+  @@index([acquisitionMethod])
+  @@map("medication_masters")
+}
+
+// ── Per-pharmacy commercial inventory ───────────────────────────
+/// Per-pharmacy stock record referencing a MedicationMaster (Phase 0.1B + Decisions D1, D2, D3).
+/// Single-tenant (no pharmacyId — see D2). The id REUSES the old Medication.id (D3) so existing
+/// OrderItem/Prescription FKs continue to resolve after the migration.
+model PharmacyInventory {
+  id              String   @id @default(uuid()) @db.Uuid
+  medicationMasterId String @map("medication_master_id") @db.Uuid
+  /// Pharmacy-specific slug. Unique per pharmacy (single-tenant → @unique).
+  slug            String   @unique
+  /// Pharmacy-specific SKU. Unique (single-tenant).
+  sku             String?  @unique
+  price           Decimal  @default(0) @db.Decimal(10, 2)
+  purchasePrice   Decimal? @db.Decimal(10, 2) @map("purchase_price")
+  currentStock    Int      @default(0) @map("current_stock")
+  lowStockThreshold Int    @default(10) @map("low_stock_threshold")
+  supplier        String?
+  shelfLocation   String?  @map("shelf_location")
+  promotions      String?
+  /// OTC / Rx flags live here per Decision D1 (can vary by pharmacy jurisdiction).
+  overTheCounter  Boolean  @default(false) @map("over_the_counter")
+  prescriptionRequired Boolean @default(true) @map("prescription_required")
+  publicListing   Boolean  @default(false) @map("public_listing")
+  active          Boolean  @default(true)
+  /// Last time the POS sync touched this row.
+  syncedAt       DateTime? @map("synced_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  medicationMaster MedicationMaster @relation(fields: [medicationMasterId], references: [id], onDelete: Cascade)
+  lots            InventoryLot[]
+  orderItems      OrderItem[]
+  prescriptions   Prescription[]
+
+  @@index([medicationMasterId])
   @@index([overTheCounter])
   @@index([publicListing])
-  @@map("medications")
+  @@index([active])
+  @@map("pharmacy_inventory")
+}
+
+// ── Inventory lots (batch + expiry tracking, Phase 1.5) ─────────
+/// One-to-many from PharmacyInventory. Supports multiple batches per medication per pharmacy
+/// with separate expiry dates — needed for recall handling and expiry-based alerts.
+model InventoryLot {
+  id              String   @id @default(uuid()) @db.Uuid
+  pharmacyInventoryId String @map("pharmacy_inventory_id") @db.Uuid
+  batchNumber     String   @map("batch_number")
+  expiryDate      DateTime @db.Date @map("expiry_date")
+  quantity        Int      @default(0)
+  receivedAt      DateTime @default(now()) @map("received_at")
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  pharmacyInventory PharmacyInventory @relation(fields: [pharmacyInventoryId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyInventoryId])
+  @@index([expiryDate])
+  @@index([active])
+  @@map("inventory_lots")
+}
+
+// ── Active ingredients (relational, many-to-many, Phase 1.2) ────
+model ActiveIngredient {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  medications MedicationActiveIngredient[]
+
+  @@index([active])
+  @@map("active_ingredients")
+}
+
+model MedicationActiveIngredient {
+  id                  String   @id @default(uuid()) @db.Uuid
+  medicationMasterId  String   @map("medication_master_id") @db.Uuid
+  activeIngredientId  String   @map("active_ingredient_id") @db.Uuid
+  /// Per-medication amount, e.g. "500" with unit "mg".
+  amount              String?
+  unit                String?
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  medicationMaster    MedicationMaster @relation(fields: [medicationMasterId], references: [id], onDelete: Cascade)
+  activeIngredient    ActiveIngredient @relation(fields: [activeIngredientId], references: [id], onDelete: Cascade)
+
+  @@index([medicationMasterId])
+  @@index([activeIngredientId])
+  @@map("medication_active_ingredients")
+}
+
+// ── Manufacturer lookup (Phase 1.2) ────────────────────────────
+model Manufacturer {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  country     String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  medications MedicationMaster[]
+
+  @@index([active])
+  @@map("manufacturers")
+}
+
+// ── Drug interactions (self-referencing on MedicationMaster, Phase 1.2) ──
+model MedicationInteraction {
+  id                  String   @id @default(uuid()) @db.Uuid
+  medicationMasterId  String   @map("medication_master_id") @db.Uuid
+  interactsWithId    String   @map("interacts_with_id") @db.Uuid
+  /// "minor" | "moderate" | "severe" | "contraindicated"
+  severity            String   @default("moderate")
+  description         String?
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  medicationMaster    MedicationMaster @relation("InteractionA", fields: [medicationMasterId], references: [id], onDelete: Cascade)
+  interactsWith       MedicationMaster @relation("InteractionB", fields: [interactsWithId], references: [id], onDelete: Cascade)
+
+  @@unique([medicationMasterId, interactsWithId])
+  @@index([medicationMasterId])
+  @@index([interactsWithId])
+  @@map("medication_interactions")
+}
+
+// ── Clinical tags (multi-select, editable, Phase 1.2) ──────────
+model ClinicalTag {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  slug        String   @unique
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  medications MedicationClinicalTag[]
+
+  @@index([active])
+  @@map("clinical_tags")
+}
+
+model MedicationClinicalTag {
+  id                  String   @id @default(uuid()) @db.Uuid
+  medicationMasterId  String   @map("medication_master_id") @db.Uuid
+  clinicalTagId       String   @map("clinical_tag_id") @db.Uuid
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  medicationMaster    MedicationMaster @relation(fields: [medicationMasterId], references: [id], onDelete: Cascade)
+  clinicalTag         ClinicalTag @relation(fields: [clinicalTagId], references: [id], onDelete: Cascade)
+
+  @@unique([medicationMasterId, clinicalTagId])
+  @@index([medicationMasterId])
+  @@index([clinicalTagId])
+  @@map("medication_clinical_tags")
+}
+
+// ── Editable lookup table (dosage forms, routes, pregnancy categories, Phase 1.3) ──
+/// Single table with `kind` discriminator to avoid table proliferation (Decision D10).
+/// kind values: "dosage_form" | "route" | "pregnancy_category".
+/// Editable by admins so new values can be added without a schema/code change.
+model MedicationLookup {
+  id          String   @id @default(uuid()) @db.Uuid
+  kind        String
+  value       String
+  slug        String
+  sortOrder   Int      @default(0) @map("sort_order")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  dosageFormMeds      MedicationMaster[] @relation("MedicationDosageForm")
+  routeMeds           MedicationMaster[] @relation("MedicationRoute")
+  pregnancyCategoryMeds MedicationMaster[] @relation("MedicationPregnancyCategory")
+
+  @@unique([kind, slug])
+  @@index([kind, active])
+  @@map("medication_lookups")
 }
 
 // ── Orders & Payments (POS / OTC / Refills) ──────────────────
@@ -1124,7 +1337,7 @@ model OrderItem {
   createdAt   DateTime @default(now()) @map("created_at")
 
   order      Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  medication Medication? @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+  medication PharmacyInventory? @relation(fields: [medicationId], references: [id], onDelete: SetNull)
   coupon     Coupon?    @relation(fields: [couponId], references: [id], onDelete: SetNull)
 
   @@index([orderId])

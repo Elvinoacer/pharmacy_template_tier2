@@ -185,9 +185,9 @@ async function handleUpdate(
       },
     });
 
-    // Keep medication free-text category in sync when slug changes.
+    // Keep MedicationMaster free-text category in sync when slug changes.
     if (nextSlug && nextSlug !== current.slug) {
-      await tx.medication.updateMany({
+      await tx.medicationMaster.updateMany({
         where: { category: current.slug },
         data: { category: nextSlug },
       });
@@ -196,7 +196,7 @@ async function handleUpdate(
     return row;
   });
 
-  const count = await prisma.medication.count({ where: { category: updated.slug } });
+  const count = await prisma.medicationMaster.count({ where: { category: updated.slug } });
 
   await writeAuditLog(userId, "medication_category_updated", "medication_category", updated.id, {
     from: current.slug,
@@ -244,7 +244,7 @@ async function handleDelete(
   }
 
   const moved = await prisma.$transaction(async (tx) => {
-    const result = await tx.medication.updateMany({
+    const result = await tx.medicationMaster.updateMany({
       where: { category: current.slug },
       data: { category: reassignTo },
     });
@@ -292,7 +292,7 @@ async function handleMerge(
   }
 
   const moved = await prisma.$transaction(async (tx) => {
-    const result = await tx.medication.updateMany({
+    const result = await tx.medicationMaster.updateMany({
       where: { category: from.slug },
       data: { category: to.slug },
     });
@@ -300,7 +300,7 @@ async function handleMerge(
     return result.count;
   });
 
-  const count = await prisma.medication.count({ where: { category: to.slug } });
+  const count = await prisma.medicationMaster.count({ where: { category: to.slug } });
 
   await writeAuditLog(userId, "medication_category_merged", "medication_category", to.id, {
     from: from.slug,

@@ -78,26 +78,38 @@ export async function GET(req: Request) {
   // matching name, SKU, or category. Sorted alphabetically with starts-with
   // matches first.
   if (parsed.resource === "medications") {
+    const masterInclude = {
+      medicationMaster: {
+        select: {
+          name: true,
+          category: true,
+          dosage: true,
+          description: true,
+        },
+      },
+    } as const;
+
     // Lookup by id — used to resolve the display name of a pre-selected medication.
     if (parsed.id) {
-      const m = await prisma.medication.findUnique({
+      const m = await prisma.pharmacyInventory.findUnique({
         where: { id: parsed.id },
+        include: masterInclude,
       });
       if (!m) return NextResponse.json({ medication: null });
       return NextResponse.json({
         medication: {
           id: m.id,
-          name: m.name,
+          name: m.medicationMaster.name,
           slug: m.slug,
           sku: m.sku,
-          category: m.category,
+          category: m.medicationMaster.category,
           price: Number(m.price),
-          stockQty: m.stockQty,
+          stockQty: m.currentStock,
           lowStockThreshold: m.lowStockThreshold,
           overTheCounter: m.overTheCounter,
           prescriptionRequired: m.prescriptionRequired,
-          dosage: m.dosage,
-          description: m.description,
+          dosage: m.medicationMaster.dosage,
+          description: m.medicationMaster.description,
         },
       });
     }
@@ -109,41 +121,51 @@ export async function GET(req: Request) {
       : {
           active: true,
           OR: [
-            { name: { contains: q, mode: "insensitive" as const } },
             { sku: { contains: q, mode: "insensitive" as const } },
-            { category: { contains: q, mode: "insensitive" as const } },
+            {
+              medicationMaster: {
+                OR: [
+                  { name: { contains: q, mode: "insensitive" as const } },
+                  { description: { contains: q, mode: "insensitive" as const } },
+                  { category: { contains: q, mode: "insensitive" as const } },
+                ],
+              },
+            },
           ],
         };
 
-    const rows = await prisma.medication.findMany({
+    const rows = await prisma.pharmacyInventory.findMany({
       where,
-      orderBy: { name: "asc" },
+      include: masterInclude,
+      orderBy: { medicationMaster: { name: "asc" } },
       take: parsed.limit,
     });
 
     const sorted = q.length < 1
       ? rows
       : rows.sort((a, b) => {
-          const aStarts = a.name.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
-          const bStarts = b.name.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
+          const an = a.medicationMaster.name;
+          const bn = b.medicationMaster.name;
+          const aStarts = an.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
+          const bStarts = bn.toLowerCase().startsWith(q.toLowerCase()) ? 0 : 1;
           if (aStarts !== bStarts) return aStarts - bStarts;
-          return a.name.localeCompare(b.name);
+          return an.localeCompare(bn);
         });
 
     return NextResponse.json({
       medications: sorted.map((m) => ({
         id: m.id,
-        name: m.name,
+        name: m.medicationMaster.name,
         slug: m.slug,
         sku: m.sku,
-        category: m.category,
+        category: m.medicationMaster.category,
         price: Number(m.price),
-        stockQty: m.stockQty,
+        stockQty: m.currentStock,
         lowStockThreshold: m.lowStockThreshold,
         overTheCounter: m.overTheCounter,
         prescriptionRequired: m.prescriptionRequired,
-        dosage: m.dosage,
-        description: m.description,
+        dosage: m.medicationMaster.dosage,
+        description: m.medicationMaster.description,
       })),
     });
   }

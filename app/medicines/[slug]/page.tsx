@@ -25,12 +25,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       alternates: { canonical: `/medicines/${cat.slug}` },
     };
   }
-  // Try medication slug.
-  const med = await prisma.medication.findUnique({ where: { slug } }).catch(() => null);
+  // Try medication slug (slug lives on PharmacyInventory; name/description on MedicationMaster).
+  const med = await prisma.pharmacyInventory
+    .findUnique({
+      where: { slug },
+      include: { medicationMaster: { select: { name: true, description: true, dosage: true } } },
+    })
+    .catch(() => null);
   if (med) {
     return {
-      title: med.name,
-      description: med.description || `${med.name} — available at Aether Pharmacy`,
+      title: med.medicationMaster.name,
+      description:
+        med.medicationMaster.description ||
+        `${med.medicationMaster.name} — available at Aether Pharmacy`,
       alternates: { canonical: `/medicines/${med.slug}` },
     };
   }
@@ -117,20 +124,45 @@ export default async function CategoryDetailPage({ params }: Props) {
     );
   }
 
-  // Otherwise, try to find a medication by slug.
-  const med = await prisma.medication.findUnique({ where: { slug } }).catch(() => null);
+  // Otherwise, try to find a medication by slug. Inventory row carries the
+  // commercial fields; MedicationMaster carries clinical fields.
+  const med = await prisma.pharmacyInventory
+    .findUnique({
+      where: { slug },
+      include: {
+        medicationMaster: {
+          select: {
+            name: true,
+            description: true,
+            dosage: true,
+            indications: true,
+            sideEffects: true,
+            contraindications: true,
+            storage: true,
+            category: true,
+            imageUrl: true,
+            imageUrls: true,
+            alternativeIds: true,
+          },
+        },
+      },
+    })
+    .catch(() => null);
   if (!med) notFound();
 
   // Prefer explicitly linked alternatives; fall back to same-category meds.
-  const altIds = (med.alternativeIds || "")
+  // alternativeIds are MedicationMaster IDs — look up PharmacyInventory rows
+  // whose medicationMasterId is in that list.
+  const altIds = (med.medicationMaster.alternativeIds || "")
     .split(/[,\s]+/)
     .map((s) => s.trim())
     .filter(Boolean);
   const alternatives =
     altIds.length > 0
-      ? await prisma.medication
+      ? await prisma.pharmacyInventory
           .findMany({
-            where: { id: { in: altIds }, active: true },
+            where: { medicationMasterId: { in: altIds }, active: true },
+            include: { medicationMaster: { select: { name: true, imageUrl: true } } },
             take: 6,
           })
           .catch(() => [])
@@ -138,14 +170,15 @@ export default async function CategoryDetailPage({ params }: Props) {
   const related =
     alternatives.length > 0
       ? alternatives
-      : await prisma.medication
+      : await prisma.pharmacyInventory
           .findMany({
             where: {
-              category: med.category,
+              medicationMaster: { category: med.medicationMaster.category },
               id: { not: med.id },
               active: true,
               OR: [{ publicListing: true }, { overTheCounter: true }],
             },
+            include: { medicationMaster: { select: { name: true, imageUrl: true } } },
             take: 4,
           })
           .catch(() => []);
@@ -153,30 +186,34 @@ export default async function CategoryDetailPage({ params }: Props) {
   return (
     <div>
       <PageHero
-        eyebrow={med.category.replace(/-/g, " ")}
-        title={med.name}
-        description={med.description || med.dosage || "Available at Aether Pharmacy"}
+        eyebrow={med.medicationMaster.category.replace(/-/g, " ")}
+        title={med.medicationMaster.name}
+        description={
+          med.medicationMaster.description ||
+          med.medicationMaster.dosage ||
+          "Available at Aether Pharmacy"
+        }
         crumbs={[
           { label: "Medicines", href: "/medicines" },
-          { label: med.name },
+          { label: med.medicationMaster.name },
         ]}
       />
 
       <section className="px-4 pb-16 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
           {(() => {
-            const gallery = (med.imageUrls || "")
+            const gallery = (med.medicationMaster.imageUrls || "")
               .split(/[\n,]+/)
               .map((s) => s.trim())
               .filter(Boolean)
-              .filter((u) => u !== med.imageUrl);
+              .filter((u) => u !== med.medicationMaster.imageUrl);
             return (
               <div className="space-y-3">
                 <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl bg-[#f4f7f4]">
-                  {med.imageUrl ? (
+                  {med.medicationMaster.imageUrl ? (
                     <Image
-                      src={med.imageUrl}
-                      alt={med.name}
+                      src={med.medicationMaster.imageUrl}
+                      alt={med.medicationMaster.name}
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 50vw"
@@ -195,7 +232,7 @@ export default async function CategoryDetailPage({ params }: Props) {
                       >
                         <Image
                           src={src}
-                          alt={`${med.name} gallery ${i + 1}`}
+                          alt={`${med.medicationMaster.name} gallery ${i + 1}`}
                           fill
                           className="object-cover"
                           sizes="120px"
@@ -219,8 +256,8 @@ export default async function CategoryDetailPage({ params }: Props) {
                   Prescription required
                 </span>
               )}
-              <span className={`rounded-full px-3 py-1 text-xs font-bold ${med.stockQty > 0 ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700"}`}>
-                {med.stockQty > 0 ? `${med.stockQty} in stock` : "Out of stock"}
+              <span className={`rounded-full px-3 py-1 text-xs font-bold ${med.currentStock > 0 ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700"}`}>
+                {med.currentStock > 0 ? `${med.currentStock} in stock` : "Out of stock"}
               </span>
             </div>
 
@@ -228,44 +265,44 @@ export default async function CategoryDetailPage({ params }: Props) {
               KES {formatPrice(Number(med.price))}
             </p>
 
-            {med.dosage && (
+            {med.medicationMaster.dosage && (
               <div className="mt-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Dosage</p>
-                <p className="mt-1 text-sm text-[#0c1a14]">{med.dosage}</p>
+                <p className="mt-1 text-sm text-[#0c1a14]">{med.medicationMaster.dosage}</p>
               </div>
             )}
 
-            {med.indications && (
+            {med.medicationMaster.indications && (
               <div className="mt-6">
                 <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Uses (indications)</p>
                 <div className="mt-2 text-sm text-[#0c1a14]">
-                  <Markdown>{med.indications}</Markdown>
+                  <Markdown>{med.medicationMaster.indications}</Markdown>
                 </div>
               </div>
             )}
 
-            {med.sideEffects && (
+            {med.medicationMaster.sideEffects && (
               <div className="mt-6">
                 <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Side effects</p>
                 <div className="mt-2 text-sm text-[#0c1a14]">
-                  <Markdown>{med.sideEffects}</Markdown>
+                  <Markdown>{med.medicationMaster.sideEffects}</Markdown>
                 </div>
               </div>
             )}
 
-            {med.contraindications && (
+            {med.medicationMaster.contraindications && (
               <div className="mt-6">
                 <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Not for you if…</p>
                 <div className="mt-2 text-sm text-[#0c1a14]">
-                  <Markdown>{med.contraindications}</Markdown>
+                  <Markdown>{med.medicationMaster.contraindications}</Markdown>
                 </div>
               </div>
             )}
 
-            {med.storage && (
+            {med.medicationMaster.storage && (
               <div className="mt-6">
                 <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Storage</p>
-                <p className="mt-1 text-sm text-[#0c1a14]">{med.storage}</p>
+                <p className="mt-1 text-sm text-[#0c1a14]">{med.medicationMaster.storage}</p>
               </div>
             )}
 
@@ -306,7 +343,7 @@ export default async function CategoryDetailPage({ params }: Props) {
         <section className="px-4 pb-16 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <h2 className="mb-4 text-xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
-              {altIds.length > 0 ? "Equivalent / alternative medications" : `Related in ${med.category.replace(/-/g, " ")}`}
+              {altIds.length > 0 ? "Equivalent / alternative medications" : `Related in ${med.medicationMaster.category.replace(/-/g, " ")}`}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((r) => (
@@ -316,14 +353,14 @@ export default async function CategoryDetailPage({ params }: Props) {
                   className="card-lift group overflow-hidden rounded-2xl border border-[#e3ebe6] bg-white shadow-sm transition hover:shadow-md"
                 >
                   <div className="relative h-24 overflow-hidden bg-[#f4f7f4]">
-                    {r.imageUrl ? (
-                      <Image src={r.imageUrl} alt={r.name} fill className="object-cover" sizes="25vw" />
+                    {r.medicationMaster.imageUrl ? (
+                      <Image src={r.medicationMaster.imageUrl} alt={r.medicationMaster.name} fill className="object-cover" sizes="25vw" />
                     ) : (
                       <div className="flex h-full items-center justify-center text-3xl">💊</div>
                     )}
                   </div>
                   <div className="p-3">
-                    <p className="text-sm font-semibold text-[#0c1a14]">{r.name}</p>
+                    <p className="text-sm font-semibold text-[#0c1a14]">{r.medicationMaster.name}</p>
                     <p className="mt-1 text-xs font-bold text-[#0d6e5a]">KES {formatPrice(Number(r.price))}</p>
                   </div>
                 </Link>

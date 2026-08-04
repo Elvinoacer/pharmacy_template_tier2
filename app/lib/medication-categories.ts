@@ -40,7 +40,7 @@ export async function listCategoriesWithCounts(): Promise<CategoryWithCount[]> {
   // Pull registry + live usage in parallel.
   const [registry, grouped] = await Promise.all([
     prisma.medicationCategory.findMany({ orderBy: [{ sortOrder: "asc" }, { name: "asc" }] }),
-    prisma.medication.groupBy({
+    prisma.medicationMaster.groupBy({
       by: ["category"],
       _count: { _all: true },
     }),

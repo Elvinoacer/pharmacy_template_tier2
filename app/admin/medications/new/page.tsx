@@ -2,33 +2,56 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { adminCreateMedicationAction } from "@/app/actions/admin";
 import { listActiveCategoryOptions } from "@/app/lib/medication-categories";
+import {
+  listDosageForms,
+  listRoutes,
+  listPregnancyCategories,
+  listManufacturers,
+  listActiveIngredients,
+  listClinicalTags,
+} from "@/app/lib/medication-lookups";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationForm from "@/app/components/admin/MedicationForm";
 import Link from "next/link";
 import { ArrowLeft, Pill } from "lucide-react";
 
-export const metadata = { title: "New Medication" };
+export const metadata = { title: "Manual Entry — Medication" };
 
 export default async function NewMedicationPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
-  const categories = await listActiveCategoryOptions();
+
+  const [
+    categories,
+    dosageForms,
+    routes,
+    pregnancyCategories,
+    manufacturers,
+    activeIngredients,
+    clinicalTags,
+  ] = await Promise.all([
+    listActiveCategoryOptions(),
+    listDosageForms(),
+    listRoutes(),
+    listPregnancyCategories(),
+    listManufacturers(),
+    listActiveIngredients(),
+    listClinicalTags(),
+  ]);
 
   return (
-    <AdminShell user={user} title="New Medication" subtitle="Add a new drug to the catalog">
+    <AdminShell user={user} title="Manual Entry — Medication" subtitle="Last-resort entry (Phase 3.5). All fields are editable here.">
       <div className="mb-6">
-        <Link 
-          href="/admin/medications" 
+        <Link
+          href="/admin/medications/add"
           className="group inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
         >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" /> Back to Catalog
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" /> Back to acquisition chooser
         </Link>
       </div>
 
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <div className="relative overflow-hidden rounded-3xl border border-gray-200/60 bg-white/40 shadow-2xl shadow-emerald-500/10 ring-1 ring-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/20 dark:ring-white/10">
-          
-          {/* Decorative background gradient */}
           <div className="pointer-events-none absolute -inset-px rounded-3xl opacity-20 transition-opacity duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-transparent to-teal-500/20" />
           </div>
@@ -40,13 +63,25 @@ export default async function NewMedicationPage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Medication Details</h2>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Fill in the information below to add a new medication.</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Five sections: Identification, Clinical, Commercial, Inventory, Media &amp; relationships.
+                </p>
               </div>
             </div>
           </div>
-          
-          <div className="relative p-8">
-            <MedicationForm action={adminCreateMedicationAction} categories={categories} />
+
+          <div className="relative p-6 sm:p-8">
+            <MedicationForm
+              action={adminCreateMedicationAction}
+              categories={categories}
+              dosageForms={dosageForms}
+              routes={routes}
+              pregnancyCategories={pregnancyCategories}
+              manufacturers={manufacturers}
+              activeIngredients={activeIngredients}
+              clinicalTags={clinicalTags}
+              acquisitionMethod="manual"
+            />
           </div>
         </div>
       </div>

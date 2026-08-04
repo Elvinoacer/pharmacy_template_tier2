@@ -66,44 +66,73 @@ export async function POST(req: Request) {
   let lowStockAlerts = 0;
   for (const m of parsed.medications) {
     const slug = m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    // Find by SKU (preferred) or slug.
+    // Find by SKU (preferred) or slug — these live on PharmacyInventory now.
+    // Include medicationMaster so we can preserve the link if found.
     const existing = m.sku
-      ? await prisma.medication.findUnique({ where: { sku: m.sku } }).catch(() => null)
-      : await prisma.medication.findUnique({ where: { slug } }).catch(() => null);
+      ? await prisma.pharmacyInventory
+          .findUnique({
+            where: { sku: m.sku },
+            include: { medicationMaster: { select: { id: true, name: true } } },
+          })
+          .catch(() => null)
+      : await prisma.pharmacyInventory
+          .findUnique({
+            where: { slug },
+            include: { medicationMaster: { select: { id: true, name: true } } },
+          })
+          .catch(() => null);
 
     if (existing) {
-      await prisma.medication.update({
+      // Update inventory commercial fields only — clinical fields stay on
+      // the linked MedicationMaster and are NOT overwritten by POS sync.
+      await prisma.pharmacyInventory.update({
         where: { id: existing.id },
         data: {
           price: m.price,
-          stockQty: m.stockQty,
+          currentStock: m.stockQty,
           lowStockThreshold: m.lowStockThreshold,
           syncedAt: new Date(),
         },
       });
     } else {
-      await prisma.medication.create({
-        data: {
-          name: m.name,
-          slug,
-          sku: m.sku || null,
-          category: m.category,
-          description: m.description || null,
-          indications: m.indications || null,
-          dosage: m.dosage || null,
-          sideEffects: m.sideEffects || null,
-          contraindications: m.contraindications || null,
-          storage: m.storage || null,
-          price: m.price,
-          stockQty: m.stockQty,
-          lowStockThreshold: m.lowStockThreshold,
-          imageUrl: m.imageUrl || null,
-          overTheCounter: m.overTheCounter,
-          publicListing: m.publicListing,
-          prescriptionRequired: m.prescriptionRequired,
-          active: m.active,
-          syncedAt: new Date(),
-        },
+      // Create a MedicationMaster (clinical shell) + PharmacyInventory (commercial
+      // row) in a transaction. POS sync is best-effort enrichment — the master
+      // starts minimal and can be enriched later via the admin UI.
+      await prisma.$transaction(async (tx) => {
+        const master = await tx.medicationMaster.create({
+          data: {
+            name: m.name,
+            slug,
+            // Best-effort generic name fallback (POS payload doesn't split it out).
+            genericName: m.name.split(" ")[0] || m.name,
+            category: m.category,
+            description: m.description || null,
+            indications: m.indications || null,
+            dosage: m.dosage || null,
+            sideEffects: m.sideEffects || null,
+            contraindications: m.contraindications || null,
+            storage: m.storage || null,
+            imageUrl: m.imageUrl || null,
+            acquisitionMethod: "pos_sync",
+            enrichmentStatus: "minimal",
+            enrichmentScore: 30,
+          },
+        });
+        await tx.pharmacyInventory.create({
+          data: {
+            medicationMasterId: master.id,
+            slug,
+            sku: m.sku || null,
+            price: m.price,
+            currentStock: m.stockQty,
+            lowStockThreshold: m.lowStockThreshold,
+            overTheCounter: m.overTheCounter,
+            publicListing: m.publicListing,
+            prescriptionRequired: m.prescriptionRequired,
+            active: m.active,
+            syncedAt: new Date(),
+          },
+        });
       });
     }
     upserted++;

@@ -27,26 +27,44 @@ export default async function MedicinesPage({
   const category = sp.category || undefined;
 
   // Pull public-listed medications (admin marks these as visible without login).
+  // Category + name/description live on MedicationMaster; everything else stays
+  // on PharmacyInventory. We build a nested where + include.
   const where = {
     publicListing: true,
     active: true,
-    ...(category && category !== "all" ? { category } : {}),
+    ...(category && category !== "all"
+      ? { medicationMaster: { category } }
+      : {}),
     ...(q
       ? {
-          OR: [
-            { name: { contains: q, mode: "insensitive" as const } },
-            { description: { contains: q, mode: "insensitive" as const } },
-          ],
+          medicationMaster: {
+            OR: [
+              { name: { contains: q, mode: "insensitive" as const } },
+              { description: { contains: q, mode: "insensitive" as const } },
+            ],
+          },
         }
       : {}),
   };
 
+  const masterInclude = {
+    medicationMaster: {
+      select: {
+        name: true,
+        description: true,
+        category: true,
+        imageUrl: true,
+      },
+    },
+  } as const;
+
   const [total, medications] = await Promise.all([
-    prisma.medication.count({ where }).catch(() => 0),
-    prisma.medication
+    prisma.pharmacyInventory.count({ where }).catch(() => 0),
+    prisma.pharmacyInventory
       .findMany({
         where,
-        orderBy: [{ stockQty: "desc" }, { name: "asc" }],
+        include: masterInclude,
+        orderBy: [{ currentStock: "desc" }, { medicationMaster: { name: "asc" } }],
         take: PAGE_SIZE,
       })
       .catch(() => []),
@@ -56,19 +74,22 @@ export default async function MedicinesPage({
   const paged =
     page === 1
       ? medications
-      : await prisma.medication
+      : await prisma.pharmacyInventory
           .findMany({
             where,
-            orderBy: [{ stockQty: "desc" }, { name: "asc" }],
+            include: masterInclude,
+            orderBy: [{ currentStock: "desc" }, { medicationMaster: { name: "asc" } }],
             take: PAGE_SIZE,
             skip: (page - 1) * PAGE_SIZE,
           })
           .catch(() => []);
 
   // Build the category list from existing categories + any from the DB.
-  const dbCategories = await prisma.medication
+  // Category lives on MedicationMaster; query distinct master categories whose
+  // pharmacyInventory is public+active.
+  const dbCategories = await prisma.medicationMaster
     .findMany({
-      where: { publicListing: true, active: true },
+      where: { pharmacyInventory: { some: { publicListing: true, active: true } } },
       select: { category: true },
       distinct: ["category"],
     })
@@ -140,10 +161,10 @@ export default async function MedicinesPage({
                   className="card-lift group overflow-hidden rounded-2xl border border-[#e3ebe6] bg-white shadow-sm transition hover:shadow-md"
                 >
                   <div className="relative h-32 overflow-hidden bg-[#f4f7f4]">
-                    {m.imageUrl ? (
+                    {m.medicationMaster.imageUrl ? (
                       <Image
-                        src={m.imageUrl}
-                        alt={m.name}
+                        src={m.medicationMaster.imageUrl}
+                        alt={m.medicationMaster.name}
                         fill
                         className="object-cover transition duration-700 group-hover:scale-105"
                         sizes="(max-width: 768px) 50vw, 25vw"
@@ -164,16 +185,16 @@ export default async function MedicinesPage({
                   </div>
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-[#0d6e5a]">
-                      {m.category.replace(/-/g, " ")}
+                      {m.medicationMaster.category.replace(/-/g, " ")}
                     </p>
-                    <h3 className="mt-1 text-sm font-semibold text-[#0c1a14]">{m.name}</h3>
-                    {m.description && (
-                      <p className="mt-1 line-clamp-2 text-xs text-[#5a6b62]">{m.description}</p>
+                    <h3 className="mt-1 text-sm font-semibold text-[#0c1a14]">{m.medicationMaster.name}</h3>
+                    {m.medicationMaster.description && (
+                      <p className="mt-1 line-clamp-2 text-xs text-[#5a6b62]">{m.medicationMaster.description}</p>
                     )}
                     <div className="mt-2 flex items-center justify-between">
                       <span className="font-bold text-[#0c1a14]">KES {formatPrice(Number(m.price))}</span>
-                      <span className={`text-[10px] ${m.stockQty > 0 ? "text-emerald-700" : "text-rose-600"}`}>
-                        {m.stockQty > 0 ? `${m.stockQty} in stock` : "out of stock"}
+                      <span className={`text-[10px] ${m.currentStock > 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                        {m.currentStock > 0 ? `${m.currentStock} in stock` : "out of stock"}
                       </span>
                     </div>
                   </div>
