@@ -43,6 +43,7 @@ export default async function EditMedicationPage({
     stockQty: String(med.stockQty ?? 0),
     lowStockThreshold: String(med.lowStockThreshold ?? 10),
     imageUrl: med.imageUrl || "",
+    imageUrls: med.imageUrls || "",
     active: Boolean(med.active),
   };
 

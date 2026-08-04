@@ -10,6 +10,28 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      // Cloudflare R2 public bucket URLs (*.r2.dev and custom domains via env).
+      {
+        protocol: "https",
+        hostname: "*.r2.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "*.cloudflarestorage.com",
+      },
+      // Allow whatever host is set as R2_PUBLIC_URL (custom domain).
+      ...(process.env.R2_PUBLIC_URL
+        ? (() => {
+            try {
+              const host = new URL(process.env.R2_PUBLIC_URL).hostname;
+              return host
+                ? [{ protocol: "https" as const, hostname: host }]
+                : [];
+            } catch {
+              return [];
+            }
+          })()
+        : []),
     ],
   },
   // Serve the FCM service worker from an API route that injects Firebase env
