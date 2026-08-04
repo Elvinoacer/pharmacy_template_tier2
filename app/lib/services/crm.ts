@@ -143,11 +143,280 @@ export async function createRefillRequest(data: {
   return refill;
 }
 
+/**
+ * When a refill reaches preparing / ready / collected, fulfill inventory once:
+ * - deduct stock (FEFO) if linked medication exists and not already deducted
+ * - decrement refillsRemaining once
+ * - mark prescription dispatched if not already
+ * - ensure a linked Order exists for payment tracking
+ *
+ * Idempotent via stock_movements relatedType=refill_request.
+ */
+async function fulfillRefillInventory(
+  refillId: string,
+  actorId?: string,
+): Promise<void> {
+  const {
+    applyStockChange,
+    notifyStockThreshold,
+    InsufficientStockError,
+  } = await import("@/app/lib/services/stock");
+
+  const existingMovement = await prisma.stockMovement.findFirst({
+    where: {
+      relatedType: "refill_request",
+      relatedId: refillId,
+      quantityDelta: { lt: 0 },
+    },
+    select: { id: true },
+  });
+
+  const refill = await prisma.refillRequest.findUnique({
+    where: { id: refillId },
+    include: {
+      prescription: {
+        include: {
+          medication: {
+            include: { medicationMaster: { select: { name: true } } },
+          },
+        },
+      },
+    },
+  });
+  if (!refill) return;
+
+  const rx = refill.prescription;
+  const medicationId = rx?.medicationId ?? null;
+  const qty = rx?.quantity ?? 1;
+  const unitPrice = rx?.unitPrice != null ? Number(rx.unitPrice) : Number(rx?.medication?.price ?? 0);
+  const medName =
+    rx?.medication?.medicationMaster?.name ??
+    rx?.medicineName ??
+    refill.medicineName;
+
+  // Already stock-deducted for this refill — still ensure order + dispatch flags.
+  if (existingMovement) {
+    await ensureRefillOrder(refill, medName, qty, unitPrice, medicationId, actorId);
+    return;
+  }
+
+  // Also skip stock if prescription was already dispatched (stock taken on dispatch).
+  const priorDispatch = rx?.id
+    ? await prisma.stockMovement.findFirst({
+        where: {
+          relatedType: "prescription",
+          relatedId: rx.id,
+          reason: { in: ["dispatch", "refill"] },
+          quantityDelta: { lt: 0 },
+        },
+        select: { id: true },
+      })
+    : null;
+
+  try {
+    const stockResult = await prisma.$transaction(async (tx) => {
+      let result = null as Awaited<ReturnType<typeof applyStockChange>> | null;
+
+      if (medicationId && !priorDispatch && !rx?.dispatchedAt) {
+        result = await applyStockChange(tx, {
+          inventoryId: medicationId,
+          quantityDelta: -qty,
+          reason: "refill",
+          notes: `Refill fulfilled: ${medName}`,
+          relatedType: "refill_request",
+          relatedId: refillId,
+          actorId: actorId ?? null,
+        });
+      } else if (medicationId && (priorDispatch || rx?.dispatchedAt)) {
+        // Record a zero-delta audit so we know this refill was linked to prior dispatch.
+        await tx.stockMovement.create({
+          data: {
+            pharmacyInventoryId: medicationId,
+            reason: "refill",
+            quantityDelta: 0,
+            balanceAfter: rx?.medication?.currentStock ?? 0,
+            notes: `Refill linked to prior dispatch (no double-count): ${medName}`,
+            relatedType: "refill_request",
+            relatedId: refillId,
+            actorId: actorId ?? null,
+          },
+        });
+      }
+
+      if (rx) {
+        const shouldDecrementRefills =
+          !rx.dispatchedAt && (rx.refillsRemaining ?? 0) > 0 && !priorDispatch;
+        await tx.prescription.update({
+          where: { id: rx.id },
+          data: {
+            ...(rx.dispatchedAt
+              ? {}
+              : {
+                  dispatchedAt: new Date(),
+                  dispatchedById: actorId ?? null,
+                  lastFilledAt: new Date(),
+                }),
+            ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
+            lastFilledAt: new Date(),
+          },
+        });
+      }
+
+      // Ensure payable order exists for this refill.
+      const existingOrder = await tx.order.findFirst({
+        where: { refillId },
+        select: { id: true },
+      });
+      if (!existingOrder && medicationId) {
+        const total = Math.max(0, unitPrice * qty);
+        await tx.order.create({
+          data: {
+            customerId: refill.customerId,
+            source: "refill",
+            refillId,
+            status: "pending",
+            total,
+            notes: `Auto-created from refill ${refillId.slice(0, 8)}`,
+            servedById: actorId ?? null,
+            items: {
+              create: {
+                medicationId,
+                name: medName,
+                quantity: qty,
+                unitPrice,
+              },
+            },
+          },
+        });
+      }
+
+      return result;
+    });
+
+    if (stockResult) await notifyStockThreshold(stockResult);
+  } catch (e) {
+    if (e instanceof InsufficientStockError) {
+      await recordAdminNotification({
+        type: "stock_low",
+        title: `Cannot fulfill refill: ${e.medicationName}`,
+        body: `Refill for ${medName} needs ${e.required} but only ${e.available} in stock.`,
+        severity: "critical",
+        relatedType: "refill_request",
+        relatedId: refillId,
+      });
+      throw e;
+    }
+    throw e;
+  }
+}
+
+async function ensureRefillOrder(
+  refill: {
+    id: string;
+    customerId: string | null;
+  },
+  medName: string,
+  qty: number,
+  unitPrice: number,
+  medicationId: string | null,
+  actorId?: string,
+) {
+  if (!medicationId) return;
+  const existing = await prisma.order.findFirst({
+    where: { refillId: refill.id },
+    select: { id: true },
+  });
+  if (existing) return;
+  const total = Math.max(0, unitPrice * qty);
+  await prisma.order.create({
+    data: {
+      customerId: refill.customerId,
+      source: "refill",
+      refillId: refill.id,
+      status: "pending",
+      total,
+      notes: `Auto-created from refill ${refill.id.slice(0, 8)}`,
+      servedById: actorId ?? null,
+      items: {
+        create: {
+          medicationId,
+          name: medName,
+          quantity: qty,
+          unitPrice,
+        },
+      },
+    },
+  });
+}
+
+/** If a refill was cancelled after stock was deducted, put the units back (once). */
+async function reverseRefillInventory(refillId: string, actorId?: string): Promise<void> {
+  const {
+    applyStockChange,
+    notifyStockThreshold,
+  } = await import("@/app/lib/services/stock");
+
+  const deduction = await prisma.stockMovement.findFirst({
+    where: {
+      relatedType: "refill_request",
+      relatedId: refillId,
+      quantityDelta: { lt: 0 },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+  if (!deduction) return;
+
+  // Already reversed?
+  const reversal = await prisma.stockMovement.findFirst({
+    where: {
+      relatedType: "refill_request",
+      relatedId: refillId,
+      reason: "return",
+      quantityDelta: { gt: 0 },
+    },
+    select: { id: true },
+  });
+  if (reversal) return;
+
+  const qty = Math.abs(deduction.quantityDelta);
+  if (qty === 0) return;
+
+  const result = await prisma.$transaction(async (tx) => {
+    const r = await applyStockChange(tx, {
+      inventoryId: deduction.pharmacyInventoryId,
+      quantityDelta: qty,
+      reason: "return",
+      notes: `Refill cancelled — restock ${qty} unit(s)`,
+      relatedType: "refill_request",
+      relatedId: refillId,
+      actorId: actorId ?? null,
+      skipLots: true, // aggregate restock; lots were FEFO'd outbound
+    });
+    // Cancel any pending auto-order for this refill.
+    await tx.order.updateMany({
+      where: { refillId, status: "pending" },
+      data: { status: "cancelled", notes: "Cancelled with refill" },
+    });
+    return r;
+  });
+  await notifyStockThreshold(result);
+}
+
 export async function updateRefillStatus(
   refillId: string,
   status: RefillStatus,
   actorId?: string,
 ) {
+  // Fulfill inventory when staff advances into operational stages.
+  if (status === "preparing" || status === "ready_for_pickup" || status === "collected") {
+    await fulfillRefillInventory(refillId, actorId);
+  }
+
+  // Restock if cancelling after a prior deduction.
+  if (status === "cancelled") {
+    await reverseRefillInventory(refillId, actorId);
+  }
+
   const refill = await prisma.refillRequest.update({
     where: { id: refillId },
     data: { status, statusUpdatedAt: new Date(), assignedToId: actorId },
@@ -164,7 +433,7 @@ export async function updateRefillStatus(
       actorId,
     );
 
-      await prisma.notification.create({
+    await prisma.notification.create({
       data: {
         customerId: refill.customerId,
         channel: "in_app",

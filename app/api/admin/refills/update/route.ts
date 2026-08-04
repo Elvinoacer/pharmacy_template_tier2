@@ -42,14 +42,19 @@ export async function POST(req: Request) {
     await updateRefillStatus(id, status, user.id);
     return NextResponse.json({ ok: true });
   } catch (err) {
+    const message = err instanceof Error ? err.message : "unknown error";
+    const isStock = message.toLowerCase().includes("insufficient stock");
     await recordAdminNotification({
-      type: "reminder_failed",
-      title: "Refill status update failed",
-      body: `Refill ${id} could not be moved to ${status}: ${err instanceof Error ? err.message : "unknown error"}`,
-      severity: "warning",
+      type: isStock ? "stock_low" : "reminder_failed",
+      title: isStock ? "Refill blocked — low stock" : "Refill status update failed",
+      body: `Refill ${id} could not be moved to ${status}: ${message}`,
+      severity: isStock ? "critical" : "warning",
       relatedType: "refill_request",
       relatedId: id,
     });
-    return NextResponse.json({ error: "update_failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: isStock ? "insufficient_stock" : "update_failed", message },
+      { status: isStock ? 409 : 500 },
+    );
   }
 }

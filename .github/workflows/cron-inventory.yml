@@ -1,0 +1,52 @@
+# Inventory health scan — low/out stock + expiring lots.
+# Requires repository secrets:
+#   APP_URL     — public base URL of the deployed app
+#   CRON_SECRET — same value as CRON_SECRET on the deployment
+name: Cron — inventory health
+
+on:
+  schedule:
+    # Every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  inventory-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call inventory cron endpoint
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${APP_URL:-}" ]; then
+            echo "::error::Missing repository secret APP_URL"
+            exit 1
+          fi
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::Missing repository secret CRON_SECRET"
+            exit 1
+          fi
+
+          BASE_URL="${APP_URL%/}"
+          URL="${BASE_URL}/api/cron/inventory"
+
+          echo "POST ${URL}"
+          HTTP_CODE=$(curl -sS -o /tmp/cron-response.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "Content-Type: application/json" \
+            --max-time 90 \
+            "${URL}")
+
+          echo "HTTP ${HTTP_CODE}"
+          cat /tmp/cron-response.json || true
+          echo
+
+          if [ "${HTTP_CODE}" -lt 200 ] || [ "${HTTP_CODE}" -ge 300 ]; then
+            echo "::error::Cron endpoint returned HTTP ${HTTP_CODE}"
+            exit 1
+          fi

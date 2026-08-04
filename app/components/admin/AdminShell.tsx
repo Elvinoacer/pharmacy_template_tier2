@@ -28,6 +28,7 @@ import {
   Moon,
   Sun,
   Monitor,
+  Package,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -52,6 +53,7 @@ export const ADMIN_LINKS = [
   { href: "/admin/knowledge", label: "AI Knowledge", icon: BookOpen },
   { href: "/admin/templates", label: "Templates", icon: FileText },
   { href: "/admin/medications", label: "Medications", icon: Pill },
+  { href: "/admin/inventory", label: "Inventory health", icon: Package },
   { href: "/admin/orders", label: "Orders & Revenue", icon: BarChart3 },
 ] as const;
 
