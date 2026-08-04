@@ -61,21 +61,24 @@ export function isSafeInternalPath(path: string | null | undefined): path is str
 
 /**
  * Decide where a user lands after sign-in.
- * Customers → /portal, staff → /admin, with safe `next` overrides.
+ * Customers → /portal, caregivers → /caregiver, staff → /admin, with safe `next` overrides.
  */
 export function resolvePostLoginPath(
   user: { role: string; customerId?: string | null },
   next?: string | null,
 ): string {
   const staff = claimIsStaff(user.role);
+  const isCaregiverRole = user.role === "caregiver";
   const safeNext = isSafeInternalPath(next) ? next : null;
 
   if (safeNext) {
-    if (safeNext.startsWith("/admin") && !staff) return user.customerId ? "/portal" : "/login";
+    if (safeNext.startsWith("/admin") && !staff) return isCaregiverRole ? "/caregiver" : user.customerId ? "/portal" : "/login";
+    if (safeNext.startsWith("/portal") && isCaregiverRole && !user.customerId) return "/caregiver";
     if (safeNext.startsWith("/portal") && staff && !user.customerId) return "/admin";
     return safeNext;
   }
 
   if (staff) return "/admin";
+  if (isCaregiverRole && !user.customerId) return "/caregiver";
   return "/portal";
 }

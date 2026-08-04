@@ -100,6 +100,16 @@ async function main() {
     },
   });
 
+  // Caregiver user — demo login for /caregiver portal.
+  const caregiverUser = await prisma.user.create({
+    data: {
+      email: "peter@example.com",
+      passwordHash: password,
+      role: "caregiver",
+      emailVerified: true,
+    },
+  });
+
   const jane = await prisma.customerProfile.create({
     data: {
       userId: customerUser.id,
@@ -209,6 +219,85 @@ async function main() {
     },
   });
 
+  // ── Medication schedules + dose logs (demo data for the adherence module) ──
+  // Jane takes Metformin twice daily (08:00, 20:00). We seed 7 days of dose
+  // logs so the caregiver dashboard has meaningful data to show.
+  const metforminScheduleMorning = await prisma.medicationSchedule.create({
+    data: {
+      prescriptionId: metformin.id,
+      customerId: jane.id,
+      timeOfDay: "08:00",
+      label: "Morning",
+      active: true,
+    },
+  });
+  const metforminScheduleEvening = await prisma.medicationSchedule.create({
+    data: {
+      prescriptionId: metformin.id,
+      customerId: jane.id,
+      timeOfDay: "20:00",
+      label: "Evening",
+      active: true,
+    },
+  });
+
+  // Backfill last 7 days of dose logs for Metformin.
+  for (let i = 7; i >= 1; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const scheduledDate = new Date(dateStr + "T00:00:00Z");
+
+    // Mostly taken, with a couple of missed/late to make the adherence ~85%.
+    const morningStatus: "taken" | "missed" | "late" =
+      i === 5 ? "missed" : i === 3 ? "late" : "taken";
+    const eveningStatus: "taken" | "missed" | "skipped" =
+      i === 5 ? "missed" : i === 2 ? "skipped" : "taken";
+
+    await prisma.doseLog.create({
+      data: {
+        prescriptionId: metformin.id,
+        customerId: jane.id,
+        scheduleId: metforminScheduleMorning.id,
+        scheduledDate,
+        scheduledTime: "08:00",
+        confirmedAt: morningStatus === "missed" ? null : new Date(d.getTime() + 8 * 60 * 60 * 1000),
+        status: morningStatus,
+        recordedBy: i % 3 === 0 ? "caregiver" : "customer",
+        caregiverId: i % 3 === 0 ? (await prisma.caregiver.findFirst({ where: { customerId: jane.id } }))?.id ?? null : null,
+      },
+    });
+    await prisma.doseLog.create({
+      data: {
+        prescriptionId: metformin.id,
+        customerId: jane.id,
+        scheduleId: metforminScheduleEvening.id,
+        scheduledDate,
+        scheduledTime: "20:00",
+        confirmedAt: eveningStatus === "missed" ? null : new Date(d.getTime() + 20 * 60 * 60 * 1000),
+        status: eveningStatus,
+        recordedBy: "customer",
+      },
+    });
+
+    // Also write the daily PrescriptionAdherence summary row so the legacy
+    // adherence display still works.
+    const dailyStatus = morningStatus === "missed" || eveningStatus === "missed" ? "missed"
+      : morningStatus === "late" ? "late"
+      : eveningStatus === "skipped" ? "skipped"
+      : "taken";
+    await prisma.prescriptionAdherence.create({
+      data: {
+        customerId: jane.id,
+        prescriptionId: metformin.id,
+        takenOn: scheduledDate,
+        status: dailyStatus,
+        recordedBy: "customer",
+      },
+    });
+  }
+
+
   const refill = await prisma.refillRequest.create({
     data: {
       customerId: jane.id,
@@ -244,12 +333,14 @@ async function main() {
   await prisma.caregiver.create({
     data: {
       customerId: jane.id,
+      caregiverUserId: caregiverUser.id,
       caregiverName: "Peter Wanjiku",
       caregiverEmail: "peter@example.com",
       caregiverPhone: "+254722000111",
       relationship: "Spouse",
       canRequestRefills: true,
       canReceivePickupNotifications: true,
+      canLogAdherence: true,
     },
   });
 

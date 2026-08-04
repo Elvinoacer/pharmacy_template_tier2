@@ -1,8 +1,9 @@
 import Groq from "groq-sdk";
-import { buildPharmacyContext } from "../../lib/chat-context";
+import { buildPharmacyContext, buildCaregiverPatientContext } from "../../lib/chat-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { dispatchPushToStaff } from "@/app/lib/services/push";
+import { isCaregiver } from "@/app/lib/services/caregiver-permissions";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -186,7 +187,15 @@ export async function POST(request: Request) {
 
   const modelName = (process.env.GROQ_MODEL || "llama-3.3-70b-versatile").trim();
   const client = new Groq({ apiKey });
-  const systemPrompt = await buildPharmacyContext();
+  let systemPrompt = await buildPharmacyContext();
+
+  // If the caller is an active caregiver, append their authorised-patient context
+  // (medications, adherence, open refills) so the AI can answer questions like
+  // "Is Mary's refill ready?" or "Which medicines does John take?".
+  if (session && await isCaregiver(session).catch(() => false)) {
+    const ctx = await buildCaregiverPatientContext(session).catch(() => "");
+    if (ctx) systemPrompt = `${systemPrompt}\n\n${ctx}`;
+  }
 
   try {
     const stream = await client.chat.completions.create({

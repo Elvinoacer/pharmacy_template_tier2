@@ -15,6 +15,7 @@ import { AdminShell } from "@/app/components/admin/AdminShell";
 import AdminNoteForm from "@/app/components/admin/AdminNoteForm";
 import AdminMessageForm from "@/app/components/admin/AdminMessageForm";
 import { StaffNotesList } from "@/app/components/admin/StaffNotesList";
+import { AdminAdherencePanel } from "@/app/components/admin/AdminAdherencePanel";
 import {
   ArrowLeft,
   Mail,
@@ -351,6 +352,14 @@ export default async function AdminCustomerDetailPage({
             }))}
             customerId={customer.id}
           />
+        </AdminPanel>
+
+        <AdminPanel
+          title="Medication adherence"
+          description="14-day adherence rate · per-prescription breakdown · recent doses"
+          className="lg:col-span-2"
+        >
+          <AdminAdherencePanel customerId={customer.id} />
         </AdminPanel>
 
         <AdminPanel title="Quick stats">

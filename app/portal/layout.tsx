@@ -8,6 +8,15 @@ export default async function PortalLayout({ children }: { children: React.React
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/portal");
   if (isStaff(user.role) && !user.customerId) redirect("/admin");
+
+  // Caregivers (role=caregiver with no patient profile of their own) must NOT
+  // access /portal routes — they only get /caregiver. The portal exposes
+  // customer profile editing, loyalty, CRM, and messaging which the caregiver
+  // is explicitly forbidden from seeing. Send them to /caregiver instead.
+  if (user.role === "caregiver" && !user.customerId) {
+    redirect("/caregiver");
+  }
+
   if (!user.customerId && user.role === "customer") {
     // Edge case: customer without profile
     redirect("/login");
