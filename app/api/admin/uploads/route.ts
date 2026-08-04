@@ -63,7 +63,10 @@ export async function POST(req: Request) {
 
   try {
     const result = await uploadToR2(file, { folder });
-    await writeAuditLog(user.id, "image_uploaded", "r2", result.key, {
+    // entityId is a UUID column — R2 object keys are paths, not UUIDs.
+    // Store the key/url in details so the audit row still has full context.
+    await writeAuditLog(user.id, "image_uploaded", "r2", undefined, {
+      key: result.key,
       url: result.url,
       contentType: result.contentType,
       size: result.size,
