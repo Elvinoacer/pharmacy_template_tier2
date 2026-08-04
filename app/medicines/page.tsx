@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
+import MedicinesFilterBar from "../components/MedicinesFilterBar";
 import { Pagination } from "../components/Pagination";
 import { parsePageParam } from "../lib/pagination";
 import { categories, pharmacy } from "../lib/data";
@@ -107,38 +108,7 @@ export default async function MedicinesPage({
       {/* Search + filter */}
       <section className="px-4 pb-6 sm:px-6">
         <div className="mx-auto max-w-6xl">
-          <form className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[200px]">
-              <input
-                name="q"
-                defaultValue={q || ""}
-                placeholder="Search medications by name or description…"
-                className="w-full rounded-full border border-[#e3ebe6] bg-white py-2.5 pl-4 pr-4 text-sm text-[#0c1a14] shadow-sm outline-none focus:border-[#0d6e5a]/40 focus:ring-2 focus:ring-[#0d6e5a]/20"
-              />
-            </div>
-            <select
-              name="category"
-              defaultValue={category || "all"}
-              onChange={(e) => {
-                const v = e.target.value;
-                window.location.href = v === "all"
-                  ? q ? `/medicines?q=${encodeURIComponent(q)}` : "/medicines"
-                  : `/medicines?category=${v}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
-              }}
-              className="rounded-full border border-[#e3ebe6] bg-white py-2.5 pl-4 pr-8 text-sm text-[#0c1a14]"
-            >
-              <option value="all">All categories</option>
-              {dbCategorySlugs.map((c) => (
-                <option key={c} value={c}>{c.replace(/-/g, " ")}</option>
-              ))}
-            </select>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
-            >
-              Search
-            </button>
-          </form>
+          <MedicinesFilterBar q={q} category={category} dbCategorySlugs={dbCategorySlugs} />
         </div>
       </section>
 
