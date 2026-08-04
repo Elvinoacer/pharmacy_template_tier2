@@ -57,6 +57,38 @@ export default async function EditMedicationPage({
   if (!inv) notFound();
   const med = inv.medicationMaster;
 
+  // Resolve alternative master IDs → names for the multi-select picker (no raw UUIDs in UI).
+  const altIdList = (med.alternativeIds || "")
+    .split(/[,\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const alternativeRows =
+    altIdList.length > 0
+      ? await prisma.medicationMaster
+          .findMany({
+            where: { id: { in: altIdList } },
+            select: {
+              id: true,
+              name: true,
+              category: true,
+              genericName: true,
+              strengthDisplay: true,
+            },
+          })
+          .catch(() => [])
+      : [];
+  const altById = new Map(alternativeRows.map((r) => [r.id, r]));
+  const alternativeOptions = altIdList
+    .map((id) => altById.get(id))
+    .filter(Boolean)
+    .map((r) => ({
+      id: r!.id,
+      name: r!.name,
+      category: r!.category,
+      genericName: r!.genericName,
+      strengthDisplay: r!.strengthDisplay,
+    }));
+
   // Pass only plain strings/booleans into the client form (no Prisma Decimal).
   const defaults = {
     inventoryId: inv.id,
@@ -86,6 +118,7 @@ export default async function EditMedicationPage({
     imageUrl: med.imageUrl || "",
     imageUrls: med.imageUrls || "",
     alternativeIds: med.alternativeIds || "",
+    alternativeOptions,
     controlledDrug: med.controlledDrug,
     controlledDrugSchedule: med.controlledDrugSchedule || "",
     pediatricUse: med.pediatricUse,

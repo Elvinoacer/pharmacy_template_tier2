@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { toast } from "@/app/components/Toaster";
 import {
@@ -36,6 +36,14 @@ const FALLBACK_CATEGORIES: CategoryOption[] = [
   { slug: "allergy", name: "Allergy" },
 ];
 
+export type AlternativeMedOption = {
+  id: string;
+  name: string;
+  category?: string;
+  genericName?: string | null;
+  strengthDisplay?: string | null;
+};
+
 export type MedicationFormDefaults = {
   inventoryId?: string;
   masterId?: string;
@@ -63,7 +71,10 @@ export type MedicationFormDefaults = {
   clinicalNotes?: string;
   imageUrl?: string;
   imageUrls?: string;
+  /** Comma-separated MedicationMaster IDs (legacy / form value). */
   alternativeIds?: string;
+  /** Pre-resolved labels for the alternatives multi-select (edit mode). */
+  alternativeOptions?: AlternativeMedOption[];
   controlledDrug?: boolean;
   controlledDrugSchedule?: string;
   pediatricUse?: boolean;
@@ -591,15 +602,24 @@ export default function MedicationForm({
         />
 
         <div>
-          <label className="label-admin">Alternative medication IDs</label>
-          <input
-            name="alternativeIds"
-            defaultValue={defaults?.alternativeIds || ""}
-            placeholder="Comma-separated UUIDs of equivalent meds"
-            className="input-admin font-mono text-xs"
+          <label className="label-admin">Equivalent / alternative medications</label>
+          <AlternativeMedicationPicker
+            excludeMasterId={defaults?.masterId}
+            initialSelected={
+              defaults?.alternativeOptions ||
+              // Fallback: bare IDs without labels (still works; names load via search API).
+              (defaults?.alternativeIds
+                ? defaults.alternativeIds
+                    .split(/[,\s]+/)
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                    .map((id) => ({ id, name: id }))
+                : [])
+            }
           />
           <p className="mt-1 text-[10px] admin-soft">
-            Optional list of MedicationMaster IDs shown as alternatives on the public detail page.
+            Search and pick medicines shown as alternatives on the public product page
+            (e.g. brand equivalents of the same generic).
           </p>
         </div>
 
@@ -744,6 +764,199 @@ function ClinicalTagPicker({
       {selected.map((id) => (
         <input key={id} type="hidden" name="clinicalTagIds" value={id} />
       ))}
+    </div>
+  );
+}
+
+/**
+ * Searchable multi-select for equivalent / alternative medications.
+ * Stores MedicationMaster IDs as a single comma-separated `alternativeIds` field
+ * (matches parseMedicationFormData + public detail page).
+ */
+function AlternativeMedicationPicker({
+  initialSelected = [],
+  excludeMasterId,
+}: {
+  initialSelected?: AlternativeMedOption[];
+  excludeMasterId?: string;
+}) {
+  const [selected, setSelected] = useState<AlternativeMedOption[]>(initialSelected);
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [options, setOptions] = useState<AlternativeMedOption[]>([]);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Resolve bare-UUID labels once on mount (edit form without server-resolved names).
+  useEffect(() => {
+    const bare = initialSelected.filter((o) => o.name === o.id);
+    if (bare.length === 0) return;
+    let cancelled = false;
+    const ids = bare.map((o) => o.id).join(",");
+    fetch(
+      `/api/customers/search?resource=medications&masters=1&ids=${encodeURIComponent(ids)}`,
+      { cache: "no-store" },
+    )
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j: { medications?: AlternativeMedOption[] } | null) => {
+        if (cancelled || !j?.medications?.length) return;
+        const byId = new Map(j.medications.map((m) => [m.id, m]));
+        setSelected((prev) =>
+          prev.map((p) => {
+            const resolved = byId.get(p.id);
+            return resolved ? { ...p, ...resolved } : p;
+          }),
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+    // Only on mount for initial bare IDs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Debounced master search.
+  useEffect(() => {
+    if (!open) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          resource: "medications",
+          masters: "1",
+          q: query,
+          limit: "20",
+        });
+        if (excludeMasterId) params.set("excludeMasterId", excludeMasterId);
+        const r = await fetch(`/api/customers/search?${params}`, { cache: "no-store" });
+        if (!r.ok) {
+          setOptions([]);
+          return;
+        }
+        const j = (await r.json()) as { medications?: AlternativeMedOption[] };
+        const selectedIds = new Set(selected.map((s) => s.id));
+        setOptions((j.medications ?? []).filter((m) => !selectedIds.has(m.id)));
+      } catch {
+        setOptions([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 220);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [open, query, excludeMasterId, selected]);
+
+  function add(med: AlternativeMedOption) {
+    if (selected.some((s) => s.id === med.id)) return;
+    if (excludeMasterId && med.id === excludeMasterId) return;
+    setSelected((prev) => [...prev, med]);
+    setQuery("");
+    setOpen(false);
+  }
+
+  function remove(id: string) {
+    setSelected((prev) => prev.filter((s) => s.id !== id));
+  }
+
+  const value = selected.map((s) => s.id).join(",");
+
+  return (
+    <div className="space-y-2">
+      <input type="hidden" name="alternativeIds" value={value} />
+
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {selected.map((m) => (
+            <span
+              key={m.id}
+              className="inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2.5 py-1 text-[10px] font-semibold admin-accent-text"
+            >
+              <Pill className="h-3 w-3 shrink-0" />
+              <span className="truncate">
+                {m.name}
+                {m.strengthDisplay ? ` · ${m.strengthDisplay}` : ""}
+              </span>
+              <button
+                type="button"
+                onClick={() => remove(m.id)}
+                className="shrink-0 hover:opacity-70"
+                aria-label={`Remove ${m.name}`}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="relative">
+        <div className="relative">
+          <Pill className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => setOpen(true)}
+            onBlur={() => {
+              // Delay so option click registers before close.
+              setTimeout(() => setOpen(false), 150);
+            }}
+            placeholder="Search by name, generic, or brand…"
+            className="input-admin pl-9"
+            autoComplete="off"
+          />
+        </div>
+
+        {open && (
+          <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl">
+            <ul className="max-h-56 overflow-y-auto">
+              {loading && (
+                <li className="px-3 py-2 text-xs admin-soft">Searching…</li>
+              )}
+              {!loading && options.length === 0 && (
+                <li className="px-3 py-3 text-xs admin-soft">
+                  {query.trim()
+                    ? "No medications match your search."
+                    : "Type to search the medication library."}
+                </li>
+              )}
+              {!loading &&
+                options.map((m) => (
+                  <li key={m.id}>
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => add(m)}
+                      className="flex w-full items-start gap-2 px-3 py-2 text-left text-xs transition hover:bg-[var(--admin-hover)] admin-text"
+                    >
+                      <Pill className="mt-0.5 h-3 w-3 shrink-0 admin-accent-text" />
+                      <span className="min-w-0">
+                        <span className="block truncate font-semibold">{m.name}</span>
+                        <span className="block truncate text-[10px] admin-soft">
+                          {[m.genericName, m.strengthDisplay, m.category?.replace(/-/g, " ")]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <p className="text-[10px] admin-soft">
+        {selected.length === 0
+          ? "None selected — the public page will fall back to same-category suggestions."
+          : `${selected.length} alternative${selected.length === 1 ? "" : "s"} linked.`}
+      </p>
     </div>
   );
 }
