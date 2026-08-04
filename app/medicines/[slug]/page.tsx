@@ -164,20 +164,49 @@ export default async function CategoryDetailPage({ params }: Props) {
 
       <section className="px-4 pb-16 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl bg-[#f4f7f4]">
-            {med.imageUrl ? (
-              <Image
-                src={med.imageUrl}
-                alt={med.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-7xl">💊</div>
-            )}
-          </div>
+          {(() => {
+            const gallery = (med.imageUrls || "")
+              .split(/[\n,]+/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+              .filter((u) => u !== med.imageUrl);
+            return (
+              <div className="space-y-3">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl bg-[#f4f7f4]">
+                  {med.imageUrl ? (
+                    <Image
+                      src={med.imageUrl}
+                      alt={med.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      priority
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-7xl">💊</div>
+                  )}
+                </div>
+                {gallery.length > 0 && (
+                  <div className="grid grid-cols-4 gap-2">
+                    {gallery.slice(0, 8).map((src, i) => (
+                      <div
+                        key={`${src}-${i}`}
+                        className="relative aspect-square overflow-hidden rounded-xl bg-[#f4f7f4] shadow-sm"
+                      >
+                        <Image
+                          src={src}
+                          alt={`${med.name} gallery ${i + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="120px"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
           <div>
             <div className="flex flex-wrap items-center gap-2">
               {med.overTheCounter && (

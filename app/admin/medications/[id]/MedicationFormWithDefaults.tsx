@@ -3,6 +3,7 @@
 import { useActionState, useState, useEffect } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Pill, Tag, Hash, DollarSign, Package, AlertCircle, Check, Save, FileText, Boxes } from "lucide-react";
+import ImageUploadField from "@/app/components/admin/ImageUploadField";
 
 const CATEGORIES = [
   "general", "pain-relief", "antibiotics", "cardiovascular", "diabetes", "respiratory",
@@ -29,6 +30,7 @@ type Defaults = {
   stockQty: string;
   lowStockThreshold: string;
   imageUrl: string;
+  imageUrls: string;
   active: boolean;
 };
 
@@ -149,10 +151,23 @@ export default function MedicationFormWithDefaults({
         </div>
       </div>
 
-      <div>
-        <label className="label-admin">Image URL</label>
-        <input name="imageUrl" defaultValue={defaults.imageUrl} className="input-admin" />
-      </div>
+      <ImageUploadField
+        name="imageUrl"
+        label="Main image"
+        folder="medications"
+        defaultValue={defaults.imageUrl}
+        hint="Upload to Cloudflare R2, or paste a public URL / local path."
+      />
+
+      <ImageUploadField
+        mode="multi"
+        name="imageUrls"
+        label="Gallery images"
+        folder="medications/gallery"
+        defaultValue={defaults.imageUrls}
+        max={8}
+        hint="Extra product photos. Upload files or paste public URLs."
+      />
 
       <div className="space-y-2">
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">

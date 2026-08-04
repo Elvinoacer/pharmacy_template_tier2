@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { toast } from "@/app/components/Toaster";
 import { Pill, Tag, Hash, DollarSign, Package, AlertCircle, Check, Save, FileText, Boxes } from "lucide-react";
+import ImageUploadField from "@/app/components/admin/ImageUploadField";
 
 const CATEGORIES = [
   "general",
@@ -180,22 +181,21 @@ export default function MedicationForm({
         </div>
       </div>
 
-      <div>
-        <label className="label-admin">Image URL</label>
-        <input name="imageUrl" placeholder="/images/otc/pain-relief.webp or R2 URL" className="input-admin" />
-        <p className="mt-1 text-[10px] admin-soft">
-          Paste a public image URL (Cloudflare R2, CDN, or /public path). Upload tooling can be wired via R2 env vars.
-        </p>
-      </div>
+      <ImageUploadField
+        name="imageUrl"
+        label="Main image"
+        folder="medications"
+        hint="Upload to Cloudflare R2, or paste a public URL / local path (e.g. /images/otc/pain-relief.webp)."
+      />
 
-      <div>
-        <label className="label-admin">Additional image URLs (gallery)</label>
-        <input
-          name="imageUrls"
-          placeholder="Comma-separated extra image URLs"
-          className="input-admin"
-        />
-      </div>
+      <ImageUploadField
+        mode="multi"
+        name="imageUrls"
+        label="Gallery images"
+        folder="medications/gallery"
+        max={8}
+        hint="Extra product photos. Upload files or paste public URLs."
+      />
 
       <div>
         <label className="label-admin">Alternative medication IDs</label>
