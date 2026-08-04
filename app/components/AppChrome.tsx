@@ -5,7 +5,7 @@ import AiChatbot from "./AiChatbot";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
-const BARE_PREFIXES = ["/portal", "/admin", "/login", "/register", "/forgot-password", "/reset-password"];
+const BARE_PREFIXES = ["/portal", "/admin", "/login", "/register", "/forgot-password", "/reset-password", "/caregiver"];
 
 export default function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || "/";
