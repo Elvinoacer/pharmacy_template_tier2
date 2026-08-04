@@ -73,6 +73,18 @@ export default function MedicationFormWithDefaults({
 
   // Auto-update slug when name changes (only if slug is empty or matches the previous auto-derived value).
   const [slug, setSlug] = useState(defaults.slug);
+  const [otc, setOtc] = useState(defaults.overTheCounter);
+  const [rxRequired, setRxRequired] = useState(defaults.prescriptionRequired);
+
+  function setOtcChecked(checked: boolean) {
+    setOtc(checked);
+    if (checked) setRxRequired(false);
+  }
+
+  function setRxChecked(checked: boolean) {
+    setRxRequired(checked);
+    if (checked) setOtc(false);
+  }
   useEffect(() => {
     const auto = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     if (!slug || slug === defaults.slug) {
@@ -200,7 +212,7 @@ export default function MedicationFormWithDefaults({
 
       <div className="space-y-2">
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
-          <input type="checkbox" name="overTheCounter" defaultChecked={defaults.overTheCounter} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
+          <input type="checkbox" name="overTheCounter" checked={otc} onChange={(e) => setOtcChecked(e.target.checked)} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
           <Boxes className="h-4 w-4" /> Available over the counter
         </label>
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
@@ -208,7 +220,7 @@ export default function MedicationFormWithDefaults({
           <Tag className="h-4 w-4" /> Show on public catalog
         </label>
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">
-          <input type="checkbox" name="prescriptionRequired" defaultChecked={defaults.prescriptionRequired} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
+          <input type="checkbox" name="prescriptionRequired" checked={rxRequired} onChange={(e) => setRxChecked(e.target.checked)} className="h-4 w-4 rounded border-[var(--admin-border-2)] bg-[var(--admin-inset)] admin-accent-text" />
           <FileText className="h-4 w-4" /> Prescription required
         </label>
         <label className="flex cursor-pointer items-center gap-2.5 text-sm admin-muted hover:text-[var(--admin-text)]">

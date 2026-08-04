@@ -75,22 +75,9 @@ export async function POST(req: Request) {
       await prisma.medication.update({
         where: { id: existing.id },
         data: {
-          name: m.name,
-          category: m.category,
-          description: m.description ?? existing.description,
-          indications: m.indications ?? existing.indications,
-          dosage: m.dosage ?? existing.dosage,
-          sideEffects: m.sideEffects ?? existing.sideEffects,
-          contraindications: m.contraindications ?? existing.contraindications,
-          storage: m.storage ?? existing.storage,
           price: m.price,
           stockQty: m.stockQty,
           lowStockThreshold: m.lowStockThreshold,
-          imageUrl: m.imageUrl ?? existing.imageUrl,
-          overTheCounter: m.overTheCounter,
-          publicListing: m.publicListing,
-          prescriptionRequired: m.prescriptionRequired,
-          active: m.active,
           syncedAt: new Date(),
         },
       });

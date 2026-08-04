@@ -731,15 +731,19 @@ export async function adminDeleteMedicationAction(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return;
   try {
-    // Soft-prefer: if order line items still reference this med, deactivate instead
+    // Soft-prefer: if order line items or prescriptions still reference this med, deactivate instead
     // of hard-deleting so history stays intact and the FK doesn't blow up.
-    const linked = await prisma.orderItem.count({ where: { medicationId: id } });
+    const [linkedOrders, linkedPrescriptions] = await Promise.all([
+      prisma.orderItem.count({ where: { medicationId: id } }),
+      prisma.prescription.count({ where: { medicationId: id } }),
+    ]);
+    const linked = linkedOrders + linkedPrescriptions;
     if (linked > 0) {
       await prisma.medication.update({
         where: { id },
         data: { active: false, publicListing: false },
       });
-      await writeAuditLog(user.id, "medication_deactivated", "medication", id, { linkedOrders: linked });
+      await writeAuditLog(user.id, "medication_deactivated", "medication", id, { linkedOrders, linkedPrescriptions });
     } else {
       await prisma.medication.delete({ where: { id } });
       await writeAuditLog(user.id, "medication_deleted", "medication", id);

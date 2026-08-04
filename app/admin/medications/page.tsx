@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { adminDeleteMedicationAction } from "@/app/actions/admin";
-import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
 import { Pagination } from "@/app/components/Pagination";
@@ -213,7 +213,10 @@ export default async function AdminMedicationsPage({
       </div>
 
       <div className="w-full">
-        <AdminPanel title="Medication Catalog" description={`Viewing ${paged.length} of ${total} total medications`}>
+        <div className="mb-5">
+          <h2 className="text-sm font-semibold admin-text">Medication Catalog</h2>
+          <p className="mt-0.5 text-xs admin-muted">{`Viewing ${paged.length} of ${total} total medications`}</p>
+        </div>
           {paged.length === 0 ? (
             <AdminEmptyState
               icon={Pill}
@@ -305,7 +308,7 @@ export default async function AdminMedicationsPage({
             </ul>
             </>
           )}
-        </AdminPanel>
+
       </div>
 
       <Pagination
