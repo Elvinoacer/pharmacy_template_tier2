@@ -1,39 +1,41 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
-import { prisma } from "@/app/lib/db";
-import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { listCategoriesWithCounts } from "@/app/lib/medication-categories";
+import { AdminPanel, AdminEmptyState, AdminCard } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { CategoryManager } from "@/app/components/admin/CategoryManager";
-import { Tag, ArrowLeft } from "lucide-react";
+import { Tag, ArrowLeft, Package, FolderTree, Sparkles } from "lucide-react";
 
 export const metadata = { title: "Medication categories" };
 
 /**
- * Lightweight category management without a separate Category model.
- * Categories are free-text on Medication; this page lists distinct values,
- * counts, and lets staff rename/merge via bulk update.
+ * Full category management for the drug catalogue.
+ * Categories live in medication_categories; Medication.category stores the slug.
  */
 export default async function MedicationCategoriesPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
-  const grouped = await prisma.medication.groupBy({
-    by: ["category"],
-    _count: { _all: true },
-    orderBy: { category: "asc" },
-  });
+  let categories: Awaited<ReturnType<typeof listCategoriesWithCounts>> = [];
+  let loadError: string | null = null;
 
-  const categories = grouped.map((g) => ({
-    name: g.category || "general",
-    count: g._count._all,
-  }));
+  try {
+    categories = await listCategoriesWithCounts();
+  } catch (err) {
+    console.error("[admin/medications/categories]", err);
+    loadError =
+      "Could not load categories. If this is a fresh deploy, run `npm run db:migrate`.";
+  }
+
+  const totalMeds = categories.reduce((s, c) => s + c.count, 0);
+  const emptyCats = categories.filter((c) => c.count === 0).length;
 
   return (
     <AdminShell
       user={user}
       title="Medication categories"
-      subtitle="Manage taxonomy used across the catalogue (stored as free-text on each medication)"
+      subtitle="Create, rename, merge, and organize the catalogue taxonomy"
       actions={
         <Link
           href="/admin/medications"
@@ -43,15 +45,45 @@ export default async function MedicationCategoriesPage() {
         </Link>
       }
     >
+      {loadError && (
+        <div className="admin-alert-error mb-4">
+          <span>{loadError}</span>
+        </div>
+      )}
+
+      <div className="mb-6 grid gap-3 sm:grid-cols-3">
+        <AdminCard
+          label="Categories"
+          value={categories.length}
+          hint={`${categories.filter((c) => c.active).length} active`}
+          icon={FolderTree}
+          accent="accent"
+        />
+        <AdminCard
+          label="Medications tagged"
+          value={totalMeds}
+          hint="Sum of meds per category"
+          icon={Package}
+          accent="info"
+        />
+        <AdminCard
+          label="Empty categories"
+          value={emptyCats}
+          hint="Ready for new products"
+          icon={Sparkles}
+          accent="neutral"
+        />
+      </div>
+
       <AdminPanel
-        title="Categories in use"
-        description={`${categories.length} distinct categor${categories.length === 1 ? "y" : "ies"}`}
+        title="Category registry"
+        description="Changes apply immediately to medication forms and catalogue filters. Renaming a slug re-tags every linked drug."
       >
-        {categories.length === 0 ? (
+        {loadError ? (
           <AdminEmptyState
             icon={Tag}
-            title="No categories yet"
-            description="Add medications to start building the category list."
+            title="Categories unavailable"
+            description={loadError}
           />
         ) : (
           <CategoryManager initial={categories} />

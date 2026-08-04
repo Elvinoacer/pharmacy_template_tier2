@@ -909,6 +909,26 @@ model PrescriptionAdherence {
   @@map("prescription_adherence")
 }
 
+// ── Medication categories (taxonomy registry) ─────────────────
+/// Canonical list of catalogue categories. Medication.category stores the slug
+/// as free-text for POS/import flexibility; this table powers admin CRUD,
+/// empty categories (0 meds), descriptions, and form dropdowns.
+model MedicationCategory {
+  id          String   @id @default(uuid()) @db.Uuid
+  /// Human label shown in UI, e.g. "Pain Relief".
+  name        String
+  /// Stable key stored on Medication.category, e.g. "pain-relief".
+  slug        String   @unique
+  description String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([active])
+  @@map("medication_categories")
+}
+
 // ── Medication catalog (stock + shop) ─────────────────────────
 /// Drug catalog. Synced from the pharmacy POS via the /api/integrations/pos/route.ts endpoint
 /// (POST guarded by POS_API_KEY). Admins can also create/edit entries directly.
@@ -917,6 +937,7 @@ model Medication {
   name            String
   slug            String   @unique
   sku             String?  @unique
+  /// Matches MedicationCategory.slug when managed via admin categories.
   category        String   @default("general")
   description     String?
   /// Markdown-rendered on the public detail page. Includes uses, dosage, side effects,

@@ -5,10 +5,23 @@ import type { ActionState } from "@/app/actions/admin";
 import { Pill, Tag, Hash, DollarSign, Package, AlertCircle, Check, Save, FileText, Boxes } from "lucide-react";
 import ImageUploadField from "@/app/components/admin/ImageUploadField";
 
-const CATEGORIES = [
-  "general", "pain-relief", "antibiotics", "cardiovascular", "diabetes", "respiratory",
-  "vitamins", "first-aid", "cold-flu", "skin-care", "baby-care", "womens-health",
-  "mens-health", "mental-health", "digestive", "allergy",
+const FALLBACK_CATEGORIES = [
+  { slug: "general", name: "General" },
+  { slug: "pain-relief", name: "Pain Relief" },
+  { slug: "antibiotics", name: "Antibiotics" },
+  { slug: "cardiovascular", name: "Cardiovascular" },
+  { slug: "diabetes", name: "Diabetes" },
+  { slug: "respiratory", name: "Respiratory" },
+  { slug: "vitamins", name: "Vitamins" },
+  { slug: "first-aid", name: "First Aid" },
+  { slug: "cold-flu", name: "Cold Flu" },
+  { slug: "skin-care", name: "Skin Care" },
+  { slug: "baby-care", name: "Baby Care" },
+  { slug: "womens-health", name: "Womens Health" },
+  { slug: "mens-health", name: "Mens Health" },
+  { slug: "mental-health", name: "Mental Health" },
+  { slug: "digestive", name: "Digestive" },
+  { slug: "allergy", name: "Allergy" },
 ];
 
 type Defaults = {
@@ -37,12 +50,26 @@ type Defaults = {
 export default function MedicationFormWithDefaults({
   action,
   defaults,
+  categories,
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   defaults: Defaults;
+  categories?: Array<{ slug: string; name: string }>;
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [name, setName] = useState(defaults.name);
+  const categoryOptions = categories?.length ? categories : FALLBACK_CATEGORIES;
+
+  // Ensure current category is always selectable even if inactive/orphan.
+  const categorySelectOptions = categoryOptions.some((c) => c.slug === defaults.category)
+    ? categoryOptions
+    : [
+        ...categoryOptions,
+        {
+          slug: defaults.category,
+          name: defaults.category.replace(/-/g, " "),
+        },
+      ];
 
   // Auto-update slug when name changes (only if slug is empty or matches the previous auto-derived value).
   const [slug, setSlug] = useState(defaults.slug);
@@ -93,7 +120,9 @@ export default function MedicationFormWithDefaults({
         <div>
           <label className="label-admin">Category</label>
           <select name="category" defaultValue={defaults.category} className="input-admin">
-            {CATEGORIES.map((c) => (<option key={c} value={c}>{c.replace(/-/g, " ")}</option>))}
+            {categorySelectOptions.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.name}</option>
+            ))}
           </select>
         </div>
       </div>

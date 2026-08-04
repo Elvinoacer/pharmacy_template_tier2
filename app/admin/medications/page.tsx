@@ -8,6 +8,7 @@ import { AdminShell } from "@/app/components/admin/AdminShell";
 import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
 import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
+import { listActiveCategoryOptions } from "@/app/lib/medication-categories";
 import { formatDateTime } from "@/app/lib/time";
 import { Pill, Plus, Search, X, Tag, Package, Pencil, Trash2, Boxes } from "lucide-react";
 import { MedicationBulkActions } from "@/app/components/admin/MedicationBulkActions";
@@ -88,7 +89,7 @@ export default async function AdminMedicationsPage({
   // (Public /medicines already used this pattern.)
   let total = 0;
   let medications: MedRow[] = [];
-  let categoryList: string[] = [];
+  let categoryList: Array<{ slug: string; name: string }> = [];
   let loadError: string | null = null;
 
   try {
@@ -99,15 +100,11 @@ export default async function AdminMedicationsPage({
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
       }),
-      prisma.medication.findMany({
-        where: { active: true },
-        select: { category: true },
-        distinct: ["category"],
-      }),
+      listActiveCategoryOptions(),
     ]);
     total = count;
     medications = rows.map(toMedRow);
-    categoryList = categories.map((c) => c.category).filter(Boolean).sort();
+    categoryList = categories;
   } catch (err) {
     console.error("[admin/medications] Failed to load catalog:", err);
     loadError =
@@ -184,8 +181,8 @@ export default async function AdminMedicationsPage({
         <select name="category" defaultValue={category || ""} className="cursor-pointer appearance-none rounded-xl bg-transparent py-2.5 pl-4 pr-10 text-sm font-medium outline-none transition-colors hover:bg-black/5 focus:bg-white dark:hover:bg-white/5 dark:focus:bg-black/40">
           <option value="">All categories</option>
           {categoryList.map((c) => (
-            <option key={c} value={c}>
-              {c.replace(/-/g, " ")}
+            <option key={c.slug} value={c.slug}>
+              {c.name}
             </option>
           ))}
         </select>

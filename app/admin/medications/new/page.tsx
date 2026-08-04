@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { adminCreateMedicationAction } from "@/app/actions/admin";
+import { listActiveCategoryOptions } from "@/app/lib/medication-categories";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationForm from "@/app/components/admin/MedicationForm";
 import Link from "next/link";
@@ -11,6 +12,7 @@ export const metadata = { title: "New Medication" };
 export default async function NewMedicationPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const categories = await listActiveCategoryOptions();
 
   return (
     <AdminShell user={user} title="New Medication" subtitle="Add a new drug to the catalog">
@@ -44,7 +46,7 @@ export default async function NewMedicationPage() {
           </div>
           
           <div className="relative p-8">
-            <MedicationForm action={adminCreateMedicationAction} />
+            <MedicationForm action={adminCreateMedicationAction} categories={categories} />
           </div>
         </div>
       </div>
