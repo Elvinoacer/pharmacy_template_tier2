@@ -158,7 +158,7 @@ npm run db:studio           # Prisma Studio
 
 ## AI safety
 
-The assistant uses Tier 1 pharmacy facts plus **approved** knowledge articles from the CRM. It must not diagnose, prescribe, change doses, or interpret labs. Uncertain or clinical questions are escalated to staff; conversations are stored for analytics.
+The assistant uses Tier 1 pharmacy facts plus **relevant approved** knowledge articles (matched per question — the full knowledge base is never dumped into the prompt). Live product availability uses secure tools against **public-listed** inventory only (coarse stock status, no internal fields). It must not diagnose, prescribe, change doses, or interpret labs. Uncertain or clinical questions are escalated to staff; conversations are stored for analytics.
 
 ## Out of scope (Tier 3)
 

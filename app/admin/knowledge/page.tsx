@@ -69,8 +69,9 @@ export default async function AdminKnowledgePage() {
         <div>
           <p className="text-sm font-semibold admin-text">How AI knowledge works</p>
           <p className="mt-0.5 text-xs admin-muted">
-            The virtual assistant searches approved articles first, then falls back to general pharmacy
-            knowledge. Mark articles as approved to make them available to the assistant.
+            The assistant only receives approved articles that match the customer&apos;s question (not the
+            full library). Public medicine stock is looked up separately via secure tools. Mark articles
+            as approved to make them searchable.
           </p>
         </div>
       </div>

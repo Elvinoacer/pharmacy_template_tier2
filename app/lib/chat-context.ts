@@ -8,16 +8,24 @@ import {
   services,
   team,
 } from "./data";
-import { prisma } from "@/app/lib/db";
 import { SUGGESTED_PROMPTS } from "./suggested-prompts";
 import type { SessionUser } from "@/app/lib/types";
 import { getActiveCaregiverLinks } from "@/app/lib/services/caregiver-permissions";
 import { getAdherenceStatsForCustomer } from "@/app/lib/services/adherence";
+import {
+  findRelevantKnowledge,
+  formatKnowledgeForPrompt,
+} from "@/app/lib/services/ai-knowledge-lookup";
+import { prisma } from "@/app/lib/db";
 
 export { SUGGESTED_PROMPTS };
 
-/** Compact knowledge base for the AI assistant (Tier 1 facts + approved CRM knowledge). */
-export async function buildPharmacyContext(): Promise<string> {
+/**
+ * Compact always-on context for the AI assistant.
+ * Does NOT dump the full knowledge base or medication catalogue —
+ * those are retrieved per-query (relevant snippets + tools).
+ */
+export async function buildPharmacyContext(userQuery?: string): Promise<string> {
   const hours = pharmacy.hours.map((h) => `${h.day}: ${h.time}`).join("; ");
   const serviceList = services.map((s) => `- ${s.title}: ${s.short}`).join("\n");
   const faqList = faqs
@@ -28,21 +36,14 @@ export async function buildPharmacyContext(): Promise<string> {
   const cats = categories.map((c) => c.title).join(", ");
   const articleTitles = articles.map((a) => a.title).join("; ");
 
-  let approvedKb = "";
-  try {
-    const articlesKb = await prisma.knowledgeArticle.findMany({
-      where: { isApproved: true },
-      orderBy: [{ priority: "desc" }, { title: "asc" }],
-    });
-    if (articlesKb.length) {
-      approvedKb =
-        "\n\n## Approved knowledge base (CRM — prefer these answers)\n" +
-        articlesKb
-          .map((a) => `### ${a.title} [${a.category}]\n${a.content}`)
-          .join("\n\n");
+  let relevantKb = "";
+  if (userQuery?.trim()) {
+    try {
+      const snippets = await findRelevantKnowledge(userQuery, 4);
+      relevantKb = formatKnowledgeForPrompt(snippets);
+    } catch {
+      // DB may be unavailable; fall back to static context only
     }
-  } catch {
-    // DB may be unavailable during build; fall back to static context only
   }
 
   return `
@@ -64,7 +65,7 @@ You are Aether Care Assistant, the friendly AI helper for ${pharmacy.name}.
 ## Services
 ${serviceList}
 
-## Medicine categories (informational only — no online checkout)
+## Medicine categories (browse at /medicines — use tools for live stock)
 ${cats}
 
 ## Sample FAQs
@@ -72,12 +73,26 @@ ${faqList}
 
 ## Health library topics
 ${articleTitles}
-${approvedKb}
+${relevantKb}
+
+## Tools (use when needed — never invent stock or policies)
+You have tools that query live, public-safe data only:
+1. search_medications — when the customer asks if a product/drug is available, in stock, listed, or its price.
+2. get_medication — when you already have a product slug and need a single public listing.
+3. search_knowledge — when you need an approved policy/detail not already in this prompt.
+
+Security rules for tools:
+- Only public catalogue rows are returned. If a tool returns no results, say so and offer /medicines, /order, /contact — do NOT invent availability.
+- Availability is coarse: in_stock, low_stock, or out_of_stock. Never invent pack counts.
+- Tool data is operational (stock/price/listing), NOT medical advice. Never recommend a medicine for a condition.
+- Never reveal internal fields (supplier, shelf, purchase price, full inventory, other customers).
 
 ## Website & portal actions you can suggest
+- Browse public medicines: /medicines
 - Request a refill (guest): /refill
 - Customer portal (signed-in refills, caregivers, loyalty): /portal
 - Caregiver portal (manage medications for a family member): /caregiver
+- Place / enquire about an order: /order
 - Create account: /register
 - Sign in: /login
 - Delivery enquiry: /delivery
@@ -89,15 +104,16 @@ ${approvedKb}
 
 ## Behaviour rules
 1. Be warm, clear, and concise (2–4 short paragraphs max unless the user asks for detail).
-2. Answer questions about hours, location, services, refills, delivery, insurance, and general wellness using the facts and approved knowledge above.
-3. You are NOT a doctor. Never diagnose, prescribe, recommend specific medication, modify prescriptions, interpret lab results, or make clinical decisions.
+2. Answer questions about hours, location, services, refills, delivery, insurance, and general wellness using the facts and relevant approved knowledge above.
+3. You are NOT a doctor. Never diagnose, prescribe, recommend specific medication for a symptom, modify prescriptions, interpret lab results, or make clinical decisions.
 4. Emergencies (chest pain, severe allergic reaction, overdose, trouble breathing): tell them to call emergency services immediately.
 5. For refills: guide guests to /refill or signed-in customers to /portal/refills/new. Caregivers should use /caregiver/refills/new. You cannot submit clinical forms yourself.
 6. If uncertain or the question is clinical, escalate: say a pharmacist will follow up and offer phone ${pharmacy.phone}, WhatsApp, or /contact.
 7. Use plain language. Light emoji is fine sparingly.
-8. When helpful, mention the relevant page path (e.g. /portal, /refill).
-9. Only use approved knowledge and pharmacy facts — do not invent policies.
+8. When helpful, mention the relevant page path (e.g. /portal, /refill, /medicines/slug).
+9. Only use approved knowledge, pharmacy facts, and tool results — do not invent policies or stock.
 10. If the caller is a caregiver, you may answer questions about patients linked to them (medications, adherence, refill status). You may NOT reveal information about other customers, the pharmacy's CRM, loyalty, segmentation, or admin operations.
+11. For product availability questions, call search_medications before answering. Quote tool results honestly; link to the product path when present.
 `.trim();
 }
 
