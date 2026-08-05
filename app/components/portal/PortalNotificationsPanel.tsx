@@ -15,6 +15,7 @@ import {
   CalendarClock,
   Sparkles,
   MessageSquare,
+  HeartPulse,
   Trash2,
   CheckCheck,
   Search,
@@ -50,6 +51,7 @@ const typeIcon: Record<string, React.ComponentType<{ className?: string }>> = {
   reminder: CalendarClock,
   campaign: Megaphone,
   loyalty: Sparkles,
+  symptom_staff_reply: HeartPulse,
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -168,7 +170,9 @@ export function PortalNotificationsPanel({
             <Bell className="h-6 w-6" />
           </span>
           <p className="mt-3 text-sm font-semibold text-[#0c1a14]">No notifications</p>
-          <p className="mt-1 text-xs text-[#5a6b62]">Refill updates, reminders, and messages will appear here.</p>
+          <p className="mt-1 text-xs text-[#5a6b62]">
+            Refill updates, pharmacist check-in replies, and reminders will appear here.
+          </p>
         </div>
       ) : (
         <ul className="space-y-2.5">
@@ -262,6 +266,15 @@ export function PortalNotificationsPanel({
               <span className="text-[#8a9a92]">· {formatDateTime(selected.createdAt)}</span>
             </div>
             <Markdown>{selected.fullBody || selected.body}</Markdown>
+            {selected.type === "symptom_staff_reply" && (
+              <a
+                href="/portal/feel"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
+              >
+                <HeartPulse className="h-3.5 w-3.5" />
+                Open How do you feel
+              </a>
+            )}
           </div>
         )}
       </Modal>

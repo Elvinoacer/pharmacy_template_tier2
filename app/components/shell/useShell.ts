@@ -46,12 +46,22 @@ export function useSidebarCollapsed(storageKey: "portal" | "admin" | "caregiver"
   return { collapsed, toggle, hydrated };
 }
 
+export type AttentionCounts = {
+  /** Header bell badge (overall unread / work queue). */
+  count: number;
+  /** How do you feel sidebar badge — staff urgent OR customer pharmacist replies. */
+  feel: number;
+  feelWorse?: number;
+  feelEscalated?: number;
+  feelReplies?: number;
+};
+
 /**
- * Tracks unread notification count via the /api/notifications/unread endpoint.
- * Polls every 60s while the tab is visible.
+ * Tracks attention counts via /api/notifications/unread.
+ * Polls every 20s while the tab is visible (faster for clinical urgency).
  */
-export function useUnreadCount() {
-  const [count, setCount] = useState<number>(0);
+export function useAttentionCounts(): AttentionCounts {
+  const [counts, setCounts] = useState<AttentionCounts>({ count: 0, feel: 0 });
 
   useEffect(() => {
     let cancelled = false;
@@ -62,28 +72,48 @@ export function useUnreadCount() {
         const r = await fetch("/api/notifications/unread", { cache: "no-store" });
         if (!r.ok) return;
         const j = await r.json();
-        if (!cancelled && typeof j.count === "number") setCount(j.count);
+        if (cancelled) return;
+        setCounts({
+          count: typeof j.count === "number" ? j.count : 0,
+          feel: typeof j.feel === "number" ? j.feel : 0,
+          feelWorse: typeof j.feelWorse === "number" ? j.feelWorse : undefined,
+          feelEscalated: typeof j.feelEscalated === "number" ? j.feelEscalated : undefined,
+          feelReplies: typeof j.feelReplies === "number" ? j.feelReplies : undefined,
+        });
       } catch {
         /* ignore — best-effort */
       }
     };
 
     fetchCount();
-    const interval = setInterval(fetchCount, 60_000);
+    const interval = setInterval(fetchCount, 20_000);
 
     const onVisibility = () => {
       if (!document.hidden) fetchCount();
     };
     document.addEventListener("visibilitychange", onVisibility);
 
+    // Allow LiveAlertCenter / push handlers to force a refresh.
+    const onRefresh = () => fetchCount();
+    window.addEventListener("aether:attention-refresh", onRefresh);
+
     return () => {
       cancelled = true;
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("aether:attention-refresh", onRefresh);
     };
   }, []);
 
-  return count;
+  return counts;
+}
+
+/**
+ * Tracks unread notification count via the /api/notifications/unread endpoint.
+ * Kept for callers that only need the header bell total.
+ */
+export function useUnreadCount() {
+  return useAttentionCounts().count;
 }
 
 export function useActivePath(): string {
@@ -102,4 +132,10 @@ export function isLinkActive(pathname: string, href: string): boolean {
     return false;
   }
   return pathname.startsWith(href + "/") || pathname === href;
+}
+
+/** Small red count pill for sidebar / header badges. */
+export function formatBadgeCount(n: number): string {
+  if (n <= 0) return "";
+  return n > 9 ? "9+" : String(n);
 }

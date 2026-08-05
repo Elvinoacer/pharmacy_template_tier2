@@ -62,6 +62,8 @@ type Session = {
   feelingTrend: string | null;
   escalatedAt: string | null;
   nextCheckInAt: string | null;
+  messageCount?: number;
+  lastMessageAt?: string | null;
   messages: Message[];
   checkIns: CheckIn[];
 };
@@ -208,6 +210,81 @@ export default function HowDoYouFeelClient({
       setShowCheckIn(true);
     }
   }, [session]);
+
+  // Live-poll open sessions so pharmacist replies appear without a full page reload.
+  // Works for guests and customers who have not enabled push — toast + thread update.
+  useEffect(() => {
+    if (!session?.id || !guestKey) return;
+    if (session.status === "closed") return;
+
+    let cancelled = false;
+    const knownIds = new Set(session.messages.map((m) => m.id));
+
+    const poll = async () => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      if (busy) return;
+      try {
+        const res = await fetch(
+          `/api/feel/session?id=${session.id}&guestKey=${encodeURIComponent(guestKey)}`,
+          { cache: "no-store" },
+        );
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        const next = data.session as Session | undefined;
+        if (!next) return;
+
+        const newStaff = (next.messages || []).filter(
+          (m) => m.role === "staff" && !knownIds.has(m.id),
+        );
+        for (const m of next.messages || []) knownIds.add(m.id);
+
+        if (newStaff.length > 0) {
+          const { toast } = await import("@/app/components/Toaster");
+          const latest = newStaff[newStaff.length - 1];
+          toast.info(
+            latest.content.length > 120
+              ? `Pharmacist: ${latest.content.slice(0, 117)}…`
+              : `Pharmacist: ${latest.content}`,
+            {
+              href: mode === "portal" ? "/portal/feel" : "/how-do-you-feel",
+              durationMs: 12_000,
+            },
+          );
+          window.dispatchEvent(new Event("aether:attention-refresh"));
+        }
+
+        // Only replace local state when something actually changed (avoids scroll thrash).
+        const lastLocal = session.messages[session.messages.length - 1]?.id;
+        const lastRemote = next.messages[next.messages.length - 1]?.id;
+        const changed =
+          next.messageCount !== session.messageCount ||
+          next.status !== session.status ||
+          next.messages.length !== session.messages.length ||
+          next.lastMessageAt !== session.lastMessageAt ||
+          lastLocal !== lastRemote ||
+          newStaff.length > 0;
+        if (changed) {
+          setSession(next);
+        }
+      } catch {
+        /* best-effort */
+      }
+    };
+
+    const interval = window.setInterval(poll, 12_000);
+    const onVisibility = () => {
+      if (!document.hidden) void poll();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+    // Intentionally depend on session id/status/messageCount, not full messages array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.id, session?.status, session?.messageCount, guestKey, busy, mode]);
 
   async function startSession(categoryId: string) {
     setBusy(true);

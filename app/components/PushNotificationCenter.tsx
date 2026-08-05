@@ -26,9 +26,10 @@ export function PushNotificationCenter({ audience = "portal" }: { audience?: Aud
     }
   }, []);
 
-  // Auto-dismiss toast after 8s
+  // Auto-dismiss toast after 8s; refresh sidebar badges when a push lands.
   useEffect(() => {
     if (!lastMessage) return;
+    window.dispatchEvent(new Event("aether:attention-refresh"));
     const t = setTimeout(clearMessage, 8000);
     return () => clearTimeout(t);
   }, [lastMessage, clearMessage]);
@@ -176,11 +177,11 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
     audience === "admin"
       ? {
           title: "Staff device alerts",
-          body: "Register this browser to get instant push alerts for new refills, enquiries, and AI escalations — even when the CRM tab is in the background.",
+          body: "Register this browser for instant push on urgent How-do-you-feel alerts (feeling worse), pharmacist handoffs, refills, and Contact enquiries — including when the CRM tab is in the background.",
         }
       : {
           title: "Browser push notifications",
-          body: "Register this device to get refill status updates, pickup reminders, and pharmacy messages as push notifications.",
+          body: "Register this device for refill updates, pickup reminders, and pharmacist replies on your How do you feel check-ins — even when the portal tab is closed.",
         };
 
   return (

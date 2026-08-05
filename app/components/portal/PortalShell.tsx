@@ -25,8 +25,15 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
-import { useSidebarCollapsed, useUnreadCount, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
+import {
+  useSidebarCollapsed,
+  useAttentionCounts,
+  useActivePath,
+  isLinkActive,
+  formatBadgeCount,
+} from "@/app/components/shell/useShell";
 import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
+import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
 
 export const PORTAL_LINKS = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard },
@@ -57,7 +64,9 @@ export function PortalShell({
 }) {
   const { collapsed, toggle, hydrated } = useSidebarCollapsed("portal");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const unread = useUnreadCount();
+  const attention = useAttentionCounts();
+  const unread = attention.count;
+  const feelBadge = attention.feel;
   const pathname = useActivePath();
 
   return (
@@ -86,18 +95,42 @@ export function PortalShell({
             {PORTAL_LINKS.map((l) => {
               const Icon = l.icon;
               const active = isLinkActive(pathname, l.href);
+              const showFeel = l.href === "/portal/feel" && feelBadge > 0;
+              const badge = showFeel ? formatBadgeCount(feelBadge) : "";
               return (
                 <li key={l.href} className="relative tooltip-host">
                   <Link
                     href={l.href}
-                    className={`nav-link-portal ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : ""}`}
-                    title={collapsed ? l.label : undefined}
+                    className={`nav-link-portal ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : ""} ${
+                      showFeel ? "!text-rose-700" : ""
+                    }`}
+                    title={
+                      collapsed
+                        ? showFeel
+                          ? `${l.label} · ${feelBadge} new`
+                          : l.label
+                        : undefined
+                    }
                   >
-                    <Icon className="h-[18px] w-[18px] shrink-0" />
+                    <span className="relative shrink-0">
+                      <Icon className="h-[18px] w-[18px]" />
+                      {collapsed && badge && (
+                        <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-0.5 text-[8px] font-bold text-white">
+                          {badge}
+                        </span>
+                      )}
+                    </span>
                     {!collapsed && <span className="truncate">{l.label}</span>}
+                    {!collapsed && badge && (
+                      <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                        {badge}
+                      </span>
+                    )}
                   </Link>
                   {collapsed && (
-                    <span className="tooltip-right hidden lg:block">{l.label}</span>
+                    <span className="tooltip-right hidden lg:block">
+                      {showFeel ? `${l.label} · ${feelBadge} new` : l.label}
+                    </span>
                   )}
                 </li>
               );
@@ -147,15 +180,24 @@ export function PortalShell({
                 {PORTAL_LINKS.map((l) => {
                   const Icon = l.icon;
                   const active = isLinkActive(pathname, l.href);
+                  const showFeel = l.href === "/portal/feel" && feelBadge > 0;
+                  const badge = showFeel ? formatBadgeCount(feelBadge) : "";
                   return (
                     <li key={l.href}>
                       <Link
                         href={l.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`nav-link-portal ${active ? "active" : ""}`}
+                        className={`nav-link-portal ${active ? "active" : ""} ${
+                          showFeel ? "!text-rose-700" : ""
+                        }`}
                       >
                         <Icon className="h-[18px] w-[18px]" />
                         <span>{l.label}</span>
+                        {badge && (
+                          <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                            {badge}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   );
@@ -231,6 +273,7 @@ export function PortalShell({
       </main>
 
       <PushNotificationCenter audience="portal" />
+      <LiveAlertCenter audience="portal" />
     </div>
   );
 }

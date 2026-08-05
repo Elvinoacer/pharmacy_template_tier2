@@ -7,7 +7,7 @@ import type {
 } from "groq-sdk/resources/chat/completions";
 import { prisma } from "@/app/lib/db";
 import { getSessionUser } from "@/app/lib/auth";
-import { dispatchPushToStaff } from "@/app/lib/services/push";
+import { dispatchPushToStaff, dispatchPushToUser } from "@/app/lib/services/push";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
 import { getResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
 import type {
@@ -604,6 +604,7 @@ export async function escalateSymptomSession(input: {
       alreadyEscalated: true as const,
       ticket: {
         conversationId: session.conversationId,
+        // Legacy field only — How do you feel never creates Contact enquiries.
         enquiryId: session.enquiryId,
       },
     };
@@ -628,7 +629,8 @@ export async function escalateSymptomSession(input: {
     .filter(Boolean)
     .join("\n");
 
-  // Create CRM conversation ticket + enquiry for staff boards
+  // CRM conversation only — NEVER create an Enquiry (those come from /contact).
+  // How do you feel is its own life-critical queue at /admin/feel.
   const conversation = await prisma.conversation.create({
     data: {
       customerId: session.customerId ?? undefined,
@@ -654,29 +656,14 @@ export async function escalateSymptomSession(input: {
     },
   });
 
-  const enquiry = await prisma.enquiry.create({
-    data: {
-      customerId: session.customerId ?? undefined,
-      type: "contact",
-      status: "new",
-      subject: subject.slice(0, 200),
-      message: (session.aiSummary || session.chiefComplaint || bodyIntro).slice(0, 4000),
-      name: session.customer?.fullName || "Guest visitor",
-      email: undefined,
-      phone: session.customer?.phone || undefined,
-      source: `symptom_triage:${session.id}`,
-    },
-  });
-
   await prisma.symptomMessage.create({
     data: {
       sessionId: session.id,
       role: "system",
-      content: `Escalated to pharmacy staff (${input.reason}). Ticket created.`,
+      content: `Escalated to pharmacy staff (${input.reason}). Pharmacist queue ticket opened — this is not a contact-page enquiry.`,
       metadata: {
         kind: "escalation",
         conversationId: conversation.id,
-        enquiryId: enquiry.id,
       },
     },
   });
@@ -688,7 +675,7 @@ export async function escalateSymptomSession(input: {
       escalatedAt: new Date(),
       escalatedReason: input.reason.slice(0, 200),
       conversationId: conversation.id,
-      enquiryId: enquiry.id,
+      // Do not set enquiryId — Contact enquiries are a separate product path.
       lastMessageAt: new Date(),
       messageCount: { increment: 1 },
     },
@@ -700,7 +687,7 @@ export async function escalateSymptomSession(input: {
         customerId: session.customerId,
         userId: session.userId ?? undefined,
         eventType: "symptom_escalation",
-        title: "Symptom check-in escalated",
+        title: "How do you feel — pharmacist requested",
         description: (session.provisionalLabel || session.chiefComplaint || input.reason).slice(
           0,
           200,
@@ -708,7 +695,6 @@ export async function escalateSymptomSession(input: {
         metadata: {
           symptomSessionId: session.id,
           conversationId: conversation.id,
-          enquiryId: enquiry.id,
         },
       },
     }).catch(() => undefined);
@@ -716,7 +702,7 @@ export async function escalateSymptomSession(input: {
 
   await recordAdminNotification({
     type: "symptom_escalation",
-    title: "Symptom triage needs pharmacist",
+    title: "URGENT: How do you feel — needs pharmacist",
     body: (session.provisionalLabel || session.chiefComplaint || "Visitor requested help").slice(
       0,
       180,
@@ -727,7 +713,7 @@ export async function escalateSymptomSession(input: {
   });
 
   await dispatchPushToStaff({
-    title: "Symptom check-in escalated",
+    title: "URGENT: Symptom needs pharmacist",
     body: (session.provisionalLabel || session.chiefComplaint || "A visitor needs pharmacist review.").slice(
       0,
       140,
@@ -735,6 +721,7 @@ export async function escalateSymptomSession(input: {
     url: `/admin/feel/${session.id}`,
     data: {
       tag: "symptom-escalation",
+      severity: "critical",
       symptomSessionId: session.id,
     },
   }).catch(() => undefined);
@@ -745,7 +732,7 @@ export async function escalateSymptomSession(input: {
     session: updated,
     ticket: {
       conversationId: conversation.id,
-      enquiryId: enquiry.id,
+      enquiryId: null as string | null,
     },
   };
 }
@@ -795,7 +782,7 @@ export async function recordSymptomCheckIn(input: {
     status = "monitoring";
   }
   if (input.feeling === "worse" && session.status !== "escalated") {
-    // Auto-nudge toward pharmacist
+    // Keep monitoring but flag urgently for staff (push + critical inbox below).
     status = "monitoring";
   }
 
@@ -812,17 +799,36 @@ export async function recordSymptomCheckIn(input: {
   });
 
   if (input.feeling === "worse") {
+    const label = (
+      session.provisionalLabel ||
+      session.chiefComplaint ||
+      session.category ||
+      "Symptom check-in"
+    ).slice(0, 180);
+    const who = session.customerId ? "A customer" : "A visitor";
+
+    // Critical in-app admin inbox (bell + /admin/inbox)
     await recordAdminNotification({
       type: "symptom_checkin",
-      title: "Symptom check-in: feeling worse",
-      body: (session.provisionalLabel || session.chiefComplaint || "Visitor feels worse").slice(
-        0,
-        180,
-      ),
-      severity: "warning",
+      title: "URGENT: Feeling worse",
+      body: `${who} reports feeling worse — ${label}`,
+      severity: "critical",
       relatedType: "symptom_session",
       relatedId: session.id,
     });
+
+    // Background + foreground push to every staff device that enabled notifications
+    await dispatchPushToStaff({
+      title: "URGENT: Feeling worse",
+      body: `${who} feels worse: ${label}`.slice(0, 140),
+      url: `/admin/feel/${session.id}`,
+      data: {
+        tag: "symptom-worse",
+        severity: "critical",
+        symptomSessionId: session.id,
+        feeling: "worse",
+      },
+    }).catch(() => undefined);
 
     // Offer escalation path via assistant message
     const offer = await prisma.symptomMessage.create({
@@ -830,7 +836,7 @@ export async function recordSymptomCheckIn(input: {
         sessionId: session.id,
         role: "assistant",
         content:
-          "Sorry you're feeling worse. Would you like me to connect you with a pharmacist for personalised advice? Tap **Talk to a pharmacist** anytime — or tell me more about what changed.",
+          "Sorry you're feeling worse — we've alerted the pharmacy team. Would you like me to connect you with a pharmacist for personalised advice right now? Tap **Talk to a pharmacist** anytime — or tell me more about what changed. If this is an emergency, call local emergency services immediately.",
         metadata: { kind: "worse_offer" },
       },
     });
@@ -872,7 +878,18 @@ export async function staffReplyToSymptomSession(input: {
   const text = input.content.trim().slice(0, 5000);
   if (!text) return { error: "empty" as const };
 
-  const session = await prisma.symptomSession.findUnique({ where: { id: input.sessionId } });
+  const session = await prisma.symptomSession.findUnique({
+    where: { id: input.sessionId },
+    include: {
+      customer: {
+        select: {
+          id: true,
+          fullName: true,
+          user: { select: { id: true } },
+        },
+      },
+    },
+  });
   if (!session) return { error: "not_found" as const };
 
   const msg = await prisma.symptomMessage.create({
@@ -918,6 +935,50 @@ export async function staffReplyToSymptomSession(input: {
         assignedToId: input.staffUserId,
       },
     }).catch(() => undefined);
+  }
+
+  // Notify the customer (in-app + push). Guests rely on live polling + toast on the feel page.
+  const preview = text.length > 140 ? `${text.slice(0, 137)}…` : text;
+  const notifTitle = input.markResolved
+    ? "Pharmacist closed your check-in"
+    : "Pharmacist replied to your check-in";
+  const notifBody = input.markResolved
+    ? `Your pharmacist left a final note: ${preview}`
+    : preview;
+  const feelUrl = session.customerId || session.userId ? "/portal/feel" : "/how-do-you-feel";
+
+  if (session.customerId) {
+    await prisma.notification
+      .create({
+        data: {
+          customerId: session.customerId,
+          userId: session.userId ?? session.customer?.user?.id ?? undefined,
+          channel: "in_app",
+          type: "symptom_staff_reply",
+          title: notifTitle,
+          body: notifBody,
+          fullBody: text,
+          status: "delivered",
+          sentAt: new Date(),
+          relatedType: "symptom_session",
+          relatedId: session.id,
+        },
+      })
+      .catch(() => undefined);
+
+    const pushUserId = session.userId ?? session.customer?.user?.id;
+    if (pushUserId) {
+      await dispatchPushToUser(pushUserId, {
+        title: notifTitle,
+        body: notifBody.slice(0, 140),
+        url: feelUrl,
+        data: {
+          tag: "symptom-staff-reply",
+          severity: "info",
+          symptomSessionId: session.id,
+        },
+      }).catch(() => undefined);
+    }
   }
 
   return { error: null, message: msg };

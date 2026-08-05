@@ -36,7 +36,7 @@ export default async function AdminFeelInboxPage({
 
   const where = statusFilter ? { status: statusFilter as never } : {};
 
-  const [sessions, counts, escalatedCount] = await Promise.all([
+  const [sessions, counts, escalatedCount, worseCount] = await Promise.all([
     prisma.symptomSession.findMany({
       where,
       include: {
@@ -48,13 +48,23 @@ export default async function AdminFeelInboxPage({
     }),
     prisma.symptomSession.groupBy({ by: ["status"], _count: true }),
     prisma.symptomSession.count({ where: { status: "escalated" } }),
+    prisma.symptomSession.count({
+      where: {
+        feelingTrend: "worse",
+        status: { in: ["active", "monitoring", "escalated"] },
+      },
+    }),
   ]);
 
-  // Prioritize escalated first in default view
+  // Prioritize: feeling worse first, then escalated, then open
   const sorted = [...sessions].sort((a, b) => {
-    const rank = (s: string) =>
-      s === "escalated" ? 0 : s === "active" || s === "monitoring" ? 1 : 2;
-    const d = rank(a.status) - rank(b.status);
+    const rank = (s: (typeof sessions)[number]) => {
+      if (s.feelingTrend === "worse" && s.status !== "resolved" && s.status !== "closed") return 0;
+      if (s.status === "escalated") return 1;
+      if (s.status === "active" || s.status === "monitoring") return 2;
+      return 3;
+    };
+    const d = rank(a) - rank(b);
     if (d !== 0) return d;
     return (b.lastMessageAt?.getTime() ?? 0) - (a.lastMessageAt?.getTime() ?? 0);
   });
@@ -65,9 +75,18 @@ export default async function AdminFeelInboxPage({
     <AdminShell
       user={user}
       title="How do you feel"
-      subtitle="AI-aided symptom check-ins — review summaries, reply when escalated, track trends."
+      subtitle="Urgent symptom check-ins — separate from Contact enquiries. Feeling-worse alerts and pharmacist handoffs land here."
     >
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="admin-stat p-4 ring-1 ring-rose-500/30">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-rose-700">
+              Feeling worse
+            </p>
+            <AlertCircle className="h-3.5 w-3.5 text-rose-600" />
+          </div>
+          <p className="mt-1 text-2xl font-bold text-rose-700">{worseCount}</p>
+        </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">
@@ -77,7 +96,7 @@ export default async function AdminFeelInboxPage({
           </div>
           <p className="mt-1 text-2xl font-bold text-amber-700">{escalatedCount}</p>
         </div>
-        {(["active", "monitoring", "resolved"] as const).map((s) => (
+        {(["active", "monitoring"] as const).map((s) => (
           <div key={s} className="admin-stat p-4">
             <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{s}</p>
             <p className="mt-1 text-2xl font-bold admin-text">{byStatus[s] || 0}</p>
@@ -109,7 +128,7 @@ export default async function AdminFeelInboxPage({
 
       <AdminPanel
         title="Triage sessions"
-        description="AI works with the visitor until escalation creates a ticket. Open a thread for the full transcript, images, and staff reply."
+        description="This queue is only for How do you feel — Contact page enquiries stay under Enquiries. Open a thread for the full transcript, images, and staff reply."
       >
         {sorted.length === 0 ? (
           <AdminEmptyState
@@ -121,11 +140,17 @@ export default async function AdminFeelInboxPage({
           <ul className="divide-y admin-border">
             {sorted.map((s) => {
               const last = s.messages[0];
+              const isWorse =
+                s.feelingTrend === "worse" &&
+                s.status !== "resolved" &&
+                s.status !== "closed";
               return (
                 <li key={s.id}>
                   <Link
                     href={`/admin/feel/${s.id}`}
-                    className="flex flex-col gap-2 px-1 py-4 transition hover:bg-[var(--admin-inset)] sm:flex-row sm:items-center sm:justify-between"
+                    className={`flex flex-col gap-2 px-1 py-4 transition hover:bg-[var(--admin-inset)] sm:flex-row sm:items-center sm:justify-between ${
+                      isWorse ? "rounded-xl bg-rose-500/5 ring-1 ring-rose-500/20" : ""
+                    }`}
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
@@ -136,12 +161,18 @@ export default async function AdminFeelInboxPage({
                         >
                           {s.status}
                         </span>
+                        {isWorse && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-rose-700">
+                            <AlertCircle className="h-3 w-3" />
+                            feeling worse
+                          </span>
+                        )}
                         {s.severity && (
                           <span className="text-[10px] font-semibold uppercase admin-muted">
                             {s.severity}
                           </span>
                         )}
-                        {s.feelingTrend && (
+                        {s.feelingTrend && !isWorse && (
                           <span className="inline-flex items-center gap-1 text-[10px] font-semibold admin-muted">
                             <Activity className="h-3 w-3" />
                             felt {s.feelingTrend}
