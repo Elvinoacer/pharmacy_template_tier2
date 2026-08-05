@@ -52,7 +52,8 @@ export default async function PortalOrdersPage({
     >
       {sp.placed && (
         <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Order placed successfully. Pay with M-Pesa below or settle at the pharmacy counter.
+          Order reserved — stock is held. Pay with M-Pesa below or at the counter; staff will
+          dispatch when you collect.
         </div>
       )}
 
@@ -68,6 +69,7 @@ export default async function PortalOrdersPage({
             {orders.map((o) => {
               const isHighlight = highlight === o.id;
               const pendingPay = o.status === "pending";
+              const isDispatched = Boolean(o.dispatchedAt) || o.status === "fulfilled";
               return (
                 <li
                   key={o.id}
@@ -87,6 +89,8 @@ export default async function PortalOrdersPage({
                           className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
                             o.status === "paid"
                               ? "bg-emerald-100 text-emerald-700"
+                              : o.status === "fulfilled"
+                                ? "bg-blue-100 text-blue-700"
                               : o.status === "waived"
                                 ? "bg-amber-100 text-amber-700"
                                 : "bg-slate-100 text-slate-600"
@@ -94,6 +98,15 @@ export default async function PortalOrdersPage({
                         >
                           {o.status}
                         </span>
+                        {isDispatched ? (
+                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                            dispatched
+                          </span>
+                        ) : o.status === "paid" ? (
+                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                            ready for collection
+                          </span>
+                        ) : null}
                         <span className="rounded-full bg-[#f4f7f4] px-2 py-0.5 text-[10px] text-[#5a6b62]">
                           {o.source}
                         </span>
@@ -111,7 +124,7 @@ export default async function PortalOrdersPage({
                         <div className="mt-2">
                           <MpesaPayButton
                             orderId={o.id}
-                            defaultPhone={profile?.phone || ""}
+                            defaultPhone={o.guestPhone || profile?.phone || ""}
                           />
                         </div>
                       )}

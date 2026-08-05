@@ -33,6 +33,12 @@ export type ActionState = {
   validation?: Record<string, unknown>;
   /** Optional redirect target (used by AI/CSV import flows). */
   redirectTo?: string;
+  /** Created/updated order id (counter sale → STK pay flow). */
+  orderId?: string;
+  /** Hint for client: start M-Pesa STK after create. */
+  startStk?: boolean;
+  /** Phone to prefill STK. */
+  stkPhone?: string;
 };
 
 async function staff() {
@@ -1192,6 +1198,20 @@ export async function adminCreateOrderAction(
   const markPaid = formData.get("markPaid") !== "off" && paymentMethod === "cash";
   const dosage = String(formData.get("dosage") || "").trim() || null;
 
+  // OTC counter: auto-dispatch by default (customer walking out with meds).
+  // Admin can uncheck "Mark as dispatched" to keep it as a paid reservation.
+  const autoDispatch =
+    formData.get("autoDispatch") !== "off" &&
+    (source === "counter" || formData.get("autoDispatch") === "on");
+  const fulfillment =
+    String(formData.get("fulfillment") || "").trim() ||
+    (autoDispatch ? "immediate" : "reserve");
+  const guestName = String(formData.get("customerName") || "").trim() || null;
+  const guestPhoneRaw =
+    String(formData.get("customerPhone") || formData.get("mpesaPhone") || "").trim() || null;
+  const { formatMpesaPhone } = await import("@/app/lib/services/daraja");
+  const guestPhone = guestPhoneRaw ? formatMpesaPhone(guestPhoneRaw) : null;
+
   const {
     applyStockChange,
     notifyStockThreshold,
@@ -1203,13 +1223,25 @@ export async function adminCreateOrderAction(
 
   try {
     const order = await prisma.$transaction(async (tx) => {
+      // Cash + auto-dispatch → fulfilled immediately; cash without → paid reservation.
+      const initialStatus = markPaid
+        ? autoDispatch
+          ? "fulfilled"
+          : "paid"
+        : "pending";
+
       const o = await tx.order.create({
         data: {
           customerId: finalCustomerId,
           source,
-          status: markPaid ? "paid" : "pending",
+          status: initialStatus,
           total,
           notes: [notes, dosage ? `Dosage: ${dosage}` : null].filter(Boolean).join("\n") || null,
+          guestName: finalCustomerId ? null : guestName,
+          guestPhone: guestPhone,
+          fulfillment: fulfillment === "delivery" ? "delivery" : autoDispatch ? "immediate" : "reserve",
+          dispatchedAt: markPaid && autoDispatch ? new Date() : null,
+          dispatchedById: markPaid && autoDispatch ? user.id : null,
           servedById: user.id,
           items: {
             create: {
@@ -1242,6 +1274,7 @@ export async function adminCreateOrderAction(
             provider: "cash",
             status: "completed",
             providerRef: `CASH-${o.id.slice(0, 8).toUpperCase()}`,
+            initiatedById: user.id,
           },
         });
       }
@@ -1291,14 +1324,30 @@ export async function adminCreateOrderAction(
     total,
     paymentMethod,
     markPaid,
+    autoDispatch,
+    fulfillment,
   });
   revalidatePath("/admin/orders");
   revalidatePath("/admin/medications");
+  revalidatePath("/admin/inventory");
   if (finalCustomerId) revalidatePath(`/admin/customers/${finalCustomerId}`);
+
+  if (paymentMethod === "daraja") {
+    return {
+      success: `Order created (KES ${total}). Send STK push — customer enters PIN on their phone.`,
+      orderId,
+      startStk: true,
+      stkPhone: guestPhone || undefined,
+    };
+  }
+
   return {
     success: markPaid
-      ? `Sale recorded & paid (cash). Total: KES ${total}.`
+      ? autoDispatch
+        ? `Sale recorded, paid (cash) & dispatched. Total: KES ${total}.`
+        : `Sale recorded & paid (cash), held for later dispatch. Total: KES ${total}.`
       : `Order created (pending payment). Total: KES ${total}.`,
+    orderId,
   };
 }
 
@@ -1306,18 +1355,28 @@ export async function adminMarkOrderPaidAction(formData: FormData) {
   const user = await staff();
   const id = String(formData.get("id") || "");
   const provider = (String(formData.get("provider") || "cash") as "cash" | "card" | "other" | "daraja");
+  const autoDispatch = formData.get("autoDispatch") !== "off";
   if (!id) return { error: "Order id required." };
 
   const order = await prisma.order.findUnique({ where: { id } });
   if (!order) return { error: "Order not found." };
-  if (order.status === "paid" || order.status === "waived") {
+  if (order.status === "paid" || order.status === "fulfilled" || order.status === "waived") {
     return { error: "Order already settled." };
   }
+
+  const doDispatch =
+    autoDispatch &&
+    (order.fulfillment === "immediate" || order.source === "counter" || formData.get("autoDispatch") === "on");
 
   await prisma.$transaction(async (tx) => {
     await tx.order.update({
       where: { id },
-      data: { status: "paid" },
+      data: {
+        status: doDispatch ? "fulfilled" : "paid",
+        ...(doDispatch
+          ? { dispatchedAt: new Date(), dispatchedById: user.id }
+          : {}),
+      },
     });
     await tx.payment.create({
       data: {
@@ -1327,13 +1386,48 @@ export async function adminMarkOrderPaidAction(formData: FormData) {
         provider,
         status: "completed",
         providerRef: `${provider.toUpperCase()}-${id.slice(0, 8).toUpperCase()}`,
+        initiatedById: user.id,
       },
     });
   });
 
-  await writeAuditLog(user.id, "order_marked_paid", "order", id, { provider });
+  await writeAuditLog(user.id, "order_marked_paid", "order", id, { provider, doDispatch });
   revalidatePath("/admin/orders");
-  return { success: "Order marked as paid." };
+  return {
+    success: doDispatch
+      ? "Order marked paid & dispatched."
+      : "Order marked as paid (awaiting dispatch).",
+  };
+}
+
+/** Hand over a paid remote/reservation order to the customer. */
+export async function adminDispatchOrderAction(formData: FormData) {
+  const user = await staff();
+  const id = String(formData.get("id") || "");
+  if (!id) return { error: "Order id required." };
+
+  const { dispatchOrder } = await import("@/app/lib/services/payments");
+  const result = await dispatchOrder({ orderId: id, actorId: user.id });
+  if (!result.ok) return { error: result.error };
+
+  await writeAuditLog(user.id, "order_dispatched", "order", id, {});
+  revalidatePath("/admin/orders");
+  return { success: "Order marked as dispatched." };
+}
+
+/** Undo auto-dispatch — keep paid, hold for later handoff. */
+export async function adminUndispatchOrderAction(formData: FormData) {
+  const user = await staff();
+  const id = String(formData.get("id") || "");
+  if (!id) return { error: "Order id required." };
+
+  const { undispatchOrder } = await import("@/app/lib/services/payments");
+  const result = await undispatchOrder({ orderId: id, actorId: user.id });
+  if (!result.ok) return { error: result.error };
+
+  await writeAuditLog(user.id, "order_undispatched", "order", id, {});
+  revalidatePath("/admin/orders");
+  return { success: "Dispatch cleared — order held as paid reservation." };
 }
 
 export async function adminWaiveOrderAction(formData: FormData) {

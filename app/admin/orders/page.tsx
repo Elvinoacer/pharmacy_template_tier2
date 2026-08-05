@@ -22,9 +22,13 @@ type OrderRow = {
   source: string;
   total: number;
   createdAt: Date;
-  customer: { id: string; fullName: string } | null;
+  guestName: string | null;
+  guestPhone: string | null;
+  fulfillment: string;
+  dispatchedAt: Date | null;
+  customer: { id: string; fullName: string; phone?: string | null } | null;
   items: { quantity: number; name: string }[];
-  payments: { providerRef: string | null }[];
+  payments: { providerRef: string | null; status: string }[];
 };
 
 type MedOption = {
@@ -84,7 +88,7 @@ export default async function AdminOrdersPage({
       prisma.order.findMany({
         where: status ? { status } : undefined,
         include: {
-          customer: { select: { id: true, fullName: true } },
+          customer: { select: { id: true, fullName: true, phone: true } },
           items: true,
           payments: { orderBy: { createdAt: "desc" }, take: 1 },
         },
@@ -115,9 +119,13 @@ export default async function AdminOrdersPage({
       source: o.source,
       total: Number(o.total),
       createdAt: o.createdAt,
+      guestName: o.guestName,
+      guestPhone: o.guestPhone,
+      fulfillment: o.fulfillment,
+      dispatchedAt: o.dispatchedAt,
       customer: o.customer,
       items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
-      payments: o.payments.map((p) => ({ providerRef: p.providerRef })),
+      payments: o.payments.map((p) => ({ providerRef: p.providerRef, status: p.status })),
     }));
     medications = meds.map((m) => ({
       id: m.id,
@@ -161,7 +169,7 @@ export default async function AdminOrdersPage({
       const extra = await prisma.order.findMany({
         where: status ? { status } : undefined,
         include: {
-          customer: { select: { id: true, fullName: true } },
+          customer: { select: { id: true, fullName: true, phone: true } },
           items: true,
           payments: { orderBy: { createdAt: "desc" }, take: 1 },
         },
@@ -175,9 +183,13 @@ export default async function AdminOrdersPage({
         source: o.source,
         total: Number(o.total),
         createdAt: o.createdAt,
+        guestName: o.guestName,
+        guestPhone: o.guestPhone,
+        fulfillment: o.fulfillment,
+        dispatchedAt: o.dispatchedAt,
         customer: o.customer,
         items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
-        payments: o.payments.map((p) => ({ providerRef: p.providerRef })),
+        payments: o.payments.map((p) => ({ providerRef: p.providerRef, status: p.status })),
       }));
     } catch (err) {
       console.error("[admin/orders] Failed to load page:", err);
@@ -189,7 +201,7 @@ export default async function AdminOrdersPage({
     <AdminShell
       user={user}
       title="Orders & Revenue"
-      subtitle="OTC counter sales, refill payments, and revenue analytics"
+      subtitle="Counter M-Pesa/cash, remote reservations, dispatch tracking"
       actions={
         <div className="flex items-center gap-2">
           <PeriodSelect period={period} status={status} />
@@ -259,8 +271,8 @@ export default async function AdminOrdersPage({
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Record OTC sale form */}
         <AdminPanel
-          title="Record OTC sale"
-          description="Sell a medication over the counter — customer is created on the fly if email is given"
+          title="Record counter sale"
+          description="Cash or M-Pesa STK. OTC defaults to auto-dispatch; uncheck to hold as a paid reservation."
         >
           <OrderForm
             action={adminCreateOrderAction}
@@ -279,17 +291,19 @@ export default async function AdminOrdersPage({
             />
           ) : (
             <ul className="space-y-2">
-              {paged.map((o) => (
+              {paged.map((o) => {
+                const displayName =
+                  o.customer?.fullName || o.guestName || "Walk-in customer";
+                const isDispatched = Boolean(o.dispatchedAt) || o.status === "fulfilled";
+                return (
                 <li
                   key={o.id}
                   className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold admin-text">
-                          {o.customer?.fullName || "Walk-in customer"}
-                        </p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-semibold admin-text">{displayName}</p>
                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
                           o.status === "paid" ? "bg-emerald-500/15 text-emerald-700"
                           : o.status === "waived" ? "bg-amber-500/15 text-amber-700"
@@ -299,15 +313,30 @@ export default async function AdminOrdersPage({
                         }`}>
                           {o.status}
                         </span>
+                        {isDispatched ? (
+                          <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                            dispatched
+                          </span>
+                        ) : o.status === "paid" ? (
+                          <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                            await dispatch
+                          </span>
+                        ) : null}
                         <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] admin-muted">
                           {o.source}
                         </span>
+                        {o.fulfillment && o.fulfillment !== "reserve" && (
+                          <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] admin-muted">
+                            {o.fulfillment}
+                          </span>
+                        )}
                       </div>
                       <p className="mt-0.5 text-xs admin-muted">
                         {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                       </p>
                       <p className="mt-1 text-[10px] admin-soft">
                         {formatDateTime(o.createdAt)}
+                        {o.guestPhone && <> · {o.guestPhone}</>}
                         {o.payments[0] && o.payments[0].providerRef && (
                           <> · Ref: {o.payments[0].providerRef}</>
                         )}
@@ -315,13 +344,18 @@ export default async function AdminOrdersPage({
                     </div>
                     <div className="text-right">
                       <p className="font-bold admin-text">KES {o.total.toLocaleString()}</p>
-                      {o.status === "pending" && (
-                        <OrderSettleActions orderId={o.id} />
-                      )}
+                      <OrderSettleActions
+                        orderId={o.id}
+                        status={o.status}
+                        guestPhone={o.guestPhone}
+                        defaultPhone={o.customer?.phone || o.guestPhone}
+                        dispatched={isDispatched}
+                      />
                     </div>
                   </div>
                 </li>
-              ))}
+              );
+              })}
             </ul>
           )}
         </AdminPanel>

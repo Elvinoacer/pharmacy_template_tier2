@@ -69,7 +69,7 @@ export default async function GuestOrderPage({
       <PageHero
         eyebrow="OTC order"
         title="Reserve over-the-counter products"
-        description="No account required. We hold stock, confirm by phone, and you pay on collection or delivery."
+        description="No account required. Hold stock online, pay with M-Pesa now or at collection — staff dispatch when you pick up."
         crumbs={[{ label: "Order OTC" }]}
       />
 
@@ -92,12 +92,12 @@ export default async function GuestOrderPage({
                   {session?.customerId ? (
                     <>
                       {" "}
-                      You&apos;re signed in — for M-Pesa pay use{" "}
+                      You&apos;re signed in — orders also appear in{" "}
                       <Link
                         href={`/portal/orders/new${preselected ? `?medicationId=${preselected.id}` : ""}`}
                         className="font-semibold text-teal-800 underline"
                       >
-                        portal checkout
+                        your portal
                       </Link>
                       .
                     </>
@@ -124,6 +124,7 @@ export default async function GuestOrderPage({
                 slug: m.slug,
               }))}
               defaultMedicationId={preselected?.id || sp.medicationId || ""}
+              isLoggedIn={Boolean(session?.customerId)}
             />
           </div>
 
@@ -140,19 +141,19 @@ export default async function GuestOrderPage({
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
                     1
                   </span>
-                  Choose an OTC product and quantity — we reserve live stock.
+                  Choose an OTC product — we reserve live stock immediately.
                 </li>
                 <li className="flex gap-3">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
                     2
                   </span>
-                  Leave your name and phone. Staff get an instant alert.
+                  Pay with M-Pesa on your phone (optional) or settle at collection.
                 </li>
                 <li className="flex gap-3">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
                     3
                   </span>
-                  We confirm availability, then you collect or receive delivery and pay.
+                  Staff dispatch when you pick up or when delivery leaves — no wasted trips.
                 </li>
               </ol>
             </div>
@@ -164,7 +165,8 @@ export default async function GuestOrderPage({
                 <Clock className="h-5 w-5 text-teal-700" /> Prefer the full portal?
               </h3>
               <p className="mt-2 text-sm text-[#5a6b62]">
-                Accounts unlock M-Pesa checkout, refill history, loyalty points, and adherence reminders.
+                Optional — guests can already pay with M-Pesa. Accounts add refill history, loyalty,
+                and dose reminders.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Link href="/login" className="btn-primary !py-2 text-sm">

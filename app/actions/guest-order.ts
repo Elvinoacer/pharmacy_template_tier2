@@ -4,17 +4,26 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/db";
 import { checkRateLimit } from "@/app/lib/rate-limit";
 import { getSessionUser } from "@/app/lib/auth";
+import { formatMpesaPhone } from "@/app/lib/services/daraja";
 
 export type GuestOrderState = {
   error?: string;
   success?: string;
   orderId?: string;
+  /** Phone normalized for guest M-Pesa pay authz */
+  phone?: string;
+  total?: number;
+  /** Soft prompt after success — account is optional */
+  suggestAccount?: boolean;
 };
 
 /**
  * Public OTC hold/order for visitors — no account required.
- * Creates a pending order (source=website), deducts stock atomically,
- * and notifies staff. Customer can collect & pay in store or pay later via portal.
+ * Creates a pending reservation (source=website, fulfillment=reserve),
+ * deducts stock atomically, notifies staff.
+ *
+ * Guest can pay later via M-Pesa (phone match) or at collection.
+ * Account creation is optional — only soft-nudged for dose reminders.
  */
 export async function guestCreateOrderAction(
   _prev: GuestOrderState,
@@ -27,6 +36,9 @@ export async function guestCreateOrderAction(
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const notes = String(formData.get("notes") || "").trim();
   const pickupPreference = String(formData.get("pickupPreference") || "pickup");
+  // pay_now is a client preference only — order is always created as reservation;
+  // client opens STK panel after success when payNow is set.
+  const payNow = formData.get("payNow") === "on" || formData.get("payNow") === "true";
 
   if (!medicationId) return { error: "Please select a product." };
   if (!fullName || fullName.length < 2) return { error: "Your name is required." };
@@ -58,7 +70,7 @@ export async function guestCreateOrderAction(
     return { error: `Only ${med.currentStock} unit(s) in stock right now.` };
   }
 
-  // Link to existing customer if email/phone matches a profile (optional).
+  // Link to existing customer if session/email/phone matches (optional — never block).
   const session = await getSessionUser().catch(() => null);
   let customerId: string | null = session?.customerId ?? null;
   if (!customerId && email) {
@@ -79,8 +91,10 @@ export async function guestCreateOrderAction(
 
   const unitPrice = Number(med.price);
   const total = Math.max(0, unitPrice * quantity);
+  const mpesaPhone = formatMpesaPhone(phone);
+  const fulfillment = pickupPreference === "delivery" ? "delivery" : "reserve";
   const orderNotes = [
-    `Guest OTC order`,
+    `Guest OTC reservation`,
     `Name: ${fullName}`,
     `Phone: ${phone}`,
     email ? `Email: ${email}` : null,
@@ -106,6 +120,9 @@ export async function guestCreateOrderAction(
           status: "pending",
           total,
           notes: orderNotes,
+          guestName: fullName,
+          guestPhone: mpesaPhone,
+          fulfillment,
           items: {
             create: {
               medicationId,
@@ -120,7 +137,7 @@ export async function guestCreateOrderAction(
         inventoryId: medicationId,
         quantityDelta: -quantity,
         reason: "sale",
-        notes: `Guest website order × ${quantity} (${fullName})`,
+        notes: `Guest website reservation × ${quantity} (${fullName})`,
         relatedType: "order",
         relatedId: o.id,
         actorId: session?.id ?? null,
@@ -140,8 +157,8 @@ export async function guestCreateOrderAction(
   const { recordAdminNotification } = await import("@/app/lib/services/admin-notifications");
   await recordAdminNotification({
     type: "enquiry_new",
-    title: "New guest OTC order",
-    body: `${fullName} (${phone}) ordered ${quantity}× ${med.medicationMaster.name} — KES ${total}`,
+    title: "New guest OTC reservation",
+    body: `${fullName} (${phone}) reserved ${quantity}× ${med.medicationMaster.name} — KES ${total}${payNow ? " (wants to pay now)" : ""}`,
     severity: "info",
     relatedType: "order",
     relatedId: orderId,
@@ -149,7 +166,7 @@ export async function guestCreateOrderAction(
 
   const { dispatchPushToStaff } = await import("@/app/lib/services/push");
   await dispatchPushToStaff({
-    title: "Guest OTC order",
+    title: "Guest OTC reservation",
     body: `${fullName}: ${quantity}× ${med.medicationMaster.name}`,
     url: "/admin/orders",
     data: { tag: `order-${orderId}`, orderId },
@@ -161,7 +178,7 @@ export async function guestCreateOrderAction(
       customerId,
       session?.id ?? null,
       "order_placed",
-      "Guest OTC order",
+      "Guest OTC reservation",
       `${med.medicationMaster.name} × ${quantity} — KES ${total}`,
       { orderId },
       session?.id,
@@ -174,7 +191,12 @@ export async function guestCreateOrderAction(
   revalidatePath("/admin/inventory");
 
   return {
-    success: `Order reserved. Reference ${orderId.slice(0, 8).toUpperCase()}. We'll confirm on ${phone}. Collect in store or we'll call about delivery.`,
+    success: payNow
+      ? `Reserved. Complete M-Pesa below — stock is held under ref ${orderId.slice(0, 8).toUpperCase()}.`
+      : `Reserved under ${orderId.slice(0, 8).toUpperCase()}. Pay with M-Pesa now or at collection. We'll confirm on ${phone}.`,
     orderId,
+    phone: mpesaPhone,
+    total,
+    suggestAccount: !session?.customerId,
   };
 }
