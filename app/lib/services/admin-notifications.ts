@@ -21,7 +21,9 @@ export type AdminNotifType =
   | "campaign_failed"
   | "reminder_failed"
   | "message_failed"
-  | "adherence_low";
+  | "adherence_low"
+  | "symptom_escalation"
+  | "symptom_checkin";
 
 export type AdminNotifSeverity = "info" | "warning" | "critical";
 
@@ -41,9 +43,13 @@ export async function recordAdminNotification(input: {
       (input.type === "payment_failed" ||
       input.type === "campaign_failed" ||
       input.type === "reminder_failed" ||
-      input.type === "ai_escalation"
+      input.type === "ai_escalation" ||
+      input.type === "symptom_escalation"
         ? "critical"
-        : input.type === "stock_low" || input.type === "feedback_low" || input.type === "adherence_low"
+        : input.type === "stock_low" ||
+            input.type === "feedback_low" ||
+            input.type === "adherence_low" ||
+            input.type === "symptom_checkin"
           ? "warning"
           : "info");
     await prisma.adminNotification.create({

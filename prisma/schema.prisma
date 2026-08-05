@@ -276,6 +276,9 @@ model User {
   segmentsCreated     Segment[]
   pushDevices         PushDevice[]
   dispatchedPrescriptions Prescription[] @relation("PrescriptionDispatcher")
+  symptomSessions     SymptomSession[]       @relation("SymptomSessionUser")
+  symptomStaffReplies SymptomMessage[]       @relation("SymptomStaffSender")
+  pharmacySettingsUpdated PharmacySettings[] @relation("PharmacySettingsUpdater")
 
   @@map("users")
 }
@@ -392,6 +395,7 @@ model CustomerProfile {
   adherenceEscalations AdherenceEscalation[]
   orders          Order[]
   payments        Payment[]
+  symptomSessions SymptomSession[]
 
   @@index([ageSegment])
   @@map("customer_profiles")
@@ -1480,7 +1484,7 @@ model CaregiverInvite {
 /// Has its own read/unread state, severity, and a `retry` action when applicable.
 model AdminNotification {
   id         String   @id @default(uuid()) @db.Uuid
-  /// Type of event: refill_new | enquiry_new | feedback_low | ai_escalation | stock_low | payment_failed | campaign_failed | reminder_failed
+  /// Type of event: refill_new | enquiry_new | feedback_low | ai_escalation | stock_low | payment_failed | campaign_failed | reminder_failed | symptom_escalation | symptom_checkin
   type       String
   title      String
   body       String
@@ -1497,4 +1501,145 @@ model AdminNotification {
   @@index([isRead])
   @@index([createdAt(sort: Desc)])
   @@map("admin_notifications")
+}
+
+// ── Pharmacy settings (singleton) ─────────────────────────────
+
+/// Single-row pharmacy configuration editable by admin (location, contact, hours).
+/// Public pages fall back to static `app/lib/data.ts` when this row is missing.
+model PharmacySettings {
+  id              String   @id @default("default")
+  displayName     String?  @map("display_name")
+  phone           String?
+  email           String?
+  whatsapp        String?
+  addressLine1    String?  @map("address_line1")
+  addressLine2    String?  @map("address_line2")
+  city            String?
+  state           String?
+  zip             String?
+  country         String?  @default("Kenya")
+  /// WGS84 latitude (e.g. -1.286389)
+  latitude        Float?
+  /// WGS84 longitude (e.g. 36.817223)
+  longitude       Float?
+  /// Optional Google Place ID for richer maps links
+  placeId         String?  @map("place_id")
+  /// Optional full iframe embed URL override; otherwise built from lat/lng
+  mapsEmbedUrl    String?  @map("maps_embed_url")
+  /// Free-form hours JSON: [{ "day": "Monday – Friday", "time": "8:00 AM – 8:00 PM" }, ...]
+  hours           Json     @default("[]")
+  updatedById     String?  @map("updated_by") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  updatedBy User? @relation("PharmacySettingsUpdater", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@map("pharmacy_settings")
+}
+
+// ── How do you feel? (symptom triage) ─────────────────────────
+
+enum SymptomSessionStatus {
+  active
+  monitoring
+  escalated
+  resolved
+  closed
+}
+
+enum SymptomSeverity {
+  mild
+  moderate
+  urgent
+  emergency
+}
+
+enum SymptomFeeling {
+  better
+  same
+  worse
+}
+
+/// AI-aided symptom check-in session. Guests use guestKey (localStorage);
+/// logged-in customers link via customerId/userId.
+model SymptomSession {
+  id               String               @id @default(uuid()) @db.Uuid
+  /// Opaque browser key for guest sessions (stored in localStorage).
+  guestKey         String?              @map("guest_key")
+  customerId       String?              @map("customer_id") @db.Uuid
+  userId           String?              @map("user_id") @db.Uuid
+  status           SymptomSessionStatus @default(active)
+  /// High-level category chosen on start: headache | stomach | cold_flu | skin | allergy | other
+  category         String?
+  chiefComplaint   String?              @map("chief_complaint")
+  /// Structured Q&A answers collected during triage (JSON object).
+  structuredAnswers Json                @default("{}") @map("structured_answers")
+  /// AI-generated rolling summary for staff (not a medical diagnosis).
+  aiSummary        String?              @map("ai_summary")
+  /// Short provisional label e.g. "possible tension headache" — always non-diagnostic wording.
+  provisionalLabel String?              @map("provisional_label")
+  severity         SymptomSeverity?
+  /// Latest self-reported trend from check-ins.
+  feelingTrend     SymptomFeeling?      @map("feeling_trend")
+  escalatedAt      DateTime?            @map("escalated_at")
+  escalatedReason  String?              @map("escalated_reason")
+  /// Linked CRM conversation created on escalation (ticket).
+  conversationId   String?              @map("conversation_id") @db.Uuid
+  /// Linked enquiry ticket for admin enquiries board.
+  enquiryId        String?              @map("enquiry_id") @db.Uuid
+  lastCheckInAt    DateTime?            @map("last_check_in_at")
+  nextCheckInAt    DateTime?            @map("next_check_in_at")
+  messageCount     Int                  @default(0) @map("message_count")
+  lastMessageAt    DateTime?            @default(now()) @map("last_message_at")
+  /// Staff assignment when escalated
+  assignedToId     String?              @map("assigned_to") @db.Uuid
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+
+  customer   CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  user       User?            @relation("SymptomSessionUser", fields: [userId], references: [id], onDelete: SetNull)
+  messages   SymptomMessage[]
+  checkIns   SymptomCheckIn[]
+
+  @@index([guestKey])
+  @@index([customerId])
+  @@index([status])
+  @@index([lastMessageAt(sort: Desc)])
+  @@map("symptom_sessions")
+}
+
+model SymptomMessage {
+  id         String   @id @default(uuid()) @db.Uuid
+  sessionId  String   @map("session_id") @db.Uuid
+  /// user | assistant | staff | system
+  role       String
+  content    String
+  /// Public image URLs attached to this turn (R2).
+  imageUrls  String[] @default([]) @map("image_urls")
+  /// Staff sender when role = staff
+  senderId   String?  @map("sender_id") @db.Uuid
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  session SymptomSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sender  User?          @relation("SymptomStaffSender", fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId, createdAt])
+  @@map("symptom_messages")
+}
+
+model SymptomCheckIn {
+  id        String         @id @default(uuid()) @db.Uuid
+  sessionId String         @map("session_id") @db.Uuid
+  feeling   SymptomFeeling
+  notes     String?
+  /// Optional free-form score 1–10 for how they feel overall
+  score     Int?
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  session SymptomSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@map("symptom_check_ins")
 }

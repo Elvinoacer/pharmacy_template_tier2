@@ -39,6 +39,8 @@ export default async function AdminInboxPage({
     severity: n.severity,
     isRead: n.isRead,
     createdAt: n.createdAt.toISOString(),
+    relatedType: n.relatedType,
+    relatedId: n.relatedId,
   }));
 
   const queryParams: Record<string, string | undefined> = {};

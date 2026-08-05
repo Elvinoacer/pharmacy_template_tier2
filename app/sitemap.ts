@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/faq",
     "/contact",
     "/refill",
+    "/how-do-you-feel",
     "/delivery",
     "/careers",
     "/privacy",
@@ -23,7 +24,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${base}${path || "/"}`,
     lastModified: now,
     changeFrequency: path === "" ? "weekly" : "monthly",
-    priority: path === "" ? 1 : path === "/contact" || path === "/refill" ? 0.9 : 0.7,
+    priority:
+      path === ""
+        ? 1
+        : path === "/contact" || path === "/refill" || path === "/how-do-you-feel"
+          ? 0.9
+          : 0.7,
   }));
 
   const serviceRoutes = services.map((s) => ({

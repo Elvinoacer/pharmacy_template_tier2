@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { Pagination } from "@/app/components/Pagination";
 import { toast } from "@/app/components/Toaster";
-import { Inbox, CheckCheck } from "lucide-react";
+import { Inbox, CheckCheck, ExternalLink } from "lucide-react";
 import { formatDateTime } from "@/app/lib/time";
 
 export type AdminNotifRow = {
@@ -13,7 +14,23 @@ export type AdminNotifRow = {
   severity: string;
   isRead: boolean;
   createdAt: string; // ISO
+  relatedType?: string | null;
+  relatedId?: string | null;
 };
+
+function relatedHref(n: AdminNotifRow): string | null {
+  if (n.relatedType === "symptom_session" && n.relatedId) {
+    return `/admin/feel/${n.relatedId}`;
+  }
+  if (n.type === "symptom_escalation" || n.type === "symptom_checkin") {
+    return n.relatedId ? `/admin/feel/${n.relatedId}` : "/admin/feel";
+  }
+  if (n.type === "ai_escalation") return "/admin/ai";
+  if (n.type === "enquiry_new") return "/admin/enquiries";
+  if (n.type === "refill_new") return "/admin/refills";
+  if (n.type === "stock_low") return "/admin/inventory";
+  return null;
+}
 
 const SEVERITY_COLOR: Record<string, string> = {
   info: "bg-blue-500/15 text-blue-700",
@@ -110,13 +127,14 @@ export function AdminInboxPanel({
               </tr>
             ) : (
               initial.map((n) => {
+                const href = relatedHref(n);
                 return (
                   <tr
                     key={n.id}
                     className={`transition ${!n.isRead ? "bg-[var(--admin-inset)]/50 font-medium" : ""}`}
                   >
                     <td>
-                      <p className="text-[10px] capitalize admin-soft">{n.type.replace("_", " ")}</p>
+                      <p className="text-[10px] capitalize admin-soft">{n.type.replace(/_/g, " ")}</p>
                     </td>
                     <td>
                       <p className="flex items-center gap-1.5 text-sm admin-text">
@@ -126,6 +144,14 @@ export function AdminInboxPanel({
                         )}
                       </p>
                       <p className="truncate text-xs admin-muted max-w-[280px]">{n.body}</p>
+                      {href && (
+                        <Link
+                          href={href}
+                          className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold admin-accent-text hover:underline"
+                        >
+                          Open <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      )}
                     </td>
                     <td>
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${SEVERITY_COLOR[n.severity] || "bg-slate-500/15 text-slate-600"}`}>

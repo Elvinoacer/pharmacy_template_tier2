@@ -32,7 +32,7 @@ function uid() {
 function renderContent(text: string) {
   const parts = text.split(/(\/[a-z][\w-]*)/gi);
   return parts.map((part, i) => {
-    if (/^\/(refill|delivery|contact|services|faq|health|careers|about|medicines|order|portal|search)(\/[\w-]+)?$/i.test(part)) {
+    if (/^\/(refill|delivery|contact|services|faq|health|careers|about|medicines|order|portal|search|how-do-you-feel)(\/[\w-]+)?$/i.test(part)) {
       return (
         <Link
           key={i}
