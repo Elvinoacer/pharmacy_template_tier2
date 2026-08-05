@@ -20,6 +20,7 @@ import {
   Pill,
   CalendarClock,
   Sparkles,
+  HeartPulse,
 } from "lucide-react";
 
 export const metadata = { title: "Messages" };
@@ -41,6 +42,7 @@ const typeIcon: Record<string, React.ComponentType<{ className?: string }>> = {
   reminder: CalendarClock,
   campaign: Megaphone,
   loyalty: Sparkles,
+  symptom_staff_reply: HeartPulse,
 };
 
 export default async function PortalMessagesPage({

@@ -93,11 +93,9 @@ export default async function AdminFeelSessionPage({
                   CRM conversation
                 </Link>
               )}
-              {session.enquiryId && (
-                <Link href="/admin/enquiries" className="font-semibold admin-accent-text hover:underline">
-                  Enquiry ticket
-                </Link>
-              )}
+              <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-semibold uppercase admin-soft">
+                How do you feel · not a contact enquiry
+              </span>
             </div>
           </div>
         </AdminPanel>

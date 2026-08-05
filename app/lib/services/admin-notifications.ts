@@ -44,12 +44,13 @@ export async function recordAdminNotification(input: {
       input.type === "campaign_failed" ||
       input.type === "reminder_failed" ||
       input.type === "ai_escalation" ||
-      input.type === "symptom_escalation"
+      input.type === "symptom_escalation" ||
+      // Feeling-worse check-ins are clinical urgency, not routine noise.
+      input.type === "symptom_checkin"
         ? "critical"
         : input.type === "stock_low" ||
             input.type === "feedback_low" ||
-            input.type === "adherence_low" ||
-            input.type === "symptom_checkin"
+            input.type === "adherence_low"
           ? "warning"
           : "info");
     await prisma.adminNotification.create({

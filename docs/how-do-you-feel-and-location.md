@@ -40,11 +40,12 @@ Same UI; sessions linked to `customerId` / `userId` for cross-device history.
 
 ### Admin (`/admin/feel`, `/admin/feel/[id]`)
 
-- Queue prioritising escalated cases.
+- Queue prioritising **feeling worse** then escalated cases (not Contact enquiries).
 - AI summary, provisional non-diagnostic label, severity, feeling trend.
 - Full transcript + image gallery.
-- Staff reply (mirrors into CRM conversation when present).
-- Admin notifications + push on escalation / “feeling worse”.
+- Staff reply (mirrors into CRM conversation when present; notifies customer).
+- **Critical** admin inbox + FCM push on escalation / “feeling worse”.
+- Sidebar badge on **How do you feel** with urgent count; live toasts if push is off.
 
 ### Location admin (`/admin/settings/location`)
 
@@ -64,7 +65,9 @@ Same UI; sessions linked to `customerId` / `userId` for cross-device history.
 - `PharmacySettings` — singleton config.
 - `SymptomSession` / `SymptomMessage` / `SymptomCheckIn` — triage state machine:
   - `active` → `monitoring` → `escalated` | `resolved` | `closed`
-- Escalation creates `Conversation` + `Enquiry` tickets and notifies staff.
+- Escalation creates a `Conversation` (CRM mirror) and notifies staff — **never** a Contact-page `Enquiry`.
+- “Feeling worse” → critical `AdminNotification` + `dispatchPushToStaff`.
+- Staff reply → customer `Notification` (in_app) + push; guests get live poll/toast via `guestKey`.
 
 ## APIs
 
@@ -76,6 +79,7 @@ Same UI; sessions linked to `customerId` / `userId` for cross-device history.
 | `POST /api/feel/check-in` | better / same / worse |
 | `POST /api/feel/escalate` | Explicit pharmacist handoff |
 | `POST /api/feel/admin/reply` | Staff reply |
+| `GET /api/feel/alerts` | Live toast poll (staff / customer / guest) |
 
 ## AI behaviour
 

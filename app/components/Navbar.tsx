@@ -394,8 +394,9 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
             aria-hidden="true"
           />
-
-          <div className="absolute inset-x-0 top-full z-50 max-h-[calc(100vh-70px)] overflow-y-auto border-b border-teal-900/10 bg-white/98 p-4 sm:p-6 shadow-2xl backdrop-blur-2xl lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          {/* Drawer Panel */}
+          <div className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-70px)] overflow-y-auto border-b border-teal-900/10 bg-white/98 p-4 pb-24 sm:p-6 sm:pb-28 shadow-2xl backdrop-blur-2xl lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            {/* Quick Actions Card Grid */}
             <div className="mb-5 grid grid-cols-2 gap-2.5">
               <Link
                 href="/refill"
@@ -415,6 +416,7 @@ export default function Navbar() {
               </Link>
             </div>
 
+            {/* Categorized Mobile Navigation Links */}
             <div className="space-y-5">
               {CATEGORIES.map((cat) => (
                 <div key={cat.key} className="space-y-1.5">
@@ -460,6 +462,7 @@ export default function Navbar() {
                 </div>
               ))}
 
+              {/* Direct Support & Portals */}
               <div className="pt-3 border-t border-gray-100 space-y-1">
                 <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-[#0d6e5a]">
                   Portals & Contact
@@ -516,13 +519,14 @@ export default function Navbar() {
               </div>
             </div>
 
-            <div className="mt-5 rounded-2xl bg-teal-900/5 p-4 text-center">
-              <p className="text-xs font-semibold text-[#084c3f]">Need help with a prescription?</p>
+            {/* Emergency Phone Dialer Footer in Mobile Drawer */}
+            <div className="mt-6 mb-4 rounded-2xl bg-[#084c3f]/5 border border-teal-900/10 p-4 text-center shadow-xs">
+              <p className="text-xs font-bold text-[#084c3f]">Need help with a prescription?</p>
               <a
                 href="tel:5125550199"
-                className="mt-1.5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#0d6e5a] shadow-xs hover:bg-teal-50 transition border border-teal-900/10"
+                className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#0d6e5a] px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#084c3f] active:scale-95 transition"
               >
-                <Phone className="h-3.5 w-3.5 text-[#0d6e5a]" />
+                <Phone className="h-3.5 w-3.5 text-teal-200" />
                 <span>Call (512) 555-0199</span>
               </a>
             </div>

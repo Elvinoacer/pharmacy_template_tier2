@@ -5,10 +5,9 @@ import { prisma } from "@/app/lib/db";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/// Returns the count of notifications the current user has not yet "read".
-/// Customers see notifications attached to their customer profile; staff see
-/// a roll-up of pending refills + new enquiries + escalated AI conversations
-/// PLUS unread items in their admin inbox (AdminNotification model).
+/// Returns attention counts for the current user.
+/// Customers: unread in-app notifications (incl. pharmacist replies on How do you feel).
+/// Staff: roll-up of work queues PLUS a dedicated How-do-you-feel urgent count for sidebar badges.
 export async function GET() {
   const user = await getSessionUser();
   if (!user) {
@@ -16,21 +15,60 @@ export async function GET() {
   }
 
   if (user.customerId) {
-    const count = await prisma.notification.count({
-      where: { customerId: user.customerId, openedAt: null, deletedAt: null },
+    const [count, feelReplies] = await Promise.all([
+      prisma.notification.count({
+        where: { customerId: user.customerId, openedAt: null, deletedAt: null },
+      }),
+      prisma.notification.count({
+        where: {
+          customerId: user.customerId,
+          openedAt: null,
+          deletedAt: null,
+          type: "symptom_staff_reply",
+        },
+      }),
+    ]);
+    return NextResponse.json({
+      count,
+      feel: feelReplies,
+      feelReplies,
     });
-    return NextResponse.json({ count });
+  }
+
+  if (!isStaff(user.role)) {
+    return NextResponse.json({ count: 0 });
   }
 
   // Staff roll-up — counts the things that need attention.
-  const [refills, enquiries, escalations, adminInbox] = await Promise.all([
-    prisma.refillRequest.count({
-      where: { status: { in: ["submitted", "under_review", "approved", "preparing"] } },
-    }),
-    prisma.enquiry.count({ where: { status: { in: ["new", "in_progress"] } } }),
-    prisma.aiConversation.count({ where: { escalated: true } }),
-    prisma.adminNotification.count({ where: { isRead: false } }),
-  ]);
+  // How do you feel is tracked separately from Contact enquiries.
+  const [refills, enquiries, escalations, adminInbox, feelEscalated, feelWorse, feelCriticalInbox] =
+    await Promise.all([
+      prisma.refillRequest.count({
+        where: { status: { in: ["submitted", "under_review", "approved", "preparing"] } },
+      }),
+      // Contact-page enquiries only (symptom triage no longer creates enquiries).
+      prisma.enquiry.count({ where: { status: { in: ["new", "in_progress"] } } }),
+      prisma.aiConversation.count({ where: { escalated: true } }),
+      prisma.adminNotification.count({ where: { isRead: false } }),
+      prisma.symptomSession.count({ where: { status: "escalated" } }),
+      // Feeling worse, still open — life-critical path for pharmacists.
+      prisma.symptomSession.count({
+        where: {
+          feelingTrend: "worse",
+          status: { in: ["active", "monitoring", "escalated"] },
+        },
+      }),
+      prisma.adminNotification.count({
+        where: {
+          isRead: false,
+          type: { in: ["symptom_escalation", "symptom_checkin"] },
+        },
+      }),
+    ]);
+
+  // Unique-ish urgent feel badge: escalated OR feeling-worse open sessions.
+  // Use max of the two queues so badge stays meaningful without double-counting noise.
+  const feelUrgent = Math.max(feelEscalated, feelWorse);
 
   return NextResponse.json({
     count: refills + enquiries + escalations + adminInbox,
@@ -38,5 +76,9 @@ export async function GET() {
     enquiries,
     escalations,
     adminInbox,
+    feel: feelUrgent,
+    feelEscalated,
+    feelWorse,
+    feelCriticalInbox,
   });
 }
