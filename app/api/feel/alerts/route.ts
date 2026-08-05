@@ -55,11 +55,14 @@ export async function GET(request: Request) {
       }),
     ]);
 
+    // Badge mirrors unread feel alerts — same source as /api/notifications/unread.
+    // Opening a thread marks related notifications read so this clears.
     return NextResponse.json({
       role: "staff",
-      feel: Math.max(feelEscalated, feelWorse),
+      feel: items.length,
       feelEscalated,
       feelWorse,
+      feelOpenQueue: Math.max(feelEscalated, feelWorse),
       alerts: items.map((n) => ({
         id: n.id,
         kind: n.type === "symptom_checkin" ? "feeling_worse" : "escalation",
