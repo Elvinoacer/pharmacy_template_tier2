@@ -218,7 +218,7 @@ export default async function AdminPrescriptionsPage({
                       <p className="font-mono text-[10px] admin-soft">{p.rxReference || "—"}</p>
                     </td>
                     <td>
-                      <p className="text-xs admin-text">{p.dosage || "—"}</p>
+                      <p className="text-xs font-semibold admin-text">{p.dosage || "—"}</p>
                       {p.schedule && (
                         <p className="text-[10px] admin-soft">{p.schedule}</p>
                       )}

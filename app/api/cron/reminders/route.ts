@@ -4,6 +4,7 @@ import { processDueReminders, launchCampaign, interpolateTemplate } from "@/app/
 import { sendDelivery } from "@/app/lib/services/delivery";
 import { writeAuditLog } from "@/app/lib/auth";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
+import { processAutoMissedDoses } from "@/app/lib/services/medication-schedule";
 
 export const runtime = "nodejs";
 
@@ -346,12 +347,13 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [reminders, campaigns, messages, adherenceAlerts, escalations] = await Promise.all([
+  const [reminders, campaigns, messages, adherenceAlerts, escalations, autoMissed] = await Promise.all([
     processDueReminders(),
     processScheduledCampaigns(),
     processScheduledMessages(),
     processLowAdherenceAlerts(),
     processAdherenceEscalations(),
+    processAutoMissedDoses(),
   ]);
 
   await writeAuditLog(null, "cron_reminders_processed", "reminder", undefined, {
@@ -360,8 +362,9 @@ export async function GET(request: NextRequest) {
     messages,
     adherenceAlerts,
     escalations,
+    autoMissed,
   });
-  return Response.json({ reminders, campaigns, messages, adherenceAlerts, escalations });
+  return Response.json({ reminders, campaigns, messages, adherenceAlerts, escalations, autoMissed });
 }
 
 export async function POST(request: NextRequest) {
