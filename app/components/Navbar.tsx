@@ -15,7 +15,6 @@ import {
   Sparkles,
   Menu,
   X,
-  FileText,
   HeartPulse,
   ShoppingBag,
   Camera,
@@ -23,7 +22,7 @@ import {
   HelpCircle,
   Briefcase,
   Info,
-  ArrowRight,
+  ChevronRight,
   LogIn,
   Stethoscope,
 } from "lucide-react";
@@ -57,7 +56,7 @@ const CATEGORIES: NavCategory[] = [
       {
         href: "/medicines",
         label: "OTC Medicines",
-        desc: "Browse stock or snap a pack photo",
+        desc: "Browse non-prescription products",
         icon: ShoppingBag,
       },
       {
@@ -146,7 +145,7 @@ export default function Navbar() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 15);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -156,6 +155,18 @@ export default function Navbar() {
     setActiveDropdown(null);
     setMenuOpen(false);
   }, [pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const handleMouseEnter = (key: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -176,9 +187,9 @@ export default function Navbar() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 transition-all duration-300">
-      {/* Top Announcement & Utility Bar */}
+      {/* Top Utility Bar — Hidden on small mobile screens to optimize vertical screen height */}
       <div
-        className={`bg-gradient-to-r from-[#06332a] via-[#084c3f] to-[#0d6e5a] text-[#e3f2ec] text-xs transition-all duration-300 ${
+        className={`hidden sm:block bg-gradient-to-r from-[#06332a] via-[#084c3f] to-[#0d6e5a] text-[#e3f2ec] text-xs transition-all duration-300 ${
           scrolled ? "max-h-0 opacity-0 overflow-hidden py-0" : "max-h-12 opacity-100 py-2 border-b border-teal-800/40"
         }`}
       >
@@ -189,58 +200,30 @@ export default function Navbar() {
               className="flex items-center gap-1.5 transition hover:text-white whitespace-nowrap shrink-0"
             >
               <Phone className="h-3 w-3 text-teal-300 shrink-0" />
-              <span className="hidden sm:inline whitespace-nowrap">(512) 555-0199</span>
-              <span className="sm:hidden whitespace-nowrap">Call Pharmacy</span>
+              <span className="whitespace-nowrap">(512) 555-0199</span>
             </a>
             <div className="hidden md:flex items-center gap-1.5 text-teal-100/80 whitespace-nowrap shrink-0">
               <MapPin className="h-3 w-3 text-teal-300 shrink-0" />
               <span className="whitespace-nowrap">1200 S Congress Ave, Austin, TX</span>
             </div>
-            <div className="hidden lg:flex items-center gap-1.5 text-teal-100/80 whitespace-nowrap shrink-0">
-              <Clock className="h-3 w-3 text-teal-300 shrink-0" />
-              <span className="whitespace-nowrap">Open Today: 8:00 AM – 8:00 PM</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 sm:gap-5 text-[11px] font-medium">
-            <Link
-              href="/caregiver"
-              className="hidden sm:flex items-center gap-1 transition hover:text-white whitespace-nowrap shrink-0"
-            >
-              <ShieldCheck className="h-3 w-3 text-emerald-300 shrink-0" />
-              <span className="whitespace-nowrap">Caregiver Hub</span>
-            </Link>
-            <Link
-              href="/portal"
-              className="flex items-center gap-1 transition hover:text-white whitespace-nowrap shrink-0"
-            >
-              <User className="h-3 w-3 text-teal-300 shrink-0" />
-              <span className="whitespace-nowrap">Patient Portal</span>
-            </Link>
-            <Link
-              href="/admin"
-              className="hidden md:inline-block rounded bg-teal-900/60 px-2 py-0.5 text-[10px] text-teal-200 hover:bg-teal-900 hover:text-white transition border border-teal-700/50 whitespace-nowrap shrink-0"
-            >
-              Staff Portal
-            </Link>
           </div>
         </div>
       </div>
 
       {/* Main Floating Navbar */}
-      <div className={`transition-all duration-300 ${scrolled ? "py-2" : "py-3"}`}>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className={`transition-all duration-300 ${scrolled ? "py-1.5 sm:py-2" : "py-2 sm:py-3"}`}>
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           <div
-            className={`flex items-center justify-between rounded-2xl transition-all duration-300 px-4 py-2.5 sm:px-6 ${
+            className={`flex items-center justify-between rounded-2xl transition-all duration-300 px-3.5 py-2 sm:px-6 sm:py-2.5 ${
               scrolled
                 ? "border border-white/60 bg-white/92 shadow-[0_12px_40px_rgba(8,40,32,0.12)] backdrop-blur-xl"
-                : "border border-white/40 bg-white/75 shadow-[0_8px_30px_rgba(8,40,32,0.06)] backdrop-blur-lg"
+                : "border border-white/40 bg-white/80 shadow-[0_8px_30px_rgba(8,40,32,0.06)] backdrop-blur-lg"
             }`}
           >
             {/* Brand Logo */}
-            <Link href="/" className="group flex items-center gap-3 shrink-0 whitespace-nowrap">
-              <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] shadow-md shadow-teal-900/20 transition-transform duration-300 group-hover:scale-105">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <Link href="/" className="group flex items-center gap-2.5 sm:gap-3 shrink-0 whitespace-nowrap">
+              <span className="relative flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] shadow-md shadow-teal-900/20 transition-transform duration-300 group-hover:scale-105">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="sm:h-5 sm:w-5">
                   <path
                     d="M12 3c-1.5 3.5-4 5.5-7.5 6.5C8 10.5 10.5 12.5 12 16c1.5-3.5 4-5.5 7.5-6.5C16 8.5 13.5 6.5 12 3Z"
                     fill="#5eead4"
@@ -250,13 +233,13 @@ export default function Navbar() {
               </span>
               <span className="flex flex-col leading-none shrink-0 whitespace-nowrap">
                 <span
-                  className="text-xl font-bold tracking-tight text-[#0c1a14] whitespace-nowrap"
+                  className="text-lg sm:text-xl font-bold tracking-tight text-[#0c1a14] whitespace-nowrap"
                   style={{ fontFamily: "var(--font-display), serif" }}
                 >
                   Aether
                 </span>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#0d6e5a] whitespace-nowrap">
-                  Pharmacy & Wellness
+                <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] text-[#0d6e5a] whitespace-nowrap">
+                  Pharmacy
                 </span>
               </span>
             </Link>
@@ -342,7 +325,6 @@ export default function Navbar() {
                 );
               })}
 
-              {/* Direct Contact Link */}
               <Link
                 href="/contact"
                 className={`rounded-full px-3.5 py-2 text-sm font-semibold transition whitespace-nowrap shrink-0 ${
@@ -356,18 +338,16 @@ export default function Navbar() {
             </nav>
 
             {/* Right Action Cluster */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              {/* Search Pill */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
               <Link
                 href="/search"
-                className="flex items-center gap-2 rounded-full border border-teal-900/10 bg-teal-50/50 px-3 py-2 text-xs font-semibold text-[#084c3f] transition hover:bg-white hover:shadow-sm whitespace-nowrap shrink-0"
+                className="flex h-9 w-9 sm:h-auto sm:w-auto items-center justify-center gap-2 rounded-full border border-teal-900/10 bg-teal-50/60 sm:px-3 sm:py-2 text-xs font-semibold text-[#084c3f] transition hover:bg-white hover:shadow-sm whitespace-nowrap shrink-0"
                 aria-label="Search medications"
               >
                 <Search className="h-4 w-4 text-[#0d6e5a] shrink-0" />
                 <span className="hidden sm:inline whitespace-nowrap">Search</span>
               </Link>
 
-              {/* Sign In button */}
               <Link
                 href="/login"
                 className="hidden xl:flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold text-[#2d3e35] transition hover:bg-teal-900/5 hover:text-[#084c3f] whitespace-nowrap shrink-0"
@@ -376,7 +356,6 @@ export default function Navbar() {
                 <span className="whitespace-nowrap">Sign in</span>
               </Link>
 
-              {/* Order OTC pill */}
               <Link
                 href="/order"
                 className="hidden sm:inline-flex rounded-full border border-teal-900/10 bg-white/90 px-3.5 py-2 text-xs font-bold text-[#084c3f] shadow-xs transition hover:bg-teal-50 whitespace-nowrap shrink-0"
@@ -384,19 +363,18 @@ export default function Navbar() {
                 Order OTC
               </Link>
 
-              {/* Primary Refill CTA */}
               <Link
                 href="/refill"
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-900/30 active:scale-[0.98] whitespace-nowrap shrink-0"
+                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-3 py-2 sm:px-4 sm:py-2.5 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-900/30 active:scale-[0.98] whitespace-nowrap shrink-0"
               >
                 <Pill className="h-3.5 w-3.5 text-teal-200 shrink-0" />
-                <span className="whitespace-nowrap">Request Refill</span>
+                <span className="whitespace-nowrap hidden min-[400px]:inline">Request Refill</span>
+                <span className="whitespace-nowrap min-[400px]:hidden">Refill</span>
               </Link>
 
-              {/* Mobile Menu Toggle Button */}
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-teal-900/10 bg-white text-[#084c3f] lg:hidden"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-teal-900/10 bg-white text-[#084c3f] lg:hidden shrink-0"
                 onClick={() => setMenuOpen((v) => !v)}
                 aria-label="Toggle menu"
                 aria-expanded={menuOpen}
@@ -408,110 +386,149 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Drawer Navigation */}
+      {/* Mobile Backdrop & Drawer Navigation */}
       {menuOpen && (
-        <div className="mx-4 mt-2 max-h-[85vh] overflow-y-auto rounded-3xl border border-white/80 bg-white/98 p-5 shadow-2xl backdrop-blur-2xl lg:hidden">
-          {/* Quick Actions Header in Mobile */}
-          <div className="mb-4 grid grid-cols-2 gap-2">
-            <Link
-              href="/refill"
-              className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] p-3 text-xs font-bold text-white shadow-md"
-            >
-              <Pill className="h-4 w-4" />
-              <span>Request Refill</span>
-            </Link>
-            <Link
-              href="/order"
-              className="flex items-center justify-center gap-2 rounded-2xl border border-teal-900/15 bg-teal-50/70 p-3 text-xs font-bold text-[#084c3f]"
-            >
-              <ShoppingBag className="h-4 w-4" />
-              <span>Order OTC</span>
-            </Link>
-          </div>
+        <>
+          <div
+            className="fixed inset-0 top-[58px] z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity"
+            onClick={() => setMenuOpen(false)}
+            aria-hidden="true"
+          />
 
-          {/* Categorized Menu Items */}
-          <div className="space-y-4">
-            {CATEGORIES.map((cat) => (
-              <div key={cat.key} className="space-y-1">
-                <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-[#0d6e5a]">
-                  {cat.label}
-                </h3>
-                <div className="grid grid-cols-1 gap-1">
-                  {cat.items.map((sub) => {
-                    const SubIcon = sub.icon;
-                    return (
-                      <Link
-                        key={sub.href}
-                        href={sub.href}
-                        className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-                          isActive(sub.href)
-                            ? "bg-teal-50 text-[#084c3f]"
-                            : "text-[#0c1a14] hover:bg-teal-50/50"
-                        }`}
-                      >
-                        <SubIcon className="h-4 w-4 text-[#0d6e5a]" />
-                        <span>{sub.label}</span>
-                        {sub.badge && (
-                          <span className="ml-auto rounded-full bg-teal-100 px-2 py-0.5 text-[9px] font-bold text-[#0d6e5a]">
-                            {sub.badge}
-                          </span>
-                        )}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-
-            <div className="pt-2 border-t border-gray-100 space-y-1">
-              <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-[#0d6e5a]">
-                Quick Links & Portals
-              </h3>
+          <div className="absolute inset-x-0 top-full z-50 max-h-[calc(100vh-70px)] overflow-y-auto border-b border-teal-900/10 bg-white/98 p-4 sm:p-6 shadow-2xl backdrop-blur-2xl lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="mb-5 grid grid-cols-2 gap-2.5">
               <Link
-                href="/contact"
-                className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
+                href="/refill"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] p-3 text-xs font-bold text-white shadow-md active:scale-95 transition"
               >
-                <Phone className="h-4 w-4 text-[#0d6e5a]" />
-                <span>Contact & Hours</span>
+                <Pill className="h-4 w-4 text-teal-200" />
+                <span>Request Refill</span>
               </Link>
               <Link
-                href="/portal"
-                className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
+                href="/order"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-2xl border border-teal-900/15 bg-teal-50/70 p-3 text-xs font-bold text-[#084c3f] active:scale-95 transition"
               >
-                <User className="h-4 w-4 text-[#0d6e5a]" />
-                <span>Customer Patient Portal</span>
-              </Link>
-              <Link
-                href="/login"
-                className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
-              >
-                <LogIn className="h-4 w-4 text-[#0d6e5a]" />
-                <span>Account Sign In</span>
-              </Link>
-              <Link
-                href="/admin"
-                className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
-              >
-                <ShieldCheck className="h-4 w-4 text-[#0d6e5a]" />
-                <span>Staff CRM Portal</span>
+                <ShoppingBag className="h-4 w-4 text-[#0d6e5a]" />
+                <span>Order OTC</span>
               </Link>
             </div>
-          </div>
 
-          {/* Emergency / Contact Footer inside Mobile Menu */}
-          <div className="mt-4 rounded-2xl bg-teal-900/5 p-3.5 text-center">
-            <p className="text-xs font-semibold text-[#084c3f]">Need Immediate Help?</p>
-            <a
-              href="tel:5125550199"
-              className="mt-1 inline-flex items-center gap-1.5 text-xs font-bold text-[#0d6e5a] underline"
-            >
-              <Phone className="h-3.5 w-3.5" />
-              <span>Call (512) 555-0199</span>
-            </a>
+            <div className="space-y-5">
+              {CATEGORIES.map((cat) => (
+                <div key={cat.key} className="space-y-1.5">
+                  <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-[#0d6e5a]">
+                    {cat.label}
+                  </h3>
+                  <div className="grid grid-cols-1 gap-1">
+                    {cat.items.map((sub) => {
+                      const SubIcon = sub.icon;
+                      const active = isActive(sub.href);
+                      return (
+                        <Link
+                          key={sub.href}
+                          href={sub.href}
+                          onClick={() => setMenuOpen(false)}
+                          className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold transition ${
+                            active
+                              ? "bg-teal-50 text-[#084c3f]"
+                              : "text-[#0c1a14] hover:bg-teal-50/50"
+                          }`}
+                        >
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-teal-900/8 text-[#0d6e5a]">
+                            <SubIcon className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <span>{sub.label}</span>
+                              {sub.badge && (
+                                <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[9px] font-bold text-[#0d6e5a]">
+                                  {sub.badge}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] font-normal text-[#5a6b62] line-clamp-1">
+                              {sub.desc}
+                            </p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-teal-900/30 shrink-0" />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              <div className="pt-3 border-t border-gray-100 space-y-1">
+                <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-[#0d6e5a]">
+                  Portals & Contact
+                </h3>
+                <div className="grid grid-cols-1 gap-1">
+                  <Link
+                    href="/contact"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-4 w-4 text-[#0d6e5a]" />
+                      <span>Contact Us & Hours</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-teal-900/30" />
+                  </Link>
+
+                  <Link
+                    href="/portal"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <User className="h-4 w-4 text-[#0d6e5a]" />
+                      <span>Patient Portal</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-teal-900/30" />
+                  </Link>
+
+                  <Link
+                    href="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <LogIn className="h-4 w-4 text-[#0d6e5a]" />
+                      <span>Sign In</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-teal-900/30" />
+                  </Link>
+
+                  <Link
+                    href="/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <ShieldCheck className="h-4 w-4 text-[#0d6e5a]" />
+                      <span>Staff CRM Portal</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-teal-900/30" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-2xl bg-teal-900/5 p-4 text-center">
+              <p className="text-xs font-semibold text-[#084c3f]">Need help with a prescription?</p>
+              <a
+                href="tel:5125550199"
+                className="mt-1.5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#0d6e5a] shadow-xs hover:bg-teal-50 transition border border-teal-900/10"
+              >
+                <Phone className="h-3.5 w-3.5 text-[#0d6e5a]" />
+                <span>Call (512) 555-0199</span>
+              </a>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );
 }
-
