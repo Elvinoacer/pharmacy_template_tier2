@@ -143,11 +143,18 @@ export function LiveAlertCenter({ audience }: { audience: Audience }) {
         let newest = since ? new Date(since).getTime() : 0;
         let toasted = false;
 
+        const path = typeof window !== "undefined" ? window.location.pathname : "";
+
         for (const alert of alerts) {
           const t = new Date(alert.createdAt).getTime();
           if (!Number.isNaN(t) && t > newest) newest = t;
           if (seen.has(alert.id)) continue;
           seen.add(alert.id);
+
+          // Already viewing this thread — live chat UI handles the update; skip duplicate toast.
+          if (alert.url && (path === alert.url || path.startsWith(`${alert.url}/`))) {
+            continue;
+          }
 
           const isUrgent =
             alert.kind === "feeling_worse" ||
