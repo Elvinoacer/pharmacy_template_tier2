@@ -8,7 +8,7 @@ import {
   ChevronDown,
   Phone,
   MapPin,
-  Clock,
+  Mail,
   User,
   ShieldCheck,
   Pill,
@@ -25,7 +25,11 @@ import {
   ChevronRight,
   LogIn,
   Stethoscope,
+  LayoutDashboard,
+  Users,
 } from "lucide-react";
+import { pharmacy } from "@/app/lib/data";
+import { resolvePortalCta, type PortalSessionHint } from "@/app/lib/portal-dest";
 
 interface NavSubItem {
   href: string;
@@ -130,19 +134,29 @@ const CATEGORIES: NavCategory[] = [
       {
         href: "/careers",
         label: "Careers",
-        desc: "Join our Austin healthcare team",
+        desc: "Join our healthcare team",
         icon: Briefcase,
       },
     ],
   },
 ];
 
-export default function Navbar() {
+const CTA_ICON = {
+  guest: LogIn,
+  customer: User,
+  caregiver: Users,
+  admin: LayoutDashboard,
+} as const;
+
+export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSessionHint | null }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const portalCta = resolvePortalCta(sessionUser);
+  const PortalIcon = CTA_ICON[portalCta.kind];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 15);
@@ -185,6 +199,8 @@ export default function Navbar() {
   const isCategoryActive = (cat: NavCategory) =>
     cat.items.some((item) => isActive(item.href));
 
+  const shortAddress = `${pharmacy.address.street}, ${pharmacy.address.city}`;
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 transition-all duration-300">
       {/* Top Utility Bar — Hidden on small mobile screens to optimize vertical screen height */}
@@ -193,20 +209,32 @@ export default function Navbar() {
           scrolled ? "max-h-0 opacity-0 overflow-hidden py-0" : "max-h-12 opacity-100 py-2 border-b border-teal-800/40"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4 sm:gap-6 text-[11px] font-medium tracking-wide">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-4 sm:gap-6 text-[11px] font-medium tracking-wide">
             <a
-              href="tel:5125550199"
+              href={pharmacy.phoneHref}
               className="flex items-center gap-1.5 transition hover:text-white whitespace-nowrap shrink-0"
             >
               <Phone className="h-3 w-3 text-teal-300 shrink-0" />
-              <span className="whitespace-nowrap">(512) 555-0199</span>
+              <span className="whitespace-nowrap">{pharmacy.phone}</span>
             </a>
-            <div className="hidden md:flex items-center gap-1.5 text-teal-100/80 whitespace-nowrap shrink-0">
+            <a
+              href={`mailto:${pharmacy.email}`}
+              className="hidden md:flex items-center gap-1.5 transition hover:text-white whitespace-nowrap shrink-0"
+            >
+              <Mail className="h-3 w-3 text-teal-300 shrink-0" />
+              <span className="whitespace-nowrap">{pharmacy.email}</span>
+            </a>
+            <div className="hidden lg:flex items-center gap-1.5 text-teal-100/80 whitespace-nowrap shrink-0">
               <MapPin className="h-3 w-3 text-teal-300 shrink-0" />
-              <span className="whitespace-nowrap">1200 S Congress Ave, Austin, TX</span>
+              <span className="whitespace-nowrap">{shortAddress}</span>
             </div>
           </div>
+          {sessionUser?.fullName && (
+            <p className="hidden xl:block truncate text-[11px] text-teal-100/75">
+              Signed in as <span className="font-semibold text-white">{sessionUser.fullName}</span>
+            </p>
+          )}
         </div>
       </div>
 
@@ -349,11 +377,16 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/login"
-                className="hidden xl:flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold text-[#2d3e35] transition hover:bg-teal-900/5 hover:text-[#084c3f] whitespace-nowrap shrink-0"
+                href={portalCta.href}
+                className={`hidden sm:flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold transition whitespace-nowrap shrink-0 ${
+                  portalCta.kind === "guest"
+                    ? "text-[#2d3e35] hover:bg-teal-900/5 hover:text-[#084c3f]"
+                    : "bg-teal-900/8 text-[#084c3f] hover:bg-teal-900/12"
+                }`}
+                title={portalCta.label}
               >
-                <LogIn className="h-3.5 w-3.5 text-[#0d6e5a] shrink-0" />
-                <span className="whitespace-nowrap">Sign in</span>
+                <PortalIcon className="h-3.5 w-3.5 text-[#0d6e5a] shrink-0" />
+                <span className="hidden md:inline whitespace-nowrap">{portalCta.shortLabel}</span>
               </Link>
 
               <Link
@@ -462,10 +495,10 @@ export default function Navbar() {
                 </div>
               ))}
 
-              {/* Direct Support & Portals */}
+              {/* Direct Support & Portals — session-aware */}
               <div className="pt-3 border-t border-gray-100 space-y-1">
                 <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-[#0d6e5a]">
-                  Portals & Contact
+                  Account & Contact
                 </h3>
                 <div className="grid grid-cols-1 gap-1">
                   <Link
@@ -481,54 +514,53 @@ export default function Navbar() {
                   </Link>
 
                   <Link
-                    href="/portal"
+                    href={portalCta.href}
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
                   >
                     <div className="flex items-center gap-3">
-                      <User className="h-4 w-4 text-[#0d6e5a]" />
-                      <span>Patient Portal</span>
+                      <PortalIcon className="h-4 w-4 text-[#0d6e5a]" />
+                      <span>{portalCta.label}</span>
                     </div>
                     <ChevronRight className="h-4 w-4 text-teal-900/30" />
                   </Link>
 
-                  <Link
-                    href="/login"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
-                  >
-                    <div className="flex items-center gap-3">
-                      <LogIn className="h-4 w-4 text-[#0d6e5a]" />
-                      <span>Sign In</span>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-teal-900/30" />
-                  </Link>
-
-                  <Link
-                    href="/admin"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
-                  >
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck className="h-4 w-4 text-[#0d6e5a]" />
-                      <span>Staff CRM Portal</span>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-teal-900/30" />
-                  </Link>
+                  {portalCta.kind === "guest" && (
+                    <Link
+                      href="/register"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
+                    >
+                      <div className="flex items-center gap-3">
+                        <User className="h-4 w-4 text-[#0d6e5a]" />
+                        <span>Create account</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-teal-900/30" />
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Emergency Phone Dialer Footer in Mobile Drawer */}
+            {/* Contact footer in Mobile Drawer */}
             <div className="mt-6 mb-4 rounded-2xl bg-[#084c3f]/5 border border-teal-900/10 p-4 text-center shadow-xs">
               <p className="text-xs font-bold text-[#084c3f]">Need help with a prescription?</p>
-              <a
-                href="tel:5125550199"
-                className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#0d6e5a] px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#084c3f] active:scale-95 transition"
-              >
-                <Phone className="h-3.5 w-3.5 text-teal-200" />
-                <span>Call (512) 555-0199</span>
-              </a>
+              <div className="mt-2 flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+                <a
+                  href={pharmacy.phoneHref}
+                  className="inline-flex items-center gap-2 rounded-full bg-[#0d6e5a] px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#084c3f] active:scale-95 transition"
+                >
+                  <Phone className="h-3.5 w-3.5 text-teal-200" />
+                  <span>Call {pharmacy.phone}</span>
+                </a>
+                <a
+                  href={`mailto:${pharmacy.email}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-teal-900/15 bg-white px-4 py-2.5 text-xs font-bold text-[#084c3f] transition hover:bg-teal-50"
+                >
+                  <Mail className="h-3.5 w-3.5 text-[#0d6e5a]" />
+                  <span>{pharmacy.email}</span>
+                </a>
+              </div>
             </div>
           </div>
         </>

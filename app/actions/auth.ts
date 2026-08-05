@@ -16,6 +16,7 @@ import {
   createSession,
   writeAuditLog,
 } from "@/app/lib/auth";
+import { validatePassword } from "@/app/lib/password";
 import { resolvePostLoginPath } from "@/app/lib/session-claim";
 
 export type AuthActionState = {
@@ -36,8 +37,9 @@ export async function registerAction(
   if (!email || !password || !fullName) {
     return { error: "Name, email, and password are required." };
   }
-  if (password.length < 8) {
-    return { error: "Password must be at least 8 characters." };
+  const passwordError = validatePassword(password);
+  if (passwordError) {
+    return { error: passwordError };
   }
 
   const meta = await getRequestMeta();
@@ -174,7 +176,8 @@ export async function resetPasswordAction(
 
   if (!token || !password) return { error: "Token and password are required." };
   if (password !== confirm) return { error: "Passwords do not match." };
-  if (password.length < 8) return { error: "Password must be at least 8 characters." };
+  const passwordError = validatePassword(password);
+  if (passwordError) return { error: passwordError };
 
   const meta = await getRequestMeta();
   const limited = checkRateLimit(`reset:${meta.ip}`, { limit: 8, windowMs: 60 * 60 * 1000 });

@@ -10,6 +10,7 @@ import {
   hashPassword,
   writeAuditLog,
 } from "@/app/lib/auth";
+import { validatePassword } from "@/app/lib/password";
 import { getRequestMeta } from "@/app/lib/request-meta";
 
 export type CaregiverActionState = { error?: string; success?: string };
@@ -28,7 +29,8 @@ export async function acceptCaregiverInviteAction(
   const phone = String(formData.get("phone") || "").trim();
 
   if (!token) return { error: "Missing invitation token." };
-  if (password.length < 8) return { error: "Password must be at least 8 characters." };
+  const passwordError = validatePassword(password);
+  if (passwordError) return { error: passwordError };
 
   const tokenHash = createHash("sha256").update(token).digest("hex");
   const invite = await prisma.caregiverInvite.findUnique({

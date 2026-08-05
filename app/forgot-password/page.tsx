@@ -6,12 +6,17 @@ export const metadata = { title: "Forgot password" };
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="mesh-bg flex min-h-screen items-center justify-center px-4 py-12">
+    <div className="mesh-bg flex min-h-screen items-center justify-center px-4 py-10 sm:py-14">
       <AuthForm
         action={forgotPasswordAction}
         title="Reset password"
-        subtitle="Enter your email and we will prepare a secure reset link."
+        subtitle="Enter your email and we will send a secure, single-use reset link."
         submitLabel="Send reset link"
+        highlights={[
+          "Reset links expire after two hours",
+          "Your existing sessions stay protected",
+          "Contact the pharmacy if you need help",
+        ]}
         footer={
           <p>
             <Link href="/login" className="font-semibold text-[#0d6e5a] hover:underline">

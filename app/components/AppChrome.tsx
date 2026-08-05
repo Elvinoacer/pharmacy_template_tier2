@@ -5,10 +5,17 @@ import AiChatbot from "./AiChatbot";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import { LiveAlertCenter } from "./LiveAlertCenter";
+import type { PortalSessionHint } from "@/app/lib/portal-dest";
 
 const BARE_PREFIXES = ["/portal", "/admin", "/login", "/register", "/forgot-password", "/reset-password", "/caregiver"];
 
-export default function AppChrome({ children }: { children: React.ReactNode }) {
+export default function AppChrome({
+  children,
+  sessionUser = null,
+}: {
+  children: React.ReactNode;
+  sessionUser?: PortalSessionHint | null;
+}) {
   const pathname = usePathname() || "/";
   const bare = BARE_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
@@ -18,7 +25,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="mesh-bg relative flex min-h-screen flex-col">
-      <Navbar />
+      <Navbar sessionUser={sessionUser} />
       <main className="flex-1">{children}</main>
       <Footer />
       <AiChatbot />
