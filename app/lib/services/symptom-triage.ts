@@ -231,7 +231,14 @@ export async function getSymptomSessionDetail(sessionId: string) {
     include: {
       messages: { orderBy: { createdAt: "asc" } },
       checkIns: { orderBy: { createdAt: "asc" } },
-      customer: { select: { id: true, fullName: true, phone: true } },
+      customer: {
+        select: {
+          id: true,
+          fullName: true,
+          phone: true,
+          user: { select: { email: true } },
+        },
+      },
     },
   });
 }
@@ -1203,6 +1210,7 @@ export function serializeSession(
           id: session.customer.id,
           fullName: session.customer.fullName,
           phone: session.customer.phone,
+          email: session.customer.user?.email ?? null,
         }
       : null,
     messages: session.messages.map((m) => ({
