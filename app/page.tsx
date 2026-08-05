@@ -21,10 +21,10 @@ const QUICK_ACTIONS = [
     icon: "↻",
   },
   {
-    title: "Delivery enquiry",
-    desc: "Check if we deliver to you",
-    href: "/delivery",
-    icon: "📦",
+    title: "How do you feel?",
+    desc: "Guided check-in for mild symptoms",
+    href: "/how-do-you-feel",
+    icon: "♡",
   },
   {
     title: "Call the pharmacy",

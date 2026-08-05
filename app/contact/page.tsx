@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
 import ContactForm from "../components/ContactForm";
 import PageHero from "../components/PageHero";
-import { pharmacy } from "../lib/data";
+import { pharmacy as staticPharmacy } from "../lib/data";
+import { getResolvedPharmacy } from "../lib/services/pharmacy-settings";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Contact ${pharmacy.name} by phone, WhatsApp, email, or form. Find our address, map, and opening hours.`,
+  description: `Contact ${staticPharmacy.name} by phone, WhatsApp, email, or form. Find our address, map, and opening hours.`,
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const pharmacy = await getResolvedPharmacy();
+
   return (
     <div>
       <PageHero
         eyebrow="Contact"
         title="We would love to hear from you"
-        description="Reach the pharmacy by phone, WhatsApp, email, or the form below. For medical emergencies, call 911."
+        description="Reach the pharmacy by phone, WhatsApp, email, or the form below. For medical emergencies, call local emergency services."
         crumbs={[{ label: "Contact" }]}
       />
 
@@ -37,14 +40,22 @@ export default function ContactPage() {
                     href={pharmacy.mapsDirections}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 inline-block font-semibold text-teal-800 hover:underline"
+                    className="mt-1 inline-flex items-center gap-1 font-semibold text-teal-800 hover:underline"
                   >
                     Get directions →
                   </a>
+                  {pharmacy.latitude != null && pharmacy.longitude != null && (
+                    <p className="mt-1 text-[11px] text-[#8a9a92]">
+                      Pin: {pharmacy.latitude.toFixed(5)}, {pharmacy.longitude.toFixed(5)}
+                    </p>
+                  )}
                 </li>
                 <li>
                   <p className="text-xs font-bold uppercase tracking-wider text-teal-700">Phone</p>
-                  <a href={pharmacy.phoneHref} className="mt-1 block font-semibold text-[#0c1a14] hover:text-teal-800">
+                  <a
+                    href={pharmacy.phoneHref}
+                    className="mt-1 block font-semibold text-[#0c1a14] hover:text-teal-800"
+                  >
                     {pharmacy.phone}
                   </a>
                 </li>
@@ -90,13 +101,24 @@ export default function ContactPage() {
 
             <div className="overflow-hidden rounded-3xl border border-white/70 shadow-sm">
               <iframe
-                title="Aether Pharmacy location map"
+                title={`${pharmacy.name} location map`}
                 src={pharmacy.mapsEmbed}
                 className="h-64 w-full border-0 bg-teal-50"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
               />
+              <div className="flex items-center justify-between gap-3 border-t border-teal-900/5 bg-white/95 px-4 py-3">
+                <p className="text-xs text-[#5a6b62]">Find us on the map</p>
+                <a
+                  href={pharmacy.mapsDirections}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-teal-600 to-teal-900 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:opacity-95"
+                >
+                  Get directions
+                </a>
+              </div>
             </div>
           </div>
 
@@ -108,7 +130,12 @@ export default function ContactPage() {
               Send a message
             </h2>
             <p className="mt-2 text-sm text-[#5a6b62]">
-              We typically respond within one business day. Fields marked * are required.
+              We typically respond within one business day. Fields marked * are required. For mild
+              everyday symptoms you can also try our{" "}
+              <a href="/how-do-you-feel" className="font-semibold text-teal-800 hover:underline">
+                How do you feel?
+              </a>{" "}
+              guided check-in.
             </p>
             <div className="relative mt-6">
               <ContactForm />

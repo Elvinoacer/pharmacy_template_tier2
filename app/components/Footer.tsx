@@ -11,6 +11,7 @@ const QUICK = [
 
 const ACTIONS = [
   { href: "/refill", label: "Request a refill" },
+  { href: "/how-do-you-feel", label: "How do you feel?" },
   { href: "/delivery", label: "Delivery enquiry" },
   { href: "/contact", label: "Contact us" },
   { href: "/medicines", label: "Medicines & health" },

@@ -21,6 +21,7 @@ import {
   Home,
   ChevronRight,
   ShoppingCart,
+  HeartPulse,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -32,6 +33,7 @@ export const PORTAL_LINKS = [
   { href: "/portal/refills", label: "Refills", icon: Pill },
   { href: "/portal/prescriptions", label: "Prescriptions", icon: FileText },
   { href: "/portal/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/portal/feel", label: "How do you feel?", icon: HeartPulse },
   { href: "/portal/caregivers", label: "Caregivers", icon: HeartHandshake },
   { href: "/portal/messages", label: "Messages", icon: MessageSquare },
   { href: "/portal/loyalty", label: "Loyalty", icon: Sparkles },

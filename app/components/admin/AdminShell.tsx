@@ -29,6 +29,8 @@ import {
   Sun,
   Monitor,
   Package,
+  HeartPulse,
+  MapPin,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -42,6 +44,7 @@ export const ADMIN_LINKS = [
   { href: "/admin/prescriptions", label: "Prescriptions", icon: FileText },
   { href: "/admin/enquiries", label: "Enquiries", icon: Mail },
   { href: "/admin/messages", label: "Communication", icon: MessageSquare },
+  { href: "/admin/feel", label: "How do you feel", icon: HeartPulse },
   { href: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
   { href: "/admin/segments", label: "Segments", icon: Layers },
   { href: "/admin/reminders", label: "Reminders", icon: CalendarClock },
@@ -55,6 +58,7 @@ export const ADMIN_LINKS = [
   { href: "/admin/medications", label: "Medications", icon: Pill },
   { href: "/admin/inventory", label: "Inventory health", icon: Package },
   { href: "/admin/orders", label: "Orders & Revenue", icon: BarChart3 },
+  { href: "/admin/settings/location", label: "Location", icon: MapPin },
 ] as const;
 
 type ThemeMode = "light" | "dark" | "system";
