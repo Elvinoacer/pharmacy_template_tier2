@@ -178,40 +178,40 @@ export default function Navbar() {
           <div className="flex items-center gap-4 sm:gap-6 text-[11px] font-medium tracking-wide">
             <a
               href="tel:5125550199"
-              className="flex items-center gap-1.5 transition hover:text-white"
+              className="flex items-center gap-1.5 transition hover:text-white whitespace-nowrap shrink-0"
             >
-              <Phone className="h-3 w-3 text-teal-300" />
-              <span className="hidden sm:inline">(512) 555-0199</span>
-              <span className="sm:hidden">Call Pharmacy</span>
+              <Phone className="h-3 w-3 text-teal-300 shrink-0" />
+              <span className="hidden sm:inline whitespace-nowrap">(512) 555-0199</span>
+              <span className="sm:hidden whitespace-nowrap">Call Pharmacy</span>
             </a>
-            <div className="hidden md:flex items-center gap-1.5 text-teal-100/80">
-              <MapPin className="h-3 w-3 text-teal-300" />
-              <span>1200 S Congress Ave, Austin, TX</span>
+            <div className="hidden md:flex items-center gap-1.5 text-teal-100/80 whitespace-nowrap shrink-0">
+              <MapPin className="h-3 w-3 text-teal-300 shrink-0" />
+              <span className="whitespace-nowrap">1200 S Congress Ave, Austin, TX</span>
             </div>
-            <div className="hidden lg:flex items-center gap-1.5 text-teal-100/80">
-              <Clock className="h-3 w-3 text-teal-300" />
-              <span>Open Today: 8:00 AM – 8:00 PM</span>
+            <div className="hidden lg:flex items-center gap-1.5 text-teal-100/80 whitespace-nowrap shrink-0">
+              <Clock className="h-3 w-3 text-teal-300 shrink-0" />
+              <span className="whitespace-nowrap">Open Today: 8:00 AM – 8:00 PM</span>
             </div>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-5 text-[11px] font-medium">
             <Link
               href="/caregiver"
-              className="hidden sm:flex items-center gap-1 transition hover:text-white"
+              className="hidden sm:flex items-center gap-1 transition hover:text-white whitespace-nowrap shrink-0"
             >
-              <ShieldCheck className="h-3 w-3 text-emerald-300" />
-              <span>Caregiver Hub</span>
+              <ShieldCheck className="h-3 w-3 text-emerald-300 shrink-0" />
+              <span className="whitespace-nowrap">Caregiver Hub</span>
             </Link>
             <Link
               href="/portal"
-              className="flex items-center gap-1 transition hover:text-white"
+              className="flex items-center gap-1 transition hover:text-white whitespace-nowrap shrink-0"
             >
-              <User className="h-3 w-3 text-teal-300" />
-              <span>Patient Portal</span>
+              <User className="h-3 w-3 text-teal-300 shrink-0" />
+              <span className="whitespace-nowrap">Patient Portal</span>
             </Link>
             <Link
               href="/admin"
-              className="hidden md:inline-block rounded bg-teal-900/60 px-2 py-0.5 text-[10px] text-teal-200 hover:bg-teal-900 hover:text-white transition border border-teal-700/50"
+              className="hidden md:inline-block rounded bg-teal-900/60 px-2 py-0.5 text-[10px] text-teal-200 hover:bg-teal-900 hover:text-white transition border border-teal-700/50 whitespace-nowrap shrink-0"
             >
               Staff Portal
             </Link>
@@ -230,8 +230,8 @@ export default function Navbar() {
             }`}
           >
             {/* Brand Logo */}
-            <Link href="/" className="group flex items-center gap-3 shrink-0">
-              <span className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] shadow-md shadow-teal-900/20 transition-transform duration-300 group-hover:scale-105">
+            <Link href="/" className="group flex items-center gap-3 shrink-0 whitespace-nowrap">
+              <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] shadow-md shadow-teal-900/20 transition-transform duration-300 group-hover:scale-105">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M12 3c-1.5 3.5-4 5.5-7.5 6.5C8 10.5 10.5 12.5 12 16c1.5-3.5 4-5.5 7.5-6.5C16 8.5 13.5 6.5 12 3Z"
@@ -240,44 +240,44 @@ export default function Navbar() {
                   <path d="M12 16v5" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </span>
-              <span className="flex flex-col leading-none">
+              <span className="flex flex-col leading-none shrink-0 whitespace-nowrap">
                 <span
-                  className="text-xl font-bold tracking-tight text-[#0c1a14]"
+                  className="text-xl font-bold tracking-tight text-[#0c1a14] whitespace-nowrap"
                   style={{ fontFamily: "var(--font-display), serif" }}
                 >
                   Aether
                 </span>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#0d6e5a]">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#0d6e5a] whitespace-nowrap">
                   Pharmacy & Wellness
                 </span>
               </span>
             </Link>
 
             {/* Desktop Navigation Categories with Dropdowns */}
-            <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main Navigation">
+            <nav className="hidden lg:flex items-center gap-1.5 shrink-0" aria-label="Main Navigation">
               {CATEGORIES.map((cat) => {
                 const catActive = isCategoryActive(cat);
                 const isOpen = activeDropdown === cat.key;
                 return (
                   <div
                     key={cat.key}
-                    className="relative"
+                    className="relative shrink-0"
                     onMouseEnter={() => handleMouseEnter(cat.key)}
                     onMouseLeave={handleMouseLeave}
                   >
                     <button
                       type="button"
                       onClick={() => setActiveDropdown(isOpen ? null : cat.key)}
-                      className={`group flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-all ${
+                      className={`group flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
                         catActive || isOpen
                           ? "bg-teal-900/8 text-[#084c3f]"
                           : "text-[#2d3e35] hover:bg-teal-900/5 hover:text-[#084c3f]"
                       }`}
                       aria-expanded={isOpen}
                     >
-                      <span>{cat.label}</span>
+                      <span className="whitespace-nowrap">{cat.label}</span>
                       <ChevronDown
-                        className={`h-3.5 w-3.5 text-[#0d6e5a] transition-transform duration-200 ${
+                        className={`h-3.5 w-3.5 text-[#0d6e5a] shrink-0 transition-transform duration-200 ${
                           isOpen ? "rotate-180" : ""
                         }`}
                       />
@@ -306,20 +306,20 @@ export default function Navbar() {
                                   }`}
                                 >
                                   <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-900/8 text-[#0d6e5a]">
-                                    <SubIcon className="h-4 w-4" />
+                                    <SubIcon className="h-4 w-4 shrink-0" />
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xs font-bold text-[#0c1a14]">
+                                      <span className="text-xs font-bold text-[#0c1a14] whitespace-nowrap">
                                         {sub.label}
                                       </span>
                                       {sub.badge && (
-                                        <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[9px] font-bold text-[#0d6e5a]">
+                                        <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[9px] font-bold text-[#0d6e5a] whitespace-nowrap shrink-0">
                                           {sub.badge}
                                         </span>
                                       )}
                                     </div>
-                                    <p className="text-[11px] text-[#5a6b62] line-clamp-1">
+                                    <p className="text-[11px] text-[#5a6b62] truncate">
                                       {sub.desc}
                                     </p>
                                   </div>
@@ -337,7 +337,7 @@ export default function Navbar() {
               {/* Direct Contact Link */}
               <Link
                 href="/contact"
-                className={`rounded-full px-3.5 py-2 text-sm font-semibold transition ${
+                className={`rounded-full px-3.5 py-2 text-sm font-semibold transition whitespace-nowrap shrink-0 ${
                   isActive("/contact")
                     ? "bg-teal-900/8 text-[#084c3f]"
                     : "text-[#2d3e35] hover:bg-teal-900/5 hover:text-[#084c3f]"
@@ -348,30 +348,30 @@ export default function Navbar() {
             </nav>
 
             {/* Right Action Cluster */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               {/* Search Pill */}
               <Link
                 href="/search"
-                className="flex items-center gap-2 rounded-full border border-teal-900/10 bg-teal-50/50 px-3 py-2 text-xs font-semibold text-[#084c3f] transition hover:bg-white hover:shadow-sm"
+                className="flex items-center gap-2 rounded-full border border-teal-900/10 bg-teal-50/50 px-3 py-2 text-xs font-semibold text-[#084c3f] transition hover:bg-white hover:shadow-sm whitespace-nowrap shrink-0"
                 aria-label="Search medications"
               >
-                <Search className="h-4 w-4 text-[#0d6e5a]" />
-                <span className="hidden sm:inline">Search</span>
+                <Search className="h-4 w-4 text-[#0d6e5a] shrink-0" />
+                <span className="hidden sm:inline whitespace-nowrap">Search</span>
               </Link>
 
               {/* Sign In button */}
               <Link
                 href="/login"
-                className="hidden xl:flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold text-[#2d3e35] transition hover:bg-teal-900/5 hover:text-[#084c3f]"
+                className="hidden xl:flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold text-[#2d3e35] transition hover:bg-teal-900/5 hover:text-[#084c3f] whitespace-nowrap shrink-0"
               >
-                <LogIn className="h-3.5 w-3.5 text-[#0d6e5a]" />
-                <span>Sign in</span>
+                <LogIn className="h-3.5 w-3.5 text-[#0d6e5a] shrink-0" />
+                <span className="whitespace-nowrap">Sign in</span>
               </Link>
 
               {/* Order OTC pill */}
               <Link
                 href="/order"
-                className="hidden sm:inline-flex rounded-full border border-teal-900/10 bg-white/90 px-3.5 py-2 text-xs font-bold text-[#084c3f] shadow-xs transition hover:bg-teal-50"
+                className="hidden sm:inline-flex rounded-full border border-teal-900/10 bg-white/90 px-3.5 py-2 text-xs font-bold text-[#084c3f] shadow-xs transition hover:bg-teal-50 whitespace-nowrap shrink-0"
               >
                 Order OTC
               </Link>
@@ -379,10 +379,10 @@ export default function Navbar() {
               {/* Primary Refill CTA */}
               <Link
                 href="/refill"
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-900/30 active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-900/30 active:scale-[0.98] whitespace-nowrap shrink-0"
               >
-                <Pill className="h-3.5 w-3.5 text-teal-200" />
-                <span>Request Refill</span>
+                <Pill className="h-3.5 w-3.5 text-teal-200 shrink-0" />
+                <span className="whitespace-nowrap">Request Refill</span>
               </Link>
 
               {/* Mobile Menu Toggle Button */}
