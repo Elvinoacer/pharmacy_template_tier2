@@ -6,9 +6,9 @@ import {
   createSession,
   registerGoogleCustomer,
   writeAuditLog,
-  isStaff,
 } from '@/app/lib/auth';
 import { appBaseUrl, getRequestMeta } from '@/app/lib/env';
+import { resolvePostLoginPath } from '@/app/lib/session-claim';
 
 export const runtime = 'nodejs';
 
@@ -120,8 +120,11 @@ export async function GET(request: Request) {
     const meta = await getRequestMeta();
     await createSession(user.id, { ip: meta.ip, userAgent: meta.userAgent });
 
-    // Route staff to /admin, customers to /portal.
-    const target = isStaff(user.role as never) ? '/admin' : '/portal';
+    // Role-aware landing: staff → /admin, pure caregiver → /caregiver, else → /portal.
+    const target = resolvePostLoginPath({
+      role: user.role,
+      customerId: user.profile?.id ?? null,
+    });
     return NextResponse.redirect(new URL(target, origin));
   } catch (error) {
     console.error('[google oauth callback]', error);

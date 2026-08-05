@@ -3,6 +3,7 @@ import { DM_Sans, Fraunces, JetBrains_Mono } from "next/font/google";
 import AppChrome from "./components/AppChrome";
 import { Toaster } from "./components/Toaster";
 import JsonLd from "./components/JsonLd";
+import { getSessionUser } from "./lib/auth";
 import { pharmacy } from "./lib/data";
 import { ensureEnvConfigured } from "./lib/ensure-env";
 import "./globals.css";
@@ -73,11 +74,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Best-effort session for public chrome (dynamic Sign in / portal CTA).
+  // Failures must not take down the public site.
+  const sessionUser = await getSessionUser().catch(() => null);
+  const sessionHint = sessionUser
+    ? {
+        role: sessionUser.role,
+        customerId: sessionUser.customerId,
+        fullName: sessionUser.fullName,
+      }
+    : null;
+
   return (
     <html
       lang="en"
@@ -85,7 +97,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col font-sans">
         <JsonLd />
-        <AppChrome>{children}</AppChrome>
+        <AppChrome sessionUser={sessionHint}>{children}</AppChrome>
         <Toaster />
       </body>
     </html>

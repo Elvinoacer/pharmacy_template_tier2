@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { loginAction } from "@/app/actions/auth";
 import AuthForm, { AuthField } from "@/app/components/AuthForm";
+import PasswordField from "@/app/components/PasswordField";
+import { getSessionUser } from "@/app/lib/auth";
+import { resolvePostLoginPath } from "@/app/lib/session-claim";
 
 export const metadata = { title: "Sign in" };
 
@@ -13,16 +17,32 @@ export default async function LoginPage({
   const next = sp.next || "";
   const error = sp.error || "";
 
+  // Already signed in → send them to the portal their role owns.
+  const session = await getSessionUser().catch(() => null);
+  if (session) {
+    redirect(
+      resolvePostLoginPath(
+        { role: session.role, customerId: session.customerId },
+        next || null,
+      ),
+    );
+  }
+
   return (
-    <div className="mesh-bg flex min-h-screen items-center justify-center px-4 py-12">
+    <div className="mesh-bg flex min-h-screen items-center justify-center px-4 py-10 sm:py-14">
       <AuthForm
         action={loginAction}
         title="Welcome back"
-        subtitle="Sign in to your Aether customer portal or staff CRM."
+        subtitle="Sign in to open your customer portal, caregiver workspace, or staff CRM — based on your account."
         submitLabel="Sign in"
         hiddenFields={next ? { next } : undefined}
         showGoogleAuth
         initialError={error}
+        highlights={[
+          "Customers land in the patient portal",
+          "Caregivers open the caregiver workspace",
+          "Pharmacists & staff open the admin CRM",
+        ]}
         footer={
           <>
             <p>
@@ -36,20 +56,21 @@ export default async function LoginPage({
                 Forgot password?
               </Link>
             </p>
-            <p className="mt-4 rounded-2xl bg-white/60 px-3 py-2 text-xs text-[#5a6b62]">
-              Demo: <code>jane@example.com</code> or <code>manager@aetherpharmacy.com</code> /{" "}
-              <code>Password123!</code>
+            <p className="mt-4 rounded-2xl border border-teal-900/8 bg-teal-50/70 px-3 py-2.5 text-xs leading-relaxed text-[#5a6b62]">
+              Demo: <code className="rounded bg-white px-1 py-0.5 text-[11px]">jane@example.com</code> or{" "}
+              <code className="rounded bg-white px-1 py-0.5 text-[11px]">manager@aetherpharmacy.com</code> /{" "}
+              <code className="rounded bg-white px-1 py-0.5 text-[11px]">Password123!</code>
             </p>
           </>
         }
       >
         <AuthField label="Email" name="email" type="email" required autoComplete="email" />
-        <AuthField
+        <PasswordField
           label="Password"
           name="password"
-          type="password"
           required
           autoComplete="current-password"
+          placeholder="Your password"
         />
       </AuthForm>
     </div>
