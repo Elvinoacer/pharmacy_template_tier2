@@ -565,15 +565,17 @@ export async function portalCreateOrderAction(
   let orderId = "";
   try {
     const { order, stockResult } = await prisma.$transaction(async (tx) => {
+      const portalPhone = String(formData.get("phone") || "").trim();
       const o = await tx.order.create({
         data: {
           customerId: user.customerId,
           source: "portal",
           status: "pending",
           total,
-          notes: String(formData.get("phone") || "")
-            ? `M-Pesa phone: ${String(formData.get("phone"))}`
-            : null,
+          // Remote portal buys are reservations until staff dispatch on handoff.
+          fulfillment: "reserve",
+          guestPhone: portalPhone || null,
+          notes: portalPhone ? `M-Pesa phone: ${portalPhone}` : null,
           items: {
             create: {
               medicationId,
@@ -590,7 +592,7 @@ export async function portalCreateOrderAction(
         inventoryId: medicationId,
         quantityDelta: -quantity,
         reason: "sale",
-        notes: `Portal OTC order × ${quantity}`,
+        notes: `Portal OTC reservation × ${quantity}`,
         relatedType: "order",
         relatedId: o.id,
         actorId: user.id,
@@ -680,6 +682,8 @@ export async function portalPayRefillAction(
       refillId,
       status: "pending",
       total,
+      // Refill payments are reservations until collection / dispatch.
+      fulfillment: "reserve",
       items: {
         create: {
           medicationId: refill.prescription?.medicationId || null,

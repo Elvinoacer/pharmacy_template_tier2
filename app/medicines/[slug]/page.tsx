@@ -311,7 +311,7 @@ export default async function CategoryDetailPage({ params }: Props) {
               <p className="mt-1 text-xs text-[#5a6b62]">
                 {med.prescriptionRequired
                   ? "This medication requires a valid prescription. Request a refill from your portal, or visit us with your prescription."
-                  : "This over-the-counter medication can be reserved online with no account, ordered in the portal (M-Pesa), or bought in store."}
+                  : "Reserve online with no account (pay M-Pesa now or at collection), use the portal for loyalty, or buy at the counter."}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {med.prescriptionRequired ? (
@@ -324,7 +324,7 @@ export default async function CategoryDetailPage({ params }: Props) {
                       href={`/order?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}
                       className="btn-primary !py-2 text-xs"
                     >
-                      Buy now — no account
+                      Reserve / pay — no account
                     </Link>
                     <Link
                       href={`/portal/orders/new?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}

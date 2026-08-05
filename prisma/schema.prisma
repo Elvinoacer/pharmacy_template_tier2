@@ -1330,10 +1330,12 @@ model MedicationLookup {
 model Order {
   id           String   @id @default(uuid()) @db.Uuid
   customerId   String?  @map("customer_id") @db.Uuid
-  /// Where the order originated: counter (staff at POS), portal (customer online), refill (linked to a RefillRequest).
+  /// Where the order originated: counter (staff at POS), portal (customer online), refill (linked to a RefillRequest), website (guest).
   source       String   @default("counter")
   refillId     String?  @map("refill_id") @db.Uuid
-  status       String   @default("pending") // pending | paid | fulfilled | cancelled | waived
+  /// pending | paid | fulfilled | cancelled | waived
+  /// paid = money received, stock reserved; fulfilled = handed to customer (dispatched).
+  status       String   @default("pending")
   total        Decimal  @default(0) @db.Decimal(10, 2)
   /// Admin can waive the payment — captured here so revenue reports stay accurate.
   waived       Boolean  @default(false)
@@ -1343,6 +1345,14 @@ model Order {
   waivedUntil  DateTime? @map("waived_until")
   /// Free-text staff notes about this order.
   notes        String?
+  /// Guest / walk-in contact when no customer profile is linked.
+  guestName    String?  @map("guest_name")
+  guestPhone   String?  @map("guest_phone")
+  /// immediate = counter handoff (auto-dispatch eligible); reserve = remote hold until collection; delivery = rider.
+  fulfillment  String   @default("reserve") // immediate | reserve | delivery
+  /// When stock was physically handed over / rider left. Null = still reserved.
+  dispatchedAt DateTime? @map("dispatched_at")
+  dispatchedById String? @map("dispatched_by") @db.Uuid
   servedById   String?  @map("served_by") @db.Uuid
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
@@ -1353,6 +1363,8 @@ model Order {
 
   @@index([customerId])
   @@index([status])
+  @@index([guestPhone])
+  @@index([dispatchedAt])
   @@index([createdAt(sort: Desc)])
   @@map("orders")
 }
@@ -1400,11 +1412,20 @@ model Payment {
   amount       Decimal        @db.Decimal(10, 2)
   provider     PaymentProvider @default(daraja)
   status       PaymentStatus  @default(pending)
-  /// Provider reference (Daraja checkout request ID, etc.)
+  /// M-Pesa receipt number (or CASH-… / WAIVE-… refs for non-Daraja).
   providerRef  String?        @map("provider_ref")
-  /// Phone number used for M-Pesa STK push.
+  /// Daraja STK CheckoutRequestID — stable key for callbacks + status polling.
+  checkoutRequestId String?   @map("checkout_request_id")
+  /// Daraja MerchantRequestID (audit).
+  merchantRequestId String?   @map("merchant_request_id")
+  /// Phone number used for M-Pesa STK push (2547…).
   phone        String?
   failureReason String?       @map("failure_reason")
+  /// How many STK push attempts for this payment row (retries share the same logical payment intent per order).
+  attemptCount Int            @default(1) @map("attempt_count")
+  lastAttemptAt DateTime?     @map("last_attempt_at")
+  /// Who initiated the STK (staff counter sale vs customer self-serve).
+  initiatedById String?       @map("initiated_by") @db.Uuid
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
 
@@ -1413,6 +1434,8 @@ model Payment {
 
   @@index([orderId])
   @@index([status])
+  @@index([checkoutRequestId])
+  @@index([phone])
   @@map("payments")
 }
 

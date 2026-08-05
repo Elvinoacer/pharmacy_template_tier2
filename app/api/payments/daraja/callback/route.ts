@@ -1,38 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/db";
+import {
+  completeDarajaPayment,
+  failDarajaPayment,
+} from "@/app/lib/services/payments";
 
 export const runtime = "nodejs";
 
 /**
- * Daraja STK push callback handler.
- *
- * Daraja calls this URL after the customer approves/declines the STK push.
- * We update the Payment row + the Order status accordingly.
- *
- * Body shape (Daraja):
- * {
- *   "Body": {
- *     "stkCallback": {
- *       "MerchantRequestID": "...",
- *       "CheckoutRequestID": "...",
- *       "ResultCode": 0,  // 0 = success, anything else = failure
- *       "ResultDesc": "The service request is processed successfully.",
- *       "CallbackMetadata": {
- *         "Item": [
- *           { "Name": "Amount", "Value": 10 },
- *           { "Name": "MpesaReceiptNumber", "Value": "SGH3XK2P61" },
- *           { "Name": "PhoneNumber", "Value": 254712345678 }
- *         ]
- *       }
- *     }
- *   }
- * }
+ * Daraja STK push callback.
+ * Idempotent — safe if status poll already settled the payment.
  */
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as {
       Body?: {
         stkCallback?: {
+          MerchantRequestID?: string;
           CheckoutRequestID?: string;
           ResultCode?: number;
           ResultDesc?: string;
@@ -44,49 +28,60 @@ export async function POST(req: Request) {
     };
 
     const cb = body.Body?.stkCallback;
-    if (!cb) {
+    if (!cb?.CheckoutRequestID) {
       return NextResponse.json({ ok: false, error: "no_callback" }, { status: 400 });
     }
 
     const payment = await prisma.payment.findFirst({
-      where: { providerRef: cb.CheckoutRequestID },
+      where: {
+        OR: [
+          { checkoutRequestId: cb.CheckoutRequestID },
+          // Legacy rows stored checkout id in providerRef.
+          { providerRef: cb.CheckoutRequestID },
+        ],
+      },
+      orderBy: { createdAt: "desc" },
     });
+
     if (!payment) {
-      return NextResponse.json({ ok: false, error: "payment_not_found" }, { status: 404 });
+      // Acknowledge so Daraja doesn't retry forever; log for ops.
+      console.warn("[daraja callback] payment not found", cb.CheckoutRequestID);
+      return NextResponse.json({ ok: true, note: "payment_not_found" });
+    }
+
+    // Persist merchant id if we only had checkout id.
+    if (cb.MerchantRequestID && !payment.merchantRequestId) {
+      await prisma.payment
+        .update({
+          where: { id: payment.id },
+          data: {
+            merchantRequestId: cb.MerchantRequestID,
+            checkoutRequestId: payment.checkoutRequestId || cb.CheckoutRequestID,
+          },
+        })
+        .catch(() => {});
     }
 
     if (cb.ResultCode === 0) {
-      // Success — extract receipt number.
       const items = cb.CallbackMetadata?.Item ?? [];
-      const receipt = items.find((i) => i.Name === "MpesaReceiptNumber")?.Value as string | undefined;
-      await prisma.$transaction([
-        prisma.payment.update({
-          where: { id: payment.id },
-          data: {
-            status: "completed",
-            providerRef: receipt || payment.providerRef,
-          },
-        }),
-        prisma.order.update({
-          where: { id: payment.orderId },
-          data: { status: "paid" },
-        }),
-      ]);
+      const receipt = items.find((i) => i.Name === "MpesaReceiptNumber")?.Value;
+      await completeDarajaPayment({
+        paymentId: payment.id,
+        mpesaReceipt: receipt != null ? String(receipt) : null,
+        resultDesc: cb.ResultDesc,
+      });
     } else {
-      await prisma.$transaction([
-        prisma.payment.update({
-          where: { id: payment.id },
-          data: {
-            status: "failed",
-            failureReason: cb.ResultDesc || "Customer declined or STK timed out",
-          },
-        }),
-      ]);
+      await failDarajaPayment({
+        paymentId: payment.id,
+        reason: cb.ResultDesc || "Customer declined or STK timed out",
+      });
     }
 
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[daraja callback]", err);
+    // Still 200-ish? Daraja retries on non-2xx. Return 500 only for true faults
+    // so transient DB errors get another try.
     return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }
 }
