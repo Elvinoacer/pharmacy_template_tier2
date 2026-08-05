@@ -22,7 +22,7 @@ type Message = {
 };
 
 const WELCOME =
-  "Hi — I'm the Aether Care Assistant. Ask me about hours, refills, delivery, vaccines, insurance, or anything else about our pharmacy. I'm not a substitute for a pharmacist for personal medical advice.";
+  "Hi — I'm the Aether Care Assistant. Ask me about hours, refills, delivery, whether a medicine is in stock, insurance, or anything else about our pharmacy. I'm not a substitute for a pharmacist for personal medical advice.";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -32,7 +32,7 @@ function uid() {
 function renderContent(text: string) {
   const parts = text.split(/(\/[a-z][\w-]*)/gi);
   return parts.map((part, i) => {
-    if (/^\/(refill|delivery|contact|services|faq|health|careers|about|medicines|search)(\/[\w-]+)?$/i.test(part)) {
+    if (/^\/(refill|delivery|contact|services|faq|health|careers|about|medicines|order|portal|search)(\/[\w-]+)?$/i.test(part)) {
       return (
         <Link
           key={i}
@@ -258,7 +258,7 @@ export default function AiChatbot() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold tracking-tight">Aether Care Assistant</p>
               <p className="text-[11px] text-teal-100/85">
-                {busy ? "Thinking…" : "Online · Powered by Gemini"}
+                {busy ? "Thinking…" : "Online · Pharmacy assistant"}
               </p>
             </div>
             <div className="flex items-center gap-1">
