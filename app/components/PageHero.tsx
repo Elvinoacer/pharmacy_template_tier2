@@ -14,7 +14,7 @@ export default function PageHero({
   crumbs?: Crumb[];
 }) {
   return (
-    <section className="relative overflow-hidden px-4 pb-10 pt-28 sm:px-6 sm:pt-32 sm:pb-12">
+    <section className="relative overflow-hidden px-4 pb-10 pt-32 sm:px-6 sm:pt-36 sm:pb-12">
       <div className="hero-glow -left-20 top-10 opacity-60" />
       <div className="relative mx-auto max-w-6xl">
         {crumbs && crumbs.length > 0 && (

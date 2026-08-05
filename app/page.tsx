@@ -47,7 +47,7 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32">
+      <section className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 sm:pb-20 sm:pt-36">
         <div className="hero-glow -left-20 top-10" />
         <div
           className="hero-glow right-0 top-40 opacity-70"
