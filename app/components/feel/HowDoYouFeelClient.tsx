@@ -571,10 +571,11 @@ export default function HowDoYouFeelClient({
   const canChat = session.status !== "closed";
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-      <div className="flex min-h-[70vh] flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 shadow-sm">
+    <div className="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-start">
+      {/* Fixed viewport height so long threads scroll inside the chat, not the page */}
+      <div className="flex h-[min(70vh,calc(100dvh-11rem))] max-h-[760px] min-h-[420px] flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 shadow-sm">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-teal-900/5 px-4 py-3 sm:px-5">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-teal-900/5 px-4 py-3 sm:px-5">
           <div className="min-w-0">
             <p className="text-xs font-bold uppercase tracking-wider text-teal-700">
               How do you feel
@@ -609,7 +610,7 @@ export default function HowDoYouFeelClient({
         </div>
 
         {escalated && (
-          <div className="flex gap-2 border-b border-amber-200/80 bg-amber-50 px-4 py-2.5 text-sm text-amber-950 sm:px-5">
+          <div className="flex shrink-0 gap-2 border-b border-amber-200/80 bg-amber-50 px-4 py-2.5 text-sm text-amber-950 sm:px-5">
             <Stethoscope className="mt-0.5 h-4 w-4 shrink-0" />
             <p>
               A pharmacist has been alerted. AI clinical guidance is paused — you can still add
@@ -618,11 +619,11 @@ export default function HowDoYouFeelClient({
           </div>
         )}
 
-        {/* Messages */}
+        {/* Messages — only this region scrolls */}
         <div
           ref={listRef}
           id={listId}
-          className="flex-1 space-y-3 overflow-y-auto px-4 py-4 sm:px-5"
+          className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5"
           role="log"
           aria-live="polite"
         >
@@ -690,7 +691,7 @@ export default function HowDoYouFeelClient({
 
         {/* Check-in strip */}
         {showCheckIn && !escalated && (
-          <div className="border-t border-teal-900/5 bg-teal-50/80 px-4 py-3 sm:px-5">
+          <div className="shrink-0 border-t border-teal-900/5 bg-teal-50/80 px-4 py-3 sm:px-5">
             <p className="text-sm font-semibold text-teal-950">How do you feel now?</p>
             <p className="mt-0.5 text-xs text-teal-900/80">
               A quick check-in helps us know if things improved — or if you need a pharmacist.
@@ -727,7 +728,7 @@ export default function HowDoYouFeelClient({
 
         {/* Composer */}
         {canChat && (
-          <form onSubmit={onSubmit} className="border-t border-teal-900/5 p-3 sm:p-4">
+          <form onSubmit={onSubmit} className="shrink-0 border-t border-teal-900/5 p-3 sm:p-4">
             {pendingImages.length > 0 && (
               <div className="mb-2 flex flex-wrap gap-2">
                 {pendingImages.map((url) => (

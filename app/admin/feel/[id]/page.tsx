@@ -5,6 +5,8 @@ import { prisma } from "@/app/lib/db";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { AdminPanel } from "@/app/components/admin/AdminUI";
 import SymptomSessionReplyForm from "@/app/components/admin/SymptomSessionReplyForm";
+import FeelAttentionRefresh from "@/app/components/admin/FeelAttentionRefresh";
+import { acknowledgeSymptomSessionForStaff } from "@/app/lib/services/symptom-triage";
 import { formatDateTime } from "@/app/lib/time";
 import {
   ArrowLeft,
@@ -43,6 +45,12 @@ export default async function AdminFeelSessionPage({
 
   if (!session) notFound();
 
+  // Viewing the thread acknowledges urgent alerts → sidebar badge clears.
+  await acknowledgeSymptomSessionForStaff({
+    sessionId: session.id,
+    staffUserId: user.id,
+  });
+
   return (
     <AdminShell
       user={user}
@@ -58,6 +66,8 @@ export default async function AdminFeelSessionPage({
         </Link>
       }
     >
+      <FeelAttentionRefresh />
+
       <div className="mb-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <AdminPanel title="AI summary for staff" description="Rolling non-diagnostic overview">
           <div className="space-y-3 text-sm">
@@ -128,7 +138,7 @@ export default async function AdminFeelSessionPage({
                 <p className="text-[10px] font-bold uppercase tracking-wider admin-muted">
                   Feeling trend
                 </p>
-                <ul className="mt-2 space-y-1">
+                <ul className="mt-2 max-h-36 space-y-1 overflow-y-auto pr-1">
                   {session.checkIns.map((c) => (
                     <li key={c.id} className="text-xs admin-text">
                       <span className="font-semibold capitalize">{c.feeling}</span>
@@ -143,12 +153,23 @@ export default async function AdminFeelSessionPage({
         </AdminPanel>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <AdminPanel
-          title="Transcript"
-          description="Full conversation including images — AI until escalation, then staff"
-        >
-          <ul className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
+      {/* Fixed-height chat panel so long transcripts don't stretch the page */}
+      <section className="admin-card flex h-[min(68vh,calc(100dvh-12rem))] min-h-[420px] flex-col overflow-hidden p-0">
+        <div className="flex shrink-0 flex-wrap items-start justify-between gap-3 border-b admin-border px-5 py-4">
+          <div>
+            <h2 className="text-sm font-semibold admin-text">Conversation</h2>
+            <p className="mt-0.5 text-xs admin-muted">
+              Full transcript including images — AI until escalation, then staff. Scroll inside this
+              panel.
+            </p>
+          </div>
+          <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-semibold uppercase admin-muted">
+            {session.messages.length} messages
+          </span>
+        </div>
+
+        <div className="grid min-h-0 flex-1 lg:grid-cols-[1.25fr_0.75fr]">
+          <ul className="min-h-0 space-y-3 overflow-y-auto px-5 py-4">
             {session.messages.map((m) => {
               const isUser = m.role === "user";
               const isStaff = m.role === "staff";
@@ -205,17 +226,25 @@ export default async function AdminFeelSessionPage({
               );
             })}
           </ul>
-        </AdminPanel>
 
-        <AdminPanel title="Staff reply" description="Visitor sees this in their check-in thread">
-          <SymptomSessionReplyForm sessionId={session.id} />
-          <p className="mt-4 text-[11px] leading-relaxed admin-muted">
-            After escalation, AI stops clinical advice. Your reply is the source of truth for the
-            visitor. Use careful language — this is not a substitute for an in-person exam when
-            one is needed.
-          </p>
-        </AdminPanel>
-      </div>
+          <div className="flex min-h-0 flex-col border-t admin-border lg:border-l lg:border-t-0">
+            <div className="shrink-0 border-b admin-border px-5 py-3">
+              <h3 className="text-sm font-semibold admin-text">Staff reply</h3>
+              <p className="mt-0.5 text-xs admin-muted">
+                Visitor sees this in their check-in thread
+              </p>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+              <SymptomSessionReplyForm sessionId={session.id} status={session.status} />
+              <p className="mt-4 text-[11px] leading-relaxed admin-muted">
+                After escalation, AI stops clinical advice. Your reply is the source of truth for the
+                visitor. Use careful language — this is not a substitute for an in-person exam when
+                one is needed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </AdminShell>
   );
 }

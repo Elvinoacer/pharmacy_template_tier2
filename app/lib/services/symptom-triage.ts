@@ -869,6 +869,181 @@ export async function recordSymptomCheckIn(input: {
   return { error: null, checkIn, systemNote, shouldOfferEscalation: false as const };
 }
 
+/**
+ * Mark How-do-you-feel admin alerts for a session as read.
+ * Called when staff open the thread or resolve it so the sidebar badge clears
+ * and room opens for new urgent alerts.
+ */
+export async function acknowledgeSymptomSessionForStaff(input: {
+  sessionId: string;
+  staffUserId?: string;
+}) {
+  const now = new Date();
+  await prisma.adminNotification
+    .updateMany({
+      where: {
+        isRead: false,
+        relatedId: input.sessionId,
+        type: { in: ["symptom_escalation", "symptom_checkin"] },
+      },
+      data: { isRead: true, readAt: now },
+    })
+    .catch(() => undefined);
+
+  // Also match rows that only set relatedType without a typed filter miss.
+  await prisma.adminNotification
+    .updateMany({
+      where: {
+        isRead: false,
+        relatedType: "symptom_session",
+        relatedId: input.sessionId,
+      },
+      data: { isRead: true, readAt: now },
+    })
+    .catch(() => undefined);
+
+  if (input.staffUserId) {
+    await prisma.symptomSession
+      .update({
+        where: { id: input.sessionId },
+        data: { assignedToId: input.staffUserId },
+      })
+      .catch(() => undefined);
+  }
+}
+
+/**
+ * Resolve a symptom session (optionally with a final staff note).
+ * Clears urgent admin alerts so the badge frees room for new cases.
+ */
+export async function resolveSymptomSession(input: {
+  sessionId: string;
+  staffUserId: string;
+  note?: string;
+}) {
+  const text = (input.note || "").trim().slice(0, 5000);
+
+  const session = await prisma.symptomSession.findUnique({
+    where: { id: input.sessionId },
+    include: {
+      customer: {
+        select: {
+          id: true,
+          fullName: true,
+          user: { select: { id: true } },
+        },
+      },
+    },
+  });
+  if (!session) return { error: "not_found" as const };
+  if (session.status === "closed") return { error: "closed" as const };
+
+  let msg = null;
+  if (text) {
+    msg = await prisma.symptomMessage.create({
+      data: {
+        sessionId: session.id,
+        role: "staff",
+        content: text,
+        senderId: input.staffUserId,
+        metadata: { kind: "staff_resolve" },
+      },
+    });
+  } else {
+    msg = await prisma.symptomMessage.create({
+      data: {
+        sessionId: session.id,
+        role: "system",
+        content: "Case marked resolved by pharmacy staff.",
+        senderId: input.staffUserId,
+        metadata: { kind: "staff_resolve" },
+      },
+    });
+  }
+
+  await prisma.symptomSession.update({
+    where: { id: session.id },
+    data: {
+      status: "resolved",
+      lastMessageAt: new Date(),
+      messageCount: { increment: 1 },
+      assignedToId: input.staffUserId,
+    },
+  });
+
+  if (session.conversationId) {
+    if (text) {
+      await prisma.message
+        .create({
+          data: {
+            conversationId: session.conversationId,
+            direction: "outbound",
+            channel: "ai",
+            senderType: "staff",
+            senderId: input.staffUserId,
+            body: text,
+            status: "sent",
+            metadata: { source: "symptom_triage_resolve", symptomSessionId: session.id },
+          },
+        })
+        .catch(() => undefined);
+    }
+    await prisma.conversation
+      .update({
+        where: { id: session.conversationId },
+        data: {
+          lastMessageAt: new Date(),
+          status: "resolved",
+          assignedToId: input.staffUserId,
+        },
+      })
+      .catch(() => undefined);
+  }
+
+  await acknowledgeSymptomSessionForStaff({
+    sessionId: session.id,
+    staffUserId: input.staffUserId,
+  });
+
+  if (session.customerId && text) {
+    const preview = text.length > 140 ? `${text.slice(0, 137)}…` : text;
+    const feelUrl = session.customerId || session.userId ? "/portal/feel" : "/how-do-you-feel";
+    await prisma.notification
+      .create({
+        data: {
+          customerId: session.customerId,
+          userId: session.userId ?? session.customer?.user?.id ?? undefined,
+          channel: "in_app",
+          type: "symptom_staff_reply",
+          title: "Pharmacist closed your check-in",
+          body: `Your pharmacist left a final note: ${preview}`,
+          fullBody: text,
+          status: "delivered",
+          sentAt: new Date(),
+          relatedType: "symptom_session",
+          relatedId: session.id,
+        },
+      })
+      .catch(() => undefined);
+
+    const pushUserId = session.userId ?? session.customer?.user?.id;
+    if (pushUserId) {
+      await dispatchPushToUser(pushUserId, {
+        title: "Pharmacist closed your check-in",
+        body: preview.slice(0, 140),
+        url: feelUrl,
+        data: {
+          tag: "symptom-staff-reply",
+          severity: "info",
+          symptomSessionId: session.id,
+        },
+      }).catch(() => undefined);
+    }
+  }
+
+  return { error: null, message: msg };
+}
+
 export async function staffReplyToSymptomSession(input: {
   sessionId: string;
   content: string;
@@ -876,6 +1051,14 @@ export async function staffReplyToSymptomSession(input: {
   markResolved?: boolean;
 }) {
   const text = input.content.trim().slice(0, 5000);
+
+  // Resolve-only path (no reply text required) — frees the urgent badge.
+  if (!text && input.markResolved) {
+    return resolveSymptomSession({
+      sessionId: input.sessionId,
+      staffUserId: input.staffUserId,
+    });
+  }
   if (!text) return { error: "empty" as const };
 
   const session = await prisma.symptomSession.findUnique({
@@ -898,7 +1081,7 @@ export async function staffReplyToSymptomSession(input: {
       role: "staff",
       content: text,
       senderId: input.staffUserId,
-      metadata: { kind: "staff_reply" },
+      metadata: { kind: input.markResolved ? "staff_resolve" : "staff_reply" },
     },
   });
 
@@ -936,6 +1119,12 @@ export async function staffReplyToSymptomSession(input: {
       },
     }).catch(() => undefined);
   }
+
+  // Staff engaged — clear urgent alerts so the badge only shows new unseen work.
+  await acknowledgeSymptomSessionForStaff({
+    sessionId: session.id,
+    staffUserId: input.staffUserId,
+  });
 
   // Notify the customer (in-app + push). Guests rely on live polling + toast on the feel page.
   const preview = text.length > 140 ? `${text.slice(0, 137)}…` : text;

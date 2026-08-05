@@ -62,6 +62,7 @@ export type AttentionCounts = {
  */
 export function useAttentionCounts(): AttentionCounts {
   const [counts, setCounts] = useState<AttentionCounts>({ count: 0, feel: 0 });
+  const pathname = usePathname();
 
   useEffect(() => {
     let cancelled = false;
@@ -93,7 +94,7 @@ export function useAttentionCounts(): AttentionCounts {
     };
     document.addEventListener("visibilitychange", onVisibility);
 
-    // Allow LiveAlertCenter / push handlers to force a refresh.
+    // Allow LiveAlertCenter / push handlers / feel-thread open to force a refresh.
     const onRefresh = () => fetchCount();
     window.addEventListener("aether:attention-refresh", onRefresh);
 
@@ -103,7 +104,8 @@ export function useAttentionCounts(): AttentionCounts {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("aether:attention-refresh", onRefresh);
     };
-  }, []);
+    // Re-fetch when route changes (e.g. open a How-do-you-feel thread → badge clears).
+  }, [pathname]);
 
   return counts;
 }

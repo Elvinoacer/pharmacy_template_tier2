@@ -24,6 +24,7 @@ export async function POST(request: Request) {
 
   const sessionId = String(body.sessionId || "").trim();
   const content = String(body.content || "");
+  const markResolved = Boolean(body.markResolved);
   if (!sessionId) {
     return NextResponse.json({ error: "sessionId required" }, { status: 400 });
   }
@@ -33,14 +34,20 @@ export async function POST(request: Request) {
       sessionId,
       content,
       staffUserId: user.id,
-      markResolved: Boolean(body.markResolved),
+      markResolved,
     });
 
     if (result.error === "not_found") {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
     }
+    if (result.error === "closed") {
+      return NextResponse.json({ error: "Session is already closed" }, { status: 400 });
+    }
     if (result.error === "empty") {
-      return NextResponse.json({ error: "Reply text required" }, { status: 400 });
+      return NextResponse.json(
+        { error: markResolved ? "Nothing to resolve" : "Reply text required" },
+        { status: 400 },
+      );
     }
 
     const detail = await getSymptomSessionDetail(sessionId);

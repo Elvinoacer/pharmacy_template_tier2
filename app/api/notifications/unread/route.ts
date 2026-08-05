@@ -66,9 +66,11 @@ export async function GET() {
       }),
     ]);
 
-  // Unique-ish urgent feel badge: escalated OR feeling-worse open sessions.
-  // Use max of the two queues so badge stays meaningful without double-counting noise.
-  const feelUrgent = Math.max(feelEscalated, feelWorse);
+  // Sidebar badge = unread How-do-you-feel alerts only.
+  // Viewing or resolving a session marks those notifications read, so the badge
+  // clears and leaves room for brand-new escalations / "feeling worse" events.
+  // Open-queue counts (escalated / worse) stay available for the inbox page stats.
+  const feelUrgent = feelCriticalInbox;
 
   return NextResponse.json({
     count: refills + enquiries + escalations + adminInbox,
@@ -80,5 +82,6 @@ export async function GET() {
     feelEscalated,
     feelWorse,
     feelCriticalInbox,
+    feelOpenQueue: Math.max(feelEscalated, feelWorse),
   });
 }

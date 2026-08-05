@@ -178,7 +178,7 @@ export function AdminShell({
                     title={
                       collapsed
                         ? showFeel
-                          ? `${l.label} · ${feelBadge} urgent`
+                          ? `${l.label} · ${feelBadge} new`
                           : l.label
                         : undefined
                     }
@@ -200,7 +200,7 @@ export function AdminShell({
                   </Link>
                   {collapsed && (
                     <span className="tooltip-right hidden lg:block">
-                      {showFeel ? `${l.label} · ${feelBadge} urgent` : l.label}
+                      {showFeel ? `${l.label} · ${feelBadge} new` : l.label}
                     </span>
                   )}
                 </li>
