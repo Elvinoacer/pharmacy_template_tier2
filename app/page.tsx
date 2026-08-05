@@ -21,6 +21,12 @@ const QUICK_ACTIONS = [
     icon: "↻",
   },
   {
+    title: "Snap a medicine pack",
+    desc: "Photo search against live stock",
+    href: "/medicines?photo=1",
+    icon: "📷",
+  },
+  {
     title: "How do you feel?",
     desc: "Guided check-in for mild symptoms",
     href: "/how-do-you-feel",

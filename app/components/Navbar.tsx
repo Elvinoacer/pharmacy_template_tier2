@@ -18,6 +18,7 @@ import {
   FileText,
   HeartPulse,
   ShoppingBag,
+  Camera,
   Truck,
   HelpCircle,
   Briefcase,
@@ -56,8 +57,15 @@ const CATEGORIES: NavCategory[] = [
       {
         href: "/medicines",
         label: "OTC Medicines",
-        desc: "Browse non-prescription products",
+        desc: "Browse stock or snap a pack photo",
         icon: ShoppingBag,
+      },
+      {
+        href: "/medicines?photo=1",
+        label: "Photo medicine search",
+        desc: "AI reads your pack, we match live stock",
+        icon: Camera,
+        badge: "New",
       },
       {
         href: "/order",

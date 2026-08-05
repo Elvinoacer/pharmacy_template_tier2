@@ -3,29 +3,67 @@ import Image from "next/image";
 import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
-import MedicinesFilterBar from "../components/MedicinesFilterBar";
+import MedicinesBrowseTools from "../components/MedicinesBrowseTools";
+import {
+  MedicineCatalogGrid,
+  type MedicineCatalogItem,
+} from "../components/MedicineCatalogCard";
 import { Pagination } from "../components/Pagination";
 import { parsePageParam } from "../lib/pagination";
 import { categories, pharmacy } from "../lib/data";
 import { prisma } from "../lib/db";
-import { formatPrice } from "../lib/format";
 
 export const metadata: Metadata = {
   title: "Medicines & Health Categories",
-  description: `Browse OTC health categories at ${pharmacy.name}. Educational guidance plus live stock for OTC products.`,
+  description: `Browse OTC health categories at ${pharmacy.name}. Educational guidance plus live stock for OTC products. Search by name or snap a pack photo.`,
   alternates: { canonical: "/medicines" },
 };
 
 const PAGE_SIZE = 24;
 
+function toCatalogItem(m: {
+  id: string;
+  slug: string;
+  price: { toString(): string } | number;
+  currentStock: number;
+  overTheCounter: boolean;
+  prescriptionRequired: boolean;
+  medicationMaster: {
+    name: string;
+    description: string | null;
+    category: string;
+    imageUrl: string | null;
+  } | null;
+}): MedicineCatalogItem | null {
+  const master = m.medicationMaster;
+  if (!master) return null;
+  const priceNum =
+    typeof m.price === "number" ? m.price : Number(m.price.toString());
+  return {
+    id: m.id,
+    slug: m.slug,
+    price: Number.isFinite(priceNum) ? priceNum : 0,
+    currentStock: m.currentStock,
+    overTheCounter: m.overTheCounter,
+    prescriptionRequired: m.prescriptionRequired,
+    medicationMaster: {
+      name: master.name,
+      description: master.description,
+      category: master.category,
+      imageUrl: master.imageUrl,
+    },
+  };
+}
+
 export default async function MedicinesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; page?: string; photo?: string }>;
 }) {
   const sp = await searchParams;
   const q = sp.q?.trim() || undefined;
   const category = sp.category || undefined;
+  const initialPhotoOpen = sp.photo === "1" || sp.photo === "true";
 
   // Pull public-listed medications (admin marks these as visible without login).
   // Category + name/description live on MedicationMaster; everything else stays
@@ -84,6 +122,10 @@ export default async function MedicinesPage({
           })
           .catch(() => []);
 
+  const catalogItems = paged
+    .map(toCatalogItem)
+    .filter((x): x is MedicineCatalogItem => x !== null);
+
   // Build the category list from existing categories + any from the DB.
   // Category lives on MedicationMaster; query distinct master categories whose
   // pharmacyInventory is public+active.
@@ -101,19 +143,24 @@ export default async function MedicinesPage({
       <PageHero
         eyebrow="Medicines & health"
         title="Categories to help you find the right care"
-        description="Browse stocked OTC products and educational categories. Reserve OTC online with no account, or sign in for M-Pesa checkout, refills, and loyalty."
+        description="Browse stocked OTC products and educational categories. Search by name, or snap a pack photo — we’ll match it to live stock. Reserve OTC online with no account, or sign in for M-Pesa checkout, refills, and loyalty."
         crumbs={[{ label: "Medicines" }]}
       />
 
-      {/* Search + filter */}
+      {/* Text search + photo search entry points */}
       <section className="px-4 pb-6 sm:px-6">
         <div className="mx-auto max-w-6xl">
-          <MedicinesFilterBar q={q} category={category} dbCategorySlugs={dbCategorySlugs} />
+          <MedicinesBrowseTools
+            q={q}
+            category={category}
+            dbCategorySlugs={dbCategorySlugs}
+            initialPhotoOpen={initialPhotoOpen}
+          />
         </div>
       </section>
 
-      {/* Live OTC catalog */}
-      {paged.length > 0 && (
+      {/* Live OTC catalog — same card grid used by photo matches */}
+      {catalogItems.length > 0 && (
         <section className="px-4 pb-12 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <h2
@@ -122,58 +169,7 @@ export default async function MedicinesPage({
             >
               Available now ({total})
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {paged.map((m) => {
-                const master = m.medicationMaster;
-                if (!master) return null;
-                return (
-                  <Link
-                    key={m.id}
-                    href={`/medicines/${m.slug}`}
-                    className="card-lift group overflow-hidden rounded-2xl border border-[#e3ebe6] bg-white shadow-sm transition hover:shadow-md"
-                  >
-                    <div className="relative h-32 overflow-hidden bg-[#f4f7f4]">
-                      {master.imageUrl ? (
-                        <Image
-                          src={master.imageUrl}
-                          alt={master.name}
-                          fill
-                          className="object-cover transition duration-700 group-hover:scale-105"
-                          sizes="(max-width: 768px) 50vw, 25vw"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-3xl">💊</div>
-                      )}
-                      {m.overTheCounter && (
-                        <span className="absolute left-2 top-2 rounded-full bg-emerald-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
-                          OTC
-                        </span>
-                      )}
-                      {m.prescriptionRequired && !m.overTheCounter && (
-                        <span className="absolute left-2 top-2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
-                          Rx required
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#0d6e5a]">
-                        {master.category ? master.category.replace(/-/g, " ") : "general"}
-                      </p>
-                      <h3 className="mt-1 text-sm font-semibold text-[#0c1a14]">{master.name}</h3>
-                      {master.description && (
-                        <p className="mt-1 line-clamp-2 text-xs text-[#5a6b62]">{master.description}</p>
-                      )}
-                      <div className="mt-2 flex items-center justify-between">
-                        <span className="font-bold text-[#0c1a14]">KES {formatPrice(Number(m.price ?? 0))}</span>
-                        <span className={`text-[10px] ${(m.currentStock ?? 0) > 0 ? "text-emerald-700" : "text-rose-600"}`}>
-                          {(m.currentStock ?? 0) > 0 ? `${m.currentStock} in stock` : "out of stock"}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+            <MedicineCatalogGrid items={catalogItems} />
 
             <Pagination
               page={page}
@@ -183,6 +179,17 @@ export default async function MedicinesPage({
               queryParams={{ q, category }}
               variant="portal"
             />
+          </div>
+        </section>
+      )}
+
+      {catalogItems.length === 0 && (q || category) && (
+        <section className="px-4 pb-12 sm:px-6">
+          <div className="mx-auto max-w-6xl rounded-2xl border border-[#e3ebe6] bg-white px-6 py-10 text-center shadow-sm">
+            <p className="text-sm font-semibold text-[#0c1a14]">No medicines matched that search</p>
+            <p className="mt-1 text-xs text-[#5a6b62]">
+              Try another name, clear filters, or use photo search above to match a pack you have at home.
+            </p>
           </div>
         </section>
       )}
@@ -219,7 +226,9 @@ export default async function MedicinesPage({
                     {c.title}
                   </h3>
                 </div>
-                <p className="p-4 text-sm leading-relaxed text-[#5a6b62] line-clamp-3">{c.description}</p>
+                <p className="line-clamp-3 p-4 text-sm leading-relaxed text-[#5a6b62]">
+                  {c.description}
+                </p>
               </Link>
             ))}
           </div>
@@ -228,7 +237,7 @@ export default async function MedicinesPage({
 
       <CtaBanner
         title="Need help choosing an OTC product?"
-        description="Our pharmacists are happy to recommend safe options that fit your health history."
+        description="Our pharmacists are happy to recommend safe options that fit your health history — or snap a pack photo above and we’ll check the shelves with you."
       />
     </div>
   );

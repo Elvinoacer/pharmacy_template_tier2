@@ -1,15 +1,19 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 export default function MedicinesFilterBar({
   q,
   category,
   dbCategorySlugs,
+  trailing,
 }: {
   q?: string;
   category?: string;
   dbCategorySlugs: string[];
+  /** Optional action after Search (e.g. photo search button). */
+  trailing?: ReactNode;
 }) {
   const router = useRouter();
 
@@ -23,7 +27,7 @@ export default function MedicinesFilterBar({
 
   return (
     <form className="flex flex-wrap items-center gap-2" action="/medicines" method="GET">
-      <div className="relative flex-1 min-w-[200px]">
+      <div className="relative min-w-[200px] flex-1">
         <input
           name="q"
           defaultValue={q || ""}
@@ -46,10 +50,11 @@ export default function MedicinesFilterBar({
       </select>
       <button
         type="submit"
-        className="inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
+        className="inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
       >
         Search
       </button>
+      {trailing}
     </form>
   );
 }
