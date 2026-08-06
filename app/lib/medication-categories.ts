@@ -7,11 +7,28 @@ export type CategoryWithCount = {
   name: string;
   slug: string;
   description: string | null;
+  imageUrl: string | null;
+  brands: string[];
+  tips: string[];
+  publicVisible: boolean;
   sortOrder: number;
   active: boolean;
   count: number;
   /** True when the slug exists only on medications (not yet in registry). */
   orphan?: boolean;
+};
+
+export type PublicCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  imageUrl: string | null;
+  brands: string[];
+  tips: string[];
+  sortOrder: number;
+  /** Live count of public-listed active inventory in this category. */
+  publicMedCount: number;
 };
 
 /** Normalize a free-text label into a stable slug for Medication.category. */
@@ -32,14 +49,45 @@ export function titleFromSlug(slug: string): string {
     .join(" ");
 }
 
+function mapRow(
+  r: {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    imageUrl: string | null;
+    brands: string[];
+    tips: string[];
+    publicVisible: boolean;
+    sortOrder: number;
+    active: boolean;
+  },
+  count: number,
+): CategoryWithCount {
+  return {
+    id: r.id,
+    name: r.name,
+    slug: r.slug,
+    description: r.description,
+    imageUrl: r.imageUrl,
+    brands: r.brands || [],
+    tips: r.tips || [],
+    publicVisible: r.publicVisible,
+    sortOrder: r.sortOrder,
+    active: r.active,
+    count,
+  };
+}
+
 /**
  * Ensure every distinct Medication.category has a registry row, then return
  * all categories with live medication counts (including empty ones).
  */
 export async function listCategoriesWithCounts(): Promise<CategoryWithCount[]> {
-  // Pull registry + live usage in parallel.
   const [registry, grouped] = await Promise.all([
-    prisma.medicationCategory.findMany({ orderBy: [{ sortOrder: "asc" }, { name: "asc" }] }),
+    prisma.medicationCategory.findMany({
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    }),
     prisma.medicationMaster.groupBy({
       by: ["category"],
       _count: { _all: true },
@@ -63,6 +111,7 @@ export async function listCategoriesWithCounts(): Promise<CategoryWithCount[]> {
         slug,
         sortOrder: 999,
         active: true,
+        publicVisible: true,
       })),
       skipDuplicates: true,
     });
@@ -75,15 +124,7 @@ export async function listCategoriesWithCounts(): Promise<CategoryWithCount[]> {
         })
       : registry;
 
-  return rows.map((r) => ({
-    id: r.id,
-    name: r.name,
-    slug: r.slug,
-    description: r.description,
-    sortOrder: r.sortOrder,
-    active: r.active,
-    count: countBySlug.get(r.slug) || 0,
-  }));
+  return rows.map((r) => mapRow(r, countBySlug.get(r.slug) || 0));
 }
 
 /** Active category slugs/names for medication form dropdowns. */
@@ -97,15 +138,16 @@ export async function listActiveCategoryOptions(): Promise<
       .map((c) => ({ slug: c.slug, name: c.name }));
   } catch (err) {
     console.error("[listActiveCategoryOptions]", err);
-    // Fallback if table not migrated yet.
     return [
       { slug: "general", name: "General" },
       { slug: "pain-relief", name: "Pain Relief" },
       { slug: "antibiotics", name: "Antibiotics" },
       { slug: "cardiovascular", name: "Cardiovascular" },
       { slug: "diabetes", name: "Diabetes" },
+      { slug: "diabetes-care", name: "Diabetes Care" },
       { slug: "respiratory", name: "Respiratory" },
       { slug: "vitamins", name: "Vitamins" },
+      { slug: "vitamins-supplements", name: "Vitamins & Supplements" },
       { slug: "first-aid", name: "First Aid" },
       { slug: "cold-flu", name: "Cold Flu" },
       { slug: "skin-care", name: "Skin Care" },
@@ -117,4 +159,68 @@ export async function listActiveCategoryOptions(): Promise<
       { slug: "allergy", name: "Allergy" },
     ];
   }
+}
+
+/**
+ * Public-facing categories for /medicines browse cards.
+ * Active + publicVisible only, ordered by sortOrder.
+ */
+export async function listPublicCategories(): Promise<PublicCategory[]> {
+  const cats = await prisma.medicationCategory.findMany({
+    where: { active: true, publicVisible: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+  });
+
+  // Count public inventory per category slug (master.category).
+  const publicMasters = await prisma.medicationMaster.findMany({
+    where: {
+      pharmacyInventory: { some: { publicListing: true, active: true } },
+    },
+    select: { category: true },
+  });
+  const countBySlug = new Map<string, number>();
+  for (const m of publicMasters) {
+    const slug = (m.category || "general").trim().toLowerCase() || "general";
+    countBySlug.set(slug, (countBySlug.get(slug) || 0) + 1);
+  }
+
+  return cats.map((c) => ({
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
+    description: c.description,
+    imageUrl: c.imageUrl,
+    brands: c.brands || [],
+    tips: c.tips || [],
+    sortOrder: c.sortOrder,
+    publicMedCount: countBySlug.get(c.slug) || 0,
+  }));
+}
+
+export async function getPublicCategoryBySlug(
+  slug: string,
+): Promise<PublicCategory | null> {
+  const c = await prisma.medicationCategory.findFirst({
+    where: { slug, active: true, publicVisible: true },
+  });
+  if (!c) return null;
+
+  const publicMedCount = await prisma.medicationMaster.count({
+    where: {
+      category: c.slug,
+      pharmacyInventory: { some: { publicListing: true, active: true } },
+    },
+  });
+
+  return {
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
+    description: c.description,
+    imageUrl: c.imageUrl,
+    brands: c.brands || [],
+    tips: c.tips || [],
+    sortOrder: c.sortOrder,
+    publicMedCount,
+  };
 }

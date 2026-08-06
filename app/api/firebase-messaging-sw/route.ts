@@ -134,12 +134,16 @@ self.addEventListener("notificationclick", (event) => {
             : status === "skipped"
               ? "Dose skipped"
               : "Snoozed 10 min"
-          : "Could not update dose";
+          : status === "snooze"
+            ? "Snooze limit reached"
+            : "Could not update dose";
         const confirmBody = ok
           ? status === "snooze"
-            ? "We'll remind you again shortly."
-            : "Your adherence log was updated."
-          : "Open the app and try again from Prescriptions.";
+            ? "We'll remind you once more shortly (max 2 snoozes)."
+            : "Your adherence log was updated. No more reminders for this dose."
+          : status === "snooze"
+            ? "Open Prescriptions and confirm Taken, Late, or Skip."
+            : "Open the app and try again from Prescriptions.";
         await self.registration.showNotification(confirmTitle, {
           body: confirmBody,
           icon: "/icon-192.png",

@@ -31,6 +31,7 @@ import {
   Package,
   HeartPulse,
   MapPin,
+  Stethoscope,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -63,6 +64,7 @@ export const ADMIN_LINKS = [
   { href: "/admin/knowledge", label: "AI Knowledge", icon: BookOpen },
   { href: "/admin/templates", label: "Templates", icon: FileText },
   { href: "/admin/medications", label: "Medications", icon: Pill },
+  { href: "/admin/services", label: "Services", icon: Stethoscope },
   { href: "/admin/inventory", label: "Inventory health", icon: Package },
   { href: "/admin/orders", label: "Orders & Revenue", icon: BarChart3 },
   { href: "/admin/settings/location", label: "Location", icon: MapPin },

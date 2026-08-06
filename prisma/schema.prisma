@@ -280,6 +280,7 @@ model User {
   symptomSessions     SymptomSession[]       @relation("SymptomSessionUser")
   symptomStaffReplies SymptomMessage[]       @relation("SymptomStaffSender")
   pharmacySettingsUpdated PharmacySettings[] @relation("PharmacySettingsUpdater")
+  serviceBookingsRecorded ServiceBooking[]   @relation("ServiceBookingRecorder")
 
   @@map("users")
 }
@@ -397,6 +398,7 @@ model CustomerProfile {
   orders          Order[]
   payments        Payment[]
   symptomSessions SymptomSession[]
+  serviceBookings ServiceBooking[]
 
   @@index([ageSegment])
   @@map("customer_profiles")
@@ -1020,6 +1022,7 @@ model AdherenceEscalation {
 /// Canonical list of catalogue categories. Medication.category stores the slug
 /// as free-text for POS/import flexibility; this table powers admin CRUD,
 /// empty categories (0 meds), descriptions, and form dropdowns.
+/// Public medicines browse uses the same rows (image, brands, tips, publicVisible).
 model MedicationCategory {
   id          String   @id @default(uuid()) @db.Uuid
   /// Human label shown in UI, e.g. "Pain Relief".
@@ -1027,12 +1030,21 @@ model MedicationCategory {
   /// Stable key stored on Medication.category, e.g. "pain-relief".
   slug        String   @unique
   description String?
+  /// Public card / detail hero image (relative path or R2 URL).
+  imageUrl    String?  @map("image_url")
+  /// Featured brands shown on the public category page.
+  brands      String[] @default([])
+  /// Pharmacist tips shown on the public category page.
+  tips        String[] @default([])
+  /// When false, category stays in admin/forms but is hidden from public browse.
+  publicVisible Boolean @default(true) @map("public_visible")
   sortOrder   Int      @default(0) @map("sort_order")
   active      Boolean  @default(true)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@index([active])
+  @@index([publicVisible])
   @@map("medication_categories")
 }
 
@@ -1373,6 +1385,8 @@ model Order {
   dispenserNoteBy User? @relation("OrderDispenser", fields: [dispenserNoteById], references: [id], onDelete: SetNull)
   items     OrderItem[]
   payments  Payment[]
+  /// Optional 1:1 link when this order settles a priced pharmacy service booking.
+  serviceBooking ServiceBooking?
 
   @@index([customerId])
   @@index([status])
@@ -1485,6 +1499,88 @@ model CaregiverInvite {
   caregiver Caregiver @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
 
   @@map("caregiver_invites")
+}
+
+// ── Pharmacy services (public catalogue + bookings) ───────────
+/// Dynamic pharmacy care services shown on /services. Seeded from the former static
+/// catalogue; admin can CRUD freely. Optional price: when set, online bookings must
+/// be paid (M-Pesa or counter) before status becomes confirmed.
+model PharmacyService {
+  id          String   @id @default(uuid()) @db.Uuid
+  slug        String   @unique
+  title       String
+  /// One-line card blurb.
+  short       String
+  description String
+  benefits    String[] @default([])
+  eligibility String?
+  duration    String?
+  imageUrl    String?  @map("image_url")
+  icon        String?
+  /// Optional fixed price in KES. Null = no online payment required to confirm.
+  price       Decimal? @db.Decimal(10, 2)
+  /// Accept online booking forms.
+  bookable    Boolean  @default(true)
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  bookings ServiceBooking[]
+
+  @@index([active, sortOrder])
+  @@map("pharmacy_services")
+}
+
+/// Customer request for a PharmacyService.
+/// Status flow:
+///   awaiting_payment — priced service, not yet paid (not confirmed)
+///   confirmed        — free service accepted, or priced service paid
+///   completed        — staff marked the visit/service done
+///   cancelled        — cancelled by staff or customer
+/// Payment status:
+///   none | unpaid | pending | paid | waived | cash
+model ServiceBooking {
+  id              String   @id @default(uuid()) @db.Uuid
+  serviceId       String   @map("service_id") @db.Uuid
+  customerId      String?  @map("customer_id") @db.Uuid
+  fullName        String   @map("full_name")
+  /// Required contact for all bookings (M-Pesa + follow-up).
+  phone           String
+  email           String?
+  notes           String?
+  preferredDate   String?  @map("preferred_date")
+  preferredTime   String?  @map("preferred_time")
+  /// awaiting_payment | confirmed | completed | cancelled
+  status          String   @default("confirmed")
+  /// none | unpaid | pending | paid | waived | cash
+  paymentStatus   String   @default("none") @map("payment_status")
+  /// Snapshot of service.price at booking time (null when free / unpriced).
+  amount          Decimal? @db.Decimal(10, 2)
+  /// Linked Order used for M-Pesa STK / cash recording when amount > 0.
+  orderId         String?  @unique @map("order_id") @db.Uuid
+  paidAt          DateTime? @map("paid_at")
+  /// daraja | cash | card | other | waive
+  paidVia         String?  @map("paid_via")
+  paymentRef      String?  @map("payment_ref")
+  recordedById    String?  @map("recorded_by") @db.Uuid
+  staffNotes      String?  @map("staff_notes")
+  /// One-shot FCM token from the booking browser (guest push without account).
+  pushToken       String?  @map("push_token")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  service    PharmacyService  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  customer   CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  order      Order?           @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  recordedBy User?            @relation("ServiceBookingRecorder", fields: [recordedById], references: [id], onDelete: SetNull)
+
+  @@index([serviceId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([phone])
+  @@index([createdAt(sort: Desc)])
+  @@map("service_bookings")
 }
 
 // ── Inbound admin notifications ───────────────────────────────

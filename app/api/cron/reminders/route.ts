@@ -178,168 +178,257 @@ async function processLowAdherenceAlerts(): Promise<number> {
 }
 
 /**
- * Escalate unconfirmed dose reminders.
+ * Resolve intended slot HH:mm from a dose reminder (title survives snooze).
+ */
+function doseSlotFromReminder(r: { title: string; scheduledFor: Date }): {
+  scheduledDate: Date;
+  scheduledTime: string;
+} {
+  const tz = process.env.TIMEZONE || "Africa/Nairobi";
+  const fromTitle = r.title.match(/\bDose\s+(\d{2}:\d{2})\b/i);
+  const scheduledTime =
+    fromTitle?.[1] ??
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(r.scheduledFor);
+
+  // Use local calendar day of the original send intent. For heavily snoozed
+  // reminders scheduledFor may have rolled; prefer sentAt/created day via
+  // scheduledFor still — createDaily uses local day of the slot.
+  const dateStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(r.scheduledFor);
+
+  return {
+    scheduledDate: new Date(dateStr + "T00:00:00Z"),
+    scheduledTime,
+  };
+}
+
+async function doseResolvedForReminder(r: {
+  relatedId: string | null;
+  title: string;
+  scheduledFor: Date;
+}): Promise<boolean> {
+  if (!r.relatedId) return false;
+  const { scheduledDate, scheduledTime } = doseSlotFromReminder(r);
+  const log = await prisma.doseLog
+    .findUnique({
+      where: {
+        prescriptionId_scheduledDate_scheduledTime: {
+          prescriptionId: r.relatedId,
+          scheduledDate,
+          scheduledTime,
+        },
+      },
+      select: { status: true },
+    })
+    .catch(() => null);
+  return Boolean(
+    log &&
+      (log.status === "taken" ||
+        log.status === "late" ||
+        log.status === "skipped" ||
+        log.status === "missed"),
+  );
+}
+
+/**
+ * Escalate unconfirmed dose reminders — status-aware, once per step.
  *
  * For each medication_dose reminder that was sent but not answered:
- *   - After 15 minutes with no response → send a follow-up reminder.
- *   - After 30 minutes with no response → mark the dose as "unknown" in the
- *     DoseLog and notify the patient's active caregivers (if any).
+ *   - Skip entirely if the dose was already logged (taken/late/skipped/missed).
+ *   - After 15 minutes with no response → one follow-up notification.
+ *   - After 45 minutes with no response → mark escalated + notify caregivers.
+ *     (Grace window widened so patients aren't hammered; auto-miss cron
+ *     still handles the dose log at T+30.)
  *
- * This closes the loop: reminder → no response → escalate → caregiver sees it.
+ * Lifecycle: due → sent → (optional follow-up) → answered | escalated.
+ * Never re-notifies after the dose is resolved.
  */
 async function processAdherenceEscalations(): Promise<number> {
   const now = new Date();
   const fifteenMinAgo = new Date(now.getTime() - 15 * 60 * 1000);
-  const thirtyMinAgo = new Date(now.getTime() - 30 * 60 * 1000);
+  const fortyFiveMinAgo = new Date(now.getTime() - 45 * 60 * 1000);
+  // Only consider reminders whose original intent is still "today-ish"
+  // (avoid escalating yesterday's leftover sent rows forever).
+  const sixHoursAgo = new Date(now.getTime() - 6 * 60 * 60 * 1000);
 
-  // Step 2 escalations: reminders sent >15 min ago, not answered, no follow-up yet.
-  const step2Candidates = await prisma.reminder.findMany({
+  const openSent = await prisma.reminder.findMany({
     where: {
       type: "medication_dose",
       status: "sent",
-      sentAt: { lte: fifteenMinAgo },
-      scheduledFor: { gte: thirtyMinAgo }, // don't escalate ancient reminders
+      sentAt: { gte: sixHoursAgo, lte: fifteenMinAgo },
     },
     take: 50,
   });
 
   let escalated = 0;
-  for (const r of step2Candidates) {
-    // Check if we already recorded a follow-up_sent escalation.
-    const existingFollowUp = await prisma.adherenceEscalation.findFirst({
-      where: { reminderId: r.id, action: "follow_up_sent" },
-    });
-    if (existingFollowUp) continue;
 
-    // Send a follow-up reminder notification (in-app + push).
-    await prisma.notification.create({
-      data: {
-        customerId: r.customerId,
-        channel: "in_app",
-        type: "reminder",
-        title: `Reminder: ${r.title}`,
-        body: r.body || "Your medication dose is still pending. Tap to confirm.",
-        status: "delivered",
-        sentAt: new Date(),
-        relatedType: "reminder",
-        relatedId: r.id,
-      },
-    });
-
-    await prisma.adherenceEscalation.create({
-      data: {
-        prescriptionId: r.relatedId || "00000000-0000-0000-0000-000000000000",
-        customerId: r.customerId,
-        reminderId: r.id,
-        scheduledDate: new Date(r.scheduledFor.toISOString().slice(0, 10) + "T00:00:00Z"),
-        scheduledTime: r.scheduledFor.toISOString().slice(11, 16),
-        step: 2,
-        action: "follow_up_sent",
-      },
-    });
-
-    escalated += 1;
-  }
-
-  // Step 3 escalations: reminders sent >30 min ago, still not answered.
-  const step3Candidates = await prisma.reminder.findMany({
-    where: {
-      type: "medication_dose",
-      status: "sent",
-      sentAt: { lte: thirtyMinAgo },
-      scheduledFor: { gte: thirtyMinAgo },
-    },
-    take: 50,
-  });
-
-  for (const r of step3Candidates) {
-    const existingMarked = await prisma.adherenceEscalation.findFirst({
-      where: { reminderId: r.id, action: "marked_unknown" },
-    });
-    if (existingMarked) continue;
-
-    // Mark the corresponding DoseLog as "unknown".
-    const scheduledDate = new Date(r.scheduledFor.toISOString().slice(0, 10) + "T00:00:00Z");
-    const scheduledTime = r.scheduledFor.toISOString().slice(11, 16);
-
-    // Try to find a DoseLog for this reminder's prescription + date + time.
-    if (r.relatedId) {
-      const doseLog = await prisma.doseLog.findUnique({
-        where: {
-          prescriptionId_scheduledDate_scheduledTime: {
-            prescriptionId: r.relatedId,
-            scheduledDate,
-            scheduledTime,
-          },
-        },
-      }).catch(() => null);
-
-      if (doseLog && doseLog.status !== "taken" && doseLog.status !== "late") {
-        await prisma.doseLog.update({
-          where: { id: doseLog.id },
-          data: { status: "unknown", recordedBy: "system" },
-        });
-      }
+  for (const r of openSent) {
+    // Already confirmed in the portal / push action → settle, no more noise.
+    if (await doseResolvedForReminder(r)) {
+      await prisma.reminder.update({
+        where: { id: r.id },
+        data: { status: "answered" },
+      });
+      continue;
     }
 
-    await prisma.reminder.update({
-      where: { id: r.id },
-      data: { status: "escalated" },
-    });
+    const sentAt = r.sentAt ?? r.scheduledFor;
+    const { scheduledDate, scheduledTime } = doseSlotFromReminder(r);
+    const prescriptionId = r.relatedId || "00000000-0000-0000-0000-000000000000";
 
-    await prisma.adherenceEscalation.create({
-      data: {
-        prescriptionId: r.relatedId || "00000000-0000-0000-0000-000000000000",
-        customerId: r.customerId,
-        reminderId: r.id,
-        scheduledDate,
-        scheduledTime,
-        step: 3,
-        action: "marked_unknown",
-      },
-    });
-
-    // Notify the patient's active caregivers (those with canLogAdherence or canReceivePickupNotifications).
-    const caregivers = await prisma.caregiver.findMany({
-      where: {
-        customerId: r.customerId,
-        status: "active",
-        OR: [{ canLogAdherence: true }, { canReceivePickupNotifications: true }],
-      },
-      include: { caregiverUser: { select: { id: true } } },
-    });
-
-    for (const cg of caregivers) {
-      if (cg.caregiverUser) {
+    // Step 2: single follow-up after 15 min.
+    if (sentAt <= fifteenMinAgo) {
+      const existingFollowUp = await prisma.adherenceEscalation.findFirst({
+        where: { reminderId: r.id, action: "follow_up_sent" },
+      });
+      if (!existingFollowUp) {
         await prisma.notification.create({
           data: {
-            userId: cg.caregiverUser.id,
+            customerId: r.customerId,
             channel: "in_app",
             type: "reminder",
-            title: `Missed dose: ${r.title}`,
-            body: `${r.customerId ? "" : ""}A scheduled dose was not confirmed in time. Please check on the patient.`,
+            title: `Still pending: ${r.title}`,
+            body:
+              r.body ||
+              "Your medication dose is still pending. Confirm Taken, Late, or Skip in Prescriptions.",
             status: "delivered",
             sentAt: new Date(),
             relatedType: "reminder",
             relatedId: r.id,
           },
         });
+
+        await prisma.adherenceEscalation.create({
+          data: {
+            prescriptionId,
+            customerId: r.customerId,
+            reminderId: r.id,
+            scheduledDate,
+            scheduledTime,
+            step: 2,
+            action: "follow_up_sent",
+          },
+        });
+        escalated += 1;
       }
     }
 
-    await prisma.adherenceEscalation.create({
-      data: {
-        prescriptionId: r.relatedId || "00000000-0000-0000-0000-000000000000",
-        customerId: r.customerId,
-        reminderId: r.id,
-        scheduledDate,
-        scheduledTime,
-        step: 3,
-        action: "caregiver_notified",
-      },
-    });
+    // Step 3: after 45 min still open → escalate once, notify caregivers.
+    if (sentAt <= fortyFiveMinAgo) {
+      const existingMarked = await prisma.adherenceEscalation.findFirst({
+        where: { reminderId: r.id, action: "marked_unknown" },
+      });
+      if (existingMarked) continue;
 
-    escalated += 1;
+      // Leave dose log alone if auto-miss already wrote missed; only stamp unknown
+      // when nothing definitive exists yet.
+      if (r.relatedId) {
+        const doseLog = await prisma.doseLog
+          .findUnique({
+            where: {
+              prescriptionId_scheduledDate_scheduledTime: {
+                prescriptionId: r.relatedId,
+                scheduledDate,
+                scheduledTime,
+              },
+            },
+          })
+          .catch(() => null);
+
+        if (!doseLog) {
+          await prisma.doseLog.create({
+            data: {
+              prescriptionId: r.relatedId,
+              customerId: r.customerId,
+              scheduledDate,
+              scheduledTime,
+              status: "unknown",
+              recordedBy: "system",
+              notes: "Unconfirmed after reminder escalation",
+            },
+          }).catch(() => null);
+        } else if (doseLog.status === "unknown" || !doseLog.status) {
+          // leave as-is
+        } else if (
+          doseLog.status !== "taken" &&
+          doseLog.status !== "late" &&
+          doseLog.status !== "skipped" &&
+          doseLog.status !== "missed"
+        ) {
+          await prisma.doseLog.update({
+            where: { id: doseLog.id },
+            data: { status: "unknown", recordedBy: "system" },
+          });
+        }
+      }
+
+      await prisma.reminder.update({
+        where: { id: r.id },
+        data: { status: "escalated" },
+      });
+
+      await prisma.adherenceEscalation.create({
+        data: {
+          prescriptionId,
+          customerId: r.customerId,
+          reminderId: r.id,
+          scheduledDate,
+          scheduledTime,
+          step: 3,
+          action: "marked_unknown",
+        },
+      });
+
+      const caregivers = await prisma.caregiver.findMany({
+        where: {
+          customerId: r.customerId,
+          status: "active",
+          OR: [{ canLogAdherence: true }, { canReceivePickupNotifications: true }],
+        },
+        include: { caregiverUser: { select: { id: true } } },
+      });
+
+      for (const cg of caregivers) {
+        if (cg.caregiverUser) {
+          await prisma.notification.create({
+            data: {
+              userId: cg.caregiverUser.id,
+              channel: "in_app",
+              type: "reminder",
+              title: `Unconfirmed dose: ${r.title}`,
+              body: "A scheduled dose was not confirmed in time. Please check on the patient.",
+              status: "delivered",
+              sentAt: new Date(),
+              relatedType: "reminder",
+              relatedId: r.id,
+            },
+          });
+        }
+      }
+
+      await prisma.adherenceEscalation.create({
+        data: {
+          prescriptionId,
+          customerId: r.customerId,
+          reminderId: r.id,
+          scheduledDate,
+          scheduledTime,
+          step: 3,
+          action: "caregiver_notified",
+        },
+      });
+
+      escalated += 1;
+    }
   }
 
   return escalated;

@@ -253,19 +253,25 @@ export function PortalShell({
       <main className="shell-main scroll-thin">
         <div className="page-container">
           {(title || actions) && (
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-3 animate-fade-up">
-              <div>
+            <div className="mb-5 flex flex-col gap-3 animate-fade-up sm:mb-6 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+              <div className="min-w-0">
                 {title && (
                   <h1
-                    className="text-2xl font-bold tracking-tight text-[#0c1a14] sm:text-3xl"
+                    className="text-xl font-bold tracking-tight text-[#0c1a14] sm:text-2xl md:text-3xl"
                     style={{ fontFamily: "var(--font-display), serif" }}
                   >
                     {title}
                   </h1>
                 )}
-                {subtitle && <p className="mt-1 text-sm text-[#5a6b62]">{subtitle}</p>}
+                {subtitle && (
+                  <p className="mt-1 text-xs text-[#5a6b62] sm:text-sm">{subtitle}</p>
+                )}
               </div>
-              {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+              {actions && (
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+                  {actions}
+                </div>
+              )}
             </div>
           )}
           {children}

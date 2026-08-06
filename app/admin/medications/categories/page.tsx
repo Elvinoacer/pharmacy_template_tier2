@@ -77,7 +77,7 @@ export default async function MedicationCategoriesPage() {
 
       <AdminPanel
         title="Category registry"
-        description="Changes apply immediately to medication forms and catalogue filters. Renaming a slug re-tags every linked drug."
+        description="Manage taxonomy for the drug catalogue and public medicines browse. Add an image, brands, and tips for public category pages. Renaming a slug re-tags every linked drug."
       >
         {loadError ? (
           <AdminEmptyState

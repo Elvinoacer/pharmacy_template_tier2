@@ -365,6 +365,13 @@ export async function processAutoMissedDoses(customerId?: string): Promise<numbe
         });
       }
 
+      // Stop further push/escalation noise for this slot.
+      await settleOpenDoseReminders(
+        sched.customerId,
+        sched.prescriptionId,
+        todayObj,
+        sched.timeOfDay,
+      );
       autoMissedCount += 1;
     } else if (existingLog.status === "unknown") {
       await prisma.doseLog.update({
@@ -375,11 +382,60 @@ export async function processAutoMissedDoses(customerId?: string): Promise<numbe
           notes: "Auto-marked missed after timeout",
         },
       });
+      await settleOpenDoseReminders(
+        sched.customerId,
+        sched.prescriptionId,
+        todayObj,
+        sched.timeOfDay,
+      );
       autoMissedCount += 1;
     }
   }
 
   return autoMissedCount;
+}
+
+/** Mark open dose reminders for a slot as answered (end of lifecycle). */
+async function settleOpenDoseReminders(
+  customerId: string,
+  prescriptionId: string,
+  scheduledDate: Date,
+  timeOfDay: string,
+): Promise<void> {
+  const dayStart = new Date(scheduledDate);
+  dayStart.setUTCHours(0, 0, 0, 0);
+  const windowStart = new Date(dayStart.getTime() - 12 * 60 * 60 * 1000);
+  const windowEnd = new Date(dayStart.getTime() + 36 * 60 * 60 * 1000);
+
+  const open = await prisma.reminder.findMany({
+    where: {
+      customerId,
+      type: "medication_dose",
+      relatedId: prescriptionId,
+      status: { in: ["scheduled", "sent", "escalated"] },
+      scheduledFor: { gte: windowStart, lte: windowEnd },
+    },
+    select: { id: true, title: true, scheduledFor: true },
+  });
+
+  const ids = open
+    .filter((r) => {
+      if (r.title?.includes(timeOfDay)) return true;
+      const hhmm = new Intl.DateTimeFormat("en-GB", {
+        timeZone: PROJECT_TIMEZONE,
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(r.scheduledFor);
+      return hhmm === timeOfDay;
+    })
+    .map((r) => r.id);
+
+  if (ids.length === 0) return;
+  await prisma.reminder.updateMany({
+    where: { id: { in: ids } },
+    data: { status: "answered" },
+  });
 }
 
 /**
@@ -520,26 +576,41 @@ export async function createDailyDoseReminders(opts?: {
     if (todayStr < startStr) continue;
 
     const scheduledFor = parseLocalDatetimeInput(`${todayStr}T${sched.timeOfDay}`);
+    const todayObj = new Date(todayStr + "T00:00:00Z");
 
-    // Skip if a dose reminder for this prescription+day+slot already exists
-    // (any status — scheduled/sent/answered/escalated). Match a ±2 min window
-    // around the exact slot so clock skew / re-runs stay idempotent.
-    const windowStart = new Date(scheduledFor.getTime() - 2 * 60 * 1000);
-    const windowEnd = new Date(scheduledFor.getTime() + 2 * 60 * 1000);
-
-    const existing = await prisma.reminder.findFirst({
+    // Idempotency: any open/closed dose reminder for this prescription on the
+    // local calendar day for this slot. Snooze moves scheduledFor forward, so
+    // a narrow ±2 min window would recreate duplicates — match the whole day
+    // and prefer title/time-of-day identity.
+    const dayWindowStart = new Date(scheduledFor.getTime() - 14 * 60 * 60 * 1000);
+    const dayWindowEnd = new Date(scheduledFor.getTime() + 14 * 60 * 60 * 1000);
+    const existingReminders = await prisma.reminder.findMany({
       where: {
         customerId: rx.customerId,
         type: "medication_dose",
         relatedId: rx.id,
-        scheduledFor: { gte: windowStart, lte: windowEnd },
+        scheduledFor: { gte: dayWindowStart, lte: dayWindowEnd },
       },
-      select: { id: true },
+      select: { id: true, title: true, scheduledFor: true, status: true },
     });
-    if (existing) continue;
+    const alreadyHasSlot = existingReminders.some((r) => {
+      if (r.title?.includes(sched.timeOfDay)) return true;
+      const hhmm = new Intl.DateTimeFormat("en-GB", {
+        timeZone: PROJECT_TIMEZONE,
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(r.scheduledFor);
+      // Allow ±5 min drift from the slot for non-snoozed reminders.
+      const [sh, sm] = sched.timeOfDay.split(":").map(Number);
+      const [rh, rm] = hhmm.split(":").map(Number);
+      const slotMins = sh * 60 + sm;
+      const remMins = rh * 60 + rm;
+      return Math.abs(slotMins - remMins) <= 5;
+    });
+    if (alreadyHasSlot) continue;
 
-    // Also skip if the dose is already logged as taken/late/skipped for today.
-    const todayObj = new Date(todayStr + "T00:00:00Z");
+    // Skip if the dose is already resolved for today (any definitive status).
     const logged = await prisma.doseLog.findUnique({
       where: {
         prescriptionId_scheduledDate_scheduledTime: {
@@ -550,7 +621,13 @@ export async function createDailyDoseReminders(opts?: {
       },
       select: { status: true },
     }).catch(() => null);
-    if (logged && (logged.status === "taken" || logged.status === "late" || logged.status === "skipped")) {
+    if (
+      logged &&
+      (logged.status === "taken" ||
+        logged.status === "late" ||
+        logged.status === "skipped" ||
+        logged.status === "missed")
+    ) {
       continue;
     }
 

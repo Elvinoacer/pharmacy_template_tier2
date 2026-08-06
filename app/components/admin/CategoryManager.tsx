@@ -2,8 +2,10 @@
 
 import { useCallback, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "@/app/components/Toaster";
 import { Modal } from "@/app/components/Modal";
+import ImageUploadField from "@/app/components/admin/ImageUploadField";
 import {
   Pencil,
   Plus,
@@ -19,6 +21,7 @@ import {
   Eye,
   ArrowRight,
   Hash,
+  Globe,
 } from "lucide-react";
 
 export type CategoryRow = {
@@ -26,6 +29,10 @@ export type CategoryRow = {
   name: string;
   slug: string;
   description: string | null;
+  imageUrl: string | null;
+  brands: string[];
+  tips: string[];
+  publicVisible: boolean;
   sortOrder: number;
   active: boolean;
   count: number;
@@ -82,7 +89,12 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
   const [formSlug, setFormSlug] = useState("");
   const [formSlugTouched, setFormSlugTouched] = useState(false);
   const [formDescription, setFormDescription] = useState("");
+  const [formImageUrl, setFormImageUrl] = useState("");
+  const [formBrands, setFormBrands] = useState("");
+  const [formTips, setFormTips] = useState("");
+  const [formPublicVisible, setFormPublicVisible] = useState(true);
   const [formActive, setFormActive] = useState(true);
+  const [imageFieldKey, setImageFieldKey] = useState(0);
 
   // Delete / merge extras
   const [reassignTo, setReassignTo] = useState("general");
@@ -114,7 +126,12 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
     setFormSlug("");
     setFormSlugTouched(false);
     setFormDescription("");
+    setFormImageUrl("");
+    setFormBrands("");
+    setFormTips("");
+    setFormPublicVisible(true);
     setFormActive(true);
+    setImageFieldKey((k) => k + 1);
     setModal({ type: "create" });
   };
 
@@ -123,7 +140,12 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
     setFormSlug(row.slug);
     setFormSlugTouched(true);
     setFormDescription(row.description || "");
+    setFormImageUrl(row.imageUrl || "");
+    setFormBrands((row.brands || []).join("\n"));
+    setFormTips((row.tips || []).join("\n"));
+    setFormPublicVisible(row.publicVisible ?? true);
     setFormActive(row.active);
+    setImageFieldKey((k) => k + 1);
     setModal({ type: "edit", row });
   };
 
@@ -151,6 +173,13 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
     if (!pending) setModal(null);
   }, [pending]);
 
+  function parseLines(raw: string): string[] {
+    return raw
+      .split(/\n|,/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
   function createCategory() {
     const name = formName.trim();
     const slug = slugify(formSlug || name);
@@ -159,18 +188,23 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
       return;
     }
 
+    const brands = parseLines(formBrands);
+    const tips = parseLines(formTips);
     const tempId = `temp-${Date.now()}`;
     const optimistic: CategoryRow = {
       id: tempId,
       name,
       slug,
       description: formDescription.trim() || null,
+      imageUrl: formImageUrl.trim() || null,
+      brands,
+      tips,
+      publicVisible: formPublicVisible,
       sortOrder: (rows.at(-1)?.sortOrder ?? 0) + 10,
       active: true,
       count: 0,
     };
 
-    // Optimistic insert
     setRows((prev) => [...prev, optimistic]);
     setModal(null);
     setPage(1);
@@ -183,10 +217,14 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
           name,
           slug,
           description: formDescription.trim() || null,
+          imageUrl: formImageUrl.trim() || null,
+          brands,
+          tips,
+          publicVisible: formPublicVisible,
         });
         if (data.category) {
           setRows((prev) =>
-            prev.map((r) => (r.id === tempId ? data.category! : r)),
+            prev.map((r) => (r.id === tempId ? { ...optimistic, ...data.category! } : r)),
           );
         }
         toast.success(`Created category "${name}".`);
@@ -205,12 +243,18 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
       return;
     }
 
+    const brands = parseLines(formBrands);
+    const tips = parseLines(formTips);
     const snapshot = rows;
     const next: CategoryRow = {
       ...row,
       name,
       slug,
       description: formDescription.trim() || null,
+      imageUrl: formImageUrl.trim() || null,
+      brands,
+      tips,
+      publicVisible: formPublicVisible,
       active: formActive,
     };
 
@@ -225,11 +269,15 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
           name,
           slug,
           description: formDescription.trim() || null,
+          imageUrl: formImageUrl.trim() || null,
+          brands,
+          tips,
+          publicVisible: formPublicVisible,
           active: formActive,
         });
         if (data.category) {
           setRows((prev) =>
-            prev.map((r) => (r.id === row.id ? { ...data.category! } : r)),
+            prev.map((r) => (r.id === row.id ? { ...next, ...data.category! } : r)),
           );
         }
         toast.success(`Updated "${name}".`);
@@ -425,8 +473,14 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                 !c.active ? "opacity-60" : ""
               }`}
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 admin-accent-text">
-                <Tag className="h-4 w-4" />
+              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 admin-accent-text">
+                {c.imageUrl ? (
+                  <Image src={c.imageUrl} alt="" fill className="object-cover" sizes="40px" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <Tag className="h-4 w-4" />
+                  </div>
+                )}
               </div>
 
               <div className="min-w-0 flex-1">
@@ -435,6 +489,11 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                   {!c.active && (
                     <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
                       Inactive
+                    </span>
+                  )}
+                  {c.publicVisible === false && (
+                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] font-semibold admin-muted">
+                      Hidden on site
                     </span>
                   )}
                   {c.slug === "general" && (
@@ -601,7 +660,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
           </>
         }
       >
-        <div className="space-y-3">
+        <div className="max-h-[65vh] space-y-3 overflow-y-auto pr-1">
           <div>
             <label className="label-admin">Display name *</label>
             <input
@@ -628,26 +687,69 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
             </p>
           </div>
           <div>
-            <label className="label-admin">Description</label>
+            <label className="label-admin">Public description</label>
             <textarea
               value={formDescription}
               onChange={(e) => setFormDescription(e.target.value)}
-              rows={2}
-              placeholder="Optional short note for staff"
+              rows={3}
+              placeholder="Shown on the public medicines category page"
               className="input-admin resize-y"
             />
           </div>
-          {modal?.type === "edit" && (
+          <div>
+            <ImageUploadField
+              key={imageFieldKey}
+              name="categoryImageUrl"
+              label="Category image"
+              folder="categories"
+              defaultValue={formImageUrl}
+              onChange={(url) => setFormImageUrl(url)}
+              hint="Upload or paste a path like /images/otc/pain-relief.webp"
+            />
+          </div>
+          <div>
+            <label className="label-admin">Featured brands (one per line)</label>
+            <textarea
+              value={formBrands}
+              onChange={(e) => setFormBrands(e.target.value)}
+              rows={2}
+              placeholder="Advil&#10;Tylenol"
+              className="input-admin resize-y"
+            />
+          </div>
+          <div>
+            <label className="label-admin">Pharmacist tips (one per line)</label>
+            <textarea
+              value={formTips}
+              onChange={(e) => setFormTips(e.target.value)}
+              rows={3}
+              placeholder="Do not combine multiple products containing acetaminophen."
+              className="input-admin resize-y"
+            />
+          </div>
+          <div className="flex flex-wrap gap-4 pt-1">
             <label className="flex cursor-pointer items-center gap-2 text-sm admin-muted">
               <input
                 type="checkbox"
-                checked={formActive}
-                onChange={(e) => setFormActive(e.target.checked)}
+                checked={formPublicVisible}
+                onChange={(e) => setFormPublicVisible(e.target.checked)}
                 className="h-4 w-4 rounded border-[var(--admin-border-2)]"
               />
-              Active (shown in medication form dropdowns)
+              <Globe className="h-3.5 w-3.5" />
+              Show on public medicines page
             </label>
-          )}
+            {modal?.type === "edit" && (
+              <label className="flex cursor-pointer items-center gap-2 text-sm admin-muted">
+                <input
+                  type="checkbox"
+                  checked={formActive}
+                  onChange={(e) => setFormActive(e.target.checked)}
+                  className="h-4 w-4 rounded border-[var(--admin-border-2)]"
+                />
+                Active in medication form dropdowns
+              </label>
+            )}
+          </div>
         </div>
       </Modal>
 

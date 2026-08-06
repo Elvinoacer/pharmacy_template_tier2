@@ -8,10 +8,10 @@ import {
   articles,
   gallery,
   pharmacy,
-  services,
   testimonials,
   trustIndicators,
 } from "./lib/data";
+import { listPublicServices } from "./lib/services/pharmacy-services";
 
 const QUICK_ACTIONS = [
   {
@@ -46,8 +46,9 @@ const QUICK_ACTIONS = [
   },
 ];
 
-export default function HomePage() {
-  const featuredServices = services.slice(0, 6);
+export default async function HomePage() {
+  const dbServices = await listPublicServices().catch(() => []);
+  const featuredServices = dbServices.slice(0, 6);
   const featuredArticles = articles.slice(0, 3);
 
   return (
@@ -227,14 +228,20 @@ export default function HomePage() {
                   href={`/services/${s.slug}`}
                   className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-white/60 bg-white shadow-[0_16px_50px_rgba(8,40,32,0.08)]"
                 >
-                  <div className="relative h-44 overflow-hidden">
-                    <Image
-                      src={s.image}
-                      alt={s.title}
-                      fill
-                      className="object-cover transition duration-700 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
+                  <div className="relative h-44 overflow-hidden bg-[#eef5f1]">
+                    {s.imageUrl ? (
+                      <Image
+                        src={s.imageUrl}
+                        alt={s.title}
+                        fill
+                        className="object-cover transition duration-700 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-4xl opacity-40">
+                        🏥
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   </div>
                   <div className="flex flex-1 flex-col p-5">

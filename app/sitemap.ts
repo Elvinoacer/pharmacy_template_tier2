@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
-import { articles, categories, pharmacy, services } from "./lib/data";
+import { articles, pharmacy } from "./lib/data";
+import { listPublicServices } from "./lib/services/pharmacy-services";
+import { listPublicCategories } from "./lib/medication-categories";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = pharmacy.siteUrl;
   const now = new Date();
 
@@ -31,6 +33,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
           ? 0.9
           : 0.7,
   }));
+
+  const [services, categories] = await Promise.all([
+    listPublicServices().catch(() => []),
+    listPublicCategories().catch(() => []),
+  ]);
 
   const serviceRoutes = services.map((s) => ({
     url: `${base}/services/${s.slug}`,
