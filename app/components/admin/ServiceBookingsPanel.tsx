@@ -8,6 +8,7 @@ import {
   type BookingAdminState,
 } from "@/app/actions/admin-services";
 import { toast } from "@/app/components/Toaster";
+import { formatDateTime } from "@/app/lib/time";
 import {
   Banknote,
   Check,
@@ -163,7 +164,7 @@ export function ServiceBookingsPanel({
                     )}
                     <span className="font-mono">
                       {b.id.slice(0, 8).toUpperCase()} ·{" "}
-                      {new Date(b.createdAt).toLocaleString()}
+                      {formatDateTime(b.createdAt)}
                     </span>
                   </div>
                   {b.notes && (

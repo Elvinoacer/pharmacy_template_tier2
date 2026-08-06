@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Check, X, Clock, Calendar } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
-import { formatDate } from "@/app/lib/time";
+import { formatDate, localTodayStr } from "@/app/lib/time";
 
 /**
  * One-tap dose confirmation widget. Used by:
@@ -41,7 +41,7 @@ export function DoseConfirmButton({
 }) {
   const [busy, setBusy] = useState(false);
   const [logged, setLogged] = useState<DoseStatus | null>(initialStatus ?? null);
-  const today = scheduledDate || new Date().toISOString().slice(0, 10);
+  const today = scheduledDate || localTodayStr();
 
   async function log(status: DoseStatus) {
     setBusy(true);

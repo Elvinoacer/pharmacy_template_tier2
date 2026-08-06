@@ -12,6 +12,7 @@ import {
   SESSION_CLAIM_COOKIE,
   signSessionClaim,
 } from "@/app/lib/session-claim";
+import { parseLocalDateInput } from "@/app/lib/time";
 
 export { addTimelineEvent, writeAuditLog };
 
@@ -213,7 +214,7 @@ export async function registerCustomer(input: {
         userId: user.id,
         fullName: input.fullName.trim(),
         phone: input.phone?.trim() || null,
-        dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : null,
+        dateOfBirth: input.dateOfBirth ? parseLocalDateInput(input.dateOfBirth) : null,
       },
     });
 

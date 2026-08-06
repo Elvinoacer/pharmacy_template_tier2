@@ -19,7 +19,12 @@ import {
   launchCampaign,
   processDueReminders,
 } from "@/app/lib/services/crm";
-import { parseLocalDatetimeInput } from "@/app/lib/time";
+import {
+  parseLocalDatetimeInput,
+  parseLocalDateInput,
+  formatDate,
+  now,
+} from "@/app/lib/time";
 import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
 import type { RefillStatus } from "@/app/generated/prisma/client";
 import { createHash, randomBytes } from "crypto";
@@ -312,7 +317,9 @@ export async function adminCreateReminderAction(
         | "whatsapp"
         | "push"
         | "in_app"),
-      scheduledFor: parseLocalDatetimeInput(String(formData.get("scheduledFor") || new Date().toISOString())),
+      scheduledFor: formData.get("scheduledFor")
+        ? parseLocalDatetimeInput(String(formData.get("scheduledFor")))
+        : now(),
       createdById: user.id,
     },
   });
@@ -484,7 +491,9 @@ export async function adminCreateCouponAction(
           discountValue,
           pointsCost,
           maxRedemptions: Number(formData.get("maxRedemptions") || 0) || null,
-          validUntil: formData.get("validUntil") ? new Date(String(formData.get("validUntil"))) : null,
+          validUntil: formData.get("validUntil")
+            ? parseLocalDateInput(String(formData.get("validUntil")))
+            : null,
           // Hidden "off" + checkbox "on" both submit; get() returns the first
           // value ("off"), so use getAll and treat active as on if "on" is present.
           active: formData.getAll("active").includes("on"),
@@ -502,7 +511,9 @@ export async function adminCreateCouponAction(
         discountValue,
         pointsCost,
         maxRedemptions: Number(formData.get("maxRedemptions") || 0) || null,
-        validUntil: formData.get("validUntil") ? new Date(String(formData.get("validUntil"))) : null,
+        validUntil: formData.get("validUntil")
+            ? parseLocalDateInput(String(formData.get("validUntil")))
+            : null,
         active: formData.getAll("active").includes("on"),
       },
     });
@@ -562,10 +573,14 @@ export async function adminCreatePrescriptionAction(
       | "on_hold"
       | "expired"
       | "discontinued"),
-    startDate: formData.get("startDate") ? new Date(String(formData.get("startDate"))) : null,
-    endDate: formData.get("endDate") ? new Date(String(formData.get("endDate"))) : null,
+    startDate: formData.get("startDate")
+      ? parseLocalDateInput(String(formData.get("startDate")))
+      : null,
+    endDate: formData.get("endDate")
+      ? parseLocalDateInput(String(formData.get("endDate")))
+      : null,
     nextRefillDue: formData.get("nextRefillDue")
-      ? new Date(String(formData.get("nextRefillDue")))
+      ? parseLocalDateInput(String(formData.get("nextRefillDue")))
       : null,
     notes: String(formData.get("notes") || "") || null,
   };
@@ -1003,10 +1018,24 @@ export async function adminDispatchPrescriptionAction(
 export async function adminDeletePrescriptionAction(formData: FormData) {
   const user = await staff();
   const id = String(formData.get("id") || "");
-  if (!id) return;
+  if (!id) redirect("/admin/prescriptions");
+
+  const existing = await prisma.prescription.findUnique({
+    where: { id },
+    select: { id: true, customerId: true },
+  });
+  if (!existing) {
+    // Already gone — don't 404 the detail page; land on the list.
+    revalidatePath("/admin/prescriptions");
+    redirect("/admin/prescriptions");
+  }
+
   await prisma.prescription.delete({ where: { id } });
   await writeAuditLog(user.id, "prescription_deleted", "prescription", id);
   revalidatePath("/admin/prescriptions");
+  revalidatePath(`/admin/customers/${existing.customerId}`);
+  // Critical: leave the detail URL so Next doesn't re-render a deleted row → 404.
+  redirect("/admin/prescriptions");
 }
 
 // ── Medications (drug catalog — split into MedicationMaster + PharmacyInventory per Phase 0) ──
@@ -1422,10 +1451,10 @@ export async function adminCreateOrderAction(
     }
     const now = new Date();
     if (coupon.validFrom && coupon.validFrom > now) {
-      return { error: `Coupon ${coupon.code} is not valid yet (starts ${coupon.validFrom.toISOString().slice(0, 10)}).` };
+      return { error: `Coupon ${coupon.code} is not valid yet (starts ${formatDate(coupon.validFrom)}).` };
     }
     if (coupon.validUntil && coupon.validUntil < now) {
-      return { error: `Coupon ${coupon.code} expired on ${coupon.validUntil.toISOString().slice(0, 10)}.` };
+      return { error: `Coupon ${coupon.code} expired on ${formatDate(coupon.validUntil)}.` };
     }
     if (coupon.maxRedemptions && coupon.redemptions >= coupon.maxRedemptions) {
       return { error: `Coupon ${coupon.code} has reached its redemption limit (${coupon.maxRedemptions}).` };
@@ -1813,7 +1842,9 @@ export async function adminWaiveOrderAction(formData: FormData) {
   const id = String(formData.get("id") || "");
   const scope = String(formData.get("scope") || "one_time") as "one_time" | "recurring_until" | "recurring_permanent";
   const reason = String(formData.get("reason") || "") || null;
-  const until = formData.get("until") ? new Date(String(formData.get("until"))) : null;
+  const until = formData.get("until")
+    ? parseLocalDateInput(String(formData.get("until")))
+    : null;
   if (!id) return;
   await prisma.order.update({
     where: { id },
@@ -1865,7 +1896,7 @@ export async function adminReceiveStockAction(
   if (quantity < 1) return { error: "Quantity must be at least 1." };
   if (batchNumber && !expiryRaw) return { error: "Expiry date is required when a batch number is set." };
 
-  const expiryDate = expiryRaw ? new Date(expiryRaw) : undefined;
+  const expiryDate = expiryRaw ? parseLocalDateInput(expiryRaw) : undefined;
   if (expiryDate && Number.isNaN(expiryDate.getTime())) {
     return { error: "Invalid expiry date." };
   }

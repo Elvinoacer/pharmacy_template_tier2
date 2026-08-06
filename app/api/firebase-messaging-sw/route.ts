@@ -20,6 +20,8 @@ export async function GET() {
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
   };
+  // Injected so the SW never uses UTC calendar days for dose logs.
+  const projectTimezone = process.env.TIMEZONE || "Africa/Nairobi";
 
   const body = `
 /* firebase-messaging-sw.js — generated with runtime Firebase config */
@@ -27,6 +29,22 @@ importScripts("https://www.gstatic.com/firebasejs/11.0.2/firebase-app-compat.js"
 importScripts("https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging-compat.js");
 
 const firebaseConfig = ${JSON.stringify(config)};
+const PROJECT_TIMEZONE = ${JSON.stringify(projectTimezone)};
+
+function localTodayStr(at) {
+  try {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: PROJECT_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(at || new Date());
+    const get = (t) => parts.find((p) => p.type === t)?.value || "00";
+    return get("year") + "-" + get("month") + "-" + get("day");
+  } catch (e) {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -111,9 +129,7 @@ self.addEventListener("notificationclick", (event) => {
   // directly so the patient does not need to open the portal page.
   if (action === "taken" || action === "skip" || action === "snooze") {
     const status = action === "taken" ? "taken" : action === "skip" ? "skipped" : "snooze";
-    const today =
-      data.takenOn ||
-      new Date().toISOString().slice(0, 10);
+    const today = data.takenOn || localTodayStr();
 
     event.waitUntil(
       (async () => {

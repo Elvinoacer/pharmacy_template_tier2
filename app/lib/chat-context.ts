@@ -17,6 +17,7 @@ import {
   formatKnowledgeForPrompt,
 } from "@/app/lib/services/ai-knowledge-lookup";
 import { prisma } from "@/app/lib/db";
+import { toLocalDateInputValue } from "@/app/lib/time";
 
 export { SUGGESTED_PROMPTS };
 
@@ -171,15 +172,15 @@ export async function buildCaregiverPatientContext(user: SessionUser): Promise<s
       ]);
 
       const meds = rxs.map((r) =>
-        `- ${r.medicineName} | dosage: ${r.dosage || "—"} | schedule: ${r.schedule || "—"} | refills: ${r.refillsRemaining ?? 0} | next refill: ${r.nextRefillDue ? r.nextRefillDue.toISOString().slice(0, 10) : "—"}`,
+        `- ${r.medicineName} | dosage: ${r.dosage || "—"} | schedule: ${r.schedule || "—"} | refills: ${r.refillsRemaining ?? 0} | next refill: ${r.nextRefillDue ? toLocalDateInputValue(r.nextRefillDue) : "—"}`,
       ).join("\n");
 
       const openRefills = refills.map((r) =>
-        `- ${r.medicineName}: ${r.status.replace(/_/g, " ")} (submitted ${r.createdAt.toISOString().slice(0, 10)})`,
+        `- ${r.medicineName}: ${r.status.replace(/_/g, " ")} (submitted ${toLocalDateInputValue(r.createdAt)})`,
       ).join("\n");
 
       const recentDoses = recentDoseLogs.map((d) =>
-        `- ${d.prescription.medicineName} on ${d.scheduledDate.toISOString().slice(0, 10)}${d.scheduledTime ? ` ${d.scheduledTime}` : ""}: ${d.status} (by ${d.recordedBy})`,
+        `- ${d.prescription.medicineName} on ${toLocalDateInputValue(d.scheduledDate)}${d.scheduledTime ? ` ${d.scheduledTime}` : ""}: ${d.status} (by ${d.recordedBy})`,
       ).join("\n");
 
       return `### Patient: ${link.customer.fullName} (relationship: ${link.relationship || "caregiver"})

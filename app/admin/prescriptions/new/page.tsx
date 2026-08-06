@@ -4,6 +4,7 @@ import { adminCreatePrescriptionAction } from "@/app/actions/admin";
 import { AdminPanel } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import PrescriptionForm from "@/app/components/admin/PrescriptionForm";
+import { PROJECT_TIMEZONE } from "@/app/lib/time";
 
 export const metadata = { title: "New prescription" };
 
@@ -15,13 +16,14 @@ export default async function NewPrescriptionPage() {
     <AdminShell
       user={user}
       title="New prescription"
-      subtitle="Add a prescription to a customer's file"
+      subtitle={`Add one or more drugs to a customer file · times in ${PROJECT_TIMEZONE.replace(/_/g, " ")}`}
     >
-      <div className="max-w-2xl">
-        <AdminPanel>
-          <PrescriptionForm action={adminCreatePrescriptionAction} />
-        </AdminPanel>
-      </div>
+      <AdminPanel
+        title="Prescription details"
+        description="Required fields are marked. Optional fields can be filled later."
+      >
+        <PrescriptionForm action={adminCreatePrescriptionAction} />
+      </AdminPanel>
     </AdminShell>
   );
 }

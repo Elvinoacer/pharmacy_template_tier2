@@ -6,7 +6,7 @@ import {
   getAdherencePerPrescription,
 } from "@/app/lib/services/adherence";
 import { parseDosageFormula, calculatePrescriptionMetrics } from "@/app/lib/services/medication-schedule";
-import { formatDate } from "@/app/lib/time";
+import { formatDate, PROJECT_LOCALE, PROJECT_TIMEZONE } from "@/app/lib/time";
 import { Activity, TrendingUp, Calendar, Award, AlertTriangle, Pill, ShieldAlert } from "lucide-react";
 
 export async function AdminAdherencePanel({ customerId }: { customerId: string }) {
@@ -125,10 +125,16 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
                 title={`${d.date}: ${d.status}`}
               >
                 <p className="text-[9px] uppercase opacity-80">
-                  {new Date(d.date + "T00:00:00Z").toLocaleDateString("en-KE", { weekday: "short", timeZone: "Africa/Nairobi" })}
+                  {new Date(d.date + "T00:00:00Z").toLocaleDateString(PROJECT_LOCALE, {
+                    weekday: "short",
+                    timeZone: PROJECT_TIMEZONE,
+                  })}
                 </p>
                 <p className="text-xs font-extrabold mt-0.5">
-                  {new Date(d.date + "T00:00:00Z").toLocaleDateString("en-KE", { day: "numeric", timeZone: "Africa/Nairobi" })}
+                  {new Date(d.date + "T00:00:00Z").toLocaleDateString(PROJECT_LOCALE, {
+                    day: "numeric",
+                    timeZone: PROJECT_TIMEZONE,
+                  })}
                 </p>
                 <p className="mt-1 text-[9px] font-extrabold uppercase tracking-tight">
                   {d.status === "none" ? "—" : d.status}

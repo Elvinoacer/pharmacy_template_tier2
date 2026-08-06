@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Clock, X, Bell, Pill, Sparkles } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import { localTodayStr } from "@/app/lib/time";
 
 export type PendingDoseItem = {
   scheduleId: string;
@@ -28,7 +29,7 @@ export function DoseReminderBanner({
 
   async function handleLog(item: PendingDoseItem, status: "taken" | "late" | "skipped") {
     setBusyId(item.scheduleId);
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = localTodayStr();
 
     try {
       const res = await fetch("/api/portal/adherence", {

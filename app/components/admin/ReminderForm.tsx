@@ -6,6 +6,7 @@ import { CalendarClock, Mail, MessageSquare, MessageCircle, Bell, Type, FileText
 import { CustomerPicker } from "@/app/components/CustomerPicker";
 import { toast } from "@/app/components/Toaster";
 import { callAiDraft } from "@/app/lib/ai-form-helper";
+import { localNowDatetimeInputValue } from "@/app/lib/time";
 
 const TYPES = [
   { value: "refill", label: "Refill" },
@@ -173,7 +174,7 @@ export default function ReminderForm({
           </div>
         )}
         {sendNow && (
-          <input type="hidden" name="scheduledFor" value={new Date().toISOString().slice(0, 16)} />
+          <input type="hidden" name="scheduledFor" value={localNowDatetimeInputValue()} />
         )}
       </div>
 
