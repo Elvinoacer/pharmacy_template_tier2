@@ -8,13 +8,14 @@ import {
 } from "@/app/actions/admin";
 import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { formatDateTime, formatDate } from "@/app/lib/time";
+import { formatDateTime, formatDate, formatTime } from "@/app/lib/time";
 import { PROJECT_TIMEZONE } from "@/app/lib/time";
 import { Markdown } from "@/app/components/Markdown";
 import {
   calculatePrescriptionMetrics,
   parseDosageFormula,
 } from "@/app/lib/services/medication-schedule";
+import { isSlotBeforeCourseStart } from "@/app/lib/medication-schedule-shared";
 import {
   ArrowLeft,
   Pill,
@@ -164,6 +165,23 @@ export default async function PrescriptionDetailPage({
     logIndex.set(`${dStr}|${t}`, log);
   }
 
+  const courseStart = prescription.startDate || prescription.createdAt;
+  const courseStartDay = localDateStr(new Date(courseStart));
+  const courseStartClock = formatTime(courseStart);
+  const createdDay = localDateStr(new Date(prescription.createdAt));
+  const createdClock = formatTime(prescription.createdAt);
+
+  function slotNotDueYet(timeOfDay: string, date: string): boolean {
+    return isSlotBeforeCourseStart({
+      timeOfDay,
+      startDay: courseStartDay,
+      startClock: courseStartClock,
+      createdDay,
+      createdClock,
+      dayStr: date,
+    });
+  }
+
   type CellStatus = "taken" | "late" | "missed" | "skipped" | "unknown" | "pending" | "none" | "future";
   const timeline: Array<{
     timeOfDay: string;
@@ -186,11 +204,11 @@ export default async function PrescriptionDetailPage({
 
       // No log yet — infer pending / future / none
       if (date > todayStr) return { date, status: "future" };
+      // Before course start (whole day or mid-day creation before this slot)
+      if (slotNotDueYet(slot.timeOfDay, date)) return { date, status: "none" };
       if (date === todayStr && slot.timeOfDay > nowTime) return { date, status: "pending" };
       if (date === todayStr && slot.timeOfDay <= nowTime) return { date, status: "unknown" };
       // Past day with no log = missed for expected slots after course start
-      const startStr = localDateStr(new Date(prescription.startDate || prescription.createdAt));
-      if (date < startStr) return { date, status: "none" };
       return { date, status: "missed" };
     }),
   }));
@@ -203,6 +221,9 @@ export default async function PrescriptionDetailPage({
       status = (["taken", "late", "missed", "skipped", "unknown"].includes(log.status)
         ? log.status
         : "unknown") as CellStatus;
+    } else if (slotNotDueYet(slot.timeOfDay, todayStr)) {
+      // Created mid-day — morning slot was never due today
+      status = "none";
     } else if (slot.timeOfDay <= nowTime) {
       status = "unknown";
     }
@@ -378,7 +399,9 @@ export default async function PrescriptionDetailPage({
                           ? `Logged by ${slot.log.recordedBy}`
                           : slot.status === "pending"
                             ? "Not yet due"
-                            : "Awaiting confirmation"}
+                            : slot.status === "none"
+                              ? "Not due today (course started after this time)"
+                              : "Awaiting confirmation"}
                       </p>
                     </div>
                     <CellBadge status={slot.status} />
@@ -811,9 +834,14 @@ function CellBadge({ status }: { status: string }) {
     unknown: "bg-rose-100 text-rose-800",
     skipped: "bg-slate-100 text-slate-700",
     pending: "bg-blue-100 text-blue-800",
+    none: "bg-slate-100 text-slate-600",
   };
   const label =
-    status === "unknown" ? "Unconfirmed" : status.charAt(0).toUpperCase() + status.slice(1);
+    status === "unknown"
+      ? "Unconfirmed"
+      : status === "none"
+        ? "Not due"
+        : status.charAt(0).toUpperCase() + status.slice(1);
   return (
     <span
       className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[10px] font-bold ${styles[status] || "bg-slate-100 text-slate-600"}`}
