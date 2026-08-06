@@ -194,8 +194,7 @@ export default async function AdminLoyaltyPage({
           ))}
         </div>
         <p className="mt-3 text-[10px] admin-soft">
-          Schedule via GitHub Action <code className="md-code">cron-loyalty.yml</code> (daily 06:00 Nairobi) or
-          hit <code className="md-code">/api/cron/loyalty</code> with CRON_SECRET.
+          Schedule via external cron provider (daily 06:00) hitting <code className="md-code">/api/cron/loyalty</code> with secret parameter or header.
         </p>
       </AdminPanel>
 
