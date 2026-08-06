@@ -17,62 +17,114 @@ export function OrderSettleActions({
   guestPhone,
   dispatched,
   defaultPhone,
+  hasRxItem = false,
+  existingDispenserNote = null,
+  customerReason = null,
 }: {
   orderId: string;
   status: string;
   guestPhone?: string | null;
   dispatched?: boolean;
   defaultPhone?: string | null;
+  /** True when any line item is Rx-required — forces dispenser note before dispatch. */
+  hasRxItem?: boolean;
+  existingDispenserNote?: string | null;
+  customerReason?: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const [stkOpen, setStkOpen] = useState(false);
+  const [dispatchOpen, setDispatchOpen] = useState(false);
   const [scope, setScope] = useState<"one_time" | "recurring_until" | "recurring_permanent">(
     "one_time",
   );
   const [reason, setReason] = useState("");
   const [until, setUntil] = useState("");
+  const [dispenserNote, setDispenserNote] = useState(existingDispenserNote || "");
+  const [busy, setBusy] = useState(false);
 
   async function markPaid(autoDispatch: boolean) {
-    const fd = new FormData();
-    fd.set("id", orderId);
-    fd.set("provider", "cash");
-    fd.set("autoDispatch", autoDispatch ? "on" : "off");
-    const result = await adminMarkOrderPaidAction(fd);
-    if (result?.error) toast.error(result.error);
-    else {
-      toast.success(result?.success || "Marked paid.");
-      window.location.reload();
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.set("id", orderId);
+      fd.set("provider", "cash");
+      fd.set("autoDispatch", autoDispatch ? "on" : "off");
+      // If auto-dispatching an Rx order, require a note here too.
+      if (autoDispatch && hasRxItem) {
+        if (!dispenserNote.trim() && !existingDispenserNote) {
+          toast.error("Add a dispenser note before paid+dispatch on Rx items.");
+          setDispatchOpen(true);
+          return;
+        }
+        if (dispenserNote.trim()) fd.set("dispenserNote", dispenserNote.trim());
+      }
+      const result = await adminMarkOrderPaidAction(fd);
+      if (result?.error) toast.error(result.error);
+      else {
+        toast.success(result?.success || "Marked paid.");
+        window.location.reload();
+      }
+    } finally {
+      setBusy(false);
     }
   }
 
   async function dispatch() {
-    const fd = new FormData();
-    fd.set("id", orderId);
-    const result = await adminDispatchOrderAction(fd);
-    if (result?.error) toast.error(result.error);
-    else {
-      toast.success(result?.success || "Dispatched.");
-      window.location.reload();
+    if (hasRxItem && !dispenserNote.trim() && !existingDispenserNote) {
+      toast.error("Dispenser note required for Rx medication before dispatch.");
+      setDispatchOpen(true);
+      return;
+    }
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.set("id", orderId);
+      if (dispenserNote.trim()) fd.set("dispenserNote", dispenserNote.trim());
+      const result = await adminDispatchOrderAction(fd);
+      if (result?.error) toast.error(result.error);
+      else {
+        toast.success(result?.success || "Dispatched.");
+        window.location.reload();
+      }
+    } finally {
+      setBusy(false);
     }
   }
 
   async function undispatch() {
-    const fd = new FormData();
-    fd.set("id", orderId);
-    const result = await adminUndispatchOrderAction(fd);
-    if (result?.error) toast.error(result.error);
-    else {
-      toast.success(result?.success || "Dispatch cleared.");
-      window.location.reload();
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.set("id", orderId);
+      const result = await adminUndispatchOrderAction(fd);
+      if (result?.error) toast.error(result.error);
+      else {
+        toast.success(result?.success || "Dispatch cleared.");
+        window.location.reload();
+      }
+    } finally {
+      setBusy(false);
     }
   }
 
   const pending = status === "pending";
   const paidHeld = (status === "paid" || status === "fulfilled") && !dispatched;
   const isDispatched = Boolean(dispatched) || status === "fulfilled";
+  const needsNote = hasRxItem && !existingDispenserNote;
 
   return (
     <div className="mt-1 space-y-1 text-right">
+      {customerReason && (
+        <p className="text-left text-[10px] admin-soft">
+          <span className="font-semibold admin-muted">Reason:</span> {customerReason}
+        </p>
+      )}
+      {existingDispenserNote && (
+        <p className="text-left text-[10px] text-emerald-700/90">
+          <span className="font-semibold">Dispenser note:</span> {existingDispenserNote}
+        </p>
+      )}
+
       {pending && (
         <>
           <button
@@ -96,15 +148,24 @@ export function OrderSettleActions({
           )}
           <button
             type="button"
-            onClick={() => markPaid(true)}
-            className="block w-full text-[10px] font-semibold text-emerald-700 hover:underline"
+            disabled={busy}
+            onClick={() => {
+              if (hasRxItem && needsNote) {
+                setDispatchOpen(true);
+                toast.info("Add dispenser note, then confirm paid + dispatch.");
+                return;
+              }
+              void markPaid(true);
+            }}
+            className="block w-full text-[10px] font-semibold text-emerald-700 hover:underline disabled:opacity-50"
           >
             Mark paid + dispatch
           </button>
           <button
             type="button"
+            disabled={busy}
             onClick={() => markPaid(false)}
-            className="block w-full text-[10px] font-semibold text-emerald-700/80 hover:underline"
+            className="block w-full text-[10px] font-semibold text-emerald-700/80 hover:underline disabled:opacity-50"
           >
             Mark paid (hold)
           </button>
@@ -119,20 +180,57 @@ export function OrderSettleActions({
       )}
 
       {paidHeld && (
-        <button
-          type="button"
-          onClick={dispatch}
-          className="block w-full text-[10px] font-semibold text-blue-700 hover:underline"
-        >
-          Mark dispatched
-        </button>
+        <>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              if (needsNote || hasRxItem) {
+                setDispatchOpen((v) => !v);
+                return;
+              }
+              void dispatch();
+            }}
+            className="block w-full text-[10px] font-semibold text-blue-700 hover:underline disabled:opacity-50"
+          >
+            {dispatchOpen ? "Hide dispatch form" : "Mark dispatched"}
+          </button>
+        </>
+      )}
+
+      {/* Dispenser note capture — shown when Rx gate needs it, or staff opens dispatch form. */}
+      {(dispatchOpen || (paidHeld && hasRxItem)) && !isDispatched && (
+        <div className="mt-1 space-y-1 rounded-lg border border-blue-500/30 bg-blue-500/5 p-2 text-left">
+          <label className="block text-[10px] font-semibold text-blue-800">
+            Dispenser note{hasRxItem ? " *" : ""}
+          </label>
+          <textarea
+            value={dispenserNote}
+            onChange={(e) => setDispenserNote(e.target.value)}
+            rows={2}
+            placeholder="Condition observed, counselling, validity…"
+            className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-[10px] admin-text"
+          />
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              if (pending) void markPaid(true);
+              else void dispatch();
+            }}
+            className="w-full rounded bg-blue-600/15 px-2 py-1 text-[10px] font-semibold text-blue-800 hover:bg-blue-600/25 disabled:opacity-50"
+          >
+            {pending ? "Confirm paid + dispatch" : "Confirm dispatch"}
+          </button>
+        </div>
       )}
 
       {isDispatched && status !== "waived" && status !== "cancelled" && (
         <button
           type="button"
-          onClick={undispatch}
-          className="block w-full text-[10px] font-semibold text-slate-600 hover:underline"
+          disabled={busy}
+          onClick={() => undispatch()}
+          className="block w-full text-[10px] font-semibold text-slate-600 hover:underline disabled:opacity-50"
         >
           Undo dispatch
         </button>
@@ -168,7 +266,7 @@ export function OrderSettleActions({
             name="reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="Reason (optional)"
+            placeholder="Waive reason (optional)"
             className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-[10px] admin-text"
           />
           <ConfirmSubmitButton

@@ -7,16 +7,20 @@ import { logDose, markReminderAnswered } from "@/app/lib/services/adherence";
 export const runtime = "nodejs";
 
 const Body = z.object({
-  prescriptionId: z.string().uuid(),
-  status: z.enum(["taken", "missed", "skipped", "late"]),
-  takenOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD
+  prescriptionId: z.string().uuid().optional(),
+  status: z.enum(["taken", "missed", "skipped", "late", "snooze"]).optional(),
+  takenOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(), // YYYY-MM-DD
   notes: z.string().optional(),
   /// Optional schedule slot time (HH:mm) when tied to a MedicationSchedule row.
   scheduledTime: z.string().regex(/^\d{2}:\d{2}$/).nullable().optional(),
   scheduleId: z.string().uuid().nullable().optional(),
   /// When this log answers a reminder, the reminder is marked "answered".
   reminderId: z.string().uuid().nullable().optional(),
+  /// Explicit action from notification buttons (snooze re-schedules the reminder).
+  action: z.enum(["snooze"]).optional(),
 });
+
+const SNOOZE_MINUTES = 10;
 
 export async function POST(req: Request) {
   const user = await getSessionUser();
@@ -28,6 +32,52 @@ export async function POST(req: Request) {
   try {
     parsed = Body.parse(await req.json());
   } catch {
+    return NextResponse.json({ error: "invalid_body" }, { status: 400 });
+  }
+
+  const isSnooze = parsed.action === "snooze" || parsed.status === "snooze";
+
+  // ── Snooze: re-schedule the same reminder instead of logging a dose ──
+  if (isSnooze) {
+    if (!parsed.reminderId) {
+      return NextResponse.json({ error: "reminder_required_for_snooze" }, { status: 400 });
+    }
+
+    const reminder = await prisma.reminder.findFirst({
+      where: {
+        id: parsed.reminderId,
+        customerId: user.customerId,
+        type: "medication_dose",
+      },
+    });
+    if (!reminder) {
+      return NextResponse.json({ error: "reminder_not_found" }, { status: 404 });
+    }
+
+    const nextAt = new Date(Date.now() + SNOOZE_MINUTES * 60 * 1000);
+    await prisma.reminder.update({
+      where: { id: reminder.id },
+      data: {
+        status: "scheduled",
+        scheduledFor: nextAt,
+        sentAt: null,
+        // Keep title/body so processDueReminders re-fires with the same content.
+      },
+    });
+
+    return NextResponse.json({
+      ok: true,
+      snoozed: true,
+      snoozeMinutes: SNOOZE_MINUTES,
+      nextAt: nextAt.toISOString(),
+    });
+  }
+
+  if (!parsed.prescriptionId || !parsed.status || !parsed.takenOn) {
+    return NextResponse.json({ error: "invalid_body" }, { status: 400 });
+  }
+
+  if (parsed.status === "snooze") {
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 

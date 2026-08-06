@@ -1095,11 +1095,60 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
 
       // Best-effort web push for reminders so customers see them on their device.
       if (reminder.customer?.user?.id) {
+        const isDose = reminder.type === "medication_dose";
+        // Enrich dose pushes so the service worker can offer Taken/Skip/Snooze
+        // and hit /api/portal/adherence without opening the app.
+        let scheduleId = "";
+        let scheduledTime = "";
+        let prescriptionId = reminder.relatedId || "";
+        if (isDose && prescriptionId) {
+          const localTime = new Intl.DateTimeFormat("en-GB", {
+            timeZone: process.env.TIMEZONE || "Africa/Nairobi",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }).format(reminder.scheduledFor);
+          scheduledTime = localTime;
+          const slot = await prisma.medicationSchedule
+            .findFirst({
+              where: {
+                prescriptionId,
+                timeOfDay: localTime,
+                active: true,
+              },
+              select: { id: true, timeOfDay: true },
+            })
+            .catch(() => null);
+          if (slot) {
+            scheduleId = slot.id;
+            scheduledTime = slot.timeOfDay;
+          }
+        }
+
+        const pushUrl = isDose ? "/portal/prescriptions" : "/portal";
         await dispatchPushToUser(reminder.customer.user.id, {
           title: reminder.title,
           body: reminder.body || reminder.title,
-          url: "/portal",
-          data: { tag: `reminder-${reminder.id}`, reminderId: reminder.id, type: reminder.type },
+          url: pushUrl,
+          data: {
+            tag: `reminder-${reminder.id}`,
+            reminderId: reminder.id,
+            type: reminder.type,
+            ...(isDose
+              ? {
+                  actions: "medication_dose",
+                  prescriptionId,
+                  scheduleId,
+                  scheduledTime,
+                  takenOn: new Intl.DateTimeFormat("en-CA", {
+                    timeZone: process.env.TIMEZONE || "Africa/Nairobi",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  }).format(reminder.scheduledFor),
+                }
+              : {}),
+          },
         }).catch(() => {
           /* best-effort */
         });

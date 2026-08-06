@@ -300,16 +300,36 @@ export default async function PortalPrescriptionsPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-black/5 flex items-center justify-between">
+                  <div className="mt-4 space-y-2 border-t border-black/5 pt-3">
                     <span className="text-[11px] text-[#8a9a92]">
-                      {dose.doseLog?.recordedBy ? `Logged by ${dose.doseLog.recordedBy}` : "Awaiting confirmation"}
+                      {dose.doseLog?.recordedBy
+                        ? `Logged by ${dose.doseLog.recordedBy}`
+                        : isPast
+                          ? "Overdue — confirm in the banner above or below"
+                          : "Upcoming — confirm when taken"}
                     </span>
-                    <AdherenceTracker
-                      prescriptionId={dose.prescriptionId}
-                      scheduledTime={dose.timeOfDay}
-                      scheduleId={dose.scheduleId}
-                      initialStatus={dose.doseLog?.status as any}
-                    />
+                    {/* Only offer slot actions when not already logged.
+                        Overdue items are also in DoseReminderBanner; board keeps
+                        a full-width stacked group so mobile stays usable. */}
+                    {(!dose.doseLog || dose.doseLog.status === "unknown") && (
+                      <AdherenceTracker
+                        prescriptionId={dose.prescriptionId}
+                        scheduledTime={dose.timeOfDay}
+                        scheduleId={dose.scheduleId}
+                        initialStatus={
+                          dose.doseLog?.status === "unknown"
+                            ? null
+                            : (dose.doseLog?.status as
+                                | "taken"
+                                | "missed"
+                                | "skipped"
+                                | "late"
+                                | null
+                                | undefined)
+                        }
+                        stacked
+                      />
+                    )}
                   </div>
                 </div>
               );
@@ -437,10 +457,13 @@ export default async function PortalPrescriptionsPage() {
                     )}
                   </div>
 
-                  {/* Action Bar */}
-                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#e3ebe6]">
-                    <AdherenceTracker prescriptionId={p.id} />
-
+                  {/* Action bar — history/refill only. Dose confirm lives on
+                      Today's Dose Operations + DoseReminderBanner above. */}
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#e3ebe6] pt-4">
+                    <p className="text-[11px] text-[#8a9a92]">
+                      Log individual doses from <strong>Today&apos;s Dose Operations</strong> or
+                      push notifications — not here.
+                    </p>
                     <Link
                       href={`/portal/refills/new?prescriptionId=${p.id}&medicine=${encodeURIComponent(p.medicineName)}&rx=${encodeURIComponent(p.rxReference || "")}`}
                       className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold shadow-xs transition ${

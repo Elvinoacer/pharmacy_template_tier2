@@ -302,6 +302,7 @@ export async function adminCreateReminderAction(
         | "follow_up"
         | "wellness"
         | "birthday"
+        | "medication_dose"
         | "custom"),
       title,
       body: String(formData.get("body") || "") || null,
@@ -516,24 +517,68 @@ export async function adminCreateCouponAction(
 
 // ── Prescriptions ─────────────────────────────────────────────
 
+type DrugPayload = {
+  medicationId?: string | null;
+  medicineName?: string;
+  rxReference?: string | null;
+  dosage?: string | null;
+  unitPrice?: number | null;
+  quantity?: number | null;
+  daysSupply?: number | null;
+  refillsRemaining?: number;
+  frequency?: string;
+  times?: string[];
+  foodCondition?: "none" | "with_food" | "without_food";
+  unitsPerDose?: number;
+};
+
+function parseDrugsJson(formData: FormData): DrugPayload[] {
+  const raw = String(formData.get("drugsJson") || "").trim();
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as DrugPayload[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function adminCreatePrescriptionAction(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
   const user = await staff();
   const customerId = String(formData.get("customerId") || "");
-  const medicineName = String(formData.get("medicineName") || "").trim();
-  if (!customerId || !medicineName) return { error: "Customer and medicine name are required." };
+  if (!customerId) return { error: "Customer is required." };
 
   const id = String(formData.get("id") || "");
-  const medicationId = String(formData.get("medicationId") || "") || null;
+  const drugs = parseDrugsJson(formData);
 
-  // If a medication is linked, verify it exists and pull its current price
-  // if the admin didn't override unitPrice.
-  // NOTE: medicationId now points at PharmacyInventory (per Phase 0 split).
-  let linkedMed: { id: string; price: unknown; currentStock: number; medicationMaster: { name: string } } | null = null;
-  if (medicationId) {
-    linkedMed = await prisma.pharmacyInventory.findUnique({
+  // Shared course-level fields.
+  const shared = {
+    prescriber: String(formData.get("prescriber") || "") || null,
+    status: (String(formData.get("status") || "active") as
+      | "active"
+      | "on_hold"
+      | "expired"
+      | "discontinued"),
+    startDate: formData.get("startDate") ? new Date(String(formData.get("startDate"))) : null,
+    endDate: formData.get("endDate") ? new Date(String(formData.get("endDate"))) : null,
+    nextRefillDue: formData.get("nextRefillDue")
+      ? new Date(String(formData.get("nextRefillDue")))
+      : null,
+    notes: String(formData.get("notes") || "") || null,
+  };
+
+  const {
+    applyStructuredSchedule,
+    resolveStructuredSchedule,
+    generateScheduleForPrescription,
+  } = await import("@/app/lib/services/medication-schedule");
+
+  async function verifyMedication(medicationId: string | null | undefined) {
+    if (!medicationId) return null;
+    const linkedMed = await prisma.pharmacyInventory.findUnique({
       where: { id: medicationId },
       select: {
         id: true,
@@ -543,68 +588,173 @@ export async function adminCreatePrescriptionAction(
       },
     });
     if (!linkedMed) {
-      return { error: "Linked medication not found. Refresh the page and try again." };
+      throw new Error("Linked medication not found. Refresh the page and try again.");
     }
+    return linkedMed;
   }
 
-  const data = {
-    customerId,
-    medicationId,
-    medicineName,
-    rxReference: String(formData.get("rxReference") || "") || null,
-    dosage: String(formData.get("dosage") || "") || null,
-    schedule: String(formData.get("schedule") || "") || null,
-    quantity: Number(formData.get("quantity") || 0) || null,
-    daysSupply: Number(formData.get("daysSupply") || 0) || null,
-    refillsRemaining: Number(formData.get("refillsRemaining") || 0),
-    prescriber: String(formData.get("prescriber") || "") || null,
-    unitPrice: formData.get("unitPrice") ? Number(formData.get("unitPrice")) : null,
-    status: (String(formData.get("status") || "active") as "active" | "on_hold" | "expired" | "discontinued"),
-    startDate: formData.get("startDate") ? new Date(String(formData.get("startDate"))) : null,
-    endDate: formData.get("endDate") ? new Date(String(formData.get("endDate"))) : null,
-    nextRefillDue: formData.get("nextRefillDue") ? new Date(String(formData.get("nextRefillDue"))) : null,
-    notes: String(formData.get("notes") || "") || null,
-  };
+  async function saveOneDrug(
+    drug: DrugPayload,
+    existingId?: string,
+  ): Promise<{ id: string; medicineName: string; medicationId: string | null }> {
+    const medicineName = String(drug.medicineName || "").trim();
+    if (!medicineName) throw new Error("Medicine name is required for each drug.");
 
-  if (id) {
-    await prisma.prescription.update({ where: { id }, data });
-    await writeAuditLog(user.id, "prescription_updated", "prescription", id, { customerId, medicationId });
-    // Regenerate medication schedule from the (possibly updated) dosage/schedule text.
-    try {
-      const { generateScheduleForPrescription } = await import("@/app/lib/services/medication-schedule");
-      await generateScheduleForPrescription(id);
-    } catch (err) {
-      console.warn("[adminCreatePrescription] schedule generation failed:", err);
+    const medicationId = drug.medicationId || null;
+    await verifyMedication(medicationId);
+
+    const hasStructured =
+      Boolean(drug.frequency) || (Array.isArray(drug.times) && drug.times.length > 0);
+
+    const resolved = hasStructured
+      ? resolveStructuredSchedule({
+          frequency: drug.frequency || "custom",
+          times: drug.times,
+          foodCondition: drug.foodCondition || "none",
+          unitsPerDose: drug.unitsPerDose ?? 1,
+        })
+      : null;
+
+    const data = {
+      customerId,
+      medicationId,
+      medicineName,
+      rxReference: drug.rxReference || null,
+      dosage: drug.dosage || null,
+      schedule: resolved?.scheduleText ?? null,
+      quantity: drug.quantity && drug.quantity > 0 ? drug.quantity : null,
+      daysSupply: drug.daysSupply && drug.daysSupply > 0 ? drug.daysSupply : null,
+      refillsRemaining: drug.refillsRemaining ?? 0,
+      unitPrice: drug.unitPrice != null ? drug.unitPrice : null,
+      ...shared,
+    };
+
+    if (existingId) {
+      await prisma.prescription.update({ where: { id: existingId }, data });
+      if (resolved) {
+        await applyStructuredSchedule(existingId, {
+          frequency: drug.frequency || "custom",
+          times: drug.times,
+          foodCondition: drug.foodCondition || "none",
+          unitsPerDose: drug.unitsPerDose ?? 1,
+        });
+      } else {
+        try {
+          await generateScheduleForPrescription(existingId);
+        } catch (err) {
+          console.warn("[adminCreatePrescription] schedule generation failed:", err);
+        }
+      }
+      return { id: existingId, medicineName, medicationId };
     }
+
+    const rx = await prisma.prescription.create({ data });
+    if (resolved) {
+      await applyStructuredSchedule(rx.id, {
+        frequency: drug.frequency || "custom",
+        times: drug.times,
+        foodCondition: drug.foodCondition || "none",
+        unitsPerDose: drug.unitsPerDose ?? 1,
+      });
+    } else {
+      try {
+        await generateScheduleForPrescription(rx.id);
+      } catch (err) {
+        console.warn("[adminCreatePrescription] schedule generation failed:", err);
+      }
+    }
+    return { id: rx.id, medicineName, medicationId };
+  }
+
+  // ── Edit path (single prescription) ──────────────────────────
+  if (id) {
+    const drug = drugs[0] || {
+      medicineName: String(formData.get("medicineName") || "").trim(),
+      medicationId: String(formData.get("medicationId") || "") || null,
+      rxReference: String(formData.get("rxReference") || "") || null,
+      dosage: String(formData.get("dosage") || "") || null,
+      schedule: String(formData.get("schedule") || "") || null,
+      quantity: Number(formData.get("quantity") || 0) || null,
+      daysSupply: Number(formData.get("daysSupply") || 0) || null,
+      refillsRemaining: Number(formData.get("refillsRemaining") || 0),
+      unitPrice: formData.get("unitPrice") ? Number(formData.get("unitPrice")) : null,
+    };
+
+    try {
+      const saved = await saveOneDrug(drug, id);
+      await writeAuditLog(user.id, "prescription_updated", "prescription", id, {
+        customerId,
+        medicationId: saved.medicationId,
+      });
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "Could not update prescription." };
+    }
+
     revalidatePath("/admin/prescriptions");
     revalidatePath(`/admin/prescriptions/${id}`);
     revalidatePath(`/admin/customers/${customerId}`);
     return { success: "Prescription updated." };
   }
 
-  const rx = await prisma.prescription.create({ data });
-  // Generate the initial medication schedule from the dosage/schedule text.
-  try {
-    const { generateScheduleForPrescription } = await import("@/app/lib/services/medication-schedule");
-    await generateScheduleForPrescription(rx.id);
-  } catch (err) {
-    console.warn("[adminCreatePrescription] schedule generation failed:", err);
+  // ── Create path (one or many drugs) ──────────────────────────
+  const toCreate =
+    drugs.length > 0
+      ? drugs
+      : [
+          {
+            medicineName: String(formData.get("medicineName") || "").trim(),
+            medicationId: String(formData.get("medicationId") || "") || null,
+            rxReference: String(formData.get("rxReference") || "") || null,
+            dosage: String(formData.get("dosage") || "") || null,
+            quantity: Number(formData.get("quantity") || 0) || null,
+            daysSupply: Number(formData.get("daysSupply") || 0) || null,
+            refillsRemaining: Number(formData.get("refillsRemaining") || 0),
+            unitPrice: formData.get("unitPrice") ? Number(formData.get("unitPrice")) : null,
+            frequency: undefined,
+            times: undefined,
+          } satisfies DrugPayload,
+        ];
+
+  if (!toCreate.some((d) => String(d.medicineName || "").trim())) {
+    return { error: "At least one medication with a name is required." };
   }
-  await addTimelineEvent(
-    customerId,
-    user.id,
-    "prescription_created",
-    "Prescription added",
-    `${medicineName} — ${data.refillsRemaining ?? 0} refills`,
-    { prescriptionId: rx.id, medicationId },
-    user.id,
-  );
-  await writeAuditLog(user.id, "prescription_created", "prescription", rx.id, { customerId, medicationId });
+
+  const created: Array<{ id: string; medicineName: string; medicationId: string | null }> = [];
+  try {
+    for (const drug of toCreate) {
+      if (!String(drug.medicineName || "").trim()) continue;
+      const saved = await saveOneDrug(drug);
+      created.push(saved);
+      await addTimelineEvent(
+        customerId,
+        user.id,
+        "prescription_created",
+        "Prescription added",
+        `${saved.medicineName} — ${drug.refillsRemaining ?? 0} refills`,
+        { prescriptionId: saved.id, medicationId: saved.medicationId },
+        user.id,
+      );
+      await writeAuditLog(user.id, "prescription_created", "prescription", saved.id, {
+        customerId,
+        medicationId: saved.medicationId,
+      });
+    }
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not create prescription." };
+  }
+
+  if (created.length === 0) {
+    return { error: "At least one medication with a name is required." };
+  }
+
   revalidatePath("/admin/prescriptions");
   revalidatePath(`/admin/customers/${customerId}`);
-  // Redirect to the new record so the form doesn't keep stale values.
-  // redirect() throws NEXT_REDIRECT — must not be caught by callers.
-  redirect(`/admin/prescriptions/${rx.id}`);
+
+  // Single drug → detail page; multi → list so the admin sees all new rows.
+  if (created.length === 1) {
+    redirect(`/admin/prescriptions/${created[0].id}`);
+  }
+  redirect("/admin/prescriptions");
 }
 
 /**
@@ -1021,6 +1171,8 @@ export async function adminCreateOrderAction(
   const quantity = Number(formData.get("quantity") || 1);
   const couponCode = String(formData.get("couponCode") || "") || null;
   const notes = String(formData.get("notes") || "") || null;
+  const reason = String(formData.get("reason") || "").trim() || null;
+  const dispenserNote = String(formData.get("dispenserNote") || "").trim() || null;
   const source = String(formData.get("source") || "counter");
 
   if (!medicationId || quantity < 1) return { error: "Medication and quantity are required." };
@@ -1198,6 +1350,22 @@ export async function adminCreateOrderAction(
   const markPaid = formData.get("markPaid") !== "off" && paymentMethod === "cash";
   const dosage = String(formData.get("dosage") || "").trim() || null;
 
+  // Rx-required counter sales that auto-dispatch need a dispenser note up front.
+  if (med.prescriptionRequired && !dispenserNote && formData.get("autoDispatch") !== "off") {
+    // Only hard-require when they intend to dispatch now (auto-dispatch on).
+    // Held reservations can add the note at dispatch time.
+    const willAutoDispatch =
+      formData.get("autoDispatch") !== "off" &&
+      (source === "counter" || formData.get("autoDispatch") === "on") &&
+      String(formData.get("paymentMethod") || "cash") === "cash";
+    if (willAutoDispatch) {
+      return {
+        error:
+          "Dispenser note is required before dispatching an Rx-required medication (condition observed, counselling, validity).",
+      };
+    }
+  }
+
   // OTC counter: auto-dispatch by default (customer walking out with meds).
   // Admin can uncheck "Mark as dispatched" to keep it as a paid reservation.
   const autoDispatch =
@@ -1237,6 +1405,10 @@ export async function adminCreateOrderAction(
           status: initialStatus,
           total,
           notes: [notes, dosage ? `Dosage: ${dosage}` : null].filter(Boolean).join("\n") || null,
+          reason,
+          dispenserNote: dispenserNote || null,
+          dispenserNoteAt: dispenserNote ? new Date() : null,
+          dispenserNoteById: dispenserNote ? user.id : null,
           guestName: finalCustomerId ? null : guestName,
           guestPhone: guestPhone,
           fulfillment: fulfillment === "delivery" ? "delivery" : autoDispatch ? "immediate" : "reserve",
@@ -1356,9 +1528,21 @@ export async function adminMarkOrderPaidAction(formData: FormData) {
   const id = String(formData.get("id") || "");
   const provider = (String(formData.get("provider") || "cash") as "cash" | "card" | "other" | "daraja");
   const autoDispatch = formData.get("autoDispatch") !== "off";
+  const dispenserNote = String(formData.get("dispenserNote") || "").trim() || null;
   if (!id) return { error: "Order id required." };
 
-  const order = await prisma.order.findUnique({ where: { id } });
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: {
+      items: {
+        include: {
+          medication: {
+            select: { prescriptionRequired: true, overTheCounter: true },
+          },
+        },
+      },
+    },
+  });
   if (!order) return { error: "Order not found." };
   if (order.status === "paid" || order.status === "fulfilled" || order.status === "waived") {
     return { error: "Order already settled." };
@@ -1368,6 +1552,20 @@ export async function adminMarkOrderPaidAction(formData: FormData) {
     autoDispatch &&
     (order.fulfillment === "immediate" || order.source === "counter" || formData.get("autoDispatch") === "on");
 
+  // Rx gate also applies on paid+dispatch from the settle panel.
+  if (doDispatch) {
+    const hasRxItem = order.items.some(
+      (i) => i.medication?.prescriptionRequired === true && i.medication?.overTheCounter !== true,
+    );
+    const noteToUse = dispenserNote || order.dispenserNote;
+    if (hasRxItem && !noteToUse) {
+      return {
+        error:
+          "Dispenser note required before dispatching Rx medication — record condition observed, counselling, and validity.",
+      };
+    }
+  }
+
   await prisma.$transaction(async (tx) => {
     await tx.order.update({
       where: { id },
@@ -1375,6 +1573,13 @@ export async function adminMarkOrderPaidAction(formData: FormData) {
         status: doDispatch ? "fulfilled" : "paid",
         ...(doDispatch
           ? { dispatchedAt: new Date(), dispatchedById: user.id }
+          : {}),
+        ...(dispenserNote
+          ? {
+              dispenserNote,
+              dispenserNoteAt: new Date(),
+              dispenserNoteById: user.id,
+            }
           : {}),
       },
     });
@@ -1406,11 +1611,53 @@ export async function adminDispatchOrderAction(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return { error: "Order id required." };
 
+  const dispenserNote = String(formData.get("dispenserNote") || "").trim() || null;
+
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: {
+      items: {
+        include: {
+          medication: {
+            select: { prescriptionRequired: true, overTheCounter: true },
+          },
+        },
+      },
+    },
+  });
+  if (!order) return { error: "Order not found." };
+
+  // Verification gate: Rx-required lines need a dispenser clinical note before handoff.
+  const hasRxItem = order.items.some(
+    (i) => i.medication?.prescriptionRequired === true && i.medication?.overTheCounter !== true,
+  );
+  const noteToUse = dispenserNote || order.dispenserNote;
+  if (hasRxItem && !noteToUse) {
+    return {
+      error:
+        "Dispenser note required before dispatching Rx medication — record condition observed, counselling, and validity.",
+    };
+  }
+
+  if (dispenserNote) {
+    await prisma.order.update({
+      where: { id },
+      data: {
+        dispenserNote,
+        dispenserNoteAt: new Date(),
+        dispenserNoteById: user.id,
+      },
+    });
+  }
+
   const { dispatchOrder } = await import("@/app/lib/services/payments");
   const result = await dispatchOrder({ orderId: id, actorId: user.id });
   if (!result.ok) return { error: result.error };
 
-  await writeAuditLog(user.id, "order_dispatched", "order", id, {});
+  await writeAuditLog(user.id, "order_dispatched", "order", id, {
+    hasRxItem,
+    dispenserNotePresent: Boolean(noteToUse),
+  });
   revalidatePath("/admin/orders");
   return { success: "Order marked as dispatched." };
 }

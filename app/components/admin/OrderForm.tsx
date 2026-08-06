@@ -259,6 +259,35 @@ export default function OrderForm({
         </div>
 
         <div>
+          <label className="label-admin">
+            Dispenser note{selected?.prescriptionRequired ? " *" : " (optional)"}
+          </label>
+          <textarea
+            name="dispenserNote"
+            rows={2}
+            required={Boolean(selected?.prescriptionRequired)}
+            placeholder="Condition observed, counselling given, validity window…"
+            className="input-admin resize-y"
+          />
+          <p className="mt-1 text-[10px] admin-soft">
+            Clinical note from the dispenser — stored separately from free-text order notes so it
+            is never overwritten. Required before dispatch for Rx-required meds.
+          </p>
+        </div>
+
+        <div>
+          <label className="label-admin">Customer reason (if known)</label>
+          <select name="reason" className="input-admin" defaultValue="">
+            <option value="">— none —</option>
+            <option value="for known condition">For a known condition</option>
+            <option value="recommended by pharmacist">Recommended by pharmacist</option>
+            <option value="returning customer">Returning customer</option>
+            <option value="self care">Self-care / minor symptom</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div>
           <label className="label-admin">Payment method</label>
           <div className="flex flex-wrap gap-2">
             {(

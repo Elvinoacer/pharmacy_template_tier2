@@ -239,7 +239,24 @@ export function GuestOrderForm({
       </div>
 
       <div>
-        <label className="label-premium">Notes (optional)</label>
+        <label className="label-premium">Reason for this medication *</label>
+        <select name="reason" required className="input-premium" defaultValue="">
+          <option value="" disabled>
+            Select a reason…
+          </option>
+          <option value="for known condition">For a known condition</option>
+          <option value="recommended by pharmacist">Recommended by pharmacist</option>
+          <option value="returning customer">Returning customer / refill of OTC</option>
+          <option value="self care">Self-care / minor symptom</option>
+          <option value="other">Other (describe in notes)</option>
+        </select>
+        <p className="mt-1 text-xs text-[#5a6b62]">
+          Staff review this before dispatch so we know why the medicine is needed.
+        </p>
+      </div>
+
+      <div>
+        <label className="label-premium">Delivery / pickup notes (optional)</label>
         <textarea
           name="notes"
           rows={2}

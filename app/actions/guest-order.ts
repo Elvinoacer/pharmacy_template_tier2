@@ -35,6 +35,7 @@ export async function guestCreateOrderAction(
   const phone = String(formData.get("phone") || "").trim();
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const notes = String(formData.get("notes") || "").trim();
+  const reason = String(formData.get("reason") || "").trim();
   const pickupPreference = String(formData.get("pickupPreference") || "pickup");
   // pay_now is a client preference only — order is always created as reservation;
   // client opens STK panel after success when payNow is set.
@@ -44,6 +45,9 @@ export async function guestCreateOrderAction(
   if (!fullName || fullName.length < 2) return { error: "Your name is required." };
   if (!phone || phone.replace(/\D/g, "").length < 9) {
     return { error: "A valid phone number is required so we can confirm your order." };
+  }
+  if (!reason) {
+    return { error: "Please tell us why you need this medication so our pharmacist can review." };
   }
 
   const rateKey = `guest-order:${phone.replace(/\D/g, "").slice(-9)}`;
@@ -93,6 +97,8 @@ export async function guestCreateOrderAction(
   const total = Math.max(0, unitPrice * quantity);
   const mpesaPhone = formatMpesaPhone(phone);
   const fulfillment = pickupPreference === "delivery" ? "delivery" : "reserve";
+  // Logistics envelope only — clinical reason is stored on Order.reason
+  // so staff can query/filter it and it is never overwritten by contact lines.
   const orderNotes = [
     `Guest OTC reservation`,
     `Name: ${fullName}`,
@@ -120,6 +126,7 @@ export async function guestCreateOrderAction(
           status: "pending",
           total,
           notes: orderNotes,
+          reason,
           guestName: fullName,
           guestPhone: mpesaPhone,
           fulfillment,
