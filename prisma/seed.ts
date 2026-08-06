@@ -704,12 +704,401 @@ async function main() {
     },
   });
 
+  // ── Pharmacy services (public catalogue) ───────────────────
+  // Wipe + reseed so demo always mirrors the public content set.
+  await prisma.serviceBooking.deleteMany().catch(() => {});
+  await prisma.pharmacyService.deleteMany().catch(() => {});
+
+  const serviceSeeds: Array<{
+    slug: string;
+    title: string;
+    short: string;
+    description: string;
+    benefits: string[];
+    eligibility: string;
+    duration: string;
+    imageUrl: string;
+    icon: string;
+    price: number | null;
+    sortOrder: number;
+  }> = [
+    {
+      slug: "prescription-dispensing",
+      title: "Prescription Dispensing",
+      short:
+        "Accurate, timely filling of prescriptions with pharmacist counselling on every new medication.",
+      description:
+        "Our pharmacists carefully review each prescription for accuracy, interactions, and appropriateness before dispensing. You receive clear counselling on how to take your medication, what to expect, and when to follow up.",
+      benefits: [
+        "Double-check safety review on every fill",
+        "Plain-language counselling",
+        "Insurance coordination and copay assistance tips",
+        "Generic alternatives when appropriate",
+      ],
+      eligibility: "Valid prescription from a licensed prescriber.",
+      duration: "Most prescriptions ready within 30–45 minutes.",
+      imageUrl: "/images/services/prescription-dispensing.webp",
+      icon: "pill",
+      price: null,
+      sortOrder: 10,
+    },
+    {
+      slug: "prescription-refills",
+      title: "Prescription Refills",
+      short:
+        "Request refills online or by phone — ready for pickup or delivery when you need them.",
+      description:
+        "Never run out of essential medication. Request a refill through our online form, WhatsApp, or phone. We will confirm availability and let you know when your order is ready.",
+      benefits: [
+        "Online refill requests 24/7",
+        "Reminder-friendly pickup windows",
+        "Auto-refill setup for maintenance meds",
+        "Transfer from other pharmacies welcome",
+      ],
+      eligibility: "Existing prescription on file with remaining refills, or new transfer.",
+      duration: "Typically ready same day when requested before 3 PM.",
+      imageUrl: "/images/gallery/welcoming_retail_floor.webp",
+      icon: "refresh",
+      price: null,
+      sortOrder: 20,
+    },
+    {
+      slug: "medication-counselling",
+      title: "Medication Counselling",
+      short:
+        "One-on-one time with a pharmacist to understand your regimen, side effects, and interactions.",
+      description:
+        "Whether you are starting a new therapy or managing multiple medications, our pharmacists provide private counselling sessions so you feel confident and informed.",
+      benefits: [
+        "Private consultation space",
+        "Full regimen review",
+        "Side-effect and interaction guidance",
+        "Adherence strategies that fit your life",
+      ],
+      eligibility: "Open to all patients; appointments preferred for longer reviews.",
+      duration: "15–30 minutes depending on complexity.",
+      imageUrl: "/images/services/medication-counselling.webp",
+      icon: "chat",
+      price: 500,
+      sortOrder: 30,
+    },
+    {
+      slug: "blood-pressure-checks",
+      title: "Blood Pressure Checks",
+      short: "Walk-in blood pressure screening with guidance on readings and next steps.",
+      description:
+        "Know your numbers. Free walk-in blood pressure checks are available during open hours. Our team explains your reading and can discuss lifestyle tips or when to see your doctor.",
+      benefits: [
+        "Free walk-in service",
+        "Calibrated equipment",
+        "Printed or verbal results",
+        "Referral guidance when needed",
+      ],
+      eligibility: "Adults and teens; no appointment required.",
+      duration: "About 5–10 minutes.",
+      imageUrl: "/images/articles/understanding-blood-pressure.webp",
+      icon: "heart",
+      price: null,
+      sortOrder: 40,
+    },
+    {
+      slug: "diabetes-management",
+      title: "Diabetes Management Support",
+      short: "Supplies, education, and pharmacist support for living well with diabetes.",
+      description:
+        "From glucose monitors and test strips to counselling on medications and lifestyle, we support patients with type 1 and type 2 diabetes every step of the way.",
+      benefits: [
+        "Meter and strip supply coordination",
+        "Medication and insulin counselling",
+        "Hypoglycaemia education",
+        "Insurance supply authorisation help",
+      ],
+      eligibility: "Patients with diabetes or prediabetes.",
+      duration: "Counselling sessions 20–40 minutes by appointment.",
+      imageUrl: "/images/articles/diabetes-everyday-tips.webp",
+      icon: "activity",
+      price: 800,
+      sortOrder: 50,
+    },
+    {
+      slug: "vaccinations",
+      title: "Vaccinations",
+      short:
+        "Flu, COVID-19, shingles, pneumonia, and travel vaccines administered by certified pharmacists.",
+      description:
+        "Stay protected with convenient on-site immunisations. We stock seasonal and year-round vaccines and can advise on schedules for adults and eligible children.",
+      benefits: [
+        "Walk-in and appointment options",
+        "Insurance billing when applicable",
+        "Digital vaccine records",
+        "Travel vaccine guidance",
+      ],
+      eligibility: "Age and medical criteria vary by vaccine; pharmacist will screen.",
+      duration: "10–20 minutes including observation.",
+      imageUrl: "/images/articles/nutrition-basics-for-heart-health.webp",
+      icon: "shield",
+      price: 1500,
+      sortOrder: 60,
+    },
+    {
+      slug: "health-screenings",
+      title: "Health Screenings",
+      short: "Cholesterol, blood glucose, BMI, and wellness checks close to home.",
+      description:
+        "Quick screenings help catch concerns early. Ask about our monthly wellness clinic days for expanded checks and health education.",
+      benefits: [
+        "Cholesterol and glucose checks",
+        "BMI and waist measurements",
+        "Results explained clearly",
+        "Physician referral when indicated",
+      ],
+      eligibility: "Adults; some screenings may have a modest fee.",
+      duration: "15–25 minutes.",
+      imageUrl: "/images/gallery/modern_care_tools.webp",
+      icon: "clipboard",
+      price: 1000,
+      sortOrder: 70,
+    },
+    {
+      slug: "delivery-services",
+      title: "Delivery Services",
+      short: "Safe, reliable medication delivery to homes across greater Nairobi.",
+      description:
+        "Cannot make it in? We deliver prescriptions and select OTC items within our service area. Temperature-sensitive medications are handled with care.",
+      benefits: [
+        "Same-day delivery on select routes",
+        "Signature confirmation available",
+        "WhatsApp status updates",
+        "Caregiver-friendly handoff options",
+      ],
+      eligibility: "Addresses within our delivery zones (see Delivery page).",
+      duration: "Usually within 2–6 hours of ready status on delivery days.",
+      imageUrl: "/images/services/delivery-services.webp",
+      icon: "truck",
+      price: 300,
+      sortOrder: 80,
+    },
+    {
+      slug: "home-care-support",
+      title: "Home Care Support",
+      short:
+        "Medication organisation, blister packs, and caregiver coordination for home-based care.",
+      description:
+        "We partner with families and home-care agencies to simplify complex regimens — including multi-dose packaging, refill calendars, and caregiver briefings.",
+      benefits: [
+        "Weekly blister packaging",
+        "Caregiver education",
+        "Regimen simplification reviews",
+        "Coordination with visiting nurses",
+      ],
+      eligibility: "Patients managing multiple medications or with caregiver support.",
+      duration: "Setup consultation 30–45 minutes.",
+      imageUrl: "/images/services/home-care-support.webp",
+      icon: "home",
+      price: 2000,
+      sortOrder: 90,
+    },
+  ];
+
+  for (const s of serviceSeeds) {
+    await prisma.pharmacyService.create({
+      data: {
+        slug: s.slug,
+        title: s.title,
+        short: s.short,
+        description: s.description,
+        benefits: s.benefits,
+        eligibility: s.eligibility,
+        duration: s.duration,
+        imageUrl: s.imageUrl,
+        icon: s.icon,
+        price: s.price,
+        bookable: true,
+        active: true,
+        sortOrder: s.sortOrder,
+      },
+    });
+  }
+  console.log(`Seeded ${serviceSeeds.length} pharmacy services.`);
+
+  // ── Medication categories (public images + tips) ───────────
+  const categorySeeds: Array<{
+    slug: string;
+    name: string;
+    description: string;
+    imageUrl: string;
+    brands: string[];
+    tips: string[];
+    sortOrder: number;
+  }> = [
+    {
+      slug: "pain-relief",
+      name: "Pain Relief",
+      description:
+        "Over-the-counter options for headaches, muscle aches, joint pain, and everyday discomfort — with pharmacist guidance on safe use.",
+      imageUrl: "/images/otc/pain-relief.webp",
+      brands: ["Advil", "Tylenol", "Aleve", "Aspercreme"],
+      tips: [
+        "Do not combine multiple products containing acetaminophen.",
+        "Ask us before using NSAIDs if you have stomach, kidney, or heart concerns.",
+        "Topical options can help localised muscle or joint pain.",
+      ],
+      sortOrder: 10,
+    },
+    {
+      slug: "vitamins-supplements",
+      name: "Vitamins & Supplements",
+      description:
+        "Evidence-minded vitamins, minerals, and wellness supplements. We help you choose what is useful — and skip what is not.",
+      imageUrl: "/images/otc/vitamins-supplements.webp",
+      brands: ["Nature Made", "Centrum", "Garden of Life", "Nordic Naturals"],
+      tips: [
+        "More is not always better — megadoses can be harmful.",
+        "Tell us about all supplements; some interact with prescriptions.",
+        "Look for USP or third-party tested products when possible.",
+      ],
+      sortOrder: 20,
+    },
+    {
+      slug: "baby-care",
+      name: "Baby Care",
+      description:
+        "Gentle essentials for little ones: fever reducers, diaper care, feeding accessories, and pharmacist advice parents can trust.",
+      imageUrl: "/images/otc/baby-care.webp",
+      brands: ["Pampers", "Johnson's", "Pedialyte", "Aveeno Baby"],
+      tips: [
+        "Always use weight-based dosing for children's medicines.",
+        "Never give aspirin to children or teens with viral illness.",
+        "Ask us about fever thresholds that warrant a doctor visit.",
+      ],
+      sortOrder: 30,
+    },
+    {
+      slug: "first-aid",
+      name: "First Aid",
+      description:
+        "Bandages, antiseptics, wound care, and emergency basics so you are prepared at home, work, or on the go.",
+      imageUrl: "/images/otc/first-aid.webp",
+      brands: ["Band-Aid", "Neosporin", "3M Nexcare", "Hydrogen Peroxide"],
+      tips: [
+        "Clean wounds gently; seek care for deep or dirty cuts.",
+        "Keep a basic kit in the car and at home.",
+        "Check expiry dates on antiseptics and ointments yearly.",
+      ],
+      sortOrder: 40,
+    },
+    {
+      slug: "skin-care",
+      name: "Skin Care",
+      description:
+        "Dermatologist-friendly moisturisers, sunscreens, acne care, and treatments for eczema, rashes, and everyday skin concerns.",
+      imageUrl: "/images/otc/skin-care.webp",
+      brands: ["CeraVe", "La Roche-Posay", "Cetaphil", "Neutrogena"],
+      tips: [
+        "Fragrance-free often means fewer irritations.",
+        "Daily SPF is one of the best long-term skin investments.",
+        "Persistent rashes deserve a professional look — we can advise.",
+      ],
+      sortOrder: 50,
+    },
+    {
+      slug: "diabetes-care",
+      name: "Diabetes Care",
+      description:
+        "Meters, strips, lancets, glucose tablets, and supportive OTC products for everyday diabetes self-management.",
+      imageUrl: "/images/articles/diabetes-everyday-tips.webp",
+      brands: ["OneTouch", "Contour", "FreeStyle", "Dex4"],
+      tips: [
+        "Match strips to your exact meter model.",
+        "Store test strips in a cool, dry place.",
+        "Ask about insurance coverage for supplies.",
+      ],
+      sortOrder: 60,
+    },
+    {
+      slug: "womens-health",
+      name: "Women's Health",
+      description:
+        "Reproductive health, prenatal vitamins, menopause support, and everyday wellness products selected with care.",
+      imageUrl: "/images/otc/womens-health.webp",
+      brands: ["Always", "Summer's Eve", "Pregnacare", "Clearblue"],
+      tips: [
+        "Prenatal vitamins ideally start before conception when possible.",
+        "Discuss hormone-related products with your pharmacist or clinician.",
+        "We stock discreet options and private counselling space.",
+      ],
+      sortOrder: 70,
+    },
+    {
+      slug: "cold-flu",
+      name: "Cold & Flu",
+      description:
+        "Symptom relief for coughs, congestion, sore throats, and seasonal illness — plus guidance on what actually helps.",
+      imageUrl: "/images/otc/cold-flu.webp",
+      brands: ["Mucinex", "DayQuil", "Robitussin", "Halls"],
+      tips: [
+        "Multi-symptom products can duplicate ingredients — check labels.",
+        "Hydration and rest still matter more than most OTC combos.",
+        "High fever, shortness of breath, or lasting symptoms need clinical care.",
+      ],
+      sortOrder: 80,
+    },
+    // Keep clinical/admin categories present for medication forms.
+    { slug: "general", name: "General", description: "Uncategorised or multi-use products.", imageUrl: "", brands: [], tips: [], sortOrder: 0 },
+    { slug: "antibiotics", name: "Antibiotics", description: "Prescription antibacterials.", imageUrl: "", brands: [], tips: [], sortOrder: 100 },
+    { slug: "cardiovascular", name: "Cardiovascular", description: "Heart and blood pressure therapies.", imageUrl: "", brands: [], tips: [], sortOrder: 110 },
+    { slug: "diabetes", name: "Diabetes", description: "Diabetes prescription therapies.", imageUrl: "/images/articles/diabetes-everyday-tips.webp", brands: [], tips: [], sortOrder: 120 },
+    { slug: "respiratory", name: "Respiratory", description: "Asthma, COPD, and breathing support.", imageUrl: "", brands: [], tips: [], sortOrder: 130 },
+    { slug: "vitamins", name: "Vitamins", description: "Clinical vitamin catalogue (see also Vitamins & Supplements).", imageUrl: "/images/otc/vitamins-supplements.webp", brands: [], tips: [], sortOrder: 140 },
+  ];
+
+  for (const c of categorySeeds) {
+    await prisma.medicationCategory.upsert({
+      where: { slug: c.slug },
+      create: {
+        slug: c.slug,
+        name: c.name,
+        description: c.description || null,
+        imageUrl: c.imageUrl || null,
+        brands: c.brands,
+        tips: c.tips,
+        publicVisible: Boolean(c.imageUrl) || ["pain-relief", "vitamins-supplements", "baby-care", "first-aid", "skin-care", "diabetes-care", "womens-health", "cold-flu"].includes(c.slug),
+        active: true,
+        sortOrder: c.sortOrder,
+      },
+      update: {
+        name: c.name,
+        description: c.description || null,
+        imageUrl: c.imageUrl || null,
+        brands: c.brands,
+        tips: c.tips,
+        publicVisible: Boolean(c.imageUrl) || ["pain-relief", "vitamins-supplements", "baby-care", "first-aid", "skin-care", "diabetes-care", "womens-health", "cold-flu"].includes(c.slug),
+        active: true,
+        sortOrder: c.sortOrder,
+      },
+    });
+  }
+
+  // Align common master category aliases so public cards show products.
+  // e.g. meds tagged "vitamins" also appear under vitamins-supplements browse if desired —
+  // we keep both slugs; form dropdown lists both. Optionally retag sparse slugs:
+  const aliasMap: Record<string, string> = {
+    // leave masters as-is; public filters use exact master.category
+  };
+  for (const [from, to] of Object.entries(aliasMap)) {
+    await prisma.medicationMaster
+      .updateMany({ where: { category: from }, data: { category: to } })
+      .catch(() => {});
+  }
+
+  console.log(`Upserted ${categorySeeds.length} medication categories.`);
+
   await prisma.auditLog.create({
     data: {
       actorId: manager.id,
       action: "seed_completed",
       entityType: "system",
-      details: { note: "Initial demo seed" },
+      details: { note: "Initial demo seed + services + categories" },
     },
   });
 

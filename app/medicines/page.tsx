@@ -10,14 +10,17 @@ import {
 } from "../components/MedicineCatalogCard";
 import { Pagination } from "../components/Pagination";
 import { parsePageParam } from "../lib/pagination";
-import { categories, pharmacy } from "../lib/data";
+import { pharmacy } from "../lib/data";
 import { prisma } from "../lib/db";
+import { listPublicCategories } from "../lib/medication-categories";
 
 export const metadata: Metadata = {
   title: "Medicines & Health Categories",
   description: `Browse OTC health categories at ${pharmacy.name}. Educational guidance plus live stock for OTC products. Search by name or snap a pack photo.`,
   alternates: { canonical: "/medicines" },
 };
+
+export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 24;
 
@@ -65,9 +68,6 @@ export default async function MedicinesPage({
   const category = sp.category || undefined;
   const initialPhotoOpen = sp.photo === "1" || sp.photo === "true";
 
-  // Pull public-listed medications (admin marks these as visible without login).
-  // Category + name/description live on MedicationMaster; everything else stays
-  // on PharmacyInventory. We build a nested where + include.
   const masterWhere: Record<string, unknown> = {};
   if (category && category !== "all") {
     masterWhere.category = category;
@@ -96,7 +96,7 @@ export default async function MedicinesPage({
     },
   };
 
-  const [total, medications] = await Promise.all([
+  const [total, medications, publicCategories] = await Promise.all([
     prisma.pharmacyInventory.count({ where }).catch(() => 0),
     prisma.pharmacyInventory
       .findMany({
@@ -106,6 +106,7 @@ export default async function MedicinesPage({
         take: PAGE_SIZE,
       })
       .catch(() => []),
+    listPublicCategories().catch(() => []),
   ]);
 
   const page = parsePageParam(sp.page, total, PAGE_SIZE);
@@ -126,17 +127,11 @@ export default async function MedicinesPage({
     .map(toCatalogItem)
     .filter((x): x is MedicineCatalogItem => x !== null);
 
-  // Build the category list from existing categories + any from the DB.
-  // Category lives on MedicationMaster; query distinct master categories whose
-  // pharmacyInventory is public+active.
-  const dbCategories = await prisma.medicationMaster
-    .findMany({
-      where: { pharmacyInventory: { some: { publicListing: true, active: true } } },
-      select: { category: true },
-      distinct: ["category"],
-    })
-    .catch(() => []);
-  const dbCategorySlugs = dbCategories.map((c) => c.category).filter(Boolean);
+  // Filter options: public categories + any DB slugs in use.
+  const filterOptions = publicCategories.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+  }));
 
   return (
     <div>
@@ -147,19 +142,17 @@ export default async function MedicinesPage({
         crumbs={[{ label: "Medicines" }]}
       />
 
-      {/* Text search + photo search entry points */}
       <section className="px-4 pb-6 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <MedicinesBrowseTools
             q={q}
             category={category}
-            dbCategorySlugs={dbCategorySlugs}
+            categoryOptions={filterOptions}
             initialPhotoOpen={initialPhotoOpen}
           />
         </div>
       </section>
 
-      {/* Live OTC catalog — same card grid used by photo matches */}
       {catalogItems.length > 0 && (
         <section className="px-4 pb-12 sm:px-6">
           <div className="mx-auto max-w-6xl">
@@ -194,7 +187,6 @@ export default async function MedicinesPage({
         </section>
       )}
 
-      {/* Educational categories */}
       <section className="px-4 pb-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <h2
@@ -203,35 +195,57 @@ export default async function MedicinesPage({
           >
             Browse by category
           </h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {categories.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/medicines/${c.slug}`}
-                className="card-lift group overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm"
-              >
-                <div className="relative h-40 overflow-hidden">
-                  <Image
-                    src={c.image}
-                    alt={c.title}
-                    fill
-                    className="object-cover transition duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <h3
-                    className="absolute bottom-3 left-3 right-3 text-lg font-semibold text-white"
-                    style={{ fontFamily: "var(--font-display), serif" }}
-                  >
-                    {c.title}
-                  </h3>
-                </div>
-                <p className="line-clamp-3 p-4 text-sm leading-relaxed text-[#5a6b62]">
-                  {c.description}
-                </p>
-              </Link>
-            ))}
-          </div>
+          {publicCategories.length === 0 ? (
+            <div className="rounded-2xl border border-[#e3ebe6] bg-white px-6 py-10 text-center shadow-sm">
+              <p className="text-sm font-semibold text-[#0c1a14]">Categories coming soon</p>
+              <p className="mt-1 text-xs text-[#5a6b62]">
+                Ask our pharmacists for guidance, or search products above.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {publicCategories.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/medicines/${c.slug}`}
+                  className="card-lift group overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm"
+                >
+                  <div className="relative h-40 overflow-hidden bg-[#eef5f1]">
+                    {c.imageUrl ? (
+                      <Image
+                        src={c.imageUrl}
+                        alt={c.name}
+                        fill
+                        className="object-cover transition duration-700 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-4xl opacity-30">
+                        💊
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <h3
+                      className="absolute bottom-3 left-3 right-3 text-lg font-semibold text-white"
+                      style={{ fontFamily: "var(--font-display), serif" }}
+                    >
+                      {c.name}
+                    </h3>
+                  </div>
+                  <div className="p-4">
+                    <p className="line-clamp-3 text-sm leading-relaxed text-[#5a6b62]">
+                      {c.description || "Browse products and pharmacist guidance in this category."}
+                    </p>
+                    {c.publicMedCount > 0 && (
+                      <p className="mt-2 text-xs font-semibold text-teal-800">
+                        {c.publicMedCount} product{c.publicMedCount === 1 ? "" : "s"} listed
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

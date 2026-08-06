@@ -89,7 +89,7 @@ export async function createRefillRequest(data: {
       { refillId: refill.id },
     );
 
-      await prisma.notification.create({
+    await prisma.notification.create({
       data: {
         customerId: data.customerId,
         channel: "in_app",
@@ -102,6 +102,30 @@ export async function createRefillRequest(data: {
         relatedId: refill.id,
       },
     });
+
+    // Stop "please refill" nags — the customer already acted.
+    const cancelWhere = data.prescriptionId
+      ? {
+          customerId: data.customerId,
+          type: "refill" as const,
+          status: { in: ["scheduled" as const, "sent" as const] },
+          OR: [
+            { relatedId: data.prescriptionId },
+            { relatedType: "prescription", relatedId: data.prescriptionId },
+          ],
+        }
+      : {
+          customerId: data.customerId,
+          type: "refill" as const,
+          status: { in: ["scheduled" as const, "sent" as const] },
+          title: { contains: data.medicineName.slice(0, 40) },
+        };
+    await prisma.reminder
+      .updateMany({
+        where: cancelWhere,
+        data: { status: "cancelled" },
+      })
+      .catch(() => null);
   }
 
   // Always alert staff — including guest / website refills without a customer profile.
@@ -463,19 +487,46 @@ export async function updateRefillStatus(
     }
 
     if (status === "ready_for_pickup") {
-      await prisma.reminder.create({
-        data: {
+      // One pickup reminder per refill request — never re-create on re-status.
+      const existingPickup = await prisma.reminder.findFirst({
+        where: {
           customerId: refill.customerId,
           type: "pickup",
-          title: "Prescription ready for pickup",
-          body: `${refill.medicineName} is ready at the pharmacy.`,
-          channel: "sms",
-          scheduledFor: new Date(),
-          status: "scheduled",
           relatedType: "refill_request",
           relatedId: refill.id,
-          createdById: actorId,
+          status: { in: ["scheduled", "sent"] },
         },
+        select: { id: true },
+      });
+      if (!existingPickup) {
+        await prisma.reminder.create({
+          data: {
+            customerId: refill.customerId,
+            type: "pickup",
+            title: "Prescription ready for pickup",
+            body: `${refill.medicineName} is ready at the pharmacy.`,
+            channel: "sms",
+            scheduledFor: new Date(),
+            status: "scheduled",
+            relatedType: "refill_request",
+            relatedId: refill.id,
+            createdById: actorId,
+          },
+        });
+      }
+    }
+
+    // When collected or cancelled, stop any lingering pickup/refill nags for this request.
+    if (status === "collected" || status === "cancelled") {
+      await prisma.reminder.updateMany({
+        where: {
+          customerId: refill.customerId,
+          relatedType: "refill_request",
+          relatedId: refill.id,
+          status: { in: ["scheduled", "sent"] },
+          type: { in: ["pickup", "refill"] },
+        },
+        data: { status: "cancelled" },
       });
     }
   }
@@ -1028,6 +1079,79 @@ export async function launchCampaign(campaignId: string, actorId: string) {
   });
 }
 
+/**
+ * Resolve the intended slot time for a medication_dose reminder.
+ * Snoozed reminders move scheduledFor, but title keeps "Dose HH:mm: …".
+ */
+function resolveDoseSlotTime(reminder: { title: string; scheduledFor: Date }): string {
+  const fromTitle = reminder.title.match(/\bDose\s+(\d{2}:\d{2})\b/i);
+  if (fromTitle?.[1]) return fromTitle[1];
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: process.env.TIMEZONE || "Africa/Nairobi",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(reminder.scheduledFor);
+}
+
+/**
+ * True when a dose for this reminder is already resolved — do not re-notify.
+ */
+async function isDoseAlreadyResolved(reminder: {
+  relatedId: string | null;
+  customerId: string;
+  title: string;
+  scheduledFor: Date;
+}): Promise<boolean> {
+  if (!reminder.relatedId) return false;
+  const tz = process.env.TIMEZONE || "Africa/Nairobi";
+  const dateStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(reminder.scheduledFor);
+  // Prefer original slot date from title window — for snoozed reminders
+  // scheduledFor may roll past midnight; use local day of original send intent
+  // by checking both today and yesterday around the slot.
+  const slotTime = resolveDoseSlotTime(reminder);
+  const candidates = [dateStr];
+  const y = new Date(reminder.scheduledFor.getTime() - 24 * 60 * 60 * 1000);
+  candidates.push(
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(y),
+  );
+
+  for (const d of candidates) {
+    const log = await prisma.doseLog
+      .findUnique({
+        where: {
+          prescriptionId_scheduledDate_scheduledTime: {
+            prescriptionId: reminder.relatedId,
+            scheduledDate: new Date(d + "T00:00:00Z"),
+            scheduledTime: slotTime,
+          },
+        },
+        select: { status: true },
+      })
+      .catch(() => null);
+    if (
+      log &&
+      (log.status === "taken" ||
+        log.status === "late" ||
+        log.status === "skipped" ||
+        log.status === "missed")
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export async function processDueReminders(): Promise<{ processedCount: number; failedCount: number; errors: string[] }> {
   const due = await prisma.reminder.findMany({
     where: { status: "scheduled", scheduledFor: { lte: new Date() } },
@@ -1049,6 +1173,72 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
         });
         processedCount += 1;
         continue;
+      }
+
+      // Dose already confirmed/missed → never re-fire; settle as answered.
+      if (reminder.type === "medication_dose") {
+        const resolved = await isDoseAlreadyResolved(reminder);
+        if (resolved) {
+          await prisma.reminder.update({
+            where: { id: reminder.id },
+            data: { status: "answered" },
+          });
+          processedCount += 1;
+          continue;
+        }
+      }
+
+      // Status-aware suppress for pickup / refill reminders.
+      if (reminder.type === "pickup" || reminder.type === "refill") {
+        let shouldCancel = false;
+
+        if (reminder.relatedType === "refill_request" && reminder.relatedId) {
+          const refill = await prisma.refillRequest
+            .findUnique({
+              where: { id: reminder.relatedId },
+              select: { status: true },
+            })
+            .catch(() => null);
+
+          if (refill) {
+            if (refill.status === "collected" || refill.status === "cancelled") {
+              // Lifecycle complete — never nag again.
+              shouldCancel = true;
+            } else if (reminder.type === "refill") {
+              // Customer already has an open refill request — drop "please refill" nags.
+              shouldCancel = true;
+            } else if (reminder.type === "pickup" && refill.status !== "ready_for_pickup") {
+              // Only remind about pickup while it's actually ready.
+              shouldCancel = true;
+            }
+          }
+        } else if (
+          reminder.type === "refill" &&
+          reminder.relatedType === "prescription" &&
+          reminder.relatedId
+        ) {
+          // Prescription-scoped refill-due: suppress if an open request already exists.
+          const open = await prisma.refillRequest
+            .findFirst({
+              where: {
+                prescriptionId: reminder.relatedId,
+                customerId: reminder.customerId,
+                status: { notIn: ["collected", "cancelled"] },
+              },
+              select: { id: true },
+            })
+            .catch(() => null);
+          if (open) shouldCancel = true;
+        }
+
+        if (shouldCancel) {
+          await prisma.reminder.update({
+            where: { id: reminder.id },
+            data: { status: "cancelled" },
+          });
+          processedCount += 1;
+          continue;
+        }
       }
 
       const delivery = await sendDelivery({
@@ -1102,18 +1292,12 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
         let scheduledTime = "";
         let prescriptionId = reminder.relatedId || "";
         if (isDose && prescriptionId) {
-          const localTime = new Intl.DateTimeFormat("en-GB", {
-            timeZone: process.env.TIMEZONE || "Africa/Nairobi",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          }).format(reminder.scheduledFor);
-          scheduledTime = localTime;
+          scheduledTime = resolveDoseSlotTime(reminder);
           const slot = await prisma.medicationSchedule
             .findFirst({
               where: {
                 prescriptionId,
-                timeOfDay: localTime,
+                timeOfDay: scheduledTime,
                 active: true,
               },
               select: { id: true, timeOfDay: true },
@@ -1125,7 +1309,12 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
           }
         }
 
-        const pushUrl = isDose ? "/portal/prescriptions" : "/portal";
+        const pushUrl =
+          isDose
+            ? "/portal/prescriptions"
+            : reminder.type === "refill" || reminder.type === "pickup"
+              ? "/portal/refills"
+              : "/portal";
         await dispatchPushToUser(reminder.customer.user.id, {
           title: reminder.title,
           body: reminder.body || reminder.title,

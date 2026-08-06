@@ -21,6 +21,8 @@ const Body = z.object({
 });
 
 const SNOOZE_MINUTES = 10;
+/** Hard cap — after this many snoozes the patient must confirm or skip. */
+const MAX_SNOOZES = 2;
 
 export async function POST(req: Request) {
   const user = await getSessionUser();
@@ -54,6 +56,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "reminder_not_found" }, { status: 404 });
     }
 
+    // Cap snoozes so patients can't loop reminders forever.
+    const priorSnoozes = await prisma.adherenceEscalation.count({
+      where: { reminderId: reminder.id, action: "snoozed" },
+    });
+    if (priorSnoozes >= MAX_SNOOZES) {
+      return NextResponse.json(
+        {
+          error: "snooze_limit_reached",
+          message: "You've snoozed this dose twice. Please confirm Taken, Late, or Skip.",
+          maxSnoozes: MAX_SNOOZES,
+        },
+        { status: 429 },
+      );
+    }
+
     const nextAt = new Date(Date.now() + SNOOZE_MINUTES * 60 * 1000);
     await prisma.reminder.update({
       where: { id: reminder.id },
@@ -65,10 +82,41 @@ export async function POST(req: Request) {
       },
     });
 
+    // Audit the snooze for the cap + escalation visibility.
+    const fromTitle = reminder.title.match(/\bDose\s+(\d{2}:\d{2})\b/i);
+    const slotTime =
+      fromTitle?.[1] ??
+      new Intl.DateTimeFormat("en-GB", {
+        timeZone: process.env.TIMEZONE || "Africa/Nairobi",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(reminder.scheduledFor);
+    const dateStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: process.env.TIMEZONE || "Africa/Nairobi",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(reminder.scheduledFor);
+
+    await prisma.adherenceEscalation.create({
+      data: {
+        prescriptionId: reminder.relatedId || "00000000-0000-0000-0000-000000000000",
+        customerId: user.customerId,
+        reminderId: reminder.id,
+        scheduledDate: new Date(dateStr + "T00:00:00Z"),
+        scheduledTime: slotTime,
+        step: 1,
+        action: "snoozed",
+      },
+    }).catch(() => null);
+
     return NextResponse.json({
       ok: true,
       snoozed: true,
       snoozeMinutes: SNOOZE_MINUTES,
+      snoozeCount: priorSnoozes + 1,
+      maxSnoozes: MAX_SNOOZES,
       nextAt: nextAt.toISOString(),
     });
   }

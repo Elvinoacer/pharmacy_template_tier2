@@ -6,16 +6,27 @@ import { useRouter } from "next/navigation";
 export default function MedicinesFilterBar({
   q,
   category,
+  categoryOptions,
+  /** @deprecated use categoryOptions */
   dbCategorySlugs,
   trailing,
 }: {
   q?: string;
   category?: string;
-  dbCategorySlugs: string[];
+  categoryOptions?: Array<{ slug: string; name: string }>;
+  dbCategorySlugs?: string[];
   /** Optional action after Search (e.g. photo search button). */
   trailing?: ReactNode;
 }) {
   const router = useRouter();
+
+  const options =
+    categoryOptions && categoryOptions.length > 0
+      ? categoryOptions
+      : (dbCategorySlugs || []).map((slug) => ({
+          slug,
+          name: slug.replace(/-/g, " "),
+        }));
 
   function onCategoryChange(v: string) {
     const params = new URLSearchParams();
@@ -39,12 +50,12 @@ export default function MedicinesFilterBar({
         name="category"
         defaultValue={category || "all"}
         onChange={(e) => onCategoryChange(e.target.value)}
-        className="rounded-full border border-[#e3ebe6] bg-white py-2.5 pl-4 pr-8 text-sm text-[#0c1a14]"
+        className="rounded-full border border-[#e3ebe6] bg-white py-2.5 pl-4 pr-8 text-sm text-[#0c1a14] capitalize"
       >
         <option value="all">All categories</option>
-        {dbCategorySlugs.map((c) => (
-          <option key={c} value={c}>
-            {c.replace(/-/g, " ")}
+        {options.map((c) => (
+          <option key={c.slug} value={c.slug}>
+            {c.name}
           </option>
         ))}
       </select>

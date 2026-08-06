@@ -356,6 +356,19 @@ export async function logDose(input: {
     });
   }
 
+  // 3. Clear related dose reminders so cron/escalation stop nagging.
+  //    Portal UI often logs without a reminderId; this closes the loop either way.
+  if (input.status !== "unknown") {
+    await settleDoseReminders({
+      customerId: input.customerId,
+      prescriptionId: input.prescriptionId,
+      scheduledDate: today,
+      scheduledTime: input.scheduledTime ?? null,
+    }).catch(() => {
+      /* best-effort — never block the dose log */
+    });
+  }
+
   return { doseLogId: doseLog.id, adherenceId: adherence.id };
 }
 
@@ -365,7 +378,62 @@ export async function logDose(input: {
  */
 export async function markReminderAnswered(reminderId: string): Promise<void> {
   await prisma.reminder.updateMany({
-    where: { id: reminderId, status: { in: ["sent", "scheduled"] } },
+    where: { id: reminderId, status: { in: ["sent", "scheduled", "escalated"] } },
     data: { status: "answered" as const },
   });
+}
+
+/**
+ * Settle all open medication_dose reminders for a prescription slot/day.
+ * Matches by related prescription + local calendar day (±1 day buffer for TZ),
+ * optionally narrowing to the scheduled time-of-day when known.
+ */
+export async function settleDoseReminders(opts: {
+  customerId: string;
+  prescriptionId: string;
+  scheduledDate: Date;
+  scheduledTime?: string | null;
+}): Promise<number> {
+  const dayStart = new Date(opts.scheduledDate);
+  dayStart.setUTCHours(0, 0, 0, 0);
+  // Cover TZ edge cases: reminder.scheduledFor is absolute UTC, local day
+  // may span two UTC dates. Use a generous 36h window around the local day.
+  const windowStart = new Date(dayStart.getTime() - 12 * 60 * 60 * 1000);
+  const windowEnd = new Date(dayStart.getTime() + 36 * 60 * 60 * 1000);
+
+  const open = await prisma.reminder.findMany({
+    where: {
+      customerId: opts.customerId,
+      type: "medication_dose",
+      relatedId: opts.prescriptionId,
+      status: { in: ["scheduled", "sent", "escalated"] },
+      scheduledFor: { gte: windowStart, lte: windowEnd },
+    },
+    select: { id: true, scheduledFor: true, title: true },
+  });
+
+  if (open.length === 0) return 0;
+
+  const time = opts.scheduledTime;
+  const toAnswer = time
+    ? open.filter((r) => {
+        const hhmm = new Intl.DateTimeFormat("en-GB", {
+          timeZone: PROJECT_TIMEZONE,
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).format(r.scheduledFor);
+        // Match exact slot, or title that embeds the time (snoozed reminders
+        // keep original title "Dose 08:00: …" while scheduledFor moves).
+        return hhmm === time || (r.title?.includes(time) ?? false);
+      })
+    : open;
+
+  if (toAnswer.length === 0) return 0;
+
+  const result = await prisma.reminder.updateMany({
+    where: { id: { in: toAnswer.map((r) => r.id) } },
+    data: { status: "answered" },
+  });
+  return result.count;
 }

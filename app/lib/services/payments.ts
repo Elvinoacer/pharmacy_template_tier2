@@ -385,6 +385,34 @@ export async function completeDarajaPayment(opts: {
     }
   }
 
+  // If this order settles a pharmacy service booking, confirm it + notify customer.
+  try {
+    const {
+      confirmServiceBookingPayment,
+      notifyBookingCustomer,
+    } = await import("@/app/lib/services/pharmacy-services");
+    const confirmed = await confirmServiceBookingPayment({
+      orderId: payment.orderId,
+      paidVia: "daraja",
+      paymentRef: opts.mpesaReceipt || null,
+    });
+    if (confirmed && !confirmed.alreadyDone) {
+      const booking = await prisma.serviceBooking.findUnique({
+        where: { id: confirmed.bookingId },
+        include: { service: { select: { title: true, slug: true } } },
+      });
+      if (booking) {
+        await notifyBookingCustomer(booking, {
+          title: "Booking confirmed",
+          body: `Payment received for ${booking.service.title}. You're all set.`,
+          url: `/services/${booking.service.slug}`,
+        }).catch(() => {});
+      }
+    }
+  } catch (err) {
+    console.error("[completeDarajaPayment] service booking hook:", err);
+  }
+
   return {
     orderId: payment.orderId,
     status: shouldAutoDispatch ? "fulfilled" : "paid",

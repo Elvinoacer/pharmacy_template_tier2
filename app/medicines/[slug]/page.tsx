@@ -5,31 +5,35 @@ import { notFound } from "next/navigation";
 import CtaBanner from "../../components/CtaBanner";
 import PageHero from "../../components/PageHero";
 import { Markdown } from "../../components/Markdown";
-import { categories, getCategory } from "../../lib/data";
+import {
+  MedicineCatalogGrid,
+  type MedicineCatalogItem,
+} from "../../components/MedicineCatalogCard";
 import { prisma } from "../../lib/db";
 import { formatPrice } from "../../lib/format";
+import { getPublicCategoryBySlug } from "../../lib/medication-categories";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return categories.map((c) => ({ slug: c.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const cat = getCategory(slug);
+  const cat = await getPublicCategoryBySlug(slug).catch(() => null);
   if (cat) {
     return {
-      title: cat.title,
-      description: cat.description,
+      title: cat.name,
+      description:
+        cat.description || `${cat.name} products and guidance at Aether Pharmacy`,
       alternates: { canonical: `/medicines/${cat.slug}` },
     };
   }
-  // Try medication slug (slug lives on PharmacyInventory; name/description on MedicationMaster).
   const med = await prisma.pharmacyInventory
     .findUnique({
       where: { slug },
-      include: { medicationMaster: { select: { name: true, description: true, dosage: true } } },
+      include: {
+        medicationMaster: { select: { name: true, description: true, dosage: true } },
+      },
     })
     .catch(() => null);
   if (med) {
@@ -44,88 +48,176 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: "Category" };
 }
 
-export default async function CategoryDetailPage({ params }: Props) {
+export default async function CategoryOrMedicinePage({ params }: Props) {
   const { slug } = await params;
-  const cat = getCategory(slug);
+  const cat = await getPublicCategoryBySlug(slug).catch(() => null);
 
-  // If it's an educational category, render the educational page.
+  // ── Category page ──────────────────────────────────────────
   if (cat) {
+    const products = await prisma.pharmacyInventory
+      .findMany({
+        where: {
+          publicListing: true,
+          active: true,
+          medicationMaster: { category: cat.slug },
+        },
+        include: {
+          medicationMaster: {
+            select: {
+              name: true,
+              description: true,
+              category: true,
+              imageUrl: true,
+            },
+          },
+        },
+        orderBy: [{ currentStock: "desc" }],
+        take: 24,
+      })
+      .catch(() => []);
+
+    const catalogItems: MedicineCatalogItem[] = products
+      .map((m) => {
+        const master = m.medicationMaster;
+        if (!master) return null;
+        const priceNum = Number(m.price.toString());
+        return {
+          id: m.id,
+          slug: m.slug,
+          price: Number.isFinite(priceNum) ? priceNum : 0,
+          currentStock: m.currentStock,
+          overTheCounter: m.overTheCounter,
+          prescriptionRequired: m.prescriptionRequired,
+          medicationMaster: {
+            name: master.name,
+            description: master.description,
+            category: master.category,
+            imageUrl: master.imageUrl,
+          },
+        } satisfies MedicineCatalogItem;
+      })
+      .filter((x): x is MedicineCatalogItem => x !== null);
+
     return (
       <div>
         <PageHero
           eyebrow="Health category"
-          title={cat.title}
-          description={cat.description}
+          title={cat.name}
+          description={
+            cat.description ||
+            "Browse products and pharmacist guidance in this category."
+          }
           crumbs={[
             { label: "Medicines", href: "/medicines" },
-            { label: cat.title },
+            { label: cat.name },
           ]}
         />
 
-        <section className="px-4 pb-16 sm:px-6">
+        <section className="px-4 pb-12 sm:px-6">
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
-              <Image
-                src={cat.image}
-                alt={cat.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-              />
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-[#eef5f1] shadow-xl">
+              {cat.imageUrl ? (
+                <Image
+                  src={cat.imageUrl}
+                  alt={cat.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-7xl opacity-30">
+                  💊
+                </div>
+              )}
             </div>
             <div>
-              <h2
-                className="text-xl font-semibold text-[#0c1a14]"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                Featured brands we often stock
-              </h2>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {cat.brands.map((b) => (
-                  <span
-                    key={b}
-                    className="rounded-full border border-teal-900/10 bg-white px-3.5 py-1.5 text-sm font-medium text-[#0c1a14]"
+              {cat.brands.length > 0 && (
+                <>
+                  <h2
+                    className="text-xl font-semibold text-[#0c1a14]"
+                    style={{ fontFamily: "var(--font-display), serif" }}
                   >
-                    {b}
-                  </span>
-                ))}
-              </div>
+                    Featured brands we often stock
+                  </h2>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {cat.brands.map((b) => (
+                      <span
+                        key={b}
+                        className="rounded-full border border-teal-900/10 bg-white px-3.5 py-1.5 text-sm font-medium text-[#0c1a14]"
+                      >
+                        {b}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
 
-              <h2
-                className="mt-10 text-xl font-semibold text-[#0c1a14]"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                Pharmacist tips
-              </h2>
-              <ul className="mt-4 space-y-3">
-                {cat.tips.map((tip) => (
-                  <li key={tip} className="flex items-start gap-2.5 text-sm text-[#5a6b62]">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600" />
-                    {tip}
-                  </li>
-                ))}
-              </ul>
+              {cat.tips.length > 0 && (
+                <>
+                  <h2
+                    className={`text-xl font-semibold text-[#0c1a14] ${cat.brands.length > 0 ? "mt-10" : ""}`}
+                    style={{ fontFamily: "var(--font-display), serif" }}
+                  >
+                    Pharmacist tips
+                  </h2>
+                  <ul className="mt-4 space-y-3">
+                    {cat.tips.map((tip) => (
+                      <li
+                        key={tip}
+                        className="flex items-start gap-2.5 text-sm text-[#5a6b62]"
+                      >
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600" />
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
 
               <p className="mt-8 rounded-2xl border border-teal-900/5 bg-teal-50/50 p-4 text-sm text-[#5a6b62]">
-                Availability varies. This page is educational only — not a product catalogue or checkout.
-                Ask in store or call for current stock and personalised advice.
+                Guidance here is educational. For personalised advice or stock
+                confirmation, ask our pharmacists in store or online.
               </p>
 
-              <Link href="/medicines" className="mt-6 inline-block text-sm font-semibold text-teal-800 hover:underline">
+              <Link
+                href="/medicines"
+                className="mt-6 inline-block text-sm font-semibold text-teal-800 hover:underline"
+              >
                 ← All categories
               </Link>
             </div>
           </div>
         </section>
 
+        {catalogItems.length > 0 && (
+          <section className="px-4 pb-16 sm:px-6">
+            <div className="mx-auto max-w-6xl">
+              <h2
+                className="mb-4 text-xl font-semibold text-[#0c1a14]"
+                style={{ fontFamily: "var(--font-display), serif" }}
+              >
+                Available in {cat.name} ({catalogItems.length})
+              </h2>
+              <MedicineCatalogGrid items={catalogItems} />
+              <div className="mt-6">
+                <Link
+                  href={`/medicines?category=${encodeURIComponent(cat.slug)}`}
+                  className="text-sm font-semibold text-teal-800 hover:underline"
+                >
+                  See all in catalogue →
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
         <CtaBanner />
       </div>
     );
   }
 
-  // Otherwise, try to find a medication by slug. Inventory row carries the
-  // commercial fields; MedicationMaster carries clinical fields.
+  // ── Medication detail ──────────────────────────────────────
   const med = await prisma.pharmacyInventory
     .findUnique({
       where: { slug },
@@ -150,9 +242,6 @@ export default async function CategoryDetailPage({ params }: Props) {
     .catch(() => null);
   if (!med) notFound();
 
-  // Prefer explicitly linked alternatives; fall back to same-category meds.
-  // alternativeIds are MedicationMaster IDs — look up PharmacyInventory rows
-  // whose medicationMasterId is in that list.
   const altIds = (med.medicationMaster.alternativeIds || "")
     .split(/[,\s]+/)
     .map((s) => s.trim())
@@ -162,7 +251,9 @@ export default async function CategoryDetailPage({ params }: Props) {
       ? await prisma.pharmacyInventory
           .findMany({
             where: { medicationMasterId: { in: altIds }, active: true },
-            include: { medicationMaster: { select: { name: true, imageUrl: true } } },
+            include: {
+              medicationMaster: { select: { name: true, imageUrl: true } },
+            },
             take: 6,
           })
           .catch(() => [])
@@ -178,15 +269,20 @@ export default async function CategoryDetailPage({ params }: Props) {
               active: true,
               OR: [{ publicListing: true }, { overTheCounter: true }],
             },
-            include: { medicationMaster: { select: { name: true, imageUrl: true } } },
+            include: {
+              medicationMaster: { select: { name: true, imageUrl: true } },
+            },
             take: 4,
           })
           .catch(() => []);
 
+  const categoryHref = `/medicines/${med.medicationMaster.category}`;
+  const categoryLabel = med.medicationMaster.category.replace(/-/g, " ");
+
   return (
     <div>
       <PageHero
-        eyebrow={med.medicationMaster.category.replace(/-/g, " ")}
+        eyebrow={categoryLabel}
         title={med.medicationMaster.name}
         description={
           med.medicationMaster.description ||
@@ -195,6 +291,7 @@ export default async function CategoryDetailPage({ params }: Props) {
         }
         crumbs={[
           { label: "Medicines", href: "/medicines" },
+          { label: categoryLabel, href: categoryHref },
           { label: med.medicationMaster.name },
         ]}
       />
@@ -209,7 +306,7 @@ export default async function CategoryDetailPage({ params }: Props) {
               .filter((u) => u !== med.medicationMaster.imageUrl);
             return (
               <div className="space-y-3">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl bg-[#f4f7f4]">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-[#f4f7f4] shadow-xl">
                   {med.medicationMaster.imageUrl ? (
                     <Image
                       src={med.medicationMaster.imageUrl}
@@ -220,7 +317,9 @@ export default async function CategoryDetailPage({ params }: Props) {
                       priority
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-7xl">💊</div>
+                    <div className="flex h-full items-center justify-center text-7xl">
+                      💊
+                    </div>
                   )}
                 </div>
                 {gallery.length > 0 && (
@@ -246,6 +345,12 @@ export default async function CategoryDetailPage({ params }: Props) {
           })()}
           <div>
             <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href={categoryHref}
+                className="rounded-full border border-teal-900/10 bg-white px-3 py-1 text-xs font-semibold capitalize text-teal-800 hover:bg-teal-50"
+              >
+                {categoryLabel}
+              </Link>
               {med.overTheCounter && (
                 <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
                   Over the counter
@@ -256,8 +361,16 @@ export default async function CategoryDetailPage({ params }: Props) {
                   Prescription required
                 </span>
               )}
-              <span className={`rounded-full px-3 py-1 text-xs font-bold ${med.currentStock > 0 ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700"}`}>
-                {med.currentStock > 0 ? `${med.currentStock} in stock` : "Out of stock"}
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-bold ${
+                  med.currentStock > 0
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-rose-100 text-rose-700"
+                }`}
+              >
+                {med.currentStock > 0
+                  ? `${med.currentStock} in stock`
+                  : "Out of stock"}
               </span>
             </div>
 
@@ -267,14 +380,20 @@ export default async function CategoryDetailPage({ params }: Props) {
 
             {med.medicationMaster.dosage && (
               <div className="mt-4">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Dosage</p>
-                <p className="mt-1 text-sm text-[#0c1a14]">{med.medicationMaster.dosage}</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
+                  Dosage
+                </p>
+                <p className="mt-1 text-sm text-[#0c1a14]">
+                  {med.medicationMaster.dosage}
+                </p>
               </div>
             )}
 
             {med.medicationMaster.indications && (
               <div className="mt-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Uses (indications)</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
+                  Uses (indications)
+                </p>
                 <div className="mt-2 text-sm text-[#0c1a14]">
                   <Markdown>{med.medicationMaster.indications}</Markdown>
                 </div>
@@ -283,7 +402,9 @@ export default async function CategoryDetailPage({ params }: Props) {
 
             {med.medicationMaster.sideEffects && (
               <div className="mt-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Side effects</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
+                  Side effects
+                </p>
                 <div className="mt-2 text-sm text-[#0c1a14]">
                   <Markdown>{med.medicationMaster.sideEffects}</Markdown>
                 </div>
@@ -292,7 +413,9 @@ export default async function CategoryDetailPage({ params }: Props) {
 
             {med.medicationMaster.contraindications && (
               <div className="mt-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Not for you if…</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
+                  Not for you if…
+                </p>
                 <div className="mt-2 text-sm text-[#0c1a14]">
                   <Markdown>{med.medicationMaster.contraindications}</Markdown>
                 </div>
@@ -301,13 +424,19 @@ export default async function CategoryDetailPage({ params }: Props) {
 
             {med.medicationMaster.storage && (
               <div className="mt-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">Storage</p>
-                <p className="mt-1 text-sm text-[#0c1a14]">{med.medicationMaster.storage}</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
+                  Storage
+                </p>
+                <p className="mt-1 text-sm text-[#0c1a14]">
+                  {med.medicationMaster.storage}
+                </p>
               </div>
             )}
 
             <div className="mt-8 rounded-2xl border border-[#0d6e5a]/20 bg-[#f0faf6] p-4">
-              <p className="text-sm font-semibold text-[#0c1a14]">How to get this medication</p>
+              <p className="text-sm font-semibold text-[#0c1a14]">
+                How to get this medication
+              </p>
               <p className="mt-1 text-xs text-[#5a6b62]">
                 {med.prescriptionRequired
                   ? "This medication requires a valid prescription. Request a refill from your portal, or visit us with your prescription."
@@ -315,7 +444,10 @@ export default async function CategoryDetailPage({ params }: Props) {
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {med.prescriptionRequired ? (
-                  <Link href="/portal/refills/new" className="btn-primary !py-2 text-xs">
+                  <Link
+                    href="/portal/refills/new"
+                    className="btn-primary !py-2 text-xs"
+                  >
                     Request refill
                   </Link>
                 ) : (
@@ -340,7 +472,10 @@ export default async function CategoryDetailPage({ params }: Props) {
               </div>
             </div>
 
-            <Link href="/medicines" className="mt-6 inline-block text-sm font-semibold text-teal-800 hover:underline">
+            <Link
+              href="/medicines"
+              className="mt-6 inline-block text-sm font-semibold text-teal-800 hover:underline"
+            >
               ← All medications
             </Link>
           </div>
@@ -350,8 +485,13 @@ export default async function CategoryDetailPage({ params }: Props) {
       {related.length > 0 && (
         <section className="px-4 pb-16 sm:px-6">
           <div className="mx-auto max-w-6xl">
-            <h2 className="mb-4 text-xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
-              {altIds.length > 0 ? "Equivalent / alternative medications" : `Related in ${med.medicationMaster.category.replace(/-/g, " ")}`}
+            <h2
+              className="mb-4 text-xl font-semibold text-[#0c1a14]"
+              style={{ fontFamily: "var(--font-display), serif" }}
+            >
+              {altIds.length > 0
+                ? "Equivalent / alternative medications"
+                : `Related in ${categoryLabel}`}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((r) => (
@@ -362,14 +502,26 @@ export default async function CategoryDetailPage({ params }: Props) {
                 >
                   <div className="relative h-24 overflow-hidden bg-[#f4f7f4]">
                     {r.medicationMaster.imageUrl ? (
-                      <Image src={r.medicationMaster.imageUrl} alt={r.medicationMaster.name} fill className="object-cover" sizes="25vw" />
+                      <Image
+                        src={r.medicationMaster.imageUrl}
+                        alt={r.medicationMaster.name}
+                        fill
+                        className="object-cover"
+                        sizes="25vw"
+                      />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-3xl">💊</div>
+                      <div className="flex h-full items-center justify-center text-3xl">
+                        💊
+                      </div>
                     )}
                   </div>
                   <div className="p-3">
-                    <p className="text-sm font-semibold text-[#0c1a14]">{r.medicationMaster.name}</p>
-                    <p className="mt-1 text-xs font-bold text-[#0d6e5a]">KES {formatPrice(Number(r.price))}</p>
+                    <p className="text-sm font-semibold text-[#0c1a14]">
+                      {r.medicationMaster.name}
+                    </p>
+                    <p className="mt-1 text-xs font-bold text-[#0d6e5a]">
+                      KES {formatPrice(Number(r.price))}
+                    </p>
                   </div>
                 </Link>
               ))}

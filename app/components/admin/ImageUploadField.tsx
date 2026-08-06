@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   ImagePlus,
   Link2,
@@ -21,6 +21,8 @@ type SingleProps = {
   folder?: string;
   hint?: string;
   required?: boolean;
+  /** Fired whenever the single URL changes (upload, paste, or clear). */
+  onChange?: (url: string) => void;
 };
 
 type MultiProps = {
@@ -34,6 +36,7 @@ type MultiProps = {
   required?: boolean;
   /** Max images in the gallery (default 8). */
   max?: number;
+  onChange?: (urls: string) => void;
 };
 
 type Props = SingleProps | MultiProps;
@@ -117,6 +120,17 @@ export default function ImageUploadField(props: Props) {
 
   const serialized = multi ? urls.join(", ") : urls[0] || "";
   const canAddMore = multi ? urls.length < max : true;
+  const onChange = props.onChange;
+
+  // Notify parent when value changes (skip first paint to avoid loops).
+  const skipNotify = useRef(true);
+  useEffect(() => {
+    if (skipNotify.current) {
+      skipNotify.current = false;
+      return;
+    }
+    onChange?.(serialized);
+  }, [serialized, onChange]);
 
   const addUrl = useCallback(
     (url: string) => {

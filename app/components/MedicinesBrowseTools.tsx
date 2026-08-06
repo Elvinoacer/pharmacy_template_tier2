@@ -12,12 +12,15 @@ import MedicineImageSearch from "@/app/components/MedicineImageSearch";
 export default function MedicinesBrowseTools({
   q,
   category,
+  categoryOptions,
+  /** @deprecated use categoryOptions */
   dbCategorySlugs,
   initialPhotoOpen = false,
 }: {
   q?: string;
   category?: string;
-  dbCategorySlugs: string[];
+  categoryOptions?: Array<{ slug: string; name: string }>;
+  dbCategorySlugs?: string[];
   /** Deep-link: /medicines?photo=1 opens the snap panel. */
   initialPhotoOpen?: boolean;
 }) {
@@ -27,12 +30,20 @@ export default function MedicinesBrowseTools({
     setPhotoOpen(true);
   }, []);
 
+  const options =
+    categoryOptions && categoryOptions.length > 0
+      ? categoryOptions
+      : (dbCategorySlugs || []).map((slug) => ({
+          slug,
+          name: slug.replace(/-/g, " "),
+        }));
+
   return (
     <div>
       <MedicinesFilterBar
         q={q}
         category={category}
-        dbCategorySlugs={dbCategorySlugs}
+        categoryOptions={options}
         trailing={
           <button
             type="button"
