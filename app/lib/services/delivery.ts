@@ -164,6 +164,7 @@ function buildEmailHtml(subject: string, bodyText: string) {
   const support = supportEmail();
   const phone = supportPhone();
   const year = new Date().getFullYear();
+  const logoUrl = `${appUrl()}/icon-192.png`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -172,33 +173,38 @@ function buildEmailHtml(subject: string, bodyText: string) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(subject)}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F8FAFC; color: #0F172A;">
-  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #F8FAFC; padding: 60px 20px;">
+<body style="margin: 0; padding: 0; font-family: Georgia, 'Times New Roman', 'Palatino Linotype', serif; background-color: #f4f1ea; color: #0c1a14;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #f4f1ea; padding: 48px 16px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; background-color: #FFFFFF; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); overflow: hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 560px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 24px 48px -24px rgba(12, 26, 20, 0.28); overflow: hidden; border: 1px solid rgba(201, 162, 39, 0.22);">
           <tr>
-            <td style="padding: 36px 36px 24px 36px; text-align: center; border-bottom: 1px solid #F1F5F9; background: linear-gradient(135deg, #0d6e5a, #084c3f);">
-              <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: -0.3px;">Aether Pharmacy</h1>
-              <p style="margin: 4px 0 0 0; font-size: 12px; color: rgba(255,255,255,0.85);">Your trusted health partner</p>
+            <td style="height: 3px; background: linear-gradient(90deg, #0d6e5a 0%, #c9a227 50%, #0d6e5a 100%); font-size: 0; line-height: 0;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="padding: 32px 36px 20px 36px; text-align: center; background: linear-gradient(165deg, #0d6e5a 0%, #0a5c4b 55%, #084c3f 100%);">
+              <img src="${logoUrl}" width="56" height="56" alt="Aether Pharmacy" style="display: block; margin: 0 auto 14px auto; border-radius: 14px; border: 1px solid rgba(201, 162, 39, 0.45); box-shadow: 0 8px 20px rgba(0,0,0,0.18);" />
+              <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(201, 162, 39, 0.95);">Aether Pharmacy</p>
+              <p style="margin: 6px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.78);">Care, refined</p>
             </td>
           </tr>
           <tr>
-            <td style="padding: 36px;">
-              <h2 style="margin: 0 0 20px 0; font-size: 20px; font-weight: 700; color: #0c1a14;">${escapeHtml(subject)}</h2>
-              <div style="font-size: 15px; line-height: 24px; color: #334155;">
+            <td style="padding: 32px 36px 28px 36px;">
+              <h1 style="margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; color: #0c1a14; line-height: 1.25;">${escapeHtml(subject)}</h1>
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.65; color: #3d4f47;">
                 ${renderedBody}
               </div>
             </td>
           </tr>
           <tr>
-            <td style="padding: 24px 36px; background-color: #F8FAFC; text-align: center; border-top: 1px solid #E2E8F0;">
-              <p style="margin: 0; font-size: 13px; color: #64748B; font-weight: 500;">
-                &copy; ${year} Aether Pharmacy. All rights reserved.
+            <td style="padding: 20px 36px 28px 36px; background-color: #faf8f4; text-align: center; border-top: 1px solid rgba(201, 162, 39, 0.18);">
+              <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #7a8a82;">
+                &copy; ${year} Aether Pharmacy
               </p>
-              <p style="margin: 8px 0 0 0; font-size: 13px; color: #94A3B8;">
-                Need help? <a href="mailto:${support}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${support}</a><br>
-                Or call <a href="tel:${phone.replace(/\s/g, "")}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${phone}</a>
+              <p style="margin: 8px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #94a39b;">
+                <a href="mailto:${support}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${support}</a>
+                &nbsp;·&nbsp;
+                <a href="tel:${phone.replace(/\s/g, "")}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${phone}</a>
               </p>
             </td>
           </tr>
@@ -209,8 +215,6 @@ function buildEmailHtml(subject: string, bodyText: string) {
 </body>
 </html>`;
 }
-
-void appUrl;
 
 async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
   if (!payload.recipient.email) return { status: "failed", error: "Customer email is missing" };

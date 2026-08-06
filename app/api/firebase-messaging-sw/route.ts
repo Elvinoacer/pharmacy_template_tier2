@@ -8,8 +8,9 @@ export const dynamic = "force-dynamic";
  * Static files in /public cannot read NEXT_PUBLIC_* at runtime — this route
  * is rewritten from /firebase-messaging-sw.js via next.config.
  *
- * Medication-dose notifications expose Taken / Skip / Snooze action buttons
- * so the patient can confirm without opening the portal page.
+ * Medication-dose notifications expose polished Taken / Skip / Later action
+ * buttons so the patient can confirm without opening the portal page.
+ * Brand logo is the icon; drug photo is the large rich-notification image.
  */
 export async function GET() {
   const config = {
@@ -22,6 +23,8 @@ export async function GET() {
   };
   // Injected so the SW never uses UTC calendar days for dose logs.
   const projectTimezone = process.env.TIMEZONE || "Africa/Nairobi";
+  const appOrigin = (process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, "");
+  const brandIcon = appOrigin ? `${appOrigin}/icon-192.png` : "/icon-192.png";
 
   const body = `
 /* firebase-messaging-sw.js — generated with runtime Firebase config */
@@ -30,6 +33,7 @@ importScripts("https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging-comp
 
 const firebaseConfig = ${JSON.stringify(config)};
 const PROJECT_TIMEZONE = ${JSON.stringify(projectTimezone)};
+const BRAND_ICON = ${JSON.stringify(brandIcon)};
 
 function localTodayStr(at) {
   try {
@@ -58,21 +62,37 @@ function isDoseNotification(data) {
   return data && (data.actions === "medication_dose" || data.type === "medication_dose");
 }
 
+function resolveAsset(url) {
+  if (!url) return BRAND_ICON;
+  if (/^(https?:|data:|blob:)/i.test(url)) return url;
+  try {
+    return new URL(url, self.registration.scope).href;
+  } catch (e) {
+    return url;
+  }
+}
+
 function doseNotificationOptions(title, body, data, url) {
+  const icon = resolveAsset((data && data.icon) || BRAND_ICON);
+  const image = data && data.image ? resolveAsset(data.image) : undefined;
   const options = {
-    body,
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
-    data: { ...(data || {}), url },
+    body: body || "",
+    icon,
+    badge: BRAND_ICON,
+    data: { ...(data || {}), url, icon, image: image || "" },
     tag: (data && data.tag) || "aether-pharmacy",
     renotify: true,
-    requireInteraction: true,
+    requireInteraction: isDoseNotification(data),
+    silent: false,
   };
+  if (image) options.image = image;
   if (isDoseNotification(data)) {
+    // Short, scannable action labels. Browsers do not allow CSS on these —
+    // symbols + tight wording are the only styling levers we have.
     options.actions = [
-      { action: "taken", title: "Taken" },
+      { action: "taken", title: "✓ Taken" },
       { action: "skip", title: "Skip" },
-      { action: "snooze", title: "Snooze" },
+      { action: "snooze", title: "Later" },
     ];
   }
   return options;
@@ -84,19 +104,24 @@ if (firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId) {
     const messaging = firebase.messaging();
 
     messaging.onBackgroundMessage((payload) => {
+      const data = payload.data || {};
       const title =
         (payload.notification && payload.notification.title) ||
-        (payload.data && payload.data.title) ||
+        data.title ||
         "Aether Pharmacy";
       const body =
         (payload.notification && payload.notification.body) ||
-        (payload.data && payload.data.body) ||
+        data.body ||
         "";
       const url =
-        (payload.data && payload.data.url) ||
+        data.url ||
         (payload.fcmOptions && payload.fcmOptions.link) ||
         "/";
-      const options = doseNotificationOptions(title, body, payload.data || {}, url);
+      // Prefer the large image from FCM notification.image when present.
+      if (!data.image && payload.notification && payload.notification.image) {
+        data.image = payload.notification.image;
+      }
+      const options = doseNotificationOptions(title, body, data, url);
       return self.registration.showNotification(title, options);
     });
   } catch (err) {
@@ -125,11 +150,12 @@ self.addEventListener("notificationclick", (event) => {
   const action = event.action || "";
   event.notification.close();
 
-  // In-notification dose actions — Taken / Skip / Snooze — hit the adherence API
+  // In-notification dose actions — Taken / Skip / Later — hit the adherence API
   // directly so the patient does not need to open the portal page.
   if (action === "taken" || action === "skip" || action === "snooze") {
     const status = action === "taken" ? "taken" : action === "skip" ? "skipped" : "snooze";
     const today = data.takenOn || localTodayStr();
+    const med = (data.medicineName || "").trim();
 
     event.waitUntil(
       (async () => {
@@ -143,30 +169,34 @@ self.addEventListener("notificationclick", (event) => {
           action: status === "snooze" ? "snooze" : undefined,
         });
 
-        // Brief confirmation toast-style notification (no actions).
+        // Brief, luxury confirmation — short copy, brand icon, optional drug image.
         const confirmTitle = ok
           ? status === "taken"
-            ? "Dose confirmed"
+            ? med ? med + " · logged" : "Dose logged"
             : status === "skipped"
-              ? "Dose skipped"
-              : "Snoozed 10 min"
+              ? med ? med + " · skipped" : "Dose skipped"
+              : "Reminder snoozed"
           : status === "snooze"
             ? "Snooze limit reached"
-            : "Could not update dose";
+            : "Could not update";
         const confirmBody = ok
           ? status === "snooze"
-            ? "We'll remind you once more shortly (max 2 snoozes)."
-            : "Your adherence log was updated. No more reminders for this dose."
+            ? "We'll nudge you again in 10 minutes."
+            : status === "taken"
+              ? "Beautifully done. No more alerts for this dose."
+              : "Noted. No more alerts for this dose."
           : status === "snooze"
-            ? "Open Prescriptions and confirm Taken, Late, or Skip."
-            : "Open the app and try again from Prescriptions.";
-        await self.registration.showNotification(confirmTitle, {
+            ? "Open Prescriptions to confirm or skip."
+            : "Open the app and try again.";
+        const ackOpts = {
           body: confirmBody,
-          icon: "/icon-192.png",
-          badge: "/icon-192.png",
+          icon: resolveAsset(data.icon || BRAND_ICON),
+          badge: BRAND_ICON,
           tag: (data.tag || "aether-pharmacy") + "-ack",
           data: { url: targetUrl },
-        });
+        };
+        if (data.image) ackOpts.image = resolveAsset(data.image);
+        await self.registration.showNotification(confirmTitle, ackOpts);
 
         // If auth failed, open the portal so the user can sign in and log.
         if (!ok && self.clients.openWindow) {

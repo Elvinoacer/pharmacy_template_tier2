@@ -922,6 +922,119 @@ select.input-admin option, select.admin-text option {
   transform: translateY(0);
 }
 
+/* ============================================================
+   Premium animations
+   ============================================================ */
+
+@keyframes subtle-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.06); }
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes drift-up {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(-120px) translateX(20px); opacity: 0; }
+}
+
+@keyframes drift-down {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(100px) translateX(-15px); opacity: 0; }
+}
+
+@keyframes hero-badge-wipe {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0; }
+  50% { clip-path: inset(0 0 0 0); opacity: 1; }
+  100% { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+
+@keyframes hero-bg-drift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes number-pop {
+  0% { opacity: 0; transform: translateY(8px) scale(0.92); }
+  60% { transform: translateY(-2px) scale(1.04); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes button-spark {
+  0% { left: -40%; }
+  100% { left: 120%; }
+}
+
+@keyframes card-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(13, 110, 90, 0); }
+  50% { box-shadow: 0 0 20px 3px rgba(13, 110, 90, 0.08); }
+}
+
+.animate-subtle-zoom {
+  animation: subtleZoom 12s ease-in-out infinite alternate;
+}
+
+.animate-gentle-pulse {
+  animation: gentle-pulse 4s ease-in-out infinite;
+}
+
+.drift-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.drift-particle-up {
+  animation: drift-up 7s ease-in-out infinite;
+}
+
+.drift-particle-down {
+  animation: drift-down 8s ease-in-out infinite;
+}
+
+.animate-number-pop {
+  opacity: 0;
+  animation: number-pop 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.button-sparkle-overlay {
+  position: relative;
+  overflow: hidden;
+}
+.button-sparkle-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  animation: button-sparkle 3s ease-in-out infinite;
+}
+
+.animate-card-glow {
+  animation: card-glow-pulse 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-subtle-zoom,
+  .animate-gentle-pulse,
+  .drift-particle-up,
+  .drift-particle-down,
+  .animate-bg-drift,
+  .animate-number-pop,
+  .button-sparkle-overlay::after,
+  .animate-card-glow {
+    animation: none !important;
+  }
+}
+
 /* Focus rings */
 button:focus-visible,
 a:focus-visible,

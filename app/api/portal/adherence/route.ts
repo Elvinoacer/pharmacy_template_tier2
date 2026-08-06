@@ -84,7 +84,10 @@ export async function POST(req: Request) {
     });
 
     // Audit the snooze for the cap + escalation visibility.
-    const fromTitle = reminder.title.match(/\bDose\s+(\d{2}:\d{2})\b/i);
+    // Titles may be legacy ("Dose 08:00: Med") or luxury ("Evening · Med · 08:00").
+    const fromTitle =
+      reminder.title.match(/(?:·|Dose)\s*(\d{2}:\d{2})\b/i) ||
+      reminder.title.match(/\b(\d{2}:\d{2})\b/);
     const slotTime = fromTitle?.[1] ?? formatTime(reminder.scheduledFor);
     const dateStr = toLocalDateInputValue(reminder.scheduledFor);
 

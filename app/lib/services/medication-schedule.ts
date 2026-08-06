@@ -690,21 +690,17 @@ export async function createDailyDoseReminders(opts?: {
     }
 
     const label = sched.label?.trim() || null;
-    const labelHint = label ? ` (${label})` : "";
     const doseQty = Number(sched.doseQuantity) || 1;
-    const body = [
-      `It's time for ${rx.medicineName}${labelHint}.`,
-      rx.dosage ? `Dosage: ${rx.dosage}.` : null,
-      doseQty !== 1 ? `Take ${doseQty} unit(s).` : null,
-      "Tap Taken, Skip, or Snooze on this notification.",
-    ]
-      .filter(Boolean)
-      .join(" ");
+    // Concise luxury copy — action buttons carry the CTA; body stays short.
+    // Keep HH:mm in the title so snooze / settle logic can recover the original slot.
+    const body =
+      rx.dosage?.trim() ||
+      (doseQty !== 1 ? `Take ${doseQty}` : "Your scheduled dose");
 
-    // Prefer "Evening Dose: Med" over bare "Dose 20:00: Med".
+    // "Evening · Amoxicillin · 20:00" (legacy parsers also accept "Dose 20:00: …").
     const title = label
-      ? `${label} Dose ${sched.timeOfDay}: ${rx.medicineName}`
-      : `Dose ${sched.timeOfDay}: ${rx.medicineName}`;
+      ? `${label} · ${rx.medicineName} · ${sched.timeOfDay}`
+      : `${rx.medicineName} · ${sched.timeOfDay}`;
 
     await prisma.reminder.create({
       data: {

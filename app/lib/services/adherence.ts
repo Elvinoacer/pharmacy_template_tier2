@@ -423,8 +423,9 @@ export async function settleDoseReminders(opts: {
           minute: "2-digit",
           hour12: false,
         }).format(r.scheduledFor);
-        // Match exact slot, or title that embeds the time (snoozed reminders
-        // keep original title "Dose 08:00: …" while scheduledFor moves).
+        // Match exact slot, or title that embeds the time (snoozed reminders keep
+        // original HH:mm in the title while scheduledFor moves — legacy
+        // "Dose 08:00: …" or luxury "Evening · Med · 08:00").
         return hhmm === time || (r.title?.includes(time) ?? false);
       })
     : open;
