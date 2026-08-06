@@ -26,11 +26,14 @@ export function PushNotificationCenter({ audience = "portal" }: { audience?: Aud
     }
   }, []);
 
-  // Auto-dismiss toast after 8s; refresh sidebar badges when a push lands.
+  // Auto-dismiss toast; dose toasts stay longer so action buttons remain usable.
   useEffect(() => {
     if (!lastMessage) return;
     window.dispatchEvent(new Event("aether:attention-refresh"));
-    const t = setTimeout(clearMessage, 8000);
+    const isDose =
+      lastMessage.data?.actions === "medication_dose" ||
+      lastMessage.data?.type === "medication_dose";
+    const t = setTimeout(clearMessage, isDose ? 20000 : 8000);
     return () => clearTimeout(t);
   }, [lastMessage, clearMessage]);
 
@@ -65,6 +68,7 @@ export function PushNotificationCenter({ audience = "portal" }: { audience?: Aud
           body={lastMessage.body || ""}
           onClose={clearMessage}
           url={lastMessage.data?.url}
+          data={lastMessage.data}
         />
       )}
     </>
@@ -350,52 +354,172 @@ function PushToast({
   url,
   onClose,
   audience,
+  data,
 }: {
   title: string;
   body: string;
   url?: string;
   onClose: () => void;
   audience: Audience;
+  data?: Record<string, string>;
 }) {
   const isAdmin = audience === "admin";
+  const isDose =
+    data?.actions === "medication_dose" || data?.type === "medication_dose";
+  const drugImage = data?.image?.trim() || "";
+  const [busy, setBusy] = useState<"taken" | "skip" | "snooze" | null>(null);
+  const [done, setDone] = useState<string | null>(null);
+
+  const runDoseAction = async (action: "taken" | "skip" | "snooze") => {
+    if (busy || done) return;
+    setBusy(action);
+    try {
+      const status = action === "taken" ? "taken" : action === "skip" ? "skipped" : "snooze";
+      const res = await fetch("/api/portal/adherence", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prescriptionId: data?.prescriptionId,
+          status,
+          takenOn: data?.takenOn,
+          scheduledTime: data?.scheduledTime || null,
+          scheduleId: data?.scheduleId || null,
+          reminderId: data?.reminderId || null,
+          action: action === "snooze" ? "snooze" : undefined,
+        }),
+      });
+      if (!res.ok) {
+        setDone(action === "snooze" ? "Snooze limit reached" : "Could not update");
+        return;
+      }
+      setDone(
+        action === "taken"
+          ? "Logged · beautifully done"
+          : action === "skip"
+            ? "Skipped · noted"
+            : "Snoozed · 10 min",
+      );
+      window.dispatchEvent(new Event("aether:attention-refresh"));
+      setTimeout(onClose, 1600);
+    } catch {
+      setDone("Could not update");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <div
       className={
         isAdmin
-          ? "pointer-events-auto fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] items-start gap-3 rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-4 shadow-xl shadow-black/40 animate-fade-up"
-          : "pointer-events-auto fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] items-start gap-3 rounded-2xl border border-teal-900/10 bg-white p-4 shadow-xl shadow-teal-900/10 animate-fade-up"
+          ? "pointer-events-auto fixed bottom-4 right-4 z-[100] w-[min(92vw,400px)] overflow-hidden rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl shadow-black/40 animate-fade-up"
+          : "pointer-events-auto fixed bottom-4 right-4 z-[100] w-[min(92vw,400px)] overflow-hidden rounded-2xl border border-[#d4af37]/25 bg-white shadow-[0_20px_50px_-20px_rgba(12,26,20,0.35)] animate-fade-up"
       }
     >
-      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${isAdmin ? "from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[var(--admin-btn-fg)]" : "from-[#0d6e5a] to-[#084c3f] text-white"}`}>
-        <Bell className="h-5 w-5" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className={isAdmin ? "text-sm font-semibold admin-text" : "text-sm font-semibold text-[#0c1a14]"}>{title}</p>
-        <p className={isAdmin ? "mt-0.5 line-clamp-3 text-xs admin-muted" : "mt-0.5 line-clamp-3 text-xs text-[#5a6b62]"}>
-          {body}
-        </p>
-        {url && (
-          <a
-            href={url}
-            onClick={onClose}
-            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline"
+      {/* Luxury gold accent bar */}
+      {!isAdmin && <div className="h-0.5 w-full bg-gradient-to-r from-[#0d6e5a] via-[#c9a227] to-[#0d6e5a]" />}
+
+      {drugImage && !isAdmin && (
+        <div className="relative h-28 w-full overflow-hidden bg-gradient-to-br from-[#e6f4ef] to-[#f7f3e8]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={drugImage}
+            alt=""
+            className="h-full w-full object-contain p-3"
+          />
+          <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent" />
+        </div>
+      )}
+
+      <div className="flex items-start gap-3 p-4">
+        <div
+          className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl ${
+            isAdmin
+              ? "bg-gradient-to-br from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[var(--admin-btn-fg)]"
+              : "bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white ring-1 ring-[#c9a227]/40"
+          }`}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon-192.png" alt="" className="h-full w-full object-cover" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p
+            className={
+              isAdmin
+                ? "text-sm font-semibold tracking-tight admin-text"
+                : "text-sm font-semibold tracking-tight text-[#0c1a14]"
+            }
           >
-            View <Zap className="h-3 w-3" />
-          </a>
-        )}
+            {title}
+          </p>
+          <p
+            className={
+              isAdmin
+                ? "mt-0.5 line-clamp-3 text-xs admin-muted"
+                : "mt-0.5 line-clamp-2 text-xs leading-relaxed text-[#5a6b62]"
+            }
+          >
+            {done || body}
+          </p>
+
+          {isDose && !isAdmin && !done && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                disabled={!!busy}
+                onClick={() => runDoseAction("taken")}
+                className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#0a5c4b] px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-white shadow-sm shadow-teal-900/20 transition hover:from-[#0a5c4b] hover:to-[#084c3f] disabled:opacity-60"
+              >
+                <Check className="h-3 w-3" />
+                {busy === "taken" ? "…" : "Taken"}
+              </button>
+              <button
+                type="button"
+                disabled={!!busy}
+                onClick={() => runDoseAction("skip")}
+                className="inline-flex items-center rounded-full border border-[#e3ebe6] bg-white px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-[#5a6b62] transition hover:border-[#c9a227]/50 hover:text-[#0c1a14] disabled:opacity-60"
+              >
+                {busy === "skip" ? "…" : "Skip"}
+              </button>
+              <button
+                type="button"
+                disabled={!!busy}
+                onClick={() => runDoseAction("snooze")}
+                className="inline-flex items-center rounded-full border border-[#c9a227]/40 bg-gradient-to-r from-[#faf6eb] to-white px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-[#8a6d1a] transition hover:border-[#c9a227] hover:text-[#6b5410] disabled:opacity-60"
+              >
+                {busy === "snooze" ? "…" : "Later"}
+              </button>
+            </div>
+          )}
+
+          {!isDose && url && (
+            <a
+              href={url}
+              onClick={onClose}
+              className={
+                isAdmin
+                  ? "mt-2 inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline"
+                  : "mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#0d6e5a] hover:underline"
+              }
+            >
+              Open <Zap className="h-3 w-3" />
+            </a>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Dismiss"
+          className={
+            isAdmin
+              ? "rounded-full p-1 admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
+              : "rounded-full p-1 text-[#8a9a92] hover:bg-teal-50 hover:text-[#0c1a14]"
+          }
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Dismiss"
-        className={
-          isAdmin
-            ? "rounded-full p-1 admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
-            : "rounded-full p-1 text-[#8a9a92] hover:bg-teal-50 hover:text-[#0c1a14]"
-        }
-      >
-        <X className="h-4 w-4" />
-      </button>
     </div>
   );
 }

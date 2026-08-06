@@ -15,11 +15,12 @@ export async function POST() {
   const home = isStaff(user.role) ? "/admin/notifications" : "/portal/messages";
 
   const result = await dispatchPushToUser(user.id, {
-    title: "Test notification",
+    title: isStaff(user.role) ? "Aether · staff alerts ready" : "Aether · you're connected",
     body: isStaff(user.role)
-      ? "Staff push is working — you will get alerts for refills, enquiries, and escalations."
-      : "Customer push is working — you will get refill updates and pharmacy messages.",
+      ? "Refills, enquiries & escalations will arrive here."
+      : "Dose reminders, refills & pharmacy notes — refined.",
     url: home,
+    icon: "/icon-192.png",
     data: { tag: "test-push" },
   });
 

@@ -77,32 +77,72 @@ export type PushPayload = {
   body: string;
   data?: Record<string, string>;
   url?: string;
+  /** Brand mark (small). Absolute URL preferred for FCM webpush. */
+  icon?: string;
+  /** Large rich-notification image (e.g. drug photo). */
+  image?: string;
 };
+
+function isDoseActions(data?: Record<string, string>): boolean {
+  return data?.actions === "medication_dose" || data?.type === "medication_dose";
+}
 
 export async function sendPush(payload: PushPayload): Promise<{ success: boolean; messageId?: string; error?: string }> {
   ensureInitialised();
   if (!messagingInstance) return { success: false, error: "Firebase not initialised" };
 
+  const icon = payload.icon || payload.data?.icon || "/icon-192.png";
+  const image = payload.image || payload.data?.image || undefined;
+  const tag = payload.data?.tag || "aether-pharmacy";
+  const dose = isDoseActions(payload.data);
+
   try {
+    const webNotification: Record<string, unknown> = {
+      title: payload.title,
+      body: payload.body,
+      icon,
+      badge: icon,
+      tag,
+      renotify: true,
+      requireInteraction: dose,
+    };
+    if (image) webNotification.image = image;
+    if (dose) {
+      // Styled action labels — browsers only render title text (no CSS), so keep
+      // them short with a light symbol for a polished, scannable feel.
+      webNotification.actions = [
+        { action: "taken", title: "✓ Taken" },
+        { action: "skip", title: "Skip" },
+        { action: "snooze", title: "Later" },
+      ];
+    }
+
     const messageId = await messagingInstance.send({
       token: payload.token,
-      notification: { title: payload.title, body: payload.body },
+      // Prefer data-driven display via the service worker so we control icon,
+      // image, and action buttons consistently. Keep a minimal notification
+      // block for platforms that auto-render without the SW handler.
+      notification: {
+        title: payload.title,
+        body: payload.body,
+        ...(image ? { imageUrl: image } : {}),
+      },
       data: {
         ...(payload.data || {}),
+        title: payload.title,
+        body: payload.body,
+        icon,
+        ...(image ? { image } : {}),
         ...(payload.url ? { url: payload.url } : {}),
       },
-      webpush: payload.url
-        ? {
-            notification: {
-              title: payload.title,
-              body: payload.body,
-              icon: "/icon-192.png",
-              badge: "/icon-192.png",
-              tag: payload.data?.tag || "aether-pharmacy",
-            },
-            fcmOptions: { link: payload.url },
-          }
-        : undefined,
+      webpush: {
+        notification: webNotification,
+        fcmOptions: payload.url ? { link: payload.url } : undefined,
+        headers: {
+          // Urgency helps dose reminders surface promptly on mobile.
+          Urgency: dose ? "high" : "normal",
+        },
+      },
     });
     return { success: true, messageId };
   } catch (err: unknown) {

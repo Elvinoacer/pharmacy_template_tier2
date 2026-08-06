@@ -55,7 +55,17 @@ export default async function HomePage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 sm:pb-20 sm:pt-36">
-        <div className="hero-glow -left-20 top-10" />
+        {/* Animated mesh gradient background */}
+        <div
+          className="absolute inset-0 -z-10 opacity-60"
+          style={{
+            background: "radial-gradient(ellipse 70% 60% at 20% 30%, rgba(45,212,191,0.18) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(201,162,39,0.12) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 50% 80%, rgba(13,110,90,0.1) 0%, transparent 60%)",
+            backgroundSize: "200% 200%",
+            animation: "hero-bg-drift 20s ease-in-out infinite",
+          }}
+        />
+
+        <div className="hero-glow -left-20 top-10 animate-gentle-pulse" />
         <div
           className="hero-glow right-0 top-40 opacity-70"
           style={{
@@ -63,9 +73,29 @@ export default async function HomePage() {
           }}
         />
 
+        {/* Floating ambient particles */}
+        <span
+          className="drift-particle drift-particle-up"
+          style={{ width: 6, height: 6, background: "rgba(45,212,191,0.3)", top: "60%", left: "15%", animationDelay: "0s" }}
+        />
+        <span
+          className="drift-particle drift-particle-up"
+          style={{ width: 4, height: 4, background: "rgba(201,162,39,0.25)", top: "50%", left: "75%", animationDelay: "2s" }}
+        />
+        <span
+          className="drift-particle drift-particle-down"
+          style={{ width: 5, height: 5, background: "rgba(13,110,90,0.2)", top: "30%", left: "55%", animationDelay: "4s" }}
+        />
+
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
           <div className="animate-fade-up">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-800/10 bg-white/70 px-3 py-1.5 text-xs font-semibold text-[#084c3f] shadow-sm backdrop-blur">
+            <div
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-800/10 bg-white/70 px-3 py-1.5 text-xs font-semibold text-[#084c3f] shadow-sm backdrop-blur"
+              style={{
+                opacity: 0,
+                animation: "hero-badge-wipe 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards",
+              }}
+            >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -77,29 +107,63 @@ export default async function HomePage() {
               className="max-w-xl text-4xl font-semibold leading-[1.08] tracking-tight text-[#0c1a14] sm:text-5xl lg:text-[3.4rem]"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
-              Care you can{" "}
-              <span className="gradient-text">trust</span>
-              , right in your neighbourhood
+              <span
+                style={{
+                  opacity: 0,
+                  display: "inline-block",
+                  animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards",
+                }}
+              >
+                Care you can{" "}
+              </span>
+              <span
+                className="gradient-text"
+                style={{
+                  opacity: 0,
+                  display: "inline-block",
+                  animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards",
+                }}
+              >
+                trust
+              </span>
+              <span
+                style={{
+                  opacity: 0,
+                  display: "inline-block",
+                  animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards",
+                }}
+              >
+                , right in your neighbourhood
+              </span>
             </h1>
 
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-[#5a6b62] sm:text-lg">
+            <p
+              className="mt-5 max-w-lg text-base leading-relaxed text-[#5a6b62] sm:text-lg"
+              style={{ opacity: 0, animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.65s forwards" }}
+            >
               {pharmacy.description} Visit us for prescriptions, vaccinations, health checks, and
               friendly pharmacist advice.
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/refill" className="btn-primary">
+            <div
+              className="mt-8 flex flex-wrap items-center gap-3"
+              style={{ opacity: 0, animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards" }}
+            >
+              <Link href="/refill" className="btn-primary button-sparkle-overlay">
                 Request a refill
               </Link>
               <Link href="/contact" className="btn-ghost">
                 Contact & directions
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
+                  <path d="M5 12h14M12 6l6 6-6 6" />
                 </svg>
               </Link>
             </div>
 
-            <div className="mt-10 flex flex-wrap gap-6 text-sm">
+            <div
+              className="mt-10 flex flex-wrap gap-6 text-sm"
+              style={{ opacity: 0, animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards" }}
+            >
               <div>
                 <p className="font-semibold text-[#0c1a14]">{pharmacy.address.full}</p>
                 <p className="text-[#5a6b62]">Free parking · Wheelchair accessible</p>
@@ -113,8 +177,11 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-            <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-teal-400/20 via-transparent to-amber-300/20 blur-2xl" />
+          <div
+            className="relative mx-auto w-full max-w-lg lg:max-w-none"
+            style={{ opacity: 0, animation: "fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards" }}
+          >
+            <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-teal-400/20 via-transparent to-amber-300/20 blur-2xl animate-subtle-zoom" />
             <div className="relative grid grid-cols-12 gap-3 sm:gap-4">
               <div className="col-span-7 row-span-2 overflow-hidden rounded-[1.5rem] shadow-2xl shadow-teal-900/20">
                 <div className="relative aspect-[3/4] sm:aspect-[4/5]">

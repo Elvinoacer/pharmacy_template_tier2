@@ -123,10 +123,17 @@ export async function onForegroundPush(
 
   const { onMessage } = await import("firebase/messaging");
   const unsubscribe = onMessage(messaging, (payload) => {
+    const data = { ...((payload.data || {}) as Record<string, string>) };
+    // Surface rich-notification image into data so the in-app toast can show it.
+    const notifImage =
+      (payload.notification as { image?: string } | undefined)?.image ||
+      // Some SDK builds expose imageUrl
+      (payload.notification as { imageUrl?: string } | undefined)?.imageUrl;
+    if (notifImage && !data.image) data.image = notifImage;
     cb({
-      title: payload.notification?.title,
-      body: payload.notification?.body,
-      data: (payload.data || {}) as Record<string, string>,
+      title: payload.notification?.title || data.title,
+      body: payload.notification?.body || data.body,
+      data,
     });
   });
   return unsubscribe;

@@ -1082,12 +1082,57 @@ export async function launchCampaign(campaignId: string, actorId: string) {
 
 /**
  * Resolve the intended slot time for a medication_dose reminder.
- * Snoozed reminders move scheduledFor, but title keeps "Dose HH:mm: …".
+ * Snoozed reminders move scheduledFor, but the title keeps the original HH:mm
+ * (legacy: "Dose 08:00: Med", luxury: "Evening · Med · 08:00").
  */
 function resolveDoseSlotTime(reminder: { title: string; scheduledFor: Date }): string {
-  const fromTitle = reminder.title.match(/\bDose\s+(\d{2}:\d{2})\b/i);
+  const fromTitle =
+    reminder.title.match(/(?:·|Dose)\s*(\d{2}:\d{2})\b/i) ||
+    reminder.title.match(/\b(\d{2}:\d{2})\b/);
   if (fromTitle?.[1]) return fromTitle[1];
   return formatTime(reminder.scheduledFor);
+}
+
+/**
+ * Compact, luxury-feeling title/body for dose pushes — rewrites legacy wordy
+ * copy already stored on older Reminder rows so customers always see the
+ * polished presentation at send time.
+ */
+function luxuryDosePushCopy(reminder: {
+  title: string;
+  body: string | null;
+  scheduledFor: Date;
+}): { title: string; body: string } {
+  const slot = resolveDoseSlotTime(reminder);
+  const rawTitle = (reminder.title || "").trim();
+  // Strip trailing/embedded slot time and legacy "Dose HH:mm:" prefix.
+  let name = rawTitle
+    .replace(/\bDose\s+\d{2}:\d{2}\s*:?\s*/i, "")
+    .replace(/\s*[·•|]\s*\d{2}:\d{2}\s*$/i, "")
+    .replace(/\s+\d{2}:\d{2}\s*$/i, "")
+    .replace(/^[:\s·•|-]+/, "")
+    .trim();
+  if (!name) name = "Medication";
+
+  // Luxury format always ends with the slot time for snooze / settle parsers.
+  const title = `${name} · ${slot}`;
+
+  const rawBody = (reminder.body || "").trim();
+  // Drop instructional CTA lines and "It's time for…" fluff.
+  let body = rawBody
+    .replace(/\bTap\s+Taken[\s\S]*$/i, "")
+    .replace(/^It'?s\s+time\s+for\s+[^.]+\.\s*/i, "")
+    .replace(/\bDosage:\s*/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  // Avoid repeating the medicine name if body is just that.
+  if (!body || body.toLowerCase() === name.toLowerCase()) {
+    body = "Your scheduled dose";
+  }
+  // Keep push bodies scannable on lock screens.
+  if (body.length > 90) body = `${body.slice(0, 87).trimEnd()}…`;
+
+  return { title, body };
 }
 
 /**
@@ -1274,21 +1319,52 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
         let scheduleId = "";
         let scheduledTime = "";
         let prescriptionId = reminder.relatedId || "";
+        let drugImage: string | undefined;
+        let pushTitle = reminder.title;
+        let pushBody = reminder.body || reminder.title;
+
         if (isDose && prescriptionId) {
+          const polished = luxuryDosePushCopy(reminder);
+          pushTitle = polished.title;
+          pushBody = polished.body;
           scheduledTime = resolveDoseSlotTime(reminder);
-          const slot = await prisma.medicationSchedule
-            .findFirst({
-              where: {
-                prescriptionId,
-                timeOfDay: scheduledTime,
-                active: true,
-              },
-              select: { id: true, timeOfDay: true },
-            })
-            .catch(() => null);
+          const [slot, rx] = await Promise.all([
+            prisma.medicationSchedule
+              .findFirst({
+                where: {
+                  prescriptionId,
+                  timeOfDay: scheduledTime,
+                  active: true,
+                },
+                select: { id: true, timeOfDay: true },
+              })
+              .catch(() => null),
+            prisma.prescription
+              .findUnique({
+                where: { id: prescriptionId },
+                select: {
+                  medicineName: true,
+                  dosage: true,
+                  medication: {
+                    select: {
+                      medicationMaster: { select: { imageUrl: true } },
+                    },
+                  },
+                },
+              })
+              .catch(() => null),
+          ]);
           if (slot) {
             scheduleId = slot.id;
             scheduledTime = slot.timeOfDay;
+          }
+          drugImage = rx?.medication?.medicationMaster?.imageUrl || undefined;
+          // Prefer catalogue dosage when the stored body is still generic.
+          if (rx?.dosage?.trim() && (!reminder.body || /scheduled dose|it'?s time/i.test(pushBody))) {
+            pushBody = rx.dosage.trim();
+          }
+          if (rx?.medicineName && !pushTitle.toLowerCase().includes(rx.medicineName.toLowerCase())) {
+            pushTitle = `${rx.medicineName} · ${scheduledTime || resolveDoseSlotTime(reminder)}`;
           }
         }
 
@@ -1299,9 +1375,12 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
               ? "/portal/refills"
               : "/portal";
         await dispatchPushToUser(reminder.customer.user.id, {
-          title: reminder.title,
-          body: reminder.body || reminder.title,
+          title: pushTitle,
+          body: pushBody,
           url: pushUrl,
+          // Brand logo as icon; drug photo as the large rich-notification image.
+          icon: "/icon-192.png",
+          image: drugImage,
           data: {
             tag: `reminder-${reminder.id}`,
             reminderId: reminder.id,
@@ -1313,6 +1392,7 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
                   scheduleId,
                   scheduledTime,
                   takenOn: toLocalDateInputValue(reminder.scheduledFor),
+                  medicineName: pushTitle.split("·")[0]?.trim() || "",
                 }
               : {}),
           },
