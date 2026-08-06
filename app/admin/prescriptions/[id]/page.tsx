@@ -21,7 +21,6 @@ import {
   Calendar,
   Trash2,
   Sparkles,
-  Truck,
   Check,
   AlertTriangle,
   TrendingUp,
@@ -35,7 +34,7 @@ import {
   Minus,
 } from "lucide-react";
 import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
-import { PendingSubmitButton } from "@/app/components/PendingSubmitButton";
+import DispatchPrescriptionForm from "@/app/components/admin/DispatchPrescriptionForm";
 
 export const metadata = { title: "Prescription Analytics & Detail" };
 
@@ -263,21 +262,18 @@ export default async function PrescriptionDetailPage({
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-start gap-2 sm:items-center">
           {!prescription.dispatchedAt ? (
-            <form action={adminDispatchPrescriptionAction}>
-              <input type="hidden" name="id" value={prescription.id} />
-              <PendingSubmitButton
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700 px-4 py-1.5 text-xs font-bold text-white shadow-xs transition hover:brightness-110 disabled:cursor-wait disabled:opacity-70"
-                pendingChildren={
-                  <>
-                    <Truck className="h-3.5 w-3.5 animate-pulse" /> Dispatching…
-                  </>
-                }
-              >
-                <Truck className="h-3.5 w-3.5" /> Dispatch & deduct stock
-              </PendingSubmitButton>
-            </form>
+            <DispatchPrescriptionForm
+              action={adminDispatchPrescriptionAction}
+              prescriptionId={prescription.id}
+              quantity={prescription.quantity ?? 1}
+              stockAvailable={
+                prescription.medication ? prescription.medication.currentStock : null
+              }
+              medicineName={prescription.medicineName}
+              hasMedicationLink={Boolean(prescription.medicationId && prescription.medication)}
+            />
           ) : (
             <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-1.5 text-xs font-bold text-emerald-700">
               <Check className="h-3.5 w-3.5" /> Dispatched {formatDateTime(prescription.dispatchedAt)}

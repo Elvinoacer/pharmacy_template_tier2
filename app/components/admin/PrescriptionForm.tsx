@@ -47,6 +47,9 @@ type DrugRow = {
   foodCondition: FoodCondition;
   /** Free-text fallback shown only for legacy edit / import confirmation. */
   freeTextSchedule: string;
+  /** Live catalogue stock for the linked medication (null = not linked yet). */
+  stockQty: number | null;
+  lowStockThreshold: number | null;
 };
 
 function emptyDrug(partial?: Partial<DrugRow>): DrugRow {
@@ -64,7 +67,24 @@ function emptyDrug(partial?: Partial<DrugRow>): DrugRow {
     times: partial?.times ?? ["08:00", "20:00"],
     foodCondition: partial?.foodCondition ?? "none",
     freeTextSchedule: partial?.freeTextSchedule ?? "",
+    stockQty: partial?.stockQty ?? null,
+    lowStockThreshold: partial?.lowStockThreshold ?? null,
   };
+}
+
+/** Clamp a quantity string to available stock; returns the value to store. */
+function clampQtyToStock(raw: string, stockQty: number | null): string {
+  if (stockQty === null) return raw;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0) return raw;
+  if (stockQty <= 0) return "0";
+  if (n > stockQty) return String(stockQty);
+  return raw;
+}
+
+function qtyNumber(raw: string): number {
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
 function presetTimes(frequency: string): string[] {
@@ -181,22 +201,100 @@ export default function PrescriptionForm({
 
   function onMedicationSelected(key: string, m: MedicationOption | null) {
     if (!m) {
-      updateDrug(key, { medicationId: "" });
+      updateDrug(key, {
+        medicationId: "",
+        stockQty: null,
+        lowStockThreshold: null,
+      });
       return;
     }
-    setDrugs((prev) =>
-      prev.map((d) => {
-        if (d.key !== key) return d;
-        return {
-          ...d,
-          medicationId: m.id,
-          medicineName: d.medicineName && d.medicineName !== m.name ? d.medicineName : m.name,
-          rxReference: d.rxReference || m.sku || "",
-          dosage: d.dosage || m.dosage || "",
-          unitPrice: d.unitPrice || m.price.toString(),
-        };
-      }),
-    );
+
+    const stock = m.stockQty;
+    const current = drugs.find((d) => d.key === key);
+    const currentQty = qtyNumber(current?.quantity ?? "");
+    const sameMedAlready = current?.medicationId === m.id && current.stockQty === stock;
+
+    // Default fill is 30 — never more than what's on the shelf.
+    let nextQty = current?.quantity ?? "30";
+    let clamped = false;
+    if (stock <= 0) {
+      nextQty = "0";
+      clamped = currentQty > 0;
+    } else if (!current?.quantity || currentQty === 0) {
+      nextQty = String(Math.min(30, stock));
+    } else if (currentQty > stock) {
+      nextQty = String(stock);
+      clamped = true;
+    }
+
+    updateDrug(key, {
+      medicationId: m.id,
+      medicineName:
+        current?.medicineName && current.medicineName !== m.name
+          ? current.medicineName
+          : m.name,
+      rxReference: current?.rxReference || m.sku || "",
+      dosage: current?.dosage || m.dosage || "",
+      unitPrice: current?.unitPrice || m.price.toString(),
+      quantity: nextQty,
+      stockQty: stock,
+      lowStockThreshold: m.lowStockThreshold,
+    });
+
+    // Skip repeat toasts when picker re-hydrates the same med+stock.
+    if (sameMedAlready) return;
+
+    if (stock <= 0) {
+      toast.error(`${m.name} is out of stock. Receive inventory before prescribing.`);
+    } else if (clamped) {
+      toast.info(`Quantity set to ${stock} — only ${stock} of ${m.name} in stock.`);
+    } else if (stock <= m.lowStockThreshold) {
+      toast.info(`${m.name}: low stock (${stock} left). Cap for this fill is ${stock}.`);
+    }
+  }
+
+  /** Client-side stock checks across all drug rows (incl. same med twice). */
+  const stockIssues = useMemo(() => {
+    const demand = new Map<string, { name: string; need: number; stock: number }>();
+    for (const d of drugs) {
+      if (!d.medicationId || d.stockQty === null) continue;
+      const need = qtyNumber(d.quantity);
+      const prev = demand.get(d.medicationId);
+      if (prev) {
+        prev.need += need;
+      } else {
+        demand.set(d.medicationId, {
+          name: d.medicineName || "Medication",
+          need,
+          stock: d.stockQty,
+        });
+      }
+    }
+    const issues: string[] = [];
+    for (const row of demand.values()) {
+      if (row.stock <= 0 && row.need > 0) {
+        issues.push(`${row.name} is out of stock (0 on hand).`);
+      } else if (row.need > row.stock) {
+        issues.push(
+          `${row.name}: need ${row.need} but only ${row.stock} in stock.`,
+        );
+      }
+    }
+    return issues;
+  }, [drugs]);
+
+  const hasStockBlock = stockIssues.length > 0;
+
+  function onQuantityChange(key: string, raw: string) {
+    const drug = drugs.find((d) => d.key === key);
+    if (!drug) return;
+    // Allow free typing while editing; clamp only when clearly over max.
+    if (drug.stockQty !== null && raw !== "" && Number(raw) > drug.stockQty) {
+      updateDrug(key, { quantity: String(drug.stockQty) });
+      toast.info(`Max available is ${drug.stockQty} units.`);
+      return;
+    }
+    updateDrug(key, { quantity: raw });
   }
 
   function onFrequencyChange(key: string, frequency: string) {
@@ -505,18 +603,94 @@ export default function PrescriptionForm({
 
             <div className="grid gap-3 sm:grid-cols-4">
               <div>
-                <label className="label-admin">Quantity</label>
+                <label className="label-admin">
+                  Quantity
+                  {drug.stockQty !== null && (
+                    <span
+                      className={`ml-1.5 font-semibold normal-case tracking-normal ${
+                        drug.stockQty <= 0
+                          ? "text-rose-600"
+                          : drug.lowStockThreshold !== null &&
+                              drug.stockQty <= drug.lowStockThreshold
+                            ? "text-amber-600"
+                            : "text-emerald-700 dark:text-emerald-400"
+                      }`}
+                    >
+                      · {drug.stockQty} in stock
+                    </span>
+                  )}
+                </label>
                 <div className="relative">
                   <Hash className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
                   <input
                     type="number"
                     min="0"
+                    max={drug.stockQty !== null ? drug.stockQty : undefined}
                     value={drug.quantity}
-                    onChange={(e) => updateDrug(drug.key, { quantity: e.target.value })}
-                    placeholder="30"
-                    className="input-admin pl-9"
+                    onChange={(e) => onQuantityChange(drug.key, e.target.value)}
+                    onBlur={(e) => {
+                      if (drug.stockQty === null) return;
+                      const clamped = clampQtyToStock(e.target.value, drug.stockQty);
+                      if (clamped !== e.target.value) {
+                        updateDrug(drug.key, { quantity: clamped });
+                      }
+                    }}
+                    placeholder={
+                      drug.stockQty !== null
+                        ? String(Math.min(30, Math.max(0, drug.stockQty)))
+                        : "30"
+                    }
+                    className={`input-admin pl-9 ${
+                      drug.stockQty !== null && qtyNumber(drug.quantity) > drug.stockQty
+                        ? "border-rose-500/60 ring-1 ring-rose-500/30"
+                        : drug.stockQty !== null && drug.stockQty <= 0
+                          ? "border-rose-500/40"
+                          : ""
+                    }`}
+                    aria-invalid={
+                      drug.stockQty !== null && qtyNumber(drug.quantity) > drug.stockQty
+                    }
                   />
                 </div>
+                {drug.stockQty !== null && (
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    {drug.stockQty <= 0 ? (
+                      <p className="text-[10px] font-semibold text-rose-600">
+                        Out of stock — receive inventory before prescribing.
+                      </p>
+                    ) : qtyNumber(drug.quantity) > drug.stockQty ? (
+                      <p className="text-[10px] font-semibold text-rose-600">
+                        Only {drug.stockQty} available. Quantity will be capped.
+                      </p>
+                    ) : (
+                      <p className="text-[10px] admin-soft">
+                        Max dispense this fill: <strong>{drug.stockQty}</strong>
+                        {drug.lowStockThreshold !== null &&
+                          drug.stockQty <= drug.lowStockThreshold && (
+                            <span className="ml-1 font-semibold text-amber-600">
+                              (low stock)
+                            </span>
+                          )}
+                      </p>
+                    )}
+                    {drug.stockQty > 0 && qtyNumber(drug.quantity) !== drug.stockQty && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateDrug(drug.key, { quantity: String(drug.stockQty) })
+                        }
+                        className="rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 py-0.5 text-[10px] font-semibold admin-accent-text hover:brightness-110"
+                      >
+                        Use all {drug.stockQty}
+                      </button>
+                    )}
+                  </div>
+                )}
+                {drug.medicationId === "" && (
+                  <p className="mt-1 text-[10px] admin-soft">
+                    Link a catalogue medication to see live stock limits.
+                  </p>
+                )}
               </div>
               <div>
                 <label className="label-admin">Days supply</label>
@@ -629,13 +803,31 @@ export default function PrescriptionForm({
         />
       </div>
 
+      {hasStockBlock && (
+        <div className="admin-alert-error">
+          <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          <div className="space-y-0.5">
+            <p className="font-semibold">Cannot save — quantity exceeds stock on hand</p>
+            <ul className="list-inside list-disc text-[11px] opacity-90">
+              {stockIssues.map((msg) => (
+                <li key={msg}>{msg}</li>
+              ))}
+            </ul>
+            <p className="text-[11px] opacity-90">
+              Lower the quantity, split the course, or receive stock first.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 text-[10px] admin-soft">
         <p className="mb-1 font-semibold admin-text">
           <Boxes className="mr-1 inline h-3 w-3" /> Stock workflow
         </p>
-        Creating a prescription does <strong>not</strong> affect inventory. After the customer
-        collects, open the prescription detail page and click{" "}
-        <Tag className="inline h-2.5 w-2.5" /> Dispatch — only then will stock be deducted.
+        Quantity for each linked medication is capped at <strong>current stock</strong> so
+        dispatch never fails for overselling. Creating a prescription still does{" "}
+        <strong>not</strong> deduct inventory — that happens when you click{" "}
+        <Tag className="inline h-2.5 w-2.5" /> Dispatch on the detail page.
         {!isEdit && drugs.length > 1 && (
           <> Each drug above is saved as its own prescription record under this customer.</>
         )}
@@ -643,7 +835,12 @@ export default function PrescriptionForm({
 
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || hasStockBlock}
+        title={
+          hasStockBlock
+            ? "Fix stock quantity issues before saving"
+            : undefined
+        }
         className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50"
       >
         {pending ? (

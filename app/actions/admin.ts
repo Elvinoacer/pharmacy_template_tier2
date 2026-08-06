@@ -593,6 +593,67 @@ export async function adminCreatePrescriptionAction(
     return linkedMed;
   }
 
+  /**
+   * Ensure linked catalogue quantities never exceed on-hand stock for this fill.
+   * Aggregates demand when the same medication appears on multiple drug rows.
+   */
+  async function assertQuantitiesWithinStock(drugList: DrugPayload[]) {
+    const demand = new Map<
+      string,
+      { need: number; nameHint: string }
+    >();
+    for (const drug of drugList) {
+      const medicationId = drug.medicationId || null;
+      if (!medicationId) continue;
+      const qty =
+        drug.quantity && drug.quantity > 0 ? Math.floor(Number(drug.quantity)) : 0;
+      if (qty <= 0) continue;
+      const prev = demand.get(medicationId);
+      if (prev) {
+        prev.need += qty;
+        if (!prev.nameHint && drug.medicineName) prev.nameHint = String(drug.medicineName);
+      } else {
+        demand.set(medicationId, {
+          need: qty,
+          nameHint: String(drug.medicineName || "").trim(),
+        });
+      }
+    }
+    if (demand.size === 0) return;
+
+    const ids = [...demand.keys()];
+    const rows = await prisma.pharmacyInventory.findMany({
+      where: { id: { in: ids } },
+      select: {
+        id: true,
+        currentStock: true,
+        medicationMaster: { select: { name: true } },
+      },
+    });
+    const byId = new Map(rows.map((r) => [r.id, r]));
+
+    for (const [medicationId, { need, nameHint }] of demand) {
+      const row = byId.get(medicationId);
+      if (!row) {
+        throw new Error(
+          `Linked medication not found (${nameHint || medicationId}). Refresh and try again.`,
+        );
+      }
+      const name = row.medicationMaster.name || nameHint || "Medication";
+      const available = row.currentStock ?? 0;
+      if (available <= 0) {
+        throw new Error(
+          `${name} is out of stock (0 on hand). Receive inventory before creating this prescription.`,
+        );
+      }
+      if (need > available) {
+        throw new Error(
+          `Insufficient stock for ${name}. Requested ${need} for this fill, but only ${available} available. Lower the quantity or receive stock first.`,
+        );
+      }
+    }
+  }
+
   async function saveOneDrug(
     drug: DrugPayload,
     existingId?: string,
@@ -601,7 +662,25 @@ export async function adminCreatePrescriptionAction(
     if (!medicineName) throw new Error("Medicine name is required for each drug.");
 
     const medicationId = drug.medicationId || null;
-    await verifyMedication(medicationId);
+    const linkedMed = await verifyMedication(medicationId);
+
+    // Per-row guard (multi-row aggregate is checked before batch create).
+    const qty =
+      drug.quantity && drug.quantity > 0 ? Math.floor(Number(drug.quantity)) : 0;
+    if (linkedMed && qty > 0) {
+      const available = linkedMed.currentStock ?? 0;
+      const name = linkedMed.medicationMaster.name || medicineName;
+      if (available <= 0) {
+        throw new Error(
+          `${name} is out of stock (0 on hand). Receive inventory before creating this prescription.`,
+        );
+      }
+      if (qty > available) {
+        throw new Error(
+          `Insufficient stock for ${name}. Requested ${qty}, available ${available}. Lower the quantity or receive stock first.`,
+        );
+      }
+    }
 
     const hasStructured =
       Boolean(drug.frequency) || (Array.isArray(drug.times) && drug.times.length > 0);
@@ -622,7 +701,7 @@ export async function adminCreatePrescriptionAction(
       rxReference: drug.rxReference || null,
       dosage: drug.dosage || null,
       schedule: resolved?.scheduleText ?? null,
-      quantity: drug.quantity && drug.quantity > 0 ? drug.quantity : null,
+      quantity: qty > 0 ? qty : null,
       daysSupply: drug.daysSupply && drug.daysSupply > 0 ? drug.daysSupply : null,
       refillsRemaining: drug.refillsRemaining ?? 0,
       unitPrice: drug.unitPrice != null ? drug.unitPrice : null,
@@ -681,6 +760,7 @@ export async function adminCreatePrescriptionAction(
     };
 
     try {
+      await assertQuantitiesWithinStock([drug]);
       const saved = await saveOneDrug(drug, id);
       await writeAuditLog(user.id, "prescription_updated", "prescription", id, {
         customerId,
@@ -721,6 +801,9 @@ export async function adminCreatePrescriptionAction(
 
   const created: Array<{ id: string; medicineName: string; medicationId: string | null }> = [];
   try {
+    // Aggregate stock check first so multi-drug forms can't oversell the same SKU.
+    await assertQuantitiesWithinStock(toCreate);
+
     for (const drug of toCreate) {
       if (!String(drug.medicineName || "").trim()) continue;
       const saved = await saveOneDrug(drug);
@@ -766,107 +849,155 @@ export async function adminCreatePrescriptionAction(
  * Idempotent: if the prescription is already dispatched, returns success
  * without re-decrementing stock. Also skips stock if a linked refill already
  * deducted inventory for this prescription fill.
+ *
+ * Returns ActionState so insufficient-stock and other failures surface inline
+ * instead of crashing into the admin error boundary.
  */
-export async function adminDispatchPrescriptionAction(formData: FormData) {
-  const user = await staff();
-  const id = String(formData.get("id") || "");
-  if (!id) return;
-
-  const rx = await prisma.prescription.findUnique({
-    where: { id },
-    include: {
-      medication: { include: { medicationMaster: { select: { name: true } } } },
-      customer: { select: { id: true, fullName: true } },
-    },
-  });
-  if (!rx) return;
-
-  // Idempotent — already dispatched.
-  if (rx.dispatchedAt) {
-    revalidatePath(`/admin/prescriptions/${id}`);
-    return;
-  }
-
-  const qty = rx.quantity ?? 1;
-  const shouldDecrementRefills = (rx.refillsRemaining ?? 0) > 0;
-  const {
-    applyStockChange,
-    notifyStockThreshold,
-    InsufficientStockError,
-  } = await import("@/app/lib/services/stock");
-
-  // If any refill already deducted stock for this Rx, don't double-count.
-  const priorRefillMovement = await prisma.stockMovement.findFirst({
-    where: {
-      relatedType: "prescription",
-      relatedId: id,
-      reason: { in: ["dispatch", "refill"] },
-      quantityDelta: { lt: 0 },
-    },
-    select: { id: true },
-  });
-
-  let stockResult = null as Awaited<ReturnType<typeof applyStockChange>> | null;
-
+export async function adminDispatchPrescriptionAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   try {
-    if (rx.medicationId && rx.medication && !priorRefillMovement) {
-      stockResult = await prisma.$transaction(async (tx) => {
-        const result = await applyStockChange(tx, {
-          inventoryId: rx.medicationId!,
-          quantityDelta: -qty,
-          reason: "dispatch",
-          notes: `Prescription dispatch: ${rx.medicineName}`,
-          relatedType: "prescription",
-          relatedId: id,
-          actorId: user.id,
+    const user = await staff();
+    const id = String(formData.get("id") || "");
+    if (!id) return { error: "Prescription id required." };
+
+    const rx = await prisma.prescription.findUnique({
+      where: { id },
+      include: {
+        medication: { include: { medicationMaster: { select: { name: true } } } },
+        customer: { select: { id: true, fullName: true } },
+      },
+    });
+    if (!rx) return { error: "Prescription not found." };
+
+    // Idempotent — already dispatched.
+    if (rx.dispatchedAt) {
+      revalidatePath(`/admin/prescriptions/${id}`);
+      return { success: "Already dispatched." };
+    }
+
+    const qty = rx.quantity ?? 1;
+    const shouldDecrementRefills = (rx.refillsRemaining ?? 0) > 0;
+    const {
+      applyStockChange,
+      notifyStockThreshold,
+      InsufficientStockError,
+    } = await import("@/app/lib/services/stock");
+
+    // If any refill already deducted stock for this Rx, don't double-count.
+    const priorRefillMovement = await prisma.stockMovement.findFirst({
+      where: {
+        relatedType: "prescription",
+        relatedId: id,
+        reason: { in: ["dispatch", "refill"] },
+        quantityDelta: { lt: 0 },
+      },
+      select: { id: true },
+    });
+
+    let stockResult = null as Awaited<ReturnType<typeof applyStockChange>> | null;
+
+    try {
+      if (rx.medicationId && rx.medication && !priorRefillMovement) {
+        // Pre-check so we can return a clear message without relying on
+        // instanceof across Prisma transaction error wrapping.
+        const available = rx.medication.currentStock ?? 0;
+        if (available < qty) {
+          const name = rx.medication.medicationMaster?.name || rx.medicineName;
+          return {
+            error: `Insufficient stock for ${name}. Available: ${available}, required: ${qty}. Receive stock or lower the prescription quantity before dispatching.`,
+          };
+        }
+
+        stockResult = await prisma.$transaction(async (tx) => {
+          const result = await applyStockChange(tx, {
+            inventoryId: rx.medicationId!,
+            quantityDelta: -qty,
+            reason: "dispatch",
+            notes: `Prescription dispatch: ${rx.medicineName}`,
+            relatedType: "prescription",
+            relatedId: id,
+            actorId: user.id,
+          });
+          await tx.prescription.update({
+            where: { id },
+            data: {
+              dispatchedAt: new Date(),
+              dispatchedById: user.id,
+              lastFilledAt: new Date(),
+              ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
+            },
+          });
+          return result;
         });
-        await tx.prescription.update({
+      } else {
+        await prisma.prescription.update({
           where: { id },
           data: {
             dispatchedAt: new Date(),
             dispatchedById: user.id,
             lastFilledAt: new Date(),
-            ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
+            ...(shouldDecrementRefills && !priorRefillMovement
+              ? { refillsRemaining: { decrement: 1 } }
+              : {}),
           },
         });
-        return result;
-      });
-    } else {
-      await prisma.prescription.update({
-        where: { id },
-        data: {
-          dispatchedAt: new Date(),
-          dispatchedById: user.id,
-          lastFilledAt: new Date(),
-          ...(shouldDecrementRefills && !priorRefillMovement
-            ? { refillsRemaining: { decrement: 1 } }
-            : {}),
-        },
-      });
+      }
+    } catch (e) {
+      if (
+        e instanceof InsufficientStockError ||
+        (e instanceof Error && e.name === "InsufficientStockError")
+      ) {
+        const stockErr = e as InstanceType<
+          typeof InsufficientStockError
+        > & { medicationName?: string; available?: number; required?: number };
+        const name = stockErr.medicationName || rx.medicineName;
+        const available = stockErr.available ?? rx.medication?.currentStock ?? 0;
+        const required = stockErr.required ?? qty;
+        return {
+          error: `Insufficient stock for ${name}. Available: ${available}, required: ${required}. Receive stock or lower the prescription quantity before dispatching.`,
+        };
+      }
+      console.error("[adminDispatchPrescription]", e);
+      return {
+        error: e instanceof Error ? e.message : "Failed to dispatch prescription.",
+      };
     }
+
+    if (stockResult) await notifyStockThreshold(stockResult);
+
+    await addTimelineEvent(
+      rx.customerId,
+      user.id,
+      "prescription_dispatched",
+      "Prescription dispatched",
+      `${rx.medicineName} — ${qty} units`,
+      { prescriptionId: id, medicationId: rx.medicationId, quantity: qty },
+      user.id,
+    );
+    await writeAuditLog(user.id, "prescription_dispatched", "prescription", id, {
+      medicationId: rx.medicationId,
+      quantity: qty,
+    });
+    revalidatePath(`/admin/prescriptions/${id}`);
+    revalidatePath(`/admin/customers/${rx.customerId}`);
+    revalidatePath("/admin/medications");
+    revalidatePath("/admin/inventory");
+
+    const stockNote = stockResult
+      ? ` Stock now ${stockResult.newStock}.`
+      : rx.medicationId
+        ? " Stock was already deducted for this fill."
+        : " No catalogue link — stock not changed.";
+    return { success: `Dispatched ${rx.medicineName} (${qty} units).${stockNote}` };
   } catch (e) {
-    if (e instanceof InsufficientStockError) throw e;
-    throw e;
+    if (e instanceof AuthError) return { error: e.message };
+    console.error("[adminDispatchPrescription]", e);
+    return {
+      error: e instanceof Error ? e.message : "Failed to dispatch prescription.",
+    };
   }
-
-  if (stockResult) await notifyStockThreshold(stockResult);
-
-  await addTimelineEvent(
-    rx.customerId,
-    user.id,
-    "prescription_dispatched",
-    "Prescription dispatched",
-    `${rx.medicineName} — ${qty} units`,
-    { prescriptionId: id, medicationId: rx.medicationId, quantity: qty },
-    user.id,
-  );
-  await writeAuditLog(user.id, "prescription_dispatched", "prescription", id, {
-    medicationId: rx.medicationId,
-    quantity: qty,
-  });
-  revalidatePath(`/admin/prescriptions/${id}`);
-  revalidatePath(`/admin/customers/${rx.customerId}`);
-  revalidatePath("/admin/medications");
 }
 
 export async function adminDeletePrescriptionAction(formData: FormData) {
