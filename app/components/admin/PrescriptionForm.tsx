@@ -24,7 +24,17 @@ import {
 } from "lucide-react";
 import { CustomerPicker } from "@/app/components/CustomerPicker";
 import { MedicationPicker, type MedicationOption } from "@/app/components/MedicationPicker";
-import { FREQUENCY_PRESETS, type FoodCondition } from "@/app/lib/medication-schedule-shared";
+import {
+  FREQUENCY_PRESETS,
+  detectCrossesMidnight,
+  inferLabelFromTime,
+  overnightGapHours,
+  presetLabels,
+  presetTimes,
+  resolveStructuredSchedule,
+  sortTimesWithLabels,
+  type FoodCondition,
+} from "@/app/lib/medication-schedule-shared";
 import { localTodayStr, PROJECT_TIMEZONE } from "@/app/lib/time";
 
 /**
@@ -34,6 +44,10 @@ import { localTodayStr, PROJECT_TIMEZONE } from "@/app/lib/time";
  * Prescription row sharing customer/prescriber/dates). Schedule is structured
  * (frequency + times + food) and written straight to MedicationSchedule —
  * free-text is only kept as a display summary.
+ *
+ * Dose times are normalised on blur/save: sorted chronologically for same-day
+ * dosing, labels stay glued to each clock time, and a warning is shown when
+ * entry order crosses midnight (e.g. 20:00 then 08:00).
  */
 
 type DrugRow = {
@@ -49,6 +63,8 @@ type DrugRow = {
   unitsPerDose: string;
   frequency: string;
   times: string[];
+  /** Parallel to times — "Morning", "Evening", etc. Survives custom edits. */
+  labels: string[];
   foodCondition: FoodCondition;
   /** Free-text fallback shown only for legacy edit / import confirmation. */
   freeTextSchedule: string;
@@ -58,6 +74,11 @@ type DrugRow = {
 };
 
 function emptyDrug(partial?: Partial<DrugRow>): DrugRow {
+  const frequency = partial?.frequency ?? "bid";
+  const times = partial?.times ?? presetTimes(frequency);
+  const labels =
+    partial?.labels ??
+    times.map((t, i) => presetLabels(frequency)[i] || inferLabelFromTime(t, i));
   return {
     key: partial?.key ?? `d-${Math.random().toString(36).slice(2, 9)}`,
     medicationId: partial?.medicationId ?? "",
@@ -69,8 +90,9 @@ function emptyDrug(partial?: Partial<DrugRow>): DrugRow {
     daysSupply: partial?.daysSupply ?? "30",
     refillsRemaining: partial?.refillsRemaining ?? "0",
     unitsPerDose: partial?.unitsPerDose ?? "1",
-    frequency: partial?.frequency ?? "bid",
-    times: partial?.times ?? ["08:00", "20:00"],
+    frequency,
+    times,
+    labels,
     foodCondition: partial?.foodCondition ?? "none",
     freeTextSchedule: partial?.freeTextSchedule ?? "",
     stockQty: partial?.stockQty ?? null,
@@ -93,14 +115,10 @@ function qtyNumber(raw: string): number {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
-function presetTimes(frequency: string): string[] {
-  const preset = FREQUENCY_PRESETS[frequency];
-  return preset ? preset.slots.map((s) => s.timeOfDay) : ["08:00"];
-}
-
 function parseLegacyScheduleHint(text: string | null | undefined): {
   frequency: string;
   times: string[];
+  labels: string[];
   foodCondition: FoodCondition;
 } {
   const t = (text || "").toLowerCase();
@@ -110,28 +128,53 @@ function parseLegacyScheduleHint(text: string | null | undefined): {
     foodCondition = "without_food";
   }
 
+  function withPreset(frequency: string, food: FoodCondition = foodCondition) {
+    const times = presetTimes(frequency);
+    return { frequency, times, labels: presetLabels(frequency), foodCondition: food };
+  }
+
   if (/\b(four\s*times|qid|4x)\b/.test(t)) {
-    return { frequency: "qid", times: presetTimes("qid"), foodCondition };
+    return withPreset("qid");
   }
   if (/\b(three\s*times|tid|3x|with\s*meals?)\b/.test(t)) {
     if (/\bwith\s*meals?\b/.test(t)) {
-      return { frequency: "with_meals", times: presetTimes("with_meals"), foodCondition: "with_food" };
+      return withPreset("with_meals", "with_food");
     }
-    return { frequency: "tid", times: presetTimes("tid"), foodCondition };
+    return withPreset("tid");
   }
   if (/\b(twice|bid|2x)\b/.test(t)) {
-    return { frequency: "bid", times: presetTimes("bid"), foodCondition };
+    return withPreset("bid");
   }
   if (/\b(once|qd|daily|1x)\b/.test(t)) {
-    return { frequency: "qd", times: presetTimes("qd"), foodCondition };
+    return withPreset("qd");
   }
   const times = Array.from(text?.matchAll(/\b([01]?\d|2[0-3]):([0-5]\d)\b/g) ?? []).map(
     (m) => `${m[1].padStart(2, "0")}:${m[2]}`,
   );
   if (times.length > 0) {
-    return { frequency: "custom", times, foodCondition };
+    const sorted = sortTimesWithLabels(
+      times,
+      times.map((tm, i) => inferLabelFromTime(tm, i)),
+    );
+    return {
+      frequency: "custom",
+      times: sorted.times,
+      labels: sorted.labels,
+      foodCondition,
+    };
   }
-  return { frequency: "bid", times: presetTimes("bid"), foodCondition };
+  return withPreset("bid");
+}
+
+/** Live schedule preview + day-boundary warning for one drug row. */
+function schedulePreview(drug: DrugRow) {
+  return resolveStructuredSchedule({
+    frequency: drug.frequency,
+    times: drug.times,
+    labels: drug.labels,
+    foodCondition: drug.foodCondition,
+    unitsPerDose: Number(drug.unitsPerDose) || 1,
+  });
 }
 
 /** Field label with required / optional badge. */
@@ -243,6 +286,7 @@ export default function PrescriptionForm({
       refillsRemaining: initial?.refillsRemaining?.toString() ?? "0",
       frequency: initialParsed.frequency,
       times: initialParsed.times,
+      labels: initialParsed.labels,
       foodCondition: initialParsed.foodCondition,
       freeTextSchedule: initial?.schedule ?? "",
     }),
@@ -360,11 +404,67 @@ export default function PrescriptionForm({
   }
 
   function onFrequencyChange(key: string, frequency: string) {
-    const times = frequency === "custom" ? undefined : presetTimes(frequency);
+    if (frequency === "custom") {
+      updateDrug(key, { frequency });
+      return;
+    }
+    const times = presetTimes(frequency);
+    const labels = presetLabels(frequency);
+    updateDrug(key, { frequency, times, labels });
+  }
+
+  /** Keep labels parallel to times; infer when a slot is added/changed. */
+  function setDrugTimes(
+    key: string,
+    nextTimes: string[],
+    nextLabels?: string[],
+    opts?: { sort?: boolean; markCustom?: boolean },
+  ) {
+    const drug = drugs.find((d) => d.key === key);
+    if (!drug) return;
+    let times = nextTimes.length ? nextTimes : ["08:00"];
+    let labels =
+      nextLabels ??
+      times.map(
+        (t, i) => drug.labels[i] || inferLabelFromTime(t, i),
+      );
+    // Pad / trim labels to match times.
+    labels = times.map((t, i) => labels[i]?.trim() || inferLabelFromTime(t, i));
+
+    if (opts?.sort !== false) {
+      const sorted = sortTimesWithLabels(times, labels);
+      times = sorted.times;
+      labels = sorted.labels;
+    }
+
     updateDrug(key, {
-      frequency,
-      ...(times ? { times } : {}),
+      times,
+      labels,
+      ...(opts?.markCustom !== false ? { frequency: "custom" as const } : {}),
     });
+  }
+
+  function normalizeDrugSchedule(key: string) {
+    const drug = drugs.find((d) => d.key === key);
+    if (!drug) return;
+    const crossed = detectCrossesMidnight(drug.times);
+    const sorted = sortTimesWithLabels(drug.times, drug.labels);
+    const changed =
+      sorted.times.join(",") !== drug.times.join(",") ||
+      sorted.labels.join(",") !== drug.labels.join(",");
+    if (changed) {
+      updateDrug(key, {
+        times: sorted.times,
+        labels: sorted.labels,
+        frequency: drug.frequency === "custom" || crossed ? "custom" : drug.frequency,
+      });
+    }
+    if (crossed) {
+      const gap = overnightGapHours(drug.times);
+      toast.info(
+        `Times crossed midnight${gap != null ? ` (≈${gap}h gap)` : ""} — sorted to same-day order: ${sorted.times.join(", ")}.`,
+      );
+    }
   }
 
   function applyLegacyParse(key: string) {
@@ -374,11 +474,12 @@ export default function PrescriptionForm({
     updateDrug(key, {
       frequency: parsed.frequency,
       times: parsed.times,
+      labels: parsed.labels,
       foodCondition: parsed.foodCondition,
     });
     setShowLegacyConfirm(true);
     toast.success(
-      `Understood as ${parsed.times.length}×/day at ${parsed.times.join(", ")} — adjust if needed.`,
+      `Understood as ${parsed.times.length}×/day at ${parsed.times.map((t, i) => `${t} (${parsed.labels[i]})`).join(", ")} — adjust if needed.`,
     );
   }
 
@@ -390,21 +491,36 @@ export default function PrescriptionForm({
     setDrugs((prev) => (prev.length <= 1 ? prev : prev.filter((d) => d.key !== key)));
   }
 
+  // Normalise times/labels before submit so server always gets sorted same-day slots.
   const drugsPayload = JSON.stringify(
-    drugs.map((d) => ({
-      medicationId: d.medicationId || null,
-      medicineName: d.medicineName,
-      rxReference: d.rxReference || null,
-      dosage: d.dosage || null,
-      unitPrice: d.unitPrice ? Number(d.unitPrice) : null,
-      quantity: d.quantity ? Number(d.quantity) : null,
-      daysSupply: d.daysSupply ? Number(d.daysSupply) : null,
-      refillsRemaining: d.refillsRemaining ? Number(d.refillsRemaining) : 0,
-      unitsPerDose: d.unitsPerDose ? Number(d.unitsPerDose) : 1,
-      frequency: d.frequency,
-      times: d.times,
-      foodCondition: d.foodCondition,
-    })),
+    drugs.map((d) => {
+      const resolved = resolveStructuredSchedule({
+        frequency: d.frequency,
+        times: d.times,
+        labels: d.labels,
+        foodCondition: d.foodCondition,
+        unitsPerDose: Number(d.unitsPerDose) || 1,
+      });
+      return {
+        medicationId: d.medicationId || null,
+        medicineName: d.medicineName,
+        rxReference: d.rxReference || null,
+        dosage: d.dosage || null,
+        unitPrice: d.unitPrice ? Number(d.unitPrice) : null,
+        quantity: d.quantity ? Number(d.quantity) : null,
+        daysSupply: d.daysSupply ? Number(d.daysSupply) : null,
+        refillsRemaining: d.refillsRemaining ? Number(d.refillsRemaining) : 0,
+        unitsPerDose: d.unitsPerDose ? Number(d.unitsPerDose) : 1,
+        frequency: d.frequency,
+        times: resolved.slots.map((s) => s.timeOfDay),
+        labels: resolved.slots.map((s) => s.label || inferLabelFromTime(s.timeOfDay)),
+        foodCondition: d.foodCondition,
+        // First dose in the admin's original entry order — used on start day
+        // so earlier clock times are not auto-missed when the cycle wraps.
+        cycleAnchorTime: resolved.cycleAnchorTime,
+        crossesMidnight: resolved.crossesMidnight,
+      };
+    }),
   );
 
   const tzLabel = PROJECT_TIMEZONE.replace(/_/g, " ");
@@ -617,55 +733,121 @@ export default function PrescriptionForm({
                     </select>
                   </div>
                   <div className="sm:col-span-2 lg:col-span-1">
-                    <FieldLabel required hint="HH:mm">
+                    <FieldLabel required hint="HH:mm · auto-sorted">
                       Dose times
                     </FieldLabel>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-end gap-2">
                       {drug.times.map((t, ti) => (
-                        <div key={`${drug.key}-t-${ti}`} className="flex items-center gap-1">
+                        <div
+                          key={`${drug.key}-t-${ti}`}
+                          className="flex flex-col gap-1 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-2"
+                        >
                           <input
-                            type="time"
-                            value={t}
+                            type="text"
+                            value={drug.labels[ti] || ""}
                             onChange={(e) => {
-                              const next = [...drug.times];
-                              next[ti] = e.target.value;
-                              updateDrug(drug.key, { times: next, frequency: "custom" });
+                              const nextLabels = [...drug.labels];
+                              nextLabels[ti] = e.target.value;
+                              updateDrug(drug.key, {
+                                labels: nextLabels,
+                                frequency: "custom",
+                              });
                             }}
-                            className="input-admin !w-[7.5rem] font-mono"
+                            onBlur={() => normalizeDrugSchedule(drug.key)}
+                            placeholder={inferLabelFromTime(t, ti)}
+                            className="input-admin !h-7 !w-[7.5rem] !px-2 !py-0 text-[10px] font-semibold"
+                            aria-label={`Label for dose ${ti + 1}`}
+                            title="Dose label (e.g. Morning, Evening)"
                           />
-                          {drug.times.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const next = drug.times.filter((_, i) => i !== ti);
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="time"
+                              value={t}
+                              onChange={(e) => {
+                                const nextTimes = [...drug.times];
+                                const nextLabels = [...drug.labels];
+                                nextTimes[ti] = e.target.value;
+                                // Re-infer label only when it still looks auto-generated.
+                                const prevAuto = inferLabelFromTime(t, ti);
+                                if (!nextLabels[ti] || nextLabels[ti] === prevAuto) {
+                                  nextLabels[ti] = inferLabelFromTime(e.target.value, ti);
+                                }
+                                // Don't sort on every keystroke — wait for blur.
                                 updateDrug(drug.key, {
-                                  times: next.length ? next : ["08:00"],
+                                  times: nextTimes,
+                                  labels: nextLabels,
                                   frequency: "custom",
                                 });
                               }}
-                              className="rounded-lg p-1.5 text-rose-600 transition hover:bg-rose-500/10"
-                              aria-label="Remove time"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          )}
+                              onBlur={() => normalizeDrugSchedule(drug.key)}
+                              className="input-admin !w-[7.5rem] font-mono"
+                            />
+                            {drug.times.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const nextTimes = drug.times.filter((_, i) => i !== ti);
+                                  const nextLabels = drug.labels.filter((_, i) => i !== ti);
+                                  setDrugTimes(
+                                    drug.key,
+                                    nextTimes.length ? nextTimes : ["08:00"],
+                                    nextLabels.length ? nextLabels : undefined,
+                                  );
+                                }}
+                                className="rounded-lg p-1.5 text-rose-600 transition hover:bg-rose-500/10"
+                                aria-label="Remove time"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       ))}
                       <button
                         type="button"
-                        onClick={() =>
-                          updateDrug(drug.key, {
-                            times: [...drug.times, "12:00"],
-                            frequency: "custom",
-                          })
-                        }
+                        onClick={() => {
+                          const nextTime = "12:00";
+                          setDrugTimes(
+                            drug.key,
+                            [...drug.times, nextTime],
+                            [...drug.labels, inferLabelFromTime(nextTime, drug.times.length)],
+                            { sort: true },
+                          );
+                        }}
                         className="inline-flex items-center gap-1 rounded-full border border-dashed border-[var(--admin-border)] px-2.5 py-1.5 text-[10px] font-semibold admin-muted transition hover:admin-accent-text"
                       >
                         <Plus className="h-3 w-3" /> Time
                       </button>
+                      {detectCrossesMidnight(drug.times) && (
+                        <button
+                          type="button"
+                          onClick={() => normalizeDrugSchedule(drug.key)}
+                          className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 text-[10px] font-semibold text-amber-800 dark:text-amber-200"
+                        >
+                          Sort chronologically
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
+
+                {(() => {
+                  const preview = schedulePreview(drug);
+                  return (
+                    <div className="mt-3 space-y-2">
+                      {preview.warning && (
+                        <p className="flex items-start gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2 text-[11px] text-amber-900 dark:text-amber-100">
+                          <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          <span>{preview.warning}</span>
+                        </p>
+                      )}
+                      <p className="rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-[11px] text-emerald-900 dark:text-emerald-200">
+                        <span className="font-semibold">Saved as: </span>
+                        {preview.scheduleText}
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 <div className="mt-4 border-t border-[var(--admin-border)] pt-3">
                   <FieldLabel optional hint="paste then parse">
@@ -689,7 +871,11 @@ export default function PrescriptionForm({
                   {showLegacyConfirm && drug.freeTextSchedule && (
                     <p className="mt-2 rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-[11px] text-emerald-800 dark:text-emerald-300">
                       Understood as <strong>{drug.times.length}×/day</strong> at{" "}
-                      <strong>{drug.times.join(", ")}</strong>
+                      <strong>
+                        {drug.times
+                          .map((t, i) => `${t}${drug.labels[i] ? ` (${drug.labels[i]})` : ""}`)
+                          .join(", ")}
+                      </strong>
                       {drug.foodCondition !== "none"
                         ? ` · ${drug.foodCondition === "with_food" ? "with food" : "without food"}`
                         : ""}

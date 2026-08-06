@@ -4,11 +4,14 @@ import { prisma } from "@/app/lib/db";
 import { PROJECT_TIMEZONE } from "@/app/lib/time";
 import {
   FREQUENCY_PRESETS,
+  isSlotBeforeCourseStart as isSlotBeforeCourseStartShared,
   resolveStructuredSchedule,
+  timeToMinutes,
   type FoodCondition,
   type ParsedDoseSlot,
   type StructuredScheduleInput,
 } from "@/app/lib/medication-schedule-shared";
+import { formatTime, localDateKey, localTodayStr } from "@/app/lib/time";
 
 /**
  * Medication schedule generation.
@@ -230,11 +233,10 @@ export function calculatePrescriptionMetrics(
   const start = rx.startDate || rx.createdAt;
 
   const now = new Date();
-  const nowStr = new Intl.DateTimeFormat("en-CA", { timeZone: PROJECT_TIMEZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
-  const nowTime = new Intl.DateTimeFormat("en-GB", { timeZone: PROJECT_TIMEZONE, hour: "2-digit", minute: "2-digit", hour12: false }).format(now);
+  const nowStr = localTodayStr(now);
+  const nowTime = formatTime(now);
+  const startDateStr = localDateKey(start);
 
-  const startDateStr = new Intl.DateTimeFormat("en-CA", { timeZone: PROJECT_TIMEZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(start));
-  
   let expectedDosesToDate = 0;
   let overdueSlotsCount = 0;
 
@@ -242,14 +244,26 @@ export function calculatePrescriptionMetrics(
   const todayObj = new Date(nowStr + "T00:00:00Z");
 
   while (curr <= todayObj) {
+    const dayStr = curr.toISOString().slice(0, 10);
     const isToday = curr.getTime() === todayObj.getTime();
     for (const slot of slots) {
+      // Skip slots that were never due (before course start / mid-day creation).
+      if (
+        isSlotBeforeCourseStart({
+          timeOfDay: slot.timeOfDay,
+          startDate: rx.startDate,
+          createdAt: rx.createdAt,
+          dayStr,
+        })
+      ) {
+        continue;
+      }
       if (!isToday) {
         expectedDosesToDate += 1;
       } else if (slot.timeOfDay <= nowTime) {
         expectedDosesToDate += 1;
         const logged = doseLogs.find((d) => {
-          const dStr = new Intl.DateTimeFormat("en-CA", { timeZone: PROJECT_TIMEZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(d.scheduledDate));
+          const dStr = localDateKey(d.scheduledDate);
           return dStr === nowStr && (d.scheduledTime === slot.timeOfDay || !d.scheduledTime);
         });
         if (!logged || logged.status === "unknown") {
@@ -260,7 +274,7 @@ export function calculatePrescriptionMetrics(
     curr.setDate(curr.getDate() + 1);
   }
 
-  expectedDosesToDate = Math.max(1, expectedDosesToDate);
+  expectedDosesToDate = Math.max(0, expectedDosesToDate);
 
   const takenDosesCount = doseLogs.filter((d) => d.status === "taken" || d.status === "late").length;
   const lateDosesCount = doseLogs.filter((d) => d.status === "late").length;
@@ -272,7 +286,11 @@ export function calculatePrescriptionMetrics(
   const daysRemaining = Math.floor(unitsRemaining / Math.max(1, formula.dailyTotalUnits));
 
   const projectedRunOutDate = new Date(now.getTime() + daysRemaining * 86400000);
-  const adherenceRate = Math.min(100, Math.round((takenDosesCount / expectedDosesToDate) * 100));
+  // No expected doses yet (e.g. Rx created mid-day before first slot) → 100%.
+  const adherenceRate =
+    expectedDosesToDate <= 0
+      ? 100
+      : Math.min(100, Math.round((takenDosesCount / expectedDosesToDate) * 100));
 
   let complianceStatus: "excellent" | "good" | "warning" | "critical" = "excellent";
   if (adherenceRate >= 90) complianceStatus = "excellent";
@@ -302,13 +320,31 @@ export function calculatePrescriptionMetrics(
   };
 }
 
+/** Server wrapper: Date objects → local keys/clocks for shared start-day checks. */
+function isSlotBeforeCourseStart(opts: {
+  timeOfDay: string;
+  startDate: Date | null | undefined;
+  createdAt: Date;
+  dayStr: string;
+}): boolean {
+  const start = opts.startDate || opts.createdAt;
+  return isSlotBeforeCourseStartShared({
+    timeOfDay: opts.timeOfDay,
+    startDay: localDateKey(start),
+    startClock: formatTime(start),
+    createdDay: localDateKey(opts.createdAt),
+    createdClock: formatTime(opts.createdAt),
+    dayStr: opts.dayStr,
+  });
+}
+
 export async function processAutoMissedDoses(customerId?: string): Promise<number> {
   const now = new Date();
-  const todayStr = new Intl.DateTimeFormat("en-CA", { timeZone: PROJECT_TIMEZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
+  const todayStr = localTodayStr(now);
   const todayObj = new Date(todayStr + "T00:00:00Z");
 
   const graceTime = new Date(now.getTime() - 30 * 60 * 1000);
-  const graceTimeStr = new Intl.DateTimeFormat("en-GB", { timeZone: PROJECT_TIMEZONE, hour: "2-digit", minute: "2-digit", hour12: false }).format(graceTime);
+  const graceTimeStr = formatTime(graceTime);
 
   const schedules = await prisma.medicationSchedule.findMany({
     where: {
@@ -317,7 +353,17 @@ export async function processAutoMissedDoses(customerId?: string): Promise<numbe
       timeOfDay: { lte: graceTimeStr },
     },
     include: {
-      prescription: { select: { id: true, customerId: true, medicineName: true } },
+      prescription: {
+        select: {
+          id: true,
+          customerId: true,
+          medicineName: true,
+          startDate: true,
+          createdAt: true,
+          status: true,
+          endDate: true,
+        },
+      },
       doseLogs: {
         where: { scheduledDate: todayObj },
       },
@@ -327,6 +373,23 @@ export async function processAutoMissedDoses(customerId?: string): Promise<numbe
   let autoMissedCount = 0;
 
   for (const sched of schedules) {
+    const rx = sched.prescription;
+    if (rx.status && rx.status !== "active") continue;
+    if (rx.endDate && localDateKey(rx.endDate) < todayStr) continue;
+
+    // Do not auto-miss doses that were never due on the start day (e.g. morning
+    // slot when the Rx was created at 15:00), or before the course start date.
+    if (
+      isSlotBeforeCourseStart({
+        timeOfDay: sched.timeOfDay,
+        startDate: rx.startDate,
+        createdAt: rx.createdAt,
+        dayStr: todayStr,
+      })
+    ) {
+      continue;
+    }
+
     const existingLog = sched.doseLogs[0];
 
     if (!existingLog) {
@@ -521,14 +584,7 @@ export async function createDailyDoseReminders(opts?: {
 }): Promise<number> {
   const { parseLocalDatetimeInput } = await import("@/app/lib/time");
 
-  const todayStr =
-    opts?.dateStr ??
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: PROJECT_TIMEZONE,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date());
+  const todayStr = opts?.dateStr ?? localTodayStr();
 
   const schedules = await prisma.medicationSchedule.findMany({
     where: {
@@ -565,25 +621,31 @@ export async function createDailyDoseReminders(opts?: {
     const rx = sched.prescription;
     if (rx.customer?.preferences?.reminderConsent === false) continue;
 
-    // Don't schedule before the course start date.
-    const start = rx.startDate || rx.createdAt;
-    const startStr = new Intl.DateTimeFormat("en-CA", {
-      timeZone: PROJECT_TIMEZONE,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date(start));
-    if (todayStr < startStr) continue;
+    // Don't schedule before the course start date, and on the start day skip
+    // slots earlier than the effective start wall-clock (creation mid-day).
+    if (
+      isSlotBeforeCourseStart({
+        timeOfDay: sched.timeOfDay,
+        startDate: rx.startDate,
+        createdAt: rx.createdAt,
+        dayStr: todayStr,
+      })
+    ) {
+      continue;
+    }
 
     const scheduledFor = parseLocalDatetimeInput(`${todayStr}T${sched.timeOfDay}`);
     const todayObj = new Date(todayStr + "T00:00:00Z");
 
-    // Idempotency: any open/closed dose reminder for this prescription on the
-    // local calendar day for this slot. Snooze moves scheduledFor forward, so
-    // a narrow ±2 min window would recreate duplicates — match the whole day
-    // and prefer title/time-of-day identity.
-    const dayWindowStart = new Date(scheduledFor.getTime() - 14 * 60 * 60 * 1000);
-    const dayWindowEnd = new Date(scheduledFor.getTime() + 14 * 60 * 60 * 1000);
+    // Idempotency: match the local calendar day around this slot.
+    // Window is asymmetric around midnight so evening→morning cycles don't
+    // collide with the previous/next day's same clock time as aggressively.
+    const slotMins = timeToMinutes(sched.timeOfDay) ?? 0;
+    // Wider before noon-ish slots (catch previous evening snoozes less), tighter overnight.
+    const preHours = slotMins < 6 * 60 ? 8 : 14;
+    const postHours = slotMins >= 18 * 60 ? 8 : 14;
+    const dayWindowStart = new Date(scheduledFor.getTime() - preHours * 60 * 60 * 1000);
+    const dayWindowEnd = new Date(scheduledFor.getTime() + postHours * 60 * 60 * 1000);
     const existingReminders = await prisma.reminder.findMany({
       where: {
         customerId: rx.customerId,
@@ -595,17 +657,13 @@ export async function createDailyDoseReminders(opts?: {
     });
     const alreadyHasSlot = existingReminders.some((r) => {
       if (r.title?.includes(sched.timeOfDay)) return true;
-      const hhmm = new Intl.DateTimeFormat("en-GB", {
-        timeZone: PROJECT_TIMEZONE,
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }).format(r.scheduledFor);
-      // Allow ±5 min drift from the slot for non-snoozed reminders.
-      const [sh, sm] = sched.timeOfDay.split(":").map(Number);
-      const [rh, rm] = hhmm.split(":").map(Number);
-      const slotMins = sh * 60 + sm;
-      const remMins = rh * 60 + rm;
+      if (sched.label && r.title?.toLowerCase().includes(sched.label.toLowerCase())) {
+        const hhmm = formatTime(r.scheduledFor);
+        const remMins = timeToMinutes(hhmm) ?? -999;
+        return Math.abs(slotMins - remMins) <= 5;
+      }
+      const hhmm = formatTime(r.scheduledFor);
+      const remMins = timeToMinutes(hhmm) ?? -999;
       return Math.abs(slotMins - remMins) <= 5;
     });
     if (alreadyHasSlot) continue;
@@ -631,10 +689,11 @@ export async function createDailyDoseReminders(opts?: {
       continue;
     }
 
-    const foodHint = sched.label ? ` (${sched.label})` : "";
+    const label = sched.label?.trim() || null;
+    const labelHint = label ? ` (${label})` : "";
     const doseQty = Number(sched.doseQuantity) || 1;
     const body = [
-      `It's time for ${rx.medicineName}${foodHint}.`,
+      `It's time for ${rx.medicineName}${labelHint}.`,
       rx.dosage ? `Dosage: ${rx.dosage}.` : null,
       doseQty !== 1 ? `Take ${doseQty} unit(s).` : null,
       "Tap Taken, Skip, or Snooze on this notification.",
@@ -642,26 +701,25 @@ export async function createDailyDoseReminders(opts?: {
       .filter(Boolean)
       .join(" ");
 
+    // Prefer "Evening Dose: Med" over bare "Dose 20:00: Med".
+    const title = label
+      ? `${label} Dose ${sched.timeOfDay}: ${rx.medicineName}`
+      : `Dose ${sched.timeOfDay}: ${rx.medicineName}`;
+
     await prisma.reminder.create({
       data: {
         customerId: rx.customerId,
         type: "medication_dose",
-        title: `Dose ${sched.timeOfDay}: ${rx.medicineName}`,
+        title,
         body,
         channel: "push",
         scheduledFor,
         relatedType: "prescription",
         relatedId: rx.id,
-        // Encode schedule id in a stable way for the SW / adherence API.
-        // Reminder has no metadata column — scheduleId is recoverable from
-        // relatedId (prescription) + scheduled time, and also embedded below.
         createdById: null,
       },
     });
 
-    // Store scheduleId by appending a machine-readable trailer only used by
-    // processDueReminders / SW. Visible body above stays human-friendly;
-    // we keep scheduleId recoverable via lookup, so no body mutation needed.
     created += 1;
   }
 

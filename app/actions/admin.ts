@@ -539,8 +539,13 @@ type DrugPayload = {
   refillsRemaining?: number;
   frequency?: string;
   times?: string[];
+  /** Parallel to times — Morning / Evening / etc. */
+  labels?: string[];
   foodCondition?: "none" | "with_food" | "without_food";
   unitsPerDose?: number;
+  /** First dose in entry order when times crossed midnight (HH:mm). */
+  cycleAnchorTime?: string | null;
+  crossesMidnight?: boolean;
 };
 
 function parseDrugsJson(formData: FormData): DrugPayload[] {
@@ -700,14 +705,15 @@ export async function adminCreatePrescriptionAction(
     const hasStructured =
       Boolean(drug.frequency) || (Array.isArray(drug.times) && drug.times.length > 0);
 
-    const resolved = hasStructured
-      ? resolveStructuredSchedule({
-          frequency: drug.frequency || "custom",
-          times: drug.times,
-          foodCondition: drug.foodCondition || "none",
-          unitsPerDose: drug.unitsPerDose ?? 1,
-        })
-      : null;
+    const scheduleInput = {
+      frequency: drug.frequency || "custom",
+      times: drug.times,
+      labels: drug.labels,
+      foodCondition: drug.foodCondition || ("none" as const),
+      unitsPerDose: drug.unitsPerDose ?? 1,
+    };
+
+    const resolved = hasStructured ? resolveStructuredSchedule(scheduleInput) : null;
 
     const data = {
       customerId,
@@ -726,12 +732,7 @@ export async function adminCreatePrescriptionAction(
     if (existingId) {
       await prisma.prescription.update({ where: { id: existingId }, data });
       if (resolved) {
-        await applyStructuredSchedule(existingId, {
-          frequency: drug.frequency || "custom",
-          times: drug.times,
-          foodCondition: drug.foodCondition || "none",
-          unitsPerDose: drug.unitsPerDose ?? 1,
-        });
+        await applyStructuredSchedule(existingId, scheduleInput);
       } else {
         try {
           await generateScheduleForPrescription(existingId);
@@ -744,12 +745,7 @@ export async function adminCreatePrescriptionAction(
 
     const rx = await prisma.prescription.create({ data });
     if (resolved) {
-      await applyStructuredSchedule(rx.id, {
-        frequency: drug.frequency || "custom",
-        times: drug.times,
-        foodCondition: drug.foodCondition || "none",
-        unitsPerDose: drug.unitsPerDose ?? 1,
-      });
+      await applyStructuredSchedule(rx.id, scheduleInput);
     } else {
       try {
         await generateScheduleForPrescription(rx.id);
