@@ -87,18 +87,18 @@ openssl rand -hex 32     # → CRON_SECRET
 
 The callback verifies the Google ID token, checks that `email_verified` is true, then either signs the user in (if their email matches an existing account) or creates a new customer account linked to their Google ID.
 
-### Scheduled jobs (GitHub Actions)
+### Scheduled jobs (Cron Endpoints)
 
-Reminders are processed hourly by [`.github/workflows/cron-reminders.yml`](.github/workflows/cron-reminders.yml), which `POST`s the deployed `/api/cron/reminders` endpoint.
+Reminders are processed every 5 minutes by calling the deployed `/api/cron/reminders` endpoint via GET/POST with authorization (`Bearer CRON_SECRET` header or `?secret=CRON_SECRET` query parameter).
 
-Set these **repository secrets** (Settings → Secrets and variables → Actions):
+Available Cron Endpoints:
 
-| Secret | Value |
-| --- | --- |
-| `APP_URL` | Public base URL of the deployment (e.g. `https://your-app.example.com`) |
-| `CRON_SECRET` | Same value as the app’s `CRON_SECRET` env var |
+| Endpoint | Frequency | Function |
+| --- | --- | --- |
+| `/api/cron/reminders` | Every 5 mins | Dose reminders, scheduled campaigns, messages & adherence alerts |
+| `/api/cron/inventory` | Every 6 hours | Inventory low stock & expiration monitoring |
+| `/api/cron/loyalty` | Daily (06:00 UTC) | Birthday points, refill completion bonuses & order points |
 
-You can also run the workflow manually via **Actions → Cron — process reminders → Run workflow**. Scheduled workflows only run from the default branch.
 
 ### Demo accounts
 

@@ -292,8 +292,9 @@ See forms section — field clear + toasts fixed across admin forms.
 
 | Job | Schedule | Endpoint |
 |---|---|---|
-| Reminders / campaigns / messages / adherence alerts | Every 5 min | `/api/cron/reminders` + `cron-reminders.yml` |
-| Loyalty (birthday, refill, order points) | Daily 03:00 UTC (~06:00 EAT) | `/api/cron/loyalty` + `cron-loyalty.yml` |
+| Reminders / campaigns / messages / adherence alerts | Every 5 min | `/api/cron/reminders` |
+| Loyalty (birthday, refill, order points) | Daily 03:00 UTC (~06:00 EAT) | `/api/cron/loyalty` |
+| Inventory low stock & expiration monitoring | Every 6 hours | `/api/cron/inventory` |
 
 ---
 

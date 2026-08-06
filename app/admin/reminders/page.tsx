@@ -150,7 +150,7 @@ export default async function AdminRemindersPage() {
           </div>
         </div>
         <p className="mt-3 text-[10px] admin-soft">
-          GitHub Action hits <code className="md-code">/api/cron/reminders</code> every 5 minutes.
+          External cron hits <code className="md-code">/api/cron/reminders</code> every 5 minutes.
           Use <strong>Process due now</strong> to run the same jobs immediately.
         </p>
       </AdminPanel>
