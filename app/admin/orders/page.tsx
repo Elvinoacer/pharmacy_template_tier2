@@ -26,6 +26,9 @@ type OrderRow = {
   guestPhone: string | null;
   fulfillment: string;
   dispatchedAt: Date | null;
+  reason: string | null;
+  dispenserNote: string | null;
+  hasRxItem: boolean;
   customer: { id: string; fullName: string; phone?: string | null } | null;
   items: { quantity: number; name: string }[];
   payments: { providerRef: string | null; status: string }[];
@@ -89,7 +92,13 @@ export default async function AdminOrdersPage({
         where: status ? { status } : undefined,
         include: {
           customer: { select: { id: true, fullName: true, phone: true } },
-          items: true,
+          items: {
+            include: {
+              medication: {
+                select: { prescriptionRequired: true, overTheCounter: true },
+              },
+            },
+          },
           payments: { orderBy: { createdAt: "desc" }, take: 1 },
         },
         orderBy: { createdAt: "desc" },
@@ -123,6 +132,13 @@ export default async function AdminOrdersPage({
       guestPhone: o.guestPhone,
       fulfillment: o.fulfillment,
       dispatchedAt: o.dispatchedAt,
+      reason: o.reason ?? null,
+      dispenserNote: o.dispenserNote ?? null,
+      hasRxItem: o.items.some(
+        (i) =>
+          i.medication?.prescriptionRequired === true &&
+          i.medication?.overTheCounter !== true,
+      ),
       customer: o.customer,
       items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
       payments: o.payments.map((p) => ({ providerRef: p.providerRef, status: p.status })),
@@ -170,7 +186,13 @@ export default async function AdminOrdersPage({
         where: status ? { status } : undefined,
         include: {
           customer: { select: { id: true, fullName: true, phone: true } },
-          items: true,
+          items: {
+            include: {
+              medication: {
+                select: { prescriptionRequired: true, overTheCounter: true },
+              },
+            },
+          },
           payments: { orderBy: { createdAt: "desc" }, take: 1 },
         },
         orderBy: { createdAt: "desc" },
@@ -187,6 +209,13 @@ export default async function AdminOrdersPage({
         guestPhone: o.guestPhone,
         fulfillment: o.fulfillment,
         dispatchedAt: o.dispatchedAt,
+        reason: o.reason ?? null,
+        dispenserNote: o.dispenserNote ?? null,
+        hasRxItem: o.items.some(
+          (i) =>
+            i.medication?.prescriptionRequired === true &&
+            i.medication?.overTheCounter !== true,
+        ),
         customer: o.customer,
         items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
         payments: o.payments.map((p) => ({ providerRef: p.providerRef, status: p.status })),
@@ -334,6 +363,16 @@ export default async function AdminOrdersPage({
                       <p className="mt-0.5 text-xs admin-muted">
                         {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                       </p>
+                      {o.reason && (
+                        <p className="mt-0.5 text-[10px] text-amber-800/90">
+                          Reason: {o.reason}
+                        </p>
+                      )}
+                      {o.dispenserNote && (
+                        <p className="mt-0.5 text-[10px] text-emerald-800/90">
+                          Dispenser: {o.dispenserNote}
+                        </p>
+                      )}
                       <p className="mt-1 text-[10px] admin-soft">
                         {formatDateTime(o.createdAt)}
                         {o.guestPhone && <> · {o.guestPhone}</>}
@@ -350,6 +389,9 @@ export default async function AdminOrdersPage({
                         guestPhone={o.guestPhone}
                         defaultPhone={o.customer?.phone || o.guestPhone}
                         dispatched={isDispatched}
+                        hasRxItem={o.hasRxItem}
+                        existingDispenserNote={o.dispenserNote}
+                        customerReason={o.reason}
                       />
                     </div>
                   </div>

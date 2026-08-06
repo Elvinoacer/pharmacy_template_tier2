@@ -2,6 +2,13 @@ import "server-only";
 
 import { prisma } from "@/app/lib/db";
 import { PROJECT_TIMEZONE } from "@/app/lib/time";
+import {
+  FREQUENCY_PRESETS,
+  resolveStructuredSchedule,
+  type FoodCondition,
+  type ParsedDoseSlot,
+  type StructuredScheduleInput,
+} from "@/app/lib/medication-schedule-shared";
 
 /**
  * Medication schedule generation.
@@ -25,10 +32,8 @@ import { PROJECT_TIMEZONE } from "@/app/lib/time";
  * prescription is created or its dosage changes), not on every save.
  */
 
-export type ParsedDoseSlot = {
-  timeOfDay: string; // "HH:mm"
-  label?: string;
-};
+export type { ParsedDoseSlot, FoodCondition, StructuredScheduleInput };
+export { FREQUENCY_PRESETS, resolveStructuredSchedule };
 
 export type DosageFormula = {
   unitsPerDose: number;
@@ -377,6 +382,45 @@ export async function processAutoMissedDoses(customerId?: string): Promise<numbe
   return autoMissedCount;
 }
 
+/**
+ * Write structured slots straight to MedicationSchedule (no free-text parse round-trip).
+ */
+export async function applyStructuredSchedule(
+  prescriptionId: string,
+  input: StructuredScheduleInput,
+): Promise<ParsedDoseSlot[]> {
+  const rx = await prisma.prescription.findUnique({
+    where: { id: prescriptionId },
+    select: { id: true, customerId: true, status: true },
+  });
+  if (!rx) throw new Error(`Prescription ${prescriptionId} not found`);
+
+  const resolved = resolveStructuredSchedule(input);
+
+  await prisma.$transaction([
+    prisma.medicationSchedule.deleteMany({ where: { prescriptionId } }),
+    ...resolved.slots.map((slot) =>
+      prisma.medicationSchedule.create({
+        data: {
+          prescriptionId,
+          customerId: rx.customerId,
+          timeOfDay: slot.timeOfDay,
+          doseQuantity: resolved.unitsPerDose,
+          label: slot.label ?? null,
+          active: rx.status === "active",
+        },
+      }),
+    ),
+    // Keep free-text schedule column in sync for display / legacy parsers.
+    prisma.prescription.update({
+      where: { id: prescriptionId },
+      data: { schedule: resolved.scheduleText },
+    }),
+  ]);
+
+  return resolved.slots;
+}
+
 export async function generateScheduleForPrescription(prescriptionId: string): Promise<ParsedDoseSlot[]> {
   const rx = await prisma.prescription.findUnique({
     where: { id: prescriptionId },
@@ -405,6 +449,146 @@ export async function generateScheduleForPrescription(prescriptionId: string): P
   ]);
 
   return formula.slots;
+}
+
+/**
+ * Walk active MedicationSchedule rows and create today's medication_dose Reminder
+ * rows ahead of each dose time. This is the missing link that feeds the
+ * escalation cron (which already handles sent-but-unanswered dose reminders).
+ *
+ * Idempotent per (customer, prescription, schedule time, local day).
+ */
+export async function createDailyDoseReminders(opts?: {
+  customerId?: string;
+  /** Override "today" for tests — YYYY-MM-DD in project timezone. */
+  dateStr?: string;
+}): Promise<number> {
+  const { parseLocalDatetimeInput } = await import("@/app/lib/time");
+
+  const todayStr =
+    opts?.dateStr ??
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: PROJECT_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+
+  const schedules = await prisma.medicationSchedule.findMany({
+    where: {
+      active: true,
+      ...(opts?.customerId ? { customerId: opts.customerId } : {}),
+      prescription: {
+        status: "active",
+        OR: [{ endDate: null }, { endDate: { gte: new Date(todayStr + "T00:00:00Z") } }],
+      },
+    },
+    include: {
+      prescription: {
+        select: {
+          id: true,
+          medicineName: true,
+          dosage: true,
+          customerId: true,
+          startDate: true,
+          createdAt: true,
+          customer: {
+            select: {
+              preferences: { select: { reminderConsent: true } },
+            },
+          },
+        },
+      },
+    },
+    take: 500,
+  });
+
+  let created = 0;
+
+  for (const sched of schedules) {
+    const rx = sched.prescription;
+    if (rx.customer?.preferences?.reminderConsent === false) continue;
+
+    // Don't schedule before the course start date.
+    const start = rx.startDate || rx.createdAt;
+    const startStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: PROJECT_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(start));
+    if (todayStr < startStr) continue;
+
+    const scheduledFor = parseLocalDatetimeInput(`${todayStr}T${sched.timeOfDay}`);
+
+    // Skip if a dose reminder for this prescription+day+slot already exists
+    // (any status — scheduled/sent/answered/escalated). Match a ±2 min window
+    // around the exact slot so clock skew / re-runs stay idempotent.
+    const windowStart = new Date(scheduledFor.getTime() - 2 * 60 * 1000);
+    const windowEnd = new Date(scheduledFor.getTime() + 2 * 60 * 1000);
+
+    const existing = await prisma.reminder.findFirst({
+      where: {
+        customerId: rx.customerId,
+        type: "medication_dose",
+        relatedId: rx.id,
+        scheduledFor: { gte: windowStart, lte: windowEnd },
+      },
+      select: { id: true },
+    });
+    if (existing) continue;
+
+    // Also skip if the dose is already logged as taken/late/skipped for today.
+    const todayObj = new Date(todayStr + "T00:00:00Z");
+    const logged = await prisma.doseLog.findUnique({
+      where: {
+        prescriptionId_scheduledDate_scheduledTime: {
+          prescriptionId: rx.id,
+          scheduledDate: todayObj,
+          scheduledTime: sched.timeOfDay,
+        },
+      },
+      select: { status: true },
+    }).catch(() => null);
+    if (logged && (logged.status === "taken" || logged.status === "late" || logged.status === "skipped")) {
+      continue;
+    }
+
+    const foodHint = sched.label ? ` (${sched.label})` : "";
+    const doseQty = Number(sched.doseQuantity) || 1;
+    const body = [
+      `It's time for ${rx.medicineName}${foodHint}.`,
+      rx.dosage ? `Dosage: ${rx.dosage}.` : null,
+      doseQty !== 1 ? `Take ${doseQty} unit(s).` : null,
+      "Tap Taken, Skip, or Snooze on this notification.",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    await prisma.reminder.create({
+      data: {
+        customerId: rx.customerId,
+        type: "medication_dose",
+        title: `Dose ${sched.timeOfDay}: ${rx.medicineName}`,
+        body,
+        channel: "push",
+        scheduledFor,
+        relatedType: "prescription",
+        relatedId: rx.id,
+        // Encode schedule id in a stable way for the SW / adherence API.
+        // Reminder has no metadata column — scheduleId is recoverable from
+        // relatedId (prescription) + scheduled time, and also embedded below.
+        createdById: null,
+      },
+    });
+
+    // Store scheduleId by appending a machine-readable trailer only used by
+    // processDueReminders / SW. Visible body above stays human-friendly;
+    // we keep scheduleId recoverable via lookup, so no body mutation needed.
+    created += 1;
+  }
+
+  return created;
 }
 
 export async function getScheduleForPrescription(prescriptionId: string) {

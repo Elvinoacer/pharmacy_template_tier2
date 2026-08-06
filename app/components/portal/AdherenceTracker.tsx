@@ -1,24 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Clock, Calendar, StickyNote, AlertCircle } from "lucide-react";
+import { Check, X, Clock, StickyNote, AlertCircle } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
-import { formatDate } from "@/app/lib/time";
 
 type DoseStatus = "taken" | "missed" | "skipped" | "late";
 
+/**
+ * Compact dose-confirm control for a *specific* scheduled slot.
+ * Used on Today's Dose Operations cards only — not on prescription history cards
+ * (those show adherence summary, not action buttons).
+ */
 export function AdherenceTracker({
   prescriptionId,
   scheduledTime,
   scheduleId,
   initialStatus,
   onLogged,
+  /** When true, render a stacked responsive button group instead of a pill row. */
+  stacked = false,
 }: {
   prescriptionId: string;
   scheduledTime?: string | null;
   scheduleId?: string | null;
   initialStatus?: DoseStatus | null;
   onLogged?: (status: DoseStatus) => void;
+  stacked?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
   const [logged, setLogged] = useState<DoseStatus | null>(initialStatus || null);
@@ -70,7 +77,9 @@ export function AdherenceTracker({
     };
 
     return (
-      <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${statusStyles[logged]}`}>
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${statusStyles[logged]}`}
+      >
         {logged === "taken" && <Check className="h-3.5 w-3.5 text-emerald-600" />}
         {logged === "late" && <Clock className="h-3.5 w-3.5 text-amber-600" />}
         {logged === "missed" && <AlertCircle className="h-3.5 w-3.5 text-rose-600" />}
@@ -81,58 +90,64 @@ export function AdherenceTracker({
     );
   }
 
+  const btnBase =
+    "inline-flex items-center justify-center gap-1 rounded-xl px-3 py-2 text-xs font-bold shadow-xs transition disabled:opacity-50";
+
   return (
-    <div className="space-y-2">
-      <div className="inline-flex flex-wrap items-center gap-1.5 rounded-full border border-[#e3ebe6] bg-[#f8faf8] p-1 shadow-2xs">
-        <span className="flex items-center gap-1 px-2 text-[11px] font-medium text-[#5a6b62]">
-          <Calendar className="h-3 w-3 text-[#0d6e5a]" />
-          {scheduledTime ? scheduledTime : formatDate(today)}
-        </span>
+    <div className="w-full space-y-2">
+      <div
+        className={
+          stacked
+            ? "grid grid-cols-2 gap-1.5 sm:grid-cols-4"
+            : "flex flex-col gap-1.5 xs:flex-row xs:flex-wrap sm:grid sm:grid-cols-2 lg:grid-cols-4"
+        }
+      >
         <button
           type="button"
           disabled={busy}
           onClick={() => log("taken")}
-          className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-xs transition hover:bg-emerald-700 disabled:opacity-50"
+          className={`${btnBase} bg-emerald-600 text-white hover:bg-emerald-700`}
           title="Confirm dose taken"
         >
-          <Check className="h-3 w-3" /> Taken
+          <Check className="h-3.5 w-3.5" /> Taken
         </button>
         <button
           type="button"
           disabled={busy}
           onClick={() => log("late")}
-          className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-1 text-[11px] font-bold text-white shadow-xs transition hover:bg-amber-600 disabled:opacity-50"
+          className={`${btnBase} bg-amber-500 text-white hover:bg-amber-600`}
           title="Took dose late"
         >
-          <Clock className="h-3 w-3" /> Late
+          <Clock className="h-3.5 w-3.5" /> Late
         </button>
         <button
           type="button"
           disabled={busy}
           onClick={() => log("missed")}
-          className="inline-flex items-center gap-1 rounded-full bg-rose-500 px-2 py-1 text-[11px] font-bold text-white shadow-xs transition hover:bg-rose-600 disabled:opacity-50"
+          className={`${btnBase} bg-rose-500 text-white hover:bg-rose-600`}
           title="Mark missed"
         >
-          <X className="h-3 w-3" /> Missed
+          <X className="h-3.5 w-3.5" /> Missed
         </button>
         <button
           type="button"
           disabled={busy}
           onClick={() => log("skipped")}
-          className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:bg-slate-300 disabled:opacity-50"
+          className={`${btnBase} bg-slate-200 text-slate-700 hover:bg-slate-300`}
           title="Skip dose"
         >
           Skip
         </button>
-        <button
-          type="button"
-          onClick={() => setShowNotes((v) => !v)}
-          className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1 text-[11px] font-medium text-[#5a6b62] border border-[#e3ebe6] transition hover:border-[#0d6e5a]"
-          title="Add note"
-        >
-          <StickyNote className="h-3 w-3 text-[#8a9a92]" /> Note
-        </button>
       </div>
+      <button
+        type="button"
+        onClick={() => setShowNotes((v) => !v)}
+        className="inline-flex items-center gap-1 text-[11px] font-medium text-[#5a6b62] hover:text-[#0d6e5a]"
+        title="Add note"
+      >
+        <StickyNote className="h-3 w-3 text-[#8a9a92]" />
+        {showNotes ? "Hide note" : "Add note"}
+      </button>
       {showNotes && (
         <input
           type="text"

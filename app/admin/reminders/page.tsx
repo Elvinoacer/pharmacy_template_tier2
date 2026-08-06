@@ -30,6 +30,7 @@ const TYPE_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   follow_up: HeartPulse,
   wellness: HeartPulse,
   birthday: Cake,
+  medication_dose: Pill,
   custom: Type,
 };
 

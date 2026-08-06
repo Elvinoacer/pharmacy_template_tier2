@@ -276,6 +276,7 @@ model User {
   segmentsCreated     Segment[]
   pushDevices         PushDevice[]
   dispatchedPrescriptions Prescription[] @relation("PrescriptionDispatcher")
+  orderDispenserNotes Order[]            @relation("OrderDispenser")
   symptomSessions     SymptomSession[]       @relation("SymptomSessionUser")
   symptomStaffReplies SymptomMessage[]       @relation("SymptomStaffSender")
   pharmacySettingsUpdated PharmacySettings[] @relation("PharmacySettingsUpdater")
@@ -1347,8 +1348,15 @@ model Order {
   /// If waived = one_time, the customer still pays on subsequent refills. If recurring_until, waived until `waivedUntil`.
   waivedScope  String?  @map("waived_scope") // one_time | recurring_until | recurring_permanent
   waivedUntil  DateTime? @map("waived_until")
-  /// Free-text staff notes about this order.
+  /// Free-text staff notes about this order (logistics / internal).
   notes        String?
+  /// Customer-provided clinical reason for the medication (reservation / OTC).
+  /// Kept separate from `notes` so M-Pesa phone and logistics text don't overwrite it.
+  reason       String?
+  /// Pharmacist/dispenser clinical note at handoff (condition observed, validity, counselling).
+  dispenserNote   String?  @map("dispenser_note")
+  dispenserNoteAt DateTime? @map("dispenser_note_at")
+  dispenserNoteById String? @map("dispenser_note_by") @db.Uuid
   /// Guest / walk-in contact when no customer profile is linked.
   guestName    String?  @map("guest_name")
   guestPhone   String?  @map("guest_phone")
@@ -1362,6 +1370,7 @@ model Order {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   customer  CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  dispenserNoteBy User? @relation("OrderDispenser", fields: [dispenserNoteById], references: [id], onDelete: SetNull)
   items     OrderItem[]
   payments  Payment[]
 

@@ -101,6 +101,23 @@ export function PortalOrderForm({
       </div>
 
       <div>
+        <label className="label-premium">Reason for this medication *</label>
+        <select name="reason" required className="input-premium" defaultValue="">
+          <option value="" disabled>
+            Select a reason…
+          </option>
+          <option value="for known condition">For a known condition</option>
+          <option value="recommended by pharmacist">Recommended by pharmacist</option>
+          <option value="returning customer">Returning customer / refill of OTC</option>
+          <option value="self care">Self-care / minor symptom</option>
+          <option value="other">Other</option>
+        </select>
+        <p className="mt-1 text-xs text-[#5a6b62]">
+          Our pharmacist reviews this before dispatch.
+        </p>
+      </div>
+
+      <div>
         <label className="label-premium">M-Pesa phone (for STK push)</label>
         <div className="relative">
           <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a9a92]" />

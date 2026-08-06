@@ -4,7 +4,10 @@ import { processDueReminders, launchCampaign, interpolateTemplate } from "@/app/
 import { sendDelivery } from "@/app/lib/services/delivery";
 import { writeAuditLog } from "@/app/lib/auth";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
-import { processAutoMissedDoses } from "@/app/lib/services/medication-schedule";
+import {
+  processAutoMissedDoses,
+  createDailyDoseReminders,
+} from "@/app/lib/services/medication-schedule";
 
 export const runtime = "nodejs";
 
@@ -347,6 +350,9 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Dose reminders must exist *before* processDueReminders fires them.
+  // Sequential: generate today's slots → fire due → escalate unanswered → auto-miss.
+  const doseRemindersCreated = await createDailyDoseReminders();
   const [reminders, campaigns, messages, adherenceAlerts, escalations, autoMissed] = await Promise.all([
     processDueReminders(),
     processScheduledCampaigns(),
@@ -357,6 +363,7 @@ export async function GET(request: NextRequest) {
   ]);
 
   await writeAuditLog(null, "cron_reminders_processed", "reminder", undefined, {
+    doseRemindersCreated,
     reminders,
     campaigns,
     messages,
@@ -364,7 +371,15 @@ export async function GET(request: NextRequest) {
     escalations,
     autoMissed,
   });
-  return Response.json({ reminders, campaigns, messages, adherenceAlerts, escalations, autoMissed });
+  return Response.json({
+    doseRemindersCreated,
+    reminders,
+    campaigns,
+    messages,
+    adherenceAlerts,
+    escalations,
+    autoMissed,
+  });
 }
 
 export async function POST(request: NextRequest) {

@@ -13,6 +13,7 @@ const TYPES = [
   { value: "follow_up", label: "Follow-up" },
   { value: "wellness", label: "Wellness" },
   { value: "birthday", label: "Birthday" },
+  { value: "medication_dose", label: "Medication dose" },
   { value: "custom", label: "Custom" },
 ];
 

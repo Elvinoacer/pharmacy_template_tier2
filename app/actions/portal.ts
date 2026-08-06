@@ -520,8 +520,12 @@ export async function portalCreateOrderAction(
   const medicationId = String(formData.get("medicationId") || "").trim();
   const quantity = Math.max(1, Number(formData.get("quantity") || 1));
   const couponCode = String(formData.get("couponCode") || "").trim().toUpperCase() || null;
+  const reason = String(formData.get("reason") || "").trim();
 
   if (!medicationId) return { error: "Please select a product." };
+  if (!reason) {
+    return { error: "Please select a reason for this medication so our pharmacist can review." };
+  }
 
   const med = await prisma.pharmacyInventory.findFirst({
     where: { id: medicationId, active: true, overTheCounter: true },
@@ -575,7 +579,9 @@ export async function portalCreateOrderAction(
           // Remote portal buys are reservations until staff dispatch on handoff.
           fulfillment: "reserve",
           guestPhone: portalPhone || null,
+          // Logistics-only notes — clinical reason lives on Order.reason.
           notes: portalPhone ? `M-Pesa phone: ${portalPhone}` : null,
+          reason,
           items: {
             create: {
               medicationId,
