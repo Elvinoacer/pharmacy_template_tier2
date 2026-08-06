@@ -93,7 +93,7 @@ export function MedicationPicker({
     };
   }, [open, query]);
 
-  // Resolve the currently-selected medication's display name when value is set externally.
+  // Resolve the currently-selected medication (name + live stock) when value is set externally.
   useEffect(() => {
     if (!value) {
       // Clearing the local selection when the value prop is cleared.
@@ -101,6 +101,9 @@ export function MedicationPicker({
       setSelected(null);
       return;
     }
+    // Already showing this id — keep current row (avoids refetch thrash on re-renders).
+    if (selected?.id === value) return;
+
     let cancelled = false;
     fetch(
       `/api/customers/search?resource=medications&id=${encodeURIComponent(value)}`,
@@ -108,13 +111,19 @@ export function MedicationPicker({
     )
       .then((r) => (r.ok ? r.json() : null))
       .then((j: { medication?: MedicationOption } | null) => {
-        if (!cancelled && j?.medication) setSelected(j.medication);
+        if (cancelled || !j?.medication) return;
+        setSelected(j.medication);
+        // Let the parent pick up live stockQty when value was set without a picker click
+        // (e.g. edit form hydrate). Parent should treat this like a selection.
+        onChange?.(j.medication);
       })
       .catch(() => {})
       .finally(() => {});
     return () => {
       cancelled = true;
     };
+    // Intentionally omit onChange/selected from deps — we only re-resolve when `value` changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const inputCls =
@@ -144,9 +153,11 @@ export function MedicationPicker({
               <span className="ml-1 text-xs opacity-70">
                 · KES {selected.price}
                 {selected.sku ? ` · ${selected.sku}` : ""}
-                {selected.stockQty <= selected.lowStockThreshold
-                  ? ` · low stock (${selected.stockQty})`
-                  : ` · ${selected.stockQty} in stock`}
+                {selected.stockQty <= 0
+                  ? " · out of stock"
+                  : selected.stockQty <= selected.lowStockThreshold
+                    ? ` · low stock (${selected.stockQty})`
+                    : ` · ${selected.stockQty} in stock`}
               </span>
             </>
           ) : (
@@ -215,8 +226,19 @@ export function MedicationPicker({
                         {m.prescriptionRequired ? " · Rx required" : " · OTC"}
                       </span>
                     </span>
-                    <span className="shrink-0 text-[10px] font-semibold opacity-70">
-                      KES {m.price} · {m.stockQty} in stock
+                    <span
+                      className={`shrink-0 text-[10px] font-semibold ${
+                        m.stockQty <= 0
+                          ? "text-rose-600"
+                          : m.stockQty <= m.lowStockThreshold
+                            ? "text-amber-600"
+                            : "opacity-70"
+                      }`}
+                    >
+                      KES {m.price} ·{" "}
+                      {m.stockQty <= 0
+                        ? "Out of stock"
+                        : `${m.stockQty} in stock`}
                     </span>
                   </button>
                 </li>
