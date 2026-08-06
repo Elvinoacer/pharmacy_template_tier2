@@ -8,6 +8,7 @@ import {
   processAutoMissedDoses,
   createDailyDoseReminders,
 } from "@/app/lib/services/medication-schedule";
+import { formatTime, toLocalDateInputValue } from "@/app/lib/time";
 
 export const runtime = "nodejs";
 
@@ -184,26 +185,13 @@ function doseSlotFromReminder(r: { title: string; scheduledFor: Date }): {
   scheduledDate: Date;
   scheduledTime: string;
 } {
-  const tz = process.env.TIMEZONE || "Africa/Nairobi";
   const fromTitle = r.title.match(/\bDose\s+(\d{2}:\d{2})\b/i);
-  const scheduledTime =
-    fromTitle?.[1] ??
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: tz,
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(r.scheduledFor);
+  const scheduledTime = fromTitle?.[1] ?? formatTime(r.scheduledFor);
 
   // Use local calendar day of the original send intent. For heavily snoozed
   // reminders scheduledFor may have rolled; prefer sentAt/created day via
   // scheduledFor still — createDaily uses local day of the slot.
-  const dateStr = new Intl.DateTimeFormat("en-CA", {
-    timeZone: tz,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(r.scheduledFor);
+  const dateStr = toLocalDateInputValue(r.scheduledFor);
 
   return {
     scheduledDate: new Date(dateStr + "T00:00:00Z"),

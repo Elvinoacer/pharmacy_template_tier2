@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { logDose, markReminderAnswered } from "@/app/lib/services/adherence";
+import { formatTime, toLocalDateInputValue } from "@/app/lib/time";
 
 export const runtime = "nodejs";
 
@@ -84,20 +85,8 @@ export async function POST(req: Request) {
 
     // Audit the snooze for the cap + escalation visibility.
     const fromTitle = reminder.title.match(/\bDose\s+(\d{2}:\d{2})\b/i);
-    const slotTime =
-      fromTitle?.[1] ??
-      new Intl.DateTimeFormat("en-GB", {
-        timeZone: process.env.TIMEZONE || "Africa/Nairobi",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }).format(reminder.scheduledFor);
-    const dateStr = new Intl.DateTimeFormat("en-CA", {
-      timeZone: process.env.TIMEZONE || "Africa/Nairobi",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(reminder.scheduledFor);
+    const slotTime = fromTitle?.[1] ?? formatTime(reminder.scheduledFor);
+    const dateStr = toLocalDateInputValue(reminder.scheduledFor);
 
     await prisma.adherenceEscalation.create({
       data: {

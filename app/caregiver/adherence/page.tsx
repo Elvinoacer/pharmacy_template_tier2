@@ -6,6 +6,7 @@ import { CaregiverShell } from "@/app/components/caregiver/CaregiverShell";
 import { getActiveCaregiverLinks } from "@/app/lib/services/caregiver-permissions";
 import { getAdherenceStatsForCustomer, getAdherencePerPrescription } from "@/app/lib/services/adherence";
 import { DoseConfirmButton } from "@/app/components/caregiver/DoseConfirmButton";
+import { formatDate, PROJECT_LOCALE, PROJECT_TIMEZONE } from "@/app/lib/time";
 import { Activity, TrendingUp, Calendar, Award, AlertTriangle, ShieldAlert, CheckCircle2, UserCheck, ArrowRight } from "lucide-react";
 
 export const metadata = { title: "Adherence Command Center" };
@@ -219,10 +220,16 @@ export default async function CaregiverAdherencePage() {
                           title={`${d.date}: ${d.status}`}
                         >
                           <p className="text-[10px] uppercase font-semibold opacity-80">
-                            {new Date(d.date + "T00:00:00Z").toLocaleDateString("en-KE", { weekday: "short", timeZone: "Africa/Nairobi" })}
+                            {new Date(d.date + "T00:00:00Z").toLocaleDateString(PROJECT_LOCALE, {
+                              weekday: "short",
+                              timeZone: PROJECT_TIMEZONE,
+                            })}
                           </p>
                           <p className="text-xs font-extrabold mt-0.5">
-                            {new Date(d.date + "T00:00:00Z").toLocaleDateString("en-KE", { day: "numeric", timeZone: "Africa/Nairobi" })}
+                            {new Date(d.date + "T00:00:00Z").toLocaleDateString(PROJECT_LOCALE, {
+                              day: "numeric",
+                              timeZone: PROJECT_TIMEZONE,
+                            })}
                           </p>
                           <p className="mt-1 text-[9px] font-extrabold uppercase tracking-tight">
                             {d.status === "none" ? "—" : d.status}
@@ -296,7 +303,7 @@ export default async function CaregiverAdherencePage() {
                           <div>
                             <span className="font-bold text-[#0c1a14]">{log.prescription.medicineName}</span>
                             <span className="ml-2 text-[11px] text-[#8a9a92]">
-                              {new Date(log.scheduledDate).toLocaleDateString()} {log.scheduledTime ? `@ ${log.scheduledTime}` : ""}
+                              {formatDate(log.scheduledDate)}{log.scheduledTime ? ` @ ${log.scheduledTime}` : ""}
                             </span>
                           </div>
 

@@ -6,6 +6,7 @@ import { updateProfileAction } from "@/app/actions/portal";
 import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel } from "@/app/components/portal/PortalWidgets";
 import ProfileForm from "@/app/components/portal/ProfileForm";
+import { toLocalDateInputValue } from "@/app/lib/time";
 import { Mail, ShieldCheck, AlertTriangle, MapPin, Phone, Heart } from "lucide-react";
 
 export const metadata = { title: "My profile" };
@@ -117,7 +118,7 @@ export default async function PortalProfilePage() {
                 fullName: profile.fullName,
                 phone: profile.phone || "",
                 dateOfBirth: profile.dateOfBirth
-                  ? profile.dateOfBirth.toISOString().slice(0, 10)
+                  ? toLocalDateInputValue(profile.dateOfBirth)
                   : "",
                 gender: profile.gender || "",
                 addressLine1: profile.addressLine1 || "",

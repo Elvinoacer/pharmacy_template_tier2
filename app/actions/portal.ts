@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser, addTimelineEvent, writeAuditLog } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { createRefillRequest, createFeedback } from "@/app/lib/services/crm";
-import { ageSegmentFromDob, isFuture } from "@/app/lib/time";
+import { ageSegmentFromDob, isFuture, parseLocalDateInput } from "@/app/lib/time";
 
 export type ActionState = { error?: string; success?: string };
 
@@ -97,7 +97,7 @@ export async function updateProfileAction(
     return { error: "Date of birth cannot be in the future." };
   }
 
-  const dob = dobRaw ? new Date(dobRaw) : null;
+  const dob = dobRaw ? parseLocalDateInput(dobRaw) : null;
   // Auto-tag age segment based on DOB.
   const ageSegment = ageSegmentFromDob(dob);
 

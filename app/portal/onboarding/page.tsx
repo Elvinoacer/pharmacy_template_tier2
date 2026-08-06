@@ -5,6 +5,7 @@ import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel } from "@/app/components/portal/PortalWidgets";
 import { updateProfileAction } from "@/app/actions/portal";
 import ProfileForm from "@/app/components/portal/ProfileForm";
+import { toLocalDateInputValue } from "@/app/lib/time";
 import { CheckCircle2, UserPlus, Shield, Heart, Sparkles } from "lucide-react";
 
 export const metadata = { title: "Complete your profile" };
@@ -101,7 +102,7 @@ export default async function OnboardingPage() {
                 fullName: profile.fullName || "",
                 phone: profile.phone || "",
                 dateOfBirth: profile.dateOfBirth
-                  ? new Date(profile.dateOfBirth).toISOString().slice(0, 10)
+                  ? toLocalDateInputValue(profile.dateOfBirth)
                   : "",
                 gender: profile.gender || "",
                 addressLine1: profile.addressLine1 || "",

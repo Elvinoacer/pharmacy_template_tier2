@@ -215,7 +215,7 @@ export default function CampaignForm({
               className="input-admin pl-9"
             />
             <p className="mt-1 text-[10px] admin-soft">
-              Cron will auto-launch this campaign at the scheduled time (Africa/Nairobi).
+              Cron will auto-launch this campaign at the scheduled local time.
             </p>
           </div>
         )}

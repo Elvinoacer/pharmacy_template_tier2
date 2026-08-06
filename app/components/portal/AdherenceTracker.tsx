@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, X, Clock, StickyNote, AlertCircle } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import { localTodayStr } from "@/app/lib/time";
 
 type DoseStatus = "taken" | "missed" | "skipped" | "late";
 
@@ -31,7 +32,7 @@ export function AdherenceTracker({
   const [logged, setLogged] = useState<DoseStatus | null>(initialStatus || null);
   const [notes, setNotes] = useState("");
   const [showNotes, setShowNotes] = useState(false);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localTodayStr();
 
   async function log(status: DoseStatus) {
     setBusy(true);

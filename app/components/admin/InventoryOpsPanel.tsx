@@ -9,7 +9,7 @@ import {
   type ActionState,
 } from "@/app/actions/admin";
 import { toast } from "@/app/components/Toaster";
-import { formatDate, formatDateTime } from "@/app/lib/time";
+import { formatDate, formatDateTime, localTodayStr } from "@/app/lib/time";
 import {
   PackagePlus,
   SlidersHorizontal,
@@ -79,7 +79,7 @@ export function InventoryOpsPanel({
 
   const low = currentStock > 0 && currentStock <= lowStockThreshold;
   const out = currentStock <= 0;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localTodayStr();
 
   const tabs = [
     { id: "receive" as const, label: "Receive", icon: PackagePlus },

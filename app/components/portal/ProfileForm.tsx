@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import type { ActionState } from "@/app/actions/portal";
 import { Check, AlertCircle, Save } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import { localTodayStr } from "@/app/lib/time";
 
 type Profile = {
   fullName: string;
@@ -97,8 +98,8 @@ export default function ProfileForm({
     }
   }, [state?.success]);
 
-  // Add a max attribute to the dateOfBirth input to prevent future dates.
-  const today = new Date().toISOString().slice(0, 10);
+  // Max DOB is today in the project timezone (not UTC).
+  const today = localTodayStr();
 
   return (
     <form action={formAction} className="space-y-5">

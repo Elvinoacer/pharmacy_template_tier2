@@ -157,8 +157,8 @@ export default function AdminMessageForm({
           />
         </div>
         <p className="mt-1 text-[10px] admin-soft">
-          Leave empty to send immediately. Times are in Africa/Nairobi. A cron job
-          will deliver scheduled messages at the right moment.
+          Leave empty to send immediately. Times use the pharmacy timezone. A cron
+          job delivers scheduled messages at the correct local moment.
         </p>
       </div>
 

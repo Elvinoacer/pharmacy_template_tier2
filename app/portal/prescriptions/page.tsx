@@ -13,7 +13,7 @@ import {
   getTodaysDosesForCustomer,
   processAutoMissedDoses,
 } from "@/app/lib/services/medication-schedule";
-import { formatDate } from "@/app/lib/time";
+import { formatDate, formatTime } from "@/app/lib/time";
 import {
   FileText,
   Plus,
@@ -103,12 +103,7 @@ export default async function PortalPrescriptionsPage() {
     ? Math.min(100, Math.round((totalTakenDoses / totalExpectedDoses) * 100))
     : 100;
 
-  const nowTime = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Nairobi",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(new Date());
+  const nowTime = formatTime(new Date());
 
   const pendingDoseItems: PendingDoseItem[] = todaysDoses
     .filter((d) => (!d.doseLog || d.doseLog.status === "unknown") && d.timeOfDay <= nowTime)

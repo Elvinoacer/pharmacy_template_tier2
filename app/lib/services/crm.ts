@@ -6,6 +6,7 @@ import { addTimelineEvent } from "@/app/lib/timeline";
 import { sendDelivery } from "@/app/lib/services/delivery";
 import { dispatchPushToUser, dispatchPushToStaff } from "@/app/lib/services/push";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
+import { formatTime, toLocalDateInputValue } from "@/app/lib/time";
 
 export async function getCustomerDashboard(customerId: string) {
   const [profile, prescriptions, refills, notifications, loyalty, reminders, timeline] =
@@ -1086,12 +1087,7 @@ export async function launchCampaign(campaignId: string, actorId: string) {
 function resolveDoseSlotTime(reminder: { title: string; scheduledFor: Date }): string {
   const fromTitle = reminder.title.match(/\bDose\s+(\d{2}:\d{2})\b/i);
   if (fromTitle?.[1]) return fromTitle[1];
-  return new Intl.DateTimeFormat("en-GB", {
-    timeZone: process.env.TIMEZONE || "Africa/Nairobi",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(reminder.scheduledFor);
+  return formatTime(reminder.scheduledFor);
 }
 
 /**
@@ -1104,27 +1100,14 @@ async function isDoseAlreadyResolved(reminder: {
   scheduledFor: Date;
 }): Promise<boolean> {
   if (!reminder.relatedId) return false;
-  const tz = process.env.TIMEZONE || "Africa/Nairobi";
-  const dateStr = new Intl.DateTimeFormat("en-CA", {
-    timeZone: tz,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(reminder.scheduledFor);
+  const dateStr = toLocalDateInputValue(reminder.scheduledFor);
   // Prefer original slot date from title window — for snoozed reminders
   // scheduledFor may roll past midnight; use local day of original send intent
   // by checking both today and yesterday around the slot.
   const slotTime = resolveDoseSlotTime(reminder);
   const candidates = [dateStr];
   const y = new Date(reminder.scheduledFor.getTime() - 24 * 60 * 60 * 1000);
-  candidates.push(
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: tz,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(y),
-  );
+  candidates.push(toLocalDateInputValue(y));
 
   for (const d of candidates) {
     const log = await prisma.doseLog
@@ -1329,12 +1312,7 @@ export async function processDueReminders(): Promise<{ processedCount: number; f
                   prescriptionId,
                   scheduleId,
                   scheduledTime,
-                  takenOn: new Intl.DateTimeFormat("en-CA", {
-                    timeZone: process.env.TIMEZONE || "Africa/Nairobi",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  }).format(reminder.scheduledFor),
+                  takenOn: toLocalDateInputValue(reminder.scheduledFor),
                 }
               : {}),
           },
