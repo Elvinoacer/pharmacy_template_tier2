@@ -237,44 +237,54 @@ export default async function HomePage() {
       {/* Quick actions */}
       <section className="px-4 pb-8 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {QUICK_ACTIONS.map((a) => (
-            <Link
-              key={a.title}
-              href={a.href}
-              className="card-lift flex items-center gap-3 rounded-2xl border border-white/70 bg-white/85 p-4 shadow-sm backdrop-blur"
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-lg">
-                {a.icon}
-              </span>
-              <span>
-                <span className="block text-sm font-semibold text-[#0c1a14]">{a.title}</span>
-                <span className="block text-xs text-[#5a6b62]">{a.desc}</span>
-              </span>
-            </Link>
+          {QUICK_ACTIONS.map((a, i) => (
+            <Reveal key={a.title} delay={i * 80}>
+              <Link
+                href={a.href}
+                className="card-lift group flex items-center gap-3 rounded-2xl border border-white/70 bg-white/85 p-4 shadow-sm backdrop-blur hover:border-teal-200/60 hover:bg-white"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-lg transition duration-300 group-hover:scale-110 group-hover:bg-teal-100 group-hover:shadow-md">
+                  {a.icon}
+                </span>
+                <span>
+                  <span className="block text-sm font-semibold text-[#0c1a14] transition-colors duration-300 group-hover:text-teal-800">{a.title}</span>
+                  <span className="block text-xs text-[#5a6b62]">{a.desc}</span>
+                </span>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* Trust band */}
       <section className="px-4 py-12 sm:px-6">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#084c3f] via-[#0d6e5a] to-[#0f766e] px-6 py-12 text-white shadow-2xl shadow-teal-900/25 sm:px-12">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {trustIndicators.map((s) => (
-              <div key={s.label} className="text-center sm:text-left">
-                <p
-                  className="text-3xl font-semibold tracking-tight sm:text-4xl"
-                  style={{ fontFamily: "var(--font-display), serif" }}
-                >
-                  {s.value}
-                </p>
-                <p className="mt-1 text-sm text-teal-100/80">{s.label}</p>
-              </div>
+        <div
+          className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#084c3f] via-[#0d6e5a] to-[#0f766e] px-6 py-12 text-white shadow-2xl shadow-teal-900/25 sm:px-12"
+          style={{ backgroundSize: "200% 200%", animation: "hero-bg-drift 25s ease-in-out infinite alternate" }}
+        >
+          {/* Subtle inner glow */}
+          <div className="absolute inset-0 bg-gradient-to-t from-teal-300/8 via-transparent to-transparent pointer-events-none" />
+          <div className="relative grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {trustIndicators.map((s, i) => (
+              <Reveal key={s.label} delay={i * 100}>
+                <div className="text-center sm:text-left">
+                  <p
+                    className="text-3xl font-semibold tracking-tight sm:text-4xl"
+                    style={{ fontFamily: "var(--font-display), serif", animationDelay: `${i * 0.15 + 0.3}s` }}
+                  >
+                    <span className="animate-number-pop" style={{ animationDelay: `${i * 0.15 + 0.3}s`, display: "inline-block" }}>
+                      {s.value}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-sm text-teal-100/80">{s.label}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured services */}
+{/* Featured services */}
       <section className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <Reveal>
@@ -283,8 +293,11 @@ export default async function HomePage() {
                 eyebrow="Our services"
                 title="Everything you need from a modern community pharmacy"
               />
-              <Link href="/services" className="text-sm font-semibold text-teal-800 hover:underline">
-                View all services →
+              <Link href="/services" className="text-sm font-semibold text-teal-800 hover:underline group inline-flex items-center gap-1">
+                View all services
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="transition-transform duration-300 group-hover:translate-x-0.5">
+                  <path d="M5 12h14M12 6l6 6-6 6" />
+                </svg>
               </Link>
             </div>
           </Reveal>
@@ -293,7 +306,7 @@ export default async function HomePage() {
               <Reveal key={s.slug} delay={i * 60}>
                 <Link
                   href={`/services/${s.slug}`}
-                  className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-white/60 bg-white shadow-[0_16px_50px_rgba(8,40,32,0.08)]"
+                  className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-white/60 bg-white shadow-[0_16px_50px_rgba(8,40,32,0.08)] hover:shadow-[0_24px_60px_rgba(8,40,32,0.15)] transition-shadow duration-500"
                 >
                   <div className="relative h-44 overflow-hidden bg-[#eef5f1]">
                     {s.imageUrl ? (
@@ -313,16 +326,16 @@ export default async function HomePage() {
                   </div>
                   <div className="flex flex-1 flex-col p-5">
                     <h3
-                      className="text-lg font-semibold text-[#0c1a14]"
+                      className="text-lg font-semibold text-[#0c1a14] transition-colors duration-300 group-hover:text-teal-800"
                       style={{ fontFamily: "var(--font-display), serif" }}
                     >
                       {s.title}
                     </h3>
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-[#5a6b62]">{s.short}</p>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-800">
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-800 transition-transform duration-300 group-hover:translate-x-1">
                       Learn more
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                        <path d="M5 12h14M13 6l6 6-6 6" />
+                        <path d="M5 12h14M12 6l6 6-6 6" />
                       </svg>
                     </span>
                   </div>
@@ -337,13 +350,13 @@ export default async function HomePage() {
       <section className="px-4 py-12 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <div className="grid overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-[0_24px_70px_rgba(8,40,32,0.1)] lg:grid-cols-2">
-              <div className="relative min-h-[260px] lg:min-h-[400px]">
+            <div className="grid overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-[0_24px_70px_rgba(8,40,32,0.1)] lg:grid-cols-2 group/card">
+              <div className="relative min-h-[260px] lg:min-h-[400px] overflow-hidden">
                 <Image
                   src="/images/gallery/modern_care_tools.webp"
                   alt="Pharmacist consulting with a patient"
                   fill
-                  className="object-cover"
+                  className="object-cover transition duration-[1.2s] ease-out group-hover/card:scale-[1.03]"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>
@@ -450,7 +463,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
+{/* Testimonials */}
       <section className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <Reveal>
@@ -463,16 +476,16 @@ export default async function HomePage() {
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {testimonials.map((t, i) => (
               <Reveal key={t.name} delay={i * 70}>
-                <figure className="card-lift flex h-full flex-col rounded-3xl border border-white/70 bg-white/85 p-6 shadow-sm backdrop-blur">
+                <figure className="card-lift group flex h-full flex-col rounded-3xl border border-white/70 bg-white/85 p-6 shadow-sm backdrop-blur hover:border-teal-200/60 hover:bg-white">
                   <div className="mb-3 flex gap-0.5 text-amber-400" aria-label={`${t.rating} out of 5 stars`}>
                     {Array.from({ length: t.rating }).map((_, si) => (
-                      <svg key={si} width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <svg key={si} width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="transition-transform duration-300" style={{ transitionDelay: `${si * 40 + i * 70}ms` }}>
                         <path d="M12 2l2.4 7.2H22l-6 4.8 2.3 7.2L12 16.8 5.7 21.2 8 14 2 9.2h7.6L12 2z" />
                       </svg>
                     ))}
                   </div>
                   <blockquote className="flex-1 text-sm leading-relaxed text-[#3d4f46]">
-                    “{t.quote}”
+                    &ldquo;{t.quote}&rdquo;
                   </blockquote>
                   <figcaption className="mt-5 flex items-center gap-3 border-t border-teal-900/5 pt-4">
                     <Image
@@ -480,7 +493,7 @@ export default async function HomePage() {
                       alt=""
                       width={40}
                       height={40}
-                      className="h-10 w-10 rounded-full object-cover"
+                      className="h-10 w-10 rounded-full object-cover ring-2 ring-teal-100/40"
                     />
                     <div>
                       <p className="text-sm font-semibold text-[#0c1a14]">{t.name}</p>
@@ -503,8 +516,11 @@ export default async function HomePage() {
                 eyebrow="Health library"
                 title="Practical advice from our pharmacists"
               />
-              <Link href="/health" className="text-sm font-semibold text-teal-800 hover:underline">
-                All articles →
+              <Link href="/health" className="text-sm font-semibold text-teal-800 hover:underline group inline-flex items-center gap-1">
+                All articles
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="transition-transform duration-300 group-hover:translate-x-0.5">
+                  <path d="M5 12h14M12 6l6 6-6 6" />
+                </svg>
               </Link>
             </div>
           </Reveal>
@@ -513,7 +529,7 @@ export default async function HomePage() {
               <Reveal key={a.slug} delay={i * 70}>
                 <Link
                   href={`/health/${a.slug}`}
-                  className="card-lift group block overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm"
+                  className="card-lift group block overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm hover:shadow-[0_20px_50px_rgba(8,40,32,0.12)] transition-shadow duration-500"
                 >
                   <div className="relative h-44 overflow-hidden">
                     <Image
@@ -529,7 +545,7 @@ export default async function HomePage() {
                       {a.category} · {a.readTime}
                     </p>
                     <h3
-                      className="mt-2 text-lg font-semibold text-[#0c1a14]"
+                      className="mt-2 text-lg font-semibold text-[#0c1a14] transition-colors duration-300 group-hover:text-teal-800"
                       style={{ fontFamily: "var(--font-display), serif" }}
                     >
                       {a.title}
@@ -551,15 +567,23 @@ export default async function HomePage() {
           </Reveal>
           <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
             {gallery.slice(0, 6).map((g, i) => (
-              <div
-                key={g.src}
-                className={`relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-2 row-span-2 min-h-[220px] md:min-h-[320px]" : "min-h-[140px] md:min-h-[160px]"}`}
-              >
-                <Image src={g.src} alt={g.alt} fill className="object-cover" sizes="(max-width: 768px) 50vw, 33vw" />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent p-3">
-                  <p className="text-xs font-medium text-white">{g.caption}</p>
+              <Reveal key={g.src} delay={i * 50}>
+                <div
+                  className={`group relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-2 row-span-2 min-h-[220px] md:min-h-[320px]" : "min-h-[140px] md:min-h-[160px]"}`}
+                >
+                  <Image
+                    src={g.src}
+                    alt={g.alt}
+                    fill
+                    className="object-cover transition duration-[1.2s] ease-out group-hover:scale-105"
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent p-3 transition-opacity duration-300 group-hover:opacity-90">
+                    <p className="text-xs font-medium text-white">{g.caption}</p>
+                  </div>
+                  <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-[inherit] pointer-events-none" />
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
