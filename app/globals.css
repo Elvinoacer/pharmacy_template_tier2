@@ -1616,3 +1616,10 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 .note-drag-handle:active { cursor: grabbing; }
 .note-dragging { opacity: 0.4; }
 .note-drag-over { border-top: 2px solid var(--admin-accent) !important; }
+
+@media (prefers-color-scheme: dark){
+ .modal-card{background:#111827;color:#f3f4f6;border:1px solid #374151;}
+ .modal-card h3,.modal-card .label-admin,.modal-card .text-sm{color:#f3f4f6;}
+ .modal-card>div:first-child,.modal-card>div:last-child{border-color:#374151;}
+ .modal-card button:hover{background:#1f2937;color:#fff;}
+}
