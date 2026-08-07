@@ -977,7 +977,7 @@ select.input-admin option, select.admin-text option {
 }
 
 .animate-subtle-zoom {
-  animation: subtleZoom 12s ease-in-out infinite alternate;
+  animation: subtle-zoom 12s ease-in-out infinite alternate;
 }
 
 .animate-gentle-pulse {
