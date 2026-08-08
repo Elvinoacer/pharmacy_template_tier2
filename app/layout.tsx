@@ -22,6 +22,7 @@ const fraunces = Fraunces({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 const jetbrains = JetBrains_Mono({

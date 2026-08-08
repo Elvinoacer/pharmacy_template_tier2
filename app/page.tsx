@@ -104,36 +104,44 @@ export default async function HomePage() {
             </div>
 
             <h1
-              className="max-w-xl text-4xl font-semibold leading-[1.08] tracking-tight text-[#0c1a14] sm:text-5xl lg:text-[3.4rem]"
+              className="max-w-2xl text-4xl font-bold leading-[1.12] tracking-tight text-[#0c1a14] sm:text-5xl lg:text-[3.6rem]"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               <span
+                className="block"
                 style={{
                   opacity: 0,
-                  display: "inline-block",
-                  animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards",
+                  animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards",
                 }}
               >
                 Care you can{" "}
+                <span className="relative inline-block px-1">
+                  <span className="gradient-text font-extrabold">trust</span>
+                  <svg
+                    className="absolute -bottom-1 left-0 w-full text-emerald-500/35"
+                    height="8"
+                    viewBox="0 0 100 8"
+                    preserveAspectRatio="none"
+                    fill="none"
+                  >
+                    <path
+                      d="M2 6 C 30 1, 70 1, 98 6"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+                ,
               </span>
               <span
-                className="gradient-text"
+                className="mt-1.5 block font-normal italic text-[#0b5c4b]"
                 style={{
                   opacity: 0,
-                  display: "inline-block",
                   animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards",
                 }}
               >
-                trust
-              </span>
-              <span
-                style={{
-                  opacity: 0,
-                  display: "inline-block",
-                  animation: "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards",
-                }}
-              >
-                , right in your neighbourhood
+                right in your neighbourhood.
               </span>
             </h1>
 
