@@ -98,47 +98,50 @@ export function DoseConfirmButton({
   }
 
   return (
-    <div className="space-y-1.5">
-      <div className="inline-flex flex-wrap items-center gap-1 rounded-full bg-[#f4f7f4] p-1">
-        <Calendar className="mx-1 h-3 w-3 text-[#8a9a92]" />
-        <span className="text-[10px] text-[#8a9a92] mr-1">
-          {formatDate(today)}{scheduledTime ? ` · ${scheduledTime}` : ""}
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5 text-xs text-[#8a9a92]">
+        <Calendar className="h-3.5 w-3.5 shrink-0" />
+        <span>
+          {formatDate(today)}
+          {scheduledTime ? ` · ${scheduledTime}` : ""}
         </span>
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <button
           type="button"
           disabled={busy}
           onClick={() => log("taken")}
-          className="inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-emerald-600 disabled:cursor-wait disabled:opacity-60"
           title="Took this dose"
         >
-          <Check className="h-2.5 w-2.5" /> Taken
+          <Check className="h-4 w-4" /> {busy ? "…" : "Taken"}
         </button>
         <button
           type="button"
           disabled={busy}
           onClick={() => log("late")}
-          className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-orange-600 disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-orange-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-orange-600 disabled:cursor-wait disabled:opacity-60"
           title="Took it late"
         >
-          <Clock className="h-2.5 w-2.5" /> Late
+          <Clock className="h-4 w-4" /> Late
         </button>
         <button
           type="button"
           disabled={busy}
           onClick={() => log("missed")}
-          className="inline-flex items-center gap-1 rounded-full bg-rose-500 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-rose-600 disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-rose-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-rose-600 disabled:cursor-wait disabled:opacity-60"
           title="Missed this dose"
         >
-          <X className="h-2.5 w-2.5" /> Missed
+          <X className="h-4 w-4" /> Missed
         </button>
         <button
           type="button"
           disabled={busy}
           onClick={() => log("skipped")}
-          className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-amber-600 disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3 text-sm font-bold text-white transition active:scale-[0.98] hover:bg-amber-600 disabled:cursor-wait disabled:opacity-60"
           title="Skipped intentionally"
         >
-          <Clock className="h-2.5 w-2.5" /> Skip
+          Skip
         </button>
       </div>
     </div>
