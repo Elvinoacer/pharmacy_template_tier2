@@ -24,17 +24,18 @@ export function DoseReminderBanner({
 }) {
   const [items, setItems] = useState<PendingDoseItem[]>(pendingDoses);
   const [busyId, setBusyId] = useState<string | null>(null);
-
-  if (!items || items.length === 0) return null;
+  const [busyStatus, setBusyStatus] = useState<"taken" | "late" | "skipped" | null>(null);
 
   async function handleLog(item: PendingDoseItem, status: "taken" | "late" | "skipped") {
     setBusyId(item.scheduleId);
+    setBusyStatus(status);
     const todayStr = localTodayStr();
 
     try {
       const res = await fetch("/api/portal/adherence", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           prescriptionId: item.prescriptionId,
           status,
@@ -62,8 +63,11 @@ export function DoseReminderBanner({
       toast.error(err instanceof Error ? err.message : "Could not update dose status");
     } finally {
       setBusyId(null);
+      setBusyStatus(null);
     }
   }
+
+  if (!items || items.length === 0) return null;
 
   return (
     <div className="mb-5 overflow-hidden rounded-2xl border border-amber-300/40 bg-gradient-to-br from-amber-50 via-white to-emerald-50/60 p-3 shadow-sm sm:mb-6 sm:p-4">
@@ -115,25 +119,28 @@ export function DoseReminderBanner({
                   type="button"
                   disabled={busy}
                   onClick={() => handleLog(item, "taken")}
-                  className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-emerald-700 disabled:opacity-50 sm:min-h-10 sm:text-xs"
+                  className="inline-flex min-h-12 w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-3 text-base font-bold text-white shadow-xs transition active:scale-[0.98] hover:bg-emerald-700 disabled:cursor-wait disabled:opacity-60 sm:min-h-11 sm:py-2.5 sm:text-sm"
                 >
-                  <Check className="h-4 w-4" /> Taken
+                  <Check className="h-5 w-5 sm:h-4 sm:w-4" />
+                  {busy && busyStatus === "taken" ? "Submitting…" : "Taken"}
                 </button>
                 <button
                   type="button"
                   disabled={busy}
                   onClick={() => handleLog(item, "late")}
-                  className="inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-amber-600 disabled:opacity-50"
+                  className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3 py-2.5 text-sm font-bold text-white shadow-xs transition active:scale-[0.98] hover:bg-amber-600 disabled:cursor-wait disabled:opacity-60"
                 >
-                  <Clock className="h-3.5 w-3.5" /> Late
+                  <Clock className="h-4 w-4" />
+                  {busy && busyStatus === "late" ? "Submitting…" : "Late"}
                 </button>
                 <button
                   type="button"
                   disabled={busy}
                   onClick={() => handleLog(item, "skipped")}
-                  className="inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-300 disabled:opacity-50"
+                  className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-slate-200 px-3 py-2.5 text-sm font-bold text-slate-700 transition active:scale-[0.98] hover:bg-slate-300 disabled:cursor-wait disabled:opacity-60"
                 >
-                  <X className="h-3.5 w-3.5" /> Skip
+                  <X className="h-4 w-4" />
+                  {busy && busyStatus === "skipped" ? "Skipping…" : "Skip"}
                 </button>
               </div>
             </li>

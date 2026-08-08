@@ -17,8 +17,10 @@ const Body = z.object({
   scheduleId: z.string().uuid().nullable().optional(),
   /// When this log answers a reminder, the reminder is marked "answered".
   reminderId: z.string().uuid().nullable().optional(),
-  /// Explicit action from notification buttons (snooze re-schedules the reminder).
-  action: z.enum(["snooze"]).optional(),
+  /// Explicit action from notification buttons.
+  /// Accept taken/skip/snooze so clients can send the button id directly;
+  /// snooze re-schedules the reminder instead of writing a dose log.
+  action: z.enum(["taken", "skip", "skipped", "snooze", "later"]).optional(),
 });
 
 const SNOOZE_MINUTES = 10;
@@ -38,7 +40,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
-  const isSnooze = parsed.action === "snooze" || parsed.status === "snooze";
+  // Normalize notification button ids → canonical dose status.
+  // Clients may send either `status` or `action` (button id). Never default
+  // an unknown action to "skipped".
+  const actionToStatus = (action: string | undefined): typeof parsed.status => {
+    if (!action) return undefined;
+    const a = action.toLowerCase();
+    if (a === "taken") return "taken";
+    if (a === "skip" || a === "skipped") return "skipped";
+    if (a === "snooze" || a === "later") return "snooze";
+    return undefined;
+  };
+  const resolvedStatus = parsed.status ?? actionToStatus(parsed.action);
+  const isSnooze =
+    parsed.action === "snooze" ||
+    parsed.action === "later" ||
+    resolvedStatus === "snooze";
 
   // ── Snooze: re-schedule the same reminder instead of logging a dose ──
   if (isSnooze) {
@@ -113,13 +130,12 @@ export async function POST(req: Request) {
     });
   }
 
-  if (!parsed.prescriptionId || !parsed.status || !parsed.takenOn) {
+  if (!parsed.prescriptionId || !resolvedStatus || !parsed.takenOn) {
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
-  if (parsed.status === "snooze") {
-    return NextResponse.json({ error: "invalid_body" }, { status: 400 });
-  }
+  // Snooze already returned above — remaining statuses are dose logs only.
+  const doseStatus = resolvedStatus as "taken" | "missed" | "skipped" | "late";
 
   // Verify the prescription belongs to this customer.
   const rx = await prisma.prescription.findFirst({
@@ -134,7 +150,7 @@ export async function POST(req: Request) {
   const result = await logDose({
     customerId: user.customerId,
     prescriptionId: parsed.prescriptionId,
-    status: parsed.status,
+    status: doseStatus,
     scheduledDate: new Date(parsed.takenOn + "T00:00:00Z"),
     scheduledTime: parsed.scheduledTime ?? null,
     scheduleId: parsed.scheduleId ?? null,

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Bell, BellOff, Check, X, AlertCircle, Zap, Smartphone } from "lucide-react";
 import { usePushNotifications } from "@/app/lib/firebase/usePush";
+import { localTodayStr } from "@/app/lib/time";
 
 const DISMISS_KEY = "aether-push-banner-dismissed";
 
@@ -27,13 +28,16 @@ export function PushNotificationCenter({ audience = "portal" }: { audience?: Aud
   }, []);
 
   // Auto-dismiss toast; dose toasts stay longer so action buttons remain usable.
+  // Dose toasts pause auto-dismiss while an action is in flight (see PushToast
+  // calling clearMessage only after success / explicit close).
   useEffect(() => {
     if (!lastMessage) return;
     window.dispatchEvent(new Event("aether:attention-refresh"));
     const isDose =
       lastMessage.data?.actions === "medication_dose" ||
       lastMessage.data?.type === "medication_dose";
-    const t = setTimeout(clearMessage, isDose ? 20000 : 8000);
+    // Dose: long window; non-dose: short. PushToast cancels close while busy.
+    const t = setTimeout(clearMessage, isDose ? 45000 : 8000);
     return () => clearTimeout(t);
   }, [lastMessage, clearMessage]);
 
@@ -369,20 +373,35 @@ function PushToast({
   const drugImage = data?.image?.trim() || "";
   const [busy, setBusy] = useState<"taken" | "skip" | "snooze" | null>(null);
   const [done, setDone] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const runDoseAction = async (action: "taken" | "skip" | "snooze") => {
     if (busy || done) return;
     setBusy(action);
+    setError(null);
     try {
-      const status = action === "taken" ? "taken" : action === "skip" ? "skipped" : "snooze";
+      // Explicit status map — never fall through to "skipped".
+      const statusMap = {
+        taken: "taken",
+        skip: "skipped",
+        snooze: "snooze",
+      } as const;
+      const status = statusMap[action];
+
+      // Fall back to project-local today if push payload omitted takenOn.
+      const takenOn =
+        data?.takenOn && /^\d{4}-\d{2}-\d{2}$/.test(data.takenOn)
+          ? data.takenOn
+          : localTodayStr();
+
       const res = await fetch("/api/portal/adherence", {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          prescriptionId: data?.prescriptionId,
+          prescriptionId: data?.prescriptionId || undefined,
           status,
-          takenOn: data?.takenOn,
+          takenOn,
           scheduledTime: data?.scheduledTime || null,
           scheduleId: data?.scheduleId || null,
           reminderId: data?.reminderId || null,
@@ -390,7 +409,12 @@ function PushToast({
         }),
       });
       if (!res.ok) {
-        setDone(action === "snooze" ? "Snooze limit reached" : "Could not update");
+        const j = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
+        if (action === "snooze" && res.status === 429) {
+          setError("Snooze limit reached — confirm Taken or Skip.");
+        } else {
+          setError(j.message || j.error || "Could not update dose");
+        }
         return;
       }
       setDone(
@@ -403,19 +427,29 @@ function PushToast({
       window.dispatchEvent(new Event("aether:attention-refresh"));
       setTimeout(onClose, 1600);
     } catch {
-      setDone("Could not update");
+      setError("Could not update dose. Check your connection.");
     } finally {
       setBusy(null);
     }
+  };
+
+  const busyLabel = (action: "taken" | "skip" | "snooze", idle: string) => {
+    if (busy !== action) return idle;
+    if (action === "taken") return "Submitting…";
+    if (action === "skip") return "Skipping…";
+    return "Snoozing…";
   };
 
   return (
     <div
       className={
         isAdmin
-          ? "pointer-events-auto fixed bottom-4 right-4 z-[100] w-[min(92vw,400px)] overflow-hidden rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl shadow-black/40 animate-fade-up"
-          : "pointer-events-auto fixed bottom-4 right-4 z-[100] w-[min(92vw,400px)] overflow-hidden rounded-2xl border border-[#d4af37]/25 bg-white shadow-[0_20px_50px_-20px_rgba(12,26,20,0.35)] animate-fade-up"
+          ? "pointer-events-auto fixed bottom-3 right-3 left-3 z-[100] mx-auto w-auto max-w-[420px] overflow-hidden rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl shadow-black/40 animate-fade-up sm:left-auto sm:bottom-4 sm:right-4 sm:w-[min(92vw,400px)]"
+          : "pointer-events-auto fixed bottom-3 right-3 left-3 z-[100] mx-auto w-auto max-w-[420px] overflow-hidden rounded-2xl border border-[#d4af37]/25 bg-white shadow-[0_20px_50px_-20px_rgba(12,26,20,0.35)] animate-fade-up sm:left-auto sm:bottom-4 sm:right-4 sm:w-[min(92vw,400px)]"
       }
+      role="alertdialog"
+      aria-label={title}
+      aria-busy={!!busy}
     >
       {/* Luxury gold accent bar */}
       {!isAdmin && <div className="h-0.5 w-full bg-gradient-to-r from-[#0d6e5a] via-[#c9a227] to-[#0d6e5a]" />}
@@ -432,7 +466,7 @@ function PushToast({
         </div>
       )}
 
-      <div className="flex items-start gap-3 p-4">
+      <div className="flex items-start gap-3 p-4 pb-3">
         <div
           className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl ${
             isAdmin
@@ -457,41 +491,11 @@ function PushToast({
             className={
               isAdmin
                 ? "mt-0.5 line-clamp-3 text-xs admin-muted"
-                : "mt-0.5 line-clamp-2 text-xs leading-relaxed text-[#5a6b62]"
+                : "mt-0.5 line-clamp-3 text-sm leading-relaxed text-[#5a6b62]"
             }
           >
-            {done || body}
+            {done || error || body}
           </p>
-
-          {isDose && !isAdmin && !done && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                disabled={!!busy}
-                onClick={() => runDoseAction("taken")}
-                className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#0a5c4b] px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-white shadow-sm shadow-teal-900/20 transition hover:from-[#0a5c4b] hover:to-[#084c3f] disabled:opacity-60"
-              >
-                <Check className="h-3 w-3" />
-                {busy === "taken" ? "…" : "Taken"}
-              </button>
-              <button
-                type="button"
-                disabled={!!busy}
-                onClick={() => runDoseAction("skip")}
-                className="inline-flex items-center rounded-full border border-[#e3ebe6] bg-white px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-[#5a6b62] transition hover:border-[#c9a227]/50 hover:text-[#0c1a14] disabled:opacity-60"
-              >
-                {busy === "skip" ? "…" : "Skip"}
-              </button>
-              <button
-                type="button"
-                disabled={!!busy}
-                onClick={() => runDoseAction("snooze")}
-                className="inline-flex items-center rounded-full border border-[#c9a227]/40 bg-gradient-to-r from-[#faf6eb] to-white px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-[#8a6d1a] transition hover:border-[#c9a227] hover:text-[#6b5410] disabled:opacity-60"
-              >
-                {busy === "snooze" ? "…" : "Later"}
-              </button>
-            </div>
-          )}
 
           {!isDose && url && (
             <a
@@ -500,26 +504,76 @@ function PushToast({
               className={
                 isAdmin
                   ? "mt-2 inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline"
-                  : "mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#0d6e5a] hover:underline"
+                  : "mt-2 inline-flex min-h-10 items-center gap-1 text-sm font-semibold text-[#0d6e5a] hover:underline"
               }
             >
-              Open <Zap className="h-3 w-3" />
+              Open <Zap className="h-3.5 w-3.5" />
             </a>
           )}
         </div>
         <button
           type="button"
           onClick={onClose}
+          disabled={!!busy}
           aria-label="Dismiss"
           className={
             isAdmin
-              ? "rounded-full p-1 admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
-              : "rounded-full p-1 text-[#8a9a92] hover:bg-teal-50 hover:text-[#0c1a14]"
+              ? "rounded-full p-2 admin-soft hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] disabled:opacity-40"
+              : "rounded-full p-2 text-[#8a9a92] hover:bg-teal-50 hover:text-[#0c1a14] disabled:opacity-40"
           }
         >
-          <X className="h-4 w-4" />
+          <X className="h-5 w-5" />
         </button>
       </div>
+
+      {/* Dose actions — full-width, thumb-friendly targets on mobile */}
+      {isDose && !isAdmin && !done && (
+        <div className="space-y-2 border-t border-[#e3ebe6]/80 bg-[#f8fbf9] px-3 py-3">
+          <button
+            type="button"
+            disabled={!!busy}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void runDoseAction("taken");
+            }}
+            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0d6e5a] to-[#0a5c4b] px-4 text-base font-bold tracking-wide text-white shadow-md shadow-teal-900/15 transition active:scale-[0.98] hover:from-[#0a5c4b] hover:to-[#084c3f] disabled:cursor-wait disabled:opacity-70 sm:min-h-11 sm:text-sm"
+          >
+            <Check className="h-5 w-5 shrink-0" />
+            {busyLabel("taken", "Taken")}
+          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              disabled={!!busy}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                void runDoseAction("skip");
+              }}
+              className="inline-flex min-h-12 w-full items-center justify-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 text-sm font-bold tracking-wide text-[#5a6b62] shadow-sm transition active:scale-[0.98] hover:border-slate-300 hover:text-[#0c1a14] disabled:cursor-wait disabled:opacity-70 sm:min-h-11"
+            >
+              <X className="h-4 w-4 shrink-0" />
+              {busyLabel("skip", "Skip")}
+            </button>
+            <button
+              type="button"
+              disabled={!!busy}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                void runDoseAction("snooze");
+              }}
+              className="inline-flex min-h-12 w-full items-center justify-center gap-1.5 rounded-xl border border-[#c9a227]/45 bg-gradient-to-r from-[#faf6eb] to-white px-3 text-sm font-bold tracking-wide text-[#8a6d1a] shadow-sm transition active:scale-[0.98] hover:border-[#c9a227] hover:text-[#6b5410] disabled:cursor-wait disabled:opacity-70 sm:min-h-11"
+            >
+              {busyLabel("snooze", "Later")}
+            </button>
+          </div>
+          {error && (
+            <p className="px-1 text-center text-xs font-medium text-rose-600">{error}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

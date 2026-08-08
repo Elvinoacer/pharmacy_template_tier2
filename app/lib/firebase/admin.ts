@@ -96,7 +96,42 @@ export async function sendPush(payload: PushPayload): Promise<{ success: boolean
   const tag = payload.data?.tag || "aether-pharmacy";
   const dose = isDoseActions(payload.data);
 
+  // FCM data values must be strings.
+  const data: Record<string, string> = {
+    ...(payload.data || {}),
+    title: payload.title,
+    body: payload.body,
+    icon,
+    ...(image ? { image } : {}),
+    ...(payload.url ? { url: payload.url } : {}),
+  };
+  if (dose) {
+    data.actions = data.actions || "medication_dose";
+    data.type = data.type || "medication_dose";
+  }
+
   try {
+    // Dose reminders: data-only so the service worker fully owns showNotification
+    // (action button ids + flat data). A top-level `notification` payload lets
+    // Chrome auto-display without our actions/data, which made every button
+    // click mis-route or no-op.
+    if (dose) {
+      const messageId = await messagingInstance.send({
+        token: payload.token,
+        data,
+        webpush: {
+          headers: {
+            Urgency: "high",
+            // TTL so a brief offline window still delivers the dose nudge.
+            TTL: "3600",
+          },
+          // Do NOT set webpush.notification or fcmOptions.link here — those
+          // cause browser auto-display that strips/breaks action handling.
+        },
+      });
+      return { success: true, messageId };
+    }
+
     const webNotification: Record<string, unknown> = {
       title: payload.title,
       body: payload.body,
@@ -104,43 +139,23 @@ export async function sendPush(payload: PushPayload): Promise<{ success: boolean
       badge: icon,
       tag,
       renotify: true,
-      requireInteraction: dose,
+      requireInteraction: false,
     };
     if (image) webNotification.image = image;
-    if (dose) {
-      // Styled action labels — browsers only render title text (no CSS), so keep
-      // them short with a light symbol for a polished, scannable feel.
-      webNotification.actions = [
-        { action: "taken", title: "✓ Taken" },
-        { action: "skip", title: "Skip" },
-        { action: "snooze", title: "Later" },
-      ];
-    }
 
     const messageId = await messagingInstance.send({
       token: payload.token,
-      // Prefer data-driven display via the service worker so we control icon,
-      // image, and action buttons consistently. Keep a minimal notification
-      // block for platforms that auto-render without the SW handler.
       notification: {
         title: payload.title,
         body: payload.body,
         ...(image ? { imageUrl: image } : {}),
       },
-      data: {
-        ...(payload.data || {}),
-        title: payload.title,
-        body: payload.body,
-        icon,
-        ...(image ? { image } : {}),
-        ...(payload.url ? { url: payload.url } : {}),
-      },
+      data,
       webpush: {
         notification: webNotification,
         fcmOptions: payload.url ? { link: payload.url } : undefined,
         headers: {
-          // Urgency helps dose reminders surface promptly on mobile.
-          Urgency: dose ? "high" : "normal",
+          Urgency: "normal",
         },
       },
     });

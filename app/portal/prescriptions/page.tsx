@@ -7,6 +7,7 @@ import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel, Badge, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { AdherenceTracker } from "@/app/components/portal/AdherenceTracker";
 import { DoseReminderBanner, type PendingDoseItem } from "@/app/components/portal/DoseReminderBanner";
+import { DoseActionHandler } from "@/app/components/portal/DoseActionHandler";
 import {
   parseDosageFormula,
   calculatePrescriptionMetrics,
@@ -142,6 +143,9 @@ export default async function PortalPrescriptionsPage() {
         </Link>
       }
     >
+      {/* Completes Taken/Skip/Later when opened from a push action deep link */}
+      <DoseActionHandler />
+
       <DoseReminderBanner pendingDoses={pendingDoseItems} />
 
       {/* Stats — 2×2 on phones, 4-col on large */}
