@@ -160,12 +160,14 @@ export async function createPrescriptionFill(
 
   // 4) Deduct stock (FEFO) — prescription_fill reason (audit §19).
   if (med) {
-    // Idempotency: skip if any prior movement already deducted stock for this Rx.
+    // Idempotency: skip if this specific fill already deducted stock.
+    // Note: We check by fill ID, NOT prescription ID, to allow multiple fills
+    // for the same prescription (Fill #1, Fill #2, etc.) to each deduct stock.
     const priorMovement = await tx.stockMovement.findFirst({
       where: {
         pharmacyInventoryId: med.id,
-        relatedType: "prescription",
-        relatedId: rx.id,
+        relatedType: "prescription_fill",
+        relatedId: fill.id,
         reason: { in: ["dispatch", "refill", "prescription_fill"] },
         quantityDelta: { lt: 0 },
       },
@@ -177,8 +179,8 @@ export async function createPrescriptionFill(
         quantityDelta: -qty,
         reason: "prescription_fill",
         notes: `Prescription fill #${nextFillNumber} (${medName})`,
-        relatedType: "prescription",
-        relatedId: rx.id,
+        relatedType: "prescription_fill",
+        relatedId: fill.id,
         actorId: input.actorId,
       });
       // Capture lot ids consumed (audit §18) on the fill row.
@@ -188,13 +190,14 @@ export async function createPrescriptionFill(
           data: { lotIds: result.lotIds as unknown as Prisma.InputJsonValue },
         });
         // Also write InventoryAllocation rows per lot for full traceability.
-        for (const lotId of result.lotIds) {
+        // Each allocation records the exact quantity from that specific lot.
+        for (const lotDetail of result.lotDetails ?? []) {
           await tx.inventoryAllocation.create({
             data: {
               orderItemId: orderItem.id,
-              inventoryLotId: lotId,
-              quantity: qty, // simplified; FEFO may have split, but the lot detail rows record the exact split
-              unitCost,
+              inventoryLotId: lotDetail.lotId,
+              quantity: lotDetail.quantity,
+              unitCost: lotDetail.unitCost ?? unitCost,
             },
           });
         }
