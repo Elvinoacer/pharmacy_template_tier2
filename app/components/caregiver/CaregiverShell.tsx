@@ -14,10 +14,14 @@ import {
   Menu,
   X,
   ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Pin,
+  PinOff,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
-import { useSidebarCollapsed, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
+import { useSidebarEnhanced, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
 
 export const CAREGIVER_LINKS = [
   { href: "/caregiver", label: "Dashboard", icon: HeartHandshake },
@@ -41,17 +45,25 @@ export function CaregiverShell({
   subtitle?: string;
   actions?: React.ReactNode;
 }) {
-  const { collapsed, toggle, hydrated } = useSidebarCollapsed("caregiver");
+  const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing } = useSidebarEnhanced("caregiver");
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = useActivePath();
+
+  // Separate pinned and unpinned links
+  const pinnedLinks = CAREGIVER_LINKS.filter((l) => pinned.includes(l.href));
+  const otherLinks = CAREGIVER_LINKS.filter((l) => !pinned.includes(l.href));
 
   return (
     <div
       className="shell-grid bg-[#f4f7f4] text-[#0c1a14]"
       data-collapsed={hydrated && collapsed ? "true" : "false"}
+      style={hydrated && !collapsed ? { "--sidebar-width": `${width}px` } as React.CSSProperties : undefined}
     >
       {/* Desktop sidebar */}
-      <aside className="shell-sidebar hidden lg:flex lg:flex-col border-r border-[#e3ebe6] bg-white">
+      <aside 
+        className="shell-sidebar caregiver-sidebar-surface hidden lg:flex lg:flex-col border-r border-[#e3ebe6] bg-white relative"
+        style={hydrated && !collapsed ? { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` } as React.CSSProperties : undefined}
+      >
         <div className="flex h-16 items-center gap-2.5 px-4 border-b border-[#e3ebe6]">
           <Link href="/caregiver" className="flex items-center gap-2.5 min-w-0">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-md shadow-teal-900/20">
@@ -67,27 +79,87 @@ export function CaregiverShell({
         </div>
 
         <nav className="flex-1 overflow-y-auto scroll-thin px-3 py-4">
-          <ul className="space-y-1">
-            {CAREGIVER_LINKS.map((l) => {
-              const Icon = l.icon;
-              const active = isLinkActive(pathname, l.href);
-              return (
-                <li key={l.href} className="relative tooltip-host">
-                  <Link
-                    href={l.href}
-                    className={`nav-link-portal ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : ""}`}
-                    title={collapsed ? l.label : undefined}
-                  >
-                    <Icon className="h-[18px] w-[18px] shrink-0" />
-                    {!collapsed && <span className="truncate">{l.label}</span>}
-                  </Link>
-                  {collapsed && (
-                    <span className="tooltip-right hidden lg:block">{l.label}</span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+          {/* Pinned section */}
+          {!collapsed && pinnedLinks.length > 0 && (
+            <div className="sidebar-nav-section">
+              <div className="sidebar-nav-label">
+                <span>Pinned</span>
+              </div>
+              <ul className="space-y-1">
+                {pinnedLinks.map((l) => {
+                  const Icon = l.icon;
+                  const active = isLinkActive(pathname, l.href);
+                  return (
+                    <li key={l.href} className="relative tooltip-host nav-link-pinned is-pinned">
+                      <Link
+                        href={l.href}
+                        className={`nav-link-portal ${active ? "active" : ""} pr-8`}
+                        title={l.label}
+                      >
+                        <Icon className="h-[18px] w-[18px] shrink-0" />
+                        <span className="truncate">{l.label}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            togglePin(l.href);
+                          }}
+                          className="pin-toggle-btn is-pinned absolute right-1 top-1/2 -translate-y-1/2"
+                          title="Unpin"
+                        >
+                          <Pin className="h-3 w-3" />
+                        </button>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          {/* All/Other links section */}
+          <div className="sidebar-nav-section">
+            {!collapsed && pinnedLinks.length > 0 && (
+              <div className="sidebar-nav-label">
+                <span>Navigation</span>
+              </div>
+            )}
+            <ul className="space-y-1">
+              {(collapsed ? CAREGIVER_LINKS : otherLinks).map((l) => {
+                const Icon = l.icon;
+                const active = isLinkActive(pathname, l.href);
+                const isItemPinned = isPinned(l.href);
+                return (
+                  <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
+                    <Link
+                      href={l.href}
+                      className={`nav-link-portal ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : "pr-8"}`}
+                      title={collapsed ? l.label : undefined}
+                    >
+                      <Icon className="h-[18px] w-[18px] shrink-0" />
+                      {!collapsed && <span className="truncate">{l.label}</span>}
+                      {!collapsed && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            togglePin(l.href);
+                          }}
+                          className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
+                          title={isItemPinned ? "Unpin" : "Pin to top"}
+                        >
+                          {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
+                        </button>
+                      )}
+                    </Link>
+                    {collapsed && (
+                      <span className="tooltip-right hidden lg:block">{l.label}</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </nav>
 
         <div className="border-t border-[#e3ebe6] p-3 space-y-1">
@@ -97,7 +169,7 @@ export function CaregiverShell({
             className="nav-link-portal w-full"
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? <ChevronRight className="h-[18px] w-[18px]" /> : <ChevronRight className="h-[18px] w-[18px] rotate-180" />}
+            {collapsed ? <PanelLeftOpen className="h-[18px] w-[18px]" /> : <PanelLeftClose className="h-[18px] w-[18px]" />}
             {!collapsed && <span>Collapse</span>}
           </button>
           <Link href="/" className="nav-link-portal" title="Back to website">
@@ -111,6 +183,15 @@ export function CaregiverShell({
             </button>
           </form>
         </div>
+
+        {/* Resize handle */}
+        {!collapsed && (
+          <div
+            className={`sidebar-resize-handle ${isResizing ? "resizing" : ""}`}
+            onMouseDown={startResize}
+            title="Drag to resize sidebar"
+          />
+        )}
       </aside>
 
       {/* Mobile sidebar drawer */}
