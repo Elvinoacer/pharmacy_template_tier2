@@ -58,6 +58,7 @@ type DrugRow = {
   dosage: string;
   unitPrice: string;
   quantity: string;
+  billingUnit: string;
   daysSupply: string;
   refillsRemaining: string;
   unitsPerDose: string;
@@ -87,6 +88,7 @@ function emptyDrug(partial?: Partial<DrugRow>): DrugRow {
     dosage: partial?.dosage ?? "",
     unitPrice: partial?.unitPrice ?? "",
     quantity: partial?.quantity ?? "30",
+    billingUnit: partial?.billingUnit ?? "UNIT",
     daysSupply: partial?.daysSupply ?? "30",
     refillsRemaining: partial?.refillsRemaining ?? "0",
     unitsPerDose: partial?.unitsPerDose ?? "1",
@@ -348,6 +350,7 @@ export default function PrescriptionForm({
       dosage: current?.dosage || m.dosage || "",
       unitPrice: current?.unitPrice || m.price.toString(),
       quantity: nextQty,
+      billingUnit: m.billingUnit ?? "UNIT",
       stockQty: stock,
       lowStockThreshold: m.lowStockThreshold,
     });
@@ -508,6 +511,7 @@ export default function PrescriptionForm({
         dosage: d.dosage || null,
         unitPrice: d.unitPrice ? Number(d.unitPrice) : null,
         quantity: d.quantity ? Number(d.quantity) : null,
+        billingUnit: d.billingUnit ?? "UNIT",
         daysSupply: d.daysSupply ? Number(d.daysSupply) : null,
         refillsRemaining: d.refillsRemaining ? Number(d.refillsRemaining) : 0,
         unitsPerDose: d.unitsPerDose ? Number(d.unitsPerDose) : 1,

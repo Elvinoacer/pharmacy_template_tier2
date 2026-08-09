@@ -76,6 +76,20 @@ enum RefillSource {
   staff
 }
 
+/// Billing unit for pharmaceutical items (audit §14).
+/// Captures whether quantity refers to tablets, bottles, packs, etc.
+enum BillingUnit {
+  TABLET
+  CAPSULE
+  BOTTLE
+  BOX
+  PACK
+  STRIP
+  AMPOULE
+  ML
+  UNIT
+}
+
 enum MessageChannel {
   email
   sms
@@ -464,6 +478,8 @@ model Prescription {
   /// Free-text schedule like "1 tablet twice daily after meals". AI uses this to predict refill dates.
   schedule         String?
   quantity         Int?
+  /// Billing unit for this prescription (tablet, bottle, pack, etc.) — audit §14.
+  billingUnit      BillingUnit?       @default(UNIT) @map("billing_unit")
   /// Days of supply per fill (used to predict next refill date).
   daysSupply       Int?               @map("days_supply")
   refillsRemaining Int?               @default(0) @map("refills_remaining")
@@ -1478,6 +1494,8 @@ model OrderItem {
   /// Snapshot of the medicine name (so historical orders don't break if the medication is renamed).
   name        String
   quantity    Int      @default(1)
+  /// Billing unit for this line item (tablet, bottle, pack, etc.) — audit §14.
+  billingUnit BillingUnit? @default(UNIT) @map("billing_unit")
   unitPrice   Decimal  @default(0) @db.Decimal(10, 2)
   /// If the customer used a coupon on this line, the discount applied.
   discountApplied Decimal @default(0) @map("discount_applied") @db.Decimal(10, 2)
@@ -1963,6 +1981,8 @@ model PrescriptionFill {
   /// 1-based sequence for human display (per-prescription).
   fillNumber          Int                   @map("fill_number")
   quantity            Int                   @default(1)
+  /// Billing unit for this fill (tablet, bottle, pack, etc.) — audit §14.
+  billingUnit         BillingUnit?          @default(UNIT) @map("billing_unit")
   /// Snapshot of the price the customer was charged for this fill.
   unitPriceSnapshot   Decimal               @default(0) @map("unit_price_snapshot") @db.Decimal(10, 2)
   discountAmount      Decimal               @default(0) @map("discount_amount") @db.Decimal(10, 2)
