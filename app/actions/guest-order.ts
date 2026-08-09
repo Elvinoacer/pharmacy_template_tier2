@@ -203,7 +203,7 @@ export async function guestCreateOrderAction(
         metadata: { expiresAt },
       });
 
-      return { order: o, stockResult: r.stockResult };
+      return { order: o, stockResult: null };
     });
     orderId = order.id;
     await notifyStockThreshold(stockResult);

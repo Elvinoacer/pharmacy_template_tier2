@@ -1,16 +1,26 @@
-```
-# Environment
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js build output
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# Environment files & secrets
 .env
 .env.local
 .env.*
-
-# Dependencies
-node_modules/
+!.env.example
+*-firebase-adminsdk-*.json
+*.service-account.json
 
 # Logs and temp files
 *.log
 *.tmp
+.DS_Store
 
 # Editors
 .vscode/
-```
+.idea/

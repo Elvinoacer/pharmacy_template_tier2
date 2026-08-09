@@ -121,7 +121,7 @@ export async function convertReservationToSale(
       relatedType: "order",
       relatedId: opts.orderId,
       actorId: opts.actorId ?? null,
-      inventoryLotId: r.inventoryLotId ?? undefined,
+      lotId: r.inventoryLotId ?? undefined,
     });
   }
 
