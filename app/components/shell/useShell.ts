@@ -1,26 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 /**
- * Persisted sidebar collapse state for desktop. Stored in localStorage so the
- * user's preference survives across sessions.
+ * Enhanced sidebar state with collapse, pinned items, and width persistence.
+ * Supports drag-to-resize and favorite pinning for better UX.
  */
-export function useSidebarCollapsed(storageKey: "portal" | "admin" | "caregiver") {
-  const key = `aether:sidebar:${storageKey}`;
+export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver") {
+  const collapsedKey = `aether:sidebar:${storageKey}:collapsed`;
+  const widthKey = `aether:sidebar:${storageKey}:width`;
+  const pinnedKey = `aether:sidebar:${storageKey}:pinned`;
+  
   const [collapsed, setCollapsed] = useState(false);
+  const [width, setWidth] = useState<number>(264);
+  const [pinned, setPinned] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
-    // Use a microtask to avoid calling setState synchronously inside the effect,
-    // which lint flags as a cascading render.
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
       try {
-        const stored = localStorage.getItem(key);
-        if (stored !== null) setCollapsed(stored === "true");
+        const storedCollapsed = localStorage.getItem(collapsedKey);
+        const storedWidth = localStorage.getItem(widthKey);
+        const storedPinned = localStorage.getItem(pinnedKey);
+        
+        if (storedCollapsed !== null) setCollapsed(storedCollapsed === "true");
+        if (storedWidth !== null) {
+          const w = parseInt(storedWidth, 10);
+          if (!isNaN(w) && w >= 200 && w <= 400) setWidth(w);
+        }
+        if (storedPinned !== null) {
+          const p = JSON.parse(storedPinned);
+          if (Array.isArray(p)) setPinned(p);
+        }
       } catch {
         /* ignore */
       }
@@ -29,21 +44,95 @@ export function useSidebarCollapsed(storageKey: "portal" | "admin" | "caregiver"
     return () => {
       cancelled = true;
     };
-  }, [key]);
+  }, [collapsedKey, widthKey, pinnedKey]);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     setCollapsed((c) => {
       const next = !c;
       try {
-        localStorage.setItem(key, String(next));
+        localStorage.setItem(collapsedKey, String(next));
       } catch {
         /* ignore */
       }
       return next;
     });
-  };
+  }, [collapsedKey]);
 
-  return { collapsed, toggle, hydrated };
+  const setWidthSafe = useCallback((w: number) => {
+    const clamped = Math.max(200, Math.min(400, w));
+    setWidth(clamped);
+    try {
+      localStorage.setItem(widthKey, String(clamped));
+    } catch {
+      /* ignore */
+    }
+  }, [widthKey]);
+
+  const togglePin = useCallback((href: string) => {
+    setPinned((prev) => {
+      const next = prev.includes(href) 
+        ? prev.filter((h) => h !== href)
+        : [...prev, href];
+      try {
+        localStorage.setItem(pinnedKey, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, [pinnedKey]);
+
+  const isPinned = useCallback((href: string) => {
+    return pinned.includes(href);
+  }, [pinned]);
+
+  // Drag to resize handlers
+  const startResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    
+    const startX = e.clientX;
+    const startWidth = width;
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const delta = moveEvent.clientX - startX;
+      setWidthSafe(startWidth + delta);
+    };
+    
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+    
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  }, [width, setWidthSafe]);
+
+  return {
+    collapsed,
+    toggle,
+    hydrated,
+    width,
+    setWidth: setWidthSafe,
+    pinned,
+    togglePin,
+    isPinned,
+    isResizing,
+    startResize,
+  };
+}
+
+/**
+ * Legacy hook for backward compatibility
+ */
+export function useSidebarCollapsed(storageKey: "portal" | "admin" | "caregiver") {
+  const enhanced = useSidebarEnhanced(storageKey);
+  return {
+    collapsed: enhanced.collapsed,
+    toggle: enhanced.toggle,
+    hydrated: enhanced.hydrated,
+  };
 }
 
 export type AttentionCounts = {
