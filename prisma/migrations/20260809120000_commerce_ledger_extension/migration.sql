@@ -84,21 +84,31 @@ CREATE INDEX IF NOT EXISTS "prescription_fills_status_idx" ON "prescription_fill
 CREATE INDEX IF NOT EXISTS "prescription_fills_dispatched_at_idx" ON "prescription_fills"("dispatched_at" DESC);
 CREATE INDEX IF NOT EXISTS "prescription_fills_created_at_idx" ON "prescription_fills"("created_at" DESC);
 
-ALTER TABLE "prescription_fills"
-  ADD CONSTRAINT IF NOT EXISTS "prescription_fills_prescription_id_fkey"
-    FOREIGN KEY ("prescription_id") REFERENCES "prescriptions"("id") ON DELETE CASCADE;
-ALTER TABLE "prescription_fills"
-  ADD CONSTRAINT IF NOT EXISTS "prescription_fills_order_id_fkey"
-    FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE SET NULL;
-ALTER TABLE "prescription_fills"
-  ADD CONSTRAINT IF NOT EXISTS "prescription_fills_refill_request_id_fkey"
-    FOREIGN KEY ("refill_request_id") REFERENCES "refill_requests"("id") ON DELETE SET NULL;
-ALTER TABLE "prescription_fills"
-  ADD CONSTRAINT IF NOT EXISTS "prescription_fills_dispensed_by_id_fkey"
-    FOREIGN KEY ("dispensed_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
-ALTER TABLE "prescription_fills"
-  ADD CONSTRAINT IF NOT EXISTS "prescription_fills_medication_id_fkey"
-    FOREIGN KEY ("medication_id") REFERENCES "pharmacy_inventory"("id") ON DELETE SET NULL;
+DO $$ BEGIN
+  ALTER TABLE "prescription_fills"
+    ADD CONSTRAINT "prescription_fills_prescription_id_fkey"
+      FOREIGN KEY ("prescription_id") REFERENCES "prescriptions"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "prescription_fills"
+    ADD CONSTRAINT "prescription_fills_order_id_fkey"
+      FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "prescription_fills"
+    ADD CONSTRAINT "prescription_fills_refill_request_id_fkey"
+      FOREIGN KEY ("refill_request_id") REFERENCES "refill_requests"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "prescription_fills"
+    ADD CONSTRAINT "prescription_fills_dispensed_by_id_fkey"
+      FOREIGN KEY ("dispensed_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "prescription_fills"
+    ADD CONSTRAINT "prescription_fills_medication_id_fkey"
+      FOREIGN KEY ("medication_id") REFERENCES "pharmacy_inventory"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS "inventory_reservations" (
   "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -124,21 +134,31 @@ CREATE INDEX IF NOT EXISTS "inventory_reservations_inventory_id_idx" ON "invento
 CREATE INDEX IF NOT EXISTS "inventory_reservations_status_idx" ON "inventory_reservations"("status");
 CREATE INDEX IF NOT EXISTS "inventory_reservations_expires_at_idx" ON "inventory_reservations"("expires_at");
 
-ALTER TABLE "inventory_reservations"
-  ADD CONSTRAINT IF NOT EXISTS "inventory_reservations_order_id_fkey"
-    FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE;
-ALTER TABLE "inventory_reservations"
-  ADD CONSTRAINT IF NOT EXISTS "inventory_reservations_order_item_id_fkey"
-    FOREIGN KEY ("order_item_id") REFERENCES "order_items"("id") ON DELETE SET NULL;
-ALTER TABLE "inventory_reservations"
-  ADD CONSTRAINT IF NOT EXISTS "inventory_reservations_inventory_id_fkey"
-    FOREIGN KEY ("inventory_id") REFERENCES "pharmacy_inventory"("id") ON DELETE CASCADE;
-ALTER TABLE "inventory_reservations"
-  ADD CONSTRAINT IF NOT EXISTS "inventory_reservations_inventory_lot_id_fkey"
-    FOREIGN KEY ("inventory_lot_id") REFERENCES "inventory_lots"("id") ON DELETE SET NULL;
-ALTER TABLE "inventory_reservations"
-  ADD CONSTRAINT IF NOT EXISTS "inventory_reservations_created_by_id_fkey"
-    FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
+DO $$ BEGIN
+  ALTER TABLE "inventory_reservations"
+    ADD CONSTRAINT "inventory_reservations_order_id_fkey"
+      FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "inventory_reservations"
+    ADD CONSTRAINT "inventory_reservations_order_item_id_fkey"
+      FOREIGN KEY ("order_item_id") REFERENCES "order_items"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "inventory_reservations"
+    ADD CONSTRAINT "inventory_reservations_inventory_id_fkey"
+      FOREIGN KEY ("inventory_id") REFERENCES "pharmacy_inventory"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "inventory_reservations"
+    ADD CONSTRAINT "inventory_reservations_inventory_lot_id_fkey"
+      FOREIGN KEY ("inventory_lot_id") REFERENCES "inventory_lots"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "inventory_reservations"
+    ADD CONSTRAINT "inventory_reservations_created_by_id_fkey"
+      FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS "refunds" (
   "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -162,18 +182,26 @@ CREATE INDEX IF NOT EXISTS "refunds_order_id_idx" ON "refunds"("order_id");
 CREATE INDEX IF NOT EXISTS "refunds_status_idx" ON "refunds"("status");
 CREATE INDEX IF NOT EXISTS "refunds_created_at_idx" ON "refunds"("created_at" DESC);
 
-ALTER TABLE "refunds"
-  ADD CONSTRAINT IF NOT EXISTS "refunds_payment_id_fkey"
-    FOREIGN KEY ("payment_id") REFERENCES "payments"("id") ON DELETE CASCADE;
-ALTER TABLE "refunds"
-  ADD CONSTRAINT IF NOT EXISTS "refunds_order_id_fkey"
-    FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE;
-ALTER TABLE "refunds"
-  ADD CONSTRAINT IF NOT EXISTS "refunds_created_by_id_fkey"
-    FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
-ALTER TABLE "refunds"
-  ADD CONSTRAINT IF NOT EXISTS "refunds_approved_by_id_fkey"
-    FOREIGN KEY ("approved_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
+DO $$ BEGIN
+  ALTER TABLE "refunds"
+    ADD CONSTRAINT "refunds_payment_id_fkey"
+      FOREIGN KEY ("payment_id") REFERENCES "payments"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "refunds"
+    ADD CONSTRAINT "refunds_order_id_fkey"
+      FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "refunds"
+    ADD CONSTRAINT "refunds_created_by_id_fkey"
+      FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "refunds"
+    ADD CONSTRAINT "refunds_approved_by_id_fkey"
+      FOREIGN KEY ("approved_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS "inventory_allocations" (
   "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -188,12 +216,16 @@ CREATE TABLE IF NOT EXISTS "inventory_allocations" (
 CREATE INDEX IF NOT EXISTS "inventory_allocations_order_item_id_idx" ON "inventory_allocations"("order_item_id");
 CREATE INDEX IF NOT EXISTS "inventory_allocations_inventory_lot_id_idx" ON "inventory_allocations"("inventory_lot_id");
 
-ALTER TABLE "inventory_allocations"
-  ADD CONSTRAINT IF NOT EXISTS "inventory_allocations_order_item_id_fkey"
-    FOREIGN KEY ("order_item_id") REFERENCES "order_items"("id") ON DELETE CASCADE;
-ALTER TABLE "inventory_allocations"
-  ADD CONSTRAINT IF NOT EXISTS "inventory_allocations_inventory_lot_id_fkey"
-    FOREIGN KEY ("inventory_lot_id") REFERENCES "inventory_lots"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "inventory_allocations"
+    ADD CONSTRAINT "inventory_allocations_order_item_id_fkey"
+      FOREIGN KEY ("order_item_id") REFERENCES "order_items"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "inventory_allocations"
+    ADD CONSTRAINT "inventory_allocations_inventory_lot_id_fkey"
+      FOREIGN KEY ("inventory_lot_id") REFERENCES "inventory_lots"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS "commerce_events" (
   "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -217,9 +249,11 @@ CREATE INDEX IF NOT EXISTS "commerce_events_order_id_idx" ON "commerce_events"("
 CREATE INDEX IF NOT EXISTS "commerce_events_customer_id_idx" ON "commerce_events"("customer_id");
 CREATE INDEX IF NOT EXISTS "commerce_events_occurred_at_idx" ON "commerce_events"("occurred_at" DESC);
 
-ALTER TABLE "commerce_events"
-  ADD CONSTRAINT IF NOT EXISTS "commerce_events_order_id_fkey"
-    FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE SET NULL;
+DO $$ BEGIN
+  ALTER TABLE "commerce_events"
+    ADD CONSTRAINT "commerce_events_order_id_fkey"
+      FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS "medication_price_history" (
   "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -239,12 +273,16 @@ CREATE INDEX IF NOT EXISTS "medication_price_history_inventory_id_effective_from
 CREATE INDEX IF NOT EXISTS "medication_price_history_effective_to_idx"
   ON "medication_price_history"("effective_to");
 
-ALTER TABLE "medication_price_history"
-  ADD CONSTRAINT IF NOT EXISTS "medication_price_history_inventory_id_fkey"
-    FOREIGN KEY ("inventory_id") REFERENCES "pharmacy_inventory"("id") ON DELETE CASCADE;
-ALTER TABLE "medication_price_history"
-  ADD CONSTRAINT IF NOT EXISTS "medication_price_history_changed_by_id_fkey"
-    FOREIGN KEY ("changed_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
+DO $$ BEGIN
+  ALTER TABLE "medication_price_history"
+    ADD CONSTRAINT "medication_price_history_inventory_id_fkey"
+      FOREIGN KEY ("inventory_id") REFERENCES "pharmacy_inventory"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "medication_price_history"
+    ADD CONSTRAINT "medication_price_history_changed_by_id_fkey"
+      FOREIGN KEY ("changed_by_id") REFERENCES "users"("id") ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS "cashier_sessions" (
   "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -264,9 +302,11 @@ CREATE TABLE IF NOT EXISTS "cashier_sessions" (
 CREATE INDEX IF NOT EXISTS "cashier_sessions_user_id_idx" ON "cashier_sessions"("user_id");
 CREATE INDEX IF NOT EXISTS "cashier_sessions_opened_at_idx" ON "cashier_sessions"("opened_at" DESC);
 
-ALTER TABLE "cashier_sessions"
-  ADD CONSTRAINT IF NOT EXISTS "cashier_sessions_user_id_fkey"
-    FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "cashier_sessions"
+    ADD CONSTRAINT "cashier_sessions_user_id_fkey"
+      FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ── Additive columns on existing tables ──────────────────────
 
@@ -361,11 +401,21 @@ UPDATE "orders" SET "amount_due" = 0
   WHERE "amount_due" = "total" AND "status" IN ('paid','fulfilled','waived');
 
 -- Backfill OrderItem gross/net amounts from existing columns (audit §17)
-UPDATE "order_items"
-SET "gross_amount" = ("unit_price" * "quantity"),
-    "net_amount"   = ("unit_price" * "quantity") - "discount_applied",
-    "gross_profit" = (("unit_price" * "quantity") - "discount_applied") - 0
-WHERE "gross_amount" = 0;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'order_items' AND column_name = 'unitPrice') THEN
+    UPDATE "order_items"
+    SET "gross_amount" = ("unitPrice" * "quantity"),
+        "net_amount"   = ("unitPrice" * "quantity") - "discount_applied",
+        "gross_profit" = (("unitPrice" * "quantity") - "discount_applied") - 0
+    WHERE "gross_amount" = 0;
+  ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'order_items' AND column_name = 'unit_price') THEN
+    UPDATE "order_items"
+    SET "gross_amount" = ("unit_price" * "quantity"),
+        "net_amount"   = ("unit_price" * "quantity") - "discount_applied",
+        "gross_profit" = (("unit_price" * "quantity") - "discount_applied") - 0
+    WHERE "gross_amount" = 0;
+  END IF;
+END $$;
 
 -- Backfill Payment.paidAt from createdAt for already-completed payments (audit §62)
 UPDATE "payments" SET "paid_at" = "updated_at"
