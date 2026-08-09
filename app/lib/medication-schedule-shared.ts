@@ -425,11 +425,15 @@ export function effectiveStartTimeOnDay(opts: {
 
   // Start day: use the later of startDate wall-clock and createdAt wall-clock
   // so mid-day creation does not treat earlier morning slots as due.
-  if (
-    opts.createdDay === opts.dayStr &&
-    compareTimes(opts.createdClock, opts.startClock) > 0
-  ) {
-    return opts.createdClock;
+  // When the prescription is created on the start day, always use the later time.
+  const sameAsStartDay = opts.createdDay === opts.dayStr;
+  const sameAsCreatedDay = opts.startDay === opts.dayStr;
+  
+  if (sameAsStartDay || sameAsCreatedDay) {
+    // On the start/creation day, use whichever is later
+    if (compareTimes(opts.createdClock, opts.startClock) > 0) {
+      return opts.createdClock;
+    }
   }
   return opts.startClock || "00:00";
 }
