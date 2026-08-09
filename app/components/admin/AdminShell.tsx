@@ -43,7 +43,7 @@ import {
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
 import {
-  useSidebarCollapsed,
+  useSidebarEnhanced,
   useAttentionCounts,
   useActivePath,
   isLinkActive,
@@ -51,6 +51,7 @@ import {
 } from "@/app/components/shell/useShell";
 import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
+import { Pin, PinOff } from "lucide-react";
 
 export const ADMIN_LINKS = [
   { href: "/admin", label: "Dashboard", icon: BarChart3 },
@@ -154,7 +155,7 @@ export function AdminShell({
   subtitle?: string;
   actions?: React.ReactNode;
 }) {
-  const { collapsed, toggle, hydrated } = useSidebarCollapsed("admin");
+  const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing } = useSidebarEnhanced("admin");
   const [mobileOpen, setMobileOpen] = useState(false);
   const attention = useAttentionCounts();
   const unread = attention.count;
@@ -162,14 +163,22 @@ export function AdminShell({
   const pathname = useActivePath();
   const theme = useAdminTheme();
 
+  // Separate pinned and unpinned links
+  const pinnedLinks = ADMIN_LINKS.filter((l) => pinned.includes(l.href));
+  const otherLinks = ADMIN_LINKS.filter((l) => !pinned.includes(l.href));
+
   return (
     <div
       className="shell-grid-admin"
       data-collapsed={hydrated && collapsed ? "true" : "false"}
       data-theme={theme.hydrated ? theme.resolved : undefined}
+      style={hydrated && !collapsed ? { "--sidebar-width": `${width}px` } as React.CSSProperties : undefined}
     >
       {/* Desktop sidebar */}
-      <aside className="shell-sidebar admin-sidebar-surface hidden lg:flex lg:flex-col border-r">
+      <aside 
+        className="shell-sidebar admin-sidebar-surface hidden lg:flex lg:flex-col border-r relative"
+        style={hydrated && !collapsed ? { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` } as React.CSSProperties : undefined}
+      >
         <div className="flex h-16 items-center gap-2.5 px-4 border-b admin-border">
           <Link href="/admin" className="flex items-center gap-2.5 min-w-0">
             <span className="admin-brand-mark">A</span>
@@ -185,51 +194,120 @@ export function AdminShell({
         </div>
 
         <nav className="flex-1 overflow-y-auto scroll-admin px-3 py-4">
-          <ul className="space-y-1">
-            {ADMIN_LINKS.map((l) => {
-              const Icon = l.icon;
-              const active = isLinkActive(pathname, l.href);
-              const showFeel = l.href === "/admin/feel" && feelBadge > 0;
-              const badge = showFeel ? formatBadgeCount(feelBadge) : "";
-              return (
-                <li key={l.href} className="relative tooltip-host">
-                  <Link
-                    href={l.href}
-                    className={`nav-link-admin ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : ""} ${
-                      showFeel ? "!text-rose-600" : ""
-                    }`}
-                    title={
-                      collapsed
-                        ? showFeel
-                          ? `${l.label} · ${feelBadge} new`
-                          : l.label
-                        : undefined
-                    }
-                  >
-                    <span className="relative shrink-0">
-                      <Icon className="h-[18px] w-[18px]" />
-                      {collapsed && badge && (
-                        <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-0.5 text-[8px] font-bold text-white">
+          {/* Pinned section */}
+          {!collapsed && pinnedLinks.length > 0 && (
+            <div className="sidebar-nav-section">
+              <div className="sidebar-nav-label">
+                <span>Pinned</span>
+              </div>
+              <ul className="space-y-1">
+                {pinnedLinks.map((l) => {
+                  const Icon = l.icon;
+                  const active = isLinkActive(pathname, l.href);
+                  const showFeel = l.href === "/admin/feel" && feelBadge > 0;
+                  const badge = showFeel ? formatBadgeCount(feelBadge) : "";
+                  return (
+                    <li key={l.href} className="relative tooltip-host nav-link-pinned is-pinned">
+                      <Link
+                        href={l.href}
+                        className={`nav-link-admin ${active ? "active" : ""} pr-8`}
+                        title={showFeel ? `${l.label} · ${feelBadge} new` : l.label}
+                      >
+                        <span className="relative shrink-0">
+                          <Icon className="h-[18px] w-[18px]" />
+                          {badge && (
+                            <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-0.5 text-[8px] font-bold text-white">
+                              {badge}
+                            </span>
+                          )}
+                        </span>
+                        <span className="truncate">{l.label}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            togglePin(l.href);
+                          }}
+                          className="pin-toggle-btn is-pinned absolute right-1 top-1/2 -translate-y-1/2"
+                          title="Unpin"
+                        >
+                          <Pin className="h-3 w-3" />
+                        </button>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          {/* All/Other links section */}
+          <div className="sidebar-nav-section">
+            {!collapsed && pinnedLinks.length > 0 && (
+              <div className="sidebar-nav-label">
+                <span>Navigation</span>
+              </div>
+            )}
+            <ul className="space-y-1">
+              {(collapsed ? ADMIN_LINKS : otherLinks).map((l) => {
+                const Icon = l.icon;
+                const active = isLinkActive(pathname, l.href);
+                const showFeel = l.href === "/admin/feel" && feelBadge > 0;
+                const badge = showFeel ? formatBadgeCount(feelBadge) : "";
+                const isItemPinned = isPinned(l.href);
+                return (
+                  <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
+                    <Link
+                      href={l.href}
+                      className={`nav-link-admin ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : "pr-8"} ${
+                        showFeel ? "!text-rose-600" : ""
+                      }`}
+                      title={
+                        collapsed
+                          ? showFeel
+                            ? `${l.label} · ${feelBadge} new`
+                            : l.label
+                          : undefined
+                      }
+                    >
+                      <span className="relative shrink-0">
+                        <Icon className="h-[18px] w-[18px]" />
+                        {collapsed && badge && (
+                          <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-0.5 text-[8px] font-bold text-white">
+                            {badge}
+                          </span>
+                        )}
+                      </span>
+                      {!collapsed && <span className="truncate">{l.label}</span>}
+                      {!collapsed && badge && (
+                        <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
                           {badge}
                         </span>
                       )}
-                    </span>
-                    {!collapsed && <span className="truncate">{l.label}</span>}
-                    {!collapsed && badge && (
-                      <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
-                        {badge}
+                      {!collapsed && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            togglePin(l.href);
+                          }}
+                          className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
+                          title={isItemPinned ? "Unpin" : "Pin to top"}
+                        >
+                          {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
+                        </button>
+                      )}
+                    </Link>
+                    {collapsed && (
+                      <span className="tooltip-right hidden lg:block">
+                        {showFeel ? `${l.label} · ${feelBadge} new` : l.label}
                       </span>
                     )}
-                  </Link>
-                  {collapsed && (
-                    <span className="tooltip-right hidden lg:block">
-                      {showFeel ? `${l.label} · ${feelBadge} new` : l.label}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </nav>
 
         <div className="border-t admin-border p-3 space-y-1">
@@ -257,6 +335,15 @@ export function AdminShell({
             {!collapsed && <span>Collapse</span>}
           </button>
         </div>
+
+        {/* Resize handle */}
+        {!collapsed && (
+          <div
+            className={`sidebar-resize-handle ${isResizing ? "resizing" : ""}`}
+            onMouseDown={startResize}
+            title="Drag to resize sidebar"
+          />
+        )}
       </aside>
 
       {/* Mobile sidebar drawer */}
