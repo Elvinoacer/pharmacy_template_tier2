@@ -388,7 +388,121 @@ export default async function AdminCustomerDetailPage({
             </div>
           </div>
         </AdminPanel>
+
+        {/* Commerce ledger: lifetime value, outstanding, orders (audit §59) */}
+        <CommerceSummaryPanel customerId={customer.id} />
       </div>
     </AdminShell>
+  );
+}
+
+async function CommerceSummaryPanel({ customerId }: { customerId: string }) {
+  // Pull the customer's commerce history directly so the existing getCustomerDetail
+  // signature doesn't need to change (and the timeline of refills/prescriptions
+  // remains compatible with downstream components).
+  const orders = await prisma.order.findMany({
+    where: { customerId, status: { notIn: ["cancelled"] } },
+    select: {
+      id: true,
+      type: true,
+      source: true,
+      status: true,
+      netTotal: true,
+      total: true,
+      amountPaid: true,
+      amountRefunded: true,
+      amountDue: true,
+      paidAt: true,
+      fulfilledAt: true,
+      createdAt: true,
+      paymentStage: true,
+      fulfillmentStage: true,
+    },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+  const fillsCount = await prisma.prescriptionFill.count({
+    where: { prescription: { customerId } },
+  });
+  const lifetimeSpend = orders.reduce((s, o) => s + Number(o.amountPaid || 0), 0);
+  const outstanding = orders.reduce((s, o) => s + Number(o.amountDue || 0), 0);
+  const refunded = orders.reduce((s, o) => s + Number(o.amountRefunded || 0), 0);
+  const avgOrderValue = orders.length > 0 ? lifetimeSpend / orders.length : 0;
+  const lastPurchaseAt = orders.find((o) => o.paidAt)?.paidAt ?? null;
+
+  return (
+    <AdminPanel
+      title="Commerce history"
+      description="Lifetime value, outstanding balance, refunds, and recent orders. Mirrors the audit's customer-lifetime-value requirement (§59)."
+      className="lg:col-span-2"
+    >
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat label="Lifetime spend" value={`KES ${lifetimeSpend.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} />
+        <Stat label="Outstanding" value={`KES ${outstanding.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} accent={outstanding > 0 ? "text-amber-600" : undefined} />
+        <Stat label="Refunded" value={`KES ${refunded.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} />
+        <Stat label="Avg order value" value={`KES ${avgOrderValue.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} />
+        <Stat label="Orders" value={String(orders.length)} />
+        <Stat label="Prescription fills" value={String(fillsCount)} />
+        <Stat label="Refills" value="see refills panel" />
+        <Stat label="Last purchase" value={lastPurchaseAt ? new Date(lastPurchaseAt).toLocaleDateString() : "—"} />
+      </div>
+
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="text-left admin-muted border-b border-[var(--admin-border)]">
+              <th className="py-2 pr-3">Order</th>
+              <th className="py-2 pr-3">Type</th>
+              <th className="py-2 pr-3">Source</th>
+              <th className="py-2 pr-3">Status</th>
+              <th className="py-2 pr-3">Payment</th>
+              <th className="py-2 pr-3">Fulfillment</th>
+              <th className="py-2 pr-3 text-right">Net</th>
+              <th className="py-2 pr-3 text-right">Paid</th>
+              <th className="py-2 pr-3 text-right">Due</th>
+              <th className="py-2 pr-3">Created</th>
+              <th className="py-2 pr-3">Paid at</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.id} className="border-b border-[var(--admin-border)]">
+                <td className="py-2 pr-3">
+                  <Link href={`/admin/orders?orderId=${o.id}`} className="admin-text font-medium hover:text-[var(--admin-accent)]">
+                    #{o.id.slice(0, 8)}
+                  </Link>
+                </td>
+                <td className="py-2 pr-3 admin-muted">{o.type ?? "—"}</td>
+                <td className="py-2 pr-3 admin-muted">{o.source}</td>
+                <td className="py-2 pr-3">
+                  <span className="badge">{o.status}</span>
+                </td>
+                <td className="py-2 pr-3 admin-muted">{o.paymentStage ?? "—"}</td>
+                <td className="py-2 pr-3 admin-muted">{o.fulfillmentStage ?? "—"}</td>
+                <td className="py-2 pr-3 text-right admin-text">KES {Number(o.netTotal || o.total || 0).toFixed(0)}</td>
+                <td className="py-2 pr-3 text-right admin-muted">KES {Number(o.amountPaid || 0).toFixed(0)}</td>
+                <td className={`py-2 pr-3 text-right ${Number(o.amountDue || 0) > 0 ? "text-amber-600 font-semibold" : "admin-muted"}`}>
+                  KES {Number(o.amountDue || 0).toFixed(0)}
+                </td>
+                <td className="py-2 pr-3 admin-muted">{new Date(o.createdAt).toLocaleDateString()}</td>
+                <td className="py-2 pr-3 admin-muted">{o.paidAt ? new Date(o.paidAt).toLocaleDateString() : "—"}</td>
+              </tr>
+            ))}
+            {orders.length === 0 && (
+              <tr><td colSpan={11} className="py-4 text-center admin-muted">No orders yet.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </AdminPanel>
+  );
+}
+
+function Stat({ label, value, accent }: { label: string; value: string; accent?: string }) {
+  return (
+    <div className="rounded-xl bg-[var(--admin-inset)] p-3">
+      <p className="text-[10px] uppercase tracking-wide admin-soft">{label}</p>
+      <p className={`mt-1 text-base font-bold ${accent ?? "admin-text"}`}>{value}</p>
+    </div>
   );
 }

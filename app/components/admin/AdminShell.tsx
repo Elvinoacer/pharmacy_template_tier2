@@ -32,6 +32,13 @@ import {
   HeartPulse,
   MapPin,
   Stethoscope,
+  DollarSign,
+  ShoppingCart,
+  Wallet,
+  RefreshCw,
+  TrendingUp,
+  UserCheck,
+  Scale,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -46,7 +53,21 @@ import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNot
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
 
 export const ADMIN_LINKS = [
-  { href: "/admin", label: "Analytics", icon: BarChart3 },
+  { href: "/admin", label: "Dashboard", icon: BarChart3 },
+  // ── Analytics section (audit §73) ───────────────────────────
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/analytics/overview", label: "Overview", icon: BarChart3 },
+  { href: "/admin/analytics/revenue", label: "Revenue", icon: DollarSign },
+  { href: "/admin/analytics/sales", label: "Sales", icon: ShoppingCart },
+  { href: "/admin/analytics/payments", label: "Payments", icon: Wallet },
+  { href: "/admin/analytics/prescriptions", label: "Rx Analytics", icon: Pill },
+  { href: "/admin/analytics/refills", label: "Refill Analytics", icon: RefreshCw },
+  { href: "/admin/analytics/inventory", label: "Inventory Analytics", icon: Package },
+  { href: "/admin/analytics/products", label: "Products", icon: TrendingUp },
+  { href: "/admin/analytics/customers", label: "Customers", icon: Users },
+  { href: "/admin/analytics/staff", label: "Staff", icon: UserCheck },
+  { href: "/admin/analytics/reconciliation", label: "Reconciliation", icon: Scale },
+  // ── Operations ────────────────────────────────────────────────
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/refills", label: "Refills", icon: Pill },
   { href: "/admin/prescriptions", label: "Prescriptions", icon: FileText },

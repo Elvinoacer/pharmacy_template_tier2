@@ -570,12 +570,33 @@ export async function portalCreateOrderAction(
   try {
     const { order, stockResult } = await prisma.$transaction(async (tx) => {
       const portalPhone = String(formData.get("phone") || "").trim();
+      const unitCost = Number(med.purchasePrice ?? 0);
+      const grossAmount = unitPrice * quantity;
+      const netAmount = Math.max(0, grossAmount - discount);
+      const grossProfit = netAmount - unitCost * quantity;
+      const expiresAt = new Date(Date.now() + 48 * 3600 * 1000);
+
       const o = await tx.order.create({
         data: {
           customerId: user.customerId,
           source: "portal",
           status: "pending",
           total,
+          // ── Commerce ledger extension (audit §8, §9, §16) ──
+          type: "OTC_PURCHASE",
+          lifecycleStatus: "active",
+          paymentStage: "unpaid",
+          fulfillmentStage: "reserved",
+          currency: "KES",
+          subtotal: grossAmount,
+          discountTotal: discount,
+          taxTotal: 0,
+          netTotal: netAmount,
+          amountPaid: 0,
+          amountRefunded: 0,
+          amountDue: netAmount,
+          reservedAt: new Date(),
+          expiresAt,
           // Remote portal buys are reservations until staff dispatch on handoff.
           fulfillment: "reserve",
           guestPhone: portalPhone || null,
@@ -589,27 +610,68 @@ export async function portalCreateOrderAction(
               quantity,
               unitPrice,
               discountApplied: discount,
+              // Commerce snapshots (audit §17)
+              unitCostSnapshot: unitCost,
+              grossAmount,
+              netAmount,
+              grossProfit,
+              taxAmount: 0,
+              currency: "KES",
+              pricingRule: "catalogue",
               couponId,
             },
           },
         },
       });
-      const stockResult = await applyStockChange(tx, {
+
+      // Reservation lifecycle (audit §9): create InventoryReservation + reservation_create stock movement.
+      const { createReservation } = await import("@/app/lib/services/commerce/reservations");
+      const { recordCommerceEvent } = await import("@/app/lib/services/commerce/events");
+      const r = await createReservation(tx, {
+        orderId: o.id,
         inventoryId: medicationId,
-        quantityDelta: -quantity,
-        reason: "sale",
-        notes: `Portal OTC reservation × ${quantity}`,
-        relatedType: "order",
-        relatedId: o.id,
-        actorId: user.id,
+        quantity,
+        createdById: user.id,
+        expiresAt,
       });
+      await recordCommerceEvent(tx, {
+        eventType: "order_created",
+        entityType: "order",
+        entityId: o.id,
+        orderId: o.id,
+        customerId: user.customerId,
+        actorId: user.id,
+        amount: netAmount,
+        metadata: { source: "portal", type: "OTC_PURCHASE", quantity, medicationId },
+      });
+      await recordCommerceEvent(tx, {
+        eventType: "order_reserved",
+        entityType: "order",
+        entityId: o.id,
+        orderId: o.id,
+        customerId: user.customerId,
+        actorId: user.id,
+        amount: netAmount,
+        metadata: { expiresAt },
+      });
+
       if (couponId) {
         await tx.coupon.update({
           where: { id: couponId },
           data: { redemptions: { increment: 1 } },
         });
+        await recordCommerceEvent(tx, {
+          eventType: "coupon_redeemed",
+          entityType: "coupon",
+          entityId: couponId,
+          orderId: o.id,
+          customerId: user.customerId,
+          actorId: user.id,
+          amount: discount,
+          metadata: { couponId, code: couponCode },
+        });
       }
-      return { order: o, stockResult };
+      return { order: o, stockResult: r.stockResult };
     });
     orderId = order.id;
     await notifyStockThreshold(stockResult);
@@ -681,6 +743,19 @@ export async function portalPayRefillAction(
     return { error: "No price set for this prescription — pay at the counter or contact the pharmacy." };
   }
 
+  // Look up medication for cost snapshot.
+  const med = refill.prescription?.medicationId
+    ? await prisma.pharmacyInventory.findUnique({
+        where: { id: refill.prescription.medicationId },
+        select: { id: true, purchasePrice: true, medicationMaster: { select: { name: true } } },
+      })
+    : null;
+  const unitCost = Number(med?.purchasePrice ?? 0);
+  const grossAmount = unitPrice * qty;
+  const netAmount = Math.max(0, grossAmount);
+  const grossProfit = netAmount - unitCost * qty;
+  const expiresAt = new Date(Date.now() + 48 * 3600 * 1000);
+
   const order = await prisma.order.create({
     data: {
       customerId: user.customerId,
@@ -688,6 +763,21 @@ export async function portalPayRefillAction(
       refillId,
       status: "pending",
       total,
+      // ── Commerce ledger extension (audit §16) ──
+      type: "REFILL",
+      lifecycleStatus: "active",
+      paymentStage: "unpaid",
+      fulfillmentStage: "reserved",
+      currency: "KES",
+      subtotal: grossAmount,
+      discountTotal: 0,
+      taxTotal: 0,
+      netTotal: netAmount,
+      amountPaid: 0,
+      amountRefunded: 0,
+      amountDue: netAmount,
+      reservedAt: new Date(),
+      expiresAt,
       // Refill payments are reservations until collection / dispatch.
       fulfillment: "reserve",
       items: {
@@ -696,10 +786,67 @@ export async function portalPayRefillAction(
           name: refill.medicineName,
           quantity: qty,
           unitPrice,
+          // Commerce snapshots (audit §17)
+          unitCostSnapshot: unitCost,
+          grossAmount,
+          netAmount,
+          grossProfit,
+          taxAmount: 0,
+          currency: "KES",
+          pricingRule: "prescription",
+          refillRequestId: refillId,
         },
       },
     },
   });
+
+  // Create a matching PrescriptionFill row linked to this order + refill (audit §4, §41.A).
+  if (refill.prescriptionId) {
+    try {
+      await prisma.$transaction(async (tx) => {
+        const priorFills = await tx.prescriptionFill.count({
+          where: { prescriptionId: refill.prescriptionId! },
+        });
+        await tx.prescriptionFill.create({
+          data: {
+            prescriptionId: refill.prescriptionId!,
+            orderId: order.id,
+            refillRequestId: refillId,
+            fillNumber: priorFills + 1,
+            quantity: qty,
+            unitPriceSnapshot: unitPrice,
+            discountAmount: 0,
+            netAmount,
+            costPriceSnapshot: unitCost,
+            status: "pending",
+            filledAt: new Date(),
+            medicationId: med?.id ?? null,
+            medicationName: med?.medicationMaster?.name ?? refill.medicineName,
+            lotIds: [],
+            notes: `Created from portal refill payment (${refillId.slice(0, 8)})`,
+          },
+        });
+        // Link RefillRequest → PrescriptionFill.
+        await tx.refillRequest.update({
+          where: { id: refillId },
+          data: {},
+        });
+        const { recordCommerceEvent } = await import("@/app/lib/services/commerce/events");
+        await recordCommerceEvent(tx, {
+          eventType: "prescription_filled",
+          entityType: "prescription",
+          entityId: refill.prescriptionId!,
+          orderId: order.id,
+          customerId: user.customerId,
+          actorId: user.id,
+          amount: netAmount,
+          metadata: { refillId, quantity: qty },
+        });
+      });
+    } catch (err) {
+      console.error("[portalPayRefill] fill creation failed:", err);
+    }
+  }
 
   revalidatePath("/portal/orders");
   revalidatePath("/portal/refills");

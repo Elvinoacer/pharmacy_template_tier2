@@ -124,6 +124,22 @@ export default async function PrescriptionDetailPage({
         }))
       : formula.slots;
 
+  // ── Commerce ledger: fill history + financial summary (audit §29, §49) ──
+  const { getPrescriptionFillHistory } = await import("@/app/lib/services/analytics/prescriptions");
+  const fillHistory = await getPrescriptionFillHistory(id);
+  const fillTotals = fillHistory.reduce(
+    (acc, f) => {
+      acc.totalBilled += f.netAmount;
+      acc.totalCollected += f.amountPaid;
+      acc.totalRefunded += f.amountRefunded;
+      acc.totalOutstanding += f.amountDue;
+      acc.cogs += f.costPriceSnapshot * f.quantity;
+      return acc;
+    },
+    { totalBilled: 0, totalCollected: 0, totalRefunded: 0, totalOutstanding: 0, cogs: 0 },
+  );
+  const fillGrossProfit = fillTotals.totalBilled - fillTotals.cogs;
+
   const metrics = calculatePrescriptionMetrics(
     {
       startDate: prescription.startDate,
@@ -365,6 +381,87 @@ export default async function PrescriptionDetailPage({
             <div className="prose prose-sm dark:prose-invert max-w-none text-xs admin-text sm:text-sm">
               <Markdown>{analysis}</Markdown>
             </div>
+          </AdminPanel>
+
+          {/* Commerce ledger: financial summary + fill history (audit §29, §49) */}
+          <AdminPanel
+            title="Financial summary & fill history"
+            description="Every fill of this prescription as a commercial transaction — billing, payments, outstanding balance, COGS, gross profit."
+          >
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wider admin-muted">Total billed</p>
+                <p className="mt-0.5 font-semibold admin-text">KES {fillTotals.totalBilled.toLocaleString("en-KE", { maximumFractionDigits: 0 })}</p>
+              </div>
+              <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wider admin-muted">Collected</p>
+                <p className="mt-0.5 font-semibold admin-text">KES {fillTotals.totalCollected.toLocaleString("en-KE", { maximumFractionDigits: 0 })}</p>
+              </div>
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wider admin-muted">Outstanding</p>
+                <p className={`mt-0.5 font-semibold ${fillTotals.totalOutstanding > 0 ? "text-amber-600" : "admin-text"}`}>
+                  KES {fillTotals.totalOutstanding.toLocaleString("en-KE", { maximumFractionDigits: 0 })}
+                </p>
+              </div>
+              <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wider admin-muted">Gross profit</p>
+                <p className="mt-0.5 font-semibold admin-text">KES {fillGrossProfit.toLocaleString("en-KE", { maximumFractionDigits: 0 })}</p>
+              </div>
+            </div>
+
+            {fillHistory.length === 0 ? (
+              <p className="mt-4 text-xs admin-muted">
+                No fills recorded yet. Dispatch this prescription to create the first fill + commercial order.
+              </p>
+            ) : (
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="text-left admin-muted border-b border-[var(--admin-border)]">
+                      <th className="py-2 pr-3">#</th>
+                      <th className="py-2 pr-3">Status</th>
+                      <th className="py-2 pr-3 text-right">Qty</th>
+                      <th className="py-2 pr-3 text-right">Unit price</th>
+                      <th className="py-2 pr-3 text-right">Net</th>
+                      <th className="py-2 pr-3 text-right">Cost</th>
+                      <th className="py-2 pr-3 text-right">Profit</th>
+                      <th className="py-2 pr-3">Payment</th>
+                      <th className="py-2 pr-3 text-right">Paid</th>
+                      <th className="py-2 pr-3 text-right">Due</th>
+                      <th className="py-2 pr-3">Dispatched</th>
+                      <th className="py-2 pr-3">Dispenser</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fillHistory.map((f) => (
+                      <tr key={f.id} className="border-b border-[var(--admin-border)]">
+                        <td className="py-2 pr-3 admin-text font-semibold">{f.fillNumber}</td>
+                        <td className="py-2 pr-3">
+                          <span className={`badge ${f.status === "dispatched" || f.status === "collected" ? "badge-success" : f.status === "pending" || f.status === "preparing" || f.status === "ready" ? "badge-info" : "badge-muted"}`}>
+                            {f.status}
+                          </span>
+                        </td>
+                        <td className="py-2 pr-3 text-right admin-muted">{f.quantity}</td>
+                        <td className="py-2 pr-3 text-right admin-muted">KES {f.unitPriceSnapshot.toFixed(0)}</td>
+                        <td className="py-2 pr-3 text-right admin-text">KES {f.netAmount.toFixed(0)}</td>
+                        <td className="py-2 pr-3 text-right admin-muted">KES {(f.costPriceSnapshot * f.quantity).toFixed(0)}</td>
+                        <td className="py-2 pr-3 text-right admin-text font-semibold">KES {f.grossProfit.toFixed(0)}</td>
+                        <td className="py-2 pr-3 admin-muted">
+                          {f.paymentProvider ? `${f.paymentProvider}${f.providerRef ? ` · ${f.providerRef}` : ""}` : "—"}
+                          {f.paymentStatus && <div className="text-[10px]">{f.paymentStatus}</div>}
+                        </td>
+                        <td className="py-2 pr-3 text-right admin-muted">KES {f.amountPaid.toFixed(0)}</td>
+                        <td className={`py-2 pr-3 text-right ${f.amountDue > 0 ? "text-amber-600 font-semibold" : "admin-muted"}`}>
+                          KES {f.amountDue.toFixed(0)}
+                        </td>
+                        <td className="py-2 pr-3 admin-muted">{f.dispatchedAt ? new Date(f.dispatchedAt).toLocaleString() : "—"}</td>
+                        <td className="py-2 pr-3 admin-muted">{f.dispensedByName ?? "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </AdminPanel>
 
           {/* Priority 3: Today's dose board */}

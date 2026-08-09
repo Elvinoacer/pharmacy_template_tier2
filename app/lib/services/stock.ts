@@ -13,6 +13,7 @@ import type { Prisma } from "@/app/generated/prisma/client";
  */
 
 export type StockReason =
+  // ── Legacy (kept for backward-compat with existing StockMovement rows) ──
   | "sale"
   | "receive"
   | "adjust"
@@ -20,7 +21,20 @@ export type StockReason =
   | "refill"
   | "pos_sync"
   | "return"
-  | "write_off";
+  | "write_off"
+  // ── Commerce ledger extension (audit §19) — stricter vocabulary ──
+  | "purchase_receive"        // Goods received from supplier
+  | "reservation_create"      // Stock held for an unpaid/uncollected reservation
+  | "reservation_release"     // Stock returned because reservation expired/cancelled
+  | "prescription_fill"       // Stock consumed by a prescription fill (audit §5)
+  | "refill_fill"             // Stock consumed by a refill fulfillment (audit §11)
+  | "return_customer"         // Customer returned purchased goods
+  | "return_supplier"         // Goods sent back to supplier
+  | "expiry"                  // Stock written off due to expiry
+  | "damage"                  // Stock written off due to damage/spoilage
+  | "transfer_in"             // Stock received from another location
+  | "transfer_out"            // Stock shipped to another location
+  | "stocktake_adjustment";   // Manual adjustment from stock count
 
 export type TxClient = Prisma.TransactionClient;
 

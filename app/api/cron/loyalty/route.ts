@@ -156,40 +156,64 @@ async function processRefillCompletions(): Promise<number> {
 async function processOrderBonuses(): Promise<number> {
   const since = new Date();
   since.setHours(since.getHours() - 24);
-  const paid = await prisma.order.findMany({
-    where: { status: "paid", updatedAt: { gte: since } },
-    include: { customer: { include: { loyaltyAccount: true } } },
+
+  // ── Commerce ledger path (audit §23, §62) ──
+  // Drive loyalty from *completed payments*, not order.status='paid'/'updatedAt'.
+  // A successfully paid counter order can later become "fulfilled" — the old
+  // logic would miss those. The new logic uses Payment.status='completed'
+  // joined via Order.customer → LoyaltyAccount.
+  const payments = await prisma.payment.findMany({
+    where: {
+      status: "completed",
+      OR: [
+        { paidAt: { gte: since } },
+        { paidAt: null, updatedAt: { gte: since } },
+      ],
+    },
+    include: {
+      order: {
+        select: {
+          id: true,
+          customerId: true,
+          status: true,
+          waived: true,
+          customer: { include: { loyaltyAccount: true } },
+        },
+      },
+    },
   });
+
   let count = 0;
-  for (const o of paid) {
-    if (!o.customer?.loyaltyAccount) continue;
+  for (const p of payments) {
+    if (!p.order?.customer?.loyaltyAccount) continue;
+    if (p.order.waived) continue; // waived orders do not earn points
+    const accountId = p.order.customer.loyaltyAccount.id;
     const existing = await prisma.loyaltyTransaction.findFirst({
       where: {
-        accountId: o.customer.loyaltyAccount.id,
+        accountId,
         source: "cron:order_paid",
-        description: { contains: o.id },
+        description: { contains: p.order.id },
       },
     });
     if (existing) continue;
-    // 1 point per 100 currency units spent (configurable via LOYALTY_SPEND_MULTIPLIER).
     const multiplier = Number(process.env.LOYALTY_SPEND_MULTIPLIER || "0.01");
-    const points = Math.max(1, Math.floor(Number(o.total) * multiplier));
-    const newPoints = o.customer.loyaltyAccount.points + points;
+    const points = Math.max(1, Math.floor(Number(p.amount) * multiplier));
+    const newPoints = p.order.customer.loyaltyAccount.points + points;
     await prisma.$transaction([
       prisma.loyaltyAccount.update({
-        where: { id: o.customer.loyaltyAccount.id },
+        where: { id: accountId },
         data: {
           points: newPoints,
-          lifetimePoints: o.customer.loyaltyAccount.lifetimePoints + points,
+          lifetimePoints: p.order.customer.loyaltyAccount.lifetimePoints + points,
           tier: newPoints >= 1000 ? "platinum" : newPoints >= 400 ? "gold" : newPoints >= 150 ? "silver" : "bronze",
         },
       }),
       prisma.loyaltyTransaction.create({
         data: {
-          accountId: o.customer.loyaltyAccount.id,
+          accountId,
           points,
           type: "earn",
-          description: `Order paid (${o.id.slice(0, 8)})`,
+          description: `Order paid (${p.order.id.slice(0, 8)})`,
           source: "cron:order_paid",
         },
       }),
