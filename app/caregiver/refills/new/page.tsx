@@ -4,7 +4,8 @@ import { prisma } from "@/app/lib/db";
 import { CaregiverShell } from "@/app/components/caregiver/CaregiverShell";
 import { CaregiverRefillForm } from "@/app/components/caregiver/CaregiverRefillForm";
 import { requireCanRequestRefills } from "@/app/lib/services/caregiver-permissions";
-import { Info, Clock, Truck, Store } from "lucide-react";
+import Link from "next/link";
+import { Info, Clock, Truck, Store, Users, ArrowRight } from "lucide-react";
 
 export const metadata = { title: "Request refill" };
 
@@ -16,7 +17,64 @@ export default async function CaregiverNewRefillPage({
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/caregiver/refills/new");
   const sp = await searchParams;
-  if (!sp.customerId) redirect("/caregiver/refills");
+  const links = await prisma.caregiver.findMany({
+    where: { caregiverUserId: user.id, status: "active", canRequestRefills: true },
+    include: {
+      customer: { select: { id: true, fullName: true } },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  // /caregiver/refills/new is also a valid entry point from the main
+  // Refills page. Do not bounce the caregiver away just because no patient
+  // was selected yet: let them choose one they are authorized to act for.
+  if (!sp.customerId) {
+    if (links.length === 0) redirect("/caregiver/refills");
+    if (links.length === 1) {
+      const params = new URLSearchParams({ customerId: links[0].customerId });
+      if (sp.prescriptionId) params.set("prescriptionId", sp.prescriptionId);
+      redirect(`/caregiver/refills/new?${params.toString()}`);
+    }
+
+    return (
+      <CaregiverShell
+        user={user}
+        title="New refill request"
+        subtitle="Choose the patient you are authorized to request a refill for."
+      >
+        <div className="mx-auto max-w-2xl">
+          <div className="card-premium p-5">
+            <div className="mb-4 flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
+                <Users className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-[#0c1a14]">Select a patient</p>
+                <p className="mt-0.5 text-xs text-[#5a6b62]">
+                  You can only request refills for patients who have granted you refill permission.
+                </p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {links.map((caregiverLink) => (
+                <Link
+                  key={caregiverLink.customerId}
+                  href={`/caregiver/refills/new?customerId=${encodeURIComponent(caregiverLink.customerId)}`}
+                  className="flex items-center justify-between rounded-xl border border-[#e3ebe6] bg-white px-4 py-3 transition hover:border-[#0d6e5a]/40 hover:bg-[#f7faf8]"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-[#0c1a14]">{caregiverLink.customer.fullName}</p>
+                    <p className="mt-0.5 text-[11px] text-[#5a6b62]">Refill requests enabled</p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-[#0d6e5a]" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CaregiverShell>
+    );
+  }
 
   // Verify the caregiver has refill permission for this patient.
   let link;
@@ -121,6 +179,7 @@ export default async function CaregiverNewRefillPage({
             </p>
             <CaregiverRefillForm
               customerId={patient.id}
+              initialPrescriptionId={sp.prescriptionId}
               customerName={patient.fullName}
               prescriptions={patient.prescriptions.map((p) => ({
                 id: p.id,
