@@ -101,18 +101,24 @@ export async function createRefund(
     await recomputeOrderFinancials(tx, payment.order.id);
 
     // If the refund covers the entire payment, mark Payment.status = refunded.
+    // For partial refunds, keep Payment.status = completed and use Order.paymentStage.
     const totalRefundedAfter = alreadyRefunded + input.amount;
     if (totalRefundedAfter >= Number(payment.amount) - 0.001) {
+      // Full refund: mark payment as fully refunded
       await tx.payment.update({
         where: { id: payment.id },
         data: { status: "refunded" },
       });
+      await tx.order.update({
+        where: { id: payment.order.id },
+        data: { paymentStage: "refunded" },
+      });
     } else {
+      // Partial refund: keep payment as completed, mark order as partially_refunded
       await tx.payment.update({
         where: { id: payment.id },
-        data: { status: "refunded" }, // partially refunded still sets status — see PaymentStage for finer-grained.
+        data: { status: "completed" },
       });
-      // Mirror partial-refund state on Order.paymentStage.
       await tx.order.update({
         where: { id: payment.order.id },
         data: { paymentStage: "partially_refunded" },
