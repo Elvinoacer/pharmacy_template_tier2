@@ -4,17 +4,19 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 /**
- * Enhanced sidebar state with collapse, pinned items, and width persistence.
- * Supports drag-to-resize and favorite pinning for better UX.
+ * Enhanced sidebar state with collapse, pinned items, width persistence, and group collapse.
+ * Supports drag-to-resize, favorite pinning, and collapsible navigation groups.
  */
 export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver") {
   const collapsedKey = `aether:sidebar:${storageKey}:collapsed`;
   const widthKey = `aether:sidebar:${storageKey}:width`;
   const pinnedKey = `aether:sidebar:${storageKey}:pinned`;
+  const groupsKey = `aether:sidebar:${storageKey}:groups`;
   
   const [collapsed, setCollapsed] = useState(false);
   const [width, setWidth] = useState<number>(264);
   const [pinned, setPinned] = useState<string[]>([]);
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [hydrated, setHydrated] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
 
@@ -26,6 +28,7 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
         const storedCollapsed = localStorage.getItem(collapsedKey);
         const storedWidth = localStorage.getItem(widthKey);
         const storedPinned = localStorage.getItem(pinnedKey);
+        const storedGroups = localStorage.getItem(groupsKey);
         
         if (storedCollapsed !== null) setCollapsed(storedCollapsed === "true");
         if (storedWidth !== null) {
@@ -36,6 +39,10 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
           const p = JSON.parse(storedPinned);
           if (Array.isArray(p)) setPinned(p);
         }
+        if (storedGroups !== null) {
+          const g = JSON.parse(storedGroups);
+          if (g && typeof g === "object") setCollapsedGroups(g);
+        }
       } catch {
         /* ignore */
       }
@@ -44,7 +51,7 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
     return () => {
       cancelled = true;
     };
-  }, [collapsedKey, widthKey, pinnedKey]);
+  }, [collapsedKey, widthKey, pinnedKey, groupsKey]);
 
   const toggle = useCallback(() => {
     setCollapsed((c) => {
@@ -86,6 +93,22 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
     return pinned.includes(href);
   }, [pinned]);
 
+  const toggleGroup = useCallback((groupId: string) => {
+    setCollapsedGroups((prev) => {
+      const next = { ...prev, [groupId]: !prev[groupId] };
+      try {
+        localStorage.setItem(groupsKey, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, [groupsKey]);
+
+  const isGroupCollapsed = useCallback((groupId: string) => {
+    return !!collapsedGroups[groupId];
+  }, [collapsedGroups]);
+
   // Drag to resize handlers
   const startResize = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -120,6 +143,9 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
     isPinned,
     isResizing,
     startResize,
+    collapsedGroups,
+    toggleGroup,
+    isGroupCollapsed,
   };
 }
 

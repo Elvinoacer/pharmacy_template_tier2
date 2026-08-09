@@ -51,46 +51,60 @@ import {
 } from "@/app/components/shell/useShell";
 import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
-import { Pin, PinOff } from "lucide-react";
+import { Pin, PinOff, ChevronDown, FolderKanban } from "lucide-react";
 
 export const ADMIN_LINKS = [
-  { href: "/admin", label: "Dashboard", icon: BarChart3 },
+  { href: "/admin", label: "Dashboard", icon: BarChart3, group: "overview" },
   // ── Analytics section (audit §73) ───────────────────────────
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/analytics/overview", label: "Overview", icon: BarChart3 },
-  { href: "/admin/analytics/revenue", label: "Revenue", icon: DollarSign },
-  { href: "/admin/analytics/sales", label: "Sales", icon: ShoppingCart },
-  { href: "/admin/analytics/payments", label: "Payments", icon: Wallet },
-  { href: "/admin/analytics/prescriptions", label: "Rx Analytics", icon: Pill },
-  { href: "/admin/analytics/refills", label: "Refill Analytics", icon: RefreshCw },
-  { href: "/admin/analytics/inventory", label: "Inventory Analytics", icon: Package },
-  { href: "/admin/analytics/products", label: "Products", icon: TrendingUp },
-  { href: "/admin/analytics/customers", label: "Customers", icon: Users },
-  { href: "/admin/analytics/staff", label: "Staff", icon: UserCheck },
-  { href: "/admin/analytics/reconciliation", label: "Reconciliation", icon: Scale },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3, group: "analytics" },
+  { href: "/admin/analytics/overview", label: "Overview", icon: BarChart3, group: "analytics" },
+  { href: "/admin/analytics/revenue", label: "Revenue", icon: DollarSign, group: "analytics" },
+  { href: "/admin/analytics/sales", label: "Sales", icon: ShoppingCart, group: "analytics" },
+  { href: "/admin/analytics/payments", label: "Payments", icon: Wallet, group: "analytics" },
+  { href: "/admin/analytics/prescriptions", label: "Rx Analytics", icon: Pill, group: "analytics" },
+  { href: "/admin/analytics/refills", label: "Refill Analytics", icon: RefreshCw, group: "analytics" },
+  { href: "/admin/analytics/inventory", label: "Inventory Analytics", icon: Package, group: "analytics" },
+  { href: "/admin/analytics/products", label: "Products", icon: TrendingUp, group: "analytics" },
+  { href: "/admin/analytics/customers", label: "Customers", icon: Users, group: "analytics" },
+  { href: "/admin/analytics/staff", label: "Staff", icon: UserCheck, group: "analytics" },
+  { href: "/admin/analytics/reconciliation", label: "Reconciliation", icon: Scale, group: "analytics" },
   // ── Operations ────────────────────────────────────────────────
-  { href: "/admin/customers", label: "Customers", icon: Users },
-  { href: "/admin/refills", label: "Refills", icon: Pill },
-  { href: "/admin/prescriptions", label: "Prescriptions", icon: FileText },
-  { href: "/admin/enquiries", label: "Enquiries", icon: Mail },
-  { href: "/admin/messages", label: "Communication", icon: MessageSquare },
-  { href: "/admin/feel", label: "How do you feel", icon: HeartPulse },
-  { href: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
-  { href: "/admin/segments", label: "Segments", icon: Layers },
-  { href: "/admin/reminders", label: "Reminders", icon: CalendarClock },
-  { href: "/admin/inbox", label: "Inbox", icon: Inbox },
-  { href: "/admin/notifications", label: "Outbound Log", icon: Bell },
-  { href: "/admin/ai", label: "AI Escalations", icon: Brain },
-  { href: "/admin/loyalty", label: "Loyalty", icon: Sparkles },
-  { href: "/admin/feedback", label: "Feedback", icon: Star },
-  { href: "/admin/knowledge", label: "AI Knowledge", icon: BookOpen },
-  { href: "/admin/templates", label: "Templates", icon: FileText },
-  { href: "/admin/medications", label: "Medications", icon: Pill },
-  { href: "/admin/services", label: "Services", icon: Stethoscope },
-  { href: "/admin/inventory", label: "Inventory health", icon: Package },
-  { href: "/admin/orders", label: "Orders & Revenue", icon: BarChart3 },
-  { href: "/admin/settings/location", label: "Location", icon: MapPin },
+  { href: "/admin/customers", label: "Customers", icon: Users, group: "operations" },
+  { href: "/admin/refills", label: "Refills", icon: Pill, group: "operations" },
+  { href: "/admin/prescriptions", label: "Prescriptions", icon: FileText, group: "operations" },
+  { href: "/admin/enquiries", label: "Enquiries", icon: Mail, group: "operations" },
+  { href: "/admin/messages", label: "Communication", icon: MessageSquare, group: "operations" },
+  { href: "/admin/feel", label: "How do you feel", icon: HeartPulse, group: "operations" },
+  { href: "/admin/campaigns", label: "Campaigns", icon: Megaphone, group: "marketing" },
+  { href: "/admin/segments", label: "Segments", icon: Layers, group: "marketing" },
+  { href: "/admin/reminders", label: "Reminders", icon: CalendarClock, group: "marketing" },
+  { href: "/admin/inbox", label: "Inbox", icon: Inbox, group: "communication" },
+  { href: "/admin/notifications", label: "Outbound Log", icon: Bell, group: "communication" },
+  { href: "/admin/ai", label: "AI Escalations", icon: Brain, group: "ai" },
+  { href: "/admin/loyalty", label: "Loyalty", icon: Sparkles, group: "engagement" },
+  { href: "/admin/feedback", label: "Feedback", icon: Star, group: "engagement" },
+  { href: "/admin/knowledge", label: "AI Knowledge", icon: BookOpen, group: "ai" },
+  { href: "/admin/templates", label: "Templates", icon: FileText, group: "content" },
+  { href: "/admin/medications", label: "Medications", icon: Pill, group: "clinical" },
+  { href: "/admin/services", label: "Services", icon: Stethoscope, group: "clinical" },
+  { href: "/admin/inventory", label: "Inventory health", icon: Package, group: "operations" },
+  { href: "/admin/orders", label: "Orders & Revenue", icon: BarChart3, group: "orders" },
+  { href: "/admin/settings/location", label: "Location", icon: MapPin, group: "settings" },
 ] as const;
+
+export const ADMIN_GROUPS = {
+  overview: { label: "Overview", icon: BarChart3 },
+  analytics: { label: "Analytics", icon: BarChart3 },
+  operations: { label: "Operations", icon: ClipboardList },
+  marketing: { label: "Marketing", icon: Megaphone },
+  communication: { label: "Communication", icon: MessageSquare },
+  ai: { label: "AI & Automation", icon: Brain },
+  engagement: { label: "Engagement", icon: Sparkles },
+  content: { label: "Content", icon: FileText },
+  clinical: { label: "Clinical", icon: Stethoscope },
+  orders: { label: "Orders", icon: ShoppingCart },
+  settings: { label: "Settings", icon: Settings },
+} as const;
 
 type ThemeMode = "light" | "dark" | "system";
 const THEME_KEY = "aether-admin-theme";
@@ -155,7 +169,7 @@ export function AdminShell({
   subtitle?: string;
   actions?: React.ReactNode;
 }) {
-  const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing } = useSidebarEnhanced("admin");
+  const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing, collapsedGroups, toggleGroup, isGroupCollapsed } = useSidebarEnhanced("admin");
   const [mobileOpen, setMobileOpen] = useState(false);
   const attention = useAttentionCounts();
   const unread = attention.count;
@@ -166,6 +180,22 @@ export function AdminShell({
   // Separate pinned and unpinned links
   const pinnedLinks = ADMIN_LINKS.filter((l) => pinned.includes(l.href));
   const otherLinks = ADMIN_LINKS.filter((l) => !pinned.includes(l.href));
+
+  // Group the non-pinned links by their group
+  const groupedLinks: Record<string, typeof ADMIN_LINKS> = {};
+  otherLinks.forEach((link) => {
+    const groupName = link.group || "other";
+    if (!groupedLinks[groupName]) {
+      groupedLinks[groupName] = [];
+    }
+    groupedLinks[groupName].push(link);
+  });
+
+  // Get ordered group keys based on ADMIN_GROUPS definition
+  const groupOrder = Object.keys(ADMIN_GROUPS);
+  const orderedGroups = groupOrder.filter((g) => groupedLinks[g]);
+  const extraGroups = Object.keys(groupedLinks).filter((g) => !groupOrder.includes(g));
+  const allGroups = [...orderedGroups, ...extraGroups];
 
   return (
     <div
@@ -241,73 +271,80 @@ export function AdminShell({
             </div>
           )}
 
-          {/* All/Other links section */}
-          <div className="sidebar-nav-section">
-            {!collapsed && pinnedLinks.length > 0 && (
-              <div className="sidebar-nav-label">
-                <span>Navigation</span>
+          {/* Grouped navigation sections */}
+          {!collapsed && allGroups.map((groupId) => {
+            const groupDef = ADMIN_GROUPS[groupId as keyof typeof ADMIN_GROUPS];
+            const groupLabel = groupDef?.label || groupId;
+            const GroupIcon = groupDef?.icon || FolderKanban;
+            const links = groupedLinks[groupId];
+            const isCollapsed = isGroupCollapsed(groupId);
+
+            return (
+              <div key={groupId} className="sidebar-nav-section">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(groupId)}
+                  className="sidebar-nav-label w-full hover:bg-[#eef5f2] dark:hover:bg-[#1a2f2a] rounded-lg transition-colors"
+                  title={isCollapsed ? `Expand ${groupLabel}` : `Collapse ${groupLabel}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <GroupIcon className="h-3.5 w-3.5" />
+                    <span>{groupLabel}</span>
+                    <span className="ml-1 text-[10px] opacity-60">({links.length})</span>
+                  </div>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isCollapsed ? "-rotate-90" : ""}`} />
+                </button>
+                {!isCollapsed && (
+                  <ul className="space-y-1 mt-1">
+                    {links.map((l) => {
+                      const Icon = l.icon;
+                      const active = isLinkActive(pathname, l.href);
+                      const showFeel = l.href === "/admin/feel" && feelBadge > 0;
+                      const badge = showFeel ? formatBadgeCount(feelBadge) : "";
+                      const isItemPinned = isPinned(l.href);
+                      return (
+                        <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
+                          <Link
+                            href={l.href}
+                            className={`nav-link-admin ${active ? "active" : ""} pr-8 ${
+                              showFeel ? "!text-rose-600" : ""
+                            }`}
+                            title={showFeel ? `${l.label} · ${feelBadge} new` : l.label}
+                          >
+                            <span className="relative shrink-0">
+                              <Icon className="h-[18px] w-[18px]" />
+                              {badge && (
+                                <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-0.5 text-[8px] font-bold text-white">
+                                  {badge}
+                                </span>
+                              )}
+                            </span>
+                            <span className="truncate">{l.label}</span>
+                            {badge && (
+                              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                                {badge}
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                togglePin(l.href);
+                              }}
+                              className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
+                              title={isItemPinned ? "Unpin" : "Pin to top"}
+                            >
+                              {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
+                            </button>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
-            )}
-            <ul className="space-y-1">
-              {(collapsed ? ADMIN_LINKS : otherLinks).map((l) => {
-                const Icon = l.icon;
-                const active = isLinkActive(pathname, l.href);
-                const showFeel = l.href === "/admin/feel" && feelBadge > 0;
-                const badge = showFeel ? formatBadgeCount(feelBadge) : "";
-                const isItemPinned = isPinned(l.href);
-                return (
-                  <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
-                    <Link
-                      href={l.href}
-                      className={`nav-link-admin ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : "pr-8"} ${
-                        showFeel ? "!text-rose-600" : ""
-                      }`}
-                      title={
-                        collapsed
-                          ? showFeel
-                            ? `${l.label} · ${feelBadge} new`
-                            : l.label
-                          : undefined
-                      }
-                    >
-                      <span className="relative shrink-0">
-                        <Icon className="h-[18px] w-[18px]" />
-                        {collapsed && badge && (
-                          <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-0.5 text-[8px] font-bold text-white">
-                            {badge}
-                          </span>
-                        )}
-                      </span>
-                      {!collapsed && <span className="truncate">{l.label}</span>}
-                      {!collapsed && badge && (
-                        <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
-                          {badge}
-                        </span>
-                      )}
-                      {!collapsed && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            togglePin(l.href);
-                          }}
-                          className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
-                          title={isItemPinned ? "Unpin" : "Pin to top"}
-                        >
-                          {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
-                        </button>
-                      )}
-                    </Link>
-                    {collapsed && (
-                      <span className="tooltip-right hidden lg:block">
-                        {showFeel ? `${l.label} · ${feelBadge} new` : l.label}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+            );
+          })}
         </nav>
 
         <div className="border-t admin-border p-3 space-y-1">
