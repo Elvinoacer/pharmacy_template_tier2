@@ -21,14 +21,20 @@ export function CaregiverRefillForm({
   customerId,
   customerName,
   prescriptions,
+  initialPrescriptionId,
 }: {
   customerId: string;
   customerName: string;
   prescriptions: Prescription[];
+  initialPrescriptionId?: string;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  const [rxId, setRxId] = useState(prescriptions[0]?.id ?? "");
+  const [rxId, setRxId] = useState(() =>
+    initialPrescriptionId && prescriptions.some((p) => p.id === initialPrescriptionId)
+      ? initialPrescriptionId
+      : (prescriptions[0]?.id ?? ""),
+  );
   const [pickup, setPickup] = useState<"pickup" | "delivery">("pickup");
   const [notes, setNotes] = useState("");
 
