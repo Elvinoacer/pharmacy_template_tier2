@@ -1,0 +1,36 @@
+# Reservation Expiry Cron
+# Runs every 15 minutes to release expired inventory reservations
+# See: app/api/cron/reservations/route.ts
+
+name: Reservation Expiry Cron
+
+on:
+  schedule:
+    # Run every 15 minutes (audit §10)
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  release-expired-reservations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger reservation expiry endpoint
+        if: ${{ env.BASE_URL != '' }}
+        run: |
+          curl -X POST \
+            --fail-with-body \
+            --max-time 30 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$BASE_URL/api/cron/reservations"
+        env:
+          BASE_URL: ${{ secrets.APP_BASE_URL || vars.APP_BASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+
+      - name: Fallback message if no URL configured
+        if: ${{ env.BASE_URL == '' }}
+        run: |
+          echo "::warning::APP_BASE_URL not configured. Set secrets.APP_BASE_URL or vars.APP_BASE_URL in GitHub."
+          echo "Manual test: curl -X POST -H \"Authorization: Bearer \$CRON_SECRET\" https://your-domain/api/cron/reservations"
+        env:
+          BASE_URL: ${{ secrets.APP_BASE_URL || vars.APP_BASE_URL }}

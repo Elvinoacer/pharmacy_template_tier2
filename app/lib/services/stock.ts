@@ -44,6 +44,7 @@ export type StockChangeResult = {
   newStock: number;
   quantityDelta: number;
   lotIds: string[];
+  lotDetails: Array<{ lotId: string; quantity: number; unitCost: number }>;
   movementIds: string[];
   crossedLowStock: boolean;
   isOutOfStock: boolean;
@@ -88,20 +89,29 @@ async function loadInventory(tx: TxClient, inventoryId: string): Promise<Invento
  * If no lots exist, only the aggregate currentStock is changed.
  * If lots exist but total lot qty < needed, still deduct what we can from lots
  * and apply the remainder to aggregate only (legacy stock without lots).
+ * 
+ * Returns detailed information about each lot touched, including the exact
+ * quantity taken from each lot and its unit cost for accurate COGS tracking.
  */
 async function deductLotsFefo(
   tx: TxClient,
   inventoryId: string,
   quantity: number,
-): Promise<{ lotIds: string[]; remaining: number }> {
+): Promise<{ 
+  lotIds: string[]; 
+  remaining: number;
+  lotDetails: Array<{ lotId: string; quantity: number; unitCost: number }>;
+}> {
   const lots = await tx.inventoryLot.findMany({
     where: { pharmacyInventoryId: inventoryId, active: true, quantity: { gt: 0 } },
     orderBy: [{ expiryDate: "asc" }, { receivedAt: "asc" }],
   });
-  if (lots.length === 0) return { lotIds: [], remaining: quantity };
+  if (lots.length === 0) return { lotIds: [], remaining: quantity, lotDetails: [] };
 
   let remaining = quantity;
   const lotIds: string[] = [];
+  const lotDetails: Array<{ lotId: string; quantity: number; unitCost: number }> = [];
+  
   for (const lot of lots) {
     if (remaining <= 0) break;
     const take = Math.min(lot.quantity, remaining);
@@ -111,9 +121,14 @@ async function deductLotsFefo(
       data: { quantity: newQty, active: newQty > 0 },
     });
     lotIds.push(lot.id);
+    lotDetails.push({
+      lotId: lot.id,
+      quantity: take,
+      unitCost: Number(lot.unitCost ?? 0),
+    });
     remaining -= take;
   }
-  return { lotIds, remaining };
+  return { lotIds, remaining, lotDetails };
 }
 
 async function addToLot(
@@ -204,6 +219,7 @@ export async function applyStockChange(
       newStock: snap.currentStock,
       quantityDelta: 0,
       lotIds: [],
+      lotDetails: [],
       movementIds: [],
       crossedLowStock: false,
       isOutOfStock: snap.currentStock <= 0,
@@ -215,6 +231,7 @@ export async function applyStockChange(
   const before = await loadInventory(tx, inventoryId);
   const previousStock = before.currentStock;
   let lotIds: string[] = [];
+  let lotDetails: Array<{ lotId: string; quantity: number; unitCost: number }> = [];
 
   if (quantityDelta < 0) {
     const needed = Math.abs(quantityDelta);
@@ -229,6 +246,7 @@ export async function applyStockChange(
     if (!skipLots) {
       const lotResult = await deductLotsFefo(tx, inventoryId, needed);
       lotIds = lotResult.lotIds;
+      lotDetails = lotResult.lotDetails;
       // If lots couldn't cover, aggregate already handled it — fine for mixed mode.
     }
   } else {
@@ -295,6 +313,7 @@ export async function applyStockChange(
     newStock: after.currentStock,
     quantityDelta,
     lotIds,
+    lotDetails,
     movementIds: [movement.id, ...extraMovementIds],
     crossedLowStock,
     isOutOfStock: after.currentStock <= 0,

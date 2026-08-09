@@ -303,6 +303,9 @@ export async function initiateStkPayment(opts: {
 /**
  * Apply a successful M-Pesa result to payment + order.
  * Idempotent: safe if webhook and poll both fire.
+ * 
+ * This function now delegates to the authoritative markOrderPaid() service
+ * to ensure financial consistency across the commerce ledger (audit §68).
  */
 export async function completeDarajaPayment(opts: {
   paymentId: string;
@@ -327,7 +330,11 @@ export async function completeDarajaPayment(opts: {
   const shouldAutoDispatch =
     order.fulfillment === "immediate" && !order.dispatchedAt;
 
+  // Import the authoritative settlement service
+  const { markOrderPaid, markOrderFulfilled } = await import("@/app/lib/services/commerce/orders");
+
   await prisma.$transaction(async (tx) => {
+    // Update payment to completed
     await tx.payment.update({
       where: { id: payment.id },
       data: {
@@ -351,19 +358,22 @@ export async function completeDarajaPayment(opts: {
       },
     });
 
-    const nextStatus = shouldAutoDispatch ? "fulfilled" : "paid";
-    await tx.order.update({
-      where: { id: payment.orderId },
-      data: {
-        status: nextStatus,
-        ...(shouldAutoDispatch
-          ? {
-              dispatchedAt: new Date(),
-              dispatchedById: payment.initiatedById ?? null,
-            }
-          : {}),
-      },
+    // Use the authoritative markOrderPaid() to update order financials
+    await markOrderPaid(tx, {
+      orderId: payment.orderId,
+      actorId: payment.initiatedById ?? null,
+      amount: payment.amount,
+      currency: "KES",
     });
+
+    // If auto-dispatch is enabled, also mark as fulfilled
+    if (shouldAutoDispatch) {
+      await markOrderFulfilled(tx, {
+        orderId: payment.orderId,
+        actorId: payment.initiatedById ?? null,
+        dispatchedById: payment.initiatedById ?? null,
+      });
+    }
   });
 
   // Soft notify staff for remote reservations that still need handoff.

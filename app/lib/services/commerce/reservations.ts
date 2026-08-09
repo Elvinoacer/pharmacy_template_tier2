@@ -8,17 +8,23 @@ import { recordCommerceEvent } from "@/app/lib/services/commerce/events";
 
 /**
  * Inventory reservation lifecycle (audit §8, §9, §10).
- *
- * A reservation is a *temporary stock commitment* — distinct from a sale.
- * Creating a reservation decrements `currentStock` (because the unit is
- * physically still on the shelf but promised to an order) but the
- * StockMovement reason is `reservation_create`, NOT `sale`.
- *
+ * 
+ * CONCEPTUAL MODEL (Option A from audit):
+ *   - currentStock = physical stock on hand (unchanged by reservation)
+ *   - reserved = stock committed to unpaid orders (separate counter)
+ *   - available = currentStock - reserved
+ * 
+ * Creating a reservation does NOT decrement currentStock. Instead, it
+ * records the reserved quantity separately. This keeps the accounting clear:
+ *   Physical stock = 100
+ *   Reserved = 10
+ *   Available = 90
+ * 
  * Lifecycle:
- *   active       → converted  (paid + collected → stock becomes a real sale)
- *   active       → released   (cancelled before payment → stock restored)
- *   active       → expired    (auto-release after expiresAt → stock restored)
- *
+ *   active       → converted  (paid + collected → reserved cleared, stock becomes a real sale)
+ *   active       → released   (cancelled before payment → reserved cleared)
+ *   active       → expired    (auto-release after expiresAt → reserved cleared)
+ * 
  * Key invariant: a single InventoryReservation row per (order, inventory)
  * so we never double-hold stock for the same order.
  */
@@ -36,35 +42,27 @@ export type ReservationCreateInput = {
 };
 
 /**
- * Create a reservation AND apply the stock movement in one atomic operation.
+ * Create a reservation AND record the reserved quantity in one atomic operation.
  * Caller wraps both in a single transaction.
+ * 
+ * NOTE: This does NOT decrement currentStock. Reservations are tracked separately
+ * so that physical stock remains unchanged until the order is actually fulfilled.
  */
 export async function createReservation(
   tx: TxClient,
   input: ReservationCreateInput,
-): Promise<{ reservationId: string; stockResult: Awaited<ReturnType<typeof applyStockChange>> }> {
+): Promise<{ reservationId: string }> {
   // Idempotency: skip if an active reservation already exists for this order + inventory.
   const existing = await tx.inventoryReservation.findFirst({
     where: { orderId: input.orderId, inventoryId: input.inventoryId, status: "active" },
     select: { id: true },
   });
   if (existing) {
-    // Already reserved — don't double-deduct. Caller should treat as no-op.
+    // Already reserved — don't double-hold. Caller should treat as no-op.
     throw new Error("reservation_already_exists");
   }
 
-  // Apply stock movement with reservation_create reason.
-  const stockResult = await applyStockChange(tx, {
-    inventoryId: input.inventoryId,
-    quantityDelta: -input.quantity,
-    reason: "reservation_create",
-    notes: `Reservation for order ${input.orderId.slice(0, 8)}`,
-    relatedType: "order",
-    relatedId: input.orderId,
-    actorId: input.createdById ?? null,
-  });
-
-  // Create the reservation row.
+  // Create the reservation row (no stock movement — reserved is tracked separately).
   const reservation = await tx.inventoryReservation.create({
     data: {
       orderId: input.orderId,
@@ -89,15 +87,15 @@ export async function createReservation(
     metadata: { reservationId: reservation.id, inventoryId: input.inventoryId, quantity: input.quantity },
   });
 
-  return { reservationId: reservation.id, stockResult };
+  return { reservationId: reservation.id };
 }
 
 /**
  * Convert an active reservation into a real sale (audit §67, Rule 7).
  * Caller has just received payment / dispatched the order.
- * Writes a `sale` stock movement of zero delta (because the units were
- * already physically decremented at reservation_create) so the ledger
- * shows the conversion explicitly.
+ * 
+ * This decrements currentStock (because the reserved units are now actually sold)
+ * and marks the reservation as converted. The stock movement reason is `sale`.
  */
 export async function convertReservationToSale(
   tx: TxClient,
@@ -114,26 +112,17 @@ export async function convertReservationToSale(
       where: { id: r.id },
       data: { status: "converted", releasedAt: new Date(), releasedReason: opts.reason ?? "converted_to_sale" },
     });
-    // Zero-delta audit movement so the stock ledger shows the conversion.
-    const inv = await tx.pharmacyInventory.findUnique({
-      where: { id: r.inventoryId },
-      select: { currentStock: true, medicationMaster: { select: { name: true } } },
+    // Decrement stock now that the reservation becomes a real sale.
+    await applyStockChange(tx, {
+      inventoryId: r.inventoryId,
+      quantityDelta: -r.quantity,
+      reason: "sale",
+      notes: `Reservation converted to sale (order ${opts.orderId.slice(0, 8)})`,
+      relatedType: "order",
+      relatedId: opts.orderId,
+      actorId: opts.actorId ?? null,
+      inventoryLotId: r.inventoryLotId ?? undefined,
     });
-    if (inv) {
-      await tx.stockMovement.create({
-        data: {
-          pharmacyInventoryId: r.inventoryId,
-          inventoryLotId: r.inventoryLotId ?? null,
-          reason: "sale",
-          quantityDelta: 0,
-          balanceAfter: inv.currentStock,
-          notes: `Reservation converted to sale (order ${opts.orderId.slice(0, 8)})`,
-          relatedType: "order",
-          relatedId: opts.orderId,
-          actorId: opts.actorId ?? null,
-        },
-      });
-    }
   }
 
   await recordCommerceEvent(tx, {
@@ -149,8 +138,11 @@ export async function convertReservationToSale(
 }
 
 /**
- * Release an active reservation: restore stock, mark reservation released.
+ * Release an active reservation: clear the reserved status (no stock change needed).
  * Used by: cancellation, expiry cron, manual release.
+ * 
+ * Since reservations don't decrement currentStock (they only track reserved separately),
+ * releasing a reservation simply marks it as released/expired without touching stock.
  *
  * Idempotent: if no active reservation exists, no-op.
  */
@@ -168,17 +160,7 @@ export async function releaseReservation(
   if (reservations.length === 0) return { released: 0 };
 
   for (const r of reservations) {
-    // Restore physical stock.
-    await applyStockChange(tx, {
-      inventoryId: r.inventoryId,
-      quantityDelta: r.quantity,
-      reason: "reservation_release",
-      notes: `Reservation released: ${opts.reason} (order ${opts.orderId.slice(0, 8)})`,
-      relatedType: "order",
-      relatedId: opts.orderId,
-      actorId: opts.actorId ?? null,
-      skipLots: true, // aggregate restore; lots were FEFO'd at reservation_create
-    });
+    // Mark reservation released (no stock change — stock was never decremented).
     await tx.inventoryReservation.update({
       where: { id: r.id },
       data: {
