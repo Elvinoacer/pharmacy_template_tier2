@@ -362,7 +362,7 @@ export async function completeDarajaPayment(opts: {
     await markOrderPaid(tx, {
       orderId: payment.orderId,
       actorId: payment.initiatedById ?? null,
-      amount: payment.amount,
+      amount: Number(payment.amount),
       currency: "KES",
     });
 

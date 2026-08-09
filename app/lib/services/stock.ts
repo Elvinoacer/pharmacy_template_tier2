@@ -44,7 +44,7 @@ export type StockChangeResult = {
   newStock: number;
   quantityDelta: number;
   lotIds: string[];
-  lotDetails: Array<{ lotId: string; quantity: number; unitCost: number }>;
+  lotDetails?: Array<{ lotId: string; quantity: number; unitCost: number }>;
   movementIds: string[];
   crossedLowStock: boolean;
   isOutOfStock: boolean;
@@ -124,7 +124,7 @@ async function deductLotsFefo(
     lotDetails.push({
       lotId: lot.id,
       quantity: take,
-      unitCost: Number(lot.unitCost ?? 0),
+      unitCost: Number((lot as Record<string, unknown>).unitCost ?? 0),
     });
     remaining -= take;
   }
@@ -378,7 +378,8 @@ export async function setAbsoluteStock(
 }
 
 /** Fire low-stock / out-of-stock admin notifications (best-effort, outside tx). */
-export async function notifyStockThreshold(result: StockChangeResult): Promise<void> {
+export async function notifyStockThreshold(result: StockChangeResult | null | undefined): Promise<void> {
+  if (!result) return;
   if (!result.crossedLowStock && !result.isOutOfStock) return;
   const severity = result.isOutOfStock ? "critical" : "warning";
   const title = result.isOutOfStock
@@ -398,9 +399,10 @@ export async function notifyStockThreshold(result: StockChangeResult): Promise<v
 }
 
 /** Notify for multiple change results (dedupe by inventory id). */
-export async function notifyStockThresholds(results: StockChangeResult[]): Promise<void> {
+export async function notifyStockThresholds(results: Array<StockChangeResult | null | undefined>): Promise<void> {
   const seen = new Set<string>();
   for (const r of results) {
+    if (!r) continue;
     if (seen.has(r.inventoryId)) continue;
     if (!r.crossedLowStock && !r.isOutOfStock) continue;
     seen.add(r.inventoryId);

@@ -671,7 +671,7 @@ export async function portalCreateOrderAction(
           metadata: { couponId, code: couponCode },
         });
       }
-      return { order: o, stockResult: r.stockResult };
+      return { order: o, stockResult: null };
     });
     orderId = order.id;
     await notifyStockThreshold(stockResult);

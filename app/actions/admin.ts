@@ -935,6 +935,7 @@ export async function adminDispatchPrescriptionAction(
               newStock: inv.currentStock,
               quantityDelta: -qty,
               lotIds: [],
+              lotDetails: [],
               movementIds: [],
               crossedLowStock: inv.currentStock <= inv.lowStockThreshold,
               isOutOfStock: inv.currentStock <= 0,
@@ -1635,14 +1636,14 @@ export async function adminCreateOrderAction(
       } else {
         // Reservation (website / portal / paid-reserve): create InventoryReservation.
         try {
-          const r = await createReservation(tx, {
+          await createReservation(tx, {
             orderId: o.id,
             inventoryId: medicationId,
             quantity,
             createdById: user.id,
             expiresAt: stages.expiresAt,
           });
-          stockResult = r.stockResult;
+          stockResult = null;
         } catch (err) {
           if (err instanceof Error && err.message === "reservation_already_exists") {
             // Idempotent — already reserved.
