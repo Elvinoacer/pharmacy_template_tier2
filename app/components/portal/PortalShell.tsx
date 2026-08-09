@@ -90,7 +90,7 @@ export function PortalShell({
   const otherLinks = PORTAL_LINKS.filter((l) => !pinned.includes(l.href));
 
   // Group the non-pinned links by their group
-  const groupedLinks: Record<string, typeof PORTAL_LINKS> = {};
+  const groupedLinks: Record<string, Array<(typeof PORTAL_LINKS)[number]>> = {};
   otherLinks.forEach((link) => {
     const groupName = link.group || "other";
     if (!groupedLinks[groupName]) {

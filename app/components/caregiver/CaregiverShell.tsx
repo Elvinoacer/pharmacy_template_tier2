@@ -67,7 +67,7 @@ export function CaregiverShell({
   const otherLinks = CAREGIVER_LINKS.filter((l) => !pinned.includes(l.href));
 
   // Group the non-pinned links by their group
-  const groupedLinks: Record<string, typeof CAREGIVER_LINKS> = {};
+  const groupedLinks: Record<string, Array<(typeof CAREGIVER_LINKS)[number]>> = {};
   otherLinks.forEach((link) => {
     const groupName = link.group || "other";
     if (!groupedLinks[groupName]) {
