@@ -51,6 +51,7 @@ export type PrescriptionFillMinAggregateOutputType = {
   refillRequestId: string | null
   fillNumber: number | null
   quantity: number | null
+  billingUnit: $Enums.BillingUnit | null
   unitPriceSnapshot: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
   netAmount: runtime.Decimal | null
@@ -74,6 +75,7 @@ export type PrescriptionFillMaxAggregateOutputType = {
   refillRequestId: string | null
   fillNumber: number | null
   quantity: number | null
+  billingUnit: $Enums.BillingUnit | null
   unitPriceSnapshot: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
   netAmount: runtime.Decimal | null
@@ -97,6 +99,7 @@ export type PrescriptionFillCountAggregateOutputType = {
   refillRequestId: number
   fillNumber: number
   quantity: number
+  billingUnit: number
   unitPriceSnapshot: number
   discountAmount: number
   netAmount: number
@@ -141,6 +144,7 @@ export type PrescriptionFillMinAggregateInputType = {
   refillRequestId?: true
   fillNumber?: true
   quantity?: true
+  billingUnit?: true
   unitPriceSnapshot?: true
   discountAmount?: true
   netAmount?: true
@@ -164,6 +168,7 @@ export type PrescriptionFillMaxAggregateInputType = {
   refillRequestId?: true
   fillNumber?: true
   quantity?: true
+  billingUnit?: true
   unitPriceSnapshot?: true
   discountAmount?: true
   netAmount?: true
@@ -187,6 +192,7 @@ export type PrescriptionFillCountAggregateInputType = {
   refillRequestId?: true
   fillNumber?: true
   quantity?: true
+  billingUnit?: true
   unitPriceSnapshot?: true
   discountAmount?: true
   netAmount?: true
@@ -298,6 +304,7 @@ export type PrescriptionFillGroupByOutputType = {
   refillRequestId: string | null
   fillNumber: number
   quantity: number
+  billingUnit: $Enums.BillingUnit | null
   unitPriceSnapshot: runtime.Decimal
   discountAmount: runtime.Decimal
   netAmount: runtime.Decimal
@@ -345,6 +352,7 @@ export type PrescriptionFillWhereInput = {
   refillRequestId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
   fillNumber?: Prisma.IntFilter<"PrescriptionFill"> | number
   quantity?: Prisma.IntFilter<"PrescriptionFill"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"PrescriptionFill"> | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -374,6 +382,7 @@ export type PrescriptionFillOrderByWithRelationInput = {
   refillRequestId?: Prisma.SortOrderInput | Prisma.SortOrder
   fillNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPriceSnapshot?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -407,6 +416,7 @@ export type PrescriptionFillWhereUniqueInput = Prisma.AtLeast<{
   prescriptionId?: Prisma.UuidFilter<"PrescriptionFill"> | string
   fillNumber?: Prisma.IntFilter<"PrescriptionFill"> | number
   quantity?: Prisma.IntFilter<"PrescriptionFill"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"PrescriptionFill"> | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -436,6 +446,7 @@ export type PrescriptionFillOrderByWithAggregationInput = {
   refillRequestId?: Prisma.SortOrderInput | Prisma.SortOrder
   fillNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPriceSnapshot?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -468,6 +479,7 @@ export type PrescriptionFillScalarWhereWithAggregatesInput = {
   refillRequestId?: Prisma.UuidNullableWithAggregatesFilter<"PrescriptionFill"> | string | null
   fillNumber?: Prisma.IntWithAggregatesFilter<"PrescriptionFill"> | number
   quantity?: Prisma.IntWithAggregatesFilter<"PrescriptionFill"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableWithAggregatesFilter<"PrescriptionFill"> | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalWithAggregatesFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalWithAggregatesFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalWithAggregatesFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -489,6 +501,7 @@ export type PrescriptionFillCreateInput = {
   id?: string
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -516,6 +529,7 @@ export type PrescriptionFillUncheckedCreateInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -537,6 +551,7 @@ export type PrescriptionFillUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -564,6 +579,7 @@ export type PrescriptionFillUncheckedUpdateInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -588,6 +604,7 @@ export type PrescriptionFillCreateManyInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -609,6 +626,7 @@ export type PrescriptionFillUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -631,6 +649,7 @@ export type PrescriptionFillUncheckedUpdateManyInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -675,6 +694,7 @@ export type PrescriptionFillCountOrderByAggregateInput = {
   refillRequestId?: Prisma.SortOrder
   fillNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   unitPriceSnapshot?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -708,6 +728,7 @@ export type PrescriptionFillMaxOrderByAggregateInput = {
   refillRequestId?: Prisma.SortOrder
   fillNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   unitPriceSnapshot?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -731,6 +752,7 @@ export type PrescriptionFillMinOrderByAggregateInput = {
   refillRequestId?: Prisma.SortOrder
   fillNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   unitPriceSnapshot?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -954,6 +976,7 @@ export type PrescriptionFillCreateWithoutDispensedByInput = {
   id?: string
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -980,6 +1003,7 @@ export type PrescriptionFillUncheckedCreateWithoutDispensedByInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1032,6 +1056,7 @@ export type PrescriptionFillScalarWhereInput = {
   refillRequestId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
   fillNumber?: Prisma.IntFilter<"PrescriptionFill"> | number
   quantity?: Prisma.IntFilter<"PrescriptionFill"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"PrescriptionFill"> | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1053,6 +1078,7 @@ export type PrescriptionFillCreateWithoutPrescriptionInput = {
   id?: string
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1078,6 +1104,7 @@ export type PrescriptionFillUncheckedCreateWithoutPrescriptionInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1125,6 +1152,7 @@ export type PrescriptionFillCreateWithoutRefillRequestInput = {
   id?: string
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1150,6 +1178,7 @@ export type PrescriptionFillUncheckedCreateWithoutRefillRequestInput = {
   orderId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1187,6 +1216,7 @@ export type PrescriptionFillUpdateWithoutRefillRequestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1212,6 +1242,7 @@ export type PrescriptionFillUncheckedUpdateWithoutRefillRequestInput = {
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1233,6 +1264,7 @@ export type PrescriptionFillCreateWithoutMedicationInput = {
   id?: string
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1259,6 +1291,7 @@ export type PrescriptionFillUncheckedCreateWithoutMedicationInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1305,6 +1338,7 @@ export type PrescriptionFillCreateWithoutOrderInput = {
   id?: string
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1330,6 +1364,7 @@ export type PrescriptionFillUncheckedCreateWithoutOrderInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1367,6 +1402,7 @@ export type PrescriptionFillUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1392,6 +1428,7 @@ export type PrescriptionFillUncheckedUpdateWithoutOrderInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1416,6 +1453,7 @@ export type PrescriptionFillCreateManyDispensedByInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1436,6 +1474,7 @@ export type PrescriptionFillUpdateWithoutDispensedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1462,6 +1501,7 @@ export type PrescriptionFillUncheckedUpdateWithoutDispensedByInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1485,6 +1525,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutDispensedByInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1507,6 +1548,7 @@ export type PrescriptionFillCreateManyPrescriptionInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1528,6 +1570,7 @@ export type PrescriptionFillUpdateWithoutPrescriptionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1553,6 +1596,7 @@ export type PrescriptionFillUncheckedUpdateWithoutPrescriptionInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1576,6 +1620,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutPrescriptionInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1600,6 +1645,7 @@ export type PrescriptionFillCreateManyMedicationInput = {
   refillRequestId?: string | null
   fillNumber: number
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1620,6 +1666,7 @@ export type PrescriptionFillUpdateWithoutMedicationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1646,6 +1693,7 @@ export type PrescriptionFillUncheckedUpdateWithoutMedicationInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1669,6 +1717,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutMedicationInput = {
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1694,6 +1743,7 @@ export type PrescriptionFillSelect<ExtArgs extends runtime.Types.Extensions.Inte
   refillRequestId?: boolean
   fillNumber?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   unitPriceSnapshot?: boolean
   discountAmount?: boolean
   netAmount?: boolean
@@ -1723,6 +1773,7 @@ export type PrescriptionFillSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   refillRequestId?: boolean
   fillNumber?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   unitPriceSnapshot?: boolean
   discountAmount?: boolean
   netAmount?: boolean
@@ -1752,6 +1803,7 @@ export type PrescriptionFillSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   refillRequestId?: boolean
   fillNumber?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   unitPriceSnapshot?: boolean
   discountAmount?: boolean
   netAmount?: boolean
@@ -1781,6 +1833,7 @@ export type PrescriptionFillSelectScalar = {
   refillRequestId?: boolean
   fillNumber?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   unitPriceSnapshot?: boolean
   discountAmount?: boolean
   netAmount?: boolean
@@ -1798,7 +1851,7 @@ export type PrescriptionFillSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PrescriptionFillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "prescriptionId" | "orderId" | "refillRequestId" | "fillNumber" | "quantity" | "unitPriceSnapshot" | "discountAmount" | "netAmount" | "costPriceSnapshot" | "status" | "filledAt" | "dispatchedAt" | "collectedAt" | "dispensedById" | "medicationId" | "medicationName" | "lotIds" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["prescriptionFill"]>
+export type PrescriptionFillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "prescriptionId" | "orderId" | "refillRequestId" | "fillNumber" | "quantity" | "billingUnit" | "unitPriceSnapshot" | "discountAmount" | "netAmount" | "costPriceSnapshot" | "status" | "filledAt" | "dispatchedAt" | "collectedAt" | "dispensedById" | "medicationId" | "medicationName" | "lotIds" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["prescriptionFill"]>
 export type PrescriptionFillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
   order?: boolean | Prisma.PrescriptionFill$orderArgs<ExtArgs>
@@ -1846,6 +1899,10 @@ export type $PrescriptionFillPayload<ExtArgs extends runtime.Types.Extensions.In
      */
     fillNumber: number
     quantity: number
+    /**
+     * Billing unit for this fill (tablet, bottle, pack, etc.) — audit §14.
+     */
+    billingUnit: $Enums.BillingUnit | null
     /**
      * Snapshot of the price the customer was charged for this fill.
      */
@@ -2307,6 +2364,7 @@ export interface PrescriptionFillFieldRefs {
   readonly refillRequestId: Prisma.FieldRef<"PrescriptionFill", 'String'>
   readonly fillNumber: Prisma.FieldRef<"PrescriptionFill", 'Int'>
   readonly quantity: Prisma.FieldRef<"PrescriptionFill", 'Int'>
+  readonly billingUnit: Prisma.FieldRef<"PrescriptionFill", 'BillingUnit'>
   readonly unitPriceSnapshot: Prisma.FieldRef<"PrescriptionFill", 'Decimal'>
   readonly discountAmount: Prisma.FieldRef<"PrescriptionFill", 'Decimal'>
   readonly netAmount: Prisma.FieldRef<"PrescriptionFill", 'Decimal'>

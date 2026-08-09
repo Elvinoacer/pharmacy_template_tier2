@@ -100,6 +100,21 @@ export const RefillSource = {
 export type RefillSource = (typeof RefillSource)[keyof typeof RefillSource]
 
 
+export const BillingUnit = {
+  TABLET: 'TABLET',
+  CAPSULE: 'CAPSULE',
+  BOTTLE: 'BOTTLE',
+  BOX: 'BOX',
+  PACK: 'PACK',
+  STRIP: 'STRIP',
+  AMPOULE: 'AMPOULE',
+  ML: 'ML',
+  UNIT: 'UNIT'
+} as const
+
+export type BillingUnit = (typeof BillingUnit)[keyof typeof BillingUnit]
+
+
 export const MessageChannel = {
   email: 'email',
   sms: 'sms',

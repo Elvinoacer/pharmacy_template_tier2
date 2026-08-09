@@ -48,6 +48,7 @@ export type PrescriptionMinAggregateOutputType = {
   dosage: string | null
   schedule: string | null
   quantity: number | null
+  billingUnit: $Enums.BillingUnit | null
   daysSupply: number | null
   refillsRemaining: number | null
   lastFilledAt: Date | null
@@ -73,6 +74,7 @@ export type PrescriptionMaxAggregateOutputType = {
   dosage: string | null
   schedule: string | null
   quantity: number | null
+  billingUnit: $Enums.BillingUnit | null
   daysSupply: number | null
   refillsRemaining: number | null
   lastFilledAt: Date | null
@@ -98,6 +100,7 @@ export type PrescriptionCountAggregateOutputType = {
   dosage: number
   schedule: number
   quantity: number
+  billingUnit: number
   daysSupply: number
   refillsRemaining: number
   lastFilledAt: number
@@ -139,6 +142,7 @@ export type PrescriptionMinAggregateInputType = {
   dosage?: true
   schedule?: true
   quantity?: true
+  billingUnit?: true
   daysSupply?: true
   refillsRemaining?: true
   lastFilledAt?: true
@@ -164,6 +168,7 @@ export type PrescriptionMaxAggregateInputType = {
   dosage?: true
   schedule?: true
   quantity?: true
+  billingUnit?: true
   daysSupply?: true
   refillsRemaining?: true
   lastFilledAt?: true
@@ -189,6 +194,7 @@ export type PrescriptionCountAggregateInputType = {
   dosage?: true
   schedule?: true
   quantity?: true
+  billingUnit?: true
   daysSupply?: true
   refillsRemaining?: true
   lastFilledAt?: true
@@ -301,6 +307,7 @@ export type PrescriptionGroupByOutputType = {
   dosage: string | null
   schedule: string | null
   quantity: number | null
+  billingUnit: $Enums.BillingUnit | null
   daysSupply: number | null
   refillsRemaining: number | null
   lastFilledAt: Date | null
@@ -349,6 +356,7 @@ export type PrescriptionWhereInput = {
   dosage?: Prisma.StringNullableFilter<"Prescription"> | string | null
   schedule?: Prisma.StringNullableFilter<"Prescription"> | string | null
   quantity?: Prisma.IntNullableFilter<"Prescription"> | number | null
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"Prescription"> | $Enums.BillingUnit | null
   daysSupply?: Prisma.IntNullableFilter<"Prescription"> | number | null
   refillsRemaining?: Prisma.IntNullableFilter<"Prescription"> | number | null
   lastFilledAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
@@ -383,6 +391,7 @@ export type PrescriptionOrderByWithRelationInput = {
   dosage?: Prisma.SortOrderInput | Prisma.SortOrder
   schedule?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingUnit?: Prisma.SortOrderInput | Prisma.SortOrder
   daysSupply?: Prisma.SortOrderInput | Prisma.SortOrder
   refillsRemaining?: Prisma.SortOrderInput | Prisma.SortOrder
   lastFilledAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -420,6 +429,7 @@ export type PrescriptionWhereUniqueInput = Prisma.AtLeast<{
   dosage?: Prisma.StringNullableFilter<"Prescription"> | string | null
   schedule?: Prisma.StringNullableFilter<"Prescription"> | string | null
   quantity?: Prisma.IntNullableFilter<"Prescription"> | number | null
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"Prescription"> | $Enums.BillingUnit | null
   daysSupply?: Prisma.IntNullableFilter<"Prescription"> | number | null
   refillsRemaining?: Prisma.IntNullableFilter<"Prescription"> | number | null
   lastFilledAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
@@ -454,6 +464,7 @@ export type PrescriptionOrderByWithAggregationInput = {
   dosage?: Prisma.SortOrderInput | Prisma.SortOrder
   schedule?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingUnit?: Prisma.SortOrderInput | Prisma.SortOrder
   daysSupply?: Prisma.SortOrderInput | Prisma.SortOrder
   refillsRemaining?: Prisma.SortOrderInput | Prisma.SortOrder
   lastFilledAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -487,6 +498,7 @@ export type PrescriptionScalarWhereWithAggregatesInput = {
   dosage?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
   schedule?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
   quantity?: Prisma.IntNullableWithAggregatesFilter<"Prescription"> | number | null
+  billingUnit?: Prisma.EnumBillingUnitNullableWithAggregatesFilter<"Prescription"> | $Enums.BillingUnit | null
   daysSupply?: Prisma.IntNullableWithAggregatesFilter<"Prescription"> | number | null
   refillsRemaining?: Prisma.IntNullableWithAggregatesFilter<"Prescription"> | number | null
   lastFilledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Prescription"> | Date | string | null
@@ -511,6 +523,7 @@ export type PrescriptionCreateInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -543,6 +556,7 @@ export type PrescriptionUncheckedCreateInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -573,6 +587,7 @@ export type PrescriptionUpdateInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -605,6 +620,7 @@ export type PrescriptionUncheckedUpdateInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -636,6 +652,7 @@ export type PrescriptionCreateManyInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -660,6 +677,7 @@ export type PrescriptionUpdateManyMutationInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -683,6 +701,7 @@ export type PrescriptionUncheckedUpdateManyInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -718,6 +737,7 @@ export type PrescriptionCountOrderByAggregateInput = {
   dosage?: Prisma.SortOrder
   schedule?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   daysSupply?: Prisma.SortOrder
   refillsRemaining?: Prisma.SortOrder
   lastFilledAt?: Prisma.SortOrder
@@ -750,6 +770,7 @@ export type PrescriptionMaxOrderByAggregateInput = {
   dosage?: Prisma.SortOrder
   schedule?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   daysSupply?: Prisma.SortOrder
   refillsRemaining?: Prisma.SortOrder
   lastFilledAt?: Prisma.SortOrder
@@ -775,6 +796,7 @@ export type PrescriptionMinOrderByAggregateInput = {
   dosage?: Prisma.SortOrder
   schedule?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   daysSupply?: Prisma.SortOrder
   refillsRemaining?: Prisma.SortOrder
   lastFilledAt?: Prisma.SortOrder
@@ -899,6 +921,10 @@ export type NullableIntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type NullableEnumBillingUnitFieldUpdateOperationsInput = {
+  set?: $Enums.BillingUnit | null
 }
 
 export type NullableDecimalFieldUpdateOperationsInput = {
@@ -1048,6 +1074,7 @@ export type PrescriptionCreateWithoutDispatchedByInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1079,6 +1106,7 @@ export type PrescriptionUncheckedCreateWithoutDispatchedByInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1138,6 +1166,7 @@ export type PrescriptionScalarWhereInput = {
   dosage?: Prisma.StringNullableFilter<"Prescription"> | string | null
   schedule?: Prisma.StringNullableFilter<"Prescription"> | string | null
   quantity?: Prisma.IntNullableFilter<"Prescription"> | number | null
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"Prescription"> | $Enums.BillingUnit | null
   daysSupply?: Prisma.IntNullableFilter<"Prescription"> | number | null
   refillsRemaining?: Prisma.IntNullableFilter<"Prescription"> | number | null
   lastFilledAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
@@ -1162,6 +1191,7 @@ export type PrescriptionCreateWithoutCustomerInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1192,6 +1222,7 @@ export type PrescriptionUncheckedCreateWithoutCustomerInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1248,6 +1279,7 @@ export type PrescriptionCreateWithoutRefillRequestsInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1279,6 +1311,7 @@ export type PrescriptionUncheckedCreateWithoutRefillRequestsInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1324,6 +1357,7 @@ export type PrescriptionUpdateWithoutRefillRequestsInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1355,6 +1389,7 @@ export type PrescriptionUncheckedUpdateWithoutRefillRequestsInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1384,6 +1419,7 @@ export type PrescriptionCreateWithoutAdherenceInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1415,6 +1451,7 @@ export type PrescriptionUncheckedCreateWithoutAdherenceInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1460,6 +1497,7 @@ export type PrescriptionUpdateWithoutAdherenceInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1491,6 +1529,7 @@ export type PrescriptionUncheckedUpdateWithoutAdherenceInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1520,6 +1559,7 @@ export type PrescriptionCreateWithoutDoseScheduleInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1551,6 +1591,7 @@ export type PrescriptionUncheckedCreateWithoutDoseScheduleInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1596,6 +1637,7 @@ export type PrescriptionUpdateWithoutDoseScheduleInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1627,6 +1669,7 @@ export type PrescriptionUncheckedUpdateWithoutDoseScheduleInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1656,6 +1699,7 @@ export type PrescriptionCreateWithoutDoseLogsInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1687,6 +1731,7 @@ export type PrescriptionUncheckedCreateWithoutDoseLogsInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1732,6 +1777,7 @@ export type PrescriptionUpdateWithoutDoseLogsInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1763,6 +1809,7 @@ export type PrescriptionUncheckedUpdateWithoutDoseLogsInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1792,6 +1839,7 @@ export type PrescriptionCreateWithoutEscalationsInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1823,6 +1871,7 @@ export type PrescriptionUncheckedCreateWithoutEscalationsInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1868,6 +1917,7 @@ export type PrescriptionUpdateWithoutEscalationsInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1899,6 +1949,7 @@ export type PrescriptionUncheckedUpdateWithoutEscalationsInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1928,6 +1979,7 @@ export type PrescriptionCreateWithoutMedicationInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -1959,6 +2011,7 @@ export type PrescriptionUncheckedCreateWithoutMedicationInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -2014,6 +2067,7 @@ export type PrescriptionCreateWithoutFillsInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -2045,6 +2099,7 @@ export type PrescriptionUncheckedCreateWithoutFillsInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -2090,6 +2145,7 @@ export type PrescriptionUpdateWithoutFillsInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2121,6 +2177,7 @@ export type PrescriptionUncheckedUpdateWithoutFillsInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2151,6 +2208,7 @@ export type PrescriptionCreateManyDispatchedByInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -2174,6 +2232,7 @@ export type PrescriptionUpdateWithoutDispatchedByInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2205,6 +2264,7 @@ export type PrescriptionUncheckedUpdateWithoutDispatchedByInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2235,6 +2295,7 @@ export type PrescriptionUncheckedUpdateManyWithoutDispatchedByInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2258,6 +2319,7 @@ export type PrescriptionCreateManyCustomerInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -2282,6 +2344,7 @@ export type PrescriptionUpdateWithoutCustomerInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2312,6 +2375,7 @@ export type PrescriptionUncheckedUpdateWithoutCustomerInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2342,6 +2406,7 @@ export type PrescriptionUncheckedUpdateManyWithoutCustomerInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2367,6 +2432,7 @@ export type PrescriptionCreateManyMedicationInput = {
   dosage?: string | null
   schedule?: string | null
   quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
   daysSupply?: number | null
   refillsRemaining?: number | null
   lastFilledAt?: Date | string | null
@@ -2390,6 +2456,7 @@ export type PrescriptionUpdateWithoutMedicationInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2421,6 +2488,7 @@ export type PrescriptionUncheckedUpdateWithoutMedicationInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2451,6 +2519,7 @@ export type PrescriptionUncheckedUpdateManyWithoutMedicationInput = {
   dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2551,6 +2620,7 @@ export type PrescriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   dosage?: boolean
   schedule?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   daysSupply?: boolean
   refillsRemaining?: boolean
   lastFilledAt?: boolean
@@ -2586,6 +2656,7 @@ export type PrescriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   dosage?: boolean
   schedule?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   daysSupply?: boolean
   refillsRemaining?: boolean
   lastFilledAt?: boolean
@@ -2614,6 +2685,7 @@ export type PrescriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   dosage?: boolean
   schedule?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   daysSupply?: boolean
   refillsRemaining?: boolean
   lastFilledAt?: boolean
@@ -2642,6 +2714,7 @@ export type PrescriptionSelectScalar = {
   dosage?: boolean
   schedule?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   daysSupply?: boolean
   refillsRemaining?: boolean
   lastFilledAt?: boolean
@@ -2659,7 +2732,7 @@ export type PrescriptionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PrescriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "medicineName" | "rxReference" | "dosage" | "schedule" | "quantity" | "daysSupply" | "refillsRemaining" | "lastFilledAt" | "nextRefillDue" | "startDate" | "endDate" | "prescriber" | "unitPrice" | "status" | "notes" | "medicationId" | "dispatchedAt" | "dispatchedById" | "createdAt" | "updatedAt", ExtArgs["result"]["prescription"]>
+export type PrescriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "medicineName" | "rxReference" | "dosage" | "schedule" | "quantity" | "billingUnit" | "daysSupply" | "refillsRemaining" | "lastFilledAt" | "nextRefillDue" | "startDate" | "endDate" | "prescriber" | "unitPrice" | "status" | "notes" | "medicationId" | "dispatchedAt" | "dispatchedById" | "createdAt" | "updatedAt", ExtArgs["result"]["prescription"]>
 export type PrescriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   refillRequests?: boolean | Prisma.Prescription$refillRequestsArgs<ExtArgs>
@@ -2710,6 +2783,10 @@ export type $PrescriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
      */
     schedule: string | null
     quantity: number | null
+    /**
+     * Billing unit for this prescription (tablet, bottle, pack, etc.) — audit §14.
+     */
+    billingUnit: $Enums.BillingUnit | null
     /**
      * Days of supply per fill (used to predict next refill date).
      */
@@ -3184,6 +3261,7 @@ export interface PrescriptionFieldRefs {
   readonly dosage: Prisma.FieldRef<"Prescription", 'String'>
   readonly schedule: Prisma.FieldRef<"Prescription", 'String'>
   readonly quantity: Prisma.FieldRef<"Prescription", 'Int'>
+  readonly billingUnit: Prisma.FieldRef<"Prescription", 'BillingUnit'>
   readonly daysSupply: Prisma.FieldRef<"Prescription", 'Int'>
   readonly refillsRemaining: Prisma.FieldRef<"Prescription", 'Int'>
   readonly lastFilledAt: Prisma.FieldRef<"Prescription", 'DateTime'>

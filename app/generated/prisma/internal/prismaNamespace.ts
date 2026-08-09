@@ -5393,6 +5393,7 @@ export const PrescriptionScalarFieldEnum = {
   dosage: 'dosage',
   schedule: 'schedule',
   quantity: 'quantity',
+  billingUnit: 'billingUnit',
   daysSupply: 'daysSupply',
   refillsRemaining: 'refillsRemaining',
   lastFilledAt: 'lastFilledAt',
@@ -6065,6 +6066,7 @@ export const OrderItemScalarFieldEnum = {
   medicationId: 'medicationId',
   name: 'name',
   quantity: 'quantity',
+  billingUnit: 'billingUnit',
   unitPrice: 'unitPrice',
   discountApplied: 'discountApplied',
   couponId: 'couponId',
@@ -6287,6 +6289,7 @@ export const PrescriptionFillScalarFieldEnum = {
   refillRequestId: 'refillRequestId',
   fillNumber: 'fillNumber',
   quantity: 'quantity',
+  billingUnit: 'billingUnit',
   unitPriceSnapshot: 'unitPriceSnapshot',
   discountAmount: 'discountAmount',
   netAmount: 'netAmount',
@@ -6578,6 +6581,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BillingUnit'
+ */
+export type EnumBillingUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingUnit'>
+    
+
+
+/**
+ * Reference to a field of type 'BillingUnit[]'
+ */
+export type ListEnumBillingUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingUnit[]'>
     
 
 

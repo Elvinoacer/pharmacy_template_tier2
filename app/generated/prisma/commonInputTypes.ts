@@ -325,6 +325,13 @@ export type IntNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
 }
 
+export type EnumBillingUnitNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillingUnit | Prisma.EnumBillingUnitFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BillingUnit[] | Prisma.ListEnumBillingUnitFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BillingUnit[] | Prisma.ListEnumBillingUnitFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBillingUnitNullableFilter<$PrismaModel> | $Enums.BillingUnit | null
+}
+
 export type DecimalNullableFilter<$PrismaModel = never> = {
   equals?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel> | null
   in?: runtime.Decimal[] | runtime.DecimalJsLike[] | number[] | string[] | Prisma.ListDecimalFieldRefInput<$PrismaModel> | null
@@ -357,6 +364,16 @@ export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+}
+
+export type EnumBillingUnitNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillingUnit | Prisma.EnumBillingUnitFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BillingUnit[] | Prisma.ListEnumBillingUnitFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BillingUnit[] | Prisma.ListEnumBillingUnitFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBillingUnitNullableWithAggregatesFilter<$PrismaModel> | $Enums.BillingUnit | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBillingUnitNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBillingUnitNullableFilter<$PrismaModel>
 }
 
 export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -1479,6 +1496,13 @@ export type NestedFloatFilter<$PrismaModel = never> = {
   not?: Prisma.NestedFloatFilter<$PrismaModel> | number
 }
 
+export type NestedEnumBillingUnitNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillingUnit | Prisma.EnumBillingUnitFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BillingUnit[] | Prisma.ListEnumBillingUnitFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BillingUnit[] | Prisma.ListEnumBillingUnitFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBillingUnitNullableFilter<$PrismaModel> | $Enums.BillingUnit | null
+}
+
 export type NestedDecimalNullableFilter<$PrismaModel = never> = {
   equals?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel> | null
   in?: runtime.Decimal[] | runtime.DecimalJsLike[] | number[] | string[] | Prisma.ListDecimalFieldRefInput<$PrismaModel> | null
@@ -1522,6 +1546,16 @@ export type NestedFloatNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
+}
+
+export type NestedEnumBillingUnitNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillingUnit | Prisma.EnumBillingUnitFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BillingUnit[] | Prisma.ListEnumBillingUnitFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BillingUnit[] | Prisma.ListEnumBillingUnitFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBillingUnitNullableWithAggregatesFilter<$PrismaModel> | $Enums.BillingUnit | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBillingUnitNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBillingUnitNullableFilter<$PrismaModel>
 }
 
 export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {

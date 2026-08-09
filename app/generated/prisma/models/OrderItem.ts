@@ -54,6 +54,7 @@ export type OrderItemMinAggregateOutputType = {
   medicationId: string | null
   name: string | null
   quantity: number | null
+  billingUnit: $Enums.BillingUnit | null
   unitPrice: runtime.Decimal | null
   discountApplied: runtime.Decimal | null
   couponId: string | null
@@ -75,6 +76,7 @@ export type OrderItemMaxAggregateOutputType = {
   medicationId: string | null
   name: string | null
   quantity: number | null
+  billingUnit: $Enums.BillingUnit | null
   unitPrice: runtime.Decimal | null
   discountApplied: runtime.Decimal | null
   couponId: string | null
@@ -96,6 +98,7 @@ export type OrderItemCountAggregateOutputType = {
   medicationId: number
   name: number
   quantity: number
+  billingUnit: number
   unitPrice: number
   discountApplied: number
   couponId: number
@@ -141,6 +144,7 @@ export type OrderItemMinAggregateInputType = {
   medicationId?: true
   name?: true
   quantity?: true
+  billingUnit?: true
   unitPrice?: true
   discountApplied?: true
   couponId?: true
@@ -162,6 +166,7 @@ export type OrderItemMaxAggregateInputType = {
   medicationId?: true
   name?: true
   quantity?: true
+  billingUnit?: true
   unitPrice?: true
   discountApplied?: true
   couponId?: true
@@ -183,6 +188,7 @@ export type OrderItemCountAggregateInputType = {
   medicationId?: true
   name?: true
   quantity?: true
+  billingUnit?: true
   unitPrice?: true
   discountApplied?: true
   couponId?: true
@@ -291,6 +297,7 @@ export type OrderItemGroupByOutputType = {
   medicationId: string | null
   name: string
   quantity: number
+  billingUnit: $Enums.BillingUnit | null
   unitPrice: runtime.Decimal
   discountApplied: runtime.Decimal
   couponId: string | null
@@ -335,6 +342,7 @@ export type OrderItemWhereInput = {
   medicationId?: Prisma.UuidNullableFilter<"OrderItem"> | string | null
   name?: Prisma.StringFilter<"OrderItem"> | string
   quantity?: Prisma.IntFilter<"OrderItem"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"OrderItem"> | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFilter<"OrderItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFilter<"OrderItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.UuidNullableFilter<"OrderItem"> | string | null
@@ -361,6 +369,7 @@ export type OrderItemOrderByWithRelationInput = {
   medicationId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   couponId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -390,6 +399,7 @@ export type OrderItemWhereUniqueInput = Prisma.AtLeast<{
   medicationId?: Prisma.UuidNullableFilter<"OrderItem"> | string | null
   name?: Prisma.StringFilter<"OrderItem"> | string
   quantity?: Prisma.IntFilter<"OrderItem"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"OrderItem"> | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFilter<"OrderItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFilter<"OrderItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.UuidNullableFilter<"OrderItem"> | string | null
@@ -416,6 +426,7 @@ export type OrderItemOrderByWithAggregationInput = {
   medicationId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   couponId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -445,6 +456,7 @@ export type OrderItemScalarWhereWithAggregatesInput = {
   medicationId?: Prisma.UuidNullableWithAggregatesFilter<"OrderItem"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"OrderItem"> | string
   quantity?: Prisma.IntWithAggregatesFilter<"OrderItem"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableWithAggregatesFilter<"OrderItem"> | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalWithAggregatesFilter<"OrderItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalWithAggregatesFilter<"OrderItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.UuidNullableWithAggregatesFilter<"OrderItem"> | string | null
@@ -464,6 +476,7 @@ export type OrderItemCreateInput = {
   id?: string
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -489,6 +502,7 @@ export type OrderItemUncheckedCreateInput = {
   medicationId?: string | null
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: string | null
@@ -510,6 +524,7 @@ export type OrderItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -535,6 +550,7 @@ export type OrderItemUncheckedUpdateInput = {
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -558,6 +574,7 @@ export type OrderItemCreateManyInput = {
   medicationId?: string | null
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: string | null
@@ -577,6 +594,7 @@ export type OrderItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -597,6 +615,7 @@ export type OrderItemUncheckedUpdateManyInput = {
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -628,6 +647,7 @@ export type OrderItemCountOrderByAggregateInput = {
   medicationId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   couponId?: Prisma.SortOrder
@@ -660,6 +680,7 @@ export type OrderItemMaxOrderByAggregateInput = {
   medicationId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   couponId?: Prisma.SortOrder
@@ -681,6 +702,7 @@ export type OrderItemMinOrderByAggregateInput = {
   medicationId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  billingUnit?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   couponId?: Prisma.SortOrder
@@ -877,6 +899,7 @@ export type OrderItemCreateWithoutCouponInput = {
   id?: string
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -901,6 +924,7 @@ export type OrderItemUncheckedCreateWithoutCouponInput = {
   medicationId?: string | null
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -952,6 +976,7 @@ export type OrderItemScalarWhereInput = {
   medicationId?: Prisma.UuidNullableFilter<"OrderItem"> | string | null
   name?: Prisma.StringFilter<"OrderItem"> | string
   quantity?: Prisma.IntFilter<"OrderItem"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"OrderItem"> | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFilter<"OrderItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFilter<"OrderItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.UuidNullableFilter<"OrderItem"> | string | null
@@ -971,6 +996,7 @@ export type OrderItemCreateWithoutMedicationInput = {
   id?: string
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -994,6 +1020,7 @@ export type OrderItemUncheckedCreateWithoutMedicationInput = {
   orderId: string
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: string | null
@@ -1041,6 +1068,7 @@ export type OrderItemCreateWithoutOrderInput = {
   id?: string
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -1064,6 +1092,7 @@ export type OrderItemUncheckedCreateWithoutOrderInput = {
   medicationId?: string | null
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: string | null
@@ -1111,6 +1140,7 @@ export type OrderItemCreateWithoutReservationsInput = {
   id?: string
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -1135,6 +1165,7 @@ export type OrderItemUncheckedCreateWithoutReservationsInput = {
   medicationId?: string | null
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: string | null
@@ -1171,6 +1202,7 @@ export type OrderItemUpdateWithoutReservationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1195,6 +1227,7 @@ export type OrderItemUncheckedUpdateWithoutReservationsInput = {
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1215,6 +1248,7 @@ export type OrderItemCreateWithoutAllocationsInput = {
   id?: string
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -1239,6 +1273,7 @@ export type OrderItemUncheckedCreateWithoutAllocationsInput = {
   medicationId?: string | null
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: string | null
@@ -1275,6 +1310,7 @@ export type OrderItemUpdateWithoutAllocationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1299,6 +1335,7 @@ export type OrderItemUncheckedUpdateWithoutAllocationsInput = {
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1321,6 +1358,7 @@ export type OrderItemCreateManyCouponInput = {
   medicationId?: string | null
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -1339,6 +1377,7 @@ export type OrderItemUpdateWithoutCouponInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1363,6 +1402,7 @@ export type OrderItemUncheckedUpdateWithoutCouponInput = {
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1385,6 +1425,7 @@ export type OrderItemUncheckedUpdateManyWithoutCouponInput = {
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1404,6 +1445,7 @@ export type OrderItemCreateManyMedicationInput = {
   orderId: string
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: string | null
@@ -1423,6 +1465,7 @@ export type OrderItemUpdateWithoutMedicationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1446,6 +1489,7 @@ export type OrderItemUncheckedUpdateWithoutMedicationInput = {
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1468,6 +1512,7 @@ export type OrderItemUncheckedUpdateManyWithoutMedicationInput = {
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1488,6 +1533,7 @@ export type OrderItemCreateManyOrderInput = {
   medicationId?: string | null
   name: string
   quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: string | null
@@ -1507,6 +1553,7 @@ export type OrderItemUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1530,6 +1577,7 @@ export type OrderItemUncheckedUpdateWithoutOrderInput = {
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1552,6 +1600,7 @@ export type OrderItemUncheckedUpdateManyWithoutOrderInput = {
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountApplied?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   couponId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1613,6 +1662,7 @@ export type OrderItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   medicationId?: boolean
   name?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   unitPrice?: boolean
   discountApplied?: boolean
   couponId?: boolean
@@ -1640,6 +1690,7 @@ export type OrderItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   medicationId?: boolean
   name?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   unitPrice?: boolean
   discountApplied?: boolean
   couponId?: boolean
@@ -1664,6 +1715,7 @@ export type OrderItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   medicationId?: boolean
   name?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   unitPrice?: boolean
   discountApplied?: boolean
   couponId?: boolean
@@ -1688,6 +1740,7 @@ export type OrderItemSelectScalar = {
   medicationId?: boolean
   name?: boolean
   quantity?: boolean
+  billingUnit?: boolean
   unitPrice?: boolean
   discountApplied?: boolean
   couponId?: boolean
@@ -1703,7 +1756,7 @@ export type OrderItemSelectScalar = {
   refillRequestId?: boolean
 }
 
-export type OrderItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "medicationId" | "name" | "quantity" | "unitPrice" | "discountApplied" | "couponId" | "createdAt" | "unitCostSnapshot" | "grossAmount" | "netAmount" | "grossProfit" | "taxAmount" | "currency" | "pricingRule" | "prescriptionFillId" | "refillRequestId", ExtArgs["result"]["orderItem"]>
+export type OrderItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "medicationId" | "name" | "quantity" | "billingUnit" | "unitPrice" | "discountApplied" | "couponId" | "createdAt" | "unitCostSnapshot" | "grossAmount" | "netAmount" | "grossProfit" | "taxAmount" | "currency" | "pricingRule" | "prescriptionFillId" | "refillRequestId", ExtArgs["result"]["orderItem"]>
 export type OrderItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   medication?: boolean | Prisma.OrderItem$medicationArgs<ExtArgs>
@@ -1744,6 +1797,10 @@ export type $OrderItemPayload<ExtArgs extends runtime.Types.Extensions.InternalA
      */
     name: string
     quantity: number
+    /**
+     * Billing unit for this line item (tablet, bottle, pack, etc.) — audit §14.
+     */
+    billingUnit: $Enums.BillingUnit | null
     unitPrice: runtime.Decimal
     /**
      * If the customer used a coupon on this line, the discount applied.
@@ -2220,6 +2277,7 @@ export interface OrderItemFieldRefs {
   readonly medicationId: Prisma.FieldRef<"OrderItem", 'String'>
   readonly name: Prisma.FieldRef<"OrderItem", 'String'>
   readonly quantity: Prisma.FieldRef<"OrderItem", 'Int'>
+  readonly billingUnit: Prisma.FieldRef<"OrderItem", 'BillingUnit'>
   readonly unitPrice: Prisma.FieldRef<"OrderItem", 'Decimal'>
   readonly discountApplied: Prisma.FieldRef<"OrderItem", 'Decimal'>
   readonly couponId: Prisma.FieldRef<"OrderItem", 'String'>
