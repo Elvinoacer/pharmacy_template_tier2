@@ -14,23 +14,36 @@ import {
   Menu,
   X,
   ChevronRight,
+  ChevronDown,
   PanelLeftClose,
   PanelLeftOpen,
   Pin,
   PinOff,
+  FolderKanban,
+  ClipboardCheck,
+  CalendarCheck,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
 import { useSidebarEnhanced, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
 
 export const CAREGIVER_LINKS = [
-  { href: "/caregiver", label: "Dashboard", icon: HeartHandshake },
-  { href: "/caregiver/patients", label: "My Patients", icon: Users },
-  { href: "/caregiver/refills", label: "Refill Requests", icon: Pill },
-  { href: "/caregiver/reminders", label: "Reminders", icon: Clock },
-  { href: "/caregiver/notifications", label: "Notifications", icon: Bell },
-  { href: "/caregiver/adherence", label: "Adherence", icon: Activity },
+  { href: "/caregiver", label: "Dashboard", icon: HeartHandshake, group: "overview" },
+  { href: "/caregiver/patients", label: "My Patients", icon: Users, group: "patients" },
+  { href: "/caregiver/refills", label: "Refill Requests", icon: Pill, group: "medications" },
+  { href: "/caregiver/reminders", label: "Reminders", icon: Clock, group: "schedule" },
+  { href: "/caregiver/notifications", label: "Notifications", icon: Bell, group: "communication" },
+  { href: "/caregiver/adherence", label: "Adherence", icon: Activity, group: "reports" },
 ] as const;
+
+export const CAREGIVER_GROUPS = {
+  overview: { label: "Overview", icon: HeartHandshake },
+  patients: { label: "Patients", icon: Users },
+  medications: { label: "Medications", icon: Pill },
+  schedule: { label: "Schedule", icon: CalendarCheck },
+  communication: { label: "Communication", icon: Bell },
+  reports: { label: "Reports", icon: ClipboardCheck },
+} as const;
 
 export function CaregiverShell({
   user,
@@ -45,13 +58,29 @@ export function CaregiverShell({
   subtitle?: string;
   actions?: React.ReactNode;
 }) {
-  const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing } = useSidebarEnhanced("caregiver");
+  const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing, collapsedGroups, toggleGroup, isGroupCollapsed } = useSidebarEnhanced("caregiver");
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = useActivePath();
 
   // Separate pinned and unpinned links
   const pinnedLinks = CAREGIVER_LINKS.filter((l) => pinned.includes(l.href));
   const otherLinks = CAREGIVER_LINKS.filter((l) => !pinned.includes(l.href));
+
+  // Group the non-pinned links by their group
+  const groupedLinks: Record<string, typeof CAREGIVER_LINKS> = {};
+  otherLinks.forEach((link) => {
+    const groupName = link.group || "other";
+    if (!groupedLinks[groupName]) {
+      groupedLinks[groupName] = [];
+    }
+    groupedLinks[groupName].push(link);
+  });
+
+  // Get ordered group keys based on CAREGIVER_GROUPS definition
+  const groupOrder = Object.keys(CAREGIVER_GROUPS);
+  const orderedGroups = groupOrder.filter((g) => groupedLinks[g]);
+  const extraGroups = Object.keys(groupedLinks).filter((g) => !groupOrder.includes(g));
+  const allGroups = [...orderedGroups, ...extraGroups];
 
   return (
     <div
@@ -117,49 +146,64 @@ export function CaregiverShell({
             </div>
           )}
 
-          {/* All/Other links section */}
-          <div className="sidebar-nav-section">
-            {!collapsed && pinnedLinks.length > 0 && (
-              <div className="sidebar-nav-label">
-                <span>Navigation</span>
+          {/* Grouped navigation sections */}
+          {!collapsed && allGroups.map((groupId) => {
+            const groupDef = CAREGIVER_GROUPS[groupId as keyof typeof CAREGIVER_GROUPS];
+            const groupLabel = groupDef?.label || groupId;
+            const GroupIcon = groupDef?.icon || FolderKanban;
+            const links = groupedLinks[groupId];
+            const isCollapsed = isGroupCollapsed(groupId);
+
+            return (
+              <div key={groupId} className="sidebar-nav-section">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(groupId)}
+                  className="sidebar-nav-label w-full hover:bg-[#eef5f2] rounded-lg transition-colors"
+                  title={isCollapsed ? `Expand ${groupLabel}` : `Collapse ${groupLabel}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <GroupIcon className="h-3.5 w-3.5" />
+                    <span>{groupLabel}</span>
+                    <span className="ml-1 text-[10px] opacity-60">({links.length})</span>
+                  </div>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isCollapsed ? "-rotate-90" : ""}`} />
+                </button>
+                {!isCollapsed && (
+                  <ul className="space-y-1 mt-1">
+                    {links.map((l) => {
+                      const Icon = l.icon;
+                      const active = isLinkActive(pathname, l.href);
+                      const isItemPinned = isPinned(l.href);
+                      return (
+                        <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
+                          <Link
+                            href={l.href}
+                            className={`nav-link-portal ${active ? "active" : ""} pr-8`}
+                            title={l.label}
+                          >
+                            <Icon className="h-[18px] w-[18px] shrink-0" />
+                            <span className="truncate">{l.label}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                togglePin(l.href);
+                              }}
+                              className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
+                              title={isItemPinned ? "Unpin" : "Pin to top"}
+                            >
+                              {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
+                            </button>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
-            )}
-            <ul className="space-y-1">
-              {(collapsed ? CAREGIVER_LINKS : otherLinks).map((l) => {
-                const Icon = l.icon;
-                const active = isLinkActive(pathname, l.href);
-                const isItemPinned = isPinned(l.href);
-                return (
-                  <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
-                    <Link
-                      href={l.href}
-                      className={`nav-link-portal ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : "pr-8"}`}
-                      title={collapsed ? l.label : undefined}
-                    >
-                      <Icon className="h-[18px] w-[18px] shrink-0" />
-                      {!collapsed && <span className="truncate">{l.label}</span>}
-                      {!collapsed && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            togglePin(l.href);
-                          }}
-                          className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
-                          title={isItemPinned ? "Unpin" : "Pin to top"}
-                        >
-                          {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
-                        </button>
-                      )}
-                    </Link>
-                    {collapsed && (
-                      <span className="tooltip-right hidden lg:block">{l.label}</span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+            );
+          })}
         </nav>
 
         <div className="border-t border-[#e3ebe6] p-3 space-y-1">
