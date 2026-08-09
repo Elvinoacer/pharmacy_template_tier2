@@ -51,7 +51,7 @@ import {
 } from "@/app/components/shell/useShell";
 import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
-import { Pin, PinOff, ChevronDown, FolderKanban } from "lucide-react";
+import { Pin, PinOff, ChevronDown, FolderKanban, ClipboardList, Settings } from "lucide-react";
 
 export const ADMIN_LINKS = [
   { href: "/admin", label: "Dashboard", icon: BarChart3, group: "overview" },
@@ -182,7 +182,7 @@ export function AdminShell({
   const otherLinks = ADMIN_LINKS.filter((l) => !pinned.includes(l.href));
 
   // Group the non-pinned links by their group
-  const groupedLinks: Record<string, typeof ADMIN_LINKS> = {};
+  const groupedLinks: Record<string, Array<(typeof ADMIN_LINKS)[number]>> = {};
   otherLinks.forEach((link) => {
     const groupName = link.group || "other";
     if (!groupedLinks[groupName]) {

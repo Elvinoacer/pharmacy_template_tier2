@@ -1,4 +1,10 @@
-```
+# Next.js build output & TypeScript build info
+.next/
+*.tsbuildinfo
+
+# Prisma generated client if output in app/generated
+# app/generated/prisma/
+
 # Compiled and build artifacts
 *.pyc
 __pycache__/
@@ -57,4 +63,3 @@ Thumbs.db
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-```
