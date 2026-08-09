@@ -281,6 +281,13 @@ model User {
   symptomStaffReplies SymptomMessage[]       @relation("SymptomStaffSender")
   pharmacySettingsUpdated PharmacySettings[] @relation("PharmacySettingsUpdater")
   serviceBookingsRecorded ServiceBooking[]   @relation("ServiceBookingRecorder")
+  // ── Commerce ledger relations (audit §41) ──
+  prescriptionFillsDispensed PrescriptionFill[] @relation("PrescriptionFillDispenser")
+  reservationCreator          InventoryReservation[] @relation("ReservationCreator")
+  refundCreator               Refund[]               @relation("RefundCreator")
+  refundApprover              Refund[]               @relation("RefundApprover")
+  priceHistoryChanges         MedicationPriceHistory[] @relation("PriceHistoryChanger")
+  cashierSessions             CashierSession[]      @relation("CashierSessionUser")
 
   @@map("users")
 }
@@ -489,6 +496,8 @@ model Prescription {
   doseSchedule  MedicationSchedule[]
   doseLogs      DoseLog[]
   escalations   AdherenceEscalation[]
+  /// Commerce ledger: one row per fill (audit §4 / §41.A).
+  fills         PrescriptionFill[]
 
   @@index([customerId])
   @@index([status])
@@ -519,6 +528,8 @@ model RefillRequest {
   customer     CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: Cascade)
   prescription Prescription?    @relation(fields: [prescriptionId], references: [id], onDelete: SetNull)
   assignedTo   User?            @relation("RefillAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  /// Commerce: the PrescriptionFill row created when this request was approved.
+  prescriptionFill PrescriptionFill?
 
   @@index([customerId])
   @@index([status])
@@ -1161,6 +1172,12 @@ model PharmacyInventory {
   movements       StockMovement[]
   orderItems      OrderItem[]
   prescriptions   Prescription[]
+  /// Active reservations against this inventory row (audit §9).
+  reservations    InventoryReservation[]
+  /// Prescription fills linked to this inventory (audit §41.A).
+  prescriptionFills PrescriptionFill[]
+  /// Historical price points (audit §46).
+  priceHistory    MedicationPriceHistory[]
 
   @@index([medicationMasterId])
   @@index([overTheCounter])
@@ -1186,6 +1203,10 @@ model InventoryLot {
 
   pharmacyInventory PharmacyInventory @relation(fields: [pharmacyInventoryId], references: [id], onDelete: Cascade)
   movements       StockMovement[]
+  /// Lot-level stock reservations (audit §9).
+  reservations    InventoryReservation[]
+  /// Lot-level cost allocations against sold order items (audit §18).
+  allocations     InventoryAllocation[]
 
   @@index([pharmacyInventoryId])
   @@index([expiryDate])
@@ -1372,6 +1393,7 @@ model Order {
   /// Guest / walk-in contact when no customer profile is linked.
   guestName    String?  @map("guest_name")
   guestPhone   String?  @map("guest_phone")
+  guestEmail   String?  @map("guest_email")
   /// immediate = counter handoff (auto-dispatch eligible); reserve = remote hold until collection; delivery = rider.
   fulfillment  String   @default("reserve") // immediate | reserve | delivery
   /// When stock was physically handed over / rider left. Null = still reserved.
@@ -1381,18 +1403,71 @@ model Order {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
+  // ── Commerce ledger extension (audit §16, §42, §63) ──────────
+  /// Strongly-typed commercial category. Stays null on legacy rows; new writes always set it.
+  type             OrderType?
+  /// Stronger lifecycle state (separate from payment + fulfillment). Null = derive from `status`.
+  lifecycleStatus  OrderLifecycleStatus?
+  /// Payment stage (separate from fulfillment). Null = derive from `status` for back-compat.
+  paymentStage     PaymentStage?        @map("payment_stage")
+  /// Fulfillment stage (separate from payment). Null = derive from `status`/`fulfillment`.
+  fulfillmentStage FulfillmentStage?   @map("fulfillment_stage")
+  currency         String               @default("KES")
+  /// Subtotal before discount: sum(unitPrice × quantity) across items.
+  subtotal         Decimal              @default(0) @db.Decimal(10, 2)
+  /// Sum of all discountApplied across items.
+  discountTotal    Decimal              @default(0) @map("discount_total") @db.Decimal(10, 2)
+  /// Reserved for future VAT/tax; today most OTC sales are tax-inclusive.
+  taxTotal         Decimal              @default(0) @map("tax_total") @db.Decimal(10, 2)
+  /// Net amount the customer owes (subtotal - discount + tax).
+  netTotal         Decimal              @default(0) @map("net_total") @db.Decimal(10, 2)
+  /// Total amount actually collected (sum of completed payments - refunds).
+  amountPaid       Decimal              @default(0) @map("amount_paid") @db.Decimal(10, 2)
+  /// Total refunded against this order.
+  amountRefunded   Decimal              @default(0) @map("amount_refunded") @db.Decimal(10, 2)
+  /// Outstanding balance = netTotal - amountPaid + amountRefunded.
+  amountDue        Decimal              @default(0) @map("amount_due") @db.Decimal(10, 2)
+  /// Explicit lifecycle timestamps (audit §63) — never rely on `updatedAt` for finance.
+  reservedAt         DateTime? @map("reserved_at")
+  paymentInitiatedAt DateTime? @map("payment_initiated_at")
+  paidAt             DateTime? @map("paid_at")
+  preparingAt        DateTime? @map("preparing_at")
+  readyAt            DateTime? @map("ready_at")
+  outForDeliveryAt   DateTime? @map("out_for_delivery_at")
+  fulfilledAt        DateTime? @map("fulfilled_at")
+  cancelledAt        DateTime? @map("cancelled_at")
+  expiredAt          DateTime? @map("expired_at")
+  /// Default reservation TTL for remote/website orders (audit §10).
+  expiresAt          DateTime? @map("expires_at")
+  /// Structured reason enum for cancellations (audit §57).
+  cancellationReason String?  @map("cancellation_reason")
+
   customer  CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   dispenserNoteBy User? @relation("OrderDispenser", fields: [dispenserNoteById], references: [id], onDelete: SetNull)
   items     OrderItem[]
   payments  Payment[]
   /// Optional 1:1 link when this order settles a priced pharmacy service booking.
   serviceBooking ServiceBooking?
+  /// Commerce event ledger entries for this order.
+  commerceEvents  CommerceEvent[]
+  /// Refunds issued against any payment on this order.
+  refunds         Refund[]
+  /// Inventory reservations (stock held pending payment/collection).
+  inventoryReservations InventoryReservation[]
+  /// 1:0..1 fill row when this order paid for a prescription fill.
+  prescriptionFill PrescriptionFill?
 
   @@index([customerId])
   @@index([status])
   @@index([guestPhone])
   @@index([dispatchedAt])
   @@index([createdAt(sort: Desc)])
+  @@index([type])
+  @@index([paymentStage])
+  @@index([fulfillmentStage])
+  @@index([lifecycleStatus])
+  @@index([paidAt])
+  @@index([fulfilledAt])
   @@map("orders")
 }
 
@@ -1409,11 +1484,37 @@ model OrderItem {
   couponId    String?  @map("coupon_id") @db.Uuid
   createdAt   DateTime @default(now()) @map("created_at")
 
+  // ── Commerce ledger extension (audit §17, §41.D) ─────────────
+  /// Snapshot of acquisition cost at sale time — preserves historical margin accuracy.
+  unitCostSnapshot Decimal @default(0) @map("unit_cost_snapshot") @db.Decimal(10, 2)
+  /// Gross amount = unitPrice × quantity (before discount).
+  grossAmount      Decimal @default(0) @map("gross_amount") @db.Decimal(10, 2)
+  /// Net amount = grossAmount - discountApplied.
+  netAmount        Decimal @default(0) @map("net_amount") @db.Decimal(10, 2)
+  /// Gross profit = netAmount - (unitCostSnapshot × quantity).
+  grossProfit      Decimal @default(0) @map("gross_profit") @db.Decimal(10, 2)
+  /// Tax/VAT allocated to this line.
+  taxAmount        Decimal @default(0) @map("tax_amount") @db.Decimal(10, 2)
+  /// Currency code snapshot (audit §17) — defaults to "KES".
+  currency         String  @default("KES")
+  /// Pricing rule that produced unitPrice (catalogue | promotion | manual_override).
+  pricingRule      String? @map("pricing_rule")
+  /// Linked prescription fill (audit §41.D).
+  prescriptionFillId String? @map("prescription_fill_id") @db.Uuid
+  /// Linked refill request (audit §17).
+  refillRequestId   String? @map("refill_request_id") @db.Uuid
+
   order      Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
   medication PharmacyInventory? @relation(fields: [medicationId], references: [id], onDelete: SetNull)
   coupon     Coupon?    @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  /// Lot-level allocations (one item can consume multiple lots, audit §18).
+  allocations    InventoryAllocation[]
+  reservations   InventoryReservation[]
 
   @@index([orderId])
+  @@index([prescriptionFillId])
+  @@index([refillRequestId])
+  @@index([medicationId])
   @@map("order_items")
 }
 
@@ -1453,16 +1554,21 @@ model Payment {
   lastAttemptAt DateTime?     @map("last_attempt_at")
   /// Who initiated the STK (staff counter sale vs customer self-serve).
   initiatedById String?       @map("initiated_by") @db.Uuid
+  /// Explicit timestamp for when the payment actually settled (audit §62).
+  paidAt       DateTime?      @map("paid_at")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
 
   order    Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   customer CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  /// First-class refunds issued against this payment (audit §14).
+  refunds Refund[]
 
   @@index([orderId])
   @@index([status])
   @@index([checkoutRequestId])
   @@index([phone])
+  @@index([paidAt])
   @@map("payments")
 }
 
@@ -1747,4 +1853,287 @@ model SymptomCheckIn {
 
   @@index([sessionId, createdAt])
   @@map("symptom_check_ins")
+}
+
+// ════════════════════════════════════════════════════════════════
+// ── Commerce ledger extension (audit §40–§77) ─────────────────────
+// Adds first-class PrescriptionFill, InventoryReservation, Refund,
+// InventoryAllocation, CommerceEvent, MedicationPriceHistory,
+// CashierSession — plus enriched Order/OrderItem financial fields.
+// All additive: existing columns + statuses stay untouched so legacy
+// rows keep working; new writes populate the new fields.
+// ════════════════════════════════════════════════════════════════
+
+enum OrderType {
+  OTC_PURCHASE
+  PRESCRIPTION_FILL
+  REFILL
+  RESERVATION
+  SERVICE
+  OTHER
+}
+
+enum OrderLifecycleStatus {
+  draft
+  active
+  completed
+  cancelled
+  expired
+  voided
+}
+
+enum PaymentStage {
+  unpaid
+  pending
+  partially_paid
+  paid
+  failed
+  refunded
+  partially_refunded
+  waived
+}
+
+enum FulfillmentStage {
+  unfulfilled
+  reserved
+  preparing
+  ready
+  out_for_delivery
+  fulfilled
+  partially_fulfilled
+  cancelled
+}
+
+enum ReservationStatus {
+  active
+  converted
+  released
+  expired
+  cancelled
+}
+
+enum PrescriptionFillStatus {
+  pending
+  preparing
+  ready
+  dispatched
+  collected
+  cancelled
+  reversed
+}
+
+enum RefundStatus {
+  pending
+  approved
+  completed
+  failed
+  reversed
+}
+
+enum CommerceEventType {
+  order_created
+  order_reserved
+  payment_initiated
+  payment_completed
+  payment_failed
+  order_fulfilled
+  prescription_filled
+  refill_requested
+  refill_approved
+  refill_collected
+  reservation_expired
+  order_cancelled
+  refund_created
+  refund_completed
+  stock_reserved
+  stock_released
+  stock_sold
+  stock_returned
+  waiver_applied
+  coupon_redeemed
+}
+
+model PrescriptionFill {
+  id                  String                @id @default(uuid()) @db.Uuid
+  prescriptionId      String                @map("prescription_id") @db.Uuid
+  /// Linked commercial order that paid for this fill (nullable for legacy / dispatched-without-charge).
+  orderId             String?               @unique @map("order_id") @db.Uuid
+  /// Refill request that triggered this fill, if any.
+  refillRequestId     String?               @unique @map("refill_request_id") @db.Uuid
+  /// 1-based sequence for human display (per-prescription).
+  fillNumber          Int                   @map("fill_number")
+  quantity            Int                   @default(1)
+  /// Snapshot of the price the customer was charged for this fill.
+  unitPriceSnapshot   Decimal               @default(0) @map("unit_price_snapshot") @db.Decimal(10, 2)
+  discountAmount      Decimal               @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  netAmount           Decimal               @default(0) @map("net_amount") @db.Decimal(10, 2)
+  /// Snapshot of pharmacy acquisition cost at fill time (for COGS / margin).
+  costPriceSnapshot   Decimal               @default(0) @map("cost_price_snapshot") @db.Decimal(10, 2)
+  status              PrescriptionFillStatus @default(pending)
+  filledAt            DateTime?             @map("filled_at")
+  dispatchedAt        DateTime?             @map("dispatched_at")
+  collectedAt         DateTime?             @map("collected_at")
+  dispensedById       String?               @map("dispensed_by_id") @db.Uuid
+  /// Snapshot of medication id at fill time (so renames/deletes don't break history).
+  medicationId        String?               @map("medication_id") @db.Uuid
+  medicationName      String                @map("medication_name")
+  /// Lot/batch ids consumed by this fill (for recall/trace). Stored as JSON array of lot UUIDs.
+  lotIds              Json                  @default("[]") @map("lot_ids")
+  notes               String?
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+
+  prescription   Prescription   @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  order          Order?         @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  refillRequest  RefillRequest? @relation(fields: [refillRequestId], references: [id], onDelete: SetNull)
+  dispensedBy    User?          @relation("PrescriptionFillDispenser", fields: [dispensedById], references: [id], onDelete: SetNull)
+  medication     PharmacyInventory? @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+
+  @@unique([prescriptionId, fillNumber])
+  @@index([prescriptionId])
+  @@index([orderId])
+  @@index([refillRequestId])
+  @@index([status])
+  @@index([dispatchedAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@map("prescription_fills")
+}
+
+model InventoryReservation {
+  id              String             @id @default(uuid()) @db.Uuid
+  orderId         String             @map("order_id") @db.Uuid
+  orderItemId     String?            @map("order_item_id") @db.Uuid
+  inventoryId     String             @map("inventory_id") @db.Uuid
+  inventoryLotId  String?            @map("inventory_lot_id") @db.Uuid
+  quantity        Int                @default(0)
+  status          ReservationStatus  @default(active)
+  reservedAt      DateTime           @default(now()) @map("reserved_at")
+  /// When the hold should auto-release if unpaid/uncollected.
+  expiresAt       DateTime?          @map("expires_at")
+  releasedAt      DateTime?          @map("released_at")
+  releasedReason  String?            @map("released_reason")
+  createdById     String?            @map("created_by") @db.Uuid
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  order          Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem      OrderItem?        @relation(fields: [orderItemId], references: [id], onDelete: SetNull)
+  inventory      PharmacyInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  inventoryLot   InventoryLot?     @relation(fields: [inventoryLotId], references: [id], onDelete: SetNull)
+  createdBy      User?             @relation("ReservationCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([orderItemId])
+  @@index([inventoryId])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("inventory_reservations")
+}
+
+model Refund {
+  id            String        @id @default(uuid()) @db.Uuid
+  paymentId     String        @map("payment_id") @db.Uuid
+  orderId       String        @map("order_id") @db.Uuid
+  amount        Decimal       @db.Decimal(10, 2)
+  /// daraja | cash | card | other
+  provider      String        @default("cash")
+  providerRef   String?       @map("provider_ref")
+  reason        String?
+  status        RefundStatus  @default(pending)
+  createdById   String?       @map("created_by") @db.Uuid
+  approvedById  String?       @map("approved_by") @db.Uuid
+  processedAt   DateTime?     @map("processed_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  payment     Payment        @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdBy   User?          @relation("RefundCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  approvedBy  User?          @relation("RefundApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+
+  @@index([paymentId])
+  @@index([orderId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("refunds")
+}
+
+model InventoryAllocation {
+  id            String   @id @default(uuid()) @db.Uuid
+  orderItemId   String   @map("order_item_id") @db.Uuid
+  inventoryLotId String  @map("inventory_lot_id") @db.Uuid
+  quantity      Int      @default(0)
+  unitCost      Decimal  @default(0) @map("unit_cost") @db.Decimal(10, 2)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  orderItem   OrderItem   @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  inventoryLot InventoryLot @relation(fields: [inventoryLotId], references: [id], onDelete: Cascade)
+
+  @@index([orderItemId])
+  @@index([inventoryLotId])
+  @@map("inventory_allocations")
+}
+
+model CommerceEvent {
+  id          String              @id @default(uuid()) @db.Uuid
+  eventType   CommerceEventType
+  entityType  String              @map("entity_type")
+  entityId    String              @map("entity_id") @db.Uuid
+  orderId     String?             @map("order_id") @db.Uuid
+  customerId  String?             @map("customer_id") @db.Uuid
+  actorId     String?             @map("actor_id") @db.Uuid
+  amount      Decimal?            @db.Decimal(10, 2)
+  currency    String              @default("KES")
+  metadata    Json                @default("{}")
+  occurredAt  DateTime            @default(now()) @map("occurred_at")
+  createdAt   DateTime            @default(now()) @map("created_at")
+
+  order    Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([eventType])
+  @@index([entityType, entityId])
+  @@index([orderId])
+  @@index([customerId])
+  @@index([occurredAt(sort: Desc)])
+  @@map("commerce_events")
+}
+
+model MedicationPriceHistory {
+  id              String    @id @default(uuid()) @db.Uuid
+  inventoryId     String    @map("inventory_id") @db.Uuid
+  price           Decimal   @db.Decimal(10, 2)
+  costPrice       Decimal?  @map("cost_price") @db.Decimal(10, 2)
+  /// catalogue | manual_override | promotion | supplier_change | stocktake
+  reason          String    @default("catalogue")
+  effectiveFrom   DateTime  @default(now()) @map("effective_from")
+  effectiveTo     DateTime? @map("effective_to")
+  changedById     String?   @map("changed_by") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  inventory   PharmacyInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  changedBy   User?             @relation("PriceHistoryChanger", fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([inventoryId, effectiveFrom(sort: Desc)])
+  @@index([effectiveTo])
+  @@map("medication_price_history")
+}
+
+model CashierSession {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  openedAt        DateTime  @default(now()) @map("opened_at")
+  openingFloat    Decimal   @default(0) @map("opening_float") @db.Decimal(10, 2)
+  closedAt        DateTime? @map("closed_at")
+  closingCash     Decimal?  @map("closing_cash") @db.Decimal(10, 2)
+  expectedCash    Decimal?  @map("expected_cash") @db.Decimal(10, 2)
+  variance        Decimal?  @db.Decimal(10, 2)
+  notes           String?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user   User   @relation("CashierSessionUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([openedAt(sort: Desc)])
+  @@map("cashier_sessions")
 }

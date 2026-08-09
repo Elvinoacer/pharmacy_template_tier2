@@ -119,16 +119,39 @@ export async function guestCreateOrderAction(
   let orderId = "";
   try {
     const { order, stockResult } = await prisma.$transaction(async (tx) => {
+      const unitCost = Number(med.purchasePrice ?? 0);
+      const grossAmount = unitPrice * quantity;
+      const netAmount = Math.max(0, grossAmount);
+      const grossProfit = netAmount - unitCost * quantity;
+      // 48-hour reservation TTL for website orders (audit §10).
+      const expiresAt = new Date(Date.now() + 48 * 3600 * 1000);
+
       const o = await tx.order.create({
         data: {
           customerId,
           source: "website",
           status: "pending",
           total,
+          // ── Commerce ledger extension (audit §8, §9, §10, §16) ──
+          type: "RESERVATION",
+          lifecycleStatus: "active",
+          paymentStage: "unpaid",
+          fulfillmentStage: fulfillment === "delivery" ? "reserved" : "reserved",
+          currency: "KES",
+          subtotal: grossAmount,
+          discountTotal: 0,
+          taxTotal: 0,
+          netTotal: netAmount,
+          amountPaid: 0,
+          amountRefunded: 0,
+          amountDue: netAmount,
+          reservedAt: new Date(),
+          expiresAt,
           notes: orderNotes,
           reason,
           guestName: fullName,
           guestPhone: mpesaPhone,
+          guestEmail: email || null,
           fulfillment,
           items: {
             create: {
@@ -136,20 +159,51 @@ export async function guestCreateOrderAction(
               name: med.medicationMaster.name,
               quantity,
               unitPrice,
+              // Commerce snapshots (audit §17)
+              unitCostSnapshot: unitCost,
+              grossAmount,
+              netAmount,
+              grossProfit,
+              taxAmount: 0,
+              currency: "KES",
+              pricingRule: "catalogue",
             },
           },
         },
       });
-      const stockResult = await applyStockChange(tx, {
+
+      // Reservation lifecycle: create InventoryReservation + reservation_create stock movement.
+      const { createReservation } = await import("@/app/lib/services/commerce/reservations");
+      const { recordCommerceEvent } = await import("@/app/lib/services/commerce/events");
+      const r = await createReservation(tx, {
+        orderId: o.id,
         inventoryId: medicationId,
-        quantityDelta: -quantity,
-        reason: "sale",
-        notes: `Guest website reservation × ${quantity} (${fullName})`,
-        relatedType: "order",
-        relatedId: o.id,
-        actorId: session?.id ?? null,
+        quantity,
+        createdById: session?.id ?? null,
+        expiresAt,
       });
-      return { order: o, stockResult };
+      await recordCommerceEvent(tx, {
+        eventType: "order_created",
+        entityType: "order",
+        entityId: o.id,
+        orderId: o.id,
+        customerId: customerId ?? null,
+        actorId: session?.id ?? null,
+        amount: netAmount,
+        metadata: { source: "website", type: "RESERVATION", quantity, medicationId },
+      });
+      await recordCommerceEvent(tx, {
+        eventType: "order_reserved",
+        entityType: "order",
+        entityId: o.id,
+        orderId: o.id,
+        customerId: customerId ?? null,
+        actorId: session?.id ?? null,
+        amount: netAmount,
+        metadata: { expiresAt },
+      });
+
+      return { order: o, stockResult: r.stockResult };
     });
     orderId = order.id;
     await notifyStockThreshold(stockResult);

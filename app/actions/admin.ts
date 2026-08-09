@@ -873,6 +873,11 @@ export async function adminDispatchPrescriptionAction(
     const id = String(formData.get("id") || "");
     if (!id) return { error: "Prescription id required." };
 
+    // ── Commerce ledger path (audit §5, §41.A) ──
+    // Dispatch now creates: PrescriptionFill + Order + OrderItem (with price
+    // + cost snapshots) + stock movement (prescription_fill) + CommerceEvent.
+    // The legacy `dispatchedAt` on Prescription is still updated for back-compat
+    // with the existing prescription detail page.
     const rx = await prisma.prescription.findUnique({
       where: { id },
       include: {
@@ -882,87 +887,100 @@ export async function adminDispatchPrescriptionAction(
     });
     if (!rx) return { error: "Prescription not found." };
 
-    // Idempotent — already dispatched.
+    // Idempotent — already dispatched (legacy field on Prescription).
     if (rx.dispatchedAt) {
       revalidatePath(`/admin/prescriptions/${id}`);
       return { success: "Already dispatched." };
     }
 
+    const { createPrescriptionFill } = await import("@/app/lib/services/commerce/prescription-fills");
+    const { applyStockChange, notifyStockThreshold, InsufficientStockError } = await import("@/app/lib/services/stock");
+
+    // Pre-check stock so we can return a friendly message without rolling back.
     const qty = rx.quantity ?? 1;
-    const shouldDecrementRefills = (rx.refillsRemaining ?? 0) > 0;
-    const {
-      applyStockChange,
-      notifyStockThreshold,
-      InsufficientStockError,
-    } = await import("@/app/lib/services/stock");
+    if (rx.medicationId && rx.medication && (rx.medication.currentStock ?? 0) < qty) {
+      const name = rx.medication.medicationMaster?.name || rx.medicineName;
+      return {
+        error: `Insufficient stock for ${name}. Available: ${rx.medication.currentStock ?? 0}, required: ${qty}. Receive stock or lower the prescription quantity before dispatching.`,
+      };
+    }
 
-    // If any refill already deducted stock for this Rx, don't double-count.
-    const priorRefillMovement = await prisma.stockMovement.findFirst({
-      where: {
-        relatedType: "prescription",
-        relatedId: id,
-        reason: { in: ["dispatch", "refill"] },
-        quantityDelta: { lt: 0 },
-      },
-      select: { id: true },
-    });
-
-    let stockResult = null as Awaited<ReturnType<typeof applyStockChange>> | null;
+    const markPaid = String(formData.get("markPaid") || "cash") !== "none";
+    const paymentMethod = String(formData.get("markPaid") || "cash") as "cash" | "daraja" | "card" | "other";
 
     try {
-      if (rx.medicationId && rx.medication && !priorRefillMovement) {
-        // Pre-check so we can return a clear message without relying on
-        // instanceof across Prisma transaction error wrapping.
-        const available = rx.medication.currentStock ?? 0;
-        if (available < qty) {
-          const name = rx.medication.medicationMaster?.name || rx.medicineName;
-          return {
-            error: `Insufficient stock for ${name}. Available: ${available}, required: ${qty}. Receive stock or lower the prescription quantity before dispatching.`,
-          };
-        }
+      const result = await prisma.$transaction(async (tx) => {
+        return createPrescriptionFill(tx, {
+          prescriptionId: id,
+          actorId: user.id,
+          manualUnitPrice: rx.unitPrice != null ? Number(rx.unitPrice) : null,
+          markDispatched: true,
+          markPaid,
+          paymentMethod,
+          notes: `Dispatched by ${user.email}`,
+        });
+      });
 
-        stockResult = await prisma.$transaction(async (tx) => {
-          const result = await applyStockChange(tx, {
-            inventoryId: rx.medicationId!,
-            quantityDelta: -qty,
-            reason: "dispatch",
-            notes: `Prescription dispatch: ${rx.medicineName}`,
-            relatedType: "prescription",
-            relatedId: id,
-            actorId: user.id,
+      // Stock threshold notification (best-effort, outside tx).
+      try {
+        if (rx.medicationId) {
+          const inv = await prisma.pharmacyInventory.findUnique({
+            where: { id: rx.medicationId },
+            select: { currentStock: true, lowStockThreshold: true, medicationMaster: { select: { name: true } } },
           });
-          await tx.prescription.update({
-            where: { id },
-            data: {
-              dispatchedAt: new Date(),
-              dispatchedById: user.id,
-              lastFilledAt: new Date(),
-              ...(shouldDecrementRefills ? { refillsRemaining: { decrement: 1 } } : {}),
-            },
-          });
-          return result;
-        });
-      } else {
-        await prisma.prescription.update({
-          where: { id },
-          data: {
-            dispatchedAt: new Date(),
-            dispatchedById: user.id,
-            lastFilledAt: new Date(),
-            ...(shouldDecrementRefills && !priorRefillMovement
-              ? { refillsRemaining: { decrement: 1 } }
-              : {}),
-          },
-        });
+          if (inv) {
+            await notifyStockThreshold({
+              inventoryId: rx.medicationId,
+              previousStock: inv.currentStock + qty,
+              newStock: inv.currentStock,
+              quantityDelta: -qty,
+              lotIds: [],
+              movementIds: [],
+              crossedLowStock: inv.currentStock <= inv.lowStockThreshold,
+              isOutOfStock: inv.currentStock <= 0,
+              medicationName: inv.medicationMaster.name,
+              lowStockThreshold: inv.lowStockThreshold,
+            });
+          }
+        }
+      } catch (e) {
+        console.error("[adminDispatchPrescription] notifyStockThreshold failed:", e);
       }
+
+      await addTimelineEvent(
+        rx.customerId,
+        user.id,
+        "prescription_dispatched",
+        "Prescription dispatched",
+        `${rx.medicineName} — ${qty} units (Fill #${result.fillId.slice(0, 8)})`,
+        { prescriptionId: id, fillId: result.fillId, orderId: result.orderId, medicationId: rx.medicationId, quantity: qty },
+        user.id,
+      );
+      await writeAuditLog(user.id, "prescription_dispatched", "prescription", id, {
+        medicationId: rx.medicationId,
+        quantity: qty,
+        orderId: result.orderId,
+        fillId: result.fillId,
+      });
+
+      revalidatePath(`/admin/prescriptions/${id}`);
+      revalidatePath(`/admin/customers/${rx.customerId}`);
+      revalidatePath("/admin/medications");
+      revalidatePath("/admin/inventory");
+      revalidatePath("/admin/orders");
+
+      const paymentNote = markPaid ? ` Payment recorded (${paymentMethod}).` : " Payment pending.";
+      return {
+        success: `Dispatched ${rx.medicineName} (${qty} units). Fill #${result.fillId.slice(0, 8)} → Order #${result.orderId.slice(0, 8)}.${paymentNote}`,
+        orderId: result.orderId,
+      };
     } catch (e) {
-      if (
-        e instanceof InsufficientStockError ||
-        (e instanceof Error && e.name === "InsufficientStockError")
-      ) {
-        const stockErr = e as InstanceType<
-          typeof InsufficientStockError
-        > & { medicationName?: string; available?: number; required?: number };
+      if (e instanceof InsufficientStockError || (e instanceof Error && e.name === "InsufficientStockError")) {
+        const stockErr = e as InstanceType<typeof InsufficientStockError> & {
+          medicationName?: string;
+          available?: number;
+          required?: number;
+        };
         const name = stockErr.medicationName || rx.medicineName;
         const available = stockErr.available ?? rx.medication?.currentStock ?? 0;
         const required = stockErr.required ?? qty;
@@ -970,38 +988,8 @@ export async function adminDispatchPrescriptionAction(
           error: `Insufficient stock for ${name}. Available: ${available}, required: ${required}. Receive stock or lower the prescription quantity before dispatching.`,
         };
       }
-      console.error("[adminDispatchPrescription]", e);
-      return {
-        error: e instanceof Error ? e.message : "Failed to dispatch prescription.",
-      };
+      throw e;
     }
-
-    if (stockResult) await notifyStockThreshold(stockResult);
-
-    await addTimelineEvent(
-      rx.customerId,
-      user.id,
-      "prescription_dispatched",
-      "Prescription dispatched",
-      `${rx.medicineName} — ${qty} units`,
-      { prescriptionId: id, medicationId: rx.medicationId, quantity: qty },
-      user.id,
-    );
-    await writeAuditLog(user.id, "prescription_dispatched", "prescription", id, {
-      medicationId: rx.medicationId,
-      quantity: qty,
-    });
-    revalidatePath(`/admin/prescriptions/${id}`);
-    revalidatePath(`/admin/customers/${rx.customerId}`);
-    revalidatePath("/admin/medications");
-    revalidatePath("/admin/inventory");
-
-    const stockNote = stockResult
-      ? ` Stock now ${stockResult.newStock}.`
-      : rx.medicationId
-        ? " Stock was already deducted for this fill."
-        : " No catalogue link — stock not changed.";
-    return { success: `Dispatched ${rx.medicineName} (${qty} units).${stockNote}` };
   } catch (e) {
     if (e instanceof AuthError) return { error: e.message };
     console.error("[adminDispatchPrescription]", e);
@@ -1010,6 +998,10 @@ export async function adminDispatchPrescriptionAction(
     };
   }
 }
+
+// ── Legacy dispatch path retained for reference / fallback ────────────────
+// (No longer called; adminDispatchPrescriptionAction above now routes through
+// createPrescriptionFill which produces a full commercial transaction.)
 
 export async function adminDeletePrescriptionAction(formData: FormData) {
   const user = await staff();
@@ -1340,6 +1332,7 @@ export async function adminCreateOrderAction(
     select: {
       id: true,
       price: true,
+      purchasePrice: true,
       currentStock: true,
       overTheCounter: true,
       prescriptionRequired: true,
@@ -1554,12 +1547,47 @@ export async function adminCreateOrderAction(
           : "paid"
         : "pending";
 
+      // ── Commerce ledger extension (audit §16, §42, §63) ──────────
+      const { deriveInitialStages } = await import("@/app/lib/services/commerce/orders");
+      const { recordCommerceEvent } = await import("@/app/lib/services/commerce/events");
+      const { createReservation } = await import("@/app/lib/services/commerce/reservations");
+      const unitCost = Number(med.purchasePrice ?? 0);
+      const grossAmount = unitPrice * quantity;
+      const netAmount = Math.max(0, grossAmount - discount);
+      const grossProfit = netAmount - unitCost * quantity;
+      const stages = deriveInitialStages({
+        type: source === "refill" ? "REFILL" : "OTC_PURCHASE",
+        source,
+        isCounterSale: source === "counter",
+        markPaid,
+        autoDispatch,
+        fulfillment: fulfillment === "delivery" ? "delivery" : autoDispatch ? "immediate" : "reserve",
+      });
+
       const o = await tx.order.create({
         data: {
           customerId: finalCustomerId,
           source,
           status: initialStatus,
           total,
+          // New commerce fields
+          type: stages.type,
+          lifecycleStatus: stages.lifecycleStatus,
+          paymentStage: stages.paymentStage,
+          fulfillmentStage: stages.fulfillmentStage,
+          currency: "KES",
+          subtotal: grossAmount,
+          discountTotal: discount,
+          taxTotal: 0,
+          netTotal: netAmount,
+          amountPaid: markPaid ? netAmount : 0,
+          amountRefunded: 0,
+          amountDue: markPaid ? 0 : netAmount,
+          reservedAt: stages.reservedAt,
+          expiresAt: stages.expiresAt,
+          paidAt: stages.paidAt,
+          fulfilledAt: stages.fulfilledAt,
+          dispatchedAt: stages.dispatchedAt,
           notes: [notes, dosage ? `Dosage: ${dosage}` : null].filter(Boolean).join("\n") || null,
           reason,
           dispenserNote: dispenserNote || null,
@@ -1567,8 +1595,8 @@ export async function adminCreateOrderAction(
           dispenserNoteById: dispenserNote ? user.id : null,
           guestName: finalCustomerId ? null : guestName,
           guestPhone: guestPhone,
+          guestEmail: String(formData.get("customerEmail") || "").trim() || null,
           fulfillment: fulfillment === "delivery" ? "delivery" : autoDispatch ? "immediate" : "reserve",
-          dispatchedAt: markPaid && autoDispatch ? new Date() : null,
           dispatchedById: markPaid && autoDispatch ? user.id : null,
           servedById: user.id,
           items: {
@@ -1578,20 +1606,75 @@ export async function adminCreateOrderAction(
               quantity,
               unitPrice,
               discountApplied: discount,
+              // New commerce snapshots
+              unitCostSnapshot: unitCost,
+              grossAmount,
+              netAmount,
+              grossProfit,
+              taxAmount: 0,
+              currency: "KES",
+              pricingRule: "catalogue",
               couponId,
             },
           },
         },
       });
-      stockResult = await applyStockChange(tx, {
-        inventoryId: medicationId,
-        quantityDelta: -quantity,
-        reason: "sale",
-        notes: `Counter/OTC sale × ${quantity}`,
-        relatedType: "order",
-        relatedId: o.id,
+
+      // Stock handling — distinguish reservation from sale (audit §8, §67).
+      if (stages.fulfillmentStage === "fulfilled" && autoDispatch) {
+        // Counter sale with auto-dispatch: physical stock leaves now (sale).
+        stockResult = await applyStockChange(tx, {
+          inventoryId: medicationId,
+          quantityDelta: -quantity,
+          reason: "sale",
+          notes: `Counter/OTC sale × ${quantity}`,
+          relatedType: "order",
+          relatedId: o.id,
+          actorId: user.id,
+        });
+      } else {
+        // Reservation (website / portal / paid-reserve): create InventoryReservation.
+        try {
+          const r = await createReservation(tx, {
+            orderId: o.id,
+            inventoryId: medicationId,
+            quantity,
+            createdById: user.id,
+            expiresAt: stages.expiresAt,
+          });
+          stockResult = r.stockResult;
+        } catch (err) {
+          if (err instanceof Error && err.message === "reservation_already_exists") {
+            // Idempotent — already reserved.
+          } else {
+            throw err;
+          }
+        }
+      }
+
+      // Commerce event ledger
+      await recordCommerceEvent(tx, {
+        eventType: "order_created",
+        entityType: "order",
+        entityId: o.id,
+        orderId: o.id,
+        customerId: finalCustomerId ?? null,
         actorId: user.id,
+        amount: netAmount,
+        metadata: { source, type: stages.type, quantity, medicationId },
       });
+      if (stages.fulfillmentStage === "reserved") {
+        await recordCommerceEvent(tx, {
+          eventType: "order_reserved",
+          entityType: "order",
+          entityId: o.id,
+          orderId: o.id,
+          customerId: finalCustomerId ?? null,
+          actorId: user.id,
+          amount: netAmount,
+          metadata: { expiresAt: stages.expiresAt },
+        });
+      }
 
       if (markPaid) {
         await tx.payment.create({
@@ -1603,6 +1686,7 @@ export async function adminCreateOrderAction(
             status: "completed",
             providerRef: `CASH-${o.id.slice(0, 8).toUpperCase()}`,
             initiatedById: user.id,
+            paidAt: new Date(),
           },
         });
       }
@@ -1842,35 +1926,133 @@ export async function adminWaiveOrderAction(formData: FormData) {
     ? parseLocalDateInput(String(formData.get("until")))
     : null;
   if (!id) return;
-  await prisma.order.update({
-    where: { id },
-    data: {
-      waived: true,
-      waivedReason: reason,
-      waivedScope: scope,
-      waivedUntil: until,
-      status: "waived",
-    },
-  });
-  // Record a waived payment so revenue reports stay consistent.
-  const order = await prisma.order.findUnique({ where: { id } });
-  if (order) {
-    await prisma.payment.create({
-      data: {
-        orderId: id,
-        customerId: order.customerId,
-        amount: order.total,
-        provider: "other",
-        status: "waived",
-        providerRef: `WAIVE-${id.slice(0, 8).toUpperCase()}`,
-        failureReason: reason,
-      },
-    }).catch(() => {
-      /* may already exist */
+
+  // ── Commerce ledger path (audit §47) ──
+  // markOrderWaived handles paymentStage, amountDue, CommerceEvent, and order
+  // financial recompute atomically. We still mirror the legacy waived payment
+  // row so existing dashboards (which sum Payment.amount by status=waived)
+  // keep working.
+  await prisma.$transaction(async (tx) => {
+    const { markOrderWaived } = await import("@/app/lib/services/commerce/orders");
+    await markOrderWaived(tx, {
+      orderId: id,
+      actorId: user.id,
+      reason,
+      scope,
+      until,
     });
-  }
+    // Mirror a waived payment row for back-compat with existing dashboards.
+    const order = await tx.order.findUnique({ where: { id }, select: { customerId: true, netTotal: true, total: true } });
+    if (order) {
+      await tx.payment.create({
+        data: {
+          orderId: id,
+          customerId: order.customerId,
+          amount: Number(order.netTotal || order.total || 0),
+          provider: "other",
+          status: "waived",
+          providerRef: `WAIVE-${id.slice(0, 8).toUpperCase()}`,
+          failureReason: reason,
+          paidAt: new Date(),
+        },
+      }).catch(() => {
+        /* may already exist */
+      });
+    }
+  });
   await writeAuditLog(user.id, "order_waived", "order", id, { scope, reason });
   revalidatePath("/admin/orders");
+}
+
+/**
+ * Refund an order's completed payment. Creates a first-class Refund row,
+ * recomputes the order's financials, and (for non-Daraja providers) marks
+ * the refund completed immediately. Audit §14.
+ */
+export async function adminRefundOrderAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const orderId = String(formData.get("orderId") || "");
+    const paymentId = String(formData.get("paymentId") || "");
+    const amountStr = String(formData.get("amount") || "0");
+    const reason = String(formData.get("reason") || "") || null;
+    const provider = String(formData.get("provider") || "cash") as "cash" | "daraja" | "card" | "other";
+
+    if (!orderId || !paymentId) return { error: "Order and payment are required." };
+    const amount = Number(amountStr);
+    if (!Number.isFinite(amount) || amount <= 0) return { error: "Refund amount must be greater than zero." };
+
+    const { createRefund } = await import("@/app/lib/services/commerce/refunds");
+    const result = await createRefund({
+      paymentId,
+      amount,
+      reason: reason ?? undefined,
+      provider,
+      createdById: user.id,
+      approvedById: user.id,
+      markCompleted: provider !== "daraja",
+    });
+
+    if (!result.ok) return { error: result.error };
+
+    await writeAuditLog(user.id, "refund_created", "order", orderId, {
+      paymentId,
+      refundId: result.refundId,
+      amount,
+      reason,
+      provider,
+    });
+    revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders?orderId=${orderId}`);
+    return { success: `Refund of KES ${amount.toFixed(0)} recorded.` };
+  } catch (e) {
+    console.error("[adminRefundOrder]", e);
+    return { error: e instanceof Error ? e.message : "Failed to process refund." };
+  }
+}
+
+/**
+ * Cancel an order with full commerce-side cleanup (audit §67.6).
+ * Releases any active reservation, marks the order cancelled, optionally
+ * auto-refunds any completed payments.
+ */
+export async function adminCancelOrderAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const orderId = String(formData.get("orderId") || "");
+    const reason = String(formData.get("reason") || "cancelled_by_staff") || "cancelled_by_staff";
+    const autoRefund = formData.get("autoRefund") === "on";
+    if (!orderId) return { error: "Order id required." };
+
+    const { cancelOrder } = await import("@/app/lib/services/commerce/fulfillment");
+    const result = await cancelOrder({
+      orderId,
+      actorId: user.id,
+      reason,
+      autoRefund,
+      refundReason: reason,
+    });
+
+    if (!result.ok) return { error: result.error };
+
+    await writeAuditLog(user.id, "order_cancelled", "order", orderId, {
+      reason,
+      autoRefund,
+      refundId: result.refundId ?? null,
+    });
+    revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders?orderId=${orderId}`);
+    return { success: `Order cancelled.${autoRefund && result.refundId ? " Refund initiated." : ""}` };
+  } catch (e) {
+    console.error("[adminCancelOrder]", e);
+    return { error: e instanceof Error ? e.message : "Failed to cancel order." };
+  }
 }
 
 // ── Inventory ops: receive / adjust / lots ────────────────────
