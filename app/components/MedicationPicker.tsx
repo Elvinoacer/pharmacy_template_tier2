@@ -31,6 +31,7 @@ export type MedicationOption = {
   prescriptionRequired: boolean;
   dosage: string | null;
   description: string | null;
+  billingUnit?: string | null;
 };
 
 export function MedicationPicker({

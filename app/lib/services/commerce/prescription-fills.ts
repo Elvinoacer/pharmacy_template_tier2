@@ -76,7 +76,7 @@ export async function createPrescriptionFill(
   const grossProfit = netAmount - unitCost * qty;
   const currency = "KES";
   // Billing unit — default to UNIT if not specified (audit §14)
-  const billingUnit = med?.billingUnit ?? "UNIT";
+  const billingUnit = ((med as Record<string, unknown> | null)?.billingUnit as string | undefined) ?? "UNIT";
 
   // 1) Create the Order (commercial transaction for this fill).
   const order = await tx.order.create({
