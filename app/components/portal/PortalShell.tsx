@@ -20,10 +20,14 @@ import {
   X,
   Home,
   ChevronRight,
+  ChevronDown,
   ShoppingCart,
   HeartPulse,
   Pin,
   PinOff,
+  FolderKanban,
+  ClipboardList,
+  CreditCard,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -38,18 +42,28 @@ import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNot
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
 
 export const PORTAL_LINKS = [
-  { href: "/portal", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/portal/refills", label: "Refills", icon: Pill },
-  { href: "/portal/prescriptions", label: "Prescriptions", icon: FileText },
-  { href: "/portal/orders", label: "Orders", icon: ShoppingCart },
-  { href: "/portal/feel", label: "How do you feel?", icon: HeartPulse },
-  { href: "/portal/caregivers", label: "Caregivers", icon: HeartHandshake },
-  { href: "/portal/messages", label: "Messages", icon: MessageSquare },
-  { href: "/portal/loyalty", label: "Loyalty", icon: Sparkles },
-  { href: "/portal/preferences", label: "Preferences", icon: Settings },
-  { href: "/portal/profile", label: "Profile", icon: User },
-  { href: "/portal/feedback", label: "Feedback", icon: Star },
+  { href: "/portal", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
+  { href: "/portal/refills", label: "Refills", icon: Pill, group: "medications" },
+  { href: "/portal/prescriptions", label: "Prescriptions", icon: FileText, group: "medications" },
+  { href: "/portal/orders", label: "Orders", icon: ShoppingCart, group: "orders" },
+  { href: "/portal/feel", label: "How do you feel?", icon: HeartPulse, group: "health" },
+  { href: "/portal/caregivers", label: "Caregivers", icon: HeartHandshake, group: "health" },
+  { href: "/portal/messages", label: "Messages", icon: MessageSquare, group: "communication" },
+  { href: "/portal/loyalty", label: "Loyalty", icon: Sparkles, group: "rewards" },
+  { href: "/portal/preferences", label: "Preferences", icon: Settings, group: "settings" },
+  { href: "/portal/profile", label: "Profile", icon: User, group: "settings" },
+  { href: "/portal/feedback", label: "Feedback", icon: Star, group: "settings" },
 ] as const;
+
+export const PORTAL_GROUPS = {
+  overview: { label: "Overview", icon: LayoutDashboard },
+  medications: { label: "Medications", icon: Pill },
+  orders: { label: "Orders & Shopping", icon: ShoppingCart },
+  health: { label: "Health & Care", icon: HeartPulse },
+  communication: { label: "Communication", icon: MessageSquare },
+  rewards: { label: "Rewards", icon: Sparkles },
+  settings: { label: "Settings", icon: Settings },
+} as const;
 
 export function PortalShell({
   user,
@@ -64,7 +78,7 @@ export function PortalShell({
   subtitle?: string;
   actions?: React.ReactNode;
 }) {
-  const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing } = useSidebarEnhanced("portal");
+  const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing, collapsedGroups, toggleGroup, isGroupCollapsed } = useSidebarEnhanced("portal");
   const [mobileOpen, setMobileOpen] = useState(false);
   const attention = useAttentionCounts();
   const unread = attention.count;
@@ -74,6 +88,23 @@ export function PortalShell({
   // Separate pinned and unpinned links
   const pinnedLinks = PORTAL_LINKS.filter((l) => pinned.includes(l.href));
   const otherLinks = PORTAL_LINKS.filter((l) => !pinned.includes(l.href));
+
+  // Group the non-pinned links by their group
+  const groupedLinks: Record<string, typeof PORTAL_LINKS> = {};
+  otherLinks.forEach((link) => {
+    const groupName = link.group || "other";
+    if (!groupedLinks[groupName]) {
+      groupedLinks[groupName] = [];
+    }
+    groupedLinks[groupName].push(link);
+  });
+
+  // Get ordered group keys based on PORTAL_GROUPS definition
+  const groupOrder = Object.keys(PORTAL_GROUPS);
+  const orderedGroups = groupOrder.filter((g) => groupedLinks[g]);
+  // Add any groups not in PORTAL_GROUPS (like "other") at the end
+  const extraGroups = Object.keys(groupedLinks).filter((g) => !groupOrder.includes(g));
+  const allGroups = [...orderedGroups, ...extraGroups];
 
   return (
     <div
@@ -148,73 +179,80 @@ export function PortalShell({
             </div>
           )}
 
-          {/* All/Other links section */}
-          <div className="sidebar-nav-section">
-            {!collapsed && pinnedLinks.length > 0 && (
-              <div className="sidebar-nav-label">
-                <span>Navigation</span>
+          {/* Grouped navigation sections */}
+          {!collapsed && allGroups.map((groupId) => {
+            const groupDef = PORTAL_GROUPS[groupId as keyof typeof PORTAL_GROUPS];
+            const groupLabel = groupDef?.label || groupId;
+            const GroupIcon = groupDef?.icon || FolderKanban;
+            const links = groupedLinks[groupId];
+            const isCollapsed = isGroupCollapsed(groupId);
+
+            return (
+              <div key={groupId} className="sidebar-nav-section">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(groupId)}
+                  className="sidebar-nav-label w-full hover:bg-[#eef5f2] rounded-lg transition-colors"
+                  title={isCollapsed ? `Expand ${groupLabel}` : `Collapse ${groupLabel}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <GroupIcon className="h-3.5 w-3.5" />
+                    <span>{groupLabel}</span>
+                    <span className="ml-1 text-[10px] opacity-60">({links.length})</span>
+                  </div>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isCollapsed ? "-rotate-90" : ""}`} />
+                </button>
+                {!isCollapsed && (
+                  <ul className="space-y-1 mt-1">
+                    {links.map((l) => {
+                      const Icon = l.icon;
+                      const active = isLinkActive(pathname, l.href);
+                      const showFeel = l.href === "/portal/feel" && feelBadge > 0;
+                      const badge = showFeel ? formatBadgeCount(feelBadge) : "";
+                      const isItemPinned = isPinned(l.href);
+                      return (
+                        <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
+                          <Link
+                            href={l.href}
+                            className={`nav-link-portal ${active ? "active" : ""} pr-8 ${
+                              showFeel ? "!text-rose-700" : ""
+                            }`}
+                            title={showFeel ? `${l.label} · ${feelBadge} new` : l.label}
+                          >
+                            <span className="relative shrink-0">
+                              <Icon className="h-[18px] w-[18px]" />
+                              {badge && (
+                                <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-0.5 text-[8px] font-bold text-white">
+                                  {badge}
+                                </span>
+                              )}
+                            </span>
+                            <span className="truncate">{l.label}</span>
+                            {badge && (
+                              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                                {badge}
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                togglePin(l.href);
+                              }}
+                              className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
+                              title={isItemPinned ? "Unpin" : "Pin to top"}
+                            >
+                              {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
+                            </button>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
-            )}
-            <ul className="space-y-1">
-              {(collapsed ? PORTAL_LINKS : otherLinks).map((l) => {
-                const Icon = l.icon;
-                const active = isLinkActive(pathname, l.href);
-                const showFeel = l.href === "/portal/feel" && feelBadge > 0;
-                const badge = showFeel ? formatBadgeCount(feelBadge) : "";
-                const isItemPinned = isPinned(l.href);
-                return (
-                  <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
-                    <Link
-                      href={l.href}
-                      className={`nav-link-portal ${active ? "active" : ""} ${collapsed ? "justify-center px-2" : "pr-8"} ${
-                        showFeel ? "!text-rose-700" : ""
-                      }`}
-                      title={
-                        collapsed
-                          ? showFeel
-                            ? `${l.label} · ${feelBadge} new`
-                            : l.label
-                          : undefined
-                      }
-                    >
-                      <span className="relative shrink-0">
-                        <Icon className="h-[18px] w-[18px]" />
-                        {collapsed && badge && (
-                          <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-0.5 text-[8px] font-bold text-white">
-                            {badge}
-                          </span>
-                        )}
-                      </span>
-                      {!collapsed && <span className="truncate">{l.label}</span>}
-                      {!collapsed && badge && (
-                        <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
-                          {badge}
-                        </span>
-                      )}
-                      {!collapsed && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            togglePin(l.href);
-                          }}
-                          className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
-                          title={isItemPinned ? "Unpin" : "Pin to top"}
-                        >
-                          {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
-                        </button>
-                      )}
-                    </Link>
-                    {collapsed && (
-                      <span className="tooltip-right hidden lg:block">
-                        {showFeel ? `${l.label} · ${feelBadge} new` : l.label}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+            );
+          })}
         </nav>
 
         <div className="border-t border-[#e3ebe6] p-3">
