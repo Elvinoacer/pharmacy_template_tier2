@@ -10,6 +10,7 @@ import {
   addTimelineEvent,
   AuthError,
 } from "@/app/lib/auth";
+import { validateCsrfToken } from "@/app/lib/csrf";
 import { prisma } from "@/app/lib/db";
 import {
   updateRefillStatus,
@@ -53,6 +54,14 @@ async function staff() {
 
 export async function adminUpdateRefillAction(formData: FormData) {
   const user = await staff();
+  // Validate CSRF token for form submissions
+  const csrfToken = String(formData.get("csrfToken") || "");
+  try {
+    await validateCsrfToken(csrfToken);
+  } catch {
+    throw new Error("Invalid request. Please refresh and try again.");
+  }
+  
   const id = String(formData.get("id") || "");
   const status = String(formData.get("status") || "") as RefillStatus;
   try {

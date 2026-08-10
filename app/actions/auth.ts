@@ -5,6 +5,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { checkRateLimit } from "@/app/lib/rate-limit";
 import { getRequestMeta } from "@/app/lib/request-meta";
 import { emailVerificationBody, passwordResetBody, sendDelivery } from "@/app/lib/services/delivery";
+import { validateCsrfToken } from "@/app/lib/csrf";
 import {
   AuthError,
   createEmailVerification,
@@ -28,6 +29,14 @@ export async function registerAction(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
+  // Validate CSRF token for form submissions
+  const csrfToken = String(formData.get("csrfToken") || "");
+  try {
+    await validateCsrfToken(csrfToken);
+  } catch {
+    return { error: "Invalid request. Please refresh and try again." };
+  }
+  
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
   const fullName = String(formData.get("fullName") || "").trim();
@@ -89,6 +98,14 @@ export async function loginAction(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
+  // Validate CSRF token for form submissions
+  const csrfToken = String(formData.get("csrfToken") || "");
+  try {
+    await validateCsrfToken(csrfToken);
+  } catch {
+    return { error: "Invalid request. Please refresh and try again." };
+  }
+  
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
   const next = String(formData.get("next") || "").trim();
@@ -136,6 +153,14 @@ export async function forgotPasswordAction(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
+  // Validate CSRF token for form submissions
+  const csrfToken = String(formData.get("csrfToken") || "");
+  try {
+    await validateCsrfToken(csrfToken);
+  } catch {
+    return { error: "Invalid request. Please refresh and try again." };
+  }
+  
   const email = String(formData.get("email") || "").trim();
   if (!email) return { error: "Email is required." };
 
@@ -170,6 +195,14 @@ export async function resetPasswordAction(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
+  // Validate CSRF token for form submissions
+  const csrfToken = String(formData.get("csrfToken") || "");
+  try {
+    await validateCsrfToken(csrfToken);
+  } catch {
+    return { error: "Invalid request. Please refresh and try again." };
+  }
+  
   const token = String(formData.get("token") || "");
   const password = String(formData.get("password") || "");
   const confirm = String(formData.get("confirm") || "");
