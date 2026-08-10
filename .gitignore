@@ -1,10 +1,4 @@
-# Next.js build output & TypeScript build info
-.next/
-*.tsbuildinfo
-
-# Prisma generated client if output in app/generated
-# app/generated/prisma/
-
+```
 # Compiled and build artifacts
 *.pyc
 __pycache__/
@@ -15,28 +9,31 @@ build/
 target/
 
 # Dependencies
-node_modules/
 .venv/
 venv/
-.env
-.env.local
-.env.*
+node_modules/
+.mypy_cache/
+.pytest_cache/
+.coverage
+coverage/
+htmlcov/
 
 # Logs and temp files
 *.log
 *.tmp
 *.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*
 
 # Editors
 .vscode/
 .idea/
 
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# OS
+# System files
 .DS_Store
 Thumbs.db
 
@@ -63,3 +60,4 @@ Thumbs.db
 *.tar.bz2
 *.tar.xz
 *.tar.zst
+```
