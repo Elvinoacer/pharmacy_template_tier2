@@ -54,10 +54,10 @@ export const metadata: Metadata = {
     description: pharmacy.description,
     images: [
       {
-        url: "/images/gallery/welcoming_retail_floor.webp",
+        url: "/images/og-preview.jpg",
         width: 1200,
-        height: 630,
-        alt: `${pharmacy.name} interior`,
+        height: 675,
+        alt: `${pharmacy.name} — ${pharmacy.tagline}`,
       },
     ],
   },
@@ -65,6 +65,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: pharmacy.name,
     description: pharmacy.description,
+    images: ["/images/og-preview.jpg"],
   },
   robots: {
     index: true,
