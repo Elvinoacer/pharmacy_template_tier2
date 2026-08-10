@@ -10,8 +10,7 @@ export default function JsonLd() {
     url: pharmacy.siteUrl,
     telephone: pharmacy.phone,
     email: pharmacy.email,
-    image:
-      "/images/gallery/welcoming_retail_floor.webp",
+    image: "/images/og-preview.jpg",
     address: {
       "@type": "PostalAddress",
       streetAddress: pharmacy.address.street,
