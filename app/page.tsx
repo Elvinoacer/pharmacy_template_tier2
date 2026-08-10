@@ -8,7 +8,6 @@ import {
   articles,
   gallery,
   pharmacy,
-  testimonials,
   trustIndicators,
 } from "./lib/data";
 import { listPublicServices } from "./lib/services/pharmacy-services";
@@ -471,51 +470,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-{/* Testimonials */}
-      <section className="px-4 py-16 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Patient stories"
-              title="Trusted by neighbours across Austin"
-              align="center"
-            />
-          </Reveal>
-          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {testimonials.map((t, i) => (
-              <Reveal key={t.name} delay={i * 70}>
-                <figure className="card-lift group flex h-full flex-col rounded-3xl border border-white/70 bg-white/85 p-6 shadow-sm backdrop-blur hover:border-teal-200/60 hover:bg-white">
-                  <div className="mb-3 flex gap-0.5 text-amber-400" aria-label={`${t.rating} out of 5 stars`}>
-                    {Array.from({ length: t.rating }).map((_, si) => (
-                      <svg key={si} width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="transition-transform duration-300" style={{ transitionDelay: `${si * 40 + i * 70}ms` }}>
-                        <path d="M12 2l2.4 7.2H22l-6 4.8 2.3 7.2L12 16.8 5.7 21.2 8 14 2 9.2h7.6L12 2z" />
-                      </svg>
-                    ))}
-                  </div>
-                  <blockquote className="flex-1 text-sm leading-relaxed text-[#3d4f46]">
-                    &ldquo;{t.quote}&rdquo;
-                  </blockquote>
-                  <figcaption className="mt-5 flex items-center gap-3 border-t border-teal-900/5 pt-4">
-                    <Image
-                      src={t.avatar}
-                      alt=""
-                      width={40}
-                      height={40}
-                      className="h-10 w-10 rounded-full object-cover ring-2 ring-teal-100/40"
-                    />
-                    <div>
-                      <p className="text-sm font-semibold text-[#0c1a14]">{t.name}</p>
-                      <p className="text-xs text-[#5a6b62]">{t.role}</p>
-                    </div>
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Health tips */}
+{/* Health tips */}
       <section className="px-4 py-12 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-6xl">
           <Reveal>

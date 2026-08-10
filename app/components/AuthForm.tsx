@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
 import type { AuthActionState } from "@/app/actions/auth";
@@ -37,6 +37,39 @@ export default function AuthForm({
   ],
 }: Props) {
   const [state, formAction, pending] = useActionState(action, {} as AuthActionState);
+  // Auth server actions validate a double-submit CSRF token. Cookies can only
+  // be set from a Route Handler / Server Action, so we fetch the token here.
+  const [csrfToken, setCsrfToken] = useState("");
+  const [csrfError, setCsrfError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/csrf", {
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error(`CSRF endpoint returned ${res.status}`);
+        const data = (await res.json()) as { token?: string };
+        if (!data.token) throw new Error("CSRF token missing from response");
+        if (!cancelled) {
+          setCsrfToken(data.token);
+          setCsrfError(null);
+        }
+      } catch (e) {
+        console.error("[AuthForm] CSRF bootstrap failed", e);
+        if (!cancelled) {
+          setCsrfError("Could not prepare a secure session. Please refresh the page.");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const canSubmit = Boolean(csrfToken) && !pending;
 
   return (
     <div className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 shadow-[0_24px_80px_rgba(8,40,32,0.12)] backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr]">
@@ -147,17 +180,18 @@ export default function AuthForm({
         </div>
 
         <form action={formAction} className="space-y-4">
+          <input type="hidden" name="csrfToken" value={csrfToken} />
           {hiddenFields &&
             Object.entries(hiddenFields).map(([k, v]) => (
               <input key={k} type="hidden" name={k} value={v} />
             ))}
 
-          {(state?.error || initialError) && (
+          {(state?.error || initialError || csrfError) && (
             <div
               role="alert"
               className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
             >
-              {state?.error || initialError}
+              {state?.error || initialError || csrfError}
             </div>
           )}
           {state?.success && (
@@ -173,10 +207,10 @@ export default function AuthForm({
 
           <button
             type="submit"
-            disabled={pending}
+            disabled={!canSubmit}
             className="btn-primary w-full !py-3.5 disabled:opacity-60"
           >
-            {pending ? "Please wait…" : submitLabel}
+            {pending ? "Please wait…" : !csrfToken ? "Preparing secure form…" : submitLabel}
           </button>
 
           {showGoogleAuth && (
