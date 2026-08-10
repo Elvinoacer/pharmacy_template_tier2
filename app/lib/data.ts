@@ -44,7 +44,7 @@ export const pharmacy = {
     "Most major plans",
   ],
   certifications: ["Licensed Texas Pharmacy", "NABP Accredited", "HIPAA Compliant", "Immunization Certified"],
-  siteUrl: "https://aetherpharmacy.com",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://pharmacy-template-tier2.vercel.app",
 };
 
 export const team = [

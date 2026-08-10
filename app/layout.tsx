@@ -57,6 +57,7 @@ export const metadata: Metadata = {
         url: "/images/og-preview.jpg",
         width: 1200,
         height: 675,
+        type: "image/jpeg",
         alt: `${pharmacy.name} — ${pharmacy.tagline}`,
       },
     ],
