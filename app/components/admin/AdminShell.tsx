@@ -86,6 +86,7 @@ export const ADMIN_LINKS = [
   { href: "/admin/knowledge", label: "AI Knowledge", icon: BookOpen, group: "ai" },
   { href: "/admin/templates", label: "Templates", icon: FileText, group: "content" },
   { href: "/admin/medications", label: "Medications", icon: Pill, group: "clinical" },
+  { href: "/admin/dispensing", label: "Dispensing Register", icon: ClipboardList, group: "clinical" },
   { href: "/admin/services", label: "Services", icon: Stethoscope, group: "clinical" },
   { href: "/admin/inventory", label: "Inventory health", icon: Package, group: "operations" },
   { href: "/admin/orders", label: "Orders & Revenue", icon: BarChart3, group: "orders" },

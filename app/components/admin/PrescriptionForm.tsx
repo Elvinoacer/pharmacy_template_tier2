@@ -36,6 +36,8 @@ import {
   type FoodCondition,
 } from "@/app/lib/medication-schedule-shared";
 import { localTodayStr, PROJECT_TIMEZONE } from "@/app/lib/time";
+import { ClinicalSafetyAlert } from "@/app/components/admin/ClinicalSafetyAlert";
+import type { ClinicalSafetyReport } from "@/app/lib/services/clinical-safety";
 
 /**
  * Prescription creation / edit form.
@@ -297,6 +299,43 @@ export default function PrescriptionForm({
   const [showLegacyConfirm, setShowLegacyConfirm] = useState(
     Boolean(initial?.schedule && isEdit && initial.schedule.length > 0),
   );
+
+  const [clinicalReports, setClinicalReports] = useState<Record<string, ClinicalSafetyReport>>({});
+  const [clinicalLoading, setClinicalLoading] = useState<Record<string, boolean>>({});
+
+  // Live real-time clinical screening across drugs & customer history
+  useEffect(() => {
+    drugs.forEach((drug) => {
+      if (!drug.medicationId) return;
+      const concurrentMedicationIds = drugs
+        .filter((d) => d.key !== drug.key && d.medicationId)
+        .map((d) => d.medicationId);
+
+      setClinicalLoading((prev) => ({ ...prev, [drug.key]: true }));
+
+      fetch("/api/admin/clinical-check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          medicationId: drug.medicationId,
+          customerId: customerId || undefined,
+          dosage: drug.dosage || undefined,
+          unitsPerDose: Number(drug.unitsPerDose) || 1,
+          concurrentMedicationIds,
+        }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.ok && data.report) {
+            setClinicalReports((prev) => ({ ...prev, [drug.key]: data.report }));
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          setClinicalLoading((prev) => ({ ...prev, [drug.key]: false }));
+        });
+    });
+  }, [customerId, drugs.map((d) => `${d.key}:${d.medicationId}:${d.dosage}:${d.unitsPerDose}`).join("|")]);
 
   useEffect(() => {
     if (state?.success) {
@@ -638,6 +677,17 @@ export default function PrescriptionForm({
                 </div>
               </div>
 
+              {/* Real-time Clinical Safety screening & Generic Alternatives */}
+              {drug.medicationId && (
+                <div className="mt-3">
+                  <ClinicalSafetyAlert
+                    report={clinicalReports[drug.key] || null}
+                    loading={clinicalLoading[drug.key] || false}
+                    onSelectAlternative={(alt) => onMedicationSelected(drug.key, alt as any)}
+                  />
+                </div>
+              )}
+
               {/* Identity / strength */}
               <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
@@ -890,7 +940,7 @@ export default function PrescriptionForm({
               </div>
 
               {/* Supply row */}
-              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <FieldLabel
                     optional
@@ -966,6 +1016,26 @@ export default function PrescriptionForm({
                       )}
                     </div>
                   )}
+                </div>
+                <div>
+                  <FieldLabel optional hint="dispensing pack unit">
+                    Unit
+                  </FieldLabel>
+                  <select
+                    value={drug.billingUnit || "UNIT"}
+                    onChange={(e) => updateDrug(drug.key, { billingUnit: e.target.value })}
+                    className="input-admin"
+                  >
+                    <option value="TABLET">Tablets</option>
+                    <option value="CAPSULE">Capsules</option>
+                    <option value="BOTTLE">Bottles</option>
+                    <option value="STRIP">Strips</option>
+                    <option value="PACK">Packs</option>
+                    <option value="BOX">Boxes</option>
+                    <option value="AMPOULE">Ampoules</option>
+                    <option value="ML">mL</option>
+                    <option value="UNIT">Units</option>
+                  </select>
                 </div>
                 <div>
                   <FieldLabel optional>Days supply</FieldLabel>

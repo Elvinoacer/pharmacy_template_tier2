@@ -14,9 +14,14 @@ import {
   Check,
   Save,
   FileText,
+  Printer,
+  Lock,
 } from "lucide-react";
 import { CustomerPicker } from "@/app/components/CustomerPicker";
 import { MpesaStkPanel } from "@/app/components/payments/MpesaStkPanel";
+import { ClinicalSafetyAlert } from "@/app/components/admin/ClinicalSafetyAlert";
+import { ReceiptModal } from "@/app/components/admin/ReceiptModal";
+import type { ClinicalSafetyReport } from "@/app/lib/services/clinical-safety";
 
 type Medication = {
   id: string;
@@ -47,6 +52,7 @@ export default function OrderForm({
   const [customerId, setCustomerId] = useState("");
   const [medicationId, setMedicationId] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [billingUnit, setBillingUnit] = useState("UNIT");
   const [couponCode, setCouponCode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "daraja" | "card">("cash");
   const [createRx, setCreateRx] = useState(false);
@@ -57,14 +63,50 @@ export default function OrderForm({
     phone: string;
   } | null>(null);
 
+  // Clinical safety & receipt states
+  const [clinicalReport, setClinicalReport] = useState<ClinicalSafetyReport | null>(null);
+  const [clinicalLoading, setClinicalLoading] = useState(false);
+  const [lastCreatedOrderId, setLastCreatedOrderId] = useState<string | null>(null);
+  const [receiptModalOpen, setReceiptModalOpen] = useState(false);
+
   const selected = medications.find((m) => m.id === medicationId);
   const total = selected ? selected.price * quantity : 0;
 
   void _customers;
 
+  // Real-time clinical safety screening
+  useEffect(() => {
+    if (!medicationId) {
+      setClinicalReport(null);
+      return;
+    }
+
+    setClinicalLoading(true);
+    fetch("/api/admin/clinical-check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        medicationId,
+        customerId: customerId || undefined,
+        quantity,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok && data.report) {
+          setClinicalReport(data.report);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setClinicalLoading(false));
+  }, [medicationId, customerId, quantity]);
+
   useEffect(() => {
     if (state?.success) {
       toast.success(state.success);
+      if (state.orderId) {
+        setLastCreatedOrderId(state.orderId);
+      }
       if (state.startStk && state.orderId) {
         setStkOrder({
           orderId: state.orderId,
@@ -79,6 +121,7 @@ export default function OrderForm({
         setCreateRx(false);
         setAutoDispatch(true);
         setMpesaPhone("");
+        setClinicalReport(null);
       }
     }
     if (state?.error) toast.error(state.error);
@@ -107,7 +150,8 @@ export default function OrderForm({
                   ? "Paid & dispatched"
                   : "Paid — held for later dispatch",
               );
-              setTimeout(() => window.location.reload(), 800);
+              setLastCreatedOrderId(stkOrder.orderId);
+              setReceiptModalOpen(true);
             }}
             onClose={() => {
               setStkOrder(null);
@@ -128,15 +172,32 @@ export default function OrderForm({
             <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
           </div>
         )}
+
         {state?.success && !stkOrder && (
-          <div className="admin-alert-success">
-            <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.success}</span>
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-900">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-emerald-600" />
+                <span className="font-bold">{state.success}</span>
+              </div>
+              {lastCreatedOrderId && (
+                <button
+                  type="button"
+                  onClick={() => setReceiptModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-800 shadow-sm"
+                >
+                  <Printer className="h-3.5 w-3.5" />
+                  <span>Print / Send Receipt</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 
         <input type="hidden" name="source" value="counter" />
         <input type="hidden" name="customerId" value={customerId} />
         <input type="hidden" name="paymentMethod" value={paymentMethod} />
+        <input type="hidden" name="billingUnit" value={billingUnit} />
         <input type="hidden" name="autoDispatch" value={autoDispatch ? "on" : "off"} />
         <input
           type="hidden"
@@ -219,7 +280,57 @@ export default function OrderForm({
           </select>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        {/* Real-time Clinical Safety & Generic Alternatives */}
+        {medicationId && (
+          <div className="rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] p-3">
+            <ClinicalSafetyAlert
+              report={clinicalReport}
+              loading={clinicalLoading}
+              onSelectAlternative={(alt) => setMedicationId(alt.id)}
+            />
+          </div>
+        )}
+
+        {/* Controlled Substance Regulatory Compliance Fields */}
+        {clinicalReport?.isControlledDrug && (
+          <div className="rounded-xl border border-purple-500/40 bg-purple-50/70 p-4 space-y-3">
+            <div className="flex items-center gap-1.5 font-bold text-xs text-purple-900">
+              <Lock className="h-3.5 w-3.5 text-purple-700" />
+              <span>Controlled Drug Dispensing Compliance (PPB Kenya)</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <label className="label-admin text-[11px]">Prescriber Name *</label>
+                <input
+                  name="prescriber"
+                  required
+                  placeholder="Dr. John Doe"
+                  className="input-admin text-xs"
+                />
+              </div>
+              <div>
+                <label className="label-admin text-[11px]">Prescriber License / KMPDC # *</label>
+                <input
+                  name="prescriberLicense"
+                  required
+                  placeholder="KMPDC-REG-1234"
+                  className="input-admin text-xs"
+                />
+              </div>
+              <div>
+                <label className="label-admin text-[11px]">Patient National ID / Passport *</label>
+                <input
+                  name="patientNationalId"
+                  required
+                  placeholder="12345678"
+                  className="input-admin text-xs"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="label-admin">Quantity *</label>
             <div className="relative">
@@ -235,6 +346,26 @@ export default function OrderForm({
               />
             </div>
           </div>
+
+          <div>
+            <label className="label-admin">Dispensing Unit</label>
+            <select
+              value={billingUnit}
+              onChange={(e) => setBillingUnit(e.target.value)}
+              className="input-admin"
+            >
+              <option value="TABLET">Tablets</option>
+              <option value="CAPSULE">Capsules</option>
+              <option value="BOTTLE">Bottles</option>
+              <option value="STRIP">Strips</option>
+              <option value="PACK">Packs</option>
+              <option value="BOX">Boxes</option>
+              <option value="AMPOULE">Ampoules</option>
+              <option value="ML">mL</option>
+              <option value="UNIT">Units</option>
+            </select>
+          </div>
+
           <div>
             <label className="label-admin">Coupon code (optional)</label>
             <div className="relative">
@@ -251,10 +382,14 @@ export default function OrderForm({
         </div>
 
         <div>
-          <label className="label-admin">Dosage (optional)</label>
+          <label className="label-admin">Dosage & Administration Instructions</label>
           <div className="relative">
             <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input name="dosage" placeholder="1 tablet twice daily" className="input-admin pl-9" />
+            <input
+              name="dosage"
+              placeholder="e.g. 1 tablet twice daily with food for 5 days"
+              className="input-admin pl-9"
+            />
           </div>
         </div>
 
@@ -266,12 +401,11 @@ export default function OrderForm({
             name="dispenserNote"
             rows={2}
             required={Boolean(selected?.prescriptionRequired)}
-            placeholder="Condition observed, counselling given, validity window…"
+            placeholder="Condition observed, counselling given, batch notes…"
             className="input-admin resize-y"
           />
           <p className="mt-1 text-[10px] admin-soft">
-            Clinical note from the dispenser — stored separately from free-text order notes so it
-            is never overwritten. Required before dispatch for Rx-required meds.
+            Clinical note from the dispenser — recorded in the dispensing register and printed on the patient receipt.
           </p>
         </div>
 
@@ -347,10 +481,9 @@ export default function OrderForm({
             className="mt-0.5 h-3.5 w-3.5 rounded"
           />
           <span>
-            <span className="font-semibold admin-text">Mark as dispatched on payment</span>
+            <span className="font-semibold admin-text">Mark as dispensed / dispatched immediately</span>
             <span className="mt-0.5 block text-[10px] admin-soft">
-              On for OTC counter sales (customer leaves with meds). Uncheck for paid reservations /
-              remote holds that you will dispatch later.
+              Checked for counter sales (patient receives medicines right now). Uncheck for remote orders held for later collection.
             </span>
           </span>
         </label>
@@ -379,7 +512,7 @@ export default function OrderForm({
           <p className="mt-1 text-[10px] admin-soft">
             {paymentMethod === "cash"
               ? autoDispatch
-                ? "Cash + dispatched immediately — counted in revenue."
+                ? "Cash + dispensed immediately — added to Dispensing Register and revenue."
                 : "Cash paid, held until you mark dispatched."
               : paymentMethod === "daraja"
                 ? "Creates the order, then opens STK so the customer can PIN-confirm."
@@ -394,16 +527,23 @@ export default function OrderForm({
         >
           {pending ? (
             <>
-              <span className="typing-dot" /> Recording…
+              <span className="typing-dot" /> Recording & Dispensing…
             </>
           ) : (
             <>
               <Save className="h-4 w-4" />{" "}
-              {paymentMethod === "daraja" ? "Create order & prepare STK" : "Record sale"}
+              {paymentMethod === "daraja" ? "Create order & prepare STK" : "Record Dispense & Sale"}
             </>
           )}
         </button>
       </form>
+
+      {/* ── Printable Official Receipt Modal ── */}
+      <ReceiptModal
+        orderId={lastCreatedOrderId}
+        isOpen={receiptModalOpen}
+        onClose={() => setReceiptModalOpen(false)}
+      />
     </div>
   );
 }

@@ -36,6 +36,9 @@ import {
 } from "lucide-react";
 import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
 import DispatchPrescriptionForm from "@/app/components/admin/DispatchPrescriptionForm";
+import { PrescriptionDetailActions } from "@/app/components/admin/PrescriptionDetailActions";
+import { screenClinicalSafety } from "@/app/lib/services/clinical-safety";
+import { ClinicalSafetyAlert } from "@/app/components/admin/ClinicalSafetyAlert";
 
 export const metadata = { title: "Prescription Analytics & Detail" };
 
@@ -266,6 +269,14 @@ export default async function PrescriptionDetailPage({
 
   const analysis = await analyzeAdherenceWithAi(analysisInput);
 
+  const clinicalReport = await screenClinicalSafety({
+    medicationId: prescription.medicationId,
+    customerId: prescription.customerId,
+    dosage: prescription.dosage,
+    schedule: prescription.schedule,
+    quantity: prescription.quantity,
+  });
+
   return (
     <AdminShell
       user={user}
@@ -297,6 +308,13 @@ export default async function PrescriptionDetailPage({
               <Pill className="h-3.5 w-3.5" /> Catalogue
             </Link>
           )}
+
+          <PrescriptionDetailActions
+            prescriptionId={prescription.id}
+            medicineName={prescription.medicineName}
+            medicationId={prescription.medicationId}
+            orderId={fillHistory[0]?.orderId || null}
+          />
         </div>
 
         <div className="flex flex-wrap items-start gap-2 sm:items-center">
@@ -326,6 +344,11 @@ export default async function PrescriptionDetailPage({
             </ConfirmSubmitButton>
           </form>
         </div>
+      </div>
+
+      {/* Real-time Clinical Safety & Interaction Screen */}
+      <div className="mb-5">
+        <ClinicalSafetyAlert report={clinicalReport} />
       </div>
 
       {/* Priority 1: KPI strip */}
