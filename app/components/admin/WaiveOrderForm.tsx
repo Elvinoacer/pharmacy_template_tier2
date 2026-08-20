@@ -10,6 +10,8 @@ import {
 import ConfirmSubmitButton from "@/app/components/admin/ConfirmSubmitButton";
 import { toast } from "@/app/components/Toaster";
 import { MpesaStkPanel } from "@/app/components/payments/MpesaStkPanel";
+import { ReceiptModal } from "@/app/components/admin/ReceiptModal";
+import { Printer } from "lucide-react";
 
 export function OrderSettleActions({
   orderId,
@@ -41,6 +43,7 @@ export function OrderSettleActions({
   const [until, setUntil] = useState("");
   const [dispenserNote, setDispenserNote] = useState(existingDispenserNote || "");
   const [busy, setBusy] = useState(false);
+  const [receiptOpen, setReceiptOpen] = useState(false);
 
   async function markPaid(autoDispatch: boolean) {
     setBusy(true);
@@ -277,6 +280,24 @@ export function OrderSettleActions({
           </ConfirmSubmitButton>
         </form>
       )}
+
+      {/* Official Receipt & Dispensing Slip Modal */}
+      <div className="pt-1">
+        <button
+          type="button"
+          onClick={() => setReceiptOpen(true)}
+          className="inline-flex items-center gap-1 rounded bg-[var(--admin-accent-soft)] px-2 py-0.5 text-[10px] font-bold admin-accent-text hover:brightness-110"
+        >
+          <Printer className="h-2.5 w-2.5" />
+          <span>Receipt</span>
+        </button>
+      </div>
+
+      <ReceiptModal
+        orderId={orderId}
+        isOpen={receiptOpen}
+        onClose={() => setReceiptOpen(false)}
+      />
     </div>
   );
 }

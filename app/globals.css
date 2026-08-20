@@ -1711,3 +1711,32 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
  .modal-card>div:first-child,.modal-card>div:last-child{border-color:#374151;}
  .modal-card button:hover{background:#1f2937;color:#fff;}
 }
+
+/* ============================================================
+   Pharmacy Receipt & Container Label Printing (POS 80mm & A4)
+   ============================================================ */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .receipt-print-area,
+  .receipt-print-area * {
+    visibility: visible;
+  }
+  .receipt-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
