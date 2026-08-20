@@ -350,6 +350,27 @@ export type EnumPrescriptionStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel> | $Enums.PrescriptionStatus
 }
 
+export type EnumPrescriptionIntakeChannelNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionIntakeChannel | Prisma.EnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PrescriptionIntakeChannel[] | Prisma.ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PrescriptionIntakeChannel[] | Prisma.ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPrescriptionIntakeChannelNullableFilter<$PrismaModel> | $Enums.PrescriptionIntakeChannel | null
+}
+
+export type EnumPrescriptionLifecycleStatusNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionLifecycleStatus | Prisma.EnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PrescriptionLifecycleStatus[] | Prisma.ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PrescriptionLifecycleStatus[] | Prisma.ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPrescriptionLifecycleStatusNullableFilter<$PrismaModel> | $Enums.PrescriptionLifecycleStatus | null
+}
+
+export type EnumClarificationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClarificationStatus | Prisma.EnumClarificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ClarificationStatus[] | Prisma.ListEnumClarificationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClarificationStatus[] | Prisma.ListEnumClarificationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClarificationStatusFilter<$PrismaModel> | $Enums.ClarificationStatus
+}
+
 export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
@@ -400,6 +421,36 @@ export type EnumPrescriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
+}
+
+export type EnumPrescriptionIntakeChannelNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionIntakeChannel | Prisma.EnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PrescriptionIntakeChannel[] | Prisma.ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PrescriptionIntakeChannel[] | Prisma.ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPrescriptionIntakeChannelNullableWithAggregatesFilter<$PrismaModel> | $Enums.PrescriptionIntakeChannel | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrescriptionIntakeChannelNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrescriptionIntakeChannelNullableFilter<$PrismaModel>
+}
+
+export type EnumPrescriptionLifecycleStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionLifecycleStatus | Prisma.EnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PrescriptionLifecycleStatus[] | Prisma.ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PrescriptionLifecycleStatus[] | Prisma.ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPrescriptionLifecycleStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.PrescriptionLifecycleStatus | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrescriptionLifecycleStatusNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrescriptionLifecycleStatusNullableFilter<$PrismaModel>
+}
+
+export type EnumClarificationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClarificationStatus | Prisma.EnumClarificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ClarificationStatus[] | Prisma.ListEnumClarificationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClarificationStatus[] | Prisma.ListEnumClarificationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClarificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ClarificationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClarificationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClarificationStatusFilter<$PrismaModel>
 }
 
 export type EnumPickupPreferenceFilter<$PrismaModel = never> = {
@@ -1521,6 +1572,27 @@ export type NestedEnumPrescriptionStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel> | $Enums.PrescriptionStatus
 }
 
+export type NestedEnumPrescriptionIntakeChannelNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionIntakeChannel | Prisma.EnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PrescriptionIntakeChannel[] | Prisma.ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PrescriptionIntakeChannel[] | Prisma.ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPrescriptionIntakeChannelNullableFilter<$PrismaModel> | $Enums.PrescriptionIntakeChannel | null
+}
+
+export type NestedEnumPrescriptionLifecycleStatusNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionLifecycleStatus | Prisma.EnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PrescriptionLifecycleStatus[] | Prisma.ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PrescriptionLifecycleStatus[] | Prisma.ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPrescriptionLifecycleStatusNullableFilter<$PrismaModel> | $Enums.PrescriptionLifecycleStatus | null
+}
+
+export type NestedEnumClarificationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClarificationStatus | Prisma.EnumClarificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ClarificationStatus[] | Prisma.ListEnumClarificationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClarificationStatus[] | Prisma.ListEnumClarificationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClarificationStatusFilter<$PrismaModel> | $Enums.ClarificationStatus
+}
+
 export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
@@ -1582,6 +1654,36 @@ export type NestedEnumPrescriptionStatusWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumPrescriptionIntakeChannelNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionIntakeChannel | Prisma.EnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PrescriptionIntakeChannel[] | Prisma.ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PrescriptionIntakeChannel[] | Prisma.ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPrescriptionIntakeChannelNullableWithAggregatesFilter<$PrismaModel> | $Enums.PrescriptionIntakeChannel | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrescriptionIntakeChannelNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrescriptionIntakeChannelNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumPrescriptionLifecycleStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionLifecycleStatus | Prisma.EnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PrescriptionLifecycleStatus[] | Prisma.ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PrescriptionLifecycleStatus[] | Prisma.ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPrescriptionLifecycleStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.PrescriptionLifecycleStatus | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrescriptionLifecycleStatusNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrescriptionLifecycleStatusNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumClarificationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClarificationStatus | Prisma.EnumClarificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ClarificationStatus[] | Prisma.ListEnumClarificationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClarificationStatus[] | Prisma.ListEnumClarificationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClarificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ClarificationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClarificationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClarificationStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumPickupPreferenceFilter<$PrismaModel = never> = {

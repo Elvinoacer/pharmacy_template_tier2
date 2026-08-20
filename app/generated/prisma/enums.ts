@@ -67,6 +67,48 @@ export const PrescriptionStatus = {
 export type PrescriptionStatus = (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus]
 
 
+export const PrescriptionIntakeChannel = {
+  physical_paper: 'physical_paper',
+  whatsapp: 'whatsapp',
+  email: 'email',
+  patient_upload: 'patient_upload',
+  doctor_referral: 'doctor_referral',
+  hospital_system: 'hospital_system',
+  electronic_prescription: 'electronic_prescription',
+  phone_communication: 'phone_communication',
+  in_person_consultation: 'in_person_consultation'
+} as const
+
+export type PrescriptionIntakeChannel = (typeof PrescriptionIntakeChannel)[keyof typeof PrescriptionIntakeChannel]
+
+
+export const PrescriptionLifecycleStatus = {
+  received: 'received',
+  under_review: 'under_review',
+  approved: 'approved',
+  partially_fulfilled: 'partially_fulfilled',
+  ready: 'ready',
+  dispatched: 'dispatched',
+  completed: 'completed',
+  on_hold: 'on_hold',
+  rejected: 'rejected',
+  cancelled: 'cancelled'
+} as const
+
+export type PrescriptionLifecycleStatus = (typeof PrescriptionLifecycleStatus)[keyof typeof PrescriptionLifecycleStatus]
+
+
+export const ClarificationStatus = {
+  none: 'none',
+  needed: 'needed',
+  contacted: 'contacted',
+  clarified: 'clarified',
+  resolved: 'resolved'
+} as const
+
+export type ClarificationStatus = (typeof ClarificationStatus)[keyof typeof ClarificationStatus]
+
+
 export const RefillStatus = {
   submitted: 'submitted',
   under_review: 'under_review',

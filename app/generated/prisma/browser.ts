@@ -172,6 +172,11 @@ export type CustomerNote = Prisma.CustomerNoteModel
  */
 export type PrescriptionAdherence = Prisma.PrescriptionAdherenceModel
 /**
+ * Model PrescriptionClarificationLog
+ * 
+ */
+export type PrescriptionClarificationLog = Prisma.PrescriptionClarificationLogModel
+/**
  * Model MedicationSchedule
  * A scheduled dose slot for a prescription. Generated from the prescription's
  * dosage/frequency text (e.g. "1 tablet twice daily" → two slots: 08:00, 20:00).

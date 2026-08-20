@@ -52,6 +52,39 @@ enum PrescriptionStatus {
   discontinued
 }
 
+enum PrescriptionIntakeChannel {
+  physical_paper
+  whatsapp
+  email
+  patient_upload
+  doctor_referral
+  hospital_system
+  electronic_prescription
+  phone_communication
+  in_person_consultation
+}
+
+enum PrescriptionLifecycleStatus {
+  received
+  under_review
+  approved
+  partially_fulfilled
+  ready
+  dispatched
+  completed
+  on_hold
+  rejected
+  cancelled
+}
+
+enum ClarificationStatus {
+  none
+  needed
+  contacted
+  clarified
+  resolved
+}
+
 enum RefillStatus {
   submitted
   under_review
@@ -302,6 +335,8 @@ model User {
   refundApprover              Refund[]               @relation("RefundApprover")
   priceHistoryChanges         MedicationPriceHistory[] @relation("PriceHistoryChanger")
   cashierSessions             CashierSession[]      @relation("CashierSessionUser")
+  prescriptionsReviewed       Prescription[]        @relation("PrescriptionReviewer")
+  clarificationLogs           PrescriptionClarificationLog[] @relation("ClarificationStaff")
 
   @@map("users")
 }
@@ -493,6 +528,40 @@ model Prescription {
   /// Admin-set price the customer pays per refill (used by payment system).
   unitPrice        Decimal?           @db.Decimal(10, 2) @map("unit_price")
   status           PrescriptionStatus @default(active)
+  /// Structured intake arrival channel (paper, whatsapp, email, patient upload, referral, hospital, e-rx, phone, in-person).
+  intakeChannel    PrescriptionIntakeChannel? @default(in_person_consultation) @map("intake_channel")
+  /// Granular prescription lifecycle progression.
+  lifecycleStatus  PrescriptionLifecycleStatus? @default(received) @map("lifecycle_status")
+  /// Patient verification details.
+  patientVerified  Boolean            @default(false) @map("patient_verified")
+  patientVerifiedAt DateTime?         @map("patient_verified_at")
+  patientVerificationNotes String?    @map("patient_verification_notes")
+  /// Prescriber verification details.
+  prescriberLicense String?           @map("prescriber_license")
+  prescriberPhone   String?           @map("prescriber_phone")
+  prescriberEmail   String?           @map("prescriber_email")
+  prescriberFacility String?          @map("prescriber_facility")
+  prescriberVerified Boolean          @default(false) @map("prescriber_verified")
+  prescriberVerifiedAt DateTime?      @map("prescriber_verified_at")
+  /// Clinical clarity & Prescriber clarification tracking.
+  isUnclear        Boolean            @default(false) @map("is_unclear")
+  unclearReason    String?            @map("unclear_reason")
+  clarificationStatus ClarificationStatus @default(none) @map("clarification_status")
+  clarificationContactMethod String?  @map("clarification_contact_method")
+  clarificationNotes String?          @map("clarification_notes")
+  clarificationContactedAt DateTime?  @map("clarification_contacted_at")
+  clarificationResolvedAt DateTime?   @map("clarification_resolved_at")
+  /// Professional review & Pharmacist decision.
+  reviewedById     String?            @map("reviewed_by_id") @db.Uuid
+  reviewedAt       DateTime?          @map("reviewed_at")
+  reviewDecision   String?            @map("review_decision")
+  reviewNotes      String?            @map("review_notes")
+  rejectionReason  String?            @map("rejection_reason")
+  holdReason       String?            @map("hold_reason")
+  /// Scanned script, photo, PDF, or referral document URLs.
+  attachmentUrls   String[]           @default([]) @map("attachment_urls")
+  /// Linked commercial dispensing order (when converted).
+  dispensingOrderId String?           @map("dispensing_order_id") @db.Uuid
   notes            String?
   /// Optional link to a Medication catalogue row. When set, dispatching this
   /// prescription decrements the medication's stock by `quantity`.
@@ -504,19 +573,24 @@ model Prescription {
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
 
-  customer      CustomerProfile      @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  refillRequests RefillRequest[]
-  adherence     PrescriptionAdherence[]
-  medication    PharmacyInventory?   @relation(fields: [medicationId], references: [id], onDelete: SetNull)
-  dispatchedBy  User?                @relation("PrescriptionDispatcher", fields: [dispatchedById], references: [id], onDelete: SetNull)
-  doseSchedule  MedicationSchedule[]
-  doseLogs      DoseLog[]
-  escalations   AdherenceEscalation[]
+  customer         CustomerProfile       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  refillRequests   RefillRequest[]
+  adherence        PrescriptionAdherence[]
+  medication       PharmacyInventory?    @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+  dispatchedBy     User?                 @relation("PrescriptionDispatcher", fields: [dispatchedById], references: [id], onDelete: SetNull)
+  reviewedBy       User?                 @relation("PrescriptionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  dispensingOrder  Order?                @relation("PrescriptionDispensingOrder", fields: [dispensingOrderId], references: [id], onDelete: SetNull)
+  doseSchedule     MedicationSchedule[]
+  doseLogs         DoseLog[]
+  escalations      AdherenceEscalation[]
+  clarificationLogs PrescriptionClarificationLog[]
   /// Commerce ledger: one row per fill (audit §4 / §41.A).
-  fills         PrescriptionFill[]
+  fills            PrescriptionFill[]
 
   @@index([customerId])
   @@index([status])
+  @@index([lifecycleStatus])
+  @@index([intakeChannel])
   @@index([medicationId])
   @@map("prescriptions")
 }
@@ -957,6 +1031,25 @@ model PrescriptionAdherence {
   @@unique([prescriptionId, takenOn])
   @@index([customerId, takenOn])
   @@map("prescription_adherence")
+}
+
+model PrescriptionClarificationLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  prescriptionId String   @map("prescription_id") @db.Uuid
+  contactMethod  String   @map("contact_method") // phone | whatsapp | email | in_person | fax
+  contactedTo    String   @map("contacted_to") // Prescriber name / phone / clinic
+  inquiryDetails String   @map("inquiry_details") // Details of ambiguity / dosage / substitution
+  doctorResponse String?  @map("doctor_response") // Prescriber resolution
+  resolved       Boolean  @default(false)
+  staffId        String?  @map("staff_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  staff        User?        @relation("ClarificationStaff", fields: [staffId], references: [id], onDelete: SetNull)
+
+  @@index([prescriptionId])
+  @@index([createdAt(sort: Desc)])
+  @@map("prescription_clarification_logs")
 }
 
 // ── Per-dose medication schedule ──────────────────────────────
@@ -1472,6 +1565,8 @@ model Order {
   inventoryReservations InventoryReservation[]
   /// 1:0..1 fill row when this order paid for a prescription fill.
   prescriptionFill PrescriptionFill?
+  /// Prescriptions converted into this dispensing order.
+  dispensedPrescriptions Prescription[] @relation("PrescriptionDispensingOrder")
 
   @@index([customerId])
   @@index([status])

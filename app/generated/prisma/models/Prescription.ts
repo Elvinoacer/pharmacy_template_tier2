@@ -58,6 +58,31 @@ export type PrescriptionMinAggregateOutputType = {
   prescriber: string | null
   unitPrice: runtime.Decimal | null
   status: $Enums.PrescriptionStatus | null
+  intakeChannel: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified: boolean | null
+  patientVerifiedAt: Date | null
+  patientVerificationNotes: string | null
+  prescriberLicense: string | null
+  prescriberPhone: string | null
+  prescriberEmail: string | null
+  prescriberFacility: string | null
+  prescriberVerified: boolean | null
+  prescriberVerifiedAt: Date | null
+  isUnclear: boolean | null
+  unclearReason: string | null
+  clarificationStatus: $Enums.ClarificationStatus | null
+  clarificationContactMethod: string | null
+  clarificationNotes: string | null
+  clarificationContactedAt: Date | null
+  clarificationResolvedAt: Date | null
+  reviewedById: string | null
+  reviewedAt: Date | null
+  reviewDecision: string | null
+  reviewNotes: string | null
+  rejectionReason: string | null
+  holdReason: string | null
+  dispensingOrderId: string | null
   notes: string | null
   medicationId: string | null
   dispatchedAt: Date | null
@@ -84,6 +109,31 @@ export type PrescriptionMaxAggregateOutputType = {
   prescriber: string | null
   unitPrice: runtime.Decimal | null
   status: $Enums.PrescriptionStatus | null
+  intakeChannel: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified: boolean | null
+  patientVerifiedAt: Date | null
+  patientVerificationNotes: string | null
+  prescriberLicense: string | null
+  prescriberPhone: string | null
+  prescriberEmail: string | null
+  prescriberFacility: string | null
+  prescriberVerified: boolean | null
+  prescriberVerifiedAt: Date | null
+  isUnclear: boolean | null
+  unclearReason: string | null
+  clarificationStatus: $Enums.ClarificationStatus | null
+  clarificationContactMethod: string | null
+  clarificationNotes: string | null
+  clarificationContactedAt: Date | null
+  clarificationResolvedAt: Date | null
+  reviewedById: string | null
+  reviewedAt: Date | null
+  reviewDecision: string | null
+  reviewNotes: string | null
+  rejectionReason: string | null
+  holdReason: string | null
+  dispensingOrderId: string | null
   notes: string | null
   medicationId: string | null
   dispatchedAt: Date | null
@@ -110,6 +160,32 @@ export type PrescriptionCountAggregateOutputType = {
   prescriber: number
   unitPrice: number
   status: number
+  intakeChannel: number
+  lifecycleStatus: number
+  patientVerified: number
+  patientVerifiedAt: number
+  patientVerificationNotes: number
+  prescriberLicense: number
+  prescriberPhone: number
+  prescriberEmail: number
+  prescriberFacility: number
+  prescriberVerified: number
+  prescriberVerifiedAt: number
+  isUnclear: number
+  unclearReason: number
+  clarificationStatus: number
+  clarificationContactMethod: number
+  clarificationNotes: number
+  clarificationContactedAt: number
+  clarificationResolvedAt: number
+  reviewedById: number
+  reviewedAt: number
+  reviewDecision: number
+  reviewNotes: number
+  rejectionReason: number
+  holdReason: number
+  attachmentUrls: number
+  dispensingOrderId: number
   notes: number
   medicationId: number
   dispatchedAt: number
@@ -152,6 +228,31 @@ export type PrescriptionMinAggregateInputType = {
   prescriber?: true
   unitPrice?: true
   status?: true
+  intakeChannel?: true
+  lifecycleStatus?: true
+  patientVerified?: true
+  patientVerifiedAt?: true
+  patientVerificationNotes?: true
+  prescriberLicense?: true
+  prescriberPhone?: true
+  prescriberEmail?: true
+  prescriberFacility?: true
+  prescriberVerified?: true
+  prescriberVerifiedAt?: true
+  isUnclear?: true
+  unclearReason?: true
+  clarificationStatus?: true
+  clarificationContactMethod?: true
+  clarificationNotes?: true
+  clarificationContactedAt?: true
+  clarificationResolvedAt?: true
+  reviewedById?: true
+  reviewedAt?: true
+  reviewDecision?: true
+  reviewNotes?: true
+  rejectionReason?: true
+  holdReason?: true
+  dispensingOrderId?: true
   notes?: true
   medicationId?: true
   dispatchedAt?: true
@@ -178,6 +279,31 @@ export type PrescriptionMaxAggregateInputType = {
   prescriber?: true
   unitPrice?: true
   status?: true
+  intakeChannel?: true
+  lifecycleStatus?: true
+  patientVerified?: true
+  patientVerifiedAt?: true
+  patientVerificationNotes?: true
+  prescriberLicense?: true
+  prescriberPhone?: true
+  prescriberEmail?: true
+  prescriberFacility?: true
+  prescriberVerified?: true
+  prescriberVerifiedAt?: true
+  isUnclear?: true
+  unclearReason?: true
+  clarificationStatus?: true
+  clarificationContactMethod?: true
+  clarificationNotes?: true
+  clarificationContactedAt?: true
+  clarificationResolvedAt?: true
+  reviewedById?: true
+  reviewedAt?: true
+  reviewDecision?: true
+  reviewNotes?: true
+  rejectionReason?: true
+  holdReason?: true
+  dispensingOrderId?: true
   notes?: true
   medicationId?: true
   dispatchedAt?: true
@@ -204,6 +330,32 @@ export type PrescriptionCountAggregateInputType = {
   prescriber?: true
   unitPrice?: true
   status?: true
+  intakeChannel?: true
+  lifecycleStatus?: true
+  patientVerified?: true
+  patientVerifiedAt?: true
+  patientVerificationNotes?: true
+  prescriberLicense?: true
+  prescriberPhone?: true
+  prescriberEmail?: true
+  prescriberFacility?: true
+  prescriberVerified?: true
+  prescriberVerifiedAt?: true
+  isUnclear?: true
+  unclearReason?: true
+  clarificationStatus?: true
+  clarificationContactMethod?: true
+  clarificationNotes?: true
+  clarificationContactedAt?: true
+  clarificationResolvedAt?: true
+  reviewedById?: true
+  reviewedAt?: true
+  reviewDecision?: true
+  reviewNotes?: true
+  rejectionReason?: true
+  holdReason?: true
+  attachmentUrls?: true
+  dispensingOrderId?: true
   notes?: true
   medicationId?: true
   dispatchedAt?: true
@@ -317,6 +469,32 @@ export type PrescriptionGroupByOutputType = {
   prescriber: string | null
   unitPrice: runtime.Decimal | null
   status: $Enums.PrescriptionStatus
+  intakeChannel: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified: boolean
+  patientVerifiedAt: Date | null
+  patientVerificationNotes: string | null
+  prescriberLicense: string | null
+  prescriberPhone: string | null
+  prescriberEmail: string | null
+  prescriberFacility: string | null
+  prescriberVerified: boolean
+  prescriberVerifiedAt: Date | null
+  isUnclear: boolean
+  unclearReason: string | null
+  clarificationStatus: $Enums.ClarificationStatus
+  clarificationContactMethod: string | null
+  clarificationNotes: string | null
+  clarificationContactedAt: Date | null
+  clarificationResolvedAt: Date | null
+  reviewedById: string | null
+  reviewedAt: Date | null
+  reviewDecision: string | null
+  reviewNotes: string | null
+  rejectionReason: string | null
+  holdReason: string | null
+  attachmentUrls: string[]
+  dispensingOrderId: string | null
   notes: string | null
   medicationId: string | null
   dispatchedAt: Date | null
@@ -366,6 +544,32 @@ export type PrescriptionWhereInput = {
   prescriber?: Prisma.StringNullableFilter<"Prescription"> | string | null
   unitPrice?: Prisma.DecimalNullableFilter<"Prescription"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFilter<"Prescription"> | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.EnumPrescriptionIntakeChannelNullableFilter<"Prescription"> | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.EnumPrescriptionLifecycleStatusNullableFilter<"Prescription"> | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFilter<"Prescription"> | boolean
+  patientVerifiedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  patientVerificationNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberLicense?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberPhone?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberEmail?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberFacility?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberVerified?: Prisma.BoolFilter<"Prescription"> | boolean
+  prescriberVerifiedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  isUnclear?: Prisma.BoolFilter<"Prescription"> | boolean
+  unclearReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFilter<"Prescription"> | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationContactedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  clarificationResolvedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  reviewedById?: Prisma.UuidNullableFilter<"Prescription"> | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  reviewDecision?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  reviewNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  holdReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  attachmentUrls?: Prisma.StringNullableListFilter<"Prescription">
+  dispensingOrderId?: Prisma.UuidNullableFilter<"Prescription"> | string | null
   notes?: Prisma.StringNullableFilter<"Prescription"> | string | null
   medicationId?: Prisma.UuidNullableFilter<"Prescription"> | string | null
   dispatchedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
@@ -377,9 +581,12 @@ export type PrescriptionWhereInput = {
   adherence?: Prisma.PrescriptionAdherenceListRelationFilter
   medication?: Prisma.XOR<Prisma.PharmacyInventoryNullableScalarRelationFilter, Prisma.PharmacyInventoryWhereInput> | null
   dispatchedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  reviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  dispensingOrder?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
   doseSchedule?: Prisma.MedicationScheduleListRelationFilter
   doseLogs?: Prisma.DoseLogListRelationFilter
   escalations?: Prisma.AdherenceEscalationListRelationFilter
+  clarificationLogs?: Prisma.PrescriptionClarificationLogListRelationFilter
   fills?: Prisma.PrescriptionFillListRelationFilter
 }
 
@@ -401,6 +608,32 @@ export type PrescriptionOrderByWithRelationInput = {
   prescriber?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  intakeChannel?: Prisma.SortOrderInput | Prisma.SortOrder
+  lifecycleStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  patientVerified?: Prisma.SortOrder
+  patientVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  patientVerificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberLicense?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberFacility?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberVerified?: Prisma.SortOrder
+  prescriberVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isUnclear?: Prisma.SortOrder
+  unclearReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarificationStatus?: Prisma.SortOrder
+  clarificationContactMethod?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarificationContactedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarificationResolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewDecision?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  holdReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  attachmentUrls?: Prisma.SortOrder
+  dispensingOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   medicationId?: Prisma.SortOrderInput | Prisma.SortOrder
   dispatchedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -412,9 +645,12 @@ export type PrescriptionOrderByWithRelationInput = {
   adherence?: Prisma.PrescriptionAdherenceOrderByRelationAggregateInput
   medication?: Prisma.PharmacyInventoryOrderByWithRelationInput
   dispatchedBy?: Prisma.UserOrderByWithRelationInput
+  reviewedBy?: Prisma.UserOrderByWithRelationInput
+  dispensingOrder?: Prisma.OrderOrderByWithRelationInput
   doseSchedule?: Prisma.MedicationScheduleOrderByRelationAggregateInput
   doseLogs?: Prisma.DoseLogOrderByRelationAggregateInput
   escalations?: Prisma.AdherenceEscalationOrderByRelationAggregateInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogOrderByRelationAggregateInput
   fills?: Prisma.PrescriptionFillOrderByRelationAggregateInput
 }
 
@@ -439,6 +675,32 @@ export type PrescriptionWhereUniqueInput = Prisma.AtLeast<{
   prescriber?: Prisma.StringNullableFilter<"Prescription"> | string | null
   unitPrice?: Prisma.DecimalNullableFilter<"Prescription"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFilter<"Prescription"> | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.EnumPrescriptionIntakeChannelNullableFilter<"Prescription"> | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.EnumPrescriptionLifecycleStatusNullableFilter<"Prescription"> | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFilter<"Prescription"> | boolean
+  patientVerifiedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  patientVerificationNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberLicense?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberPhone?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberEmail?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberFacility?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberVerified?: Prisma.BoolFilter<"Prescription"> | boolean
+  prescriberVerifiedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  isUnclear?: Prisma.BoolFilter<"Prescription"> | boolean
+  unclearReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFilter<"Prescription"> | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationContactedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  clarificationResolvedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  reviewedById?: Prisma.UuidNullableFilter<"Prescription"> | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  reviewDecision?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  reviewNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  holdReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  attachmentUrls?: Prisma.StringNullableListFilter<"Prescription">
+  dispensingOrderId?: Prisma.UuidNullableFilter<"Prescription"> | string | null
   notes?: Prisma.StringNullableFilter<"Prescription"> | string | null
   medicationId?: Prisma.UuidNullableFilter<"Prescription"> | string | null
   dispatchedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
@@ -450,9 +712,12 @@ export type PrescriptionWhereUniqueInput = Prisma.AtLeast<{
   adherence?: Prisma.PrescriptionAdherenceListRelationFilter
   medication?: Prisma.XOR<Prisma.PharmacyInventoryNullableScalarRelationFilter, Prisma.PharmacyInventoryWhereInput> | null
   dispatchedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  reviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  dispensingOrder?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
   doseSchedule?: Prisma.MedicationScheduleListRelationFilter
   doseLogs?: Prisma.DoseLogListRelationFilter
   escalations?: Prisma.AdherenceEscalationListRelationFilter
+  clarificationLogs?: Prisma.PrescriptionClarificationLogListRelationFilter
   fills?: Prisma.PrescriptionFillListRelationFilter
 }, "id">
 
@@ -474,6 +739,32 @@ export type PrescriptionOrderByWithAggregationInput = {
   prescriber?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  intakeChannel?: Prisma.SortOrderInput | Prisma.SortOrder
+  lifecycleStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  patientVerified?: Prisma.SortOrder
+  patientVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  patientVerificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberLicense?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberFacility?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriberVerified?: Prisma.SortOrder
+  prescriberVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isUnclear?: Prisma.SortOrder
+  unclearReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarificationStatus?: Prisma.SortOrder
+  clarificationContactMethod?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarificationContactedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarificationResolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewDecision?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  holdReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  attachmentUrls?: Prisma.SortOrder
+  dispensingOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   medicationId?: Prisma.SortOrderInput | Prisma.SortOrder
   dispatchedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -508,6 +799,32 @@ export type PrescriptionScalarWhereWithAggregatesInput = {
   prescriber?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
   unitPrice?: Prisma.DecimalNullableWithAggregatesFilter<"Prescription"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusWithAggregatesFilter<"Prescription"> | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.EnumPrescriptionIntakeChannelNullableWithAggregatesFilter<"Prescription"> | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.EnumPrescriptionLifecycleStatusNullableWithAggregatesFilter<"Prescription"> | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolWithAggregatesFilter<"Prescription"> | boolean
+  patientVerifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Prescription"> | Date | string | null
+  patientVerificationNotes?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  prescriberLicense?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  prescriberPhone?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  prescriberEmail?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  prescriberFacility?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  prescriberVerified?: Prisma.BoolWithAggregatesFilter<"Prescription"> | boolean
+  prescriberVerifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Prescription"> | Date | string | null
+  isUnclear?: Prisma.BoolWithAggregatesFilter<"Prescription"> | boolean
+  unclearReason?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusWithAggregatesFilter<"Prescription"> | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  clarificationNotes?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  clarificationContactedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Prescription"> | Date | string | null
+  clarificationResolvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Prescription"> | Date | string | null
+  reviewedById?: Prisma.UuidNullableWithAggregatesFilter<"Prescription"> | string | null
+  reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Prescription"> | Date | string | null
+  reviewDecision?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  reviewNotes?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  holdReason?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  attachmentUrls?: Prisma.StringNullableListFilter<"Prescription">
+  dispensingOrderId?: Prisma.UuidNullableWithAggregatesFilter<"Prescription"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
   medicationId?: Prisma.UuidNullableWithAggregatesFilter<"Prescription"> | string | null
   dispatchedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Prescription"> | Date | string | null
@@ -533,6 +850,30 @@ export type PrescriptionCreateInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -542,9 +883,12 @@ export type PrescriptionCreateInput = {
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -566,6 +910,32 @@ export type PrescriptionUncheckedCreateInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -577,6 +947,7 @@ export type PrescriptionUncheckedCreateInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -597,6 +968,30 @@ export type PrescriptionUpdateInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -606,9 +1001,12 @@ export type PrescriptionUpdateInput = {
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -630,6 +1028,32 @@ export type PrescriptionUncheckedUpdateInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -641,6 +1065,7 @@ export type PrescriptionUncheckedUpdateInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -662,6 +1087,32 @@ export type PrescriptionCreateManyInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -687,6 +1138,30 @@ export type PrescriptionUpdateManyMutationInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -711,6 +1186,32 @@ export type PrescriptionUncheckedUpdateManyInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -747,6 +1248,32 @@ export type PrescriptionCountOrderByAggregateInput = {
   prescriber?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  intakeChannel?: Prisma.SortOrder
+  lifecycleStatus?: Prisma.SortOrder
+  patientVerified?: Prisma.SortOrder
+  patientVerifiedAt?: Prisma.SortOrder
+  patientVerificationNotes?: Prisma.SortOrder
+  prescriberLicense?: Prisma.SortOrder
+  prescriberPhone?: Prisma.SortOrder
+  prescriberEmail?: Prisma.SortOrder
+  prescriberFacility?: Prisma.SortOrder
+  prescriberVerified?: Prisma.SortOrder
+  prescriberVerifiedAt?: Prisma.SortOrder
+  isUnclear?: Prisma.SortOrder
+  unclearReason?: Prisma.SortOrder
+  clarificationStatus?: Prisma.SortOrder
+  clarificationContactMethod?: Prisma.SortOrder
+  clarificationNotes?: Prisma.SortOrder
+  clarificationContactedAt?: Prisma.SortOrder
+  clarificationResolvedAt?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  reviewDecision?: Prisma.SortOrder
+  reviewNotes?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  holdReason?: Prisma.SortOrder
+  attachmentUrls?: Prisma.SortOrder
+  dispensingOrderId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   medicationId?: Prisma.SortOrder
   dispatchedAt?: Prisma.SortOrder
@@ -780,6 +1307,31 @@ export type PrescriptionMaxOrderByAggregateInput = {
   prescriber?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  intakeChannel?: Prisma.SortOrder
+  lifecycleStatus?: Prisma.SortOrder
+  patientVerified?: Prisma.SortOrder
+  patientVerifiedAt?: Prisma.SortOrder
+  patientVerificationNotes?: Prisma.SortOrder
+  prescriberLicense?: Prisma.SortOrder
+  prescriberPhone?: Prisma.SortOrder
+  prescriberEmail?: Prisma.SortOrder
+  prescriberFacility?: Prisma.SortOrder
+  prescriberVerified?: Prisma.SortOrder
+  prescriberVerifiedAt?: Prisma.SortOrder
+  isUnclear?: Prisma.SortOrder
+  unclearReason?: Prisma.SortOrder
+  clarificationStatus?: Prisma.SortOrder
+  clarificationContactMethod?: Prisma.SortOrder
+  clarificationNotes?: Prisma.SortOrder
+  clarificationContactedAt?: Prisma.SortOrder
+  clarificationResolvedAt?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  reviewDecision?: Prisma.SortOrder
+  reviewNotes?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  holdReason?: Prisma.SortOrder
+  dispensingOrderId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   medicationId?: Prisma.SortOrder
   dispatchedAt?: Prisma.SortOrder
@@ -806,6 +1358,31 @@ export type PrescriptionMinOrderByAggregateInput = {
   prescriber?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  intakeChannel?: Prisma.SortOrder
+  lifecycleStatus?: Prisma.SortOrder
+  patientVerified?: Prisma.SortOrder
+  patientVerifiedAt?: Prisma.SortOrder
+  patientVerificationNotes?: Prisma.SortOrder
+  prescriberLicense?: Prisma.SortOrder
+  prescriberPhone?: Prisma.SortOrder
+  prescriberEmail?: Prisma.SortOrder
+  prescriberFacility?: Prisma.SortOrder
+  prescriberVerified?: Prisma.SortOrder
+  prescriberVerifiedAt?: Prisma.SortOrder
+  isUnclear?: Prisma.SortOrder
+  unclearReason?: Prisma.SortOrder
+  clarificationStatus?: Prisma.SortOrder
+  clarificationContactMethod?: Prisma.SortOrder
+  clarificationNotes?: Prisma.SortOrder
+  clarificationContactedAt?: Prisma.SortOrder
+  clarificationResolvedAt?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  reviewDecision?: Prisma.SortOrder
+  reviewNotes?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  holdReason?: Prisma.SortOrder
+  dispensingOrderId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   medicationId?: Prisma.SortOrder
   dispatchedAt?: Prisma.SortOrder
@@ -838,10 +1415,24 @@ export type PrescriptionCreateNestedManyWithoutDispatchedByInput = {
   connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
 }
 
+export type PrescriptionCreateNestedManyWithoutReviewedByInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutReviewedByInput, Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput> | Prisma.PrescriptionCreateWithoutReviewedByInput[] | Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutReviewedByInput | Prisma.PrescriptionCreateOrConnectWithoutReviewedByInput[]
+  createMany?: Prisma.PrescriptionCreateManyReviewedByInputEnvelope
+  connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+}
+
 export type PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput = {
   create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutDispatchedByInput, Prisma.PrescriptionUncheckedCreateWithoutDispatchedByInput> | Prisma.PrescriptionCreateWithoutDispatchedByInput[] | Prisma.PrescriptionUncheckedCreateWithoutDispatchedByInput[]
   connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutDispatchedByInput | Prisma.PrescriptionCreateOrConnectWithoutDispatchedByInput[]
   createMany?: Prisma.PrescriptionCreateManyDispatchedByInputEnvelope
+  connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+}
+
+export type PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutReviewedByInput, Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput> | Prisma.PrescriptionCreateWithoutReviewedByInput[] | Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutReviewedByInput | Prisma.PrescriptionCreateOrConnectWithoutReviewedByInput[]
+  createMany?: Prisma.PrescriptionCreateManyReviewedByInputEnvelope
   connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
 }
 
@@ -859,6 +1450,20 @@ export type PrescriptionUpdateManyWithoutDispatchedByNestedInput = {
   deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
 }
 
+export type PrescriptionUpdateManyWithoutReviewedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutReviewedByInput, Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput> | Prisma.PrescriptionCreateWithoutReviewedByInput[] | Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutReviewedByInput | Prisma.PrescriptionCreateOrConnectWithoutReviewedByInput[]
+  upsert?: Prisma.PrescriptionUpsertWithWhereUniqueWithoutReviewedByInput | Prisma.PrescriptionUpsertWithWhereUniqueWithoutReviewedByInput[]
+  createMany?: Prisma.PrescriptionCreateManyReviewedByInputEnvelope
+  set?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  disconnect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  delete?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  update?: Prisma.PrescriptionUpdateWithWhereUniqueWithoutReviewedByInput | Prisma.PrescriptionUpdateWithWhereUniqueWithoutReviewedByInput[]
+  updateMany?: Prisma.PrescriptionUpdateManyWithWhereWithoutReviewedByInput | Prisma.PrescriptionUpdateManyWithWhereWithoutReviewedByInput[]
+  deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
+}
+
 export type PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput = {
   create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutDispatchedByInput, Prisma.PrescriptionUncheckedCreateWithoutDispatchedByInput> | Prisma.PrescriptionCreateWithoutDispatchedByInput[] | Prisma.PrescriptionUncheckedCreateWithoutDispatchedByInput[]
   connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutDispatchedByInput | Prisma.PrescriptionCreateOrConnectWithoutDispatchedByInput[]
@@ -870,6 +1475,20 @@ export type PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput = {
   connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
   update?: Prisma.PrescriptionUpdateWithWhereUniqueWithoutDispatchedByInput | Prisma.PrescriptionUpdateWithWhereUniqueWithoutDispatchedByInput[]
   updateMany?: Prisma.PrescriptionUpdateManyWithWhereWithoutDispatchedByInput | Prisma.PrescriptionUpdateManyWithWhereWithoutDispatchedByInput[]
+  deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
+}
+
+export type PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutReviewedByInput, Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput> | Prisma.PrescriptionCreateWithoutReviewedByInput[] | Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutReviewedByInput | Prisma.PrescriptionCreateOrConnectWithoutReviewedByInput[]
+  upsert?: Prisma.PrescriptionUpsertWithWhereUniqueWithoutReviewedByInput | Prisma.PrescriptionUpsertWithWhereUniqueWithoutReviewedByInput[]
+  createMany?: Prisma.PrescriptionCreateManyReviewedByInputEnvelope
+  set?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  disconnect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  delete?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  update?: Prisma.PrescriptionUpdateWithWhereUniqueWithoutReviewedByInput | Prisma.PrescriptionUpdateWithWhereUniqueWithoutReviewedByInput[]
+  updateMany?: Prisma.PrescriptionUpdateManyWithWhereWithoutReviewedByInput | Prisma.PrescriptionUpdateManyWithWhereWithoutReviewedByInput[]
   deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
 }
 
@@ -915,6 +1534,10 @@ export type PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput = {
   deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
 }
 
+export type PrescriptionCreateattachmentUrlsInput = {
+  set: string[]
+}
+
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -937,6 +1560,23 @@ export type NullableDecimalFieldUpdateOperationsInput = {
 
 export type EnumPrescriptionStatusFieldUpdateOperationsInput = {
   set?: $Enums.PrescriptionStatus
+}
+
+export type NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput = {
+  set?: $Enums.PrescriptionIntakeChannel | null
+}
+
+export type NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput = {
+  set?: $Enums.PrescriptionLifecycleStatus | null
+}
+
+export type EnumClarificationStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ClarificationStatus
+}
+
+export type PrescriptionUpdateattachmentUrlsInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type PrescriptionCreateNestedOneWithoutRefillRequestsInput = {
@@ -967,6 +1607,20 @@ export type PrescriptionUpdateOneRequiredWithoutAdherenceNestedInput = {
   upsert?: Prisma.PrescriptionUpsertWithoutAdherenceInput
   connect?: Prisma.PrescriptionWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.PrescriptionUpdateToOneWithWhereWithoutAdherenceInput, Prisma.PrescriptionUpdateWithoutAdherenceInput>, Prisma.PrescriptionUncheckedUpdateWithoutAdherenceInput>
+}
+
+export type PrescriptionCreateNestedOneWithoutClarificationLogsInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutClarificationLogsInput, Prisma.PrescriptionUncheckedCreateWithoutClarificationLogsInput>
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutClarificationLogsInput
+  connect?: Prisma.PrescriptionWhereUniqueInput
+}
+
+export type PrescriptionUpdateOneRequiredWithoutClarificationLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutClarificationLogsInput, Prisma.PrescriptionUncheckedCreateWithoutClarificationLogsInput>
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutClarificationLogsInput
+  upsert?: Prisma.PrescriptionUpsertWithoutClarificationLogsInput
+  connect?: Prisma.PrescriptionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PrescriptionUpdateToOneWithWhereWithoutClarificationLogsInput, Prisma.PrescriptionUpdateWithoutClarificationLogsInput>, Prisma.PrescriptionUncheckedUpdateWithoutClarificationLogsInput>
 }
 
 export type PrescriptionCreateNestedOneWithoutDoseScheduleInput = {
@@ -1053,6 +1707,48 @@ export type PrescriptionUncheckedUpdateManyWithoutMedicationNestedInput = {
   deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
 }
 
+export type PrescriptionCreateNestedManyWithoutDispensingOrderInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutDispensingOrderInput, Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput> | Prisma.PrescriptionCreateWithoutDispensingOrderInput[] | Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput[]
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutDispensingOrderInput | Prisma.PrescriptionCreateOrConnectWithoutDispensingOrderInput[]
+  createMany?: Prisma.PrescriptionCreateManyDispensingOrderInputEnvelope
+  connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+}
+
+export type PrescriptionUncheckedCreateNestedManyWithoutDispensingOrderInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutDispensingOrderInput, Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput> | Prisma.PrescriptionCreateWithoutDispensingOrderInput[] | Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput[]
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutDispensingOrderInput | Prisma.PrescriptionCreateOrConnectWithoutDispensingOrderInput[]
+  createMany?: Prisma.PrescriptionCreateManyDispensingOrderInputEnvelope
+  connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+}
+
+export type PrescriptionUpdateManyWithoutDispensingOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutDispensingOrderInput, Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput> | Prisma.PrescriptionCreateWithoutDispensingOrderInput[] | Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput[]
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutDispensingOrderInput | Prisma.PrescriptionCreateOrConnectWithoutDispensingOrderInput[]
+  upsert?: Prisma.PrescriptionUpsertWithWhereUniqueWithoutDispensingOrderInput | Prisma.PrescriptionUpsertWithWhereUniqueWithoutDispensingOrderInput[]
+  createMany?: Prisma.PrescriptionCreateManyDispensingOrderInputEnvelope
+  set?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  disconnect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  delete?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  update?: Prisma.PrescriptionUpdateWithWhereUniqueWithoutDispensingOrderInput | Prisma.PrescriptionUpdateWithWhereUniqueWithoutDispensingOrderInput[]
+  updateMany?: Prisma.PrescriptionUpdateManyWithWhereWithoutDispensingOrderInput | Prisma.PrescriptionUpdateManyWithWhereWithoutDispensingOrderInput[]
+  deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
+}
+
+export type PrescriptionUncheckedUpdateManyWithoutDispensingOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutDispensingOrderInput, Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput> | Prisma.PrescriptionCreateWithoutDispensingOrderInput[] | Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput[]
+  connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutDispensingOrderInput | Prisma.PrescriptionCreateOrConnectWithoutDispensingOrderInput[]
+  upsert?: Prisma.PrescriptionUpsertWithWhereUniqueWithoutDispensingOrderInput | Prisma.PrescriptionUpsertWithWhereUniqueWithoutDispensingOrderInput[]
+  createMany?: Prisma.PrescriptionCreateManyDispensingOrderInputEnvelope
+  set?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  disconnect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  delete?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  connect?: Prisma.PrescriptionWhereUniqueInput | Prisma.PrescriptionWhereUniqueInput[]
+  update?: Prisma.PrescriptionUpdateWithWhereUniqueWithoutDispensingOrderInput | Prisma.PrescriptionUpdateWithWhereUniqueWithoutDispensingOrderInput[]
+  updateMany?: Prisma.PrescriptionUpdateManyWithWhereWithoutDispensingOrderInput | Prisma.PrescriptionUpdateManyWithWhereWithoutDispensingOrderInput[]
+  deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
+}
+
 export type PrescriptionCreateNestedOneWithoutFillsInput = {
   create?: Prisma.XOR<Prisma.PrescriptionCreateWithoutFillsInput, Prisma.PrescriptionUncheckedCreateWithoutFillsInput>
   connectOrCreate?: Prisma.PrescriptionCreateOrConnectWithoutFillsInput
@@ -1084,6 +1780,30 @@ export type PrescriptionCreateWithoutDispatchedByInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -1092,9 +1812,12 @@ export type PrescriptionCreateWithoutDispatchedByInput = {
   refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutPrescriptionInput
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1116,6 +1839,32 @@ export type PrescriptionUncheckedCreateWithoutDispatchedByInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -1126,6 +1875,7 @@ export type PrescriptionUncheckedCreateWithoutDispatchedByInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1136,6 +1886,132 @@ export type PrescriptionCreateOrConnectWithoutDispatchedByInput = {
 
 export type PrescriptionCreateManyDispatchedByInputEnvelope = {
   data: Prisma.PrescriptionCreateManyDispatchedByInput | Prisma.PrescriptionCreateManyDispatchedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type PrescriptionCreateWithoutReviewedByInput = {
+  id?: string
+  medicineName: string
+  rxReference?: string | null
+  dosage?: string | null
+  schedule?: string | null
+  quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
+  daysSupply?: number | null
+  refillsRemaining?: number | null
+  lastFilledAt?: Date | string | null
+  nextRefillDue?: Date | string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  prescriber?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  notes?: string | null
+  dispatchedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutPrescriptionsInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutPrescriptionInput
+  adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
+  medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
+  dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
+  doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
+  escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
+  fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
+}
+
+export type PrescriptionUncheckedCreateWithoutReviewedByInput = {
+  id?: string
+  customerId: string
+  medicineName: string
+  rxReference?: string | null
+  dosage?: string | null
+  schedule?: string | null
+  quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
+  daysSupply?: number | null
+  refillsRemaining?: number | null
+  lastFilledAt?: Date | string | null
+  nextRefillDue?: Date | string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  prescriber?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
+  notes?: string | null
+  medicationId?: string | null
+  dispatchedAt?: Date | string | null
+  dispatchedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutPrescriptionInput
+  adherence?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutPrescriptionInput
+  doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
+  escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
+  fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
+}
+
+export type PrescriptionCreateOrConnectWithoutReviewedByInput = {
+  where: Prisma.PrescriptionWhereUniqueInput
+  create: Prisma.XOR<Prisma.PrescriptionCreateWithoutReviewedByInput, Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput>
+}
+
+export type PrescriptionCreateManyReviewedByInputEnvelope = {
+  data: Prisma.PrescriptionCreateManyReviewedByInput | Prisma.PrescriptionCreateManyReviewedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -1176,12 +2052,54 @@ export type PrescriptionScalarWhereInput = {
   prescriber?: Prisma.StringNullableFilter<"Prescription"> | string | null
   unitPrice?: Prisma.DecimalNullableFilter<"Prescription"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFilter<"Prescription"> | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.EnumPrescriptionIntakeChannelNullableFilter<"Prescription"> | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.EnumPrescriptionLifecycleStatusNullableFilter<"Prescription"> | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFilter<"Prescription"> | boolean
+  patientVerifiedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  patientVerificationNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberLicense?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberPhone?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberEmail?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberFacility?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  prescriberVerified?: Prisma.BoolFilter<"Prescription"> | boolean
+  prescriberVerifiedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  isUnclear?: Prisma.BoolFilter<"Prescription"> | boolean
+  unclearReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFilter<"Prescription"> | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  clarificationContactedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  clarificationResolvedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  reviewedById?: Prisma.UuidNullableFilter<"Prescription"> | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
+  reviewDecision?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  reviewNotes?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  holdReason?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  attachmentUrls?: Prisma.StringNullableListFilter<"Prescription">
+  dispensingOrderId?: Prisma.UuidNullableFilter<"Prescription"> | string | null
   notes?: Prisma.StringNullableFilter<"Prescription"> | string | null
   medicationId?: Prisma.UuidNullableFilter<"Prescription"> | string | null
   dispatchedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
   dispatchedById?: Prisma.UuidNullableFilter<"Prescription"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
+}
+
+export type PrescriptionUpsertWithWhereUniqueWithoutReviewedByInput = {
+  where: Prisma.PrescriptionWhereUniqueInput
+  update: Prisma.XOR<Prisma.PrescriptionUpdateWithoutReviewedByInput, Prisma.PrescriptionUncheckedUpdateWithoutReviewedByInput>
+  create: Prisma.XOR<Prisma.PrescriptionCreateWithoutReviewedByInput, Prisma.PrescriptionUncheckedCreateWithoutReviewedByInput>
+}
+
+export type PrescriptionUpdateWithWhereUniqueWithoutReviewedByInput = {
+  where: Prisma.PrescriptionWhereUniqueInput
+  data: Prisma.XOR<Prisma.PrescriptionUpdateWithoutReviewedByInput, Prisma.PrescriptionUncheckedUpdateWithoutReviewedByInput>
+}
+
+export type PrescriptionUpdateManyWithWhereWithoutReviewedByInput = {
+  where: Prisma.PrescriptionScalarWhereInput
+  data: Prisma.XOR<Prisma.PrescriptionUpdateManyMutationInput, Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByInput>
 }
 
 export type PrescriptionCreateWithoutCustomerInput = {
@@ -1201,6 +2119,30 @@ export type PrescriptionCreateWithoutCustomerInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -1209,9 +2151,12 @@ export type PrescriptionCreateWithoutCustomerInput = {
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1232,6 +2177,32 @@ export type PrescriptionUncheckedCreateWithoutCustomerInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -1243,6 +2214,7 @@ export type PrescriptionUncheckedCreateWithoutCustomerInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1289,6 +2261,30 @@ export type PrescriptionCreateWithoutRefillRequestsInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -1297,9 +2293,12 @@ export type PrescriptionCreateWithoutRefillRequestsInput = {
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1321,6 +2320,32 @@ export type PrescriptionUncheckedCreateWithoutRefillRequestsInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -1331,6 +2356,7 @@ export type PrescriptionUncheckedCreateWithoutRefillRequestsInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1367,6 +2393,30 @@ export type PrescriptionUpdateWithoutRefillRequestsInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1375,9 +2425,12 @@ export type PrescriptionUpdateWithoutRefillRequestsInput = {
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1399,6 +2452,32 @@ export type PrescriptionUncheckedUpdateWithoutRefillRequestsInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1409,6 +2488,7 @@ export type PrescriptionUncheckedUpdateWithoutRefillRequestsInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1429,6 +2509,30 @@ export type PrescriptionCreateWithoutAdherenceInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -1437,9 +2541,12 @@ export type PrescriptionCreateWithoutAdherenceInput = {
   refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1461,6 +2568,32 @@ export type PrescriptionUncheckedCreateWithoutAdherenceInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -1471,6 +2604,7 @@ export type PrescriptionUncheckedCreateWithoutAdherenceInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1507,6 +2641,30 @@ export type PrescriptionUpdateWithoutAdherenceInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1515,9 +2673,12 @@ export type PrescriptionUpdateWithoutAdherenceInput = {
   refillRequests?: Prisma.RefillRequestUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1539,6 +2700,32 @@ export type PrescriptionUncheckedUpdateWithoutAdherenceInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1546,6 +2733,255 @@ export type PrescriptionUncheckedUpdateWithoutAdherenceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutPrescriptionNestedInput
+  doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
+  escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
+  fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
+}
+
+export type PrescriptionCreateWithoutClarificationLogsInput = {
+  id?: string
+  medicineName: string
+  rxReference?: string | null
+  dosage?: string | null
+  schedule?: string | null
+  quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
+  daysSupply?: number | null
+  refillsRemaining?: number | null
+  lastFilledAt?: Date | string | null
+  nextRefillDue?: Date | string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  prescriber?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  notes?: string | null
+  dispatchedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutPrescriptionsInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutPrescriptionInput
+  adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
+  medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
+  dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
+  doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
+  escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
+}
+
+export type PrescriptionUncheckedCreateWithoutClarificationLogsInput = {
+  id?: string
+  customerId: string
+  medicineName: string
+  rxReference?: string | null
+  dosage?: string | null
+  schedule?: string | null
+  quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
+  daysSupply?: number | null
+  refillsRemaining?: number | null
+  lastFilledAt?: Date | string | null
+  nextRefillDue?: Date | string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  prescriber?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
+  notes?: string | null
+  medicationId?: string | null
+  dispatchedAt?: Date | string | null
+  dispatchedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutPrescriptionInput
+  adherence?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutPrescriptionInput
+  doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
+  escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
+}
+
+export type PrescriptionCreateOrConnectWithoutClarificationLogsInput = {
+  where: Prisma.PrescriptionWhereUniqueInput
+  create: Prisma.XOR<Prisma.PrescriptionCreateWithoutClarificationLogsInput, Prisma.PrescriptionUncheckedCreateWithoutClarificationLogsInput>
+}
+
+export type PrescriptionUpsertWithoutClarificationLogsInput = {
+  update: Prisma.XOR<Prisma.PrescriptionUpdateWithoutClarificationLogsInput, Prisma.PrescriptionUncheckedUpdateWithoutClarificationLogsInput>
+  create: Prisma.XOR<Prisma.PrescriptionCreateWithoutClarificationLogsInput, Prisma.PrescriptionUncheckedCreateWithoutClarificationLogsInput>
+  where?: Prisma.PrescriptionWhereInput
+}
+
+export type PrescriptionUpdateToOneWithWhereWithoutClarificationLogsInput = {
+  where?: Prisma.PrescriptionWhereInput
+  data: Prisma.XOR<Prisma.PrescriptionUpdateWithoutClarificationLogsInput, Prisma.PrescriptionUncheckedUpdateWithoutClarificationLogsInput>
+}
+
+export type PrescriptionUpdateWithoutClarificationLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  medicineName?: Prisma.StringFieldUpdateOperationsInput | string
+  rxReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextRefillDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutPrescriptionsNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutPrescriptionNestedInput
+  adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
+  medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
+  dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
+  doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
+  escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
+}
+
+export type PrescriptionUncheckedUpdateWithoutClarificationLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicineName?: Prisma.StringFieldUpdateOperationsInput | string
+  rxReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextRefillDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutPrescriptionNestedInput
+  adherence?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
@@ -1569,6 +3005,30 @@ export type PrescriptionCreateWithoutDoseScheduleInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -1578,8 +3038,11 @@ export type PrescriptionCreateWithoutDoseScheduleInput = {
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1601,6 +3064,32 @@ export type PrescriptionUncheckedCreateWithoutDoseScheduleInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -1611,6 +3100,7 @@ export type PrescriptionUncheckedCreateWithoutDoseScheduleInput = {
   adherence?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1647,6 +3137,30 @@ export type PrescriptionUpdateWithoutDoseScheduleInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1656,8 +3170,11 @@ export type PrescriptionUpdateWithoutDoseScheduleInput = {
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1679,6 +3196,32 @@ export type PrescriptionUncheckedUpdateWithoutDoseScheduleInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1689,6 +3232,7 @@ export type PrescriptionUncheckedUpdateWithoutDoseScheduleInput = {
   adherence?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1709,6 +3253,30 @@ export type PrescriptionCreateWithoutDoseLogsInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -1718,8 +3286,11 @@ export type PrescriptionCreateWithoutDoseLogsInput = {
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1741,6 +3312,32 @@ export type PrescriptionUncheckedCreateWithoutDoseLogsInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -1751,6 +3348,7 @@ export type PrescriptionUncheckedCreateWithoutDoseLogsInput = {
   adherence?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutPrescriptionInput
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1787,6 +3385,30 @@ export type PrescriptionUpdateWithoutDoseLogsInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1796,8 +3418,11 @@ export type PrescriptionUpdateWithoutDoseLogsInput = {
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1819,6 +3444,32 @@ export type PrescriptionUncheckedUpdateWithoutDoseLogsInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1829,6 +3480,7 @@ export type PrescriptionUncheckedUpdateWithoutDoseLogsInput = {
   adherence?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1849,6 +3501,30 @@ export type PrescriptionCreateWithoutEscalationsInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -1858,8 +3534,11 @@ export type PrescriptionCreateWithoutEscalationsInput = {
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1881,6 +3560,32 @@ export type PrescriptionUncheckedCreateWithoutEscalationsInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -1891,6 +3596,7 @@ export type PrescriptionUncheckedCreateWithoutEscalationsInput = {
   adherence?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutPrescriptionInput
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -1927,6 +3633,30 @@ export type PrescriptionUpdateWithoutEscalationsInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1936,8 +3666,11 @@ export type PrescriptionUpdateWithoutEscalationsInput = {
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1959,6 +3692,32 @@ export type PrescriptionUncheckedUpdateWithoutEscalationsInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1969,6 +3728,7 @@ export type PrescriptionUncheckedUpdateWithoutEscalationsInput = {
   adherence?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -1989,6 +3749,30 @@ export type PrescriptionCreateWithoutMedicationInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -1997,9 +3781,12 @@ export type PrescriptionCreateWithoutMedicationInput = {
   refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutPrescriptionInput
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -2021,6 +3808,32 @@ export type PrescriptionUncheckedCreateWithoutMedicationInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   dispatchedAt?: Date | string | null
   dispatchedById?: string | null
@@ -2031,6 +3844,7 @@ export type PrescriptionUncheckedCreateWithoutMedicationInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
@@ -2060,6 +3874,148 @@ export type PrescriptionUpdateManyWithWhereWithoutMedicationInput = {
   data: Prisma.XOR<Prisma.PrescriptionUpdateManyMutationInput, Prisma.PrescriptionUncheckedUpdateManyWithoutMedicationInput>
 }
 
+export type PrescriptionCreateWithoutDispensingOrderInput = {
+  id?: string
+  medicineName: string
+  rxReference?: string | null
+  dosage?: string | null
+  schedule?: string | null
+  quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
+  daysSupply?: number | null
+  refillsRemaining?: number | null
+  lastFilledAt?: Date | string | null
+  nextRefillDue?: Date | string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  prescriber?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  notes?: string | null
+  dispatchedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutPrescriptionsInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutPrescriptionInput
+  adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
+  medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
+  dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
+  escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
+  fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
+}
+
+export type PrescriptionUncheckedCreateWithoutDispensingOrderInput = {
+  id?: string
+  customerId: string
+  medicineName: string
+  rxReference?: string | null
+  dosage?: string | null
+  schedule?: string | null
+  quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
+  daysSupply?: number | null
+  refillsRemaining?: number | null
+  lastFilledAt?: Date | string | null
+  nextRefillDue?: Date | string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  prescriber?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  notes?: string | null
+  medicationId?: string | null
+  dispatchedAt?: Date | string | null
+  dispatchedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutPrescriptionInput
+  adherence?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutPrescriptionInput
+  doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
+  escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
+  fills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutPrescriptionInput
+}
+
+export type PrescriptionCreateOrConnectWithoutDispensingOrderInput = {
+  where: Prisma.PrescriptionWhereUniqueInput
+  create: Prisma.XOR<Prisma.PrescriptionCreateWithoutDispensingOrderInput, Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput>
+}
+
+export type PrescriptionCreateManyDispensingOrderInputEnvelope = {
+  data: Prisma.PrescriptionCreateManyDispensingOrderInput | Prisma.PrescriptionCreateManyDispensingOrderInput[]
+  skipDuplicates?: boolean
+}
+
+export type PrescriptionUpsertWithWhereUniqueWithoutDispensingOrderInput = {
+  where: Prisma.PrescriptionWhereUniqueInput
+  update: Prisma.XOR<Prisma.PrescriptionUpdateWithoutDispensingOrderInput, Prisma.PrescriptionUncheckedUpdateWithoutDispensingOrderInput>
+  create: Prisma.XOR<Prisma.PrescriptionCreateWithoutDispensingOrderInput, Prisma.PrescriptionUncheckedCreateWithoutDispensingOrderInput>
+}
+
+export type PrescriptionUpdateWithWhereUniqueWithoutDispensingOrderInput = {
+  where: Prisma.PrescriptionWhereUniqueInput
+  data: Prisma.XOR<Prisma.PrescriptionUpdateWithoutDispensingOrderInput, Prisma.PrescriptionUncheckedUpdateWithoutDispensingOrderInput>
+}
+
+export type PrescriptionUpdateManyWithWhereWithoutDispensingOrderInput = {
+  where: Prisma.PrescriptionScalarWhereInput
+  data: Prisma.XOR<Prisma.PrescriptionUpdateManyMutationInput, Prisma.PrescriptionUncheckedUpdateManyWithoutDispensingOrderInput>
+}
+
 export type PrescriptionCreateWithoutFillsInput = {
   id?: string
   medicineName: string
@@ -2077,6 +4033,30 @@ export type PrescriptionCreateWithoutFillsInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
   notes?: string | null
   dispatchedAt?: Date | string | null
   createdAt?: Date | string
@@ -2086,9 +4066,12 @@ export type PrescriptionCreateWithoutFillsInput = {
   adherence?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutPrescriptionInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput
   dispatchedBy?: Prisma.UserCreateNestedOneWithoutDispatchedPrescriptionsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionsReviewedInput
+  dispensingOrder?: Prisma.OrderCreateNestedOneWithoutDispensedPrescriptionsInput
   doseSchedule?: Prisma.MedicationScheduleCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
 }
 
 export type PrescriptionUncheckedCreateWithoutFillsInput = {
@@ -2109,6 +4092,32 @@ export type PrescriptionUncheckedCreateWithoutFillsInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -2120,6 +4129,7 @@ export type PrescriptionUncheckedCreateWithoutFillsInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutPrescriptionInput
   doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutPrescriptionInput
   escalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutPrescriptionInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutPrescriptionInput
 }
 
 export type PrescriptionCreateOrConnectWithoutFillsInput = {
@@ -2155,6 +4165,30 @@ export type PrescriptionUpdateWithoutFillsInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2164,9 +4198,12 @@ export type PrescriptionUpdateWithoutFillsInput = {
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
 }
 
 export type PrescriptionUncheckedUpdateWithoutFillsInput = {
@@ -2187,6 +4224,32 @@ export type PrescriptionUncheckedUpdateWithoutFillsInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2198,6 +4261,7 @@ export type PrescriptionUncheckedUpdateWithoutFillsInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
 export type PrescriptionCreateManyDispatchedByInput = {
@@ -2218,9 +4282,86 @@ export type PrescriptionCreateManyDispatchedByInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PrescriptionCreateManyReviewedByInput = {
+  id?: string
+  customerId: string
+  medicineName: string
+  rxReference?: string | null
+  dosage?: string | null
+  schedule?: string | null
+  quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
+  daysSupply?: number | null
+  refillsRemaining?: number | null
+  lastFilledAt?: Date | string | null
+  nextRefillDue?: Date | string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  prescriber?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
+  notes?: string | null
+  medicationId?: string | null
+  dispatchedAt?: Date | string | null
+  dispatchedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2242,6 +4383,30 @@ export type PrescriptionUpdateWithoutDispatchedByInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2250,9 +4415,12 @@ export type PrescriptionUpdateWithoutDispatchedByInput = {
   refillRequests?: Prisma.RefillRequestUpdateManyWithoutPrescriptionNestedInput
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -2274,6 +4442,32 @@ export type PrescriptionUncheckedUpdateWithoutDispatchedByInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2284,6 +4478,7 @@ export type PrescriptionUncheckedUpdateWithoutDispatchedByInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -2305,9 +4500,202 @@ export type PrescriptionUncheckedUpdateManyWithoutDispatchedByInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PrescriptionUpdateWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  medicineName?: Prisma.StringFieldUpdateOperationsInput | string
+  rxReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextRefillDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutPrescriptionsNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutPrescriptionNestedInput
+  adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
+  medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
+  dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
+  doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
+  escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
+  fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
+}
+
+export type PrescriptionUncheckedUpdateWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicineName?: Prisma.StringFieldUpdateOperationsInput | string
+  rxReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextRefillDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutPrescriptionNestedInput
+  adherence?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutPrescriptionNestedInput
+  doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
+  escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
+  fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
+}
+
+export type PrescriptionUncheckedUpdateManyWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicineName?: Prisma.StringFieldUpdateOperationsInput | string
+  rxReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextRefillDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2329,6 +4717,32 @@ export type PrescriptionCreateManyCustomerInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   medicationId?: string | null
   dispatchedAt?: Date | string | null
@@ -2354,6 +4768,30 @@ export type PrescriptionUpdateWithoutCustomerInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2362,9 +4800,12 @@ export type PrescriptionUpdateWithoutCustomerInput = {
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -2385,6 +4826,32 @@ export type PrescriptionUncheckedUpdateWithoutCustomerInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2396,6 +4863,7 @@ export type PrescriptionUncheckedUpdateWithoutCustomerInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -2416,6 +4884,32 @@ export type PrescriptionUncheckedUpdateManyWithoutCustomerInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2442,6 +4936,32 @@ export type PrescriptionCreateManyMedicationInput = {
   prescriber?: string | null
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  dispensingOrderId?: string | null
   notes?: string | null
   dispatchedAt?: Date | string | null
   dispatchedById?: string | null
@@ -2466,6 +4986,30 @@ export type PrescriptionUpdateWithoutMedicationInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2474,9 +5018,12 @@ export type PrescriptionUpdateWithoutMedicationInput = {
   refillRequests?: Prisma.RefillRequestUpdateManyWithoutPrescriptionNestedInput
   adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
   dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  dispensingOrder?: Prisma.OrderUpdateOneWithoutDispensedPrescriptionsNestedInput
   doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -2498,6 +5045,32 @@ export type PrescriptionUncheckedUpdateWithoutMedicationInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2508,6 +5081,7 @@ export type PrescriptionUncheckedUpdateWithoutMedicationInput = {
   doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
   doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
   fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
 }
 
@@ -2529,7 +5103,251 @@ export type PrescriptionUncheckedUpdateManyWithoutMedicationInput = {
   prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  dispensingOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PrescriptionCreateManyDispensingOrderInput = {
+  id?: string
+  customerId: string
+  medicineName: string
+  rxReference?: string | null
+  dosage?: string | null
+  schedule?: string | null
+  quantity?: number | null
+  billingUnit?: $Enums.BillingUnit | null
+  daysSupply?: number | null
+  refillsRemaining?: number | null
+  lastFilledAt?: Date | string | null
+  nextRefillDue?: Date | string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  prescriber?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.PrescriptionStatus
+  intakeChannel?: $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: boolean
+  patientVerifiedAt?: Date | string | null
+  patientVerificationNotes?: string | null
+  prescriberLicense?: string | null
+  prescriberPhone?: string | null
+  prescriberEmail?: string | null
+  prescriberFacility?: string | null
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: Date | string | null
+  isUnclear?: boolean
+  unclearReason?: string | null
+  clarificationStatus?: $Enums.ClarificationStatus
+  clarificationContactMethod?: string | null
+  clarificationNotes?: string | null
+  clarificationContactedAt?: Date | string | null
+  clarificationResolvedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewDecision?: string | null
+  reviewNotes?: string | null
+  rejectionReason?: string | null
+  holdReason?: string | null
+  attachmentUrls?: Prisma.PrescriptionCreateattachmentUrlsInput | string[]
+  notes?: string | null
+  medicationId?: string | null
+  dispatchedAt?: Date | string | null
+  dispatchedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PrescriptionUpdateWithoutDispensingOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  medicineName?: Prisma.StringFieldUpdateOperationsInput | string
+  rxReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextRefillDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutPrescriptionsNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutPrescriptionNestedInput
+  adherence?: Prisma.PrescriptionAdherenceUpdateManyWithoutPrescriptionNestedInput
+  medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionsNestedInput
+  dispatchedBy?: Prisma.UserUpdateOneWithoutDispatchedPrescriptionsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPrescriptionsReviewedNestedInput
+  doseSchedule?: Prisma.MedicationScheduleUpdateManyWithoutPrescriptionNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutPrescriptionNestedInput
+  escalations?: Prisma.AdherenceEscalationUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutPrescriptionNestedInput
+  fills?: Prisma.PrescriptionFillUpdateManyWithoutPrescriptionNestedInput
+}
+
+export type PrescriptionUncheckedUpdateWithoutDispensingOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicineName?: Prisma.StringFieldUpdateOperationsInput | string
+  rxReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextRefillDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutPrescriptionNestedInput
+  adherence?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutPrescriptionNestedInput
+  doseSchedule?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutPrescriptionNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutPrescriptionNestedInput
+  escalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutPrescriptionNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutPrescriptionNestedInput
+  fills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutPrescriptionNestedInput
+}
+
+export type PrescriptionUncheckedUpdateManyWithoutDispensingOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicineName?: Prisma.StringFieldUpdateOperationsInput | string
+  rxReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  daysSupply?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  refillsRemaining?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastFilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextRefillDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
+  intakeChannel?: Prisma.NullableEnumPrescriptionIntakeChannelFieldUpdateOperationsInput | $Enums.PrescriptionIntakeChannel | null
+  lifecycleStatus?: Prisma.NullableEnumPrescriptionLifecycleStatusFieldUpdateOperationsInput | $Enums.PrescriptionLifecycleStatus | null
+  patientVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  patientVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientVerificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberLicense?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriberVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriberVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isUnclear?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unclearReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationStatus?: Prisma.EnumClarificationStatusFieldUpdateOperationsInput | $Enums.ClarificationStatus
+  clarificationContactMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarificationContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clarificationResolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  holdReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachmentUrls?: Prisma.PrescriptionUpdateattachmentUrlsInput | string[]
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2547,6 +5365,7 @@ export type PrescriptionCountOutputType = {
   doseSchedule: number
   doseLogs: number
   escalations: number
+  clarificationLogs: number
   fills: number
 }
 
@@ -2556,6 +5375,7 @@ export type PrescriptionCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   doseSchedule?: boolean | PrescriptionCountOutputTypeCountDoseScheduleArgs
   doseLogs?: boolean | PrescriptionCountOutputTypeCountDoseLogsArgs
   escalations?: boolean | PrescriptionCountOutputTypeCountEscalationsArgs
+  clarificationLogs?: boolean | PrescriptionCountOutputTypeCountClarificationLogsArgs
   fills?: boolean | PrescriptionCountOutputTypeCountFillsArgs
 }
 
@@ -2607,6 +5427,13 @@ export type PrescriptionCountOutputTypeCountEscalationsArgs<ExtArgs extends runt
 /**
  * PrescriptionCountOutputType without action
  */
+export type PrescriptionCountOutputTypeCountClarificationLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PrescriptionClarificationLogWhereInput
+}
+
+/**
+ * PrescriptionCountOutputType without action
+ */
 export type PrescriptionCountOutputTypeCountFillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PrescriptionFillWhereInput
 }
@@ -2630,6 +5457,32 @@ export type PrescriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   prescriber?: boolean
   unitPrice?: boolean
   status?: boolean
+  intakeChannel?: boolean
+  lifecycleStatus?: boolean
+  patientVerified?: boolean
+  patientVerifiedAt?: boolean
+  patientVerificationNotes?: boolean
+  prescriberLicense?: boolean
+  prescriberPhone?: boolean
+  prescriberEmail?: boolean
+  prescriberFacility?: boolean
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: boolean
+  isUnclear?: boolean
+  unclearReason?: boolean
+  clarificationStatus?: boolean
+  clarificationContactMethod?: boolean
+  clarificationNotes?: boolean
+  clarificationContactedAt?: boolean
+  clarificationResolvedAt?: boolean
+  reviewedById?: boolean
+  reviewedAt?: boolean
+  reviewDecision?: boolean
+  reviewNotes?: boolean
+  rejectionReason?: boolean
+  holdReason?: boolean
+  attachmentUrls?: boolean
+  dispensingOrderId?: boolean
   notes?: boolean
   medicationId?: boolean
   dispatchedAt?: boolean
@@ -2641,9 +5494,12 @@ export type PrescriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   adherence?: boolean | Prisma.Prescription$adherenceArgs<ExtArgs>
   medication?: boolean | Prisma.Prescription$medicationArgs<ExtArgs>
   dispatchedBy?: boolean | Prisma.Prescription$dispatchedByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Prescription$reviewedByArgs<ExtArgs>
+  dispensingOrder?: boolean | Prisma.Prescription$dispensingOrderArgs<ExtArgs>
   doseSchedule?: boolean | Prisma.Prescription$doseScheduleArgs<ExtArgs>
   doseLogs?: boolean | Prisma.Prescription$doseLogsArgs<ExtArgs>
   escalations?: boolean | Prisma.Prescription$escalationsArgs<ExtArgs>
+  clarificationLogs?: boolean | Prisma.Prescription$clarificationLogsArgs<ExtArgs>
   fills?: boolean | Prisma.Prescription$fillsArgs<ExtArgs>
   _count?: boolean | Prisma.PrescriptionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["prescription"]>
@@ -2666,6 +5522,32 @@ export type PrescriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   prescriber?: boolean
   unitPrice?: boolean
   status?: boolean
+  intakeChannel?: boolean
+  lifecycleStatus?: boolean
+  patientVerified?: boolean
+  patientVerifiedAt?: boolean
+  patientVerificationNotes?: boolean
+  prescriberLicense?: boolean
+  prescriberPhone?: boolean
+  prescriberEmail?: boolean
+  prescriberFacility?: boolean
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: boolean
+  isUnclear?: boolean
+  unclearReason?: boolean
+  clarificationStatus?: boolean
+  clarificationContactMethod?: boolean
+  clarificationNotes?: boolean
+  clarificationContactedAt?: boolean
+  clarificationResolvedAt?: boolean
+  reviewedById?: boolean
+  reviewedAt?: boolean
+  reviewDecision?: boolean
+  reviewNotes?: boolean
+  rejectionReason?: boolean
+  holdReason?: boolean
+  attachmentUrls?: boolean
+  dispensingOrderId?: boolean
   notes?: boolean
   medicationId?: boolean
   dispatchedAt?: boolean
@@ -2675,6 +5557,8 @@ export type PrescriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   medication?: boolean | Prisma.Prescription$medicationArgs<ExtArgs>
   dispatchedBy?: boolean | Prisma.Prescription$dispatchedByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Prescription$reviewedByArgs<ExtArgs>
+  dispensingOrder?: boolean | Prisma.Prescription$dispensingOrderArgs<ExtArgs>
 }, ExtArgs["result"]["prescription"]>
 
 export type PrescriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2695,6 +5579,32 @@ export type PrescriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   prescriber?: boolean
   unitPrice?: boolean
   status?: boolean
+  intakeChannel?: boolean
+  lifecycleStatus?: boolean
+  patientVerified?: boolean
+  patientVerifiedAt?: boolean
+  patientVerificationNotes?: boolean
+  prescriberLicense?: boolean
+  prescriberPhone?: boolean
+  prescriberEmail?: boolean
+  prescriberFacility?: boolean
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: boolean
+  isUnclear?: boolean
+  unclearReason?: boolean
+  clarificationStatus?: boolean
+  clarificationContactMethod?: boolean
+  clarificationNotes?: boolean
+  clarificationContactedAt?: boolean
+  clarificationResolvedAt?: boolean
+  reviewedById?: boolean
+  reviewedAt?: boolean
+  reviewDecision?: boolean
+  reviewNotes?: boolean
+  rejectionReason?: boolean
+  holdReason?: boolean
+  attachmentUrls?: boolean
+  dispensingOrderId?: boolean
   notes?: boolean
   medicationId?: boolean
   dispatchedAt?: boolean
@@ -2704,6 +5614,8 @@ export type PrescriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   medication?: boolean | Prisma.Prescription$medicationArgs<ExtArgs>
   dispatchedBy?: boolean | Prisma.Prescription$dispatchedByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Prescription$reviewedByArgs<ExtArgs>
+  dispensingOrder?: boolean | Prisma.Prescription$dispensingOrderArgs<ExtArgs>
 }, ExtArgs["result"]["prescription"]>
 
 export type PrescriptionSelectScalar = {
@@ -2724,6 +5636,32 @@ export type PrescriptionSelectScalar = {
   prescriber?: boolean
   unitPrice?: boolean
   status?: boolean
+  intakeChannel?: boolean
+  lifecycleStatus?: boolean
+  patientVerified?: boolean
+  patientVerifiedAt?: boolean
+  patientVerificationNotes?: boolean
+  prescriberLicense?: boolean
+  prescriberPhone?: boolean
+  prescriberEmail?: boolean
+  prescriberFacility?: boolean
+  prescriberVerified?: boolean
+  prescriberVerifiedAt?: boolean
+  isUnclear?: boolean
+  unclearReason?: boolean
+  clarificationStatus?: boolean
+  clarificationContactMethod?: boolean
+  clarificationNotes?: boolean
+  clarificationContactedAt?: boolean
+  clarificationResolvedAt?: boolean
+  reviewedById?: boolean
+  reviewedAt?: boolean
+  reviewDecision?: boolean
+  reviewNotes?: boolean
+  rejectionReason?: boolean
+  holdReason?: boolean
+  attachmentUrls?: boolean
+  dispensingOrderId?: boolean
   notes?: boolean
   medicationId?: boolean
   dispatchedAt?: boolean
@@ -2732,16 +5670,19 @@ export type PrescriptionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PrescriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "medicineName" | "rxReference" | "dosage" | "schedule" | "quantity" | "billingUnit" | "daysSupply" | "refillsRemaining" | "lastFilledAt" | "nextRefillDue" | "startDate" | "endDate" | "prescriber" | "unitPrice" | "status" | "notes" | "medicationId" | "dispatchedAt" | "dispatchedById" | "createdAt" | "updatedAt", ExtArgs["result"]["prescription"]>
+export type PrescriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "medicineName" | "rxReference" | "dosage" | "schedule" | "quantity" | "billingUnit" | "daysSupply" | "refillsRemaining" | "lastFilledAt" | "nextRefillDue" | "startDate" | "endDate" | "prescriber" | "unitPrice" | "status" | "intakeChannel" | "lifecycleStatus" | "patientVerified" | "patientVerifiedAt" | "patientVerificationNotes" | "prescriberLicense" | "prescriberPhone" | "prescriberEmail" | "prescriberFacility" | "prescriberVerified" | "prescriberVerifiedAt" | "isUnclear" | "unclearReason" | "clarificationStatus" | "clarificationContactMethod" | "clarificationNotes" | "clarificationContactedAt" | "clarificationResolvedAt" | "reviewedById" | "reviewedAt" | "reviewDecision" | "reviewNotes" | "rejectionReason" | "holdReason" | "attachmentUrls" | "dispensingOrderId" | "notes" | "medicationId" | "dispatchedAt" | "dispatchedById" | "createdAt" | "updatedAt", ExtArgs["result"]["prescription"]>
 export type PrescriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   refillRequests?: boolean | Prisma.Prescription$refillRequestsArgs<ExtArgs>
   adherence?: boolean | Prisma.Prescription$adherenceArgs<ExtArgs>
   medication?: boolean | Prisma.Prescription$medicationArgs<ExtArgs>
   dispatchedBy?: boolean | Prisma.Prescription$dispatchedByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Prescription$reviewedByArgs<ExtArgs>
+  dispensingOrder?: boolean | Prisma.Prescription$dispensingOrderArgs<ExtArgs>
   doseSchedule?: boolean | Prisma.Prescription$doseScheduleArgs<ExtArgs>
   doseLogs?: boolean | Prisma.Prescription$doseLogsArgs<ExtArgs>
   escalations?: boolean | Prisma.Prescription$escalationsArgs<ExtArgs>
+  clarificationLogs?: boolean | Prisma.Prescription$clarificationLogsArgs<ExtArgs>
   fills?: boolean | Prisma.Prescription$fillsArgs<ExtArgs>
   _count?: boolean | Prisma.PrescriptionCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2749,11 +5690,15 @@ export type PrescriptionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   medication?: boolean | Prisma.Prescription$medicationArgs<ExtArgs>
   dispatchedBy?: boolean | Prisma.Prescription$dispatchedByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Prescription$reviewedByArgs<ExtArgs>
+  dispensingOrder?: boolean | Prisma.Prescription$dispensingOrderArgs<ExtArgs>
 }
 export type PrescriptionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   medication?: boolean | Prisma.Prescription$medicationArgs<ExtArgs>
   dispatchedBy?: boolean | Prisma.Prescription$dispatchedByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Prescription$reviewedByArgs<ExtArgs>
+  dispensingOrder?: boolean | Prisma.Prescription$dispensingOrderArgs<ExtArgs>
 }
 
 export type $PrescriptionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2764,9 +5709,12 @@ export type $PrescriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     adherence: Prisma.$PrescriptionAdherencePayload<ExtArgs>[]
     medication: Prisma.$PharmacyInventoryPayload<ExtArgs> | null
     dispatchedBy: Prisma.$UserPayload<ExtArgs> | null
+    reviewedBy: Prisma.$UserPayload<ExtArgs> | null
+    dispensingOrder: Prisma.$OrderPayload<ExtArgs> | null
     doseSchedule: Prisma.$MedicationSchedulePayload<ExtArgs>[]
     doseLogs: Prisma.$DoseLogPayload<ExtArgs>[]
     escalations: Prisma.$AdherenceEscalationPayload<ExtArgs>[]
+    clarificationLogs: Prisma.$PrescriptionClarificationLogPayload<ExtArgs>[]
     /**
      * Commerce ledger: one row per fill (audit §4 / §41.A).
      */
@@ -2808,6 +5756,56 @@ export type $PrescriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
      */
     unitPrice: runtime.Decimal | null
     status: $Enums.PrescriptionStatus
+    /**
+     * Structured intake arrival channel (paper, whatsapp, email, patient upload, referral, hospital, e-rx, phone, in-person).
+     */
+    intakeChannel: $Enums.PrescriptionIntakeChannel | null
+    /**
+     * Granular prescription lifecycle progression.
+     */
+    lifecycleStatus: $Enums.PrescriptionLifecycleStatus | null
+    /**
+     * Patient verification details.
+     */
+    patientVerified: boolean
+    patientVerifiedAt: Date | null
+    patientVerificationNotes: string | null
+    /**
+     * Prescriber verification details.
+     */
+    prescriberLicense: string | null
+    prescriberPhone: string | null
+    prescriberEmail: string | null
+    prescriberFacility: string | null
+    prescriberVerified: boolean
+    prescriberVerifiedAt: Date | null
+    /**
+     * Clinical clarity & Prescriber clarification tracking.
+     */
+    isUnclear: boolean
+    unclearReason: string | null
+    clarificationStatus: $Enums.ClarificationStatus
+    clarificationContactMethod: string | null
+    clarificationNotes: string | null
+    clarificationContactedAt: Date | null
+    clarificationResolvedAt: Date | null
+    /**
+     * Professional review & Pharmacist decision.
+     */
+    reviewedById: string | null
+    reviewedAt: Date | null
+    reviewDecision: string | null
+    reviewNotes: string | null
+    rejectionReason: string | null
+    holdReason: string | null
+    /**
+     * Scanned script, photo, PDF, or referral document URLs.
+     */
+    attachmentUrls: string[]
+    /**
+     * Linked commercial dispensing order (when converted).
+     */
+    dispensingOrderId: string | null
     notes: string | null
     /**
      * Optional link to a Medication catalogue row. When set, dispatching this
@@ -3221,9 +6219,12 @@ export interface Prisma__PrescriptionClient<T, Null = never, ExtArgs extends run
   adherence<T extends Prisma.Prescription$adherenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$adherenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionAdherencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   medication<T extends Prisma.Prescription$medicationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$medicationArgs<ExtArgs>>): Prisma.Prisma__PharmacyInventoryClient<runtime.Types.Result.GetResult<Prisma.$PharmacyInventoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   dispatchedBy<T extends Prisma.Prescription$dispatchedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$dispatchedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  reviewedBy<T extends Prisma.Prescription$reviewedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$reviewedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  dispensingOrder<T extends Prisma.Prescription$dispensingOrderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$dispensingOrderArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   doseSchedule<T extends Prisma.Prescription$doseScheduleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$doseScheduleArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicationSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   doseLogs<T extends Prisma.Prescription$doseLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$doseLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoseLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   escalations<T extends Prisma.Prescription$escalationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$escalationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdherenceEscalationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clarificationLogs<T extends Prisma.Prescription$clarificationLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$clarificationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionClarificationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fills<T extends Prisma.Prescription$fillsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Prescription$fillsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionFillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3271,6 +6272,32 @@ export interface PrescriptionFieldRefs {
   readonly prescriber: Prisma.FieldRef<"Prescription", 'String'>
   readonly unitPrice: Prisma.FieldRef<"Prescription", 'Decimal'>
   readonly status: Prisma.FieldRef<"Prescription", 'PrescriptionStatus'>
+  readonly intakeChannel: Prisma.FieldRef<"Prescription", 'PrescriptionIntakeChannel'>
+  readonly lifecycleStatus: Prisma.FieldRef<"Prescription", 'PrescriptionLifecycleStatus'>
+  readonly patientVerified: Prisma.FieldRef<"Prescription", 'Boolean'>
+  readonly patientVerifiedAt: Prisma.FieldRef<"Prescription", 'DateTime'>
+  readonly patientVerificationNotes: Prisma.FieldRef<"Prescription", 'String'>
+  readonly prescriberLicense: Prisma.FieldRef<"Prescription", 'String'>
+  readonly prescriberPhone: Prisma.FieldRef<"Prescription", 'String'>
+  readonly prescriberEmail: Prisma.FieldRef<"Prescription", 'String'>
+  readonly prescriberFacility: Prisma.FieldRef<"Prescription", 'String'>
+  readonly prescriberVerified: Prisma.FieldRef<"Prescription", 'Boolean'>
+  readonly prescriberVerifiedAt: Prisma.FieldRef<"Prescription", 'DateTime'>
+  readonly isUnclear: Prisma.FieldRef<"Prescription", 'Boolean'>
+  readonly unclearReason: Prisma.FieldRef<"Prescription", 'String'>
+  readonly clarificationStatus: Prisma.FieldRef<"Prescription", 'ClarificationStatus'>
+  readonly clarificationContactMethod: Prisma.FieldRef<"Prescription", 'String'>
+  readonly clarificationNotes: Prisma.FieldRef<"Prescription", 'String'>
+  readonly clarificationContactedAt: Prisma.FieldRef<"Prescription", 'DateTime'>
+  readonly clarificationResolvedAt: Prisma.FieldRef<"Prescription", 'DateTime'>
+  readonly reviewedById: Prisma.FieldRef<"Prescription", 'String'>
+  readonly reviewedAt: Prisma.FieldRef<"Prescription", 'DateTime'>
+  readonly reviewDecision: Prisma.FieldRef<"Prescription", 'String'>
+  readonly reviewNotes: Prisma.FieldRef<"Prescription", 'String'>
+  readonly rejectionReason: Prisma.FieldRef<"Prescription", 'String'>
+  readonly holdReason: Prisma.FieldRef<"Prescription", 'String'>
+  readonly attachmentUrls: Prisma.FieldRef<"Prescription", 'String[]'>
+  readonly dispensingOrderId: Prisma.FieldRef<"Prescription", 'String'>
   readonly notes: Prisma.FieldRef<"Prescription", 'String'>
   readonly medicationId: Prisma.FieldRef<"Prescription", 'String'>
   readonly dispatchedAt: Prisma.FieldRef<"Prescription", 'DateTime'>
@@ -3764,6 +6791,44 @@ export type Prescription$dispatchedByArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
+ * Prescription.reviewedBy
+ */
+export type Prescription$reviewedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Prescription.dispensingOrder
+ */
+export type Prescription$dispensingOrderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Order
+   */
+  select?: Prisma.OrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Order
+   */
+  omit?: Prisma.OrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderInclude<ExtArgs> | null
+  where?: Prisma.OrderWhereInput
+}
+
+/**
  * Prescription.doseSchedule
  */
 export type Prescription$doseScheduleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3833,6 +6898,30 @@ export type Prescription$escalationsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.AdherenceEscalationScalarFieldEnum | Prisma.AdherenceEscalationScalarFieldEnum[]
+}
+
+/**
+ * Prescription.clarificationLogs
+ */
+export type Prescription$clarificationLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PrescriptionClarificationLog
+   */
+  select?: Prisma.PrescriptionClarificationLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PrescriptionClarificationLog
+   */
+  omit?: Prisma.PrescriptionClarificationLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PrescriptionClarificationLogInclude<ExtArgs> | null
+  where?: Prisma.PrescriptionClarificationLogWhereInput
+  orderBy?: Prisma.PrescriptionClarificationLogOrderByWithRelationInput | Prisma.PrescriptionClarificationLogOrderByWithRelationInput[]
+  cursor?: Prisma.PrescriptionClarificationLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PrescriptionClarificationLogScalarFieldEnum | Prisma.PrescriptionClarificationLogScalarFieldEnum[]
 }
 
 /**

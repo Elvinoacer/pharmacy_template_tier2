@@ -81,6 +81,7 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   CustomerNote: 'CustomerNote',
   PrescriptionAdherence: 'PrescriptionAdherence',
+  PrescriptionClarificationLog: 'PrescriptionClarificationLog',
   MedicationSchedule: 'MedicationSchedule',
   DoseLog: 'DoseLog',
   AdherenceEscalation: 'AdherenceEscalation',
@@ -281,6 +282,32 @@ export const PrescriptionScalarFieldEnum = {
   prescriber: 'prescriber',
   unitPrice: 'unitPrice',
   status: 'status',
+  intakeChannel: 'intakeChannel',
+  lifecycleStatus: 'lifecycleStatus',
+  patientVerified: 'patientVerified',
+  patientVerifiedAt: 'patientVerifiedAt',
+  patientVerificationNotes: 'patientVerificationNotes',
+  prescriberLicense: 'prescriberLicense',
+  prescriberPhone: 'prescriberPhone',
+  prescriberEmail: 'prescriberEmail',
+  prescriberFacility: 'prescriberFacility',
+  prescriberVerified: 'prescriberVerified',
+  prescriberVerifiedAt: 'prescriberVerifiedAt',
+  isUnclear: 'isUnclear',
+  unclearReason: 'unclearReason',
+  clarificationStatus: 'clarificationStatus',
+  clarificationContactMethod: 'clarificationContactMethod',
+  clarificationNotes: 'clarificationNotes',
+  clarificationContactedAt: 'clarificationContactedAt',
+  clarificationResolvedAt: 'clarificationResolvedAt',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  reviewDecision: 'reviewDecision',
+  reviewNotes: 'reviewNotes',
+  rejectionReason: 'rejectionReason',
+  holdReason: 'holdReason',
+  attachmentUrls: 'attachmentUrls',
+  dispensingOrderId: 'dispensingOrderId',
   notes: 'notes',
   medicationId: 'medicationId',
   dispatchedAt: 'dispatchedAt',
@@ -636,6 +663,21 @@ export const PrescriptionAdherenceScalarFieldEnum = {
 } as const
 
 export type PrescriptionAdherenceScalarFieldEnum = (typeof PrescriptionAdherenceScalarFieldEnum)[keyof typeof PrescriptionAdherenceScalarFieldEnum]
+
+
+export const PrescriptionClarificationLogScalarFieldEnum = {
+  id: 'id',
+  prescriptionId: 'prescriptionId',
+  contactMethod: 'contactMethod',
+  contactedTo: 'contactedTo',
+  inquiryDetails: 'inquiryDetails',
+  doctorResponse: 'doctorResponse',
+  resolved: 'resolved',
+  staffId: 'staffId',
+  createdAt: 'createdAt'
+} as const
+
+export type PrescriptionClarificationLogScalarFieldEnum = (typeof PrescriptionClarificationLogScalarFieldEnum)[keyof typeof PrescriptionClarificationLogScalarFieldEnum]
 
 
 export const MedicationScheduleScalarFieldEnum = {

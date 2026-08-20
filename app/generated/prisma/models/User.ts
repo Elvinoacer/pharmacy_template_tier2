@@ -283,6 +283,8 @@ export type UserWhereInput = {
   refundApprover?: Prisma.RefundListRelationFilter
   priceHistoryChanges?: Prisma.MedicationPriceHistoryListRelationFilter
   cashierSessions?: Prisma.CashierSessionListRelationFilter
+  prescriptionsReviewed?: Prisma.PrescriptionListRelationFilter
+  clarificationLogs?: Prisma.PrescriptionClarificationLogListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -336,6 +338,8 @@ export type UserOrderByWithRelationInput = {
   refundApprover?: Prisma.RefundOrderByRelationAggregateInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryOrderByRelationAggregateInput
   cashierSessions?: Prisma.CashierSessionOrderByRelationAggregateInput
+  prescriptionsReviewed?: Prisma.PrescriptionOrderByRelationAggregateInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -392,6 +396,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   refundApprover?: Prisma.RefundListRelationFilter
   priceHistoryChanges?: Prisma.MedicationPriceHistoryListRelationFilter
   cashierSessions?: Prisma.CashierSessionListRelationFilter
+  prescriptionsReviewed?: Prisma.PrescriptionListRelationFilter
+  clarificationLogs?: Prisma.PrescriptionClarificationLogListRelationFilter
 }, "id" | "email" | "googleId">
 
 export type UserOrderByWithAggregationInput = {
@@ -483,6 +489,8 @@ export type UserCreateInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -536,6 +544,8 @@ export type UserUncheckedCreateInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserUpdateInput = {
@@ -589,6 +599,8 @@ export type UserUpdateInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -642,6 +654,8 @@ export type UserUncheckedUpdateInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -870,6 +884,12 @@ export type UserCreateNestedOneWithoutDispatchedPrescriptionsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutPrescriptionsReviewedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPrescriptionsReviewedInput, Prisma.UserUncheckedCreateWithoutPrescriptionsReviewedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPrescriptionsReviewedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserUpdateOneWithoutDispatchedPrescriptionsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutDispatchedPrescriptionsInput, Prisma.UserUncheckedCreateWithoutDispatchedPrescriptionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutDispatchedPrescriptionsInput
@@ -878,6 +898,16 @@ export type UserUpdateOneWithoutDispatchedPrescriptionsNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDispatchedPrescriptionsInput, Prisma.UserUpdateWithoutDispatchedPrescriptionsInput>, Prisma.UserUncheckedUpdateWithoutDispatchedPrescriptionsInput>
+}
+
+export type UserUpdateOneWithoutPrescriptionsReviewedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPrescriptionsReviewedInput, Prisma.UserUncheckedCreateWithoutPrescriptionsReviewedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPrescriptionsReviewedInput
+  upsert?: Prisma.UserUpsertWithoutPrescriptionsReviewedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPrescriptionsReviewedInput, Prisma.UserUpdateWithoutPrescriptionsReviewedInput>, Prisma.UserUncheckedUpdateWithoutPrescriptionsReviewedInput>
 }
 
 export type UserCreateNestedOneWithoutAssignedRefillsInput = {
@@ -1184,6 +1214,22 @@ export type UserUpdateOneWithoutCustomerNotesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCustomerNotesInput, Prisma.UserUpdateWithoutCustomerNotesInput>, Prisma.UserUncheckedUpdateWithoutCustomerNotesInput>
 }
 
+export type UserCreateNestedOneWithoutClarificationLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutClarificationLogsInput, Prisma.UserUncheckedCreateWithoutClarificationLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutClarificationLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutClarificationLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutClarificationLogsInput, Prisma.UserUncheckedCreateWithoutClarificationLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutClarificationLogsInput
+  upsert?: Prisma.UserUpsertWithoutClarificationLogsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutClarificationLogsInput, Prisma.UserUpdateWithoutClarificationLogsInput>, Prisma.UserUncheckedUpdateWithoutClarificationLogsInput>
+}
+
 export type UserCreateNestedOneWithoutOrderDispenserNotesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutOrderDispenserNotesInput, Prisma.UserUncheckedCreateWithoutOrderDispenserNotesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrderDispenserNotesInput
@@ -1408,6 +1454,8 @@ export type UserCreateWithoutPushDevicesInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutPushDevicesInput = {
@@ -1460,6 +1508,8 @@ export type UserUncheckedCreateWithoutPushDevicesInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutPushDevicesInput = {
@@ -1528,6 +1578,8 @@ export type UserUpdateWithoutPushDevicesInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPushDevicesInput = {
@@ -1580,6 +1632,8 @@ export type UserUncheckedUpdateWithoutPushDevicesInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1632,6 +1686,8 @@ export type UserCreateWithoutSessionsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1684,6 +1740,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1752,6 +1810,8 @@ export type UserUpdateWithoutSessionsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1804,6 +1864,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutPasswordResetsInput = {
@@ -1856,6 +1918,8 @@ export type UserCreateWithoutPasswordResetsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutPasswordResetsInput = {
@@ -1908,6 +1972,8 @@ export type UserUncheckedCreateWithoutPasswordResetsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutPasswordResetsInput = {
@@ -1976,6 +2042,8 @@ export type UserUpdateWithoutPasswordResetsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasswordResetsInput = {
@@ -2028,6 +2096,8 @@ export type UserUncheckedUpdateWithoutPasswordResetsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutEmailVerificationsInput = {
@@ -2080,6 +2150,8 @@ export type UserCreateWithoutEmailVerificationsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutEmailVerificationsInput = {
@@ -2132,6 +2204,8 @@ export type UserUncheckedCreateWithoutEmailVerificationsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutEmailVerificationsInput = {
@@ -2200,6 +2274,8 @@ export type UserUpdateWithoutEmailVerificationsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailVerificationsInput = {
@@ -2252,6 +2328,8 @@ export type UserUncheckedUpdateWithoutEmailVerificationsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -2304,6 +2382,8 @@ export type UserCreateWithoutProfileInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -2356,6 +2436,8 @@ export type UserUncheckedCreateWithoutProfileInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -2424,6 +2506,8 @@ export type UserUpdateWithoutProfileInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -2476,6 +2560,8 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutCaregiverLinksInput = {
@@ -2528,6 +2614,8 @@ export type UserCreateWithoutCaregiverLinksInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutCaregiverLinksInput = {
@@ -2580,6 +2668,8 @@ export type UserUncheckedCreateWithoutCaregiverLinksInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutCaregiverLinksInput = {
@@ -2648,6 +2738,8 @@ export type UserUpdateWithoutCaregiverLinksInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCaregiverLinksInput = {
@@ -2700,6 +2792,8 @@ export type UserUncheckedUpdateWithoutCaregiverLinksInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutDispatchedPrescriptionsInput = {
@@ -2752,6 +2846,8 @@ export type UserCreateWithoutDispatchedPrescriptionsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutDispatchedPrescriptionsInput = {
@@ -2804,11 +2900,126 @@ export type UserUncheckedCreateWithoutDispatchedPrescriptionsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutDispatchedPrescriptionsInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutDispatchedPrescriptionsInput, Prisma.UserUncheckedCreateWithoutDispatchedPrescriptionsInput>
+}
+
+export type UserCreateWithoutPrescriptionsReviewedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+}
+
+export type UserUncheckedCreateWithoutPrescriptionsReviewedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+}
+
+export type UserCreateOrConnectWithoutPrescriptionsReviewedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPrescriptionsReviewedInput, Prisma.UserUncheckedCreateWithoutPrescriptionsReviewedInput>
 }
 
 export type UserUpsertWithoutDispatchedPrescriptionsInput = {
@@ -2872,6 +3083,8 @@ export type UserUpdateWithoutDispatchedPrescriptionsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDispatchedPrescriptionsInput = {
@@ -2924,6 +3137,127 @@ export type UserUncheckedUpdateWithoutDispatchedPrescriptionsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+}
+
+export type UserUpsertWithoutPrescriptionsReviewedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPrescriptionsReviewedInput, Prisma.UserUncheckedUpdateWithoutPrescriptionsReviewedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPrescriptionsReviewedInput, Prisma.UserUncheckedCreateWithoutPrescriptionsReviewedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPrescriptionsReviewedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPrescriptionsReviewedInput, Prisma.UserUncheckedUpdateWithoutPrescriptionsReviewedInput>
+}
+
+export type UserUpdateWithoutPrescriptionsReviewedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPrescriptionsReviewedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutAssignedRefillsInput = {
@@ -2976,6 +3310,8 @@ export type UserCreateWithoutAssignedRefillsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutAssignedRefillsInput = {
@@ -3028,6 +3364,8 @@ export type UserUncheckedCreateWithoutAssignedRefillsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutAssignedRefillsInput = {
@@ -3096,6 +3434,8 @@ export type UserUpdateWithoutAssignedRefillsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedRefillsInput = {
@@ -3148,6 +3488,8 @@ export type UserUncheckedUpdateWithoutAssignedRefillsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutTimelineAsUserInput = {
@@ -3200,6 +3542,8 @@ export type UserCreateWithoutTimelineAsUserInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutTimelineAsUserInput = {
@@ -3252,6 +3596,8 @@ export type UserUncheckedCreateWithoutTimelineAsUserInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutTimelineAsUserInput = {
@@ -3309,6 +3655,8 @@ export type UserCreateWithoutTimelineCreatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutTimelineCreatedInput = {
@@ -3361,6 +3709,8 @@ export type UserUncheckedCreateWithoutTimelineCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutTimelineCreatedInput = {
@@ -3429,6 +3779,8 @@ export type UserUpdateWithoutTimelineAsUserInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTimelineAsUserInput = {
@@ -3481,6 +3833,8 @@ export type UserUncheckedUpdateWithoutTimelineAsUserInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUpsertWithoutTimelineCreatedInput = {
@@ -3544,6 +3898,8 @@ export type UserUpdateWithoutTimelineCreatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTimelineCreatedInput = {
@@ -3596,6 +3952,8 @@ export type UserUncheckedUpdateWithoutTimelineCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutSegmentsCreatedInput = {
@@ -3648,6 +4006,8 @@ export type UserCreateWithoutSegmentsCreatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutSegmentsCreatedInput = {
@@ -3700,6 +4060,8 @@ export type UserUncheckedCreateWithoutSegmentsCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutSegmentsCreatedInput = {
@@ -3768,6 +4130,8 @@ export type UserUpdateWithoutSegmentsCreatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSegmentsCreatedInput = {
@@ -3820,6 +4184,8 @@ export type UserUncheckedUpdateWithoutSegmentsCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutAssignedConversationsInput = {
@@ -3872,6 +4238,8 @@ export type UserCreateWithoutAssignedConversationsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutAssignedConversationsInput = {
@@ -3924,6 +4292,8 @@ export type UserUncheckedCreateWithoutAssignedConversationsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutAssignedConversationsInput = {
@@ -3992,6 +4362,8 @@ export type UserUpdateWithoutAssignedConversationsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedConversationsInput = {
@@ -4044,6 +4416,8 @@ export type UserUncheckedUpdateWithoutAssignedConversationsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutMessagesSentInput = {
@@ -4096,6 +4470,8 @@ export type UserCreateWithoutMessagesSentInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutMessagesSentInput = {
@@ -4148,6 +4524,8 @@ export type UserUncheckedCreateWithoutMessagesSentInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutMessagesSentInput = {
@@ -4216,6 +4594,8 @@ export type UserUpdateWithoutMessagesSentInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesSentInput = {
@@ -4268,6 +4648,8 @@ export type UserUncheckedUpdateWithoutMessagesSentInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutTemplatesCreatedInput = {
@@ -4320,6 +4702,8 @@ export type UserCreateWithoutTemplatesCreatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutTemplatesCreatedInput = {
@@ -4372,6 +4756,8 @@ export type UserUncheckedCreateWithoutTemplatesCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutTemplatesCreatedInput = {
@@ -4429,6 +4815,8 @@ export type UserCreateWithoutTemplatesUpdatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutTemplatesUpdatedInput = {
@@ -4481,6 +4869,8 @@ export type UserUncheckedCreateWithoutTemplatesUpdatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutTemplatesUpdatedInput = {
@@ -4549,6 +4939,8 @@ export type UserUpdateWithoutTemplatesCreatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTemplatesCreatedInput = {
@@ -4601,6 +4993,8 @@ export type UserUncheckedUpdateWithoutTemplatesCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUpsertWithoutTemplatesUpdatedInput = {
@@ -4664,6 +5058,8 @@ export type UserUpdateWithoutTemplatesUpdatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTemplatesUpdatedInput = {
@@ -4716,6 +5112,8 @@ export type UserUncheckedUpdateWithoutTemplatesUpdatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -4768,6 +5166,8 @@ export type UserCreateWithoutNotificationsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -4820,6 +5220,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -4888,6 +5290,8 @@ export type UserUpdateWithoutNotificationsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -4940,6 +5344,8 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutRemindersCreatedInput = {
@@ -4992,6 +5398,8 @@ export type UserCreateWithoutRemindersCreatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutRemindersCreatedInput = {
@@ -5044,6 +5452,8 @@ export type UserUncheckedCreateWithoutRemindersCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutRemindersCreatedInput = {
@@ -5112,6 +5522,8 @@ export type UserUpdateWithoutRemindersCreatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRemindersCreatedInput = {
@@ -5164,6 +5576,8 @@ export type UserUncheckedUpdateWithoutRemindersCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutCampaignsCreatedInput = {
@@ -5216,6 +5630,8 @@ export type UserCreateWithoutCampaignsCreatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutCampaignsCreatedInput = {
@@ -5268,6 +5684,8 @@ export type UserUncheckedCreateWithoutCampaignsCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutCampaignsCreatedInput = {
@@ -5336,6 +5754,8 @@ export type UserUpdateWithoutCampaignsCreatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCampaignsCreatedInput = {
@@ -5388,6 +5808,8 @@ export type UserUncheckedUpdateWithoutCampaignsCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutLoyaltyTxCreatedInput = {
@@ -5440,6 +5862,8 @@ export type UserCreateWithoutLoyaltyTxCreatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutLoyaltyTxCreatedInput = {
@@ -5492,6 +5916,8 @@ export type UserUncheckedCreateWithoutLoyaltyTxCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutLoyaltyTxCreatedInput = {
@@ -5560,6 +5986,8 @@ export type UserUpdateWithoutLoyaltyTxCreatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLoyaltyTxCreatedInput = {
@@ -5612,6 +6040,8 @@ export type UserUncheckedUpdateWithoutLoyaltyTxCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutEnquiriesAssignedInput = {
@@ -5664,6 +6094,8 @@ export type UserCreateWithoutEnquiriesAssignedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutEnquiriesAssignedInput = {
@@ -5716,6 +6148,8 @@ export type UserUncheckedCreateWithoutEnquiriesAssignedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutEnquiriesAssignedInput = {
@@ -5784,6 +6218,8 @@ export type UserUpdateWithoutEnquiriesAssignedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnquiriesAssignedInput = {
@@ -5836,6 +6272,8 @@ export type UserUncheckedUpdateWithoutEnquiriesAssignedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutFeedbackRespondedInput = {
@@ -5888,6 +6326,8 @@ export type UserCreateWithoutFeedbackRespondedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutFeedbackRespondedInput = {
@@ -5940,6 +6380,8 @@ export type UserUncheckedCreateWithoutFeedbackRespondedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutFeedbackRespondedInput = {
@@ -6008,6 +6450,8 @@ export type UserUpdateWithoutFeedbackRespondedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFeedbackRespondedInput = {
@@ -6060,6 +6504,8 @@ export type UserUncheckedUpdateWithoutFeedbackRespondedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutKnowledgeCreatedInput = {
@@ -6112,6 +6558,8 @@ export type UserCreateWithoutKnowledgeCreatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutKnowledgeCreatedInput = {
@@ -6164,6 +6612,8 @@ export type UserUncheckedCreateWithoutKnowledgeCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutKnowledgeCreatedInput = {
@@ -6221,6 +6671,8 @@ export type UserCreateWithoutKnowledgeUpdatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutKnowledgeUpdatedInput = {
@@ -6273,6 +6725,8 @@ export type UserUncheckedCreateWithoutKnowledgeUpdatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutKnowledgeUpdatedInput = {
@@ -6341,6 +6795,8 @@ export type UserUpdateWithoutKnowledgeCreatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutKnowledgeCreatedInput = {
@@ -6393,6 +6849,8 @@ export type UserUncheckedUpdateWithoutKnowledgeCreatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUpsertWithoutKnowledgeUpdatedInput = {
@@ -6456,6 +6914,8 @@ export type UserUpdateWithoutKnowledgeUpdatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutKnowledgeUpdatedInput = {
@@ -6508,6 +6968,8 @@ export type UserUncheckedUpdateWithoutKnowledgeUpdatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutAiConversationsInput = {
@@ -6560,6 +7022,8 @@ export type UserCreateWithoutAiConversationsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutAiConversationsInput = {
@@ -6612,6 +7076,8 @@ export type UserUncheckedCreateWithoutAiConversationsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutAiConversationsInput = {
@@ -6680,6 +7146,8 @@ export type UserUpdateWithoutAiConversationsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAiConversationsInput = {
@@ -6732,6 +7200,8 @@ export type UserUncheckedUpdateWithoutAiConversationsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -6784,6 +7254,8 @@ export type UserCreateWithoutAuditLogsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -6836,6 +7308,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -6904,6 +7378,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -6956,6 +7432,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutCustomerNotesInput = {
@@ -7008,6 +7486,8 @@ export type UserCreateWithoutCustomerNotesInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutCustomerNotesInput = {
@@ -7060,6 +7540,8 @@ export type UserUncheckedCreateWithoutCustomerNotesInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutCustomerNotesInput = {
@@ -7128,6 +7610,8 @@ export type UserUpdateWithoutCustomerNotesInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCustomerNotesInput = {
@@ -7180,6 +7664,240 @@ export type UserUncheckedUpdateWithoutCustomerNotesInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+}
+
+export type UserCreateWithoutClarificationLogsInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+}
+
+export type UserUncheckedCreateWithoutClarificationLogsInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+}
+
+export type UserCreateOrConnectWithoutClarificationLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutClarificationLogsInput, Prisma.UserUncheckedCreateWithoutClarificationLogsInput>
+}
+
+export type UserUpsertWithoutClarificationLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutClarificationLogsInput, Prisma.UserUncheckedUpdateWithoutClarificationLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutClarificationLogsInput, Prisma.UserUncheckedCreateWithoutClarificationLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutClarificationLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutClarificationLogsInput, Prisma.UserUncheckedUpdateWithoutClarificationLogsInput>
+}
+
+export type UserUpdateWithoutClarificationLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutClarificationLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserCreateWithoutOrderDispenserNotesInput = {
@@ -7232,6 +7950,8 @@ export type UserCreateWithoutOrderDispenserNotesInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutOrderDispenserNotesInput = {
@@ -7284,6 +8004,8 @@ export type UserUncheckedCreateWithoutOrderDispenserNotesInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutOrderDispenserNotesInput = {
@@ -7352,6 +8074,8 @@ export type UserUpdateWithoutOrderDispenserNotesInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrderDispenserNotesInput = {
@@ -7404,6 +8128,8 @@ export type UserUncheckedUpdateWithoutOrderDispenserNotesInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutServiceBookingsRecordedInput = {
@@ -7456,6 +8182,8 @@ export type UserCreateWithoutServiceBookingsRecordedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutServiceBookingsRecordedInput = {
@@ -7508,6 +8236,8 @@ export type UserUncheckedCreateWithoutServiceBookingsRecordedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutServiceBookingsRecordedInput = {
@@ -7576,6 +8306,8 @@ export type UserUpdateWithoutServiceBookingsRecordedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServiceBookingsRecordedInput = {
@@ -7628,6 +8360,8 @@ export type UserUncheckedUpdateWithoutServiceBookingsRecordedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutPharmacySettingsUpdatedInput = {
@@ -7680,6 +8414,8 @@ export type UserCreateWithoutPharmacySettingsUpdatedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutPharmacySettingsUpdatedInput = {
@@ -7732,6 +8468,8 @@ export type UserUncheckedCreateWithoutPharmacySettingsUpdatedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutPharmacySettingsUpdatedInput = {
@@ -7800,6 +8538,8 @@ export type UserUpdateWithoutPharmacySettingsUpdatedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPharmacySettingsUpdatedInput = {
@@ -7852,6 +8592,8 @@ export type UserUncheckedUpdateWithoutPharmacySettingsUpdatedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutSymptomSessionsInput = {
@@ -7904,6 +8646,8 @@ export type UserCreateWithoutSymptomSessionsInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutSymptomSessionsInput = {
@@ -7956,6 +8700,8 @@ export type UserUncheckedCreateWithoutSymptomSessionsInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutSymptomSessionsInput = {
@@ -8024,6 +8770,8 @@ export type UserUpdateWithoutSymptomSessionsInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSymptomSessionsInput = {
@@ -8076,6 +8824,8 @@ export type UserUncheckedUpdateWithoutSymptomSessionsInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutSymptomStaffRepliesInput = {
@@ -8128,6 +8878,8 @@ export type UserCreateWithoutSymptomStaffRepliesInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutSymptomStaffRepliesInput = {
@@ -8180,6 +8932,8 @@ export type UserUncheckedCreateWithoutSymptomStaffRepliesInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutSymptomStaffRepliesInput = {
@@ -8248,6 +9002,8 @@ export type UserUpdateWithoutSymptomStaffRepliesInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSymptomStaffRepliesInput = {
@@ -8300,6 +9056,8 @@ export type UserUncheckedUpdateWithoutSymptomStaffRepliesInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutPrescriptionFillsDispensedInput = {
@@ -8352,6 +9110,8 @@ export type UserCreateWithoutPrescriptionFillsDispensedInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutPrescriptionFillsDispensedInput = {
@@ -8404,6 +9164,8 @@ export type UserUncheckedCreateWithoutPrescriptionFillsDispensedInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutPrescriptionFillsDispensedInput = {
@@ -8472,6 +9234,8 @@ export type UserUpdateWithoutPrescriptionFillsDispensedInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrescriptionFillsDispensedInput = {
@@ -8524,6 +9288,8 @@ export type UserUncheckedUpdateWithoutPrescriptionFillsDispensedInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutReservationCreatorInput = {
@@ -8576,6 +9342,8 @@ export type UserCreateWithoutReservationCreatorInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutReservationCreatorInput = {
@@ -8628,6 +9396,8 @@ export type UserUncheckedCreateWithoutReservationCreatorInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutReservationCreatorInput = {
@@ -8696,6 +9466,8 @@ export type UserUpdateWithoutReservationCreatorInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReservationCreatorInput = {
@@ -8748,6 +9520,8 @@ export type UserUncheckedUpdateWithoutReservationCreatorInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutRefundCreatorInput = {
@@ -8800,6 +9574,8 @@ export type UserCreateWithoutRefundCreatorInput = {
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutRefundCreatorInput = {
@@ -8852,6 +9628,8 @@ export type UserUncheckedCreateWithoutRefundCreatorInput = {
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutRefundCreatorInput = {
@@ -8909,6 +9687,8 @@ export type UserCreateWithoutRefundApproverInput = {
   refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutRefundApproverInput = {
@@ -8961,6 +9741,8 @@ export type UserUncheckedCreateWithoutRefundApproverInput = {
   refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutRefundApproverInput = {
@@ -9029,6 +9811,8 @@ export type UserUpdateWithoutRefundCreatorInput = {
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefundCreatorInput = {
@@ -9081,6 +9865,8 @@ export type UserUncheckedUpdateWithoutRefundCreatorInput = {
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUpsertWithoutRefundApproverInput = {
@@ -9144,6 +9930,8 @@ export type UserUpdateWithoutRefundApproverInput = {
   refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefundApproverInput = {
@@ -9196,6 +9984,8 @@ export type UserUncheckedUpdateWithoutRefundApproverInput = {
   refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutPriceHistoryChangesInput = {
@@ -9248,6 +10038,8 @@ export type UserCreateWithoutPriceHistoryChangesInput = {
   refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutPriceHistoryChangesInput = {
@@ -9300,6 +10092,8 @@ export type UserUncheckedCreateWithoutPriceHistoryChangesInput = {
   refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutPriceHistoryChangesInput = {
@@ -9368,6 +10162,8 @@ export type UserUpdateWithoutPriceHistoryChangesInput = {
   refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPriceHistoryChangesInput = {
@@ -9420,6 +10216,8 @@ export type UserUncheckedUpdateWithoutPriceHistoryChangesInput = {
   refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type UserCreateWithoutCashierSessionsInput = {
@@ -9472,6 +10270,8 @@ export type UserCreateWithoutCashierSessionsInput = {
   refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
   refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
 }
 
 export type UserUncheckedCreateWithoutCashierSessionsInput = {
@@ -9524,6 +10324,8 @@ export type UserUncheckedCreateWithoutCashierSessionsInput = {
   refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
   refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type UserCreateOrConnectWithoutCashierSessionsInput = {
@@ -9592,6 +10394,8 @@ export type UserUpdateWithoutCashierSessionsInput = {
   refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
   refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCashierSessionsInput = {
@@ -9644,6 +10448,8 @@ export type UserUncheckedUpdateWithoutCashierSessionsInput = {
   refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
   refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
   priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 
@@ -9688,6 +10494,8 @@ export type UserCountOutputType = {
   refundApprover: number
   priceHistoryChanges: number
   cashierSessions: number
+  prescriptionsReviewed: number
+  clarificationLogs: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -9727,6 +10535,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   refundApprover?: boolean | UserCountOutputTypeCountRefundApproverArgs
   priceHistoryChanges?: boolean | UserCountOutputTypeCountPriceHistoryChangesArgs
   cashierSessions?: boolean | UserCountOutputTypeCountCashierSessionsArgs
+  prescriptionsReviewed?: boolean | UserCountOutputTypeCountPrescriptionsReviewedArgs
+  clarificationLogs?: boolean | UserCountOutputTypeCountClarificationLogsArgs
 }
 
 /**
@@ -9991,6 +10801,20 @@ export type UserCountOutputTypeCountCashierSessionsArgs<ExtArgs extends runtime.
   where?: Prisma.CashierSessionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPrescriptionsReviewedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PrescriptionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountClarificationLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PrescriptionClarificationLogWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -10043,6 +10867,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   refundApprover?: boolean | Prisma.User$refundApproverArgs<ExtArgs>
   priceHistoryChanges?: boolean | Prisma.User$priceHistoryChangesArgs<ExtArgs>
   cashierSessions?: boolean | Prisma.User$cashierSessionsArgs<ExtArgs>
+  prescriptionsReviewed?: boolean | Prisma.User$prescriptionsReviewedArgs<ExtArgs>
+  clarificationLogs?: boolean | Prisma.User$clarificationLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -10133,6 +10959,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   refundApprover?: boolean | Prisma.User$refundApproverArgs<ExtArgs>
   priceHistoryChanges?: boolean | Prisma.User$priceHistoryChangesArgs<ExtArgs>
   cashierSessions?: boolean | Prisma.User$cashierSessionsArgs<ExtArgs>
+  prescriptionsReviewed?: boolean | Prisma.User$prescriptionsReviewedArgs<ExtArgs>
+  clarificationLogs?: boolean | Prisma.User$clarificationLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -10178,6 +11006,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     refundApprover: Prisma.$RefundPayload<ExtArgs>[]
     priceHistoryChanges: Prisma.$MedicationPriceHistoryPayload<ExtArgs>[]
     cashierSessions: Prisma.$CashierSessionPayload<ExtArgs>[]
+    prescriptionsReviewed: Prisma.$PrescriptionPayload<ExtArgs>[]
+    clarificationLogs: Prisma.$PrescriptionClarificationLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -10630,6 +11460,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   refundApprover<T extends Prisma.User$refundApproverArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refundApproverArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefundPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   priceHistoryChanges<T extends Prisma.User$priceHistoryChangesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$priceHistoryChangesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicationPriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cashierSessions<T extends Prisma.User$cashierSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cashierSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashierSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  prescriptionsReviewed<T extends Prisma.User$prescriptionsReviewedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$prescriptionsReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clarificationLogs<T extends Prisma.User$clarificationLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$clarificationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionClarificationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11945,6 +12777,54 @@ export type User$cashierSessionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.CashierSessionScalarFieldEnum | Prisma.CashierSessionScalarFieldEnum[]
+}
+
+/**
+ * User.prescriptionsReviewed
+ */
+export type User$prescriptionsReviewedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Prescription
+   */
+  select?: Prisma.PrescriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Prescription
+   */
+  omit?: Prisma.PrescriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PrescriptionInclude<ExtArgs> | null
+  where?: Prisma.PrescriptionWhereInput
+  orderBy?: Prisma.PrescriptionOrderByWithRelationInput | Prisma.PrescriptionOrderByWithRelationInput[]
+  cursor?: Prisma.PrescriptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PrescriptionScalarFieldEnum | Prisma.PrescriptionScalarFieldEnum[]
+}
+
+/**
+ * User.clarificationLogs
+ */
+export type User$clarificationLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PrescriptionClarificationLog
+   */
+  select?: Prisma.PrescriptionClarificationLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PrescriptionClarificationLog
+   */
+  omit?: Prisma.PrescriptionClarificationLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PrescriptionClarificationLogInclude<ExtArgs> | null
+  where?: Prisma.PrescriptionClarificationLogWhereInput
+  orderBy?: Prisma.PrescriptionClarificationLogOrderByWithRelationInput | Prisma.PrescriptionClarificationLogOrderByWithRelationInput[]
+  cursor?: Prisma.PrescriptionClarificationLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PrescriptionClarificationLogScalarFieldEnum | Prisma.PrescriptionClarificationLogScalarFieldEnum[]
 }
 
 /**

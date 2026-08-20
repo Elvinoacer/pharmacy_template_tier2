@@ -32,6 +32,8 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
+import { PrescriptionUploadModal } from "@/app/components/portal/PrescriptionUploadModal";
+
 export const metadata = { title: "Prescriptions & Dosage Management" };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -135,12 +137,15 @@ export default async function PortalPrescriptionsPage() {
       title="Prescriptions"
       subtitle="Dose schedule, adherence, and refill supply."
       actions={
-        <Link
-          href="/portal/refills/new"
-          className="btn-primary inline-flex w-full items-center justify-center gap-1.5 sm:w-auto"
-        >
-          <Plus className="h-4 w-4" /> Request refill
-        </Link>
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <PrescriptionUploadModal />
+          <Link
+            href="/portal/refills/new"
+            className="btn-primary inline-flex flex-1 items-center justify-center gap-1.5 sm:flex-none"
+          >
+            <Plus className="h-4 w-4" /> Request refill
+          </Link>
+        </div>
       }
     >
       {/* Completes Taken/Skip/Later when opened from a push action deep link */}
@@ -296,9 +301,20 @@ export default async function PortalPrescriptionsPage() {
                           <h3 className="text-base font-bold text-[#0c1a14] sm:text-lg">
                             {p.medicineName}
                           </h3>
-                          <Badge className={STATUS_COLOR[p.status] || "bg-slate-100 text-slate-700"}>
-                            {p.status.replace("_", " ")}
-                          </Badge>
+                          {p.lifecycleStatus ? (
+                            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300 capitalize">
+                              {p.lifecycleStatus.replace("_", " ")}
+                            </span>
+                          ) : (
+                            <Badge className={STATUS_COLOR[p.status] || "bg-slate-100 text-slate-700"}>
+                              {p.status.replace("_", " ")}
+                            </Badge>
+                          )}
+                          {p.intakeChannel && (
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 capitalize">
+                              {p.intakeChannel.replace("_", " ")}
+                            </span>
+                          )}
                         </div>
                         <p className="mt-0.5 text-xs font-medium text-[#0d6e5a]">
                           {formula.formulaLabel}

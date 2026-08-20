@@ -427,6 +427,7 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   CustomerNote: 'CustomerNote',
   PrescriptionAdherence: 'PrescriptionAdherence',
+  PrescriptionClarificationLog: 'PrescriptionClarificationLog',
   MedicationSchedule: 'MedicationSchedule',
   DoseLog: 'DoseLog',
   AdherenceEscalation: 'AdherenceEscalation',
@@ -476,7 +477,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "pushDevice" | "session" | "passwordReset" | "emailVerification" | "customerProfile" | "caregiver" | "customerPreference" | "prescription" | "refillRequest" | "timelineEvent" | "segment" | "customerSegment" | "conversation" | "message" | "messageTemplate" | "notification" | "reminder" | "campaign" | "loyaltyAccount" | "loyaltyTransaction" | "coupon" | "enquiry" | "feedback" | "knowledgeArticle" | "aiConversation" | "aiMessage" | "auditLog" | "customerNote" | "prescriptionAdherence" | "medicationSchedule" | "doseLog" | "adherenceEscalation" | "medicationCategory" | "medicationMaster" | "pharmacyInventory" | "inventoryLot" | "stockMovement" | "activeIngredient" | "medicationActiveIngredient" | "manufacturer" | "medicationInteraction" | "clinicalTag" | "medicationClinicalTag" | "medicationLookup" | "order" | "orderItem" | "payment" | "loyaltyRule" | "caregiverInvite" | "pharmacyService" | "serviceBooking" | "adminNotification" | "pharmacySettings" | "symptomSession" | "symptomMessage" | "symptomCheckIn" | "prescriptionFill" | "inventoryReservation" | "refund" | "inventoryAllocation" | "commerceEvent" | "medicationPriceHistory" | "cashierSession"
+    modelProps: "user" | "pushDevice" | "session" | "passwordReset" | "emailVerification" | "customerProfile" | "caregiver" | "customerPreference" | "prescription" | "refillRequest" | "timelineEvent" | "segment" | "customerSegment" | "conversation" | "message" | "messageTemplate" | "notification" | "reminder" | "campaign" | "loyaltyAccount" | "loyaltyTransaction" | "coupon" | "enquiry" | "feedback" | "knowledgeArticle" | "aiConversation" | "aiMessage" | "auditLog" | "customerNote" | "prescriptionAdherence" | "prescriptionClarificationLog" | "medicationSchedule" | "doseLog" | "adherenceEscalation" | "medicationCategory" | "medicationMaster" | "pharmacyInventory" | "inventoryLot" | "stockMovement" | "activeIngredient" | "medicationActiveIngredient" | "manufacturer" | "medicationInteraction" | "clinicalTag" | "medicationClinicalTag" | "medicationLookup" | "order" | "orderItem" | "payment" | "loyaltyRule" | "caregiverInvite" | "pharmacyService" | "serviceBooking" | "adminNotification" | "pharmacySettings" | "symptomSession" | "symptomMessage" | "symptomCheckIn" | "prescriptionFill" | "inventoryReservation" | "refund" | "inventoryAllocation" | "commerceEvent" | "medicationPriceHistory" | "cashierSession"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2697,6 +2698,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PrescriptionAdherenceCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PrescriptionAdherenceCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrescriptionClarificationLog: {
+      payload: Prisma.$PrescriptionClarificationLogPayload<ExtArgs>
+      fields: Prisma.PrescriptionClarificationLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrescriptionClarificationLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrescriptionClarificationLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>
+        }
+        findFirst: {
+          args: Prisma.PrescriptionClarificationLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrescriptionClarificationLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>
+        }
+        findMany: {
+          args: Prisma.PrescriptionClarificationLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>[]
+        }
+        create: {
+          args: Prisma.PrescriptionClarificationLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>
+        }
+        createMany: {
+          args: Prisma.PrescriptionClarificationLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrescriptionClarificationLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>[]
+        }
+        delete: {
+          args: Prisma.PrescriptionClarificationLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>
+        }
+        update: {
+          args: Prisma.PrescriptionClarificationLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrescriptionClarificationLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrescriptionClarificationLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrescriptionClarificationLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrescriptionClarificationLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionClarificationLogPayload>
+        }
+        aggregate: {
+          args: Prisma.PrescriptionClarificationLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrescriptionClarificationLog>
+        }
+        groupBy: {
+          args: Prisma.PrescriptionClarificationLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrescriptionClarificationLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrescriptionClarificationLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrescriptionClarificationLogCountAggregateOutputType> | number
         }
       }
     }
@@ -5403,6 +5478,32 @@ export const PrescriptionScalarFieldEnum = {
   prescriber: 'prescriber',
   unitPrice: 'unitPrice',
   status: 'status',
+  intakeChannel: 'intakeChannel',
+  lifecycleStatus: 'lifecycleStatus',
+  patientVerified: 'patientVerified',
+  patientVerifiedAt: 'patientVerifiedAt',
+  patientVerificationNotes: 'patientVerificationNotes',
+  prescriberLicense: 'prescriberLicense',
+  prescriberPhone: 'prescriberPhone',
+  prescriberEmail: 'prescriberEmail',
+  prescriberFacility: 'prescriberFacility',
+  prescriberVerified: 'prescriberVerified',
+  prescriberVerifiedAt: 'prescriberVerifiedAt',
+  isUnclear: 'isUnclear',
+  unclearReason: 'unclearReason',
+  clarificationStatus: 'clarificationStatus',
+  clarificationContactMethod: 'clarificationContactMethod',
+  clarificationNotes: 'clarificationNotes',
+  clarificationContactedAt: 'clarificationContactedAt',
+  clarificationResolvedAt: 'clarificationResolvedAt',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  reviewDecision: 'reviewDecision',
+  reviewNotes: 'reviewNotes',
+  rejectionReason: 'rejectionReason',
+  holdReason: 'holdReason',
+  attachmentUrls: 'attachmentUrls',
+  dispensingOrderId: 'dispensingOrderId',
   notes: 'notes',
   medicationId: 'medicationId',
   dispatchedAt: 'dispatchedAt',
@@ -5758,6 +5859,21 @@ export const PrescriptionAdherenceScalarFieldEnum = {
 } as const
 
 export type PrescriptionAdherenceScalarFieldEnum = (typeof PrescriptionAdherenceScalarFieldEnum)[keyof typeof PrescriptionAdherenceScalarFieldEnum]
+
+
+export const PrescriptionClarificationLogScalarFieldEnum = {
+  id: 'id',
+  prescriptionId: 'prescriptionId',
+  contactMethod: 'contactMethod',
+  contactedTo: 'contactedTo',
+  inquiryDetails: 'inquiryDetails',
+  doctorResponse: 'doctorResponse',
+  resolved: 'resolved',
+  staffId: 'staffId',
+  createdAt: 'createdAt'
+} as const
+
+export type PrescriptionClarificationLogScalarFieldEnum = (typeof PrescriptionClarificationLogScalarFieldEnum)[keyof typeof PrescriptionClarificationLogScalarFieldEnum]
 
 
 export const MedicationScheduleScalarFieldEnum = {
@@ -6627,6 +6743,48 @@ export type ListEnumPrescriptionStatusFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'PrescriptionIntakeChannel'
+ */
+export type EnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrescriptionIntakeChannel'>
+    
+
+
+/**
+ * Reference to a field of type 'PrescriptionIntakeChannel[]'
+ */
+export type ListEnumPrescriptionIntakeChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrescriptionIntakeChannel[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PrescriptionLifecycleStatus'
+ */
+export type EnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrescriptionLifecycleStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PrescriptionLifecycleStatus[]'
+ */
+export type ListEnumPrescriptionLifecycleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrescriptionLifecycleStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ClarificationStatus'
+ */
+export type EnumClarificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClarificationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ClarificationStatus[]'
+ */
+export type ListEnumClarificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClarificationStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'PickupPreference'
  */
 export type EnumPickupPreferenceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PickupPreference'>
@@ -7338,6 +7496,7 @@ export type GlobalOmitConfig = {
   auditLog?: Prisma.AuditLogOmit
   customerNote?: Prisma.CustomerNoteOmit
   prescriptionAdherence?: Prisma.PrescriptionAdherenceOmit
+  prescriptionClarificationLog?: Prisma.PrescriptionClarificationLogOmit
   medicationSchedule?: Prisma.MedicationScheduleOmit
   doseLog?: Prisma.DoseLogOmit
   adherenceEscalation?: Prisma.AdherenceEscalationOmit
