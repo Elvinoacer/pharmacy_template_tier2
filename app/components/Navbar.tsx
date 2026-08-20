@@ -102,6 +102,13 @@ const CATEGORIES: NavCategory[] = [
         badge: "AI Tool",
       },
       {
+        href: "/health/self-care-guide",
+        label: "Self-Care vs Doctor Guide",
+        desc: "When to self-treat vs see a clinician",
+        icon: ShieldCheck,
+        badge: "Triage",
+      },
+      {
         href: "/health",
         label: "Health Library",
         desc: "Medication guides & wellness tips",
@@ -111,7 +118,7 @@ const CATEGORIES: NavCategory[] = [
         href: "/caregiver",
         label: "Caregiver Portal",
         desc: "Manage meds for family members",
-        icon: ShieldCheck,
+        icon: Users,
       },
     ],
   },

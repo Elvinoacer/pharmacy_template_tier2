@@ -16,13 +16,24 @@ const prisma = new PrismaClient({ adapter });
 
 const publicSlugs = [
   "pain-relief",
-  "vitamins-supplements",
-  "baby-care",
-  "first-aid",
-  "skin-care",
-  "diabetes-care",
-  "womens-health",
   "cold-flu",
+  "allergy",
+  "allergy-treatments",
+  "digestive",
+  "digestive-health",
+  "first-aid",
+  "topical-treatments",
+  "skin-care",
+  "antiseptics",
+  "wound-care",
+  "oral-care",
+  "womens-health",
+  "feminine-hygiene",
+  "baby-care",
+  "medical-consumables",
+  "diabetes-care",
+  "vitamins-supplements",
+  "nutritional-products",
 ];
 
 async function main() {

@@ -143,7 +143,38 @@ export default async function MedicinesPage({
       />
 
       <section className="px-4 pb-6 sm:px-6">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-6xl space-y-4">
+          {/* Clinical Self-Care Advisory Banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border border-teal-800/15 bg-gradient-to-r from-teal-50/90 via-emerald-50/50 to-white p-5 shadow-xs">
+            <div className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-teal-800 text-base text-white shadow-xs">
+                💡
+              </span>
+              <div>
+                <h3 className="text-sm font-bold text-teal-950">
+                  Not sure if your symptom is suitable for self-care?
+                </h3>
+                <p className="mt-0.5 text-xs text-[#5a6b62]">
+                  Consult our pharmacist-verified guide to learn when OTC treatments are safe and when symptoms warrant medical evaluation.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href="/health/self-care-guide"
+                className="btn-primary !py-2 !px-4 text-xs font-semibold"
+              >
+                Self-Care vs Doctor Guide →
+              </Link>
+              <Link
+                href="/how-do-you-feel"
+                className="btn-ghost !py-2 !px-4 text-xs font-semibold"
+              >
+                AI Symptom Check
+              </Link>
+            </div>
+          </div>
+
           <MedicinesBrowseTools
             q={q}
             category={category}
@@ -204,46 +235,79 @@ export default async function MedicinesPage({
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {publicCategories.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/medicines/${c.slug}`}
-                  className="card-lift group overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm"
-                >
-                  <div className="relative h-40 overflow-hidden bg-[#eef5f1]">
-                    {c.imageUrl ? (
-                      <Image
-                        src={c.imageUrl}
-                        alt={c.name}
-                        fill
-                        className="object-cover transition duration-700 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, 25vw"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-4xl opacity-30">
-                        💊
+              {publicCategories.map((c) => {
+                const emojis: Record<string, string> = {
+                  "pain-relief": "🧠",
+                  "cold-flu": "🫁",
+                  "allergy-treatments": "🌿",
+                  "digestive-health": "🫄",
+                  "first-aid": "🩹",
+                  "topical-treatments": "🧴",
+                  "skin-care": "✨",
+                  antiseptics: "🧪",
+                  "wound-care": "🩹",
+                  "oral-care": "👄",
+                  "feminine-hygiene": "🌸",
+                  "baby-care": "👶",
+                  "medical-consumables": "🩺",
+                  "nutritional-products": "⚡",
+                };
+                const emoji = emojis[c.slug] || "💊";
+
+                return (
+                  <Link
+                    key={c.slug}
+                    href={`/medicines/${c.slug}`}
+                    className="card-lift group flex flex-col justify-between overflow-hidden rounded-3xl border border-[#e3ebe6] bg-white shadow-xs transition duration-300 hover:border-teal-500/40 hover:shadow-lg"
+                  >
+                    <div>
+                      <div className="relative h-44 overflow-hidden bg-[#eef5f1]">
+                        {c.imageUrl ? (
+                          <Image
+                            src={c.imageUrl}
+                            alt={c.name}
+                            fill
+                            className="object-cover transition duration-700 group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 25vw"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-5xl opacity-30">
+                            {emoji}
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                        
+                        <span className="absolute top-3 left-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 text-sm shadow-xs backdrop-blur-xs">
+                          {emoji}
+                        </span>
+
+                        {c.publicMedCount > 0 && (
+                          <span className="absolute top-3 right-3 rounded-full bg-teal-900/85 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs backdrop-blur-xs">
+                            {c.publicMedCount} products
+                          </span>
+                        )}
+
+                        <h3
+                          className="absolute bottom-3 left-3 right-3 text-lg font-bold text-white group-hover:text-teal-100 transition-colors"
+                          style={{ fontFamily: "var(--font-display), serif" }}
+                        >
+                          {c.name}
+                        </h3>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    <h3
-                      className="absolute bottom-3 left-3 right-3 text-lg font-semibold text-white"
-                      style={{ fontFamily: "var(--font-display), serif" }}
-                    >
-                      {c.name}
-                    </h3>
-                  </div>
-                  <div className="p-4">
-                    <p className="line-clamp-3 text-sm leading-relaxed text-[#5a6b62]">
-                      {c.description || "Browse products and pharmacist guidance in this category."}
-                    </p>
-                    {c.publicMedCount > 0 && (
-                      <p className="mt-2 text-xs font-semibold text-teal-800">
-                        {c.publicMedCount} product{c.publicMedCount === 1 ? "" : "s"} listed
-                      </p>
-                    )}
-                  </div>
-                </Link>
-              ))}
+                      <div className="p-4">
+                        <p className="line-clamp-2 text-xs leading-relaxed text-[#5a6b62]">
+                          {c.description || "Browse stocked remedies and clinical self-care guidance."}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-[#f0f4f1] px-4 py-2.5 bg-[#fafcfb] flex items-center justify-between text-xs font-semibold text-teal-800">
+                      <span>Explore category & guidance</span>
+                      <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
