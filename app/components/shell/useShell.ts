@@ -7,55 +7,104 @@ import { usePathname } from "next/navigation";
  * Enhanced sidebar state with collapse, pinned items, width persistence, and group collapse.
  * Supports drag-to-resize, favorite pinning, and collapsible navigation groups.
  */
+type CachedSidebarState = {
+  collapsed: boolean;
+  width: number;
+  pinned: string[];
+  collapsedGroups: Record<string, boolean>;
+  hydrated: boolean;
+};
+
+// In-memory module cache so SPA navigations render instantly with zero layout shifts or flash
+const sidebarMemoryCache: Record<string, CachedSidebarState> = {};
+const sidebarScrollMemory: Record<string, number> = {};
+let cachedAttentionCounts: AttentionCounts = { count: 0, feel: 0 };
+
+/**
+ * Enhanced sidebar state with collapse, pinned items, width persistence, and group collapse.
+ * Supports drag-to-resize, favorite pinning, and collapsible navigation groups.
+ */
 export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver") {
   const collapsedKey = `aether:sidebar:${storageKey}:collapsed`;
   const widthKey = `aether:sidebar:${storageKey}:width`;
   const pinnedKey = `aether:sidebar:${storageKey}:pinned`;
   const groupsKey = `aether:sidebar:${storageKey}:groups`;
+
+  const cached = sidebarMemoryCache[storageKey];
   
-  const [collapsed, setCollapsed] = useState(false);
-  const [width, setWidth] = useState<number>(264);
-  const [pinned, setPinned] = useState<string[]>([]);
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-  const [hydrated, setHydrated] = useState(false);
+  const [collapsed, setCollapsed] = useState<boolean>(() => cached?.collapsed ?? false);
+  const [width, setWidth] = useState<number>(() => cached?.width ?? 264);
+  const [pinned, setPinned] = useState<string[]>(() => cached?.pinned ?? []);
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>(() => cached?.collapsedGroups ?? {});
+  const [hydrated, setHydrated] = useState<boolean>(() => cached?.hydrated ?? false);
   const [isResizing, setIsResizing] = useState(false);
 
+  // Sync to memory cache whenever state changes
   useEffect(() => {
-    let cancelled = false;
-    queueMicrotask(() => {
-      if (cancelled) return;
-      try {
-        const storedCollapsed = localStorage.getItem(collapsedKey);
-        const storedWidth = localStorage.getItem(widthKey);
-        const storedPinned = localStorage.getItem(pinnedKey);
-        const storedGroups = localStorage.getItem(groupsKey);
-        
-        if (storedCollapsed !== null) setCollapsed(storedCollapsed === "true");
-        if (storedWidth !== null) {
-          const w = parseInt(storedWidth, 10);
-          if (!isNaN(w) && w >= 200 && w <= 400) setWidth(w);
-        }
-        if (storedPinned !== null) {
-          const p = JSON.parse(storedPinned);
-          if (Array.isArray(p)) setPinned(p);
-        }
-        if (storedGroups !== null) {
-          const g = JSON.parse(storedGroups);
-          if (g && typeof g === "object") setCollapsedGroups(g);
-        }
-      } catch {
-        /* ignore */
-      }
-      setHydrated(true);
-    });
-    return () => {
-      cancelled = true;
+    sidebarMemoryCache[storageKey] = {
+      collapsed,
+      width,
+      pinned,
+      collapsedGroups,
+      hydrated,
     };
-  }, [collapsedKey, widthKey, pinnedKey, groupsKey]);
+  }, [storageKey, collapsed, width, pinned, collapsedGroups, hydrated]);
+
+  useEffect(() => {
+    if (sidebarMemoryCache[storageKey]?.hydrated) {
+      setHydrated(true);
+      return;
+    }
+
+    try {
+      const storedCollapsed = localStorage.getItem(collapsedKey);
+      const storedWidth = localStorage.getItem(widthKey);
+      const storedPinned = localStorage.getItem(pinnedKey);
+      const storedGroups = localStorage.getItem(groupsKey);
+      
+      let nextCollapsed = false;
+      let nextWidth = 264;
+      let nextPinned: string[] = [];
+      let nextGroups: Record<string, boolean> = {};
+
+      if (storedCollapsed !== null) nextCollapsed = storedCollapsed === "true";
+      if (storedWidth !== null) {
+        const w = parseInt(storedWidth, 10);
+        if (!isNaN(w) && w >= 200 && w <= 400) nextWidth = w;
+      }
+      if (storedPinned !== null) {
+        const p = JSON.parse(storedPinned);
+        if (Array.isArray(p)) nextPinned = p;
+      }
+      if (storedGroups !== null) {
+        const g = JSON.parse(storedGroups);
+        if (g && typeof g === "object") nextGroups = g;
+      }
+
+      setCollapsed(nextCollapsed);
+      setWidth(nextWidth);
+      setPinned(nextPinned);
+      setCollapsedGroups(nextGroups);
+      setHydrated(true);
+
+      sidebarMemoryCache[storageKey] = {
+        collapsed: nextCollapsed,
+        width: nextWidth,
+        pinned: nextPinned,
+        collapsedGroups: nextGroups,
+        hydrated: true,
+      };
+    } catch {
+      setHydrated(true);
+    }
+  }, [collapsedKey, widthKey, pinnedKey, groupsKey, storageKey]);
 
   const toggle = useCallback(() => {
     setCollapsed((c) => {
       const next = !c;
+      if (sidebarMemoryCache[storageKey]) {
+        sidebarMemoryCache[storageKey].collapsed = next;
+      }
       try {
         localStorage.setItem(collapsedKey, String(next));
       } catch {
@@ -63,23 +112,29 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
       }
       return next;
     });
-  }, [collapsedKey]);
+  }, [collapsedKey, storageKey]);
 
   const setWidthSafe = useCallback((w: number) => {
     const clamped = Math.max(200, Math.min(400, w));
     setWidth(clamped);
+    if (sidebarMemoryCache[storageKey]) {
+      sidebarMemoryCache[storageKey].width = clamped;
+    }
     try {
       localStorage.setItem(widthKey, String(clamped));
     } catch {
       /* ignore */
     }
-  }, [widthKey]);
+  }, [widthKey, storageKey]);
 
   const togglePin = useCallback((href: string) => {
     setPinned((prev) => {
       const next = prev.includes(href) 
         ? prev.filter((h) => h !== href)
         : [...prev, href];
+      if (sidebarMemoryCache[storageKey]) {
+        sidebarMemoryCache[storageKey].pinned = next;
+      }
       try {
         localStorage.setItem(pinnedKey, JSON.stringify(next));
       } catch {
@@ -87,7 +142,7 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
       }
       return next;
     });
-  }, [pinnedKey]);
+  }, [pinnedKey, storageKey]);
 
   const isPinned = useCallback((href: string) => {
     return pinned.includes(href);
@@ -96,6 +151,9 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
   const toggleGroup = useCallback((groupId: string) => {
     setCollapsedGroups((prev) => {
       const next = { ...prev, [groupId]: !prev[groupId] };
+      if (sidebarMemoryCache[storageKey]) {
+        sidebarMemoryCache[storageKey].collapsedGroups = next;
+      }
       try {
         localStorage.setItem(groupsKey, JSON.stringify(next));
       } catch {
@@ -103,7 +161,7 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
       }
       return next;
     });
-  }, [groupsKey]);
+  }, [groupsKey, storageKey]);
 
   const isGroupCollapsed = useCallback((groupId: string) => {
     return !!collapsedGroups[groupId];
@@ -150,6 +208,71 @@ export function useSidebarEnhanced(storageKey: "portal" | "admin" | "caregiver")
 }
 
 /**
+ * Persists and restores sidebar scroll position across route navigations and page reloads.
+ * Also ensures the active link stays in view without snapping to the top.
+ */
+export function useSidebarScroll(storageKey: string) {
+  const scrollKey = `aether:sidebar:${storageKey}:scroll`;
+  const navRef = useRef<HTMLElement | null>(null);
+  const pathname = usePathname();
+
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLElement>) => {
+      const top = (e.currentTarget as HTMLElement).scrollTop;
+      sidebarScrollMemory[storageKey] = top;
+      try {
+        sessionStorage.setItem(scrollKey, String(top));
+      } catch {
+        /* ignore */
+      }
+    },
+    [storageKey, scrollKey]
+  );
+
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+
+    const restore = () => {
+      let savedTop: number | null = null;
+      if (typeof sidebarScrollMemory[storageKey] === "number") {
+        savedTop = sidebarScrollMemory[storageKey];
+      } else {
+        try {
+          const stored = sessionStorage.getItem(scrollKey);
+          if (stored !== null) {
+            const parsed = parseFloat(stored);
+            if (!isNaN(parsed)) savedTop = parsed;
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+
+      if (savedTop !== null && savedTop > 0) {
+        el.scrollTop = savedTop;
+      } else {
+        // If no scroll position is recorded yet, ensure active link is in view
+        const activeLink = el.querySelector<HTMLElement>('[data-active="true"], a.active');
+        if (activeLink) {
+          const navRect = el.getBoundingClientRect();
+          const linkRect = activeLink.getBoundingClientRect();
+          if (linkRect.top < navRect.top || linkRect.bottom > navRect.bottom) {
+            activeLink.scrollIntoView({ block: "nearest", behavior: "auto" });
+          }
+        }
+      }
+    };
+
+    restore();
+    const rafId = requestAnimationFrame(restore);
+    return () => cancelAnimationFrame(rafId);
+  }, [pathname, storageKey, scrollKey]);
+
+  return { navRef, handleScroll };
+}
+
+/**
  * Legacy hook for backward compatibility
  */
 export function useSidebarCollapsed(storageKey: "portal" | "admin" | "caregiver") {
@@ -176,7 +299,7 @@ export type AttentionCounts = {
  * Polls every 20s while the tab is visible (faster for clinical urgency).
  */
 export function useAttentionCounts(): AttentionCounts {
-  const [counts, setCounts] = useState<AttentionCounts>({ count: 0, feel: 0 });
+  const [counts, setCounts] = useState<AttentionCounts>(cachedAttentionCounts);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -189,13 +312,15 @@ export function useAttentionCounts(): AttentionCounts {
         if (!r.ok) return;
         const j = await r.json();
         if (cancelled) return;
-        setCounts({
+        const next: AttentionCounts = {
           count: typeof j.count === "number" ? j.count : 0,
           feel: typeof j.feel === "number" ? j.feel : 0,
           feelWorse: typeof j.feelWorse === "number" ? j.feelWorse : undefined,
           feelEscalated: typeof j.feelEscalated === "number" ? j.feelEscalated : undefined,
           feelReplies: typeof j.feelReplies === "number" ? j.feelReplies : undefined,
-        });
+        };
+        cachedAttentionCounts = next;
+        setCounts(next);
       } catch {
         /* ignore — best-effort */
       }

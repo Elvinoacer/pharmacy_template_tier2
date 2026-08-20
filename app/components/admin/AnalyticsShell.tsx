@@ -28,6 +28,7 @@ export function PeriodSelector({
         <Link
           key={p}
           href={`${basePath}?period=${p}`}
+          scroll={false}
           className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
             current === p
               ? "border-[var(--admin-accent)] bg-[var(--admin-accent)] text-[var(--admin-btn-fg)]"
