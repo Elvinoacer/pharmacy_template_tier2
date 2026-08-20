@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
-import { useSidebarEnhanced, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
+import { useSidebarEnhanced, useSidebarScroll, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
 
 export const CAREGIVER_LINKS = [
   { href: "/caregiver", label: "Dashboard", icon: HeartHandshake, group: "overview" },
@@ -59,6 +59,8 @@ export function CaregiverShell({
   actions?: React.ReactNode;
 }) {
   const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing, collapsedGroups, toggleGroup, isGroupCollapsed } = useSidebarEnhanced("caregiver");
+  const { navRef: desktopNavRef, handleScroll: handleDesktopScroll } = useSidebarScroll("caregiver");
+  const { navRef: mobileNavRef, handleScroll: handleMobileScroll } = useSidebarScroll("caregiver_mobile");
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = useActivePath();
 
@@ -94,7 +96,7 @@ export function CaregiverShell({
         style={hydrated && !collapsed ? { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` } as React.CSSProperties : undefined}
       >
         <div className="flex h-16 items-center gap-2.5 px-4 border-b border-[#e3ebe6]">
-          <Link href="/caregiver" className="flex items-center gap-2.5 min-w-0">
+          <Link href="/caregiver" scroll={false} className="flex items-center gap-2.5 min-w-0">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-md shadow-teal-900/20">
               <HeartHandshake className="h-4 w-4" />
             </span>
@@ -107,7 +109,11 @@ export function CaregiverShell({
           </Link>
         </div>
 
-        <nav className="flex-1 overflow-y-auto scroll-thin px-3 py-4">
+        <nav
+          ref={desktopNavRef}
+          onScroll={handleDesktopScroll}
+          className="flex-1 overflow-y-auto scroll-thin px-3 py-4"
+        >
           {/* Pinned section */}
           {!collapsed && pinnedLinks.length > 0 && (
             <div className="sidebar-nav-section">
@@ -122,6 +128,8 @@ export function CaregiverShell({
                     <li key={l.href} className="relative tooltip-host nav-link-pinned is-pinned">
                       <Link
                         href={l.href}
+                        scroll={false}
+                        data-active={active ? "true" : undefined}
                         className={`nav-link-portal ${active ? "active" : ""} pr-8`}
                         title={l.label}
                       >
@@ -179,6 +187,8 @@ export function CaregiverShell({
                         <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
                           <Link
                             href={l.href}
+                            scroll={false}
+                            data-active={active ? "true" : undefined}
                             className={`nav-link-portal ${active ? "active" : ""} pr-8`}
                             title={l.label}
                           >
@@ -244,7 +254,7 @@ export function CaregiverShell({
           <div className="sidebar-backdrop lg:hidden" onClick={() => setMobileOpen(false)} />
           <aside className="sidebar-drawer lg:hidden flex flex-col bg-white">
             <div className="flex h-16 items-center justify-between gap-2.5 px-4 border-b border-[#e3ebe6]">
-              <Link href="/caregiver" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
+              <Link href="/caregiver" scroll={false} onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white">
                   <HeartHandshake className="h-4 w-4" />
                 </span>
@@ -262,7 +272,11 @@ export function CaregiverShell({
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto scroll-thin px-3 py-4">
+            <nav
+              ref={mobileNavRef}
+              onScroll={handleMobileScroll}
+              className="flex-1 overflow-y-auto scroll-thin px-3 py-4"
+            >
               <ul className="space-y-1">
                 {CAREGIVER_LINKS.map((l) => {
                   const Icon = l.icon;
@@ -271,6 +285,8 @@ export function CaregiverShell({
                     <li key={l.href}>
                       <Link
                         href={l.href}
+                        scroll={false}
+                        data-active={active ? "true" : undefined}
                         onClick={() => setMobileOpen(false)}
                         className={`nav-link-portal ${active ? "active" : ""}`}
                       >
@@ -308,7 +324,7 @@ export function CaregiverShell({
         </button>
 
         <div className="hidden md:flex items-center gap-1.5 text-xs text-[#8a9a92]">
-          <Link href="/caregiver" className="hover:text-[#0d6e5a]">Caregiver</Link>
+          <Link href="/caregiver" scroll={false} className="hover:text-[#0d6e5a]">Caregiver</Link>
           {pathname !== "/caregiver" && (
             <>
               <ChevronRight className="h-3 w-3" />

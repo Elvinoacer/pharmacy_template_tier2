@@ -33,6 +33,7 @@ import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
 import {
   useSidebarEnhanced,
+  useSidebarScroll,
   useAttentionCounts,
   useActivePath,
   isLinkActive,
@@ -79,6 +80,8 @@ export function PortalShell({
   actions?: React.ReactNode;
 }) {
   const { collapsed, toggle, hydrated, width, pinned, togglePin, isPinned, startResize, isResizing, collapsedGroups, toggleGroup, isGroupCollapsed } = useSidebarEnhanced("portal");
+  const { navRef: desktopNavRef, handleScroll: handleDesktopScroll } = useSidebarScroll("portal");
+  const { navRef: mobileNavRef, handleScroll: handleMobileScroll } = useSidebarScroll("portal_mobile");
   const [mobileOpen, setMobileOpen] = useState(false);
   const attention = useAttentionCounts();
   const unread = attention.count;
@@ -118,7 +121,7 @@ export function PortalShell({
         style={hydrated && !collapsed ? { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` } as React.CSSProperties : undefined}
       >
         <div className="flex h-16 items-center gap-2.5 px-4 border-b border-[#e3ebe6]">
-          <Link href="/portal" className="flex items-center gap-2.5 min-w-0">
+          <Link href="/portal" scroll={false} className="flex items-center gap-2.5 min-w-0">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white font-bold shadow-md shadow-teal-900/20">
               A
             </span>
@@ -131,7 +134,11 @@ export function PortalShell({
           </Link>
         </div>
 
-        <nav className="flex-1 overflow-y-auto scroll-thin px-3 py-4">
+        <nav
+          ref={desktopNavRef}
+          onScroll={handleDesktopScroll}
+          className="flex-1 overflow-y-auto scroll-thin px-3 py-4"
+        >
           {/* Pinned section */}
           {!collapsed && pinnedLinks.length > 0 && (
             <div className="sidebar-nav-section">
@@ -148,6 +155,8 @@ export function PortalShell({
                     <li key={l.href} className="relative tooltip-host nav-link-pinned is-pinned">
                       <Link
                         href={l.href}
+                        scroll={false}
+                        data-active={active ? "true" : undefined}
                         className={`nav-link-portal ${active ? "active" : ""} pr-8`}
                         title={showFeel ? `${l.label} · ${feelBadge} new` : l.label}
                       >
@@ -214,6 +223,8 @@ export function PortalShell({
                         <li key={l.href} className={`relative tooltip-host nav-link-pinned ${isItemPinned ? "is-pinned" : ""}`}>
                           <Link
                             href={l.href}
+                            scroll={false}
+                            data-active={active ? "true" : undefined}
                             className={`nav-link-portal ${active ? "active" : ""} pr-8 ${
                               showFeel ? "!text-rose-700" : ""
                             }`}
@@ -283,7 +294,7 @@ export function PortalShell({
           <div className="sidebar-backdrop lg:hidden" onClick={() => setMobileOpen(false)} />
           <aside className="sidebar-drawer lg:hidden flex flex-col bg-white">
             <div className="flex h-16 items-center justify-between gap-2.5 px-4 border-b border-[#e3ebe6]">
-              <Link href="/portal" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
+              <Link href="/portal" scroll={false} onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white font-bold">
                   A
                 </span>
@@ -301,7 +312,11 @@ export function PortalShell({
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto scroll-thin px-3 py-4">
+            <nav
+              ref={mobileNavRef}
+              onScroll={handleMobileScroll}
+              className="flex-1 overflow-y-auto scroll-thin px-3 py-4"
+            >
               <ul className="space-y-1">
                 {PORTAL_LINKS.map((l) => {
                   const Icon = l.icon;
@@ -312,6 +327,8 @@ export function PortalShell({
                     <li key={l.href}>
                       <Link
                         href={l.href}
+                        scroll={false}
+                        data-active={active ? "true" : undefined}
                         onClick={() => setMobileOpen(false)}
                         className={`nav-link-portal ${active ? "active" : ""} ${
                           showFeel ? "!text-rose-700" : ""
@@ -356,7 +373,7 @@ export function PortalShell({
         </button>
 
         <div className="hidden md:flex items-center gap-1.5 text-xs text-[#8a9a92]">
-          <Link href="/portal" className="hover:text-[#0d6e5a]">Portal</Link>
+          <Link href="/portal" scroll={false} className="hover:text-[#0d6e5a]">Portal</Link>
           {pathname !== "/portal" && (
             <>
               <ChevronRight className="h-3 w-3" />

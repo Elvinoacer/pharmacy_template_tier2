@@ -56,6 +56,7 @@ import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
 import {
   useSidebarEnhanced,
+  useSidebarScroll,
   useAttentionCounts,
   useActivePath,
   isLinkActive,
@@ -201,6 +202,9 @@ export const ADMIN_LINKS = [
 type ThemeMode = "light" | "dark" | "system";
 const THEME_KEY = "aether-admin-theme";
 
+let cachedThemeMode: ThemeMode | null = null;
+let cachedResolvedTheme: "light" | "dark" | null = null;
+
 function resolveTheme(mode: ThemeMode): "light" | "dark" {
   if (mode === "light" || mode === "dark") return mode;
   if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -210,21 +214,28 @@ function resolveTheme(mode: ThemeMode): "light" | "dark" {
 }
 
 function useAdminTheme() {
-  const [mode, setMode] = useState<ThemeMode>("system");
-  const [resolved, setResolved] = useState<"light" | "dark">("light");
-  const [hydrated, setHydrated] = useState(false);
+  const [mode, setMode] = useState<ThemeMode>(() => cachedThemeMode ?? "system");
+  const [resolved, setResolved] = useState<"light" | "dark">(() => cachedResolvedTheme ?? "light");
+  const [hydrated, setHydrated] = useState<boolean>(() => cachedThemeMode !== null);
 
   useEffect(() => {
     const stored = (localStorage.getItem(THEME_KEY) as ThemeMode | null) || "system";
     const next = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+    const nextResolved = resolveTheme(next);
+    cachedThemeMode = next;
+    cachedResolvedTheme = nextResolved;
     setMode(next);
-    setResolved(resolveTheme(next));
+    setResolved(nextResolved);
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    const apply = () => setResolved(resolveTheme(mode));
+    const apply = () => {
+      const nextResolved = resolveTheme(mode);
+      cachedResolvedTheme = nextResolved;
+      setResolved(nextResolved);
+    };
     apply();
     if (mode !== "system") return;
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -234,9 +245,12 @@ function useAdminTheme() {
   }, [mode, hydrated]);
 
   const setTheme = (next: ThemeMode) => {
+    cachedThemeMode = next;
     setMode(next);
     localStorage.setItem(THEME_KEY, next);
-    setResolved(resolveTheme(next));
+    const nextResolved = resolveTheme(next);
+    cachedResolvedTheme = nextResolved;
+    setResolved(nextResolved);
   };
 
   const cycle = () => {
@@ -274,6 +288,9 @@ export function AdminShell({
     toggleGroup,
     isGroupCollapsed,
   } = useSidebarEnhanced("admin");
+
+  const { navRef: desktopNavRef, handleScroll: handleDesktopScroll } = useSidebarScroll("admin");
+  const { navRef: mobileNavRef, handleScroll: handleMobileScroll } = useSidebarScroll("admin_mobile");
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -341,7 +358,7 @@ export function AdminShell({
       >
         {/* Brand Header */}
         <div className="flex h-16 items-center justify-between gap-2.5 px-4 border-b admin-border">
-          <Link href="/admin" className="flex items-center gap-3 min-w-0 group">
+          <Link href="/admin" scroll={false} className="flex items-center gap-3 min-w-0 group">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-800 text-white font-extrabold text-sm shadow-md shadow-emerald-900/20 group-hover:scale-105 transition-transform">
               Rx
             </div>
@@ -394,7 +411,11 @@ export function AdminShell({
         )}
 
         {/* Navigation List */}
-        <nav className="flex-1 overflow-y-auto scroll-admin px-3 py-3 space-y-4">
+        <nav
+          ref={desktopNavRef}
+          onScroll={handleDesktopScroll}
+          className="flex-1 overflow-y-auto scroll-admin px-3 py-3 space-y-4"
+        >
           {/* Pinned Quick Links */}
           {!collapsed && pinnedLinks.length > 0 && !searchQuery && (
             <div className="space-y-1">
@@ -414,6 +435,8 @@ export function AdminShell({
                     <li key={l.href} className="relative group">
                       <Link
                         href={l.href}
+                        scroll={false}
+                        data-active={active ? "true" : undefined}
                         className={`flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition ${
                           active
                             ? "bg-gradient-to-r from-emerald-600/15 to-teal-600/10 text-emerald-800 dark:text-emerald-300 font-bold border-l-2 border-emerald-600"
@@ -458,6 +481,8 @@ export function AdminShell({
                   <li key={l.href} className="relative flex justify-center">
                     <Link
                       href={l.href}
+                      scroll={false}
+                      data-active={active ? "true" : undefined}
                       className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
                         active
                           ? "bg-emerald-600 text-white shadow-md shadow-emerald-900/20"
@@ -521,6 +546,8 @@ export function AdminShell({
                           <li key={l.href} className="relative group">
                             <Link
                               href={l.href}
+                              scroll={false}
+                              data-active={active ? "true" : undefined}
                               className={`flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition ${
                                 active
                                   ? "bg-gradient-to-r from-emerald-600/15 to-teal-600/10 text-emerald-800 dark:text-emerald-300 font-bold border-l-2 border-emerald-600 shadow-sm"
@@ -626,6 +653,7 @@ export function AdminShell({
             <div className="flex h-16 items-center justify-between gap-2.5 px-4 border-b admin-border">
               <Link
                 href="/admin"
+                scroll={false}
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3"
               >
@@ -647,7 +675,11 @@ export function AdminShell({
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto scroll-admin px-3 py-4 space-y-4">
+            <nav
+              ref={mobileNavRef}
+              onScroll={handleMobileScroll}
+              className="flex-1 overflow-y-auto scroll-admin px-3 py-4 space-y-4"
+            >
               {orderedGroups.map((groupId) => {
                 const groupDef = ADMIN_GROUPS[groupId as keyof typeof ADMIN_GROUPS];
                 const groupLabel = groupDef?.label || groupId;
@@ -673,6 +705,8 @@ export function AdminShell({
                           <li key={l.href}>
                             <Link
                               href={l.href}
+                              scroll={false}
+                              data-active={active ? "true" : undefined}
                               onClick={() => setMobileOpen(false)}
                               className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition ${
                                 active
@@ -730,7 +764,7 @@ export function AdminShell({
         </button>
 
         <div className="hidden md:flex items-center gap-2 text-xs admin-soft">
-          <Link href="/admin" className="hover:text-[var(--admin-accent)] transition-colors font-medium">
+          <Link href="/admin" scroll={false} className="hover:text-[var(--admin-accent)] transition-colors font-medium">
             Admin
           </Link>
           {pathname !== "/admin" && (
