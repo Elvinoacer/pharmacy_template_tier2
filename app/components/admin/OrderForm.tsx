@@ -16,6 +16,11 @@ import {
   FileText,
   Printer,
   Lock,
+  Stethoscope,
+  ShieldCheck,
+  Calendar,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 import { CustomerPicker } from "@/app/components/CustomerPicker";
 import { MpesaStkPanel } from "@/app/components/payments/MpesaStkPanel";
@@ -55,9 +60,19 @@ export default function OrderForm({
   const [billingUnit, setBillingUnit] = useState("UNIT");
   const [couponCode, setCouponCode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "daraja" | "card">("cash");
-  const [createRx, setCreateRx] = useState(false);
   const [autoDispatch, setAutoDispatch] = useState(true);
   const [mpesaPhone, setMpesaPhone] = useState("");
+  
+  // Prescription validation state
+  const [rxMode, setRxMode] = useState<"new" | "existing">("new");
+  const [prescriptionId, setPrescriptionId] = useState("");
+  const [prescriber, setPrescriber] = useState("");
+  const [prescriberLicense, setPrescriberLicense] = useState("");
+  const [rxReference, setRxReference] = useState("");
+  const [refillsRemaining, setRefillsRemaining] = useState(0);
+  const [daysSupply, setDaysSupply] = useState(30);
+  const [patientNationalId, setPatientNationalId] = useState("");
+
   const [stkOrder, setStkOrder] = useState<{
     orderId: string;
     phone: string;
@@ -70,6 +85,7 @@ export default function OrderForm({
   const [receiptModalOpen, setReceiptModalOpen] = useState(false);
 
   const selected = medications.find((m) => m.id === medicationId);
+  const isRx = Boolean(selected?.prescriptionRequired && !selected?.overTheCounter);
   const total = selected ? selected.price * quantity : 0;
 
   void _customers;
@@ -101,6 +117,7 @@ export default function OrderForm({
       .finally(() => setClinicalLoading(false));
   }, [medicationId, customerId, quantity]);
 
+  // Reset form on success
   useEffect(() => {
     if (state?.success) {
       toast.success(state.success);
@@ -118,19 +135,19 @@ export default function OrderForm({
         setQuantity(1);
         setCouponCode("");
         setPaymentMethod("cash");
-        setCreateRx(false);
         setAutoDispatch(true);
         setMpesaPhone("");
+        setPrescriber("");
+        setPrescriberLicense("");
+        setRxReference("");
+        setRefillsRemaining(0);
+        setPatientNationalId("");
+        setPrescriptionId("");
         setClinicalReport(null);
       }
     }
     if (state?.error) toast.error(state.error);
   }, [state, mpesaPhone]);
-
-  // OTC defaults to auto-dispatch; Rx-ish holds can stay unchecked.
-  useEffect(() => {
-    if (selected?.overTheCounter) setAutoDispatch(true);
-  }, [selected?.id, selected?.overTheCounter]);
 
   return (
     <div className="space-y-4">
@@ -160,7 +177,7 @@ export default function OrderForm({
           />
           <p className="mt-2 text-[10px] text-teal-800">
             {autoDispatch
-              ? "On success this counter sale auto-marks as dispatched (uncheck above next time to hold stock for later handoff)."
+              ? "On success this counter sale auto-marks as dispatched with FEFO lot deduction."
               : "On success the order stays paid/reserved until you mark dispatched."}
           </p>
         </div>
@@ -174,10 +191,10 @@ export default function OrderForm({
         )}
 
         {state?.success && !stkOrder && (
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-900">
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-900 dark:text-emerald-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-600" />
+                <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 <span className="font-bold">{state.success}</span>
               </div>
               {lastCreatedOrderId && (
@@ -196,6 +213,7 @@ export default function OrderForm({
 
         <input type="hidden" name="source" value="counter" />
         <input type="hidden" name="customerId" value={customerId} />
+        <input type="hidden" name="prescriptionId" value={prescriptionId} />
         <input type="hidden" name="paymentMethod" value={paymentMethod} />
         <input type="hidden" name="billingUnit" value={billingUnit} />
         <input type="hidden" name="autoDispatch" value={autoDispatch ? "on" : "off"} />
@@ -205,124 +223,191 @@ export default function OrderForm({
           value={autoDispatch ? "immediate" : "reserve"}
         />
 
-        <div>
-          <label className="label-admin">Customer (optional — leave blank for walk-in)</label>
+        {/* ── Patient Identification ── */}
+        <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="label-admin font-bold text-xs flex items-center gap-1.5">
+              <User className="h-3.5 w-3.5 text-emerald-600" />
+              <span>Patient / Customer {isRx ? "*" : "(optional for walk-in)"}</span>
+            </label>
+            {isRx && (
+              <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-[9px] font-bold text-blue-700 dark:text-blue-300">
+                Patient Required for Rx Dispense
+              </span>
+            )}
+          </div>
+
           <CustomerPicker
             value={customerId}
             onChange={setCustomerId}
             variant="admin"
-            placeholder="Search customer or leave blank for walk-in…"
+            placeholder="Search registered patient or leave blank for walk-in…"
           />
-          <p className="mt-1 text-[10px] admin-soft">
-            If left blank and an email is given below, a customer account is created automatically
-            and an onboarding email is sent.
-          </p>
+
+          {!customerId && (
+            <div className="grid gap-3 sm:grid-cols-3 pt-1">
+              <div>
+                <label className="label-admin text-[11px]">Walk-in Patient Name {isRx ? "*" : ""}</label>
+                <div className="relative">
+                  <User className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+                  <input
+                    name="customerName"
+                    required={isRx}
+                    placeholder="e.g. Jane Doe"
+                    className="input-admin pl-9 text-xs"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="label-admin text-[11px]">Patient Phone {isRx ? "*" : ""}</label>
+                <div className="relative">
+                  <Phone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+                  <input
+                    name="customerPhone"
+                    type="tel"
+                    required={isRx}
+                    placeholder="+254 712 345 678"
+                    value={mpesaPhone}
+                    onChange={(e) => setMpesaPhone(e.target.value)}
+                    className="input-admin pl-9 text-xs"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="label-admin text-[11px]">Patient Email (Receipt/Invite)</label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+                  <input
+                    name="customerEmail"
+                    type="email"
+                    placeholder="jane@example.com"
+                    className="input-admin pl-9 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {!customerId && (
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <label className="label-admin">Walk-in name</label>
-              <div className="relative">
-                <User className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                <input name="customerName" placeholder="Jane Doe" className="input-admin pl-9" />
-              </div>
-            </div>
-            <div>
-              <label className="label-admin">Email (for receipt + invite)</label>
-              <div className="relative">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                <input
-                  name="customerEmail"
-                  type="email"
-                  placeholder="jane@example.com"
-                  className="input-admin pl-9"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="label-admin">Phone</label>
-              <div className="relative">
-                <Phone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                <input
-                  name="customerPhone"
-                  type="tel"
-                  placeholder="+254 712 345 678"
-                  value={mpesaPhone}
-                  onChange={(e) => setMpesaPhone(e.target.value)}
-                  className="input-admin pl-9"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div>
-          <label className="label-admin">Medication *</label>
+        {/* ── Medication Selection ── */}
+        <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 space-y-3">
+          <label className="label-admin font-bold text-xs">Select Medication *</label>
           <select
             name="medicationId"
             required
             value={medicationId}
             onChange={(e) => {
               setMedicationId(e.target.value);
-              const m = medications.find((x) => x.id === e.target.value);
-              if (m?.prescriptionRequired) setCreateRx(true);
             }}
-            className="input-admin"
+            className="input-admin text-xs"
           >
-            <option value="">Select medication…</option>
+            <option value="">Select medication from catalogue…</option>
             {medications.map((m) => (
               <option key={m.id} value={m.id} disabled={m.stockQty <= 0}>
                 {m.name} — KES {m.price} ({m.stockQty} in stock)
-                {m.overTheCounter ? " · OTC" : " · Rx"}
+                {m.prescriptionRequired && !m.overTheCounter ? " · [Rx Required]" : " · [OTC]"}
               </option>
             ))}
           </select>
+
+          {/* Real-time Clinical Safety & Generic Alternatives */}
+          {medicationId && (
+            <div className="mt-3">
+              <ClinicalSafetyAlert
+                report={clinicalReport}
+                loading={clinicalLoading}
+                onSelectAlternative={(alt) => setMedicationId(alt.id)}
+              />
+            </div>
+          )}
         </div>
 
-        {/* Real-time Clinical Safety & Generic Alternatives */}
-        {medicationId && (
-          <div className="rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] p-3">
-            <ClinicalSafetyAlert
-              report={clinicalReport}
-              loading={clinicalLoading}
-              onSelectAlternative={(alt) => setMedicationId(alt.id)}
-            />
-          </div>
-        )}
-
-        {/* Controlled Substance Regulatory Compliance Fields */}
-        {clinicalReport?.isControlledDrug && (
-          <div className="rounded-xl border border-purple-500/40 bg-purple-50/70 p-4 space-y-3">
-            <div className="flex items-center gap-1.5 font-bold text-xs text-purple-900">
-              <Lock className="h-3.5 w-3.5 text-purple-700" />
-              <span>Controlled Drug Dispensing Compliance (PPB Kenya)</span>
+        {/* ── Prescription Dispensing Validation Panel (Auto-displayed for Rx) ── */}
+        {isRx && (
+          <div className="rounded-2xl border-2 border-blue-500/40 bg-blue-50/50 p-4 space-y-4 dark:bg-blue-950/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Stethoscope className="h-4 w-4 text-blue-700 dark:text-blue-400" />
+                <h3 className="font-bold text-xs text-blue-950 dark:text-blue-200">
+                  Prescription Dispensing &amp; Validation (Required for Rx)
+                </h3>
+              </div>
+              <span className="rounded-full bg-blue-600 px-2.5 py-0.5 text-[9px] font-bold text-white uppercase tracking-wider">
+                Certified Fill #1
+              </span>
             </div>
-            <div className="grid gap-3 sm:grid-cols-3">
+
+            <p className="text-[11px] text-blue-900/90 dark:text-blue-300">
+              This medication requires a valid prescription. Completing this sale will automatically create and link the <strong>Prescription</strong>, record <strong>PrescriptionFill #1</strong>, and deduct stock exactly once via FEFO lot allocation.
+            </p>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div>
-                <label className="label-admin text-[11px]">Prescriber Name *</label>
+                <label className="label-admin text-[11px]">Prescribing Doctor / Clinician *</label>
                 <input
                   name="prescriber"
                   required
-                  placeholder="Dr. John Doe"
+                  value={prescriber}
+                  onChange={(e) => setPrescriber(e.target.value)}
+                  placeholder="e.g. Dr. John Doe"
                   className="input-admin text-xs"
                 />
               </div>
+
               <div>
-                <label className="label-admin text-[11px]">Prescriber License / KMPDC # *</label>
+                <label className="label-admin text-[11px]">Prescriber License / KMPDC #</label>
                 <input
                   name="prescriberLicense"
-                  required
-                  placeholder="KMPDC-REG-1234"
+                  value={prescriberLicense}
+                  onChange={(e) => setPrescriberLicense(e.target.value)}
+                  placeholder="e.g. KMPDC-REG-8421"
+                  className="input-admin text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="label-admin text-[11px]">Prescription Ref / Serial #</label>
+                <input
+                  name="rxReference"
+                  value={rxReference}
+                  onChange={(e) => setRxReference(e.target.value)}
+                  placeholder={`RX-${new Date().getFullYear()}-XXXX`}
+                  className="input-admin text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="label-admin text-[11px]">Authorized Refills (0 for one-time)</label>
+                <input
+                  name="refillsRemaining"
+                  type="number"
+                  min="0"
+                  max="12"
+                  value={refillsRemaining}
+                  onChange={(e) => setRefillsRemaining(Math.max(0, Number(e.target.value)))}
                   className="input-admin text-xs"
                 />
               </div>
+
               <div>
-                <label className="label-admin text-[11px]">Patient National ID / Passport *</label>
+                <label className="label-admin text-[11px]">Days Supply</label>
+                <input
+                  name="daysSupply"
+                  type="number"
+                  min="1"
+                  value={daysSupply}
+                  onChange={(e) => setDaysSupply(Math.max(1, Number(e.target.value)))}
+                  className="input-admin text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="label-admin text-[11px]">Patient National ID / Passport</label>
                 <input
                   name="patientNationalId"
-                  required
-                  placeholder="12345678"
+                  value={patientNationalId}
+                  onChange={(e) => setPatientNationalId(e.target.value)}
+                  placeholder="e.g. 12345678"
                   className="input-admin text-xs"
                 />
               </div>
@@ -330,212 +415,217 @@ export default function OrderForm({
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        {/* ── Controlled Substance Compliance Banner ── */}
+        {clinicalReport?.isControlledDrug && (
+          <div className="rounded-2xl border border-purple-500/40 bg-purple-50/70 p-4 space-y-2 dark:bg-purple-950/20">
+            <div className="flex items-center gap-1.5 font-bold text-xs text-purple-900 dark:text-purple-300">
+              <Lock className="h-3.5 w-3.5 text-purple-700" />
+              <span>Controlled Substance Compliance (DDA / Kenya PPB Schedule)</span>
+            </div>
+            <p className="text-[11px] text-purple-900/90 dark:text-purple-300">
+              Entry will be automatically logged to the regulatory <strong>Controlled Drugs Register</strong>. Ensure doctor license and patient national ID are verified.
+            </p>
+          </div>
+        )}
+
+        {/* ── Quantity & Dispensing Units ── */}
+        <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 space-y-3">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div>
+              <label className="label-admin">Quantity *</label>
+              <div className="relative">
+                <Hash className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+                <input
+                  name="quantity"
+                  type="number"
+                  min="1"
+                  required
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                  className="input-admin pl-9 text-xs"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="label-admin">Dispensing Unit (Broken Pack Support)</label>
+              <select
+                value={billingUnit}
+                onChange={(e) => setBillingUnit(e.target.value)}
+                className="input-admin text-xs"
+              >
+                <option value="TABLET">Tablets</option>
+                <option value="CAPSULE">Capsules</option>
+                <option value="BOTTLE">Bottles</option>
+                <option value="STRIP">Strips</option>
+                <option value="PACK">Packs</option>
+                <option value="BOX">Boxes</option>
+                <option value="AMPOULE">Ampoules</option>
+                <option value="ML">mL</option>
+                <option value="UNIT">Units</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="label-admin">Coupon Code (optional)</label>
+              <div className="relative">
+                <Tag className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+                <input
+                  name="couponCode"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  placeholder="SUMMER25"
+                  className="input-admin pl-9 font-mono uppercase text-xs"
+                />
+              </div>
+            </div>
+          </div>
+
           <div>
-            <label className="label-admin">Quantity *</label>
+            <label className="label-admin">Dosage &amp; Administration Instructions</label>
             <div className="relative">
-              <Hash className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+              <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input
-                name="quantity"
-                type="number"
-                min="1"
-                required
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-                className="input-admin pl-9"
+                name="dosage"
+                placeholder="e.g. 1 tablet twice daily with food for 5 days"
+                className="input-admin pl-9 text-xs"
               />
             </div>
           </div>
 
           <div>
-            <label className="label-admin">Dispensing Unit</label>
-            <select
-              value={billingUnit}
-              onChange={(e) => setBillingUnit(e.target.value)}
-              className="input-admin"
-            >
-              <option value="TABLET">Tablets</option>
-              <option value="CAPSULE">Capsules</option>
-              <option value="BOTTLE">Bottles</option>
-              <option value="STRIP">Strips</option>
-              <option value="PACK">Packs</option>
-              <option value="BOX">Boxes</option>
-              <option value="AMPOULE">Ampoules</option>
-              <option value="ML">mL</option>
-              <option value="UNIT">Units</option>
+            <label className="label-admin">
+              Pharmacist Dispenser Note &amp; Counselling {isRx ? "*" : "(optional)"}
+            </label>
+            <textarea
+              name="dispenserNote"
+              rows={2}
+              required={isRx}
+              placeholder="Condition observed, counselling provided, validity notes…"
+              className="input-admin resize-y text-xs"
+            />
+            <p className="mt-1 text-[10px] admin-soft">
+              Clinical note from the dispenser — permanently recorded on the dispensing register and printed on the patient receipt.
+            </p>
+          </div>
+
+          <div>
+            <label className="label-admin">Customer Reason (if known)</label>
+            <select name="reason" className="input-admin text-xs" defaultValue="">
+              <option value="">— none —</option>
+              <option value="for known condition">For a known condition</option>
+              <option value="recommended by pharmacist">Recommended by pharmacist</option>
+              <option value="returning customer">Returning customer</option>
+              <option value="self care">Self-care / minor symptom</option>
+              <option value="other">Other</option>
             </select>
           </div>
+        </div>
 
+        {/* ── Payment Method & Settlement ── */}
+        <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 space-y-3">
           <div>
-            <label className="label-admin">Coupon code (optional)</label>
-            <div className="relative">
-              <Tag className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input
-                name="couponCode"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                placeholder="SUMMER25"
-                className="input-admin pl-9 font-mono uppercase"
-              />
+            <label className="label-admin">Payment Method</label>
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  { value: "cash", label: "Cash (mark paid)" },
+                  { value: "daraja", label: "M-Pesa STK Push" },
+                  { value: "card", label: "Card (pending settlement)" },
+                ] as const
+              ).map((m) => (
+                <label
+                  key={m.value}
+                  className={`flex cursor-pointer items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold ${
+                    paymentMethod === m.value
+                      ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text shadow-2xs"
+                      : "border-[var(--admin-border)] admin-muted"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethodRadio"
+                    checked={paymentMethod === m.value}
+                    onChange={() => setPaymentMethod(m.value)}
+                    className="sr-only"
+                  />
+                  {m.label}
+                </label>
+              ))}
             </div>
           </div>
-        </div>
 
-        <div>
-          <label className="label-admin">Dosage & Administration Instructions</label>
-          <div className="relative">
-            <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input
-              name="dosage"
-              placeholder="e.g. 1 tablet twice daily with food for 5 days"
-              className="input-admin pl-9"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="label-admin">
-            Dispenser note{selected?.prescriptionRequired ? " *" : " (optional)"}
-          </label>
-          <textarea
-            name="dispenserNote"
-            rows={2}
-            required={Boolean(selected?.prescriptionRequired)}
-            placeholder="Condition observed, counselling given, batch notes…"
-            className="input-admin resize-y"
-          />
-          <p className="mt-1 text-[10px] admin-soft">
-            Clinical note from the dispenser — recorded in the dispensing register and printed on the patient receipt.
-          </p>
-        </div>
-
-        <div>
-          <label className="label-admin">Customer reason (if known)</label>
-          <select name="reason" className="input-admin" defaultValue="">
-            <option value="">— none —</option>
-            <option value="for known condition">For a known condition</option>
-            <option value="recommended by pharmacist">Recommended by pharmacist</option>
-            <option value="returning customer">Returning customer</option>
-            <option value="self care">Self-care / minor symptom</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="label-admin">Payment method</label>
-          <div className="flex flex-wrap gap-2">
-            {(
-              [
-                { value: "cash", label: "Cash (mark paid)" },
-                { value: "daraja", label: "M-Pesa STK" },
-                { value: "card", label: "Card (pending)" },
-              ] as const
-            ).map((m) => (
-              <label
-                key={m.value}
-                className={`flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-xs ${
-                  paymentMethod === m.value
-                    ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text"
-                    : "border-[var(--admin-border)] admin-muted"
-                }`}
-              >
+          {paymentMethod === "daraja" && (
+            <div>
+              <label className="label-admin">M-Pesa Phone (Customer)</label>
+              <div className="relative">
+                <Phone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
                 <input
-                  type="radio"
-                  name="paymentMethodRadio"
-                  checked={paymentMethod === m.value}
-                  onChange={() => setPaymentMethod(m.value)}
-                  className="sr-only"
+                  name="mpesaPhone"
+                  type="tel"
+                  required
+                  value={mpesaPhone}
+                  onChange={(e) => setMpesaPhone(e.target.value)}
+                  placeholder="07XX XXX XXX — customer enters PIN"
+                  className="input-admin pl-9 text-xs"
                 />
-                {m.label}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {paymentMethod === "daraja" && (
-          <div>
-            <label className="label-admin">M-Pesa phone (customer)</label>
-            <div className="relative">
-              <Phone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input
-                name="mpesaPhone"
-                type="tel"
-                required
-                value={mpesaPhone}
-                onChange={(e) => setMpesaPhone(e.target.value)}
-                placeholder="07XX XXX XXX — customer enters PIN"
-                className="input-admin pl-9"
-              />
+              </div>
+              <p className="mt-1 text-[10px] admin-soft">
+                Staff triggers the push; customer confirms with PIN on handset.
+              </p>
             </div>
-            <p className="mt-1 text-[10px] admin-soft">
-              You start the push; the customer only enters their PIN. We confirm via webhook or status poll.
-            </p>
-          </div>
-        )}
+          )}
 
-        <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2.5 text-xs admin-muted">
-          <input
-            type="checkbox"
-            checked={autoDispatch}
-            onChange={(e) => setAutoDispatch(e.target.checked)}
-            className="mt-0.5 h-3.5 w-3.5 rounded"
-          />
-          <span>
-            <span className="font-semibold admin-text">Mark as dispensed / dispatched immediately</span>
-            <span className="mt-0.5 block text-[10px] admin-soft">
-              Checked for counter sales (patient receives medicines right now). Uncheck for remote orders held for later collection.
-            </span>
-          </span>
-        </label>
-
-        {selected?.prescriptionRequired && (
-          <label className="flex cursor-pointer items-center gap-2 text-xs admin-muted">
+          <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3.5 py-2.5 text-xs admin-muted">
             <input
               type="checkbox"
-              name="createPrescription"
-              checked={createRx}
-              onChange={(e) => setCreateRx(e.target.checked)}
-              className="h-3.5 w-3.5 rounded"
+              checked={autoDispatch}
+              onChange={(e) => setAutoDispatch(e.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 rounded"
             />
-            Also create a prescription record for this customer
+            <span>
+              <span className="font-bold admin-text">Mark as dispensed / dispatched immediately</span>
+              <span className="mt-0.5 block text-[10px] admin-soft">
+                Checked for counter sales (patient leaves with medicines now). Uncheck for paid remote reservations to dispatch later.
+              </span>
+            </span>
           </label>
-        )}
-        {createRx && <input type="hidden" name="createPrescription" value="on" />}
 
-        <div className="rounded-xl bg-[var(--admin-inset)] p-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs admin-muted">Total</p>
-            <p className="text-lg font-bold admin-text">
-              <DollarSign className="inline h-4 w-4" /> KES {total.toLocaleString()}
+          <div className="rounded-xl bg-[var(--admin-inset)] p-3.5">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold admin-muted">Total Payable</p>
+              <p className="text-xl font-black admin-text">
+                KES {total.toLocaleString()}
+              </p>
+            </div>
+            <p className="mt-1 text-[10px] admin-soft">
+              {isRx
+                ? "Prescription Fill #1 will be created and unified with this order with single stock deduction."
+                : "Standard counter sale will be recorded and added to revenue."}
             </p>
           </div>
-          <p className="mt-1 text-[10px] admin-soft">
-            {paymentMethod === "cash"
-              ? autoDispatch
-                ? "Cash + dispensed immediately — added to Dispensing Register and revenue."
-                : "Cash paid, held until you mark dispatched."
-              : paymentMethod === "daraja"
-                ? "Creates the order, then opens STK so the customer can PIN-confirm."
-                : "Stays pending until marked paid."}
-          </p>
-        </div>
 
-        <button
-          type="submit"
-          disabled={pending || Boolean(stkOrder)}
-          className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50"
-        >
-          {pending ? (
-            <>
-              <span className="typing-dot" /> Recording & Dispensing…
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4" />{" "}
-              {paymentMethod === "daraja" ? "Create order & prepare STK" : "Record Dispense & Sale"}
-            </>
-          )}
-        </button>
+          <button
+            type="submit"
+            disabled={pending || Boolean(stkOrder)}
+            className="btn-admin-primary w-full !rounded-xl py-3 text-xs font-bold shadow-md disabled:opacity-50"
+          >
+            {pending ? (
+              <>
+                <span className="typing-dot" /> Recording &amp; Dispensing…
+              </>
+            ) : (
+              <>
+                <ShieldCheck className="h-4 w-4" />{" "}
+                {paymentMethod === "daraja"
+                  ? "Create Prescription & Prepare STK"
+                  : isRx
+                    ? "Authorize Rx & Complete Dispensing"
+                    : "Record Counter Sale"}
+              </>
+            )}
+          </button>
+        </div>
       </form>
 
       {/* ── Printable Official Receipt Modal ── */}
