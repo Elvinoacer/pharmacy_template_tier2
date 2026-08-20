@@ -1549,15 +1549,114 @@ export async function adminCreateOrderAction(
   let orderId = "";
 
   try {
-    const order = await prisma.$transaction(async (tx) => {
-      // Cash + auto-dispatch → fulfilled immediately; cash without → paid reservation.
+    const order = await prisma.$transaction(
+      async (tx) => {
+      // ── PRESCRIPTION-REQUIRED DISPENSING PATH ──────────────────
+      if (med.prescriptionRequired || formData.get("prescriptionId")) {
+        const { createPrescriptionFill } = await import("@/app/lib/services/commerce/prescription-fills");
+
+        // Guarantee customer anchor for prescription and fill tracking
+        if (!finalCustomerId) {
+          const walkInName = String(formData.get("customerName") || "Walk-in Patient").trim();
+          const walkInPhone = guestPhone || String(formData.get("customerPhone") || "").trim() || null;
+          const walkInEmail = customerEmail || `patient-${Date.now()}@pharmacy.internal`;
+
+          const u = await tx.user.create({
+            data: {
+              email: walkInEmail.toLowerCase(),
+              role: "customer" as const,
+              emailVerified: false,
+            },
+          });
+          const p = await tx.customerProfile.create({
+            data: {
+              userId: u.id,
+              fullName: walkInName,
+              phone: walkInPhone,
+            },
+          });
+          finalCustomerId = p.id;
+        }
+
+        let targetRxId = String(formData.get("prescriptionId") || "").trim();
+
+        // If no existing prescription selected, automatically create the new prescription
+        if (!targetRxId) {
+          const prescriber = String(formData.get("prescriber") || "Licensed Prescriber").trim();
+          const prescriberLicense = String(formData.get("prescriberLicense") || "").trim();
+          const patientNationalId = String(formData.get("patientNationalId") || "").trim();
+          const rxRef = String(formData.get("rxReference") || `RX-${Date.now().toString(36).toUpperCase()}`).trim();
+          const refillsRemaining = Math.max(0, Number(formData.get("refillsRemaining") || 0));
+          const daysSupply = Number(formData.get("daysSupply") || 30);
+
+          const rx = await tx.prescription.create({
+            data: {
+              customerId: finalCustomerId,
+              medicationId,
+              medicineName: medName,
+              prescriber,
+              rxReference: rxRef,
+              dosage: dosage || "As directed by prescriber",
+              quantity,
+              unitPrice,
+              daysSupply,
+              refillsRemaining,
+              status: "active",
+              notes: [
+                dispenserNote ? `[Dispenser Note]: ${dispenserNote}` : null,
+                prescriberLicense ? `Prescriber License: ${prescriberLicense}` : null,
+                patientNationalId ? `Patient National ID: ${patientNationalId}` : null,
+                notes,
+              ]
+                .filter(Boolean)
+                .join("\n") || "Created via counter dispensing",
+            },
+          });
+          targetRxId = rx.id;
+        }
+
+        // Convert prescription into a commercial fill with exactly ONE stock deduction
+        const fillResult = await createPrescriptionFill(tx, {
+          prescriptionId: targetRxId,
+          actorId: user.id,
+          manualUnitPrice: unitPrice,
+          discountAmount: discount,
+          markDispatched: autoDispatch,
+          markPaid,
+          paymentMethod: paymentMethod as any,
+          notes: [dispenserNote, reason ? `Reason: ${reason}` : null].filter(Boolean).join(" · ") || null,
+        });
+
+        // Update the order with counter dispenser metadata
+        await tx.order.update({
+          where: { id: fillResult.orderId },
+          data: {
+            reason,
+            dispenserNote: dispenserNote || null,
+            dispenserNoteAt: dispenserNote ? new Date() : null,
+            dispenserNoteById: dispenserNote ? user.id : null,
+            guestName: guestName,
+            guestPhone: guestPhone,
+          },
+        });
+
+        if (couponId) {
+          await tx.coupon.update({
+            where: { id: couponId },
+            data: { redemptions: { increment: 1 } },
+          });
+        }
+
+        return { id: fillResult.orderId };
+      }
+
+      // ── STANDARD OTC COUNTER SALES PATH ─────────────────────────
       const initialStatus = markPaid
         ? autoDispatch
           ? "fulfilled"
           : "paid"
         : "pending";
 
-      // ── Commerce ledger extension (audit §16, §42, §63) ──────────
       const { deriveInitialStages } = await import("@/app/lib/services/commerce/orders");
       const { recordCommerceEvent } = await import("@/app/lib/services/commerce/events");
       const { createReservation } = await import("@/app/lib/services/commerce/reservations");
@@ -1566,7 +1665,7 @@ export async function adminCreateOrderAction(
       const netAmount = Math.max(0, grossAmount - discount);
       const grossProfit = netAmount - unitCost * quantity;
       const stages = deriveInitialStages({
-        type: source === "refill" ? "REFILL" : "OTC_PURCHASE",
+        type: "OTC_PURCHASE",
         source,
         isCounterSale: source === "counter",
         markPaid,
@@ -1580,7 +1679,6 @@ export async function adminCreateOrderAction(
           source,
           status: initialStatus,
           total,
-          // New commerce fields
           type: stages.type,
           lifecycleStatus: stages.lifecycleStatus,
           paymentStage: stages.paymentStage,
@@ -1616,7 +1714,6 @@ export async function adminCreateOrderAction(
               quantity,
               unitPrice,
               discountApplied: discount,
-              // New commerce snapshots
               unitCostSnapshot: unitCost,
               grossAmount,
               netAmount,
@@ -1630,20 +1727,18 @@ export async function adminCreateOrderAction(
         },
       });
 
-      // Stock handling — distinguish reservation from sale (audit §8, §67).
+      // Stock handling for OTC sale
       if (stages.fulfillmentStage === "fulfilled" && autoDispatch) {
-        // Counter sale with auto-dispatch: physical stock leaves now (sale).
         stockResult = await applyStockChange(tx, {
           inventoryId: medicationId,
           quantityDelta: -quantity,
           reason: "sale",
-          notes: `Counter/OTC sale × ${quantity}`,
+          notes: `Counter OTC sale × ${quantity}`,
           relatedType: "order",
           relatedId: o.id,
           actorId: user.id,
         });
       } else {
-        // Reservation (website / portal / paid-reserve): create InventoryReservation.
         try {
           await createReservation(tx, {
             orderId: o.id,
@@ -1654,15 +1749,12 @@ export async function adminCreateOrderAction(
           });
           stockResult = null;
         } catch (err) {
-          if (err instanceof Error && err.message === "reservation_already_exists") {
-            // Idempotent — already reserved.
-          } else {
+          if (err instanceof Error && err.message !== "reservation_already_exists") {
             throw err;
           }
         }
       }
 
-      // Commerce event ledger
       await recordCommerceEvent(tx, {
         eventType: "order_created",
         entityType: "order",
@@ -1673,18 +1765,6 @@ export async function adminCreateOrderAction(
         amount: netAmount,
         metadata: { source, type: stages.type, quantity, medicationId },
       });
-      if (stages.fulfillmentStage === "reserved") {
-        await recordCommerceEvent(tx, {
-          eventType: "order_reserved",
-          entityType: "order",
-          entityId: o.id,
-          orderId: o.id,
-          customerId: finalCustomerId ?? null,
-          actorId: user.id,
-          amount: netAmount,
-          metadata: { expiresAt: stages.expiresAt },
-        });
-      }
 
       if (markPaid) {
         await tx.payment.create({
@@ -1701,23 +1781,6 @@ export async function adminCreateOrderAction(
         });
       }
 
-      // If Rx-required med sold at counter, optionally create a prescription record.
-      if (med.prescriptionRequired && finalCustomerId && formData.get("createPrescription") === "on") {
-        await tx.prescription.create({
-          data: {
-            customerId: finalCustomerId,
-            medicationId,
-            medicineName: medName,
-            dosage: dosage || null,
-            quantity,
-            unitPrice,
-            refillsRemaining: Number(formData.get("refillsRemaining") || 0),
-            status: "active",
-            notes: "Created from counter OTC/Rx sale",
-          },
-        });
-      }
-
       if (couponId) {
         await tx.coupon.update({
           where: { id: couponId },
@@ -1726,7 +1789,7 @@ export async function adminCreateOrderAction(
       }
 
       return o;
-    });
+    }, { maxWait: 15000, timeout: 30000 });
     orderId = order.id;
   } catch (e) {
     if (e instanceof InsufficientStockError) {
