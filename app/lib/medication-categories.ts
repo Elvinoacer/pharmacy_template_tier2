@@ -161,6 +161,15 @@ export async function listActiveCategoryOptions(): Promise<
   }
 }
 
+const CATEGORY_ALIAS_MAP: Record<string, string> = {
+  allergy: "allergy-treatments",
+  digestive: "digestive-health",
+  "womens-health": "feminine-hygiene",
+  "vitamins-supplements": "nutritional-products",
+  "diabetes-care": "medical-consumables",
+  vitamins: "nutritional-products",
+};
+
 /**
  * Public-facing categories for /medicines browse cards.
  * Active + publicVisible only, ordered by sortOrder.
@@ -184,7 +193,23 @@ export async function listPublicCategories(): Promise<PublicCategory[]> {
     countBySlug.set(slug, (countBySlug.get(slug) || 0) + 1);
   }
 
-  return cats.map((c) => ({
+  // Filter out redundant empty aliases if canonical category has products
+  const canonicalSlugsWithItems = new Set(
+    Object.values(CATEGORY_ALIAS_MAP).filter((s) => (countBySlug.get(s) || 0) > 0)
+  );
+
+  const filtered = cats.filter((c) => {
+    if (
+      CATEGORY_ALIAS_MAP[c.slug] &&
+      canonicalSlugsWithItems.has(CATEGORY_ALIAS_MAP[c.slug]) &&
+      (countBySlug.get(c.slug) || 0) === 0
+    ) {
+      return false; // Skip redundant alias
+    }
+    return true;
+  });
+
+  return filtered.map((c) => ({
     id: c.id,
     name: c.name,
     slug: c.slug,
@@ -200,9 +225,19 @@ export async function listPublicCategories(): Promise<PublicCategory[]> {
 export async function getPublicCategoryBySlug(
   slug: string,
 ): Promise<PublicCategory | null> {
-  const c = await prisma.medicationCategory.findFirst({
-    where: { slug, active: true, publicVisible: true },
+  const normalized = (slug || "").trim().toLowerCase();
+  const canonicalSlug = CATEGORY_ALIAS_MAP[normalized] || normalized;
+
+  let c = await prisma.medicationCategory.findFirst({
+    where: { slug: canonicalSlug, active: true, publicVisible: true },
   });
+
+  if (!c && canonicalSlug !== normalized) {
+    c = await prisma.medicationCategory.findFirst({
+      where: { slug: normalized, active: true, publicVisible: true },
+    });
+  }
+
   if (!c) return null;
 
   const publicMedCount = await prisma.medicationMaster.count({

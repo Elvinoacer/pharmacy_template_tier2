@@ -937,7 +937,7 @@ async function main() {
       description:
         "Over-the-counter options for headaches, muscle aches, joint pain, and everyday discomfort — with pharmacist guidance on safe use.",
       imageUrl: "/images/otc/pain-relief.webp",
-      brands: ["Advil", "Tylenol", "Aleve", "Aspercreme"],
+      brands: ["Panadol", "Brufen", "Voltaren", "Deep Heat", "Disprin", "Advil"],
       tips: [
         "Do not combine multiple products containing acetaminophen.",
         "Ask us before using NSAIDs if you have stomach, kidney, or heart concerns.",
@@ -946,32 +946,46 @@ async function main() {
       sortOrder: 10,
     },
     {
-      slug: "vitamins-supplements",
-      name: "Vitamins & Supplements",
+      slug: "cold-flu",
+      name: "Cold & Flu",
       description:
-        "Evidence-minded vitamins, minerals, and wellness supplements. We help you choose what is useful — and skip what is not.",
-      imageUrl: "/images/otc/vitamins-supplements.webp",
-      brands: ["Nature Made", "Centrum", "Garden of Life", "Nordic Naturals"],
+        "Symptom relief for coughs, congestion, sore throats, and seasonal illness — plus guidance on what actually helps.",
+      imageUrl: "/images/otc/cold-flu.webp",
+      brands: ["Benylin", "Otrivin", "Strepsils", "Vicks", "Actifed", "Mucinex"],
       tips: [
-        "More is not always better — megadoses can be harmful.",
-        "Tell us about all supplements; some interact with prescriptions.",
-        "Look for USP or third-party tested products when possible.",
+        "Multi-symptom products can duplicate ingredients — check labels.",
+        "Hydration and rest still matter more than most OTC combos.",
+        "High fever, shortness of breath, or lasting symptoms need clinical care.",
       ],
       sortOrder: 20,
     },
     {
-      slug: "baby-care",
-      name: "Baby Care",
+      slug: "allergy-treatments",
+      name: "Allergy Treatments",
       description:
-        "Gentle essentials for little ones: fever reducers, diaper care, feeding accessories, and pharmacist advice parents can trust.",
-      imageUrl: "/images/otc/baby-care.webp",
-      brands: ["Pampers", "Johnson's", "Pedialyte", "Aveeno Baby"],
+        "Non-drowsy antihistamines, corticosteroid nasal sprays, and eye drops for seasonal hay fever, pet dander, and allergic skin reactions.",
+      imageUrl: "/images/articles/seasonal-allergy-guide.webp",
+      brands: ["Zyrtec", "Clarityn", "Telfast", "Flixonase", "Optrex", "Allegra"],
       tips: [
-        "Always use weight-based dosing for children's medicines.",
-        "Never give aspirin to children or teens with viral illness.",
-        "Ask us about fever thresholds that warrant a doctor visit.",
+        "Second-generation antihistamines provide 24-hour relief with minimal drowsiness.",
+        "Steroid nasal sprays work best when used daily across allergy season.",
+        "Seek emergency care for facial swelling or throat tightness.",
       ],
       sortOrder: 30,
+    },
+    {
+      slug: "digestive-health",
+      name: "Digestive Health",
+      description:
+        "Antacids, acid reducers, oral rehydration salts, anti-diarrheals, laxatives, and daily probiotics for digestive balance.",
+      imageUrl: "/images/services/medication-counselling.webp",
+      brands: ["Gaviscon", "Imodium", "Dioralyte", "Dulcolax", "Bio-Kult", "Prilosec"],
+      tips: [
+        "Oral rehydration salts are the first priority for acute fluid loss.",
+        "Short-course acid reducers take 1–4 days for full 24-hour symptom control.",
+        "Black tarry stools or difficulty swallowing require immediate doctor evaluation.",
+      ],
+      sortOrder: 40,
     },
     {
       slug: "first-aid",
@@ -979,13 +993,27 @@ async function main() {
       description:
         "Bandages, antiseptics, wound care, and emergency basics so you are prepared at home, work, or on the go.",
       imageUrl: "/images/otc/first-aid.webp",
-      brands: ["Band-Aid", "Neosporin", "3M Nexcare", "Hydrogen Peroxide"],
+      brands: ["Band-Aid", "Burnshield", "3M Nexcare", "Elastoplast", "Curad"],
       tips: [
         "Clean wounds gently; seek care for deep or dirty cuts.",
         "Keep a basic kit in the car and at home.",
         "Check expiry dates on antiseptics and ointments yearly.",
       ],
-      sortOrder: 40,
+      sortOrder: 50,
+    },
+    {
+      slug: "topical-treatments",
+      name: "Topical Treatments",
+      description:
+        "Hydrocortisone anti-itch creams, antifungal treatments, calming lotions, and hemorrhoidal soothing care.",
+      imageUrl: "/images/otc/skin-care.webp",
+      brands: ["Canesten", "Neosporin", "Anusol", "Cortizone", "Calamine"],
+      tips: [
+        "Apply hydrocortisone thinly for a maximum of 7 consecutive days.",
+        "Continue antifungal creams for 1–2 weeks after symptoms disappear.",
+        "Never apply steroid creams to open wounds or active viral infections.",
+      ],
+      sortOrder: 60,
     },
     {
       slug: "skin-care",
@@ -993,63 +1021,124 @@ async function main() {
       description:
         "Dermatologist-friendly moisturisers, sunscreens, acne care, and treatments for eczema, rashes, and everyday skin concerns.",
       imageUrl: "/images/otc/skin-care.webp",
-      brands: ["CeraVe", "La Roche-Posay", "Cetaphil", "Neutrogena"],
+      brands: ["CeraVe", "La Roche-Posay", "Epimax", "Cetaphil", "PanOxyl", "Eucerin"],
       tips: [
         "Fragrance-free often means fewer irritations.",
         "Daily SPF is one of the best long-term skin investments.",
         "Persistent rashes deserve a professional look — we can advise.",
       ],
-      sortOrder: 50,
-    },
-    {
-      slug: "diabetes-care",
-      name: "Diabetes Care",
-      description:
-        "Meters, strips, lancets, glucose tablets, and supportive OTC products for everyday diabetes self-management.",
-      imageUrl: "/images/articles/diabetes-everyday-tips.webp",
-      brands: ["OneTouch", "Contour", "FreeStyle", "Dex4"],
-      tips: [
-        "Match strips to your exact meter model.",
-        "Store test strips in a cool, dry place.",
-        "Ask about insurance coverage for supplies.",
-      ],
-      sortOrder: 60,
-    },
-    {
-      slug: "womens-health",
-      name: "Women's Health",
-      description:
-        "Reproductive health, prenatal vitamins, menopause support, and everyday wellness products selected with care.",
-      imageUrl: "/images/otc/womens-health.webp",
-      brands: ["Always", "Summer's Eve", "Pregnacare", "Clearblue"],
-      tips: [
-        "Prenatal vitamins ideally start before conception when possible.",
-        "Discuss hormone-related products with your pharmacist or clinician.",
-        "We stock discreet options and private counselling space.",
-      ],
       sortOrder: 70,
     },
     {
-      slug: "cold-flu",
-      name: "Cold & Flu",
+      slug: "antiseptics",
+      name: "Antiseptics",
       description:
-        "Symptom relief for coughs, congestion, sore throats, and seasonal illness — plus guidance on what actually helps.",
-      imageUrl: "/images/otc/cold-flu.webp",
-      brands: ["Mucinex", "DayQuil", "Robitussin", "Halls"],
+        "Povidone-iodine solutions, chlorhexidine washes, hydrogen peroxide, and sterile alcohol skin preparation wipes.",
+      imageUrl: "/images/gallery/careful_dispensing.webp",
+      brands: ["Betadine", "Dettol", "Savlon", "Hibiclens", "Medi-Swab"],
       tips: [
-        "Multi-symptom products can duplicate ingredients — check labels.",
-        "Hydration and rest still matter more than most OTC combos.",
-        "High fever, shortness of breath, or lasting symptoms need clinical care.",
+        "Povidone-iodine provides broad antimicrobial protection without skin stinging.",
+        "Allow antiseptic liquids to air dry completely on skin before dressing.",
+        "Deep puncture wounds or dirty animal bites need doctor evaluation.",
       ],
       sortOrder: 80,
     },
-    // Keep clinical/admin categories present for medication forms.
+    {
+      slug: "wound-care",
+      name: "Wound Care",
+      description:
+        "Hydrocolloid dressings, sterile non-stick pads, wound irrigation saline, and medical silicone scar reduction gels.",
+      imageUrl: "/images/otc/first-aid.webp",
+      brands: ["DuoDERM", "Melolin", "Kelo-Cote", "Steri-Strip", "Opsite"],
+      tips: [
+        "Moist wound healing under hydrocolloid dressings speeds healing and reduces scarring.",
+        "Irrigate with sterile saline rather than harsh scrubbing.",
+        "Seek care if wound edges gape or redness spreads outward.",
+      ],
+      sortOrder: 90,
+    },
+    {
+      slug: "oral-care",
+      name: "Oral Care",
+      description:
+        "Chlorhexidine mouthwashes, mouth ulcer soothing gels, fast-acting toothache analgesics, and dry mouth hydrating rinses.",
+      imageUrl: "/images/gallery/welcoming_retail_floor.webp",
+      brands: ["Corsodyl", "Bonjela", "Orajel", "Biotène", "Sensodyne", "Colgate"],
+      tips: [
+        "Use chlorhexidine mouthwash 30 minutes after brushing.",
+        "Apply protective ulcer gels before meals to shield exposed nerve endings.",
+        "Any mouth ulcer lasting more than 3 weeks must be examined by a dentist.",
+      ],
+      sortOrder: 100,
+    },
+    {
+      slug: "feminine-hygiene",
+      name: "Feminine Hygiene",
+      description:
+        "pH-balanced intimate washes, organic sanitary protection, single-dose thrush treatments, and period pain heat patches.",
+      imageUrl: "/images/otc/womens-health.webp",
+      brands: ["Always", "Tampax", "Femfresh", "Canesten", "Cura-Heat", "Clearblue"],
+      tips: [
+        "Vaginal pessaries should be inserted at bedtime for optimal retention.",
+        "Only use gentle cleansers externally; the internal vaginal canal is self-cleansing.",
+        "Abnormal bleeding or fishy discharge warrants clinical consultation.",
+      ],
+      sortOrder: 110,
+    },
+    {
+      slug: "baby-care",
+      name: "Baby Care",
+      description:
+        "Gentle essentials for little ones: fever reducers, diaper care, feeding accessories, and pharmacist advice parents can trust.",
+      imageUrl: "/images/otc/baby-care.webp",
+      brands: ["Calpol", "Infacol", "Sudocrem", "Little Remedies", "Pampers", "Johnson's"],
+      tips: [
+        "Always use weight-based dosing for children's medicines.",
+        "Never give aspirin to children or teens with viral illness.",
+        "ANY fever in an infant under 3 months is an immediate medical emergency.",
+      ],
+      sortOrder: 120,
+    },
+    {
+      slug: "medical-consumables",
+      name: "Medical Consumables",
+      description:
+        "Digital clinical thermometers, fingertip pulse oximeters, blood pressure monitors, glucose strips, and sterile gloves.",
+      imageUrl: "/images/gallery/modern_care_tools.webp",
+      brands: ["Omron", "OneTouch", "Accu-Chek", "Contec", "Beurer", "3M"],
+      tips: [
+        "Rest 5 minutes quietly before taking resting blood pressure readings.",
+        "Store glucose strips tightly capped in their original container away from moisture.",
+        "SpO2 under 92% or blood pressure >= 180/120 are critical clinical warning signs.",
+      ],
+      sortOrder: 130,
+    },
+    {
+      slug: "nutritional-products",
+      name: "Nutritional Products",
+      description:
+        "Complete daily multivitamins, effervescent vitamin C + zinc, oral electrolyte hydration, gentle iron, and meal shakes.",
+      imageUrl: "/images/otc/vitamins-supplements.webp",
+      brands: ["Wellman", "Wellwoman", "Berocca", "Hydralyte", "Feroglobin", "Ensure", "Centrum"],
+      tips: [
+        "Take iron supplements with vitamin C for enhanced absorption; avoid dairy or tea within 2 hours.",
+        "Do not exceed upper limits for fat-soluble vitamins (A, D, E, K).",
+        "Always disclose supplements to your pharmacist to check for prescription drug interactions.",
+      ],
+      sortOrder: 140,
+    },
+    // Aliases and clinical categories
     { slug: "general", name: "General", description: "Uncategorised or multi-use products.", imageUrl: "", brands: [], tips: [], sortOrder: 0 },
-    { slug: "antibiotics", name: "Antibiotics", description: "Prescription antibacterials.", imageUrl: "", brands: [], tips: [], sortOrder: 100 },
-    { slug: "cardiovascular", name: "Cardiovascular", description: "Heart and blood pressure therapies.", imageUrl: "", brands: [], tips: [], sortOrder: 110 },
-    { slug: "diabetes", name: "Diabetes", description: "Diabetes prescription therapies.", imageUrl: "/images/articles/diabetes-everyday-tips.webp", brands: [], tips: [], sortOrder: 120 },
-    { slug: "respiratory", name: "Respiratory", description: "Asthma, COPD, and breathing support.", imageUrl: "", brands: [], tips: [], sortOrder: 130 },
-    { slug: "vitamins", name: "Vitamins", description: "Clinical vitamin catalogue (see also Vitamins & Supplements).", imageUrl: "/images/otc/vitamins-supplements.webp", brands: [], tips: [], sortOrder: 140 },
+    { slug: "allergy", name: "Allergy", description: "Allergy and hay fever treatments.", imageUrl: "/images/articles/seasonal-allergy-guide.webp", brands: ["Zyrtec", "Clarityn"], tips: ["Non-drowsy options available."], sortOrder: 35 },
+    { slug: "digestive", name: "Digestive", description: "Digestive therapies.", imageUrl: "/images/services/medication-counselling.webp", brands: ["Gaviscon", "Imodium"], tips: ["Hydration is key."], sortOrder: 45 },
+    { slug: "womens-health", name: "Women's Health", description: "Reproductive health and wellness.", imageUrl: "/images/otc/womens-health.webp", brands: ["Always", "Pregnacare"], tips: ["Discreet counselling available."], sortOrder: 115 },
+    { slug: "diabetes-care", name: "Diabetes Care", description: "Meters, strips, and glucose care.", imageUrl: "/images/articles/diabetes-everyday-tips.webp", brands: ["OneTouch", "Accu-Chek"], tips: ["Store test strips in a cool dry place."], sortOrder: 135 },
+    { slug: "vitamins-supplements", name: "Vitamins & Supplements", description: "Vitamins and nutritional supplements.", imageUrl: "/images/otc/vitamins-supplements.webp", brands: ["Nature Made", "Centrum"], tips: ["Ask about interactions."], sortOrder: 145 },
+    { slug: "antibiotics", name: "Antibiotics", description: "Prescription antibacterials.", imageUrl: "", brands: [], tips: [], sortOrder: 200 },
+    { slug: "cardiovascular", name: "Cardiovascular", description: "Heart and blood pressure therapies.", imageUrl: "", brands: [], tips: [], sortOrder: 210 },
+    { slug: "diabetes", name: "Diabetes", description: "Diabetes prescription therapies.", imageUrl: "/images/articles/diabetes-everyday-tips.webp", brands: [], tips: [], sortOrder: 220 },
+    { slug: "respiratory", name: "Respiratory", description: "Asthma, COPD, and breathing support.", imageUrl: "", brands: [], tips: [], sortOrder: 230 },
+    { slug: "vitamins", name: "Vitamins", description: "Clinical vitamin catalogue.", imageUrl: "/images/otc/vitamins-supplements.webp", brands: [], tips: [], sortOrder: 240 },
   ];
 
   for (const c of categorySeeds) {

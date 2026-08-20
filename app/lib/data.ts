@@ -336,16 +336,153 @@ export const categories = [
     description:
       "Symptom relief for coughs, congestion, sore throats, and seasonal illness — plus guidance on what actually helps.",
     image: "/images/otc/cold-flu.webp",
-    brands: ["Mucinex", "DayQuil", "Robitussin", "Halls"],
+    brands: ["Mucinex", "DayQuil", "Robitussin", "Halls", "Benylin", "Otrivin"],
     tips: [
       "Multi-symptom products can duplicate ingredients — check labels.",
       "Hydration and rest still matter more than most OTC combos.",
       "High fever, shortness of breath, or lasting symptoms need clinical care.",
     ],
   },
+  {
+    slug: "allergy-treatments",
+    title: "Allergy Treatments",
+    description:
+      "Antihistamines, steroid nasal sprays, and eye drops for seasonal hay fever, pet dander, and allergic skin reactions.",
+    image: "/images/articles/seasonal-allergy-guide.webp",
+    brands: ["Zyrtec", "Clarityn", "Telfast", "Flixonase", "Optrex"],
+    tips: [
+      "Second-generation antihistamines provide 24-hour relief with minimal drowsiness.",
+      "Steroid nasal sprays work best when used daily across allergy season.",
+      "Seek emergency care for facial swelling or throat tightness.",
+    ],
+  },
+  {
+    slug: "digestive-health",
+    title: "Digestive Health",
+    description:
+      "Antacids, acid reducers, rehydration salts, anti-diarrheals, laxatives, and daily probiotics for digestive balance.",
+    image: "/images/services/medication-counselling.webp",
+    brands: ["Gaviscon", "Imodium", "Dioralyte", "Dulcolax", "Bio-Kult"],
+    tips: [
+      "Oral rehydration salts are the first priority for acute fluid loss.",
+      "Short-course acid reducers take 1–4 days for full 24-hour symptom control.",
+      "Black tarry stools or difficulty swallowing require immediate doctor evaluation.",
+    ],
+  },
+  {
+    slug: "topical-treatments",
+    title: "Topical Treatments",
+    description:
+      "Hydrocortisone anti-itch creams, antifungal treatments, calming lotions, and hemorrhoidal soothing care.",
+    image: "/images/otc/skin-care.webp",
+    brands: ["Canesten", "Neosporin", "Anusol", "Cortizone", "Calamine"],
+    tips: [
+      "Apply hydrocortisone thinly for a maximum of 7 consecutive days.",
+      "Continue antifungal creams for 1–2 weeks after symptoms disappear to prevent recurrence.",
+      "Never apply steroid creams to open wounds or active viral infections.",
+    ],
+  },
+  {
+    slug: "antiseptics",
+    title: "Antiseptics",
+    description:
+      "Povidone-iodine solutions, chlorhexidine washes, hydrogen peroxide, and sterile alcohol skin preparation wipes.",
+    image: "/images/gallery/careful_dispensing.webp",
+    brands: ["Betadine", "Dettol", "Savlon", "Hibiclens"],
+    tips: [
+      "Povidone-iodine provides broad antimicrobial protection without skin stinging.",
+      "Allow antiseptic liquids to air dry completely on skin before dressing.",
+      "Deep puncture wounds or dirty animal bites need doctor evaluation and tetanus review.",
+    ],
+  },
+  {
+    slug: "wound-care",
+    title: "Wound Care",
+    description:
+      "Hydrocolloid dressings, sterile non-stick pads, wound irrigation saline, and medical silicone scar reduction gels.",
+    image: "/images/otc/first-aid.webp",
+    brands: ["DuoDERM", "Melolin", "Kelo-Cote", "Steri-Strip"],
+    tips: [
+      "Moist wound healing under hydrocolloid dressings speeds healing and reduces scarring.",
+      "Irrigate with sterile saline rather than harsh scrubbing.",
+      "Seek care if wound edges gape or redness spreads outward.",
+    ],
+  },
+  {
+    slug: "oral-care",
+    title: "Oral Care",
+    description:
+      "Chlorhexidine mouthwashes, mouth ulcer soothing gels, fast-acting toothache analgesics, and dry mouth hydrating rinses.",
+    image: "/images/gallery/welcoming_retail_floor.webp",
+    brands: ["Corsodyl", "Bonjela", "Orajel", "Biotène", "Sensodyne"],
+    tips: [
+      "Use chlorhexidine mouthwash 30 minutes after brushing to avoid toothpaste interference.",
+      "Apply protective ulcer gels before meals to shield exposed nerve endings.",
+      "Any mouth ulcer lasting more than 3 weeks must be examined by a dentist or clinician.",
+    ],
+  },
+  {
+    slug: "feminine-hygiene",
+    title: "Feminine Hygiene",
+    description:
+      "pH-balanced intimate washes, organic sanitary protection, single-dose thrush treatments, and period pain heat patches.",
+    image: "/images/otc/womens-health.webp",
+    brands: ["Always", "Tampax", "Femfresh", "Canesten", "Cura-Heat"],
+    tips: [
+      "Vaginal pessaries should be inserted at bedtime for optimal retention.",
+      "Only use gentle cleansers externally; the internal vaginal canal is self-cleansing.",
+      "Abnormal bleeding or fishy discharge warrants clinical consultation.",
+    ],
+  },
+  {
+    slug: "medical-consumables",
+    title: "Medical Consumables",
+    description:
+      "Digital clinical thermometers, fingertip pulse oximeters, blood pressure monitors, glucose strips, and sterile gloves.",
+    image: "/images/gallery/modern_care_tools.webp",
+    brands: ["Omron", "OneTouch", "Accu-Chek", "Contec", "3M"],
+    tips: [
+      "Rest 5 minutes quietly before taking resting blood pressure readings.",
+      "Store glucose strips tightly capped in their original container away from moisture.",
+      "SpO2 under 92% or blood pressure >= 180/120 are critical clinical warning signs.",
+    ],
+  },
+  {
+    slug: "nutritional-products",
+    title: "Nutritional Products",
+    description:
+      "Daily complete multivitamins, effervescent vitamin C + zinc, oral electrolyte hydration, gentle iron, and meal shakes.",
+    image: "/images/otc/vitamins-supplements.webp",
+    brands: ["Wellman", "Wellwoman", "Berocca", "Hydralyte", "Feroglobin", "Ensure"],
+    tips: [
+      "Take iron supplements with vitamin C for enhanced absorption; avoid dairy or tea within 2 hours.",
+      "Do not exceed upper limits for fat-soluble vitamins (A, D, E, K).",
+      "Always disclose supplements to your pharmacist to check for prescription drug interactions.",
+    ],
+  },
 ];
 
 export const articles = [
+  {
+    slug: "when-is-self-care-appropriate",
+    title: "When is a Condition Appropriate for Self-Care? (And When to See a Doctor)",
+    excerpt:
+      "A pharmacist's comprehensive guide to distinguishing mild self-treatable symptoms from red-flag warning signs that require clinical evaluation.",
+    category: "Self-Care & Triage",
+    readTime: "7 min",
+    date: "2026-03-18",
+    author: "Dr. Priya Nair, PharmD",
+    image: "/images/articles/seasonal-allergy-guide.webp",
+    content: [
+      "Over-the-counter (OTC) medicines empower individuals and families to safely manage everyday health complaints — from headaches and seasonal allergies to minor cuts and heartburn.",
+      "However, responsible self-care requires knowing when a symptom is safe for home management and when it demands prompt medical attention.",
+      "General Rule 1: Mild, transient symptoms with an identifiable cause (e.g. tension headache after a long screen day, mild nasal congestion from a viral cold) are ideal candidates for OTC self-care.",
+      "General Rule 2: Respect the time limit. OTC remedies are formulated for short-term relief (typically 3 to 7 days). If your symptoms fail to improve or worsen after this window, you must pause self-care and consult a pharmacist or physician.",
+      "Red Flags: Never attempt self-care if you experience 'red flag' symptoms — including sudden unbearable pain ('thunderclap' headache), chest pressure or pain radiating to the jaw/arm, shortness of breath, blood in vomit or stool, sudden confusion or weakness, or any fever in an infant under 3 months.",
+      "Watch for active ingredient duplication: Multi-symptom cold sachets, sleep aids, and pain tablets often contain paracetamol. Taking them together can lead to dangerous accidental liver toxicity.",
+      "Check our interactive Self-Care vs Medical Attention Guide or ask our pharmacists in store or online anytime you are unsure.",
+    ],
+  },
   {
     slug: "medication-safety-at-home",
     title: "Medication Safety at Home: 8 Habits That Protect Your Family",

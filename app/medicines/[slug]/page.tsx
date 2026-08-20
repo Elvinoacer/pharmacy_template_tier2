@@ -12,6 +12,8 @@ import {
 import { prisma } from "../../lib/db";
 import { formatPrice } from "../../lib/format";
 import { getPublicCategoryBySlug } from "../../lib/medication-categories";
+import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
+import { CheckCircle2, AlertOctagon, ShieldAlert, Sparkles, Clock, ArrowRight, HelpCircle } from "lucide-react";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -22,9 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const cat = await getPublicCategoryBySlug(slug).catch(() => null);
   if (cat) {
     return {
-      title: cat.name,
+      title: `${cat.name} — OTC Healthcare & Guidance`,
       description:
-        cat.description || `${cat.name} products and guidance at Aether Pharmacy`,
+        cat.description || `${cat.name} non-prescription products, self-care guidelines, and pharmacist advice at Aether Pharmacy`,
       alternates: { canonical: `/medicines/${cat.slug}` },
     };
   }
@@ -51,6 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryOrMedicinePage({ params }: Props) {
   const { slug } = await params;
   const cat = await getPublicCategoryBySlug(slug).catch(() => null);
+  const otcGuidance = cat ? getOtcCategoryGuidance(cat.slug) : null;
 
   // ── Category page ──────────────────────────────────────────
   if (cat) {
@@ -101,11 +104,11 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
     return (
       <div>
         <PageHero
-          eyebrow="Health category"
+          eyebrow="OTC Health Category & Guidance"
           title={cat.name}
           description={
             cat.description ||
-            "Browse products and pharmacist guidance in this category."
+            "Browse stocked non-prescription products and expert pharmacist guidance for self-care."
           }
           crumbs={[
             { label: "Medicines", href: "/medicines" },
@@ -113,6 +116,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
           ]}
         />
 
+        {/* Category Hero & Overview */}
         <section className="px-4 pb-12 sm:px-6">
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-[#eef5f1] shadow-xl">
@@ -131,88 +135,216 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                 </div>
               )}
             </div>
-            <div>
-              {cat.brands.length > 0 && (
-                <>
-                  <h2
-                    className="text-xl font-semibold text-[#0c1a14]"
-                    style={{ fontFamily: "var(--font-display), serif" }}
-                  >
-                    Featured brands we often stock
-                  </h2>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {cat.brands.map((b) => (
-                      <span
-                        key={b}
-                        className="rounded-full border border-teal-900/10 bg-white px-3.5 py-1.5 text-sm font-medium text-[#0c1a14]"
-                      >
-                        {b}
-                      </span>
-                    ))}
+            <div className="flex flex-col justify-between">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
+                    Over The Counter (OTC)
+                  </span>
+                  {otcGuidance && (
+                    <span className="flex items-center gap-1 rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-teal-800 border border-teal-200">
+                      <Clock className="h-3 w-3" />
+                      {otcGuidance.maxSelfCareDuration}
+                    </span>
+                  )}
+                </div>
+
+                <p className="mt-4 text-base leading-relaxed text-[#2c3e35]">
+                  {cat.description ||
+                    "Our pharmacy stocks quality non-prescription remedies and provides professional clinical advice on safe home management."}
+                </p>
+
+                {cat.brands.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#5a6b62]">
+                      Featured Brands We Stock
+                    </h3>
+                    <div className="mt-2.5 flex flex-wrap gap-2">
+                      {cat.brands.map((b) => (
+                        <span
+                          key={b}
+                          className="rounded-full border border-teal-900/10 bg-white px-3 py-1 text-xs font-semibold text-[#0c1a14] shadow-xs"
+                        >
+                          {b}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </>
-              )}
+                )}
 
-              {cat.tips.length > 0 && (
-                <>
-                  <h2
-                    className={`text-xl font-semibold text-[#0c1a14] ${cat.brands.length > 0 ? "mt-10" : ""}`}
-                    style={{ fontFamily: "var(--font-display), serif" }}
-                  >
-                    Pharmacist tips
-                  </h2>
-                  <ul className="mt-4 space-y-3">
-                    {cat.tips.map((tip) => (
-                      <li
-                        key={tip}
-                        className="flex items-start gap-2.5 text-sm text-[#5a6b62]"
-                      >
-                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600" />
-                        {tip}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+                {otcGuidance && otcGuidance.commonActiveIngredients.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#5a6b62]">
+                      Common Active Ingredients
+                    </h3>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {otcGuidance.commonActiveIngredients.map((ing) => (
+                        <span
+                          key={ing}
+                          className="rounded-lg bg-[#f0faf6] px-2.5 py-1 text-xs font-medium text-[#084c3f] border border-[#0d6e5a]/15"
+                        >
+                          {ing}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
-              <p className="mt-8 rounded-2xl border border-teal-900/5 bg-teal-50/50 p-4 text-sm text-[#5a6b62]">
-                Guidance here is educational. For personalised advice or stock
-                confirmation, ask our pharmacists in store or online.
-              </p>
-
-              <Link
-                href="/medicines"
-                className="mt-6 inline-block text-sm font-semibold text-teal-800 hover:underline"
-              >
-                ← All categories
-              </Link>
+              <div className="mt-8 flex flex-wrap gap-3 border-t border-[#e3ebe6] pt-6">
+                <Link
+                  href="/health/self-care-guide"
+                  className="inline-flex items-center gap-1.5 rounded-2xl bg-teal-800 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-teal-900 transition"
+                >
+                  <HelpCircle className="h-3.5 w-3.5" /> Open Self-Care vs Doctor Guide
+                </Link>
+                <Link
+                  href={`/how-do-you-feel?category=${encodeURIComponent(cat.slug)}`}
+                  className="inline-flex items-center gap-1.5 rounded-2xl border border-purple-300 bg-purple-50 px-4 py-2 text-xs font-semibold text-purple-900 hover:bg-purple-100 transition"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-purple-700" /> AI Symptom Check
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {catalogItems.length > 0 && (
-          <section className="px-4 pb-16 sm:px-6">
+        {/* Clinical Triage Protocol: Self-Care vs Medical Attention */}
+        {otcGuidance && (
+          <section className="px-4 pb-12 sm:px-6">
             <div className="mx-auto max-w-6xl">
-              <h2
-                className="mb-4 text-xl font-semibold text-[#0c1a14]"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                Available in {cat.name} ({catalogItems.length})
-              </h2>
-              <MedicineCatalogGrid items={catalogItems} />
-              <div className="mt-6">
-                <Link
-                  href={`/medicines?category=${encodeURIComponent(cat.slug)}`}
-                  className="text-sm font-semibold text-teal-800 hover:underline"
+              <div className="mb-6">
+                <h2
+                  className="text-2xl font-bold text-[#0c1a14]"
+                  style={{ fontFamily: "var(--font-display), serif" }}
                 >
-                  See all in catalogue →
-                </Link>
+                  When is Self-Care Appropriate for {cat.name}?
+                </h2>
+                <p className="mt-1 text-sm text-[#5a6b62]">
+                  Clinical safety criteria to help you determine if home OTC treatment is suitable or if you need to seek in-person medical attention.
+                </p>
               </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* 🟢 Appropriate for Self-Care */}
+                <div className="rounded-3xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/20 p-6 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-xl bg-emerald-600 p-2 text-white shadow-sm">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+                        Appropriate For Self-Care
+                      </span>
+                      <h3 className="font-bold text-emerald-950">
+                        Safe for Home OTC Management
+                      </h3>
+                    </div>
+                  </div>
+
+                  <ul className="mt-4 space-y-2.5">
+                    {otcGuidance.selfCareAppropriate.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs text-[#2c3e35]">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-white/90 p-3 text-xs text-emerald-900">
+                    <strong>Expected Timeframe:</strong> Maximum of {otcGuidance.maxSelfCareDuration} before clinical re-assessment.
+                  </div>
+                </div>
+
+                {/* 🔴 When to Seek Medical Attention / Red Flags */}
+                <div className="rounded-3xl border-2 border-rose-300 bg-gradient-to-br from-rose-50/80 via-white to-rose-50/30 p-6 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-2xl bg-rose-600 p-2 text-white shadow-sm">
+                      <AlertOctagon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-rose-800">
+                        When to Seek Medical Attention
+                      </span>
+                      <h3 className="font-bold text-rose-950">
+                        Red Flags & Warning Criteria
+                      </h3>
+                    </div>
+                  </div>
+
+                  <ul className="mt-4 space-y-2.5">
+                    {otcGuidance.medicalAttentionCriteria.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs text-rose-950 font-medium">
+                        <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-rose-600 mt-0.5" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {otcGuidance.emergencyWarning && (
+                    <div className="mt-5 rounded-2xl border border-rose-300 bg-rose-100/60 p-3 text-xs font-semibold text-rose-950">
+                      🚨 {otcGuidance.emergencyWarning}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Pharmacist Tips */}
+              {otcGuidance.pharmacistTips.length > 0 && (
+                <div className="mt-6 rounded-3xl border border-[#d2dfd8] bg-white p-6 shadow-sm">
+                  <h3
+                    className="text-lg font-bold text-[#0c1a14]"
+                    style={{ fontFamily: "var(--font-display), serif" }}
+                  >
+                    Pharmacist Clinical Advice for {cat.name}
+                  </h3>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {otcGuidance.pharmacistTips.map((tip, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5 rounded-2xl bg-[#f8faf9] p-3 text-xs text-[#2c3e35]">
+                        <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-teal-700" />
+                        <span>{tip}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         )}
 
-        <CtaBanner />
+        {/* Live Stock Catalog */}
+        {catalogItems.length > 0 && (
+          <section className="px-4 pb-16 sm:px-6">
+            <div className="mx-auto max-w-6xl">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2
+                    className="text-2xl font-bold text-[#0c1a14]"
+                    style={{ fontFamily: "var(--font-display), serif" }}
+                  >
+                    Stocked {cat.name} Products ({catalogItems.length})
+                  </h2>
+                  <p className="text-xs text-[#5a6b62]">
+                    Available for immediate counter pickup, reserve online with no account, or delivery.
+                  </p>
+                </div>
+                <Link
+                  href={`/medicines?category=${encodeURIComponent(cat.slug)}`}
+                  className="text-xs font-bold text-teal-800 hover:underline"
+                >
+                  View full catalogue →
+                </Link>
+              </div>
+
+              <MedicineCatalogGrid items={catalogItems} />
+            </div>
+          </section>
+        )}
+
+        <CtaBanner
+          title={`Have questions about ${cat.name}?`}
+          description="Our pharmacists are always available in-store or online to confirm product suitability, screen for interactions, and ensure your self-care is safe."
+        />
       </div>
     );
   }
@@ -347,137 +479,161 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={categoryHref}
-                className="rounded-full border border-teal-900/10 bg-white px-3 py-1 text-xs font-semibold capitalize text-teal-800 hover:bg-teal-50"
+                className="rounded-full border border-teal-900/15 bg-white px-3.5 py-1 text-xs font-semibold capitalize text-teal-800 hover:bg-teal-50 shadow-xs"
               >
                 {categoryLabel}
               </Link>
               {med.overTheCounter && (
-                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                  Over the counter
+                <span className="rounded-full bg-emerald-100 px-3.5 py-1 text-xs font-bold text-emerald-800">
+                  Over-the-Counter (OTC)
                 </span>
               )}
               {med.prescriptionRequired && (
-                <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">
-                  Prescription required
+                <span className="rounded-full bg-amber-100 px-3.5 py-1 text-xs font-bold text-amber-900">
+                  Prescription Required
                 </span>
               )}
               <span
-                className={`rounded-full px-3 py-1 text-xs font-bold ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold ${
                   med.currentStock > 0
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-rose-100 text-rose-700"
+                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                    : "bg-rose-50 text-rose-700 border border-rose-200"
                 }`}
               >
+                <span className={`h-1.5 w-1.5 rounded-full ${med.currentStock > 0 ? "bg-emerald-500" : "bg-rose-500"}`} />
                 {med.currentStock > 0
-                  ? `${med.currentStock} in stock`
-                  : "Out of stock"}
+                  ? `${med.currentStock} units in stock`
+                  : "Currently Out of Stock"}
               </span>
             </div>
 
-            <p className="mt-4 text-3xl font-bold text-[#0c1a14]">
-              KES {formatPrice(Number(med.price))}
-            </p>
+            <div className="mt-4 flex items-baseline gap-2">
+              <span className="text-3xl font-extrabold text-[#0c1a14]">
+                KES {formatPrice(Number(med.price))}
+              </span>
+              <span className="text-xs text-[#5a6b62]">Inclusive of all taxes</span>
+            </div>
 
-            {med.medicationMaster.dosage && (
-              <div className="mt-4">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
-                  Dosage
-                </p>
-                <p className="mt-1 text-sm text-[#0c1a14]">
-                  {med.medicationMaster.dosage}
-                </p>
-              </div>
-            )}
-
-            {med.medicationMaster.indications && (
-              <div className="mt-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
-                  Uses (indications)
-                </p>
-                <div className="mt-2 text-sm text-[#0c1a14]">
-                  <Markdown>{med.medicationMaster.indications}</Markdown>
-                </div>
-              </div>
-            )}
-
-            {med.medicationMaster.sideEffects && (
-              <div className="mt-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
-                  Side effects
-                </p>
-                <div className="mt-2 text-sm text-[#0c1a14]">
-                  <Markdown>{med.medicationMaster.sideEffects}</Markdown>
-                </div>
-              </div>
-            )}
-
-            {med.medicationMaster.contraindications && (
-              <div className="mt-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
-                  Not for you if…
-                </p>
-                <div className="mt-2 text-sm text-[#0c1a14]">
-                  <Markdown>{med.medicationMaster.contraindications}</Markdown>
-                </div>
-              </div>
-            )}
-
-            {med.medicationMaster.storage && (
-              <div className="mt-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#8a9a92]">
-                  Storage
-                </p>
-                <p className="mt-1 text-sm text-[#0c1a14]">
-                  {med.medicationMaster.storage}
-                </p>
-              </div>
-            )}
-
-            <div className="mt-8 rounded-2xl border border-[#0d6e5a]/20 bg-[#f0faf6] p-4">
-              <p className="text-sm font-semibold text-[#0c1a14]">
-                How to get this medication
+            {/* Quick Action Box */}
+            <div className="mt-6 rounded-3xl border border-[#0d6e5a]/20 bg-gradient-to-br from-[#f0faf6] via-white to-[#f0faf6]/50 p-5 shadow-xs">
+              <p className="text-xs font-bold uppercase tracking-wider text-teal-900">
+                Ready to Order / Reserve
               </p>
               <p className="mt-1 text-xs text-[#5a6b62]">
                 {med.prescriptionRequired
-                  ? "This medication requires a valid prescription. Request a refill from your portal, or visit us with your prescription."
-                  : "Reserve online with no account (pay M-Pesa now or at collection), use the portal for loyalty, or buy at the counter."}
+                  ? "This medication requires a valid prescription. Request a refill via your portal or upload Rx."
+                  : "Reserve online with no account (pay M-Pesa or at collection), or sign in for loyalty points & dose reminders."}
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2.5">
                 {med.prescriptionRequired ? (
                   <Link
                     href="/portal/refills/new"
-                    className="btn-primary !py-2 text-xs"
+                    className="btn-primary !py-2.5 !px-5 text-xs font-semibold"
                   >
-                    Request refill
+                    Request Prescription Refill →
                   </Link>
                 ) : (
                   <>
                     <Link
                       href={`/order?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}
-                      className="btn-primary !py-2 text-xs"
+                      className="btn-primary !py-2.5 !px-5 text-xs font-semibold shadow-sm"
                     >
-                      Reserve / pay — no account
+                      Reserve / Pay — No Account Required →
                     </Link>
                     <Link
                       href={`/portal/orders/new?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}
-                      className="btn-ghost !py-2 text-xs"
+                      className="btn-ghost !py-2.5 !px-4 text-xs font-semibold bg-white"
                     >
-                      Portal checkout
+                      Portal Checkout
                     </Link>
                   </>
                 )}
-                <Link href="/contact" className="btn-ghost !py-2 text-xs">
-                  Ask a pharmacist
+                <Link href="/contact" className="btn-ghost !py-2.5 !px-4 text-xs font-semibold bg-white">
+                  Ask Pharmacist
                 </Link>
               </div>
             </div>
 
-            <Link
-              href="/medicines"
-              className="mt-6 inline-block text-sm font-semibold text-teal-800 hover:underline"
-            >
-              ← All medications
-            </Link>
+            {/* Structured Clinical Information */}
+            <div className="mt-6 space-y-4">
+              {med.medicationMaster.dosage && (
+                <div className="rounded-2xl border border-[#e3ebe6] bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-teal-900 flex items-center gap-1.5">
+                    💊 Dosage & Administration
+                  </p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-[#2c3e35]">
+                    {med.medicationMaster.dosage}
+                  </p>
+                </div>
+              )}
+
+              {med.medicationMaster.indications && (
+                <div className="rounded-2xl border border-[#e3ebe6] bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-teal-900 flex items-center gap-1.5">
+                    🎯 Uses & Indications
+                  </p>
+                  <div className="mt-1.5 text-xs leading-relaxed text-[#2c3e35]">
+                    <Markdown>{med.medicationMaster.indications}</Markdown>
+                  </div>
+                </div>
+              )}
+
+              {med.medicationMaster.sideEffects && (
+                <div className="rounded-2xl border border-[#e3ebe6] bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                    ⚠️ Side Effects & Precautions
+                  </p>
+                  <div className="mt-1.5 text-xs leading-relaxed text-[#2c3e35]">
+                    <Markdown>{med.medicationMaster.sideEffects}</Markdown>
+                  </div>
+                </div>
+              )}
+
+              {med.medicationMaster.contraindications && (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50/40 p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-rose-950 flex items-center gap-1.5">
+                    🛑 Not For You If (Contraindications)
+                  </p>
+                  <div className="mt-1.5 text-xs leading-relaxed text-rose-900">
+                    <Markdown>{med.medicationMaster.contraindications}</Markdown>
+                  </div>
+                </div>
+              )}
+
+              {med.medicationMaster.storage && (
+                <div className="rounded-2xl border border-[#e3ebe6] bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#5a6b62] flex items-center gap-1.5">
+                    🌡️ Storage Instructions
+                  </p>
+                  <p className="mt-1.5 text-xs text-[#5a6b62]">
+                    {med.medicationMaster.storage}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Self-Care Safety Reminder */}
+            {med.overTheCounter && (
+              <div className="mt-6 rounded-2xl border border-teal-200/80 bg-[#f4f9f6] p-4 text-xs text-[#2c3e35]">
+                <strong className="text-teal-950">💡 Pharmacist Self-Care Tip: </strong>
+                Over-the-counter medicines are intended for short-term symptom relief. If symptoms do not improve within 3–7 days or worsen, pause self-care and consult our pharmacist or your doctor.
+              </div>
+            )}
+
+            <div className="mt-6 flex items-center justify-between">
+              <Link
+                href="/medicines"
+                className="text-xs font-bold text-teal-800 hover:underline"
+              >
+                ← Back to all medicines
+              </Link>
+              <Link
+                href="/health/self-care-guide"
+                className="text-xs font-bold text-teal-800 hover:underline"
+              >
+                Self-Care vs Doctor Guide →
+              </Link>
+            </div>
           </div>
         </div>
       </section>

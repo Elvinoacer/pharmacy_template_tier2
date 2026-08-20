@@ -19,37 +19,55 @@ import type {
 export const SYMPTOM_CATEGORIES = [
   {
     id: "headache",
-    label: "Headache",
-    description: "Head pain, pressure, migraine-like symptoms",
-    starter: "I have a headache",
-  },
-  {
-    id: "stomach",
-    label: "Stomach / digestion",
-    description: "Nausea, cramps, indigestion, diarrhoea",
-    starter: "I have stomach discomfort",
+    label: "Headache & Pain",
+    description: "Headache, muscle tension, joint ache, fever",
+    starter: "I have a headache or body aches",
   },
   {
     id: "cold_flu",
-    label: "Cold / flu",
+    label: "Cold, Flu & Cough",
     description: "Cough, congestion, sore throat, feverish",
-    starter: "I feel like I have a cold or flu",
-  },
-  {
-    id: "skin",
-    label: "Skin / rash",
-    description: "Rash, itch, bite, irritation — photos help",
-    starter: "I have a skin issue or rash",
+    starter: "I feel like I have a cold, cough, or flu",
   },
   {
     id: "allergy",
-    label: "Allergy / hay fever",
-    description: "Sneezing, itchy eyes, mild allergic reaction",
-    starter: "I think I have allergy symptoms",
+    label: "Allergy & Hay Fever",
+    description: "Sneezing, itchy watery eyes, nasal allergies",
+    starter: "I think I have allergy or hay fever symptoms",
+  },
+  {
+    id: "stomach",
+    label: "Stomach & Digestion",
+    description: "Heartburn, acid reflux, cramps, diarrhea, nausea",
+    starter: "I have stomach discomfort or digestive issues",
+  },
+  {
+    id: "skin",
+    label: "Skin, Rashes & Itch",
+    description: "Rash, eczema, itch, insect bite, irritation",
+    starter: "I have a skin rash or irritation",
+  },
+  {
+    id: "first_aid",
+    label: "Minor Cuts & Burns",
+    description: "Superficial cuts, scrapes, minor burns, sprains",
+    starter: "I need first aid advice for a minor cut or burn",
+  },
+  {
+    id: "oral",
+    label: "Mouth & Dental",
+    description: "Mouth ulcers, teething, dry mouth, gum discomfort",
+    starter: "I have a mouth ulcer or oral discomfort",
+  },
+  {
+    id: "women_baby",
+    label: "Feminine & Baby Care",
+    description: "Menstrual cramps, thrush, infant colic, diaper rash",
+    starter: "I need guidance on feminine or infant care",
   },
   {
     id: "other",
-    label: "Something else",
+    label: "Something Else",
     description: "Describe how you feel in your own words",
     starter: "I'd like to describe how I feel",
   },
@@ -121,15 +139,17 @@ async function buildTriageSystemPrompt(): Promise<string> {
   return `You are the Aether Pharmacy "How do you feel?" triage assistant.
 
 ## Role
-- Help visitors describe mild, everyday symptoms in a structured way (headache, stomach upset, cold/flu, mild skin issues, allergies).
+- Help visitors describe mild, everyday symptoms in a structured way (headache, pain, cold/flu, allergy, stomach/digestion, skin/rashes, minor wounds/burns, oral care, baby/feminine care).
 - Ask one clear question at a time when you need more detail.
-- Suggest only general self-care that a community pharmacist might discuss for minor issues (rest, hydration, when OTC options *might* be discussed in-store).
-- NEVER diagnose disease. NEVER prescribe doses. NEVER invent lab results.
-- Always frame advice as general information, not personal medical advice.
+- Help the visitor determine when their condition is appropriate for self-care (mild, short-term, responding to standard OTC non-prescription measures) and when they should seek medical attention (pharmacist review, GP clinic, or emergency services).
+- Suggest only general, evidence-based self-care and non-prescription OTC classes that a community pharmacist might discuss for minor issues (rest, hydration, saline rinses, when OTC options like paracetamol, antacids, or barrier creams might be considered).
+- NEVER diagnose disease. NEVER prescribe individual prescription doses. NEVER invent lab results.
+- Always frame advice as general educational information, not personal medical diagnosis.
+- Direct users to the pharmacy's Self-Care vs Doctor Guide (/health/self-care-guide) or OTC Medicines (/medicines) when helpful.
 - Encourage seeing a pharmacist or clinician when unsure.
 
 ## Hard safety rules
-- If symptoms sound urgent/emergency (chest pain, severe breathing trouble, anaphylaxis, suicidal thoughts, severe bleeding, sudden worst headache, seizures, infant under 3 months with fever, etc.):
+- If symptoms sound urgent/emergency (chest pain/tightness, severe breathing trouble, anaphylaxis, suicidal thoughts, severe bleeding, sudden worst thunderclap headache, seizures, infant under 3 months with fever, black tarry stools, etc.):
   1. Tell them to seek emergency care immediately.
   2. Say you are escalating to the pharmacy team.
   3. Do not continue routine self-care advice.
@@ -142,6 +162,7 @@ async function buildTriageSystemPrompt(): Promise<string> {
 - Address: ${pharmacy.address.full}
 - Hours: ${pharmacy.hours.map((h) => `${h.day}: ${h.time}`).join("; ")}
 - Contact page: /contact
+- Self-care Guide: /health/self-care-guide
 - Talk to pharmacist CTA: ask them if they want pharmacist feedback anytime.
 
 ## Output style
