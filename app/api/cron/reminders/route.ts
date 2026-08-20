@@ -8,6 +8,10 @@ import {
   processAutoMissedDoses,
   createDailyDoseReminders,
 } from "@/app/lib/services/medication-schedule";
+import {
+  generateUpcomingRefillReminders,
+  processRefillLapseAlerts,
+} from "@/app/lib/services/refills";
 import { formatTime, toLocalDateInputValue } from "@/app/lib/time";
 
 export const runtime = "nodejs";
@@ -429,33 +433,42 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Dose reminders must exist *before* processDueReminders fires them.
-  // Sequential: generate today's slots → fire due → escalate unanswered → auto-miss.
-  const doseRemindersCreated = await createDailyDoseReminders();
-  const [reminders, campaigns, messages, adherenceAlerts, escalations, autoMissed] = await Promise.all([
+  // Dose reminders & upcoming refill reminders must exist before processDueReminders fires them.
+  // Sequential: generate daily dose reminders & refill reminders → fire due → escalate unanswered → auto-miss.
+  const [doseRemindersCreated, refillRemindersCreated] = await Promise.all([
+    createDailyDoseReminders(),
+    generateUpcomingRefillReminders(),
+  ]);
+
+  const [reminders, campaigns, messages, adherenceAlerts, refillLapseAlerts, escalations, autoMissed] = await Promise.all([
     processDueReminders(),
     processScheduledCampaigns(),
     processScheduledMessages(),
     processLowAdherenceAlerts(),
+    processRefillLapseAlerts(),
     processAdherenceEscalations(),
     processAutoMissedDoses(),
   ]);
 
   await writeAuditLog(null, "cron_reminders_processed", "reminder", undefined, {
     doseRemindersCreated,
+    refillRemindersCreated,
     reminders,
     campaigns,
     messages,
     adherenceAlerts,
+    refillLapseAlerts,
     escalations,
     autoMissed,
   });
   return Response.json({
     doseRemindersCreated,
+    refillRemindersCreated,
     reminders,
     campaigns,
     messages,
     adherenceAlerts,
+    refillLapseAlerts,
     escalations,
     autoMissed,
   });

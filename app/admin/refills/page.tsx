@@ -1,23 +1,21 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { REFILL_STATUSES, refillStatusMeta } from "@/app/lib/types";
-import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { REFILL_STATUSES } from "@/app/lib/types";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { Pill } from "lucide-react";
-import { RefillFilter } from "@/app/components/admin/RefillFilter";
-import { RefillRow } from "@/app/components/admin/RefillRow";
-import { Pagination } from "@/app/components/Pagination";
-import { parsePageParam } from "@/app/lib/pagination";
+import { RefillManagementView } from "@/app/components/admin/RefillManagementView";
+import {
+  getRefillDashboardSummary,
+  getRefillSchedules,
+  getMissingRefillsPatients,
+} from "@/app/lib/services/refills";
 
-export const metadata = { title: "Refill management" };
-
-const PAGE_SIZE = 25;
+export const metadata = { title: "Medication Refills & Schedules" };
 
 export default async function AdminRefillsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; q?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; tab?: string }>;
 }) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
@@ -36,13 +34,23 @@ export default async function AdminRefillsPage({
             { rxReference: { contains: sp.q, mode: "insensitive" as const } },
             { customerName: { contains: sp.q, mode: "insensitive" as const } },
             { customer: { fullName: { contains: sp.q, mode: "insensitive" as const } } },
+            { phone: { contains: sp.q, mode: "insensitive" as const } },
           ],
         }
       : {}),
   };
 
-  const [total, refills, allRefills] = await Promise.all([
-    prisma.refillRequest.count({ where }),
+  // Fetch all dashboard data concurrently
+  const [
+    stats,
+    allStatusCounts,
+    activeRefillRows,
+    schedulesResult,
+    missingPatients,
+    historyRowsRaw,
+  ] = await Promise.all([
+    getRefillDashboardSummary(),
+    prisma.refillRequest.groupBy({ by: ["status"], _count: true }),
     prisma.refillRequest.findMany({
       where,
       include: {
@@ -50,92 +58,103 @@ export default async function AdminRefillsPage({
         assignedTo: { select: { email: true } },
       },
       orderBy: { createdAt: "desc" },
-      take: PAGE_SIZE,
-      skip: 0,
+      take: 100,
     }),
-    prisma.refillRequest.groupBy({ by: ["status"], _count: true }),
+    getRefillSchedules({ query: sp.q, pageSize: 100 }),
+    getMissingRefillsPatients({ query: sp.q }),
+    prisma.refillRequest.findMany({
+      where: {
+        status: { in: ["collected", "cancelled", "ready_for_pickup"] },
+      },
+      include: {
+        customer: true,
+        prescriptionFill: {
+          include: {
+            dispensedBy: { select: { email: true } },
+            order: {
+              include: { payments: true },
+            },
+          },
+        },
+      },
+      orderBy: { statusUpdatedAt: "desc" },
+      take: 100,
+    }),
   ]);
 
-  const page = parsePageParam(sp.page, total, PAGE_SIZE);
-  const paged = page === 1
-    ? refills
-    : await prisma.refillRequest.findMany({
-        where,
-        include: { customer: true, assignedTo: { select: { email: true } } },
-        orderBy: { createdAt: "desc" },
-        take: PAGE_SIZE,
-        skip: (page - 1) * PAGE_SIZE,
-      });
+  const refillCounts: Record<string, number> = {};
+  for (const r of allStatusCounts) refillCounts[r.status] = r._count;
 
-  const counts: Record<string, number> = {};
-  for (const r of allRefills) counts[r.status] = r._count;
+  const activeRefills = activeRefillRows.map((r) => ({
+    id: r.id,
+    status: r.status,
+    medicineName: r.medicineName,
+    rxReference: r.rxReference,
+    source: r.source,
+    customerName: r.customerName,
+    customerFullName: r.customer?.fullName ?? null,
+    customerId: r.customerId,
+    phone: r.phone,
+    email: r.email,
+    createdAt: r.createdAt,
+  }));
 
-  const queryParams: Record<string, string | undefined> = {
-    q: sp.q,
-    status: statusFilter,
-  };
+  const historyRows = historyRowsRaw.map((r) => ({
+    id: r.id,
+    medicineName: r.medicineName,
+    rxReference: r.rxReference,
+    customerName: r.customerName,
+    customerFullName: r.customer?.fullName ?? null,
+    customerId: r.customerId,
+    phone: r.phone,
+    email: r.email,
+    pickupPreference: r.pickupPreference,
+    status: r.status,
+    source: r.source,
+    createdAt: r.createdAt,
+    statusUpdatedAt: r.statusUpdatedAt,
+    prescriptionFill: r.prescriptionFill
+      ? {
+          id: r.prescriptionFill.id,
+          fillNumber: r.prescriptionFill.fillNumber,
+          filledAt: r.prescriptionFill.filledAt,
+          dispatchedAt: r.prescriptionFill.dispatchedAt,
+          netAmount: Number(r.prescriptionFill.netAmount),
+          quantity: r.prescriptionFill.quantity,
+          dispensedBy: r.prescriptionFill.dispensedBy,
+          order: r.prescriptionFill.order
+            ? {
+                id: r.prescriptionFill.order.id,
+                status: r.prescriptionFill.order.status,
+                total: Number(r.prescriptionFill.order.total),
+                amountPaid: Number(r.prescriptionFill.order.amountPaid),
+                amountDue: Number(r.prescriptionFill.order.amountDue),
+                payments: r.prescriptionFill.order.payments.map((p) => ({
+                  provider: p.provider,
+                  status: p.status,
+                  providerRef: p.providerRef,
+                })),
+              }
+            : null,
+        }
+      : null,
+  }));
 
   return (
     <AdminShell
       user={user}
-      title="Refill management"
-      subtitle={`${total} request${total === 1 ? "" : "s"}${statusFilter ? ` · ${refillStatusMeta(statusFilter).label}` : ""}`}
+      title="Medication Refills & Schedules"
+      subtitle={`${stats.totalPrescriptionsOnRefill} maintenance prescriptions · ${stats.activeRequestsCount} active requests · ${stats.dueInNext7DaysCount} due this week`}
     >
-      {/* Filter chips + search */}
-      <RefillFilter counts={counts} active={statusFilter || "all"} search={sp.q} />
-
-      <AdminPanel>
-        {paged.length === 0 ? (
-          <AdminEmptyState
-            icon={Pill}
-            title="No refills match your filters"
-            description="Try clearing the status filter or search query."
-          />
-        ) : (
-          <div className="overflow-x-auto scroll-admin">
-            <table className="table-admin">
-              <thead>
-                <tr>
-                  <th>Customer</th>
-                  <th>Medicine</th>
-                  <th>Source</th>
-                  <th>Submitted</th>
-                  <th>Status</th>
-                  <th>Update</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paged.map((r) => (
-                  <RefillRow
-                    key={r.id}
-                    refill={{
-                      id: r.id,
-                      status: r.status,
-                      medicineName: r.medicineName,
-                      rxReference: r.rxReference,
-                      source: r.source,
-                      customerName: r.customerName,
-                      customerFullName: r.customer?.fullName ?? null,
-                      customerId: r.customerId,
-                      phone: r.phone,
-                      email: r.email,
-                      createdAt: r.createdAt,
-                    }}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </AdminPanel>
-
-      <Pagination
-        page={page}
-        total={total}
-        pageSize={PAGE_SIZE}
-        basePath="/admin/refills"
-        queryParams={queryParams}
-        variant="admin"
+      <RefillManagementView
+        stats={stats}
+        activeRefills={activeRefills}
+        refillCounts={refillCounts}
+        currentStatusFilter={statusFilter || "all"}
+        searchQuery={sp.q}
+        schedules={schedulesResult.items}
+        missingPatients={missingPatients}
+        historyRows={historyRows}
       />
     </AdminShell>
   );

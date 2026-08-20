@@ -2648,3 +2648,236 @@ export async function adminWriteOffLotAction(
     return { error: "Write-off failed." };
   }
 }
+
+// ════════════════════════════════════════════════════════════════
+// ── Enhanced Medication Refills Server Actions ──────────────────
+// ════════════════════════════════════════════════════════════════
+
+export async function adminCreateInboundRefillAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const { createRefillRequest } = await import("@/app/lib/services/crm");
+
+    const medicineName = String(formData.get("medicineName") || "").trim();
+    const customerId = String(formData.get("customerId") || "").trim() || null;
+    const customerName = String(formData.get("customerName") || "").trim() || null;
+    const phone = String(formData.get("phone") || "").trim() || null;
+    const email = String(formData.get("email") || "").trim() || null;
+    const prescriptionId = String(formData.get("prescriptionId") || "").trim() || null;
+    const rxReference = String(formData.get("rxReference") || "").trim() || null;
+    const pickupPreference = (String(formData.get("pickupPreference") || "pickup") as "pickup" | "delivery");
+    const preferredDate = String(formData.get("preferredDate") || "") || undefined;
+    const preferredTime = String(formData.get("preferredTime") || "") || undefined;
+    const notes = String(formData.get("notes") || "").trim() || undefined;
+    const source = (String(formData.get("source") || "staff") as "website" | "portal" | "ai" | "phone" | "whatsapp" | "staff");
+
+    if (!medicineName) {
+      return { error: "Medicine name is required." };
+    }
+
+    const refill = await createRefillRequest({
+      customerId,
+      prescriptionId: prescriptionId || undefined,
+      medicineName,
+      rxReference: rxReference || undefined,
+      customerName: customerName || undefined,
+      phone: phone || undefined,
+      email: email || undefined,
+      pickupPreference,
+      preferredDate,
+      preferredTime,
+      notes,
+      source,
+    });
+
+    await writeAuditLog(user.id, "staff_inbound_refill_created", "refill_request", refill.id, {
+      medicineName,
+      source,
+      customerId,
+    });
+
+    revalidatePath("/admin/refills");
+    revalidatePath("/admin/customers");
+    return { success: `Refill request created for ${medicineName}.` };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to record refill request." };
+  }
+}
+
+export async function adminApproveRefillAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const id = String(formData.get("id") || "");
+    if (!id) return { error: "Refill id is required." };
+
+    const markPreparing = formData.get("markPreparing") === "true";
+    const markPaid = formData.get("markPaid") === "true";
+    const paymentMethod = (String(formData.get("paymentMethod") || "cash") as "cash" | "daraja" | "card" | "other");
+    const notes = String(formData.get("notes") || "").trim() || undefined;
+    const overrideUnitPrice = formData.get("overrideUnitPrice") ? Number(formData.get("overrideUnitPrice")) : undefined;
+
+    const { approveRefillRequest } = await import("@/app/lib/services/refills");
+    const result = await approveRefillRequest(id, user.id, {
+      markPreparing,
+      markPaid,
+      paymentMethod,
+      notes,
+      overrideUnitPrice,
+    });
+
+    revalidatePath("/admin/refills");
+    revalidatePath("/admin/orders");
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/prescriptions");
+    return { success: `Refill approved successfully.${markPreparing ? " Status moved to Preparing." : ""}` };
+  } catch (e) {
+    const { InsufficientStockError } = await import("@/app/lib/services/stock");
+    if (e instanceof InsufficientStockError) {
+      return { error: e.message };
+    }
+    return { error: e instanceof Error ? e.message : "Failed to approve refill." };
+  }
+}
+
+export async function adminSendRefillReminderAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const customerId = String(formData.get("customerId") || "");
+    const prescriptionId = String(formData.get("prescriptionId") || "") || undefined;
+    const refillRequestId = String(formData.get("refillRequestId") || "") || undefined;
+    const channel = (String(formData.get("channel") || "sms") as "sms" | "whatsapp" | "email" | "in_app");
+    const customSubject = String(formData.get("subject") || "").trim() || undefined;
+    const customBody = String(formData.get("body") || "").trim() || undefined;
+
+    if (!customerId) return { error: "Customer id is required." };
+
+    const { sendDirectRefillReminder } = await import("@/app/lib/services/refills");
+    const res = await sendDirectRefillReminder({
+      customerId,
+      prescriptionId,
+      refillRequestId,
+      channel,
+      customSubject,
+      customBody,
+      actorId: user.id,
+    });
+
+    revalidatePath("/admin/refills");
+    revalidatePath(`/admin/customers/${customerId}`);
+    return { success: `Refill reminder sent via ${channel.toUpperCase()} (${res.deliveryStatus}).` };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to send refill reminder." };
+  }
+}
+
+export async function adminRequestPrescriberRefillAuthAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const prescriptionId = String(formData.get("prescriptionId") || "");
+    const contactMethod = String(formData.get("contactMethod") || "phone");
+    const contactedTo = String(formData.get("contactedTo") || "").trim();
+    const inquiryDetails = String(formData.get("inquiryDetails") || "").trim();
+    const doctorResponse = String(formData.get("doctorResponse") || "").trim() || undefined;
+    const resolved = formData.get("resolved") === "true" || formData.get("resolved") === "on";
+
+    if (!prescriptionId || !contactedTo || !inquiryDetails) {
+      return { error: "Prescription, doctor contact, and inquiry details are required." };
+    }
+
+    const { logPrescriberRefillAuthorization } = await import("@/app/lib/services/refills");
+    await logPrescriberRefillAuthorization({
+      prescriptionId,
+      contactMethod,
+      contactedTo,
+      inquiryDetails,
+      doctorResponse,
+      resolved,
+      actorId: user.id,
+    });
+
+    revalidatePath("/admin/refills");
+    revalidatePath(`/admin/prescriptions/${prescriptionId}`);
+    return { success: `Prescriber contact recorded.${resolved ? " Status marked resolved." : ""}` };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to record prescriber inquiry." };
+  }
+}
+
+export async function adminInterveneMissedRefillAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const customerId = String(formData.get("customerId") || "");
+    const prescriptionId = String(formData.get("prescriptionId") || "");
+    const channel = (String(formData.get("channel") || "whatsapp") as "whatsapp" | "sms" | "email" | "in_app");
+    const message = String(formData.get("message") || "").trim();
+    const notifyCaregivers = formData.get("notifyCaregivers") === "on" || formData.get("notifyCaregivers") === "true";
+
+    if (!customerId || !prescriptionId || !message) {
+      return { error: "Customer, prescription, and intervention message are required." };
+    }
+
+    const { sendDirectRefillReminder } = await import("@/app/lib/services/refills");
+    await sendDirectRefillReminder({
+      customerId,
+      prescriptionId,
+      channel,
+      customSubject: "Clinical Adherence Follow-up from Aether Pharmacy",
+      customBody: message,
+      actorId: user.id,
+    });
+
+    // Notify caregivers if requested
+    if (notifyCaregivers) {
+      const caregivers = await prisma.caregiver.findMany({
+        where: { customerId, status: "active" },
+        include: { caregiverUser: { select: { id: true } } },
+      });
+      for (const cg of caregivers) {
+        if (cg.caregiverUser?.id) {
+          await prisma.notification.create({
+            data: {
+              userId: cg.caregiverUser.id,
+              channel: "in_app",
+              type: "refill",
+              title: "Patient Refill Follow-up Alert",
+              body: `A clinical adherence follow-up was initiated for your dependent's maintenance medication.`,
+              status: "delivered",
+              sentAt: new Date(),
+            },
+          });
+        }
+      }
+    }
+
+    // Add note to patient record
+    await prisma.customerNote.create({
+      data: {
+        customerId,
+        authorId: user.id,
+        body: `[Non-Adherence Intervention] Sent ${channel.toUpperCase()} follow-up regarding missed refill. Message: "${message}"`,
+      },
+    });
+
+    revalidatePath("/admin/refills");
+    revalidatePath(`/admin/customers/${customerId}`);
+    return { success: "Non-adherence clinical intervention recorded and sent." };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to record clinical intervention." };
+  }
+}
+

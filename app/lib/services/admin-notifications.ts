@@ -12,6 +12,7 @@ import { prisma } from "@/app/lib/db";
 
 export type AdminNotifType =
   | "refill_new"
+  | "refill_lapsed"
   | "enquiry_new"
   | "feedback_low"
   | "feedback_new"
