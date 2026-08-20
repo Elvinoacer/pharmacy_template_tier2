@@ -54,7 +54,7 @@ import {
   INTAKE_CHANNEL_LABELS,
   calculatePrescriptionQuantity,
   calculatePrescriptionDuration,
-} from "@/app/lib/services/prescription-lifecycle";
+} from "@/app/lib/prescription-lifecycle-shared";
 import { PrescriptionIntakeChannel } from "@/app/generated/prisma/enums";
 
 /**

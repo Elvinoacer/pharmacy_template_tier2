@@ -51,7 +51,7 @@ import {
   PRIMARY_LIFECYCLE_STAGES,
   EXCEPTION_LIFECYCLE_STATUSES,
   LIFECYCLE_STATUS_LABELS,
-} from "@/app/lib/services/prescription-lifecycle";
+} from "@/app/lib/prescription-lifecycle-shared";
 import { formatDateTime, formatDate } from "@/app/lib/time";
 
 export type ClarificationLogRow = {
