@@ -39,6 +39,7 @@ import DispatchPrescriptionForm from "@/app/components/admin/DispatchPrescriptio
 import { PrescriptionDetailActions } from "@/app/components/admin/PrescriptionDetailActions";
 import { screenClinicalSafety } from "@/app/lib/services/clinical-safety";
 import { ClinicalSafetyAlert } from "@/app/components/admin/ClinicalSafetyAlert";
+import { PrescriptionReviewCockpit } from "@/app/components/admin/PrescriptionReviewCockpit";
 
 export const metadata = { title: "Prescription Analytics & Detail" };
 
@@ -85,37 +86,32 @@ export default async function PrescriptionDetailPage({
   if (!user) redirect("/login");
   const { id } = await params;
 
-  const prescription = await prisma.prescription
-    .findUnique({
-      where: { id },
-      include: {
-        customer: { select: { id: true, fullName: true, phone: true } },
-        refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
-        adherence: { orderBy: { takenOn: "desc" }, take: 30 },
-        doseLogs: { orderBy: [{ scheduledDate: "desc" }, { scheduledTime: "desc" }], take: 90 },
-        doseSchedule: { where: { active: true }, orderBy: { timeOfDay: "asc" } },
-        medication: { include: { medicationMaster: { select: { name: true } } } },
-        dispatchedBy: { select: { id: true, email: true } },
-      },
-    })
-    .catch(async () => {
-      const base = await prisma.prescription.findUnique({
-        where: { id },
-        include: {
-          customer: { select: { id: true, fullName: true, phone: true } },
-          refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
-          medication: { include: { medicationMaster: { select: { name: true } } } },
-          dispatchedBy: { select: { id: true, email: true } },
+  const prescription = await prisma.prescription.findUnique({
+    where: { id },
+    include: {
+      customer: {
+        select: {
+          id: true,
+          fullName: true,
+          phone: true,
+          gender: true,
+          dateOfBirth: true,
+          user: { select: { email: true } },
         },
-      });
-      if (!base) return null;
-      return {
-        ...base,
-        adherence: [] as { id: string; status: string; takenOn: Date; notes: string | null }[],
-        doseLogs: [] as DoseLogRow[],
-        doseSchedule: [] as { id: string; timeOfDay: string; label: string | null }[],
-      };
-    });
+      },
+      refillRequests: { orderBy: { createdAt: "desc" }, take: 10 },
+      adherence: { orderBy: { takenOn: "desc" }, take: 30 },
+      doseLogs: { orderBy: [{ scheduledDate: "desc" }, { scheduledTime: "desc" }], take: 90 },
+      doseSchedule: { where: { active: true }, orderBy: { timeOfDay: "asc" } },
+      medication: { include: { medicationMaster: { select: { name: true } } } },
+      dispatchedBy: { select: { id: true, email: true } },
+      reviewedBy: { select: { id: true, email: true } },
+      clarificationLogs: {
+        include: { staff: { select: { email: true } } },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
   if (!prescription) notFound();
 
   const formula = parseDosageFormula(prescription.dosage, prescription.schedule);
@@ -349,6 +345,11 @@ export default async function PrescriptionDetailPage({
       {/* Real-time Clinical Safety & Interaction Screen */}
       <div className="mb-5">
         <ClinicalSafetyAlert report={clinicalReport} />
+      </div>
+
+      {/* Prescription Lifecycle & Verification Cockpit */}
+      <div className="mb-6">
+        <PrescriptionReviewCockpit rx={prescription as any} />
       </div>
 
       {/* Priority 1: KPI strip */}

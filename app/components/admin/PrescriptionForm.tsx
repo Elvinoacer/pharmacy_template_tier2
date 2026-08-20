@@ -21,6 +21,18 @@ import {
   User,
   Stethoscope,
   Info,
+  MessageSquare,
+  Mail,
+  UploadCloud,
+  Building2,
+  QrCode,
+  PhoneCall,
+  UserCheck,
+  ShieldCheck,
+  HelpCircle,
+  Calculator,
+  Paperclip,
+  AlertTriangle,
 } from "lucide-react";
 import { CustomerPicker } from "@/app/components/CustomerPicker";
 import { MedicationPicker, type MedicationOption } from "@/app/components/MedicationPicker";
@@ -35,9 +47,15 @@ import {
   sortTimesWithLabels,
   type FoodCondition,
 } from "@/app/lib/medication-schedule-shared";
-import { localTodayStr, PROJECT_TIMEZONE } from "@/app/lib/time";
+import { localTodayStr, PROJECT_TIMEZONE, formatDate } from "@/app/lib/time";
 import { ClinicalSafetyAlert } from "@/app/components/admin/ClinicalSafetyAlert";
 import type { ClinicalSafetyReport } from "@/app/lib/services/clinical-safety";
+import {
+  INTAKE_CHANNEL_LABELS,
+  calculatePrescriptionQuantity,
+  calculatePrescriptionDuration,
+} from "@/app/lib/services/prescription-lifecycle";
+import { PrescriptionIntakeChannel } from "@/app/generated/prisma/enums";
 
 /**
  * Prescription creation / edit form.
@@ -266,12 +284,39 @@ export default function PrescriptionForm({
     endDate: string | null;
     prescriber: string | null;
     notes: string | null;
+    intakeChannel?: string | null;
+    lifecycleStatus?: string | null;
+    prescriberLicense?: string | null;
+    prescriberPhone?: string | null;
+    prescriberEmail?: string | null;
+    prescriberFacility?: string | null;
+    prescriberVerified?: boolean;
+    patientVerified?: boolean;
+    patientVerificationNotes?: string | null;
+    isUnclear?: boolean;
+    unclearReason?: string | null;
+    attachmentUrls?: string[];
   };
 }) {
   const isEdit = Boolean(initial?.id);
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [customerId, setCustomerId] = useState(initial?.customerId ?? "");
   const todayLocal = localTodayStr();
+
+  const [intakeChannel, setIntakeChannel] = useState<string>(
+    initial?.intakeChannel || "in_person_consultation"
+  );
+  const [prescriber, setPrescriber] = useState<string>(initial?.prescriber || "");
+  const [prescriberLicense, setPrescriberLicense] = useState<string>(initial?.prescriberLicense || "");
+  const [prescriberPhone, setPrescriberPhone] = useState<string>(initial?.prescriberPhone || "");
+  const [prescriberEmail, setPrescriberEmail] = useState<string>(initial?.prescriberEmail || "");
+  const [prescriberFacility, setPrescriberFacility] = useState<string>(initial?.prescriberFacility || "");
+  const [prescriberVerified, setPrescriberVerified] = useState<boolean>(initial?.prescriberVerified ?? false);
+  const [patientVerified, setPatientVerified] = useState<boolean>(initial?.patientVerified ?? false);
+  const [patientVerificationNotes, setPatientVerificationNotes] = useState<string>(initial?.patientVerificationNotes || "");
+  const [isUnclear, setIsUnclear] = useState<boolean>(initial?.isUnclear ?? false);
+  const [unclearReason, setUnclearReason] = useState<string>(initial?.unclearReason || "");
+  const [attachmentUrls, setAttachmentUrls] = useState<string>(initial?.attachmentUrls?.join("\n") || "");
 
   const initialParsed = useMemo(
     () => parseLegacyScheduleHint(initial?.schedule),
@@ -302,6 +347,34 @@ export default function PrescriptionForm({
 
   const [clinicalReports, setClinicalReports] = useState<Record<string, ClinicalSafetyReport>>({});
   const [clinicalLoading, setClinicalLoading] = useState<Record<string, boolean>>({});
+  const [duplicateAlerts, setDuplicateAlerts] = useState<{ hasDuplicates: boolean; duplicates: any[] } | null>(null);
+
+  // Live real-time duplicate therapy screening across customer active prescriptions
+  useEffect(() => {
+    if (!customerId || !drugs[0]?.medicineName) {
+      setDuplicateAlerts(null);
+      return;
+    }
+    const drug = drugs[0];
+    fetch("/api/admin/prescriptions/calculate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "duplicates",
+        customerId,
+        medicationId: drug.medicationId || undefined,
+        medicineName: drug.medicineName,
+        excludePrescriptionId: initial?.id,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok && data.data?.duplicates) {
+          setDuplicateAlerts(data.data.duplicates);
+        }
+      })
+      .catch(() => {});
+  }, [customerId, drugs[0]?.medicineName, drugs[0]?.medicationId]);
 
   // Live real-time clinical screening across drugs & customer history
   useEffect(() => {
@@ -584,21 +657,115 @@ export default function PrescriptionForm({
       {initial?.id && <input type="hidden" name="id" value={initial.id} />}
       <input type="hidden" name="drugsJson" value={drugsPayload} />
 
-      {/* ── Patient ───────────────────────────────────────────── */}
+      {/* ── Prescription Intake Channel (9 channels) ─────────── */}
       <SectionCard
-        title="Patient"
-        description="Who this prescription belongs to"
-        icon={User}
+        title="Prescription intake channel"
+        description="Select how this prescription arrived at the pharmacy"
+        icon={FileText}
       >
-        <div className="max-w-xl">
-          <FieldLabel required>Customer</FieldLabel>
-          <CustomerPicker
-            name="customerId"
-            value={customerId}
-            onChange={setCustomerId}
-            variant="admin"
-            required
-          />
+        <input type="hidden" name="intakeChannel" value={intakeChannel} />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3">
+          {Object.entries(INTAKE_CHANNEL_LABELS).map(([key, info]) => {
+            const isSelected = intakeChannel === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setIntakeChannel(key)}
+                className={`flex flex-col items-start rounded-2xl border p-3.5 text-left transition shadow-sm ${
+                  isSelected
+                    ? "border-emerald-500 bg-emerald-500/15 ring-2 ring-emerald-500/30 font-bold"
+                    : "border-[var(--admin-border)] bg-[var(--admin-card)] hover:bg-[var(--admin-hover)]"
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`text-xs font-bold ${isSelected ? "text-emerald-800 dark:text-emerald-300" : "admin-text"}`}>
+                    {info.label}
+                  </span>
+                  {isSelected && <span className="text-[10px] text-emerald-600 font-bold">✓</span>}
+                </div>
+                <span className="line-clamp-2 text-[10px] admin-soft leading-tight">
+                  {info.description}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </SectionCard>
+
+      {/* ── Duplicate Therapy Alert (if detected) ──────────────── */}
+      {duplicateAlerts && duplicateAlerts.hasDuplicates && (
+        <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <div className="space-y-1">
+              <h4 className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                Potential Duplicate Therapy Detected
+              </h4>
+              <p className="text-xs text-amber-800 dark:text-amber-300">
+                This patient already has active prescription(s) for this medication or class:
+              </p>
+              <ul className="list-disc list-inside text-xs text-amber-900 dark:text-amber-200 font-medium pt-1 space-y-0.5">
+                {duplicateAlerts.duplicates.map((dup: any) => (
+                  <li key={dup.id}>
+                    <strong>{dup.medicineName}</strong> (Dose: {dup.dosage || "—"}) · Started {formatDate(dup.startDate || dup.createdAt)}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[10px] text-amber-700/90 dark:text-amber-300/90 pt-1">
+                Please verify if this is a dose adjustment, therapeutic substitution, or concurrent regimen.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Patient & Verification ────────────────────────────── */}
+      <SectionCard
+        title="Patient verification"
+        description="Patient identity, records, and clinical file"
+        icon={UserCheck}
+      >
+        <div className="space-y-4 max-w-2xl">
+          <div>
+            <FieldLabel required>Customer profile</FieldLabel>
+            <CustomerPicker
+              name="customerId"
+              value={customerId}
+              onChange={setCustomerId}
+              variant="admin"
+              required
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
+            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold admin-text">
+              <input
+                type="checkbox"
+                name="patientVerified"
+                checked={patientVerified}
+                onChange={(e) => setPatientVerified(e.target.checked)}
+                className="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500"
+              />
+              <span>Patient identity &amp; clinical file verified</span>
+            </label>
+            <span className="text-[10px] admin-soft font-semibold">
+              {patientVerified ? "✓ Verified against patient ID" : "Verification pending"}
+            </span>
+          </div>
+
+          <div>
+            <FieldLabel optional hint="Allergies, conditions, or clinical notes">
+              Patient verification notes
+            </FieldLabel>
+            <input
+              name="patientVerificationNotes"
+              value={patientVerificationNotes}
+              onChange={(e) => setPatientVerificationNotes(e.target.value)}
+              placeholder="e.g. Verified photo ID, allergy: Penicillin, pregnancy: No"
+              className="input-admin text-xs"
+            />
+          </div>
         </div>
       </SectionCard>
 
@@ -984,6 +1151,27 @@ export default function PrescriptionForm({
                       }
                     />
                   </div>
+                  {/* Smart Live Quantity Auto-Calculator Widget */}
+                  {(() => {
+                    const unitsPerDoseNum = Number(drug.unitsPerDose) || 1;
+                    const dosesCount = Math.max(1, drug.times.length);
+                    const daysSupplyNum = Number(drug.daysSupply) || 30;
+                    const autoCalculatedTotalQty = Math.ceil(unitsPerDoseNum * dosesCount * daysSupplyNum);
+                    return (
+                      <div className="mt-1.5 flex items-center justify-between gap-1 rounded-xl bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-800 dark:text-emerald-300 border border-emerald-500/20">
+                        <span>💡 Auto: {unitsPerDoseNum} dose × {dosesCount}/d × {daysSupplyNum}d = <strong>{autoCalculatedTotalQty}</strong></span>
+                        {drug.quantity !== String(autoCalculatedTotalQty) && (
+                          <button
+                            type="button"
+                            onClick={() => updateDrug(drug.key, { quantity: String(autoCalculatedTotalQty) })}
+                            className="font-bold underline hover:opacity-80 shrink-0 ml-1"
+                          >
+                            Use {autoCalculatedTotalQty}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
                   {drug.stockQty !== null && (
                     <div className="mt-1.5 flex flex-wrap items-center gap-2">
                       {drug.stockQty <= 0 ? (
@@ -1129,32 +1317,168 @@ export default function PrescriptionForm({
         </SectionCard>
 
         <SectionCard
-          title="Prescriber & notes"
-          description="Administrative metadata"
+          title="Prescriber & verification"
+          description="Practitioner credentials & medical license verification"
           icon={Stethoscope}
         >
-          <div className="space-y-4">
+          <div className="space-y-3.5">
             <div>
-              <FieldLabel optional>Prescriber</FieldLabel>
+              <FieldLabel optional>Prescriber full name</FieldLabel>
               <input
                 name="prescriber"
-                defaultValue={initial?.prescriber ?? ""}
-                placeholder="Dr. Jane Doe / Staff pharmacist"
-                className="input-admin"
+                value={prescriber}
+                onChange={(e) => setPrescriber(e.target.value)}
+                placeholder="e.g. Dr. Jane Mutua, MD"
+                className="input-admin text-xs"
               />
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <FieldLabel optional hint="Board / KMPDC #">License / Reg #</FieldLabel>
+                <input
+                  name="prescriberLicense"
+                  value={prescriberLicense}
+                  onChange={(e) => setPrescriberLicense(e.target.value)}
+                  placeholder="e.g. KMPDC-A48291"
+                  className="input-admin text-xs font-mono"
+                />
+              </div>
+              <div>
+                <FieldLabel optional>Hospital / Facility</FieldLabel>
+                <input
+                  name="prescriberFacility"
+                  value={prescriberFacility}
+                  onChange={(e) => setPrescriberFacility(e.target.value)}
+                  placeholder="e.g. Nairobi Hospital"
+                  className="input-admin text-xs"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <FieldLabel optional>Prescriber phone</FieldLabel>
+                <input
+                  name="prescriberPhone"
+                  value={prescriberPhone}
+                  onChange={(e) => setPrescriberPhone(e.target.value)}
+                  placeholder="+254 700 000000"
+                  className="input-admin text-xs"
+                />
+              </div>
+              <div>
+                <FieldLabel optional>Prescriber email</FieldLabel>
+                <input
+                  name="prescriberEmail"
+                  value={prescriberEmail}
+                  onChange={(e) => setPrescriberEmail(e.target.value)}
+                  placeholder="doctor@hospital.org"
+                  className="input-admin text-xs"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold admin-text">
+                <input
+                  type="checkbox"
+                  name="prescriberVerified"
+                  checked={prescriberVerified}
+                  onChange={(e) => setPrescriberVerified(e.target.checked)}
+                  className="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500"
+                />
+                <span>Prescriber license &amp; credentials verified</span>
+              </label>
+              <span className="text-[10px] admin-soft">
+                {prescriberVerified ? "✓ Verified Practitioner" : "Unverified"}
+              </span>
+            </div>
+          </div>
+        </SectionCard>
+      </div>
+
+      {/* ── Clinical Clarity & Script Attachments ──────────────── */}
+      <div className="grid gap-5 lg:grid-cols-2">
+        <SectionCard
+          title="Clinical clarity & flags"
+          description="Flag unclear prescriptions requiring prescriber clarification"
+          icon={HelpCircle}
+        >
+          <div className="space-y-3.5">
+            <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-amber-900 dark:text-amber-300">
+                <input
+                  type="checkbox"
+                  name="isUnclear"
+                  checked={isUnclear}
+                  onChange={(e) => setIsUnclear(e.target.checked)}
+                  className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500"
+                />
+                <span>Flag prescription as unclear / ambiguous</span>
+              </label>
+              {isUnclear && (
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] font-bold uppercase text-amber-800 dark:text-amber-300">
+                  Hold for clarification
+                </span>
+              )}
+            </div>
+
+            {isUnclear && (
+              <div>
+                <FieldLabel required>Unclear reason / Ambiguity</FieldLabel>
+                <select
+                  name="unclearReason"
+                  value={unclearReason}
+                  onChange={(e) => setUnclearReason(e.target.value)}
+                  className="input-admin text-xs"
+                >
+                  <option value="">Select reason...</option>
+                  <option value="Illegible / unclear handwriting">Illegible / unclear handwriting</option>
+                  <option value="Missing dosage strength or unit">Missing dosage strength or unit</option>
+                  <option value="Ambiguous frequency / dosing schedule">Ambiguous frequency / dosing schedule</option>
+                  <option value="Conflicting route of administration">Conflicting route of administration</option>
+                  <option value="Missing prescriber signature / credentials">Missing prescriber signature / credentials</option>
+                  <option value="Drug interaction / safety clarification required">Drug interaction / safety clarification required</option>
+                  <option value="Other clarification needed">Other clarification needed</option>
+                </select>
+              </div>
+            )}
+
             <div>
               <FieldLabel optional hint="staff only">
-                Notes
+                Internal clinical notes
               </FieldLabel>
               <textarea
                 name="notes"
-                rows={4}
+                rows={3}
                 defaultValue={initial?.notes ?? ""}
-                placeholder="Internal notes (visible to staff only)…"
-                className="input-admin resize-y"
+                placeholder="Internal notes, allergy verification, or prescriber instructions…"
+                className="input-admin resize-y text-xs"
               />
             </div>
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          title="Prescription attachments"
+          description="Scanned hard-copy, WhatsApp photo, or e-Rx PDF URLs"
+          icon={Paperclip}
+        >
+          <div className="space-y-3.5">
+            <div>
+              <FieldLabel optional hint="One URL per line or comma-separated">
+                Document / Scan URLs
+              </FieldLabel>
+              <textarea
+                name="attachmentUrls"
+                rows={4}
+                value={attachmentUrls}
+                onChange={(e) => setAttachmentUrls(e.target.value)}
+                placeholder="https://.../uploads/prescription-scan.jpg&#10;https://.../whatsapp-rx.pdf"
+                className="input-admin resize-y font-mono text-xs"
+              />
+            </div>
+            <p className="text-[11px] admin-soft leading-tight">
+              Attached source files remain viewable on the review cockpit for audit compliance.
+            </p>
           </div>
         </SectionCard>
       </div>

@@ -852,3 +852,84 @@ export async function portalPayRefillAction(
   revalidatePath("/portal/refills");
   redirect(`/portal/orders?orderId=${order.id}`);
 }
+
+/**
+ * Customer digital prescription upload from Patient Portal.
+ */
+export async function portalUploadPrescriptionAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await getSessionUser();
+    if (!user || !user.customerId) {
+      return { error: "Please sign in to upload prescriptions." };
+    }
+    const customerId: string = user.customerId;
+    const medicineName = String(formData.get("medicineName") || "").trim();
+    const prescriber = String(formData.get("prescriber") || "").trim() || null;
+    const notes = String(formData.get("notes") || "").trim() || null;
+    const rawUrls = String(formData.get("attachmentUrls") || "").trim();
+    const attachmentUrls = rawUrls
+      ? rawUrls
+          .split(/[\n,]+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+
+    if (!medicineName) {
+      return { error: "Medication name or description is required." };
+    }
+
+    const { PrescriptionIntakeChannel, PrescriptionLifecycleStatus } = await import(
+      "@/app/generated/prisma/enums"
+    );
+
+    const rx = await prisma.$transaction(async (tx) => {
+      const created = await tx.prescription.create({
+        data: {
+          customerId,
+          medicineName,
+          prescriber,
+          notes,
+          attachmentUrls,
+          intakeChannel: PrescriptionIntakeChannel.patient_upload,
+          lifecycleStatus: PrescriptionLifecycleStatus.received,
+          status: "active",
+        },
+      });
+
+      await tx.adminNotification.create({
+        data: {
+          type: "prescription_upload",
+          title: `New Patient Prescription Upload: ${medicineName}`,
+          body: `Uploaded by patient via portal. Clinical verification required.`,
+          severity: "info",
+          relatedType: "prescription",
+          relatedId: created.id,
+        },
+      });
+
+      return created;
+    });
+
+    await addTimelineEvent(
+      customerId,
+      user.id,
+      "prescription_uploaded",
+      "Prescription Uploaded",
+      `${medicineName} submitted via patient portal`,
+      { prescriptionId: rx.id },
+      user.id,
+    );
+
+    revalidatePath("/portal/prescriptions");
+    revalidatePath("/admin/prescriptions");
+
+    return { success: "Prescription uploaded successfully. Our pharmacy team will review it shortly." };
+  } catch (e) {
+    console.error("[portalUploadPrescriptionAction]", e);
+    return { error: e instanceof Error ? e.message : "Failed to upload prescription." };
+  }
+}
+

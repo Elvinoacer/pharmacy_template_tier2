@@ -579,9 +579,28 @@ export async function adminCreatePrescriptionAction(
   const id = String(formData.get("id") || "");
   const drugs = parseDrugsJson(formData);
 
-  // Shared course-level fields.
+  // Shared course-level fields including 9-channel intake, prescriber verification, and clinical clarity.
   const shared = {
-    prescriber: String(formData.get("prescriber") || "") || null,
+    prescriber: String(formData.get("prescriber") || "").trim() || null,
+    intakeChannel: (formData.get("intakeChannel") as any) || "in_person_consultation",
+    lifecycleStatus: (formData.get("lifecycleStatus") as any) || "received",
+    prescriberLicense: String(formData.get("prescriberLicense") || "").trim() || null,
+    prescriberPhone: String(formData.get("prescriberPhone") || "").trim() || null,
+    prescriberEmail: String(formData.get("prescriberEmail") || "").trim() || null,
+    prescriberFacility: String(formData.get("prescriberFacility") || "").trim() || null,
+    prescriberVerified: formData.get("prescriberVerified") === "true" || formData.get("prescriberVerified") === "on",
+    prescriberVerifiedAt: (formData.get("prescriberVerified") === "true" || formData.get("prescriberVerified") === "on") ? new Date() : null,
+    patientVerified: formData.get("patientVerified") === "true" || formData.get("patientVerified") === "on",
+    patientVerifiedAt: (formData.get("patientVerified") === "true" || formData.get("patientVerified") === "on") ? new Date() : null,
+    patientVerificationNotes: String(formData.get("patientVerificationNotes") || "").trim() || null,
+    isUnclear: formData.get("isUnclear") === "true" || formData.get("isUnclear") === "on",
+    unclearReason: String(formData.get("unclearReason") || "").trim() || null,
+    attachmentUrls: formData.get("attachmentUrls")
+      ? String(formData.get("attachmentUrls"))
+          .split(/[\n,]+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [],
     status: (String(formData.get("status") || "active") as
       | "active"
       | "on_hold"
@@ -1034,6 +1053,307 @@ export async function adminDeletePrescriptionAction(formData: FormData) {
   revalidatePath(`/admin/customers/${existing.customerId}`);
   // Critical: leave the detail URL so Next doesn't re-render a deleted row → 404.
   redirect("/admin/prescriptions");
+}
+
+/**
+ * Verify patient & prescriber information.
+ */
+export async function adminVerifyPrescriptionAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const prescriptionId = String(formData.get("prescriptionId") || "");
+    if (!prescriptionId) return { error: "Prescription ID is required." };
+
+    const {
+      verifyPrescriptionPatientInfo,
+      verifyPrescriptionPrescriberInfo,
+    } = await import("@/app/lib/services/prescription-lifecycle");
+
+    const patientVerified = formData.get("patientVerified") === "true" || formData.get("patientVerified") === "on";
+    const patientNotes = String(formData.get("patientNotes") || "").trim();
+
+    const prescriberVerified = formData.get("prescriberVerified") === "true" || formData.get("prescriberVerified") === "on";
+    const prescriber = String(formData.get("prescriber") || "").trim();
+    const prescriberLicense = String(formData.get("prescriberLicense") || "").trim();
+    const prescriberPhone = String(formData.get("prescriberPhone") || "").trim();
+    const prescriberEmail = String(formData.get("prescriberEmail") || "").trim();
+    const prescriberFacility = String(formData.get("prescriberFacility") || "").trim();
+
+    await verifyPrescriptionPatientInfo({
+      prescriptionId,
+      staffId: user.id,
+      verified: patientVerified,
+      notes: patientNotes,
+    });
+
+    await verifyPrescriptionPrescriberInfo({
+      prescriptionId,
+      staffId: user.id,
+      prescriber: prescriber || undefined,
+      prescriberLicense: prescriberLicense || undefined,
+      prescriberPhone: prescriberPhone || undefined,
+      prescriberEmail: prescriberEmail || undefined,
+      prescriberFacility: prescriberFacility || undefined,
+      verified: prescriberVerified,
+    });
+
+    await writeAuditLog(user.id, "prescription_verified", "prescription", prescriptionId, {
+      patientVerified,
+      prescriberVerified,
+    });
+
+    revalidatePath(`/admin/prescriptions/${prescriptionId}`);
+    revalidatePath("/admin/prescriptions");
+    return { success: "Patient & prescriber verification updated." };
+  } catch (e) {
+    if (e instanceof AuthError) return { error: e.message };
+    console.error("[adminVerifyPrescriptionAction]", e);
+    return { error: e instanceof Error ? e.message : "Failed to verify prescription." };
+  }
+}
+
+/**
+ * Flag an unclear prescription and request prescriber clarification.
+ */
+export async function adminFlagUnclearPrescriptionAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const prescriptionId = String(formData.get("prescriptionId") || "");
+    const unclearReason = String(formData.get("unclearReason") || "").trim();
+    const notes = String(formData.get("notes") || "").trim();
+    const placeOnHold = formData.get("placeOnHold") === "true" || formData.get("placeOnHold") === "on";
+
+    if (!prescriptionId) return { error: "Prescription ID is required." };
+    if (!unclearReason) return { error: "Reason for flagging is required." };
+
+    const { flagPrescriptionAsUnclear } = await import("@/app/lib/services/prescription-lifecycle");
+
+    await flagPrescriptionAsUnclear({
+      prescriptionId,
+      staffId: user.id,
+      unclearReason,
+      notes,
+      placeOnHold,
+    });
+
+    await writeAuditLog(user.id, "prescription_flagged_unclear", "prescription", prescriptionId, {
+      unclearReason,
+      placeOnHold,
+    });
+
+    revalidatePath(`/admin/prescriptions/${prescriptionId}`);
+    revalidatePath("/admin/prescriptions");
+    return { success: "Prescription flagged for prescriber clarification." };
+  } catch (e) {
+    if (e instanceof AuthError) return { error: e.message };
+    console.error("[adminFlagUnclearPrescriptionAction]", e);
+    return { error: e instanceof Error ? e.message : "Failed to flag prescription." };
+  }
+}
+
+/**
+ * Log prescriber clarification communication attempt or resolution.
+ */
+export async function adminLogClarificationAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const prescriptionId = String(formData.get("prescriptionId") || "");
+    const contactMethod = String(formData.get("contactMethod") || "phone").trim();
+    const contactedTo = String(formData.get("contactedTo") || "").trim();
+    const inquiryDetails = String(formData.get("inquiryDetails") || "").trim();
+    const doctorResponse = String(formData.get("doctorResponse") || "").trim();
+    const resolved = formData.get("resolved") === "true" || formData.get("resolved") === "on";
+
+    if (!prescriptionId) return { error: "Prescription ID is required." };
+    if (!contactedTo) return { error: "Prescriber contact / name is required." };
+    if (!inquiryDetails) return { error: "Inquiry / clarification details required." };
+
+    const { logPrescriberClarificationAttempt } = await import("@/app/lib/services/prescription-lifecycle");
+
+    await logPrescriberClarificationAttempt({
+      prescriptionId,
+      staffId: user.id,
+      contactMethod,
+      contactedTo,
+      inquiryDetails,
+      doctorResponse,
+      resolved,
+    });
+
+    await writeAuditLog(user.id, "prescriber_clarification_logged", "prescription", prescriptionId, {
+      contactMethod,
+      resolved,
+    });
+
+    revalidatePath(`/admin/prescriptions/${prescriptionId}`);
+    revalidatePath("/admin/prescriptions");
+    return { success: resolved ? "Prescriber clarification resolved successfully." : "Prescriber contact log recorded." };
+  } catch (e) {
+    if (e instanceof AuthError) return { error: e.message };
+    console.error("[adminLogClarificationAction]", e);
+    return { error: e instanceof Error ? e.message : "Failed to log clarification." };
+  }
+}
+
+/**
+ * Pharmacist Professional Review: Approve, Reject, or Hold.
+ */
+export async function adminReviewPrescriptionAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const prescriptionId = String(formData.get("prescriptionId") || "");
+    const decision = String(formData.get("decision") || "approved") as "approved" | "rejected" | "on_hold";
+    const notes = String(formData.get("notes") || "").trim();
+    const rejectionReason = String(formData.get("rejectionReason") || "").trim();
+    const holdReason = String(formData.get("holdReason") || "").trim();
+
+    if (!prescriptionId) return { error: "Prescription ID is required." };
+    if (decision === "rejected" && !rejectionReason) {
+      return { error: "Clinical rejection reason is required." };
+    }
+    if (decision === "on_hold" && !holdReason) {
+      return { error: "Reason for placing prescription on hold is required." };
+    }
+
+    const { recordPrescriptionReviewDecision } = await import("@/app/lib/services/prescription-lifecycle");
+
+    const updated = await recordPrescriptionReviewDecision({
+      prescriptionId,
+      staffId: user.id,
+      decision,
+      notes,
+      rejectionReason,
+      holdReason,
+    });
+
+    await writeAuditLog(user.id, "prescription_reviewed", "prescription", prescriptionId, {
+      decision,
+      rejectionReason,
+      holdReason,
+    });
+
+    await addTimelineEvent(
+      updated.customerId,
+      user.id,
+      `prescription_${decision}`,
+      `Prescription ${decision === "approved" ? "Approved" : decision === "rejected" ? "Rejected" : "Placed On Hold"}`,
+      `${updated.medicineName}: ${decision === "approved" ? (notes || "Verified by pharmacist") : (decision === "rejected" ? rejectionReason : holdReason)}`,
+      { prescriptionId, decision },
+      user.id,
+    );
+
+    revalidatePath(`/admin/prescriptions/${prescriptionId}`);
+    revalidatePath("/admin/prescriptions");
+    revalidatePath(`/admin/customers/${updated.customerId}`);
+
+    return {
+      success: `Prescription ${decision === "approved" ? "approved for dispensing" : decision === "rejected" ? "rejected" : "placed on hold"}.`,
+    };
+  } catch (e) {
+    if (e instanceof AuthError) return { error: e.message };
+    console.error("[adminReviewPrescriptionAction]", e);
+    return { error: e instanceof Error ? e.message : "Failed to record review decision." };
+  }
+}
+
+/**
+ * Transition prescription along lifecycle progression.
+ */
+export async function adminUpdatePrescriptionLifecycleStatusAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const prescriptionId = String(formData.get("prescriptionId") || "");
+    const newStatus = String(formData.get("newStatus") || "") as any;
+    const notes = String(formData.get("notes") || "").trim();
+
+    if (!prescriptionId) return { error: "Prescription ID is required." };
+    if (!newStatus) return { error: "Target status is required." };
+
+    const { transitionPrescriptionLifecycleStatus } = await import("@/app/lib/services/prescription-lifecycle");
+
+    await transitionPrescriptionLifecycleStatus({
+      prescriptionId,
+      staffId: user.id,
+      newStatus,
+      notes,
+    });
+
+    await writeAuditLog(user.id, "prescription_status_transitioned", "prescription", prescriptionId, {
+      newStatus,
+    });
+
+    revalidatePath(`/admin/prescriptions/${prescriptionId}`);
+    revalidatePath("/admin/prescriptions");
+    return { success: `Prescription lifecycle updated to ${newStatus}.` };
+  } catch (e) {
+    if (e instanceof AuthError) return { error: e.message };
+    console.error("[adminUpdatePrescriptionLifecycleStatusAction]", e);
+    return { error: e instanceof Error ? e.message : "Failed to update lifecycle status." };
+  }
+}
+
+/**
+ * Convert prescription items into a commercial dispensing order (ready for POS / counter payment / pickup).
+ */
+export async function adminConvertToDispensingOrderAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const user = await staff();
+    const prescriptionId = String(formData.get("prescriptionId") || "");
+    const markPaid = formData.get("markPaid") === "true" || formData.get("markPaid") === "on";
+    const paymentMethod = (String(formData.get("paymentMethod") || "cash") as "cash" | "daraja" | "card" | "other");
+    const markDispatched = formData.get("markDispatched") === "true" || formData.get("markDispatched") === "on";
+    const notes = String(formData.get("notes") || "").trim();
+
+    if (!prescriptionId) return { error: "Prescription ID is required." };
+
+    const { convertPrescriptionToCommercialDispensingOrder } = await import("@/app/lib/services/prescription-lifecycle");
+
+    const result = await convertPrescriptionToCommercialDispensingOrder({
+      prescriptionId,
+      staffId: user.id,
+      markPaid,
+      paymentMethod,
+      markDispatched,
+      notes,
+    });
+
+    await writeAuditLog(user.id, "prescription_converted_to_order", "prescription", prescriptionId, {
+      orderId: result.orderId,
+      fillId: result.fillId,
+    });
+
+    revalidatePath(`/admin/prescriptions/${prescriptionId}`);
+    revalidatePath("/admin/prescriptions");
+    revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders/${result.orderId}`);
+
+    return {
+      success: `Prescription converted into Dispensing Order #${result.orderId.slice(0, 8)}.`,
+      orderId: result.orderId,
+    };
+  } catch (e) {
+    if (e instanceof AuthError) return { error: e.message };
+    console.error("[adminConvertToDispensingOrderAction]", e);
+    return { error: e instanceof Error ? e.message : "Failed to convert prescription into dispensing order." };
+  }
 }
 
 // ── Medications (drug catalog — split into MedicationMaster + PharmacyInventory per Phase 0) ──
