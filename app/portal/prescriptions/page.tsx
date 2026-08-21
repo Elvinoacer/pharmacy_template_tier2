@@ -411,9 +411,17 @@ export default async function PortalPrescriptionsPage() {
                   </div>
 
                   <div className="mt-4 flex flex-col gap-2 border-t border-[#e3ebe6] pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:pt-4">
-                    <p className="text-[11px] leading-relaxed text-[#8a9a92]">
-                      Log doses from <strong>Today&apos;s doses</strong> above or push notifications.
-                    </p>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Link
+                        href="/portal/counselling"
+                        className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-3 py-1 text-[11px] font-bold text-teal-900 border border-teal-200 hover:bg-teal-100 transition"
+                      >
+                        📋 Digital Counselling Leaflet →
+                      </Link>
+                      <p className="text-[11px] leading-relaxed text-[#8a9a92]">
+                        Log doses from <strong>Today&apos;s doses</strong> above.
+                      </p>
+                    </div>
                     <Link
                       href={`/portal/refills/new?prescriptionId=${p.id}&medicine=${encodeURIComponent(p.medicineName)}&rx=${encodeURIComponent(p.rxReference || "")}`}
                       className={`inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold shadow-xs transition sm:w-auto ${

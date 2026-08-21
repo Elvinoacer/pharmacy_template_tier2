@@ -4,6 +4,7 @@ import { pharmacy } from "../lib/data";
 const QUICK = [
   { href: "/about", label: "About us" },
   { href: "/services", label: "Services" },
+  { href: "/health/counselling", label: "Medication counselling" },
   { href: "/health", label: "Health library" },
   { href: "/health/self-care-guide", label: "Self-care & triage guide" },
   { href: "/faq", label: "FAQ" },

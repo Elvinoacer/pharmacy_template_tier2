@@ -13,7 +13,10 @@ import { prisma } from "../../lib/db";
 import { formatPrice } from "../../lib/format";
 import { getPublicCategoryBySlug } from "../../lib/medication-categories";
 import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
-import { CheckCircle2, AlertOctagon, ShieldAlert, Sparkles, Clock, ArrowRight, HelpCircle } from "lucide-react";
+import { generateDynamicCounsellingProfile } from "../../lib/medication-counselling";
+import { getMedicationCounsellingBySlug } from "../../lib/services/medication-counselling-db";
+import DigitalCounsellingCard from "../../components/health/DigitalCounsellingCard";
+import { CheckCircle2, AlertOctagon, ShieldAlert, Sparkles, Clock, ArrowRight, HelpCircle, BookOpen } from "lucide-react";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -357,6 +360,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
         medicationMaster: {
           select: {
             name: true,
+            genericName: true,
             description: true,
             dosage: true,
             indications: true,
@@ -367,6 +371,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
             imageUrl: true,
             imageUrls: true,
             alternativeIds: true,
+            dosageForm: { select: { value: true } },
           },
         },
       },
@@ -410,6 +415,18 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
 
   const categoryHref = `/medicines/${med.medicationMaster.category}`;
   const categoryLabel = med.medicationMaster.category.replace(/-/g, " ");
+
+  const counsellingProfile =
+    (await getMedicationCounsellingBySlug(med.slug)) ||
+    generateDynamicCounsellingProfile(
+      med.medicationMaster.name,
+      med.medicationMaster.genericName,
+      med.medicationMaster.category,
+      med.medicationMaster.dosageForm?.value || null,
+      med.medicationMaster.dosage,
+      med.medicationMaster.storage,
+      med.medicationMaster.sideEffects
+    );
 
   return (
     <div>
@@ -635,6 +652,36 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 12-Pillar Digital Patient Counselling & Safety Guide */}
+      <section className="px-4 pb-16 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-900 border border-emerald-200">
+                Digital Clinical Standard
+              </span>
+              <h2
+                className="mt-2 text-2xl font-bold text-[#0c1a14]"
+                style={{ fontFamily: "var(--font-display), serif" }}
+              >
+                Medication Counselling &amp; Administration Guide
+              </h2>
+              <p className="mt-1 text-xs text-[#5a6b62]">
+                Comprehensive 12-pillar clinical guidance prepared by Aether Pharmacy licensed pharmacists.
+              </p>
+            </div>
+            <Link
+              href={`/health/counselling/${med.slug}`}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-800 hover:underline"
+            >
+              Open Full Counselling Hub Guide →
+            </Link>
+          </div>
+
+          <DigitalCounsellingCard counselling={counsellingProfile} />
         </div>
       </section>
 
