@@ -96,7 +96,7 @@ export default async function AdminRefillsPage({
     customerId: r.customerId,
     phone: r.phone,
     email: r.email,
-    createdAt: r.createdAt,
+    createdAt: r.createdAt ? r.createdAt.toISOString() : new Date().toISOString(),
   }));
 
   const historyRows = historyRowsRaw.map((r) => ({
@@ -108,31 +108,31 @@ export default async function AdminRefillsPage({
     customerId: r.customerId,
     phone: r.phone,
     email: r.email,
-    pickupPreference: r.pickupPreference,
+    pickupPreference: (r.pickupPreference === "delivery" ? "delivery" : "pickup") as "delivery" | "pickup",
     status: r.status,
     source: r.source,
-    createdAt: r.createdAt,
-    statusUpdatedAt: r.statusUpdatedAt,
+    createdAt: r.createdAt ? r.createdAt.toISOString() : new Date().toISOString(),
+    statusUpdatedAt: r.statusUpdatedAt ? r.statusUpdatedAt.toISOString() : new Date().toISOString(),
     prescriptionFill: r.prescriptionFill
       ? {
           id: r.prescriptionFill.id,
           fillNumber: r.prescriptionFill.fillNumber,
-          filledAt: r.prescriptionFill.filledAt,
-          dispatchedAt: r.prescriptionFill.dispatchedAt,
-          netAmount: Number(r.prescriptionFill.netAmount),
-          quantity: r.prescriptionFill.quantity,
+          filledAt: r.prescriptionFill.filledAt ? r.prescriptionFill.filledAt.toISOString() : null,
+          dispatchedAt: r.prescriptionFill.dispatchedAt ? r.prescriptionFill.dispatchedAt.toISOString() : null,
+          netAmount: Number(r.prescriptionFill.netAmount ?? 0),
+          quantity: r.prescriptionFill.quantity ?? 1,
           dispensedBy: r.prescriptionFill.dispensedBy,
           order: r.prescriptionFill.order
             ? {
                 id: r.prescriptionFill.order.id,
                 status: r.prescriptionFill.order.status,
-                total: Number(r.prescriptionFill.order.total),
-                amountPaid: Number(r.prescriptionFill.order.amountPaid),
-                amountDue: Number(r.prescriptionFill.order.amountDue),
-                payments: r.prescriptionFill.order.payments.map((p) => ({
+                total: Number(r.prescriptionFill.order.total ?? 0),
+                amountPaid: Number(r.prescriptionFill.order.amountPaid ?? 0),
+                amountDue: Number(r.prescriptionFill.order.amountDue ?? 0),
+                payments: (r.prescriptionFill.order.payments || []).map((p) => ({
                   provider: p.provider,
                   status: p.status,
-                  providerRef: p.providerRef,
+                  providerRef: p.providerRef ?? null,
                 })),
               }
             : null,
