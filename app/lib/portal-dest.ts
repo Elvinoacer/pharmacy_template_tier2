@@ -8,6 +8,7 @@ export type PortalSessionHint = {
   role: string;
   customerId?: string | null;
   fullName?: string | null;
+  platformAdmin?: boolean;
 };
 
 export type PortalCta = {
@@ -26,6 +27,7 @@ export type PortalCta = {
  */
 export function resolvePortalDestination(user: PortalSessionHint | null | undefined): string {
   if (!user) return "/login";
+  if (user.platformAdmin) return "/platform";
   if (claimIsStaff(user.role)) return "/admin";
   if (user.role === "caregiver" && !user.customerId) return "/caregiver";
   return "/portal";
@@ -38,6 +40,15 @@ export function resolvePortalCta(user: PortalSessionHint | null | undefined): Po
       label: "Sign in",
       shortLabel: "Sign in",
       kind: "guest",
+    };
+  }
+
+  if (user.platformAdmin) {
+    return {
+      href: "/platform",
+      label: "Network console",
+      shortLabel: "Network",
+      kind: "admin",
     };
   }
 

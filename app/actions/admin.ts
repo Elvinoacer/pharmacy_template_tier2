@@ -438,7 +438,7 @@ export async function adminLoyaltyAdjustAction(
   const description = String(formData.get("description") || "Manual adjustment");
   if (!customerId || !points) return { error: "Customer and points required." };
 
-  const account = await prisma.loyaltyAccount.findUnique({ where: { customerId } });
+  const account = await prisma.loyaltyAccount.findFirst({ where: { customerId } });
   if (!account) return { error: "No loyalty account." };
 
   const newPoints = Math.max(0, account.points + points);
@@ -1759,7 +1759,7 @@ export async function adminCreateOrderAction(
   let discount = 0;
   let couponId: string | null = null;
   if (couponCode) {
-    const coupon = await prisma.coupon.findUnique({
+    const coupon = await prisma.coupon.findFirst({
       where: { code: couponCode.toUpperCase() },
     });
     if (!coupon) {

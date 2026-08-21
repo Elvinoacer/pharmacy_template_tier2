@@ -36,6 +36,7 @@ export type FeedbackSumAggregateOutputType = {
 
 export type FeedbackMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   name: string | null
   email: string | null
@@ -53,6 +54,7 @@ export type FeedbackMinAggregateOutputType = {
 
 export type FeedbackMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   name: string | null
   email: string | null
@@ -70,6 +72,7 @@ export type FeedbackMaxAggregateOutputType = {
 
 export type FeedbackCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   name: number
   email: number
@@ -97,6 +100,7 @@ export type FeedbackSumAggregateInputType = {
 
 export type FeedbackMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   name?: true
   email?: true
@@ -114,6 +118,7 @@ export type FeedbackMinAggregateInputType = {
 
 export type FeedbackMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   name?: true
   email?: true
@@ -131,6 +136,7 @@ export type FeedbackMaxAggregateInputType = {
 
 export type FeedbackCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   name?: true
   email?: true
@@ -235,6 +241,7 @@ export type FeedbackGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type FeedbackGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string | null
   name: string | null
   email: string | null
@@ -275,6 +282,7 @@ export type FeedbackWhereInput = {
   OR?: Prisma.FeedbackWhereInput[]
   NOT?: Prisma.FeedbackWhereInput | Prisma.FeedbackWhereInput[]
   id?: Prisma.UuidFilter<"Feedback"> | string
+  pharmacyId?: Prisma.UuidFilter<"Feedback"> | string
   customerId?: Prisma.UuidNullableFilter<"Feedback"> | string | null
   name?: Prisma.StringNullableFilter<"Feedback"> | string | null
   email?: Prisma.StringNullableFilter<"Feedback"> | string | null
@@ -290,10 +298,12 @@ export type FeedbackWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Feedback"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   respondedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type FeedbackOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -309,6 +319,7 @@ export type FeedbackOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   respondedBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type FeedbackWhereUniqueInput = Prisma.AtLeast<{
@@ -316,6 +327,7 @@ export type FeedbackWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.FeedbackWhereInput | Prisma.FeedbackWhereInput[]
   OR?: Prisma.FeedbackWhereInput[]
   NOT?: Prisma.FeedbackWhereInput | Prisma.FeedbackWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"Feedback"> | string
   customerId?: Prisma.UuidNullableFilter<"Feedback"> | string | null
   name?: Prisma.StringNullableFilter<"Feedback"> | string | null
   email?: Prisma.StringNullableFilter<"Feedback"> | string | null
@@ -331,10 +343,12 @@ export type FeedbackWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Feedback"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   respondedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type FeedbackOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -360,6 +374,7 @@ export type FeedbackScalarWhereWithAggregatesInput = {
   OR?: Prisma.FeedbackScalarWhereWithAggregatesInput[]
   NOT?: Prisma.FeedbackScalarWhereWithAggregatesInput | Prisma.FeedbackScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"Feedback"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"Feedback"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"Feedback"> | string | null
   name?: Prisma.StringNullableWithAggregatesFilter<"Feedback"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"Feedback"> | string | null
@@ -390,10 +405,12 @@ export type FeedbackCreateInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutFeedbackInput
   respondedBy?: Prisma.UserCreateNestedOneWithoutFeedbackRespondedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
 }
 
 export type FeedbackUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   name?: string | null
   email?: string | null
@@ -424,10 +441,12 @@ export type FeedbackUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutFeedbackNestedInput
   respondedBy?: Prisma.UserUpdateOneWithoutFeedbackRespondedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutFeedbackNestedInput
 }
 
 export type FeedbackUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -445,6 +464,7 @@ export type FeedbackUncheckedUpdateInput = {
 
 export type FeedbackCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   name?: string | null
   email?: string | null
@@ -477,6 +497,7 @@ export type FeedbackUpdateManyMutationInput = {
 
 export type FeedbackUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -504,6 +525,7 @@ export type FeedbackOrderByRelationAggregateInput = {
 
 export type FeedbackCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -525,6 +547,7 @@ export type FeedbackAvgOrderByAggregateInput = {
 
 export type FeedbackMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -542,6 +565,7 @@ export type FeedbackMaxOrderByAggregateInput = {
 
 export type FeedbackMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -559,6 +583,48 @@ export type FeedbackMinOrderByAggregateInput = {
 
 export type FeedbackSumOrderByAggregateInput = {
   rating?: Prisma.SortOrder
+}
+
+export type FeedbackCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.FeedbackCreateWithoutPharmacyInput, Prisma.FeedbackUncheckedCreateWithoutPharmacyInput> | Prisma.FeedbackCreateWithoutPharmacyInput[] | Prisma.FeedbackUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.FeedbackCreateOrConnectWithoutPharmacyInput | Prisma.FeedbackCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.FeedbackCreateManyPharmacyInputEnvelope
+  connect?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+}
+
+export type FeedbackUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.FeedbackCreateWithoutPharmacyInput, Prisma.FeedbackUncheckedCreateWithoutPharmacyInput> | Prisma.FeedbackCreateWithoutPharmacyInput[] | Prisma.FeedbackUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.FeedbackCreateOrConnectWithoutPharmacyInput | Prisma.FeedbackCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.FeedbackCreateManyPharmacyInputEnvelope
+  connect?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+}
+
+export type FeedbackUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.FeedbackCreateWithoutPharmacyInput, Prisma.FeedbackUncheckedCreateWithoutPharmacyInput> | Prisma.FeedbackCreateWithoutPharmacyInput[] | Prisma.FeedbackUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.FeedbackCreateOrConnectWithoutPharmacyInput | Prisma.FeedbackCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.FeedbackUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.FeedbackUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.FeedbackCreateManyPharmacyInputEnvelope
+  set?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+  disconnect?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+  delete?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+  connect?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+  update?: Prisma.FeedbackUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.FeedbackUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.FeedbackUpdateManyWithWhereWithoutPharmacyInput | Prisma.FeedbackUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.FeedbackScalarWhereInput | Prisma.FeedbackScalarWhereInput[]
+}
+
+export type FeedbackUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.FeedbackCreateWithoutPharmacyInput, Prisma.FeedbackUncheckedCreateWithoutPharmacyInput> | Prisma.FeedbackCreateWithoutPharmacyInput[] | Prisma.FeedbackUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.FeedbackCreateOrConnectWithoutPharmacyInput | Prisma.FeedbackCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.FeedbackUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.FeedbackUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.FeedbackCreateManyPharmacyInputEnvelope
+  set?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+  disconnect?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+  delete?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+  connect?: Prisma.FeedbackWhereUniqueInput | Prisma.FeedbackWhereUniqueInput[]
+  update?: Prisma.FeedbackUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.FeedbackUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.FeedbackUpdateManyWithWhereWithoutPharmacyInput | Prisma.FeedbackUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.FeedbackScalarWhereInput | Prisma.FeedbackScalarWhereInput[]
 }
 
 export type FeedbackCreateNestedManyWithoutRespondedByInput = {
@@ -653,6 +719,87 @@ export type EnumFeedbackStatusFieldUpdateOperationsInput = {
   set?: $Enums.FeedbackStatus
 }
 
+export type FeedbackCreateWithoutPharmacyInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  rating?: number | null
+  type?: $Enums.FeedbackType
+  title?: string | null
+  body: string
+  status?: $Enums.FeedbackStatus
+  staffResponse?: string | null
+  respondedAt?: Date | string | null
+  isPublic?: boolean
+  createdAt?: Date | string
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutFeedbackInput
+  respondedBy?: Prisma.UserCreateNestedOneWithoutFeedbackRespondedInput
+}
+
+export type FeedbackUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  name?: string | null
+  email?: string | null
+  rating?: number | null
+  type?: $Enums.FeedbackType
+  title?: string | null
+  body: string
+  status?: $Enums.FeedbackStatus
+  staffResponse?: string | null
+  respondedById?: string | null
+  respondedAt?: Date | string | null
+  isPublic?: boolean
+  createdAt?: Date | string
+}
+
+export type FeedbackCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.FeedbackWhereUniqueInput
+  create: Prisma.XOR<Prisma.FeedbackCreateWithoutPharmacyInput, Prisma.FeedbackUncheckedCreateWithoutPharmacyInput>
+}
+
+export type FeedbackCreateManyPharmacyInputEnvelope = {
+  data: Prisma.FeedbackCreateManyPharmacyInput | Prisma.FeedbackCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type FeedbackUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.FeedbackWhereUniqueInput
+  update: Prisma.XOR<Prisma.FeedbackUpdateWithoutPharmacyInput, Prisma.FeedbackUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.FeedbackCreateWithoutPharmacyInput, Prisma.FeedbackUncheckedCreateWithoutPharmacyInput>
+}
+
+export type FeedbackUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.FeedbackWhereUniqueInput
+  data: Prisma.XOR<Prisma.FeedbackUpdateWithoutPharmacyInput, Prisma.FeedbackUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type FeedbackUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.FeedbackScalarWhereInput
+  data: Prisma.XOR<Prisma.FeedbackUpdateManyMutationInput, Prisma.FeedbackUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type FeedbackScalarWhereInput = {
+  AND?: Prisma.FeedbackScalarWhereInput | Prisma.FeedbackScalarWhereInput[]
+  OR?: Prisma.FeedbackScalarWhereInput[]
+  NOT?: Prisma.FeedbackScalarWhereInput | Prisma.FeedbackScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Feedback"> | string
+  pharmacyId?: Prisma.UuidFilter<"Feedback"> | string
+  customerId?: Prisma.UuidNullableFilter<"Feedback"> | string | null
+  name?: Prisma.StringNullableFilter<"Feedback"> | string | null
+  email?: Prisma.StringNullableFilter<"Feedback"> | string | null
+  rating?: Prisma.IntNullableFilter<"Feedback"> | number | null
+  type?: Prisma.EnumFeedbackTypeFilter<"Feedback"> | $Enums.FeedbackType
+  title?: Prisma.StringNullableFilter<"Feedback"> | string | null
+  body?: Prisma.StringFilter<"Feedback"> | string
+  status?: Prisma.EnumFeedbackStatusFilter<"Feedback"> | $Enums.FeedbackStatus
+  staffResponse?: Prisma.StringNullableFilter<"Feedback"> | string | null
+  respondedById?: Prisma.UuidNullableFilter<"Feedback"> | string | null
+  respondedAt?: Prisma.DateTimeNullableFilter<"Feedback"> | Date | string | null
+  isPublic?: Prisma.BoolFilter<"Feedback"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"Feedback"> | Date | string
+}
+
 export type FeedbackCreateWithoutRespondedByInput = {
   id?: string
   name?: string | null
@@ -667,10 +814,12 @@ export type FeedbackCreateWithoutRespondedByInput = {
   isPublic?: boolean
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutFeedbackInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
 }
 
 export type FeedbackUncheckedCreateWithoutRespondedByInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   name?: string | null
   email?: string | null
@@ -711,26 +860,6 @@ export type FeedbackUpdateManyWithWhereWithoutRespondedByInput = {
   data: Prisma.XOR<Prisma.FeedbackUpdateManyMutationInput, Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByInput>
 }
 
-export type FeedbackScalarWhereInput = {
-  AND?: Prisma.FeedbackScalarWhereInput | Prisma.FeedbackScalarWhereInput[]
-  OR?: Prisma.FeedbackScalarWhereInput[]
-  NOT?: Prisma.FeedbackScalarWhereInput | Prisma.FeedbackScalarWhereInput[]
-  id?: Prisma.UuidFilter<"Feedback"> | string
-  customerId?: Prisma.UuidNullableFilter<"Feedback"> | string | null
-  name?: Prisma.StringNullableFilter<"Feedback"> | string | null
-  email?: Prisma.StringNullableFilter<"Feedback"> | string | null
-  rating?: Prisma.IntNullableFilter<"Feedback"> | number | null
-  type?: Prisma.EnumFeedbackTypeFilter<"Feedback"> | $Enums.FeedbackType
-  title?: Prisma.StringNullableFilter<"Feedback"> | string | null
-  body?: Prisma.StringFilter<"Feedback"> | string
-  status?: Prisma.EnumFeedbackStatusFilter<"Feedback"> | $Enums.FeedbackStatus
-  staffResponse?: Prisma.StringNullableFilter<"Feedback"> | string | null
-  respondedById?: Prisma.UuidNullableFilter<"Feedback"> | string | null
-  respondedAt?: Prisma.DateTimeNullableFilter<"Feedback"> | Date | string | null
-  isPublic?: Prisma.BoolFilter<"Feedback"> | boolean
-  createdAt?: Prisma.DateTimeFilter<"Feedback"> | Date | string
-}
-
 export type FeedbackCreateWithoutCustomerInput = {
   id?: string
   name?: string | null
@@ -745,10 +874,12 @@ export type FeedbackCreateWithoutCustomerInput = {
   isPublic?: boolean
   createdAt?: Date | string
   respondedBy?: Prisma.UserCreateNestedOneWithoutFeedbackRespondedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
 }
 
 export type FeedbackUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   name?: string | null
   email?: string | null
   rating?: number | null
@@ -789,8 +920,77 @@ export type FeedbackUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.FeedbackUpdateManyMutationInput, Prisma.FeedbackUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type FeedbackCreateManyPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  name?: string | null
+  email?: string | null
+  rating?: number | null
+  type?: $Enums.FeedbackType
+  title?: string | null
+  body: string
+  status?: $Enums.FeedbackStatus
+  staffResponse?: string | null
+  respondedById?: string | null
+  respondedAt?: Date | string | null
+  isPublic?: boolean
+  createdAt?: Date | string
+}
+
+export type FeedbackUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  type?: Prisma.EnumFeedbackTypeFieldUpdateOperationsInput | $Enums.FeedbackType
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+  staffResponse?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  respondedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneWithoutFeedbackNestedInput
+  respondedBy?: Prisma.UserUpdateOneWithoutFeedbackRespondedNestedInput
+}
+
+export type FeedbackUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  type?: Prisma.EnumFeedbackTypeFieldUpdateOperationsInput | $Enums.FeedbackType
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+  staffResponse?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  respondedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  respondedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FeedbackUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  type?: Prisma.EnumFeedbackTypeFieldUpdateOperationsInput | $Enums.FeedbackType
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+  staffResponse?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  respondedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  respondedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type FeedbackCreateManyRespondedByInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   name?: string | null
   email?: string | null
@@ -819,10 +1019,12 @@ export type FeedbackUpdateWithoutRespondedByInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutFeedbackNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutFeedbackNestedInput
 }
 
 export type FeedbackUncheckedUpdateWithoutRespondedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -839,6 +1041,7 @@ export type FeedbackUncheckedUpdateWithoutRespondedByInput = {
 
 export type FeedbackUncheckedUpdateManyWithoutRespondedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -855,6 +1058,7 @@ export type FeedbackUncheckedUpdateManyWithoutRespondedByInput = {
 
 export type FeedbackCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   name?: string | null
   email?: string | null
   rating?: number | null
@@ -883,10 +1087,12 @@ export type FeedbackUpdateWithoutCustomerInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   respondedBy?: Prisma.UserUpdateOneWithoutFeedbackRespondedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutFeedbackNestedInput
 }
 
 export type FeedbackUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -903,6 +1109,7 @@ export type FeedbackUncheckedUpdateWithoutCustomerInput = {
 
 export type FeedbackUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -921,6 +1128,7 @@ export type FeedbackUncheckedUpdateManyWithoutCustomerInput = {
 
 export type FeedbackSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   name?: boolean
   email?: boolean
@@ -936,10 +1144,12 @@ export type FeedbackSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdAt?: boolean
   customer?: boolean | Prisma.Feedback$customerArgs<ExtArgs>
   respondedBy?: boolean | Prisma.Feedback$respondedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["feedback"]>
 
 export type FeedbackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   name?: boolean
   email?: boolean
@@ -955,10 +1165,12 @@ export type FeedbackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdAt?: boolean
   customer?: boolean | Prisma.Feedback$customerArgs<ExtArgs>
   respondedBy?: boolean | Prisma.Feedback$respondedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["feedback"]>
 
 export type FeedbackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   name?: boolean
   email?: boolean
@@ -974,10 +1186,12 @@ export type FeedbackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdAt?: boolean
   customer?: boolean | Prisma.Feedback$customerArgs<ExtArgs>
   respondedBy?: boolean | Prisma.Feedback$respondedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["feedback"]>
 
 export type FeedbackSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   name?: boolean
   email?: boolean
@@ -993,18 +1207,21 @@ export type FeedbackSelectScalar = {
   createdAt?: boolean
 }
 
-export type FeedbackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "name" | "email" | "rating" | "type" | "title" | "body" | "status" | "staffResponse" | "respondedById" | "respondedAt" | "isPublic" | "createdAt", ExtArgs["result"]["feedback"]>
+export type FeedbackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "name" | "email" | "rating" | "type" | "title" | "body" | "status" | "staffResponse" | "respondedById" | "respondedAt" | "isPublic" | "createdAt", ExtArgs["result"]["feedback"]>
 export type FeedbackInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Feedback$customerArgs<ExtArgs>
   respondedBy?: boolean | Prisma.Feedback$respondedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type FeedbackIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Feedback$customerArgs<ExtArgs>
   respondedBy?: boolean | Prisma.Feedback$respondedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type FeedbackIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Feedback$customerArgs<ExtArgs>
   respondedBy?: boolean | Prisma.Feedback$respondedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $FeedbackPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1012,9 +1229,11 @@ export type $FeedbackPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     respondedBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string | null
     name: string | null
     email: string | null
@@ -1424,6 +1643,7 @@ export interface Prisma__FeedbackClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.Feedback$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Feedback$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   respondedBy<T extends Prisma.Feedback$respondedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Feedback$respondedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1454,6 +1674,7 @@ export interface Prisma__FeedbackClient<T, Null = never, ExtArgs extends runtime
  */
 export interface FeedbackFieldRefs {
   readonly id: Prisma.FieldRef<"Feedback", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"Feedback", 'String'>
   readonly customerId: Prisma.FieldRef<"Feedback", 'String'>
   readonly name: Prisma.FieldRef<"Feedback", 'String'>
   readonly email: Prisma.FieldRef<"Feedback", 'String'>

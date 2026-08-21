@@ -36,6 +36,7 @@ export type KnowledgeArticleSumAggregateOutputType = {
 
 export type KnowledgeArticleMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   title: string | null
   category: string | null
   content: string | null
@@ -49,6 +50,7 @@ export type KnowledgeArticleMinAggregateOutputType = {
 
 export type KnowledgeArticleMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   title: string | null
   category: string | null
   content: string | null
@@ -62,6 +64,7 @@ export type KnowledgeArticleMaxAggregateOutputType = {
 
 export type KnowledgeArticleCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   title: number
   category: number
   content: number
@@ -86,6 +89,7 @@ export type KnowledgeArticleSumAggregateInputType = {
 
 export type KnowledgeArticleMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   title?: true
   category?: true
   content?: true
@@ -99,6 +103,7 @@ export type KnowledgeArticleMinAggregateInputType = {
 
 export type KnowledgeArticleMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   title?: true
   category?: true
   content?: true
@@ -112,6 +117,7 @@ export type KnowledgeArticleMaxAggregateInputType = {
 
 export type KnowledgeArticleCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   title?: true
   category?: true
   content?: true
@@ -213,6 +219,7 @@ export type KnowledgeArticleGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type KnowledgeArticleGroupByOutputType = {
   id: string
+  pharmacyId: string
   title: string
   category: string
   content: string
@@ -250,6 +257,7 @@ export type KnowledgeArticleWhereInput = {
   OR?: Prisma.KnowledgeArticleWhereInput[]
   NOT?: Prisma.KnowledgeArticleWhereInput | Prisma.KnowledgeArticleWhereInput[]
   id?: Prisma.UuidFilter<"KnowledgeArticle"> | string
+  pharmacyId?: Prisma.UuidFilter<"KnowledgeArticle"> | string
   title?: Prisma.StringFilter<"KnowledgeArticle"> | string
   category?: Prisma.StringFilter<"KnowledgeArticle"> | string
   content?: Prisma.StringFilter<"KnowledgeArticle"> | string
@@ -262,10 +270,12 @@ export type KnowledgeArticleWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"KnowledgeArticle"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type KnowledgeArticleOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
@@ -278,6 +288,7 @@ export type KnowledgeArticleOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.UserOrderByWithRelationInput
   updatedBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type KnowledgeArticleWhereUniqueInput = Prisma.AtLeast<{
@@ -285,6 +296,7 @@ export type KnowledgeArticleWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.KnowledgeArticleWhereInput | Prisma.KnowledgeArticleWhereInput[]
   OR?: Prisma.KnowledgeArticleWhereInput[]
   NOT?: Prisma.KnowledgeArticleWhereInput | Prisma.KnowledgeArticleWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"KnowledgeArticle"> | string
   title?: Prisma.StringFilter<"KnowledgeArticle"> | string
   category?: Prisma.StringFilter<"KnowledgeArticle"> | string
   content?: Prisma.StringFilter<"KnowledgeArticle"> | string
@@ -297,10 +309,12 @@ export type KnowledgeArticleWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"KnowledgeArticle"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type KnowledgeArticleOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
@@ -323,6 +337,7 @@ export type KnowledgeArticleScalarWhereWithAggregatesInput = {
   OR?: Prisma.KnowledgeArticleScalarWhereWithAggregatesInput[]
   NOT?: Prisma.KnowledgeArticleScalarWhereWithAggregatesInput | Prisma.KnowledgeArticleScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"KnowledgeArticle"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"KnowledgeArticle"> | string
   title?: Prisma.StringWithAggregatesFilter<"KnowledgeArticle"> | string
   category?: Prisma.StringWithAggregatesFilter<"KnowledgeArticle"> | string
   content?: Prisma.StringWithAggregatesFilter<"KnowledgeArticle"> | string
@@ -347,10 +362,12 @@ export type KnowledgeArticleCreateInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutKnowledgeCreatedInput
   updatedBy?: Prisma.UserCreateNestedOneWithoutKnowledgeUpdatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
 }
 
 export type KnowledgeArticleUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   title: string
   category?: string
   content: string
@@ -375,10 +392,12 @@ export type KnowledgeArticleUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutKnowledgeCreatedNestedInput
   updatedBy?: Prisma.UserUpdateOneWithoutKnowledgeUpdatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutKnowledgeArticlesNestedInput
 }
 
 export type KnowledgeArticleUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
@@ -393,6 +412,7 @@ export type KnowledgeArticleUncheckedUpdateInput = {
 
 export type KnowledgeArticleCreateManyInput = {
   id?: string
+  pharmacyId: string
   title: string
   category?: string
   content: string
@@ -419,6 +439,7 @@ export type KnowledgeArticleUpdateManyMutationInput = {
 
 export type KnowledgeArticleUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
@@ -443,6 +464,7 @@ export type KnowledgeArticleOrderByRelationAggregateInput = {
 
 export type KnowledgeArticleCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
@@ -461,6 +483,7 @@ export type KnowledgeArticleAvgOrderByAggregateInput = {
 
 export type KnowledgeArticleMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
@@ -474,6 +497,7 @@ export type KnowledgeArticleMaxOrderByAggregateInput = {
 
 export type KnowledgeArticleMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
@@ -487,6 +511,48 @@ export type KnowledgeArticleMinOrderByAggregateInput = {
 
 export type KnowledgeArticleSumOrderByAggregateInput = {
   priority?: Prisma.SortOrder
+}
+
+export type KnowledgeArticleCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.KnowledgeArticleCreateWithoutPharmacyInput, Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput> | Prisma.KnowledgeArticleCreateWithoutPharmacyInput[] | Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.KnowledgeArticleCreateOrConnectWithoutPharmacyInput | Prisma.KnowledgeArticleCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.KnowledgeArticleCreateManyPharmacyInputEnvelope
+  connect?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+}
+
+export type KnowledgeArticleUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.KnowledgeArticleCreateWithoutPharmacyInput, Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput> | Prisma.KnowledgeArticleCreateWithoutPharmacyInput[] | Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.KnowledgeArticleCreateOrConnectWithoutPharmacyInput | Prisma.KnowledgeArticleCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.KnowledgeArticleCreateManyPharmacyInputEnvelope
+  connect?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+}
+
+export type KnowledgeArticleUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.KnowledgeArticleCreateWithoutPharmacyInput, Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput> | Prisma.KnowledgeArticleCreateWithoutPharmacyInput[] | Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.KnowledgeArticleCreateOrConnectWithoutPharmacyInput | Prisma.KnowledgeArticleCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.KnowledgeArticleUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.KnowledgeArticleUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.KnowledgeArticleCreateManyPharmacyInputEnvelope
+  set?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+  disconnect?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+  delete?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+  connect?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+  update?: Prisma.KnowledgeArticleUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.KnowledgeArticleUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.KnowledgeArticleUpdateManyWithWhereWithoutPharmacyInput | Prisma.KnowledgeArticleUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.KnowledgeArticleScalarWhereInput | Prisma.KnowledgeArticleScalarWhereInput[]
+}
+
+export type KnowledgeArticleUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.KnowledgeArticleCreateWithoutPharmacyInput, Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput> | Prisma.KnowledgeArticleCreateWithoutPharmacyInput[] | Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.KnowledgeArticleCreateOrConnectWithoutPharmacyInput | Prisma.KnowledgeArticleCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.KnowledgeArticleUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.KnowledgeArticleUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.KnowledgeArticleCreateManyPharmacyInputEnvelope
+  set?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+  disconnect?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+  delete?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+  connect?: Prisma.KnowledgeArticleWhereUniqueInput | Prisma.KnowledgeArticleWhereUniqueInput[]
+  update?: Prisma.KnowledgeArticleUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.KnowledgeArticleUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.KnowledgeArticleUpdateManyWithWhereWithoutPharmacyInput | Prisma.KnowledgeArticleUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.KnowledgeArticleScalarWhereInput | Prisma.KnowledgeArticleScalarWhereInput[]
 }
 
 export type KnowledgeArticleCreateNestedManyWithoutCreatedByInput = {
@@ -582,6 +648,78 @@ export type KnowledgeArticleUpdatetagsInput = {
   push?: string | string[]
 }
 
+export type KnowledgeArticleCreateWithoutPharmacyInput = {
+  id?: string
+  title: string
+  category?: string
+  content: string
+  tags?: Prisma.KnowledgeArticleCreatetagsInput | string[]
+  isApproved?: boolean
+  priority?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: Prisma.UserCreateNestedOneWithoutKnowledgeCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutKnowledgeUpdatedInput
+}
+
+export type KnowledgeArticleUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  title: string
+  category?: string
+  content: string
+  tags?: Prisma.KnowledgeArticleCreatetagsInput | string[]
+  isApproved?: boolean
+  priority?: number
+  createdById?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type KnowledgeArticleCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.KnowledgeArticleWhereUniqueInput
+  create: Prisma.XOR<Prisma.KnowledgeArticleCreateWithoutPharmacyInput, Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput>
+}
+
+export type KnowledgeArticleCreateManyPharmacyInputEnvelope = {
+  data: Prisma.KnowledgeArticleCreateManyPharmacyInput | Prisma.KnowledgeArticleCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type KnowledgeArticleUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.KnowledgeArticleWhereUniqueInput
+  update: Prisma.XOR<Prisma.KnowledgeArticleUpdateWithoutPharmacyInput, Prisma.KnowledgeArticleUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.KnowledgeArticleCreateWithoutPharmacyInput, Prisma.KnowledgeArticleUncheckedCreateWithoutPharmacyInput>
+}
+
+export type KnowledgeArticleUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.KnowledgeArticleWhereUniqueInput
+  data: Prisma.XOR<Prisma.KnowledgeArticleUpdateWithoutPharmacyInput, Prisma.KnowledgeArticleUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type KnowledgeArticleUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.KnowledgeArticleScalarWhereInput
+  data: Prisma.XOR<Prisma.KnowledgeArticleUpdateManyMutationInput, Prisma.KnowledgeArticleUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type KnowledgeArticleScalarWhereInput = {
+  AND?: Prisma.KnowledgeArticleScalarWhereInput | Prisma.KnowledgeArticleScalarWhereInput[]
+  OR?: Prisma.KnowledgeArticleScalarWhereInput[]
+  NOT?: Prisma.KnowledgeArticleScalarWhereInput | Prisma.KnowledgeArticleScalarWhereInput[]
+  id?: Prisma.UuidFilter<"KnowledgeArticle"> | string
+  pharmacyId?: Prisma.UuidFilter<"KnowledgeArticle"> | string
+  title?: Prisma.StringFilter<"KnowledgeArticle"> | string
+  category?: Prisma.StringFilter<"KnowledgeArticle"> | string
+  content?: Prisma.StringFilter<"KnowledgeArticle"> | string
+  tags?: Prisma.StringNullableListFilter<"KnowledgeArticle">
+  isApproved?: Prisma.BoolFilter<"KnowledgeArticle"> | boolean
+  priority?: Prisma.IntFilter<"KnowledgeArticle"> | number
+  createdById?: Prisma.UuidNullableFilter<"KnowledgeArticle"> | string | null
+  updatedById?: Prisma.UuidNullableFilter<"KnowledgeArticle"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"KnowledgeArticle"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"KnowledgeArticle"> | Date | string
+}
+
 export type KnowledgeArticleCreateWithoutCreatedByInput = {
   id?: string
   title: string
@@ -593,10 +731,12 @@ export type KnowledgeArticleCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutKnowledgeUpdatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
 }
 
 export type KnowledgeArticleUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  pharmacyId: string
   title: string
   category?: string
   content: string
@@ -629,10 +769,12 @@ export type KnowledgeArticleCreateWithoutUpdatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutKnowledgeCreatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
 }
 
 export type KnowledgeArticleUncheckedCreateWithoutUpdatedByInput = {
   id?: string
+  pharmacyId: string
   title: string
   category?: string
   content: string
@@ -670,23 +812,6 @@ export type KnowledgeArticleUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.KnowledgeArticleUpdateManyMutationInput, Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByInput>
 }
 
-export type KnowledgeArticleScalarWhereInput = {
-  AND?: Prisma.KnowledgeArticleScalarWhereInput | Prisma.KnowledgeArticleScalarWhereInput[]
-  OR?: Prisma.KnowledgeArticleScalarWhereInput[]
-  NOT?: Prisma.KnowledgeArticleScalarWhereInput | Prisma.KnowledgeArticleScalarWhereInput[]
-  id?: Prisma.UuidFilter<"KnowledgeArticle"> | string
-  title?: Prisma.StringFilter<"KnowledgeArticle"> | string
-  category?: Prisma.StringFilter<"KnowledgeArticle"> | string
-  content?: Prisma.StringFilter<"KnowledgeArticle"> | string
-  tags?: Prisma.StringNullableListFilter<"KnowledgeArticle">
-  isApproved?: Prisma.BoolFilter<"KnowledgeArticle"> | boolean
-  priority?: Prisma.IntFilter<"KnowledgeArticle"> | number
-  createdById?: Prisma.UuidNullableFilter<"KnowledgeArticle"> | string | null
-  updatedById?: Prisma.UuidNullableFilter<"KnowledgeArticle"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"KnowledgeArticle"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"KnowledgeArticle"> | Date | string
-}
-
 export type KnowledgeArticleUpsertWithWhereUniqueWithoutUpdatedByInput = {
   where: Prisma.KnowledgeArticleWhereUniqueInput
   update: Prisma.XOR<Prisma.KnowledgeArticleUpdateWithoutUpdatedByInput, Prisma.KnowledgeArticleUncheckedUpdateWithoutUpdatedByInput>
@@ -703,8 +828,65 @@ export type KnowledgeArticleUpdateManyWithWhereWithoutUpdatedByInput = {
   data: Prisma.XOR<Prisma.KnowledgeArticleUpdateManyMutationInput, Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByInput>
 }
 
+export type KnowledgeArticleCreateManyPharmacyInput = {
+  id?: string
+  title: string
+  category?: string
+  content: string
+  tags?: Prisma.KnowledgeArticleCreatetagsInput | string[]
+  isApproved?: boolean
+  priority?: number
+  createdById?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type KnowledgeArticleUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.KnowledgeArticleUpdatetagsInput | string[]
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneWithoutKnowledgeCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutKnowledgeUpdatedNestedInput
+}
+
+export type KnowledgeArticleUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.KnowledgeArticleUpdatetagsInput | string[]
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type KnowledgeArticleUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.KnowledgeArticleUpdatetagsInput | string[]
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type KnowledgeArticleCreateManyCreatedByInput = {
   id?: string
+  pharmacyId: string
   title: string
   category?: string
   content: string
@@ -718,6 +900,7 @@ export type KnowledgeArticleCreateManyCreatedByInput = {
 
 export type KnowledgeArticleCreateManyUpdatedByInput = {
   id?: string
+  pharmacyId: string
   title: string
   category?: string
   content: string
@@ -740,10 +923,12 @@ export type KnowledgeArticleUpdateWithoutCreatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.UserUpdateOneWithoutKnowledgeUpdatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutKnowledgeArticlesNestedInput
 }
 
 export type KnowledgeArticleUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
@@ -757,6 +942,7 @@ export type KnowledgeArticleUncheckedUpdateWithoutCreatedByInput = {
 
 export type KnowledgeArticleUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
@@ -779,10 +965,12 @@ export type KnowledgeArticleUpdateWithoutUpdatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutKnowledgeCreatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutKnowledgeArticlesNestedInput
 }
 
 export type KnowledgeArticleUncheckedUpdateWithoutUpdatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
@@ -796,6 +984,7 @@ export type KnowledgeArticleUncheckedUpdateWithoutUpdatedByInput = {
 
 export type KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
@@ -811,6 +1000,7 @@ export type KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByInput = {
 
 export type KnowledgeArticleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   title?: boolean
   category?: boolean
   content?: boolean
@@ -823,10 +1013,12 @@ export type KnowledgeArticleSelect<ExtArgs extends runtime.Types.Extensions.Inte
   updatedAt?: boolean
   createdBy?: boolean | Prisma.KnowledgeArticle$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.KnowledgeArticle$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["knowledgeArticle"]>
 
 export type KnowledgeArticleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   title?: boolean
   category?: boolean
   content?: boolean
@@ -839,10 +1031,12 @@ export type KnowledgeArticleSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   updatedAt?: boolean
   createdBy?: boolean | Prisma.KnowledgeArticle$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.KnowledgeArticle$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["knowledgeArticle"]>
 
 export type KnowledgeArticleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   title?: boolean
   category?: boolean
   content?: boolean
@@ -855,10 +1049,12 @@ export type KnowledgeArticleSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   updatedAt?: boolean
   createdBy?: boolean | Prisma.KnowledgeArticle$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.KnowledgeArticle$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["knowledgeArticle"]>
 
 export type KnowledgeArticleSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   title?: boolean
   category?: boolean
   content?: boolean
@@ -871,18 +1067,21 @@ export type KnowledgeArticleSelectScalar = {
   updatedAt?: boolean
 }
 
-export type KnowledgeArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "content" | "tags" | "isApproved" | "priority" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["knowledgeArticle"]>
+export type KnowledgeArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "title" | "category" | "content" | "tags" | "isApproved" | "priority" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["knowledgeArticle"]>
 export type KnowledgeArticleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.KnowledgeArticle$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.KnowledgeArticle$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type KnowledgeArticleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.KnowledgeArticle$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.KnowledgeArticle$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type KnowledgeArticleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.KnowledgeArticle$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.KnowledgeArticle$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $KnowledgeArticlePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -890,9 +1089,11 @@ export type $KnowledgeArticlePayload<ExtArgs extends runtime.Types.Extensions.In
   objects: {
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     updatedBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     title: string
     category: string
     content: string
@@ -1299,6 +1500,7 @@ export interface Prisma__KnowledgeArticleClient<T, Null = never, ExtArgs extends
   readonly [Symbol.toStringTag]: "PrismaPromise"
   createdBy<T extends Prisma.KnowledgeArticle$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KnowledgeArticle$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   updatedBy<T extends Prisma.KnowledgeArticle$updatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KnowledgeArticle$updatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1329,6 +1531,7 @@ export interface Prisma__KnowledgeArticleClient<T, Null = never, ExtArgs extends
  */
 export interface KnowledgeArticleFieldRefs {
   readonly id: Prisma.FieldRef<"KnowledgeArticle", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"KnowledgeArticle", 'String'>
   readonly title: Prisma.FieldRef<"KnowledgeArticle", 'String'>
   readonly category: Prisma.FieldRef<"KnowledgeArticle", 'String'>
   readonly content: Prisma.FieldRef<"KnowledgeArticle", 'String'>

@@ -44,6 +44,7 @@ export type PharmacyInventorySumAggregateOutputType = {
 
 export type PharmacyInventoryMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   medicationMasterId: string | null
   slug: string | null
   sku: string | null
@@ -65,6 +66,7 @@ export type PharmacyInventoryMinAggregateOutputType = {
 
 export type PharmacyInventoryMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   medicationMasterId: string | null
   slug: string | null
   sku: string | null
@@ -86,6 +88,7 @@ export type PharmacyInventoryMaxAggregateOutputType = {
 
 export type PharmacyInventoryCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   medicationMasterId: number
   slug: number
   sku: number
@@ -123,6 +126,7 @@ export type PharmacyInventorySumAggregateInputType = {
 
 export type PharmacyInventoryMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   medicationMasterId?: true
   slug?: true
   sku?: true
@@ -144,6 +148,7 @@ export type PharmacyInventoryMinAggregateInputType = {
 
 export type PharmacyInventoryMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   medicationMasterId?: true
   slug?: true
   sku?: true
@@ -165,6 +170,7 @@ export type PharmacyInventoryMaxAggregateInputType = {
 
 export type PharmacyInventoryCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   medicationMasterId?: true
   slug?: true
   sku?: true
@@ -273,6 +279,7 @@ export type PharmacyInventoryGroupByArgs<ExtArgs extends runtime.Types.Extension
 
 export type PharmacyInventoryGroupByOutputType = {
   id: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku: string | null
@@ -317,6 +324,7 @@ export type PharmacyInventoryWhereInput = {
   OR?: Prisma.PharmacyInventoryWhereInput[]
   NOT?: Prisma.PharmacyInventoryWhereInput | Prisma.PharmacyInventoryWhereInput[]
   id?: Prisma.UuidFilter<"PharmacyInventory"> | string
+  pharmacyId?: Prisma.UuidFilter<"PharmacyInventory"> | string
   medicationMasterId?: Prisma.UuidFilter<"PharmacyInventory"> | string
   slug?: Prisma.StringFilter<"PharmacyInventory"> | string
   sku?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
@@ -342,10 +350,12 @@ export type PharmacyInventoryWhereInput = {
   reservations?: Prisma.InventoryReservationListRelationFilter
   prescriptionFills?: Prisma.PrescriptionFillListRelationFilter
   priceHistory?: Prisma.MedicationPriceHistoryListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type PharmacyInventoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   medicationMasterId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   sku?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -371,16 +381,20 @@ export type PharmacyInventoryOrderByWithRelationInput = {
   reservations?: Prisma.InventoryReservationOrderByRelationAggregateInput
   prescriptionFills?: Prisma.PrescriptionFillOrderByRelationAggregateInput
   priceHistory?: Prisma.MedicationPriceHistoryOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type PharmacyInventoryWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  slug?: string
-  sku?: string
+  pharmacyId_slug?: Prisma.PharmacyInventoryPharmacyIdSlugCompoundUniqueInput
+  pharmacyId_sku?: Prisma.PharmacyInventoryPharmacyIdSkuCompoundUniqueInput
   AND?: Prisma.PharmacyInventoryWhereInput | Prisma.PharmacyInventoryWhereInput[]
   OR?: Prisma.PharmacyInventoryWhereInput[]
   NOT?: Prisma.PharmacyInventoryWhereInput | Prisma.PharmacyInventoryWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"PharmacyInventory"> | string
   medicationMasterId?: Prisma.UuidFilter<"PharmacyInventory"> | string
+  slug?: Prisma.StringFilter<"PharmacyInventory"> | string
+  sku?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
   price?: Prisma.DecimalFilter<"PharmacyInventory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchasePrice?: Prisma.DecimalNullableFilter<"PharmacyInventory"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currentStock?: Prisma.IntFilter<"PharmacyInventory"> | number
@@ -403,10 +417,12 @@ export type PharmacyInventoryWhereUniqueInput = Prisma.AtLeast<{
   reservations?: Prisma.InventoryReservationListRelationFilter
   prescriptionFills?: Prisma.PrescriptionFillListRelationFilter
   priceHistory?: Prisma.MedicationPriceHistoryListRelationFilter
-}, "id" | "slug" | "sku">
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
+}, "id" | "pharmacyId_slug" | "pharmacyId_sku">
 
 export type PharmacyInventoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   medicationMasterId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   sku?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -436,6 +452,7 @@ export type PharmacyInventoryScalarWhereWithAggregatesInput = {
   OR?: Prisma.PharmacyInventoryScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PharmacyInventoryScalarWhereWithAggregatesInput | Prisma.PharmacyInventoryScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"PharmacyInventory"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"PharmacyInventory"> | string
   medicationMasterId?: Prisma.UuidWithAggregatesFilter<"PharmacyInventory"> | string
   slug?: Prisma.StringWithAggregatesFilter<"PharmacyInventory"> | string
   sku?: Prisma.StringNullableWithAggregatesFilter<"PharmacyInventory"> | string | null
@@ -481,10 +498,12 @@ export type PharmacyInventoryCreateInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -537,10 +556,12 @@ export type PharmacyInventoryUpdateInput = {
   reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
   prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
   priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -569,6 +590,7 @@ export type PharmacyInventoryUncheckedUpdateInput = {
 
 export type PharmacyInventoryCreateManyInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -610,6 +632,7 @@ export type PharmacyInventoryUpdateManyMutationInput = {
 
 export type PharmacyInventoryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -629,11 +652,6 @@ export type PharmacyInventoryUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type PharmacyInventoryNullableScalarRelationFilter = {
-  is?: Prisma.PharmacyInventoryWhereInput | null
-  isNot?: Prisma.PharmacyInventoryWhereInput | null
-}
-
 export type PharmacyInventoryListRelationFilter = {
   every?: Prisma.PharmacyInventoryWhereInput
   some?: Prisma.PharmacyInventoryWhereInput
@@ -644,8 +662,24 @@ export type PharmacyInventoryOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type PharmacyInventoryNullableScalarRelationFilter = {
+  is?: Prisma.PharmacyInventoryWhereInput | null
+  isNot?: Prisma.PharmacyInventoryWhereInput | null
+}
+
+export type PharmacyInventoryPharmacyIdSlugCompoundUniqueInput = {
+  pharmacyId: string
+  slug: string
+}
+
+export type PharmacyInventoryPharmacyIdSkuCompoundUniqueInput = {
+  pharmacyId: string
+  sku: string
+}
+
 export type PharmacyInventoryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   medicationMasterId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   sku?: Prisma.SortOrder
@@ -674,6 +708,7 @@ export type PharmacyInventoryAvgOrderByAggregateInput = {
 
 export type PharmacyInventoryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   medicationMasterId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   sku?: Prisma.SortOrder
@@ -695,6 +730,7 @@ export type PharmacyInventoryMaxOrderByAggregateInput = {
 
 export type PharmacyInventoryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   medicationMasterId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   sku?: Prisma.SortOrder
@@ -724,6 +760,48 @@ export type PharmacyInventorySumOrderByAggregateInput = {
 export type PharmacyInventoryScalarRelationFilter = {
   is?: Prisma.PharmacyInventoryWhereInput
   isNot?: Prisma.PharmacyInventoryWhereInput
+}
+
+export type PharmacyInventoryCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PharmacyInventoryCreateWithoutPharmacyInput, Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput> | Prisma.PharmacyInventoryCreateWithoutPharmacyInput[] | Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PharmacyInventoryCreateOrConnectWithoutPharmacyInput | Prisma.PharmacyInventoryCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.PharmacyInventoryCreateManyPharmacyInputEnvelope
+  connect?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+}
+
+export type PharmacyInventoryUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PharmacyInventoryCreateWithoutPharmacyInput, Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput> | Prisma.PharmacyInventoryCreateWithoutPharmacyInput[] | Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PharmacyInventoryCreateOrConnectWithoutPharmacyInput | Prisma.PharmacyInventoryCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.PharmacyInventoryCreateManyPharmacyInputEnvelope
+  connect?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+}
+
+export type PharmacyInventoryUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacyInventoryCreateWithoutPharmacyInput, Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput> | Prisma.PharmacyInventoryCreateWithoutPharmacyInput[] | Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PharmacyInventoryCreateOrConnectWithoutPharmacyInput | Prisma.PharmacyInventoryCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.PharmacyInventoryUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.PharmacyInventoryUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.PharmacyInventoryCreateManyPharmacyInputEnvelope
+  set?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+  disconnect?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+  delete?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+  connect?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+  update?: Prisma.PharmacyInventoryUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.PharmacyInventoryUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.PharmacyInventoryUpdateManyWithWhereWithoutPharmacyInput | Prisma.PharmacyInventoryUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.PharmacyInventoryScalarWhereInput | Prisma.PharmacyInventoryScalarWhereInput[]
+}
+
+export type PharmacyInventoryUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacyInventoryCreateWithoutPharmacyInput, Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput> | Prisma.PharmacyInventoryCreateWithoutPharmacyInput[] | Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PharmacyInventoryCreateOrConnectWithoutPharmacyInput | Prisma.PharmacyInventoryCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.PharmacyInventoryUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.PharmacyInventoryUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.PharmacyInventoryCreateManyPharmacyInputEnvelope
+  set?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+  disconnect?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+  delete?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+  connect?: Prisma.PharmacyInventoryWhereUniqueInput | Prisma.PharmacyInventoryWhereUniqueInput[]
+  update?: Prisma.PharmacyInventoryUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.PharmacyInventoryUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.PharmacyInventoryUpdateManyWithWhereWithoutPharmacyInput | Prisma.PharmacyInventoryUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.PharmacyInventoryScalarWhereInput | Prisma.PharmacyInventoryScalarWhereInput[]
 }
 
 export type PharmacyInventoryCreateNestedOneWithoutPrescriptionsInput = {
@@ -872,6 +950,113 @@ export type PharmacyInventoryUpdateOneRequiredWithoutPriceHistoryNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PharmacyInventoryUpdateToOneWithWhereWithoutPriceHistoryInput, Prisma.PharmacyInventoryUpdateWithoutPriceHistoryInput>, Prisma.PharmacyInventoryUncheckedUpdateWithoutPriceHistoryInput>
 }
 
+export type PharmacyInventoryCreateWithoutPharmacyInput = {
+  id?: string
+  slug: string
+  sku?: string | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currentStock?: number
+  lowStockThreshold?: number
+  supplier?: string | null
+  shelfLocation?: string | null
+  promotions?: string | null
+  overTheCounter?: boolean
+  prescriptionRequired?: boolean
+  publicListing?: boolean
+  active?: boolean
+  syncedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  medicationMaster: Prisma.MedicationMasterCreateNestedOneWithoutPharmacyInventoryInput
+  lots?: Prisma.InventoryLotCreateNestedManyWithoutPharmacyInventoryInput
+  movements?: Prisma.StockMovementCreateNestedManyWithoutPharmacyInventoryInput
+  orderItems?: Prisma.OrderItemCreateNestedManyWithoutMedicationInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutMedicationInput
+  reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
+  prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
+  priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+}
+
+export type PharmacyInventoryUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  medicationMasterId: string
+  slug: string
+  sku?: string | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currentStock?: number
+  lowStockThreshold?: number
+  supplier?: string | null
+  shelfLocation?: string | null
+  promotions?: string | null
+  overTheCounter?: boolean
+  prescriptionRequired?: boolean
+  publicListing?: boolean
+  active?: boolean
+  syncedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lots?: Prisma.InventoryLotUncheckedCreateNestedManyWithoutPharmacyInventoryInput
+  movements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutPharmacyInventoryInput
+  orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutMedicationInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutMedicationInput
+  reservations?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutInventoryInput
+  prescriptionFills?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutMedicationInput
+  priceHistory?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutInventoryInput
+}
+
+export type PharmacyInventoryCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.PharmacyInventoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.PharmacyInventoryCreateWithoutPharmacyInput, Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PharmacyInventoryCreateManyPharmacyInputEnvelope = {
+  data: Prisma.PharmacyInventoryCreateManyPharmacyInput | Prisma.PharmacyInventoryCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type PharmacyInventoryUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.PharmacyInventoryWhereUniqueInput
+  update: Prisma.XOR<Prisma.PharmacyInventoryUpdateWithoutPharmacyInput, Prisma.PharmacyInventoryUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.PharmacyInventoryCreateWithoutPharmacyInput, Prisma.PharmacyInventoryUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PharmacyInventoryUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.PharmacyInventoryWhereUniqueInput
+  data: Prisma.XOR<Prisma.PharmacyInventoryUpdateWithoutPharmacyInput, Prisma.PharmacyInventoryUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type PharmacyInventoryUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.PharmacyInventoryScalarWhereInput
+  data: Prisma.XOR<Prisma.PharmacyInventoryUpdateManyMutationInput, Prisma.PharmacyInventoryUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type PharmacyInventoryScalarWhereInput = {
+  AND?: Prisma.PharmacyInventoryScalarWhereInput | Prisma.PharmacyInventoryScalarWhereInput[]
+  OR?: Prisma.PharmacyInventoryScalarWhereInput[]
+  NOT?: Prisma.PharmacyInventoryScalarWhereInput | Prisma.PharmacyInventoryScalarWhereInput[]
+  id?: Prisma.UuidFilter<"PharmacyInventory"> | string
+  pharmacyId?: Prisma.UuidFilter<"PharmacyInventory"> | string
+  medicationMasterId?: Prisma.UuidFilter<"PharmacyInventory"> | string
+  slug?: Prisma.StringFilter<"PharmacyInventory"> | string
+  sku?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
+  price?: Prisma.DecimalFilter<"PharmacyInventory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  purchasePrice?: Prisma.DecimalNullableFilter<"PharmacyInventory"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currentStock?: Prisma.IntFilter<"PharmacyInventory"> | number
+  lowStockThreshold?: Prisma.IntFilter<"PharmacyInventory"> | number
+  supplier?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
+  shelfLocation?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
+  promotions?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
+  overTheCounter?: Prisma.BoolFilter<"PharmacyInventory"> | boolean
+  prescriptionRequired?: Prisma.BoolFilter<"PharmacyInventory"> | boolean
+  publicListing?: Prisma.BoolFilter<"PharmacyInventory"> | boolean
+  active?: Prisma.BoolFilter<"PharmacyInventory"> | boolean
+  syncedAt?: Prisma.DateTimeNullableFilter<"PharmacyInventory"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"PharmacyInventory"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PharmacyInventory"> | Date | string
+}
+
 export type PharmacyInventoryCreateWithoutPrescriptionsInput = {
   id?: string
   slug: string
@@ -897,10 +1082,12 @@ export type PharmacyInventoryCreateWithoutPrescriptionsInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutPrescriptionsInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -967,10 +1154,12 @@ export type PharmacyInventoryUpdateWithoutPrescriptionsInput = {
   reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
   prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
   priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateWithoutPrescriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1021,10 +1210,12 @@ export type PharmacyInventoryCreateWithoutMedicationMasterInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutMedicationMasterInput = {
   id?: string
+  pharmacyId: string
   slug: string
   sku?: string | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1076,30 +1267,6 @@ export type PharmacyInventoryUpdateManyWithWhereWithoutMedicationMasterInput = {
   data: Prisma.XOR<Prisma.PharmacyInventoryUpdateManyMutationInput, Prisma.PharmacyInventoryUncheckedUpdateManyWithoutMedicationMasterInput>
 }
 
-export type PharmacyInventoryScalarWhereInput = {
-  AND?: Prisma.PharmacyInventoryScalarWhereInput | Prisma.PharmacyInventoryScalarWhereInput[]
-  OR?: Prisma.PharmacyInventoryScalarWhereInput[]
-  NOT?: Prisma.PharmacyInventoryScalarWhereInput | Prisma.PharmacyInventoryScalarWhereInput[]
-  id?: Prisma.UuidFilter<"PharmacyInventory"> | string
-  medicationMasterId?: Prisma.UuidFilter<"PharmacyInventory"> | string
-  slug?: Prisma.StringFilter<"PharmacyInventory"> | string
-  sku?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
-  price?: Prisma.DecimalFilter<"PharmacyInventory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  purchasePrice?: Prisma.DecimalNullableFilter<"PharmacyInventory"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  currentStock?: Prisma.IntFilter<"PharmacyInventory"> | number
-  lowStockThreshold?: Prisma.IntFilter<"PharmacyInventory"> | number
-  supplier?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
-  shelfLocation?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
-  promotions?: Prisma.StringNullableFilter<"PharmacyInventory"> | string | null
-  overTheCounter?: Prisma.BoolFilter<"PharmacyInventory"> | boolean
-  prescriptionRequired?: Prisma.BoolFilter<"PharmacyInventory"> | boolean
-  publicListing?: Prisma.BoolFilter<"PharmacyInventory"> | boolean
-  active?: Prisma.BoolFilter<"PharmacyInventory"> | boolean
-  syncedAt?: Prisma.DateTimeNullableFilter<"PharmacyInventory"> | Date | string | null
-  createdAt?: Prisma.DateTimeFilter<"PharmacyInventory"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"PharmacyInventory"> | Date | string
-}
-
 export type PharmacyInventoryCreateWithoutLotsInput = {
   id?: string
   slug: string
@@ -1125,10 +1292,12 @@ export type PharmacyInventoryCreateWithoutLotsInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutLotsInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1195,10 +1364,12 @@ export type PharmacyInventoryUpdateWithoutLotsInput = {
   reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
   prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
   priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateWithoutLotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1249,10 +1420,12 @@ export type PharmacyInventoryCreateWithoutMovementsInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutMovementsInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1319,10 +1492,12 @@ export type PharmacyInventoryUpdateWithoutMovementsInput = {
   reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
   prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
   priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateWithoutMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1373,10 +1548,12 @@ export type PharmacyInventoryCreateWithoutOrderItemsInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutOrderItemsInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1443,10 +1620,12 @@ export type PharmacyInventoryUpdateWithoutOrderItemsInput = {
   reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
   prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
   priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateWithoutOrderItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1497,10 +1676,12 @@ export type PharmacyInventoryCreateWithoutPrescriptionFillsInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutMedicationInput
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutPrescriptionFillsInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1567,10 +1748,12 @@ export type PharmacyInventoryUpdateWithoutPrescriptionFillsInput = {
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutMedicationNestedInput
   reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
   priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateWithoutPrescriptionFillsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1621,10 +1804,12 @@ export type PharmacyInventoryCreateWithoutReservationsInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutMedicationInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutReservationsInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1691,10 +1876,12 @@ export type PharmacyInventoryUpdateWithoutReservationsInput = {
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutMedicationNestedInput
   prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
   priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateWithoutReservationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1745,10 +1932,12 @@ export type PharmacyInventoryCreateWithoutPriceHistoryInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutMedicationInput
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutPriceHistoryInput = {
   id?: string
+  pharmacyId: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1815,10 +2004,12 @@ export type PharmacyInventoryUpdateWithoutPriceHistoryInput = {
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutMedicationNestedInput
   reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
   prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateWithoutPriceHistoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1844,8 +2035,107 @@ export type PharmacyInventoryUncheckedUpdateWithoutPriceHistoryInput = {
   prescriptionFills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutMedicationNestedInput
 }
 
+export type PharmacyInventoryCreateManyPharmacyInput = {
+  id?: string
+  medicationMasterId: string
+  slug: string
+  sku?: string | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currentStock?: number
+  lowStockThreshold?: number
+  supplier?: string | null
+  shelfLocation?: string | null
+  promotions?: string | null
+  overTheCounter?: boolean
+  prescriptionRequired?: boolean
+  publicListing?: boolean
+  active?: boolean
+  syncedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PharmacyInventoryUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currentStock?: Prisma.IntFieldUpdateOperationsInput | number
+  lowStockThreshold?: Prisma.IntFieldUpdateOperationsInput | number
+  supplier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shelfLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promotions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overTheCounter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriptionRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicListing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  syncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  medicationMaster?: Prisma.MedicationMasterUpdateOneRequiredWithoutPharmacyInventoryNestedInput
+  lots?: Prisma.InventoryLotUpdateManyWithoutPharmacyInventoryNestedInput
+  movements?: Prisma.StockMovementUpdateManyWithoutPharmacyInventoryNestedInput
+  orderItems?: Prisma.OrderItemUpdateManyWithoutMedicationNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutMedicationNestedInput
+  reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
+  prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
+  priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+}
+
+export type PharmacyInventoryUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currentStock?: Prisma.IntFieldUpdateOperationsInput | number
+  lowStockThreshold?: Prisma.IntFieldUpdateOperationsInput | number
+  supplier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shelfLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promotions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overTheCounter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriptionRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicListing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  syncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lots?: Prisma.InventoryLotUncheckedUpdateManyWithoutPharmacyInventoryNestedInput
+  movements?: Prisma.StockMovementUncheckedUpdateManyWithoutPharmacyInventoryNestedInput
+  orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutMedicationNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutMedicationNestedInput
+  reservations?: Prisma.InventoryReservationUncheckedUpdateManyWithoutInventoryNestedInput
+  prescriptionFills?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutMedicationNestedInput
+  priceHistory?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutInventoryNestedInput
+}
+
+export type PharmacyInventoryUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currentStock?: Prisma.IntFieldUpdateOperationsInput | number
+  lowStockThreshold?: Prisma.IntFieldUpdateOperationsInput | number
+  supplier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shelfLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promotions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overTheCounter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prescriptionRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicListing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  syncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type PharmacyInventoryCreateManyMedicationMasterInput = {
   id?: string
+  pharmacyId: string
   slug: string
   sku?: string | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1889,10 +2179,12 @@ export type PharmacyInventoryUpdateWithoutMedicationMasterInput = {
   reservations?: Prisma.InventoryReservationUpdateManyWithoutInventoryNestedInput
   prescriptionFills?: Prisma.PrescriptionFillUpdateManyWithoutMedicationNestedInput
   priceHistory?: Prisma.MedicationPriceHistoryUpdateManyWithoutInventoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutInventoryNestedInput
 }
 
 export type PharmacyInventoryUncheckedUpdateWithoutMedicationMasterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1920,6 +2212,7 @@ export type PharmacyInventoryUncheckedUpdateWithoutMedicationMasterInput = {
 
 export type PharmacyInventoryUncheckedUpdateManyWithoutMedicationMasterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -2025,6 +2318,7 @@ export type PharmacyInventoryCountOutputTypeCountPriceHistoryArgs<ExtArgs extend
 
 export type PharmacyInventorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   medicationMasterId?: boolean
   slug?: boolean
   sku?: boolean
@@ -2050,11 +2344,13 @@ export type PharmacyInventorySelect<ExtArgs extends runtime.Types.Extensions.Int
   reservations?: boolean | Prisma.PharmacyInventory$reservationsArgs<ExtArgs>
   prescriptionFills?: boolean | Prisma.PharmacyInventory$prescriptionFillsArgs<ExtArgs>
   priceHistory?: boolean | Prisma.PharmacyInventory$priceHistoryArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PharmacyInventoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyInventory"]>
 
 export type PharmacyInventorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   medicationMasterId?: boolean
   slug?: boolean
   sku?: boolean
@@ -2073,10 +2369,12 @@ export type PharmacyInventorySelectCreateManyAndReturn<ExtArgs extends runtime.T
   createdAt?: boolean
   updatedAt?: boolean
   medicationMaster?: boolean | Prisma.MedicationMasterDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyInventory"]>
 
 export type PharmacyInventorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   medicationMasterId?: boolean
   slug?: boolean
   sku?: boolean
@@ -2095,10 +2393,12 @@ export type PharmacyInventorySelectUpdateManyAndReturn<ExtArgs extends runtime.T
   createdAt?: boolean
   updatedAt?: boolean
   medicationMaster?: boolean | Prisma.MedicationMasterDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyInventory"]>
 
 export type PharmacyInventorySelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   medicationMasterId?: boolean
   slug?: boolean
   sku?: boolean
@@ -2118,7 +2418,7 @@ export type PharmacyInventorySelectScalar = {
   updatedAt?: boolean
 }
 
-export type PharmacyInventoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "medicationMasterId" | "slug" | "sku" | "price" | "purchasePrice" | "currentStock" | "lowStockThreshold" | "supplier" | "shelfLocation" | "promotions" | "overTheCounter" | "prescriptionRequired" | "publicListing" | "active" | "syncedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacyInventory"]>
+export type PharmacyInventoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "medicationMasterId" | "slug" | "sku" | "price" | "purchasePrice" | "currentStock" | "lowStockThreshold" | "supplier" | "shelfLocation" | "promotions" | "overTheCounter" | "prescriptionRequired" | "publicListing" | "active" | "syncedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacyInventory"]>
 export type PharmacyInventoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   medicationMaster?: boolean | Prisma.MedicationMasterDefaultArgs<ExtArgs>
   lots?: boolean | Prisma.PharmacyInventory$lotsArgs<ExtArgs>
@@ -2128,13 +2428,16 @@ export type PharmacyInventoryInclude<ExtArgs extends runtime.Types.Extensions.In
   reservations?: boolean | Prisma.PharmacyInventory$reservationsArgs<ExtArgs>
   prescriptionFills?: boolean | Prisma.PharmacyInventory$prescriptionFillsArgs<ExtArgs>
   priceHistory?: boolean | Prisma.PharmacyInventory$priceHistoryArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PharmacyInventoryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PharmacyInventoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   medicationMaster?: boolean | Prisma.MedicationMasterDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PharmacyInventoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   medicationMaster?: boolean | Prisma.MedicationMasterDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $PharmacyInventoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2157,9 +2460,11 @@ export type $PharmacyInventoryPayload<ExtArgs extends runtime.Types.Extensions.I
      * Historical price points (audit §46).
      */
     priceHistory: Prisma.$MedicationPriceHistoryPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     medicationMasterId: string
     /**
      * Pharmacy-specific slug. Unique per pharmacy (single-tenant → @unique).
@@ -2591,6 +2896,7 @@ export interface Prisma__PharmacyInventoryClient<T, Null = never, ExtArgs extend
   reservations<T extends Prisma.PharmacyInventory$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyInventory$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   prescriptionFills<T extends Prisma.PharmacyInventory$prescriptionFillsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyInventory$prescriptionFillsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionFillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   priceHistory<T extends Prisma.PharmacyInventory$priceHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyInventory$priceHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicationPriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2621,6 +2927,7 @@ export interface Prisma__PharmacyInventoryClient<T, Null = never, ExtArgs extend
  */
 export interface PharmacyInventoryFieldRefs {
   readonly id: Prisma.FieldRef<"PharmacyInventory", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"PharmacyInventory", 'String'>
   readonly medicationMasterId: Prisma.FieldRef<"PharmacyInventory", 'String'>
   readonly slug: Prisma.FieldRef<"PharmacyInventory", 'String'>
   readonly sku: Prisma.FieldRef<"PharmacyInventory", 'String'>

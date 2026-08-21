@@ -26,6 +26,7 @@ export type AggregateReminder = {
 
 export type ReminderMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   type: $Enums.ReminderType | null
   title: string | null
@@ -42,6 +43,7 @@ export type ReminderMinAggregateOutputType = {
 
 export type ReminderMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   type: $Enums.ReminderType | null
   title: string | null
@@ -58,6 +60,7 @@ export type ReminderMaxAggregateOutputType = {
 
 export type ReminderCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   type: number
   title: number
@@ -76,6 +79,7 @@ export type ReminderCountAggregateOutputType = {
 
 export type ReminderMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   type?: true
   title?: true
@@ -92,6 +96,7 @@ export type ReminderMinAggregateInputType = {
 
 export type ReminderMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   type?: true
   title?: true
@@ -108,6 +113,7 @@ export type ReminderMaxAggregateInputType = {
 
 export type ReminderCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   type?: true
   title?: true
@@ -197,6 +203,7 @@ export type ReminderGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type ReminderGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -234,6 +241,7 @@ export type ReminderWhereInput = {
   OR?: Prisma.ReminderWhereInput[]
   NOT?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[]
   id?: Prisma.UuidFilter<"Reminder"> | string
+  pharmacyId?: Prisma.UuidFilter<"Reminder"> | string
   customerId?: Prisma.UuidFilter<"Reminder"> | string
   type?: Prisma.EnumReminderTypeFilter<"Reminder"> | $Enums.ReminderType
   title?: Prisma.StringFilter<"Reminder"> | string
@@ -248,10 +256,12 @@ export type ReminderWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Reminder"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileScalarRelationFilter, Prisma.CustomerProfileWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type ReminderOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -266,6 +276,7 @@ export type ReminderOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type ReminderWhereUniqueInput = Prisma.AtLeast<{
@@ -273,6 +284,7 @@ export type ReminderWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[]
   OR?: Prisma.ReminderWhereInput[]
   NOT?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"Reminder"> | string
   customerId?: Prisma.UuidFilter<"Reminder"> | string
   type?: Prisma.EnumReminderTypeFilter<"Reminder"> | $Enums.ReminderType
   title?: Prisma.StringFilter<"Reminder"> | string
@@ -287,10 +299,12 @@ export type ReminderWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Reminder"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileScalarRelationFilter, Prisma.CustomerProfileWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type ReminderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -313,6 +327,7 @@ export type ReminderScalarWhereWithAggregatesInput = {
   OR?: Prisma.ReminderScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ReminderScalarWhereWithAggregatesInput | Prisma.ReminderScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"Reminder"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"Reminder"> | string
   customerId?: Prisma.UuidWithAggregatesFilter<"Reminder"> | string
   type?: Prisma.EnumReminderTypeWithAggregatesFilter<"Reminder"> | $Enums.ReminderType
   title?: Prisma.StringWithAggregatesFilter<"Reminder"> | string
@@ -341,10 +356,12 @@ export type ReminderCreateInput = {
   createdAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutRemindersInput
   createdBy?: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
 }
 
 export type ReminderUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -373,10 +390,12 @@ export type ReminderUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutRemindersNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutRemindersCreatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutRemindersNestedInput
 }
 
 export type ReminderUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -393,6 +412,7 @@ export type ReminderUncheckedUpdateInput = {
 
 export type ReminderCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -423,6 +443,7 @@ export type ReminderUpdateManyMutationInput = {
 
 export type ReminderUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -449,6 +470,7 @@ export type ReminderOrderByRelationAggregateInput = {
 
 export type ReminderCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -465,6 +487,7 @@ export type ReminderCountOrderByAggregateInput = {
 
 export type ReminderMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -481,6 +504,7 @@ export type ReminderMaxOrderByAggregateInput = {
 
 export type ReminderMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -493,6 +517,48 @@ export type ReminderMinOrderByAggregateInput = {
   sentAt?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type ReminderCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.ReminderCreateWithoutPharmacyInput, Prisma.ReminderUncheckedCreateWithoutPharmacyInput> | Prisma.ReminderCreateWithoutPharmacyInput[] | Prisma.ReminderUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ReminderCreateOrConnectWithoutPharmacyInput | Prisma.ReminderCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.ReminderCreateManyPharmacyInputEnvelope
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+}
+
+export type ReminderUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.ReminderCreateWithoutPharmacyInput, Prisma.ReminderUncheckedCreateWithoutPharmacyInput> | Prisma.ReminderCreateWithoutPharmacyInput[] | Prisma.ReminderUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ReminderCreateOrConnectWithoutPharmacyInput | Prisma.ReminderCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.ReminderCreateManyPharmacyInputEnvelope
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+}
+
+export type ReminderUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.ReminderCreateWithoutPharmacyInput, Prisma.ReminderUncheckedCreateWithoutPharmacyInput> | Prisma.ReminderCreateWithoutPharmacyInput[] | Prisma.ReminderUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ReminderCreateOrConnectWithoutPharmacyInput | Prisma.ReminderCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.ReminderUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.ReminderUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.ReminderCreateManyPharmacyInputEnvelope
+  set?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+  disconnect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+  delete?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+  update?: Prisma.ReminderUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.ReminderUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.ReminderUpdateManyWithWhereWithoutPharmacyInput | Prisma.ReminderUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
+}
+
+export type ReminderUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.ReminderCreateWithoutPharmacyInput, Prisma.ReminderUncheckedCreateWithoutPharmacyInput> | Prisma.ReminderCreateWithoutPharmacyInput[] | Prisma.ReminderUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ReminderCreateOrConnectWithoutPharmacyInput | Prisma.ReminderCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.ReminderUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.ReminderUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.ReminderCreateManyPharmacyInputEnvelope
+  set?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+  disconnect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+  delete?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[]
+  update?: Prisma.ReminderUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.ReminderUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.ReminderUpdateManyWithWhereWithoutPharmacyInput | Prisma.ReminderUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
 }
 
 export type ReminderCreateNestedManyWithoutCreatedByInput = {
@@ -587,6 +653,84 @@ export type EnumReminderStatusFieldUpdateOperationsInput = {
   set?: $Enums.ReminderStatus
 }
 
+export type ReminderCreateWithoutPharmacyInput = {
+  id?: string
+  type: $Enums.ReminderType
+  title: string
+  body?: string | null
+  channel?: $Enums.NotificationChannel
+  scheduledFor: Date | string
+  status?: $Enums.ReminderStatus
+  relatedType?: string | null
+  relatedId?: string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutRemindersInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput
+}
+
+export type ReminderUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId: string
+  type: $Enums.ReminderType
+  title: string
+  body?: string | null
+  channel?: $Enums.NotificationChannel
+  scheduledFor: Date | string
+  status?: $Enums.ReminderStatus
+  relatedType?: string | null
+  relatedId?: string | null
+  sentAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+}
+
+export type ReminderCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.ReminderWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReminderCreateWithoutPharmacyInput, Prisma.ReminderUncheckedCreateWithoutPharmacyInput>
+}
+
+export type ReminderCreateManyPharmacyInputEnvelope = {
+  data: Prisma.ReminderCreateManyPharmacyInput | Prisma.ReminderCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type ReminderUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.ReminderWhereUniqueInput
+  update: Prisma.XOR<Prisma.ReminderUpdateWithoutPharmacyInput, Prisma.ReminderUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.ReminderCreateWithoutPharmacyInput, Prisma.ReminderUncheckedCreateWithoutPharmacyInput>
+}
+
+export type ReminderUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.ReminderWhereUniqueInput
+  data: Prisma.XOR<Prisma.ReminderUpdateWithoutPharmacyInput, Prisma.ReminderUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type ReminderUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.ReminderScalarWhereInput
+  data: Prisma.XOR<Prisma.ReminderUpdateManyMutationInput, Prisma.ReminderUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type ReminderScalarWhereInput = {
+  AND?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
+  OR?: Prisma.ReminderScalarWhereInput[]
+  NOT?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Reminder"> | string
+  pharmacyId?: Prisma.UuidFilter<"Reminder"> | string
+  customerId?: Prisma.UuidFilter<"Reminder"> | string
+  type?: Prisma.EnumReminderTypeFilter<"Reminder"> | $Enums.ReminderType
+  title?: Prisma.StringFilter<"Reminder"> | string
+  body?: Prisma.StringNullableFilter<"Reminder"> | string | null
+  channel?: Prisma.EnumNotificationChannelFilter<"Reminder"> | $Enums.NotificationChannel
+  scheduledFor?: Prisma.DateTimeFilter<"Reminder"> | Date | string
+  status?: Prisma.EnumReminderStatusFilter<"Reminder"> | $Enums.ReminderStatus
+  relatedType?: Prisma.StringNullableFilter<"Reminder"> | string | null
+  relatedId?: Prisma.UuidNullableFilter<"Reminder"> | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"Reminder"> | Date | string | null
+  createdById?: Prisma.UuidNullableFilter<"Reminder"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Reminder"> | Date | string
+}
+
 export type ReminderCreateWithoutCreatedByInput = {
   id?: string
   type: $Enums.ReminderType
@@ -600,10 +744,12 @@ export type ReminderCreateWithoutCreatedByInput = {
   sentAt?: Date | string | null
   createdAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutRemindersInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
 }
 
 export type ReminderUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -643,25 +789,6 @@ export type ReminderUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.ReminderUpdateManyMutationInput, Prisma.ReminderUncheckedUpdateManyWithoutCreatedByInput>
 }
 
-export type ReminderScalarWhereInput = {
-  AND?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
-  OR?: Prisma.ReminderScalarWhereInput[]
-  NOT?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
-  id?: Prisma.UuidFilter<"Reminder"> | string
-  customerId?: Prisma.UuidFilter<"Reminder"> | string
-  type?: Prisma.EnumReminderTypeFilter<"Reminder"> | $Enums.ReminderType
-  title?: Prisma.StringFilter<"Reminder"> | string
-  body?: Prisma.StringNullableFilter<"Reminder"> | string | null
-  channel?: Prisma.EnumNotificationChannelFilter<"Reminder"> | $Enums.NotificationChannel
-  scheduledFor?: Prisma.DateTimeFilter<"Reminder"> | Date | string
-  status?: Prisma.EnumReminderStatusFilter<"Reminder"> | $Enums.ReminderStatus
-  relatedType?: Prisma.StringNullableFilter<"Reminder"> | string | null
-  relatedId?: Prisma.UuidNullableFilter<"Reminder"> | string | null
-  sentAt?: Prisma.DateTimeNullableFilter<"Reminder"> | Date | string | null
-  createdById?: Prisma.UuidNullableFilter<"Reminder"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Reminder"> | Date | string
-}
-
 export type ReminderCreateWithoutCustomerInput = {
   id?: string
   type: $Enums.ReminderType
@@ -675,10 +802,12 @@ export type ReminderCreateWithoutCustomerInput = {
   sentAt?: Date | string | null
   createdAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
 }
 
 export type ReminderUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   type: $Enums.ReminderType
   title: string
   body?: string | null
@@ -718,8 +847,73 @@ export type ReminderUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.ReminderUpdateManyMutationInput, Prisma.ReminderUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type ReminderCreateManyPharmacyInput = {
+  id?: string
+  customerId: string
+  type: $Enums.ReminderType
+  title: string
+  body?: string | null
+  channel?: $Enums.NotificationChannel
+  scheduledFor: Date | string
+  status?: $Enums.ReminderStatus
+  relatedType?: string | null
+  relatedId?: string | null
+  sentAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+}
+
+export type ReminderUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
+  scheduledFor?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutRemindersNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutRemindersCreatedNestedInput
+}
+
+export type ReminderUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
+  scheduledFor?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ReminderUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
+  scheduledFor?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ReminderCreateManyCreatedByInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -746,10 +940,12 @@ export type ReminderUpdateWithoutCreatedByInput = {
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutRemindersNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutRemindersNestedInput
 }
 
 export type ReminderUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -765,6 +961,7 @@ export type ReminderUncheckedUpdateWithoutCreatedByInput = {
 
 export type ReminderUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -780,6 +977,7 @@ export type ReminderUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type ReminderCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   type: $Enums.ReminderType
   title: string
   body?: string | null
@@ -806,10 +1004,12 @@ export type ReminderUpdateWithoutCustomerInput = {
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutRemindersCreatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutRemindersNestedInput
 }
 
 export type ReminderUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -825,6 +1025,7 @@ export type ReminderUncheckedUpdateWithoutCustomerInput = {
 
 export type ReminderUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -842,6 +1043,7 @@ export type ReminderUncheckedUpdateManyWithoutCustomerInput = {
 
 export type ReminderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   type?: boolean
   title?: boolean
@@ -856,10 +1058,12 @@ export type ReminderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdAt?: boolean
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.Reminder$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reminder"]>
 
 export type ReminderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   type?: boolean
   title?: boolean
@@ -874,10 +1078,12 @@ export type ReminderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdAt?: boolean
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.Reminder$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reminder"]>
 
 export type ReminderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   type?: boolean
   title?: boolean
@@ -892,10 +1098,12 @@ export type ReminderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdAt?: boolean
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.Reminder$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reminder"]>
 
 export type ReminderSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   type?: boolean
   title?: boolean
@@ -910,18 +1118,21 @@ export type ReminderSelectScalar = {
   createdAt?: boolean
 }
 
-export type ReminderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "type" | "title" | "body" | "channel" | "scheduledFor" | "status" | "relatedType" | "relatedId" | "sentAt" | "createdById" | "createdAt", ExtArgs["result"]["reminder"]>
+export type ReminderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "type" | "title" | "body" | "channel" | "scheduledFor" | "status" | "relatedType" | "relatedId" | "sentAt" | "createdById" | "createdAt", ExtArgs["result"]["reminder"]>
 export type ReminderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.Reminder$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type ReminderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.Reminder$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type ReminderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.Reminder$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $ReminderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -929,9 +1140,11 @@ export type $ReminderPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     customer: Prisma.$CustomerProfilePayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string
     type: $Enums.ReminderType
     title: string
@@ -1340,6 +1553,7 @@ export interface Prisma__ReminderClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.CustomerProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.Reminder$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Reminder$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1370,6 +1584,7 @@ export interface Prisma__ReminderClient<T, Null = never, ExtArgs extends runtime
  */
 export interface ReminderFieldRefs {
   readonly id: Prisma.FieldRef<"Reminder", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"Reminder", 'String'>
   readonly customerId: Prisma.FieldRef<"Reminder", 'String'>
   readonly type: Prisma.FieldRef<"Reminder", 'ReminderType'>
   readonly title: Prisma.FieldRef<"Reminder", 'String'>

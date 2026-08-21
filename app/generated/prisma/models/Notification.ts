@@ -26,6 +26,7 @@ export type AggregateNotification = {
 
 export type NotificationMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   userId: string | null
   channel: $Enums.NotificationChannel | null
@@ -44,6 +45,7 @@ export type NotificationMinAggregateOutputType = {
 
 export type NotificationMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   userId: string | null
   channel: $Enums.NotificationChannel | null
@@ -62,6 +64,7 @@ export type NotificationMaxAggregateOutputType = {
 
 export type NotificationCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   userId: number
   channel: number
@@ -82,6 +85,7 @@ export type NotificationCountAggregateOutputType = {
 
 export type NotificationMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   channel?: true
@@ -100,6 +104,7 @@ export type NotificationMinAggregateInputType = {
 
 export type NotificationMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   channel?: true
@@ -118,6 +123,7 @@ export type NotificationMaxAggregateInputType = {
 
 export type NotificationCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   channel?: true
@@ -209,6 +215,7 @@ export type NotificationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 
 export type NotificationGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string | null
   userId: string | null
   channel: $Enums.NotificationChannel
@@ -248,6 +255,7 @@ export type NotificationWhereInput = {
   OR?: Prisma.NotificationWhereInput[]
   NOT?: Prisma.NotificationWhereInput | Prisma.NotificationWhereInput[]
   id?: Prisma.UuidFilter<"Notification"> | string
+  pharmacyId?: Prisma.UuidFilter<"Notification"> | string
   customerId?: Prisma.UuidNullableFilter<"Notification"> | string | null
   userId?: Prisma.UuidNullableFilter<"Notification"> | string | null
   channel?: Prisma.EnumNotificationChannelFilter<"Notification"> | $Enums.NotificationChannel
@@ -264,10 +272,12 @@ export type NotificationWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Notification"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type NotificationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -284,6 +294,7 @@ export type NotificationOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type NotificationWhereUniqueInput = Prisma.AtLeast<{
@@ -291,6 +302,7 @@ export type NotificationWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.NotificationWhereInput | Prisma.NotificationWhereInput[]
   OR?: Prisma.NotificationWhereInput[]
   NOT?: Prisma.NotificationWhereInput | Prisma.NotificationWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"Notification"> | string
   customerId?: Prisma.UuidNullableFilter<"Notification"> | string | null
   userId?: Prisma.UuidNullableFilter<"Notification"> | string | null
   channel?: Prisma.EnumNotificationChannelFilter<"Notification"> | $Enums.NotificationChannel
@@ -307,10 +319,12 @@ export type NotificationWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Notification"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type NotificationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -335,6 +349,7 @@ export type NotificationScalarWhereWithAggregatesInput = {
   OR?: Prisma.NotificationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.NotificationScalarWhereWithAggregatesInput | Prisma.NotificationScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"Notification"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"Notification"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"Notification"> | string | null
   userId?: Prisma.UuidNullableWithAggregatesFilter<"Notification"> | string | null
   channel?: Prisma.EnumNotificationChannelWithAggregatesFilter<"Notification"> | $Enums.NotificationChannel
@@ -367,10 +382,12 @@ export type NotificationCreateInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutNotificationsInput
   user?: Prisma.UserCreateNestedOneWithoutNotificationsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
 }
 
 export type NotificationUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   channel: $Enums.NotificationChannel
@@ -403,10 +420,12 @@ export type NotificationUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutNotificationsNestedInput
   user?: Prisma.UserUpdateOneWithoutNotificationsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutNotificationsNestedInput
 }
 
 export type NotificationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
@@ -425,6 +444,7 @@ export type NotificationUncheckedUpdateInput = {
 
 export type NotificationCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   channel: $Enums.NotificationChannel
@@ -459,6 +479,7 @@ export type NotificationUpdateManyMutationInput = {
 
 export type NotificationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
@@ -487,6 +508,7 @@ export type NotificationOrderByRelationAggregateInput = {
 
 export type NotificationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -505,6 +527,7 @@ export type NotificationCountOrderByAggregateInput = {
 
 export type NotificationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -523,6 +546,7 @@ export type NotificationMaxOrderByAggregateInput = {
 
 export type NotificationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -537,6 +561,48 @@ export type NotificationMinOrderByAggregateInput = {
   sentAt?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type NotificationCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.NotificationCreateWithoutPharmacyInput, Prisma.NotificationUncheckedCreateWithoutPharmacyInput> | Prisma.NotificationCreateWithoutPharmacyInput[] | Prisma.NotificationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.NotificationCreateOrConnectWithoutPharmacyInput | Prisma.NotificationCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.NotificationCreateManyPharmacyInputEnvelope
+  connect?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+}
+
+export type NotificationUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.NotificationCreateWithoutPharmacyInput, Prisma.NotificationUncheckedCreateWithoutPharmacyInput> | Prisma.NotificationCreateWithoutPharmacyInput[] | Prisma.NotificationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.NotificationCreateOrConnectWithoutPharmacyInput | Prisma.NotificationCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.NotificationCreateManyPharmacyInputEnvelope
+  connect?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+}
+
+export type NotificationUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.NotificationCreateWithoutPharmacyInput, Prisma.NotificationUncheckedCreateWithoutPharmacyInput> | Prisma.NotificationCreateWithoutPharmacyInput[] | Prisma.NotificationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.NotificationCreateOrConnectWithoutPharmacyInput | Prisma.NotificationCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.NotificationUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.NotificationUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.NotificationCreateManyPharmacyInputEnvelope
+  set?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+  disconnect?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+  delete?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+  connect?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+  update?: Prisma.NotificationUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.NotificationUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.NotificationUpdateManyWithWhereWithoutPharmacyInput | Prisma.NotificationUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.NotificationScalarWhereInput | Prisma.NotificationScalarWhereInput[]
+}
+
+export type NotificationUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.NotificationCreateWithoutPharmacyInput, Prisma.NotificationUncheckedCreateWithoutPharmacyInput> | Prisma.NotificationCreateWithoutPharmacyInput[] | Prisma.NotificationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.NotificationCreateOrConnectWithoutPharmacyInput | Prisma.NotificationCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.NotificationUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.NotificationUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.NotificationCreateManyPharmacyInputEnvelope
+  set?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+  disconnect?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+  delete?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+  connect?: Prisma.NotificationWhereUniqueInput | Prisma.NotificationWhereUniqueInput[]
+  update?: Prisma.NotificationUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.NotificationUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.NotificationUpdateManyWithWhereWithoutPharmacyInput | Prisma.NotificationUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.NotificationScalarWhereInput | Prisma.NotificationScalarWhereInput[]
 }
 
 export type NotificationCreateNestedManyWithoutUserInput = {
@@ -631,6 +697,90 @@ export type EnumNotificationStatusFieldUpdateOperationsInput = {
   set?: $Enums.NotificationStatus
 }
 
+export type NotificationCreateWithoutPharmacyInput = {
+  id?: string
+  channel: $Enums.NotificationChannel
+  type: string
+  title: string
+  body: string
+  status?: $Enums.NotificationStatus
+  relatedType?: string | null
+  relatedId?: string | null
+  fullBody?: string | null
+  deletedAt?: Date | string | null
+  sentAt?: Date | string | null
+  openedAt?: Date | string | null
+  createdAt?: Date | string
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutNotificationsInput
+  user?: Prisma.UserCreateNestedOneWithoutNotificationsInput
+}
+
+export type NotificationUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  userId?: string | null
+  channel: $Enums.NotificationChannel
+  type: string
+  title: string
+  body: string
+  status?: $Enums.NotificationStatus
+  relatedType?: string | null
+  relatedId?: string | null
+  fullBody?: string | null
+  deletedAt?: Date | string | null
+  sentAt?: Date | string | null
+  openedAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type NotificationCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.NotificationWhereUniqueInput
+  create: Prisma.XOR<Prisma.NotificationCreateWithoutPharmacyInput, Prisma.NotificationUncheckedCreateWithoutPharmacyInput>
+}
+
+export type NotificationCreateManyPharmacyInputEnvelope = {
+  data: Prisma.NotificationCreateManyPharmacyInput | Prisma.NotificationCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type NotificationUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.NotificationWhereUniqueInput
+  update: Prisma.XOR<Prisma.NotificationUpdateWithoutPharmacyInput, Prisma.NotificationUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.NotificationCreateWithoutPharmacyInput, Prisma.NotificationUncheckedCreateWithoutPharmacyInput>
+}
+
+export type NotificationUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.NotificationWhereUniqueInput
+  data: Prisma.XOR<Prisma.NotificationUpdateWithoutPharmacyInput, Prisma.NotificationUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type NotificationUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.NotificationScalarWhereInput
+  data: Prisma.XOR<Prisma.NotificationUpdateManyMutationInput, Prisma.NotificationUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type NotificationScalarWhereInput = {
+  AND?: Prisma.NotificationScalarWhereInput | Prisma.NotificationScalarWhereInput[]
+  OR?: Prisma.NotificationScalarWhereInput[]
+  NOT?: Prisma.NotificationScalarWhereInput | Prisma.NotificationScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Notification"> | string
+  pharmacyId?: Prisma.UuidFilter<"Notification"> | string
+  customerId?: Prisma.UuidNullableFilter<"Notification"> | string | null
+  userId?: Prisma.UuidNullableFilter<"Notification"> | string | null
+  channel?: Prisma.EnumNotificationChannelFilter<"Notification"> | $Enums.NotificationChannel
+  type?: Prisma.StringFilter<"Notification"> | string
+  title?: Prisma.StringFilter<"Notification"> | string
+  body?: Prisma.StringFilter<"Notification"> | string
+  status?: Prisma.EnumNotificationStatusFilter<"Notification"> | $Enums.NotificationStatus
+  relatedType?: Prisma.StringNullableFilter<"Notification"> | string | null
+  relatedId?: Prisma.UuidNullableFilter<"Notification"> | string | null
+  fullBody?: Prisma.StringNullableFilter<"Notification"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Notification"> | Date | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"Notification"> | Date | string | null
+  openedAt?: Prisma.DateTimeNullableFilter<"Notification"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"Notification"> | Date | string
+}
+
 export type NotificationCreateWithoutUserInput = {
   id?: string
   channel: $Enums.NotificationChannel
@@ -646,10 +796,12 @@ export type NotificationCreateWithoutUserInput = {
   openedAt?: Date | string | null
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutNotificationsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
 }
 
 export type NotificationUncheckedCreateWithoutUserInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   channel: $Enums.NotificationChannel
   type: string
@@ -691,27 +843,6 @@ export type NotificationUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.NotificationUpdateManyMutationInput, Prisma.NotificationUncheckedUpdateManyWithoutUserInput>
 }
 
-export type NotificationScalarWhereInput = {
-  AND?: Prisma.NotificationScalarWhereInput | Prisma.NotificationScalarWhereInput[]
-  OR?: Prisma.NotificationScalarWhereInput[]
-  NOT?: Prisma.NotificationScalarWhereInput | Prisma.NotificationScalarWhereInput[]
-  id?: Prisma.UuidFilter<"Notification"> | string
-  customerId?: Prisma.UuidNullableFilter<"Notification"> | string | null
-  userId?: Prisma.UuidNullableFilter<"Notification"> | string | null
-  channel?: Prisma.EnumNotificationChannelFilter<"Notification"> | $Enums.NotificationChannel
-  type?: Prisma.StringFilter<"Notification"> | string
-  title?: Prisma.StringFilter<"Notification"> | string
-  body?: Prisma.StringFilter<"Notification"> | string
-  status?: Prisma.EnumNotificationStatusFilter<"Notification"> | $Enums.NotificationStatus
-  relatedType?: Prisma.StringNullableFilter<"Notification"> | string | null
-  relatedId?: Prisma.UuidNullableFilter<"Notification"> | string | null
-  fullBody?: Prisma.StringNullableFilter<"Notification"> | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Notification"> | Date | string | null
-  sentAt?: Prisma.DateTimeNullableFilter<"Notification"> | Date | string | null
-  openedAt?: Prisma.DateTimeNullableFilter<"Notification"> | Date | string | null
-  createdAt?: Prisma.DateTimeFilter<"Notification"> | Date | string
-}
-
 export type NotificationCreateWithoutCustomerInput = {
   id?: string
   channel: $Enums.NotificationChannel
@@ -727,10 +858,12 @@ export type NotificationCreateWithoutCustomerInput = {
   openedAt?: Date | string | null
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutNotificationsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
 }
 
 export type NotificationUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   userId?: string | null
   channel: $Enums.NotificationChannel
   type: string
@@ -772,8 +905,81 @@ export type NotificationUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.NotificationUpdateManyMutationInput, Prisma.NotificationUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type NotificationCreateManyPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  userId?: string | null
+  channel: $Enums.NotificationChannel
+  type: string
+  title: string
+  body: string
+  status?: $Enums.NotificationStatus
+  relatedType?: string | null
+  relatedId?: string | null
+  fullBody?: string | null
+  deletedAt?: Date | string | null
+  sentAt?: Date | string | null
+  openedAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type NotificationUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fullBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  openedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneWithoutNotificationsNestedInput
+  user?: Prisma.UserUpdateOneWithoutNotificationsNestedInput
+}
+
+export type NotificationUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fullBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  openedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type NotificationUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fullBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  openedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type NotificationCreateManyUserInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   channel: $Enums.NotificationChannel
   type: string
@@ -804,10 +1010,12 @@ export type NotificationUpdateWithoutUserInput = {
   openedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutNotificationsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutNotificationsNestedInput
 }
 
 export type NotificationUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -825,6 +1033,7 @@ export type NotificationUncheckedUpdateWithoutUserInput = {
 
 export type NotificationUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -842,6 +1051,7 @@ export type NotificationUncheckedUpdateManyWithoutUserInput = {
 
 export type NotificationCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   userId?: string | null
   channel: $Enums.NotificationChannel
   type: string
@@ -872,10 +1082,12 @@ export type NotificationUpdateWithoutCustomerInput = {
   openedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutNotificationsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutNotificationsNestedInput
 }
 
 export type NotificationUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -893,6 +1105,7 @@ export type NotificationUncheckedUpdateWithoutCustomerInput = {
 
 export type NotificationUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -912,6 +1125,7 @@ export type NotificationUncheckedUpdateManyWithoutCustomerInput = {
 
 export type NotificationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   channel?: boolean
@@ -928,10 +1142,12 @@ export type NotificationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   customer?: boolean | Prisma.Notification$customerArgs<ExtArgs>
   user?: boolean | Prisma.Notification$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["notification"]>
 
 export type NotificationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   channel?: boolean
@@ -948,10 +1164,12 @@ export type NotificationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   customer?: boolean | Prisma.Notification$customerArgs<ExtArgs>
   user?: boolean | Prisma.Notification$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["notification"]>
 
 export type NotificationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   channel?: boolean
@@ -968,10 +1186,12 @@ export type NotificationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   customer?: boolean | Prisma.Notification$customerArgs<ExtArgs>
   user?: boolean | Prisma.Notification$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["notification"]>
 
 export type NotificationSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   channel?: boolean
@@ -988,18 +1208,21 @@ export type NotificationSelectScalar = {
   createdAt?: boolean
 }
 
-export type NotificationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "userId" | "channel" | "type" | "title" | "body" | "status" | "relatedType" | "relatedId" | "fullBody" | "deletedAt" | "sentAt" | "openedAt" | "createdAt", ExtArgs["result"]["notification"]>
+export type NotificationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "userId" | "channel" | "type" | "title" | "body" | "status" | "relatedType" | "relatedId" | "fullBody" | "deletedAt" | "sentAt" | "openedAt" | "createdAt", ExtArgs["result"]["notification"]>
 export type NotificationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Notification$customerArgs<ExtArgs>
   user?: boolean | Prisma.Notification$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type NotificationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Notification$customerArgs<ExtArgs>
   user?: boolean | Prisma.Notification$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Notification$customerArgs<ExtArgs>
   user?: boolean | Prisma.Notification$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $NotificationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1007,9 +1230,11 @@ export type $NotificationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string | null
     userId: string | null
     channel: $Enums.NotificationChannel
@@ -1426,6 +1651,7 @@ export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.Notification$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Notification$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.Notification$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Notification$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1456,6 +1682,7 @@ export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends run
  */
 export interface NotificationFieldRefs {
   readonly id: Prisma.FieldRef<"Notification", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"Notification", 'String'>
   readonly customerId: Prisma.FieldRef<"Notification", 'String'>
   readonly userId: Prisma.FieldRef<"Notification", 'String'>
   readonly channel: Prisma.FieldRef<"Notification", 'NotificationChannel'>

@@ -26,6 +26,7 @@ export type AggregateEnquiry = {
 
 export type EnquiryMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   name: string | null
   email: string | null
@@ -43,6 +44,7 @@ export type EnquiryMinAggregateOutputType = {
 
 export type EnquiryMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   name: string | null
   email: string | null
@@ -60,6 +62,7 @@ export type EnquiryMaxAggregateOutputType = {
 
 export type EnquiryCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   name: number
   email: number
@@ -79,6 +82,7 @@ export type EnquiryCountAggregateOutputType = {
 
 export type EnquiryMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   name?: true
   email?: true
@@ -96,6 +100,7 @@ export type EnquiryMinAggregateInputType = {
 
 export type EnquiryMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   name?: true
   email?: true
@@ -113,6 +118,7 @@ export type EnquiryMaxAggregateInputType = {
 
 export type EnquiryCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   name?: true
   email?: true
@@ -203,6 +209,7 @@ export type EnquiryGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type EnquiryGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string | null
   name: string
   email: string | null
@@ -241,6 +248,7 @@ export type EnquiryWhereInput = {
   OR?: Prisma.EnquiryWhereInput[]
   NOT?: Prisma.EnquiryWhereInput | Prisma.EnquiryWhereInput[]
   id?: Prisma.UuidFilter<"Enquiry"> | string
+  pharmacyId?: Prisma.UuidFilter<"Enquiry"> | string
   customerId?: Prisma.UuidNullableFilter<"Enquiry"> | string | null
   name?: Prisma.StringFilter<"Enquiry"> | string
   email?: Prisma.StringNullableFilter<"Enquiry"> | string | null
@@ -256,10 +264,12 @@ export type EnquiryWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Enquiry"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   assignedTo?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type EnquiryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -275,6 +285,7 @@ export type EnquiryOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   assignedTo?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type EnquiryWhereUniqueInput = Prisma.AtLeast<{
@@ -282,6 +293,7 @@ export type EnquiryWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.EnquiryWhereInput | Prisma.EnquiryWhereInput[]
   OR?: Prisma.EnquiryWhereInput[]
   NOT?: Prisma.EnquiryWhereInput | Prisma.EnquiryWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"Enquiry"> | string
   customerId?: Prisma.UuidNullableFilter<"Enquiry"> | string | null
   name?: Prisma.StringFilter<"Enquiry"> | string
   email?: Prisma.StringNullableFilter<"Enquiry"> | string | null
@@ -297,10 +309,12 @@ export type EnquiryWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Enquiry"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   assignedTo?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type EnquiryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -324,6 +338,7 @@ export type EnquiryScalarWhereWithAggregatesInput = {
   OR?: Prisma.EnquiryScalarWhereWithAggregatesInput[]
   NOT?: Prisma.EnquiryScalarWhereWithAggregatesInput | Prisma.EnquiryScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"Enquiry"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"Enquiry"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"Enquiry"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"Enquiry"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"Enquiry"> | string | null
@@ -354,10 +369,12 @@ export type EnquiryCreateInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutEnquiriesInput
   assignedTo?: Prisma.UserCreateNestedOneWithoutEnquiriesAssignedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
 }
 
 export type EnquiryUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   name: string
   email?: string | null
@@ -388,10 +405,12 @@ export type EnquiryUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutEnquiriesNestedInput
   assignedTo?: Prisma.UserUpdateOneWithoutEnquiriesAssignedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutEnquiriesNestedInput
 }
 
 export type EnquiryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -409,6 +428,7 @@ export type EnquiryUncheckedUpdateInput = {
 
 export type EnquiryCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   name: string
   email?: string | null
@@ -441,6 +461,7 @@ export type EnquiryUpdateManyMutationInput = {
 
 export type EnquiryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -468,6 +489,7 @@ export type EnquiryOrderByRelationAggregateInput = {
 
 export type EnquiryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -485,6 +507,7 @@ export type EnquiryCountOrderByAggregateInput = {
 
 export type EnquiryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -502,6 +525,7 @@ export type EnquiryMaxOrderByAggregateInput = {
 
 export type EnquiryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -515,6 +539,48 @@ export type EnquiryMinOrderByAggregateInput = {
   source?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type EnquiryCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.EnquiryCreateWithoutPharmacyInput, Prisma.EnquiryUncheckedCreateWithoutPharmacyInput> | Prisma.EnquiryCreateWithoutPharmacyInput[] | Prisma.EnquiryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.EnquiryCreateOrConnectWithoutPharmacyInput | Prisma.EnquiryCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.EnquiryCreateManyPharmacyInputEnvelope
+  connect?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+}
+
+export type EnquiryUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.EnquiryCreateWithoutPharmacyInput, Prisma.EnquiryUncheckedCreateWithoutPharmacyInput> | Prisma.EnquiryCreateWithoutPharmacyInput[] | Prisma.EnquiryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.EnquiryCreateOrConnectWithoutPharmacyInput | Prisma.EnquiryCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.EnquiryCreateManyPharmacyInputEnvelope
+  connect?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+}
+
+export type EnquiryUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.EnquiryCreateWithoutPharmacyInput, Prisma.EnquiryUncheckedCreateWithoutPharmacyInput> | Prisma.EnquiryCreateWithoutPharmacyInput[] | Prisma.EnquiryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.EnquiryCreateOrConnectWithoutPharmacyInput | Prisma.EnquiryCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.EnquiryUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.EnquiryUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.EnquiryCreateManyPharmacyInputEnvelope
+  set?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+  disconnect?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+  delete?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+  connect?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+  update?: Prisma.EnquiryUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.EnquiryUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.EnquiryUpdateManyWithWhereWithoutPharmacyInput | Prisma.EnquiryUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.EnquiryScalarWhereInput | Prisma.EnquiryScalarWhereInput[]
+}
+
+export type EnquiryUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.EnquiryCreateWithoutPharmacyInput, Prisma.EnquiryUncheckedCreateWithoutPharmacyInput> | Prisma.EnquiryCreateWithoutPharmacyInput[] | Prisma.EnquiryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.EnquiryCreateOrConnectWithoutPharmacyInput | Prisma.EnquiryCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.EnquiryUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.EnquiryUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.EnquiryCreateManyPharmacyInputEnvelope
+  set?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+  disconnect?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+  delete?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+  connect?: Prisma.EnquiryWhereUniqueInput | Prisma.EnquiryWhereUniqueInput[]
+  update?: Prisma.EnquiryUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.EnquiryUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.EnquiryUpdateManyWithWhereWithoutPharmacyInput | Prisma.EnquiryUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.EnquiryScalarWhereInput | Prisma.EnquiryScalarWhereInput[]
 }
 
 export type EnquiryCreateNestedManyWithoutAssignedToInput = {
@@ -609,6 +675,87 @@ export type EnumEnquiryStatusFieldUpdateOperationsInput = {
   set?: $Enums.EnquiryStatus
 }
 
+export type EnquiryCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  email?: string | null
+  phone?: string | null
+  type?: $Enums.EnquiryType
+  subject?: string | null
+  message: string
+  status?: $Enums.EnquiryStatus
+  staffNotes?: string | null
+  source?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutEnquiriesInput
+  assignedTo?: Prisma.UserCreateNestedOneWithoutEnquiriesAssignedInput
+}
+
+export type EnquiryUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  name: string
+  email?: string | null
+  phone?: string | null
+  type?: $Enums.EnquiryType
+  subject?: string | null
+  message: string
+  status?: $Enums.EnquiryStatus
+  assignedToId?: string | null
+  staffNotes?: string | null
+  source?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EnquiryCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.EnquiryWhereUniqueInput
+  create: Prisma.XOR<Prisma.EnquiryCreateWithoutPharmacyInput, Prisma.EnquiryUncheckedCreateWithoutPharmacyInput>
+}
+
+export type EnquiryCreateManyPharmacyInputEnvelope = {
+  data: Prisma.EnquiryCreateManyPharmacyInput | Prisma.EnquiryCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type EnquiryUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.EnquiryWhereUniqueInput
+  update: Prisma.XOR<Prisma.EnquiryUpdateWithoutPharmacyInput, Prisma.EnquiryUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.EnquiryCreateWithoutPharmacyInput, Prisma.EnquiryUncheckedCreateWithoutPharmacyInput>
+}
+
+export type EnquiryUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.EnquiryWhereUniqueInput
+  data: Prisma.XOR<Prisma.EnquiryUpdateWithoutPharmacyInput, Prisma.EnquiryUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type EnquiryUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.EnquiryScalarWhereInput
+  data: Prisma.XOR<Prisma.EnquiryUpdateManyMutationInput, Prisma.EnquiryUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type EnquiryScalarWhereInput = {
+  AND?: Prisma.EnquiryScalarWhereInput | Prisma.EnquiryScalarWhereInput[]
+  OR?: Prisma.EnquiryScalarWhereInput[]
+  NOT?: Prisma.EnquiryScalarWhereInput | Prisma.EnquiryScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Enquiry"> | string
+  pharmacyId?: Prisma.UuidFilter<"Enquiry"> | string
+  customerId?: Prisma.UuidNullableFilter<"Enquiry"> | string | null
+  name?: Prisma.StringFilter<"Enquiry"> | string
+  email?: Prisma.StringNullableFilter<"Enquiry"> | string | null
+  phone?: Prisma.StringNullableFilter<"Enquiry"> | string | null
+  type?: Prisma.EnumEnquiryTypeFilter<"Enquiry"> | $Enums.EnquiryType
+  subject?: Prisma.StringNullableFilter<"Enquiry"> | string | null
+  message?: Prisma.StringFilter<"Enquiry"> | string
+  status?: Prisma.EnumEnquiryStatusFilter<"Enquiry"> | $Enums.EnquiryStatus
+  assignedToId?: Prisma.UuidNullableFilter<"Enquiry"> | string | null
+  staffNotes?: Prisma.StringNullableFilter<"Enquiry"> | string | null
+  source?: Prisma.StringNullableFilter<"Enquiry"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Enquiry"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Enquiry"> | Date | string
+}
+
 export type EnquiryCreateWithoutAssignedToInput = {
   id?: string
   name: string
@@ -623,10 +770,12 @@ export type EnquiryCreateWithoutAssignedToInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutEnquiriesInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
 }
 
 export type EnquiryUncheckedCreateWithoutAssignedToInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   name: string
   email?: string | null
@@ -667,26 +816,6 @@ export type EnquiryUpdateManyWithWhereWithoutAssignedToInput = {
   data: Prisma.XOR<Prisma.EnquiryUpdateManyMutationInput, Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToInput>
 }
 
-export type EnquiryScalarWhereInput = {
-  AND?: Prisma.EnquiryScalarWhereInput | Prisma.EnquiryScalarWhereInput[]
-  OR?: Prisma.EnquiryScalarWhereInput[]
-  NOT?: Prisma.EnquiryScalarWhereInput | Prisma.EnquiryScalarWhereInput[]
-  id?: Prisma.UuidFilter<"Enquiry"> | string
-  customerId?: Prisma.UuidNullableFilter<"Enquiry"> | string | null
-  name?: Prisma.StringFilter<"Enquiry"> | string
-  email?: Prisma.StringNullableFilter<"Enquiry"> | string | null
-  phone?: Prisma.StringNullableFilter<"Enquiry"> | string | null
-  type?: Prisma.EnumEnquiryTypeFilter<"Enquiry"> | $Enums.EnquiryType
-  subject?: Prisma.StringNullableFilter<"Enquiry"> | string | null
-  message?: Prisma.StringFilter<"Enquiry"> | string
-  status?: Prisma.EnumEnquiryStatusFilter<"Enquiry"> | $Enums.EnquiryStatus
-  assignedToId?: Prisma.UuidNullableFilter<"Enquiry"> | string | null
-  staffNotes?: Prisma.StringNullableFilter<"Enquiry"> | string | null
-  source?: Prisma.StringNullableFilter<"Enquiry"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Enquiry"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Enquiry"> | Date | string
-}
-
 export type EnquiryCreateWithoutCustomerInput = {
   id?: string
   name: string
@@ -701,10 +830,12 @@ export type EnquiryCreateWithoutCustomerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   assignedTo?: Prisma.UserCreateNestedOneWithoutEnquiriesAssignedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
 }
 
 export type EnquiryUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   name: string
   email?: string | null
   phone?: string | null
@@ -745,8 +876,77 @@ export type EnquiryUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.EnquiryUpdateManyMutationInput, Prisma.EnquiryUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type EnquiryCreateManyPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  name: string
+  email?: string | null
+  phone?: string | null
+  type?: $Enums.EnquiryType
+  subject?: string | null
+  message: string
+  status?: $Enums.EnquiryStatus
+  assignedToId?: string | null
+  staffNotes?: string | null
+  source?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EnquiryUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumEnquiryTypeFieldUpdateOperationsInput | $Enums.EnquiryType
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEnquiryStatusFieldUpdateOperationsInput | $Enums.EnquiryStatus
+  staffNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneWithoutEnquiriesNestedInput
+  assignedTo?: Prisma.UserUpdateOneWithoutEnquiriesAssignedNestedInput
+}
+
+export type EnquiryUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumEnquiryTypeFieldUpdateOperationsInput | $Enums.EnquiryType
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEnquiryStatusFieldUpdateOperationsInput | $Enums.EnquiryStatus
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EnquiryUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumEnquiryTypeFieldUpdateOperationsInput | $Enums.EnquiryType
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEnquiryStatusFieldUpdateOperationsInput | $Enums.EnquiryStatus
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type EnquiryCreateManyAssignedToInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   name: string
   email?: string | null
@@ -775,10 +975,12 @@ export type EnquiryUpdateWithoutAssignedToInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutEnquiriesNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutEnquiriesNestedInput
 }
 
 export type EnquiryUncheckedUpdateWithoutAssignedToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -795,6 +997,7 @@ export type EnquiryUncheckedUpdateWithoutAssignedToInput = {
 
 export type EnquiryUncheckedUpdateManyWithoutAssignedToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -811,6 +1014,7 @@ export type EnquiryUncheckedUpdateManyWithoutAssignedToInput = {
 
 export type EnquiryCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   name: string
   email?: string | null
   phone?: string | null
@@ -839,10 +1043,12 @@ export type EnquiryUpdateWithoutCustomerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedTo?: Prisma.UserUpdateOneWithoutEnquiriesAssignedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutEnquiriesNestedInput
 }
 
 export type EnquiryUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -859,6 +1065,7 @@ export type EnquiryUncheckedUpdateWithoutCustomerInput = {
 
 export type EnquiryUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -877,6 +1084,7 @@ export type EnquiryUncheckedUpdateManyWithoutCustomerInput = {
 
 export type EnquirySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   name?: boolean
   email?: boolean
@@ -892,10 +1100,12 @@ export type EnquirySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   customer?: boolean | Prisma.Enquiry$customerArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Enquiry$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["enquiry"]>
 
 export type EnquirySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   name?: boolean
   email?: boolean
@@ -911,10 +1121,12 @@ export type EnquirySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   updatedAt?: boolean
   customer?: boolean | Prisma.Enquiry$customerArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Enquiry$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["enquiry"]>
 
 export type EnquirySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   name?: boolean
   email?: boolean
@@ -930,10 +1142,12 @@ export type EnquirySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   updatedAt?: boolean
   customer?: boolean | Prisma.Enquiry$customerArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Enquiry$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["enquiry"]>
 
 export type EnquirySelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   name?: boolean
   email?: boolean
@@ -949,18 +1163,21 @@ export type EnquirySelectScalar = {
   updatedAt?: boolean
 }
 
-export type EnquiryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "name" | "email" | "phone" | "type" | "subject" | "message" | "status" | "assignedToId" | "staffNotes" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["enquiry"]>
+export type EnquiryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "name" | "email" | "phone" | "type" | "subject" | "message" | "status" | "assignedToId" | "staffNotes" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["enquiry"]>
 export type EnquiryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Enquiry$customerArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Enquiry$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type EnquiryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Enquiry$customerArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Enquiry$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type EnquiryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Enquiry$customerArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Enquiry$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $EnquiryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -968,9 +1185,11 @@ export type $EnquiryPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     assignedTo: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string | null
     name: string
     email: string | null
@@ -1380,6 +1599,7 @@ export interface Prisma__EnquiryClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.Enquiry$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Enquiry$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   assignedTo<T extends Prisma.Enquiry$assignedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Enquiry$assignedToArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1410,6 +1630,7 @@ export interface Prisma__EnquiryClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface EnquiryFieldRefs {
   readonly id: Prisma.FieldRef<"Enquiry", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"Enquiry", 'String'>
   readonly customerId: Prisma.FieldRef<"Enquiry", 'String'>
   readonly name: Prisma.FieldRef<"Enquiry", 'String'>
   readonly email: Prisma.FieldRef<"Enquiry", 'String'>

@@ -186,8 +186,30 @@ const CTA_ICON = {
   admin: LayoutDashboard,
 } as const;
 
-export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSessionHint | null }) {
-  const pathname = usePathname();
+export default function Navbar({
+  sessionUser = null,
+  pharmacySlug = null,
+}: {
+  sessionUser?: PortalSessionHint | null;
+  pharmacySlug?: string | null;
+}) {
+  const pathname = usePathname() || "/";
+  const fromPath = pathname.match(/^\/p\/([^/]+)/);
+  const slug = pharmacySlug || fromPath?.[1] || null;
+  const isPlatform =
+    !slug ||
+    pathname === "/" ||
+    pathname.startsWith("/for-pharmacies") ||
+    pathname.startsWith("/onboard");
+
+  const withBase = (href: string) => {
+    if (isPlatform || !slug) return href;
+    if (href.startsWith("http") || href.startsWith("tel") || href.startsWith("mailto")) return href;
+    const [path, q] = href.split("?");
+    const prefixed = path === "/" ? `/p/${slug}` : `/p/${slug}${path}`;
+    return q ? `${prefixed}?${q}` : prefixed;
+  };
+
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -231,8 +253,10 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
     }, 180);
   };
 
-  const isActive = (href: string) =>
-    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+  const isActive = (href: string) => {
+    const target = withBase(href);
+    return pathname === target || (target !== "/" && pathname.startsWith(`${target}/`));
+  };
 
   const isCategoryActive = (cat: NavCategory) =>
     cat.items.some((item) => isActive(item.href));
@@ -287,7 +311,10 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
             }`}
           >
             {/* Brand Logo */}
-            <Link href="/" className="group flex items-center gap-2.5 sm:gap-3 shrink-0 whitespace-nowrap">
+            <Link
+              href={isPlatform ? "/" : `/p/${slug}`}
+              className="group flex items-center gap-2.5 sm:gap-3 shrink-0 whitespace-nowrap"
+            >
               <span className="relative flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] shadow-md shadow-teal-900/20 transition-transform duration-300 group-hover:scale-105">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="sm:h-5 sm:w-5">
                   <path
@@ -305,7 +332,7 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
                   Aether
                 </span>
                 <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] text-[#0d6e5a] whitespace-nowrap">
-                  Pharmacy
+                  {isPlatform ? "Network" : slug}
                 </span>
               </span>
             </Link>
@@ -355,7 +382,7 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
                               return (
                                 <Link
                                   key={sub.href}
-                                  href={sub.href}
+                                  href={withBase(sub.href)}
                                   className={`flex items-start gap-3 rounded-xl p-2.5 transition-all ${
                                     subActive
                                       ? "bg-teal-50/90 text-[#084c3f]"
@@ -392,7 +419,7 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
               })}
 
               <Link
-                href="/contact"
+                href={withBase("/contact")}
                 className={`rounded-full px-3.5 py-2 text-sm font-semibold transition whitespace-nowrap shrink-0 ${
                   isActive("/contact")
                     ? "bg-teal-900/8 text-[#084c3f]"
@@ -406,7 +433,7 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
             {/* Right Action Cluster */}
             <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
               <Link
-                href="/search"
+                href={withBase("/search")}
                 className="flex h-9 w-9 sm:h-auto sm:w-auto items-center justify-center gap-2 rounded-full border border-teal-900/10 bg-teal-50/60 sm:px-3 sm:py-2 text-xs font-semibold text-[#084c3f] transition hover:bg-white hover:shadow-sm whitespace-nowrap shrink-0"
                 aria-label="Search medications"
               >
@@ -428,14 +455,14 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
               </Link>
 
               <Link
-                href="/order"
+                href={withBase("/order")}
                 className="hidden sm:inline-flex rounded-full border border-teal-900/10 bg-white/90 px-3.5 py-2 text-xs font-bold text-[#084c3f] shadow-xs transition hover:bg-teal-50 whitespace-nowrap shrink-0"
               >
                 Order OTC
               </Link>
 
               <Link
-                href="/refill"
+                href={withBase("/refill")}
                 className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-3 py-2 sm:px-4 sm:py-2.5 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-900/30 active:scale-[0.98] whitespace-nowrap shrink-0"
               >
                 <Pill className="h-3.5 w-3.5 text-teal-200 shrink-0" />
@@ -470,7 +497,7 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
             {/* Quick Actions Card Grid */}
             <div className="mb-5 grid grid-cols-2 gap-2.5">
               <Link
-                href="/refill"
+                href={withBase("/refill")}
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] p-3 text-xs font-bold text-white shadow-md active:scale-95 transition"
               >
@@ -478,7 +505,7 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
                 <span>Request Refill</span>
               </Link>
               <Link
-                href="/order"
+                href={withBase("/order")}
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center justify-center gap-2 rounded-2xl border border-teal-900/15 bg-teal-50/70 p-3 text-xs font-bold text-[#084c3f] active:scale-95 transition"
               >
@@ -501,7 +528,7 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
                       return (
                         <Link
                           key={sub.href}
-                          href={sub.href}
+                          href={withBase(sub.href)}
                           onClick={() => setMenuOpen(false)}
                           className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold transition ${
                             active
@@ -540,7 +567,7 @@ export default function Navbar({ sessionUser = null }: { sessionUser?: PortalSes
                 </h3>
                 <div className="grid grid-cols-1 gap-1">
                   <Link
-                    href="/contact"
+                    href={withBase("/contact")}
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-teal-50/50"
                   >

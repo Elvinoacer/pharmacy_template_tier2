@@ -51,6 +51,12 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Pharmacy: 'Pharmacy',
+  PharmacyMembership: 'PharmacyMembership',
+  CustomerPharmacy: 'CustomerPharmacy',
+  PharmacyIntegration: 'PharmacyIntegration',
+  PharmacyOnboardingEvent: 'PharmacyOnboardingEvent',
+  PlatformSettings: 'PlatformSettings',
   User: 'User',
   PushDevice: 'PushDevice',
   Session: 'Session',
@@ -148,6 +154,129 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const PharmacyScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  name: 'name',
+  legalName: 'legalName',
+  tagline: 'tagline',
+  description: 'description',
+  licenseNumber: 'licenseNumber',
+  licenseDocumentUrl: 'licenseDocumentUrl',
+  ppbPremisesNumber: 'ppbPremisesNumber',
+  kraPin: 'kraPin',
+  status: 'status',
+  listed: 'listed',
+  featured: 'featured',
+  verificationNotes: 'verificationNotes',
+  rejectionReason: 'rejectionReason',
+  verifiedAt: 'verifiedAt',
+  verifiedById: 'verifiedById',
+  submittedAt: 'submittedAt',
+  goLiveAt: 'goLiveAt',
+  setupCompletedAt: 'setupCompletedAt',
+  ownerUserId: 'ownerUserId',
+  email: 'email',
+  phone: 'phone',
+  whatsapp: 'whatsapp',
+  city: 'city',
+  county: 'county',
+  country: 'country',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  logoUrl: 'logoUrl',
+  coverImageUrl: 'coverImageUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PharmacyScalarFieldEnum = (typeof PharmacyScalarFieldEnum)[keyof typeof PharmacyScalarFieldEnum]
+
+
+export const PharmacyMembershipScalarFieldEnum = {
+  id: 'id',
+  pharmacyId: 'pharmacyId',
+  userId: 'userId',
+  role: 'role',
+  status: 'status',
+  invitedById: 'invitedById',
+  invitedAt: 'invitedAt',
+  acceptedAt: 'acceptedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PharmacyMembershipScalarFieldEnum = (typeof PharmacyMembershipScalarFieldEnum)[keyof typeof PharmacyMembershipScalarFieldEnum]
+
+
+export const CustomerPharmacyScalarFieldEnum = {
+  customerId: 'customerId',
+  pharmacyId: 'pharmacyId',
+  preferred: 'preferred',
+  firstSeenAt: 'firstSeenAt'
+} as const
+
+export type CustomerPharmacyScalarFieldEnum = (typeof CustomerPharmacyScalarFieldEnum)[keyof typeof CustomerPharmacyScalarFieldEnum]
+
+
+export const PharmacyIntegrationScalarFieldEnum = {
+  id: 'id',
+  pharmacyId: 'pharmacyId',
+  timezone: 'timezone',
+  locale: 'locale',
+  currency: 'currency',
+  loyaltySpendMultiplier: 'loyaltySpendMultiplier',
+  emailFromOverride: 'emailFromOverride',
+  supportEmailOverride: 'supportEmailOverride',
+  supportPhoneOverride: 'supportPhoneOverride',
+  darajaEnv: 'darajaEnv',
+  darajaShortcode: 'darajaShortcode',
+  darajaConsumerKeyEnc: 'darajaConsumerKeyEnc',
+  darajaConsumerSecretEnc: 'darajaConsumerSecretEnc',
+  darajaPasskeyEnc: 'darajaPasskeyEnc',
+  twilioSmsFrom: 'twilioSmsFrom',
+  twilioAccountSidEnc: 'twilioAccountSidEnc',
+  twilioAuthTokenEnc: 'twilioAuthTokenEnc',
+  whatsappPhoneNumberId: 'whatsappPhoneNumberId',
+  whatsappAccessTokenEnc: 'whatsappAccessTokenEnc',
+  posApiKeyHash: 'posApiKeyHash',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PharmacyIntegrationScalarFieldEnum = (typeof PharmacyIntegrationScalarFieldEnum)[keyof typeof PharmacyIntegrationScalarFieldEnum]
+
+
+export const PharmacyOnboardingEventScalarFieldEnum = {
+  id: 'id',
+  pharmacyId: 'pharmacyId',
+  actorId: 'actorId',
+  type: 'type',
+  message: 'message',
+  meta: 'meta',
+  createdAt: 'createdAt'
+} as const
+
+export type PharmacyOnboardingEventScalarFieldEnum = (typeof PharmacyOnboardingEventScalarFieldEnum)[keyof typeof PharmacyOnboardingEventScalarFieldEnum]
+
+
+export const PlatformSettingsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  tagline: 'tagline',
+  description: 'description',
+  supportEmail: 'supportEmail',
+  supportPhone: 'supportPhone',
+  marketplaceHero: 'marketplaceHero',
+  aboutMarkdown: 'aboutMarkdown',
+  forPharmaciesMd: 'forPharmaciesMd',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PlatformSettingsScalarFieldEnum = (typeof PlatformSettingsScalarFieldEnum)[keyof typeof PlatformSettingsScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -159,6 +288,7 @@ export const UserScalarFieldEnum = {
   twoFactorEnabled: 'twoFactorEnabled',
   twoFactorSecret: 'twoFactorSecret',
   status: 'status',
+  platformAdmin: 'platformAdmin',
   lastLoginAt: 'lastLoginAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -280,6 +410,7 @@ export type CustomerPreferenceScalarFieldEnum = (typeof CustomerPreferenceScalar
 
 export const PrescriptionScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   medicineName: 'medicineName',
   rxReference: 'rxReference',
@@ -339,6 +470,7 @@ export type PrescriptionScalarFieldEnum = (typeof PrescriptionScalarFieldEnum)[k
 
 export const RefillRequestScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   prescriptionId: 'prescriptionId',
   medicineName: 'medicineName',
@@ -363,6 +495,7 @@ export type RefillRequestScalarFieldEnum = (typeof RefillRequestScalarFieldEnum)
 
 export const TimelineEventScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   userId: 'userId',
   eventType: 'eventType',
@@ -378,6 +511,7 @@ export type TimelineEventScalarFieldEnum = (typeof TimelineEventScalarFieldEnum)
 
 export const SegmentScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   name: 'name',
   description: 'description',
   rules: 'rules',
@@ -401,6 +535,7 @@ export type CustomerSegmentScalarFieldEnum = (typeof CustomerSegmentScalarFieldE
 
 export const ConversationScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   channel: 'channel',
   subject: 'subject',
@@ -433,6 +568,7 @@ export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeo
 
 export const MessageTemplateScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   name: 'name',
   channel: 'channel',
   subject: 'subject',
@@ -449,6 +585,7 @@ export type MessageTemplateScalarFieldEnum = (typeof MessageTemplateScalarFieldE
 
 export const NotificationScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   userId: 'userId',
   channel: 'channel',
@@ -470,6 +607,7 @@ export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[k
 
 export const ReminderScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   type: 'type',
   title: 'title',
@@ -489,6 +627,7 @@ export type ReminderScalarFieldEnum = (typeof ReminderScalarFieldEnum)[keyof typ
 
 export const CampaignScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   name: 'name',
   description: 'description',
   channel: 'channel',
@@ -509,6 +648,7 @@ export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typ
 
 export const LoyaltyAccountScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   points: 'points',
   tier: 'tier',
@@ -538,6 +678,7 @@ export type LoyaltyTransactionScalarFieldEnum = (typeof LoyaltyTransactionScalar
 
 export const CouponScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   code: 'code',
   description: 'description',
   discountType: 'discountType',
@@ -558,6 +699,7 @@ export type CouponScalarFieldEnum = (typeof CouponScalarFieldEnum)[keyof typeof 
 
 export const EnquiryScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   name: 'name',
   email: 'email',
@@ -578,6 +720,7 @@ export type EnquiryScalarFieldEnum = (typeof EnquiryScalarFieldEnum)[keyof typeo
 
 export const FeedbackScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   name: 'name',
   email: 'email',
@@ -598,6 +741,7 @@ export type FeedbackScalarFieldEnum = (typeof FeedbackScalarFieldEnum)[keyof typ
 
 export const KnowledgeArticleScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   title: 'title',
   category: 'category',
   content: 'content',
@@ -615,6 +759,7 @@ export type KnowledgeArticleScalarFieldEnum = (typeof KnowledgeArticleScalarFiel
 
 export const AiConversationScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   userId: 'userId',
   sessionKey: 'sessionKey',
@@ -643,6 +788,7 @@ export type AiMessageScalarFieldEnum = (typeof AiMessageScalarFieldEnum)[keyof t
 
 export const AuditLogScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   actorId: 'actorId',
   action: 'action',
   entityType: 'entityType',
@@ -657,6 +803,7 @@ export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typ
 
 export const CustomerNoteScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   authorId: 'authorId',
   body: 'body',
@@ -700,6 +847,7 @@ export type PrescriptionClarificationLogScalarFieldEnum = (typeof PrescriptionCl
 
 export const MedicationScheduleScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   prescriptionId: 'prescriptionId',
   customerId: 'customerId',
   timeOfDay: 'timeOfDay',
@@ -784,6 +932,7 @@ export type AdherenceFollowUpScalarFieldEnum = (typeof AdherenceFollowUpScalarFi
 
 export const MedicationCategoryScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   name: 'name',
   slug: 'slug',
   description: 'description',
@@ -844,6 +993,7 @@ export type MedicationMasterScalarFieldEnum = (typeof MedicationMasterScalarFiel
 
 export const PharmacyInventoryScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   medicationMasterId: 'medicationMasterId',
   slug: 'slug',
   sku: 'sku',
@@ -883,6 +1033,7 @@ export type InventoryLotScalarFieldEnum = (typeof InventoryLotScalarFieldEnum)[k
 
 export const StockMovementScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   pharmacyInventoryId: 'pharmacyInventoryId',
   inventoryLotId: 'inventoryLotId',
   reason: 'reason',
@@ -982,6 +1133,7 @@ export type MedicationLookupScalarFieldEnum = (typeof MedicationLookupScalarFiel
 
 export const OrderScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   source: 'source',
   refillId: 'refillId',
@@ -1060,6 +1212,7 @@ export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof t
 
 export const PaymentScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   orderId: 'orderId',
   customerId: 'customerId',
   amount: 'amount',
@@ -1083,6 +1236,7 @@ export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeo
 
 export const LoyaltyRuleScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   name: 'name',
   trigger: 'trigger',
   points: 'points',
@@ -1110,6 +1264,7 @@ export type CaregiverInviteScalarFieldEnum = (typeof CaregiverInviteScalarFieldE
 
 export const PharmacyServiceScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   slug: 'slug',
   title: 'title',
   short: 'short',
@@ -1132,6 +1287,7 @@ export type PharmacyServiceScalarFieldEnum = (typeof PharmacyServiceScalarFieldE
 
 export const ServiceBookingScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   serviceId: 'serviceId',
   customerId: 'customerId',
   fullName: 'fullName',
@@ -1159,6 +1315,7 @@ export type ServiceBookingScalarFieldEnum = (typeof ServiceBookingScalarFieldEnu
 
 export const AdminNotificationScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   type: 'type',
   title: 'title',
   body: 'body',
@@ -1177,6 +1334,7 @@ export type AdminNotificationScalarFieldEnum = (typeof AdminNotificationScalarFi
 
 export const PharmacySettingsScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   displayName: 'displayName',
   phone: 'phone',
   email: 'email',
@@ -1192,6 +1350,22 @@ export const PharmacySettingsScalarFieldEnum = {
   placeId: 'placeId',
   mapsEmbedUrl: 'mapsEmbedUrl',
   hours: 'hours',
+  tagline: 'tagline',
+  about: 'about',
+  logoUrl: 'logoUrl',
+  coverImageUrl: 'coverImageUrl',
+  brandPrimary: 'brandPrimary',
+  brandAccent: 'brandAccent',
+  social: 'social',
+  team: 'team',
+  testimonials: 'testimonials',
+  faq: 'faq',
+  insurance: 'insurance',
+  certifications: 'certifications',
+  deliveryNotes: 'deliveryNotes',
+  deliveryFeeKes: 'deliveryFeeKes',
+  deliveryRadiusKm: 'deliveryRadiusKm',
+  careersEmail: 'careersEmail',
   updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1202,6 +1376,7 @@ export type PharmacySettingsScalarFieldEnum = (typeof PharmacySettingsScalarFiel
 
 export const SymptomSessionScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   guestKey: 'guestKey',
   customerId: 'customerId',
   userId: 'userId',
@@ -1257,6 +1432,7 @@ export type SymptomCheckInScalarFieldEnum = (typeof SymptomCheckInScalarFieldEnu
 
 export const PrescriptionFillScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   prescriptionId: 'prescriptionId',
   orderId: 'orderId',
   refillRequestId: 'refillRequestId',
@@ -1285,6 +1461,7 @@ export type PrescriptionFillScalarFieldEnum = (typeof PrescriptionFillScalarFiel
 
 export const InventoryReservationScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   orderId: 'orderId',
   orderItemId: 'orderItemId',
   inventoryId: 'inventoryId',
@@ -1305,6 +1482,7 @@ export type InventoryReservationScalarFieldEnum = (typeof InventoryReservationSc
 
 export const RefundScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   paymentId: 'paymentId',
   orderId: 'orderId',
   amount: 'amount',
@@ -1336,6 +1514,7 @@ export type InventoryAllocationScalarFieldEnum = (typeof InventoryAllocationScal
 
 export const CommerceEventScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   eventType: 'eventType',
   entityType: 'entityType',
   entityId: 'entityId',
@@ -1354,6 +1533,7 @@ export type CommerceEventScalarFieldEnum = (typeof CommerceEventScalarFieldEnum)
 
 export const MedicationPriceHistoryScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   inventoryId: 'inventoryId',
   price: 'price',
   costPrice: 'costPrice',
@@ -1369,6 +1549,7 @@ export type MedicationPriceHistoryScalarFieldEnum = (typeof MedicationPriceHisto
 
 export const CashierSessionScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   userId: 'userId',
   openedAt: 'openedAt',
   openingFloat: 'openingFloat',
@@ -1386,6 +1567,7 @@ export type CashierSessionScalarFieldEnum = (typeof CashierSessionScalarFieldEnu
 
 export const HealthScreeningRecordScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   conductedById: 'conductedById',
   screeningType: 'screeningType',
@@ -1427,6 +1609,7 @@ export type HealthScreeningRecordScalarFieldEnum = (typeof HealthScreeningRecord
 
 export const ClinicalReferralScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   screeningId: 'screeningId',
   customerId: 'customerId',
   referredById: 'referredById',
@@ -1455,6 +1638,7 @@ export type ClinicalReferralScalarFieldEnum = (typeof ClinicalReferralScalarFiel
 
 export const PharmacyImmunizationPolicyScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   enabled: 'enabled',
   jurisdiction: 'jurisdiction',
   authorizingBody: 'authorizingBody',
@@ -1478,6 +1662,7 @@ export type PharmacyImmunizationPolicyScalarFieldEnum = (typeof PharmacyImmuniza
 
 export const VaccineProductScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   slug: 'slug',
   name: 'name',
   antigen: 'antigen',
@@ -1522,6 +1707,7 @@ export type VaccineProductScalarFieldEnum = (typeof VaccineProductScalarFieldEnu
 
 export const ImmunizerCredentialScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   userId: 'userId',
   credentialType: 'credentialType',
   title: 'title',
@@ -1540,6 +1726,7 @@ export type ImmunizerCredentialScalarFieldEnum = (typeof ImmunizerCredentialScal
 
 export const ImmunizationAppointmentScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   vaccineProductId: 'vaccineProductId',
   customerId: 'customerId',
   serviceBookingId: 'serviceBookingId',
@@ -1665,6 +1852,7 @@ export type AdverseEventFollowingImmunizationScalarFieldEnum = (typeof AdverseEv
 
 export const PreventiveCounsellingSessionScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   customerId: 'customerId',
   counsellorId: 'counsellorId',
   campaignId: 'campaignId',
@@ -1690,6 +1878,7 @@ export type PreventiveCounsellingSessionScalarFieldEnum = (typeof PreventiveCoun
 
 export const PublicHealthCampaignScalarFieldEnum = {
   id: 'id',
+  pharmacyId: 'pharmacyId',
   campaignId: 'campaignId',
   slug: 'slug',
   title: 'title',

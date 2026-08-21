@@ -36,6 +36,7 @@ export type CommerceEventSumAggregateOutputType = {
 
 export type CommerceEventMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   eventType: $Enums.CommerceEventType | null
   entityType: string | null
   entityId: string | null
@@ -50,6 +51,7 @@ export type CommerceEventMinAggregateOutputType = {
 
 export type CommerceEventMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   eventType: $Enums.CommerceEventType | null
   entityType: string | null
   entityId: string | null
@@ -64,6 +66,7 @@ export type CommerceEventMaxAggregateOutputType = {
 
 export type CommerceEventCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   eventType: number
   entityType: number
   entityId: number
@@ -89,6 +92,7 @@ export type CommerceEventSumAggregateInputType = {
 
 export type CommerceEventMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   eventType?: true
   entityType?: true
   entityId?: true
@@ -103,6 +107,7 @@ export type CommerceEventMinAggregateInputType = {
 
 export type CommerceEventMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   eventType?: true
   entityType?: true
   entityId?: true
@@ -117,6 +122,7 @@ export type CommerceEventMaxAggregateInputType = {
 
 export type CommerceEventCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   eventType?: true
   entityType?: true
   entityId?: true
@@ -219,6 +225,7 @@ export type CommerceEventGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 
 export type CommerceEventGroupByOutputType = {
   id: string
+  pharmacyId: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string
@@ -257,6 +264,7 @@ export type CommerceEventWhereInput = {
   OR?: Prisma.CommerceEventWhereInput[]
   NOT?: Prisma.CommerceEventWhereInput | Prisma.CommerceEventWhereInput[]
   id?: Prisma.UuidFilter<"CommerceEvent"> | string
+  pharmacyId?: Prisma.UuidFilter<"CommerceEvent"> | string
   eventType?: Prisma.EnumCommerceEventTypeFilter<"CommerceEvent"> | $Enums.CommerceEventType
   entityType?: Prisma.StringFilter<"CommerceEvent"> | string
   entityId?: Prisma.UuidFilter<"CommerceEvent"> | string
@@ -269,10 +277,12 @@ export type CommerceEventWhereInput = {
   occurredAt?: Prisma.DateTimeFilter<"CommerceEvent"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"CommerceEvent"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type CommerceEventOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   eventType?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
   entityId?: Prisma.SortOrder
@@ -285,6 +295,7 @@ export type CommerceEventOrderByWithRelationInput = {
   occurredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type CommerceEventWhereUniqueInput = Prisma.AtLeast<{
@@ -292,6 +303,7 @@ export type CommerceEventWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CommerceEventWhereInput | Prisma.CommerceEventWhereInput[]
   OR?: Prisma.CommerceEventWhereInput[]
   NOT?: Prisma.CommerceEventWhereInput | Prisma.CommerceEventWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"CommerceEvent"> | string
   eventType?: Prisma.EnumCommerceEventTypeFilter<"CommerceEvent"> | $Enums.CommerceEventType
   entityType?: Prisma.StringFilter<"CommerceEvent"> | string
   entityId?: Prisma.UuidFilter<"CommerceEvent"> | string
@@ -304,10 +316,12 @@ export type CommerceEventWhereUniqueInput = Prisma.AtLeast<{
   occurredAt?: Prisma.DateTimeFilter<"CommerceEvent"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"CommerceEvent"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type CommerceEventOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   eventType?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
   entityId?: Prisma.SortOrder
@@ -331,6 +345,7 @@ export type CommerceEventScalarWhereWithAggregatesInput = {
   OR?: Prisma.CommerceEventScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CommerceEventScalarWhereWithAggregatesInput | Prisma.CommerceEventScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"CommerceEvent"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"CommerceEvent"> | string
   eventType?: Prisma.EnumCommerceEventTypeWithAggregatesFilter<"CommerceEvent"> | $Enums.CommerceEventType
   entityType?: Prisma.StringWithAggregatesFilter<"CommerceEvent"> | string
   entityId?: Prisma.UuidWithAggregatesFilter<"CommerceEvent"> | string
@@ -357,10 +372,12 @@ export type CommerceEventCreateInput = {
   occurredAt?: Date | string
   createdAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutCommerceEventsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCommerceEventsInput
 }
 
 export type CommerceEventUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string
@@ -387,10 +404,12 @@ export type CommerceEventUpdateInput = {
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneWithoutCommerceEventsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCommerceEventsNestedInput
 }
 
 export type CommerceEventUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   eventType?: Prisma.EnumCommerceEventTypeFieldUpdateOperationsInput | $Enums.CommerceEventType
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
   entityId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -406,6 +425,7 @@ export type CommerceEventUncheckedUpdateInput = {
 
 export type CommerceEventCreateManyInput = {
   id?: string
+  pharmacyId: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string
@@ -435,6 +455,7 @@ export type CommerceEventUpdateManyMutationInput = {
 
 export type CommerceEventUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   eventType?: Prisma.EnumCommerceEventTypeFieldUpdateOperationsInput | $Enums.CommerceEventType
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
   entityId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -460,6 +481,7 @@ export type CommerceEventOrderByRelationAggregateInput = {
 
 export type CommerceEventCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   eventType?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
   entityId?: Prisma.SortOrder
@@ -479,6 +501,7 @@ export type CommerceEventAvgOrderByAggregateInput = {
 
 export type CommerceEventMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   eventType?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
   entityId?: Prisma.SortOrder
@@ -493,6 +516,7 @@ export type CommerceEventMaxOrderByAggregateInput = {
 
 export type CommerceEventMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   eventType?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
   entityId?: Prisma.SortOrder
@@ -507,6 +531,48 @@ export type CommerceEventMinOrderByAggregateInput = {
 
 export type CommerceEventSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
+}
+
+export type CommerceEventCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.CommerceEventCreateWithoutPharmacyInput, Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput> | Prisma.CommerceEventCreateWithoutPharmacyInput[] | Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CommerceEventCreateOrConnectWithoutPharmacyInput | Prisma.CommerceEventCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.CommerceEventCreateManyPharmacyInputEnvelope
+  connect?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+}
+
+export type CommerceEventUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.CommerceEventCreateWithoutPharmacyInput, Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput> | Prisma.CommerceEventCreateWithoutPharmacyInput[] | Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CommerceEventCreateOrConnectWithoutPharmacyInput | Prisma.CommerceEventCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.CommerceEventCreateManyPharmacyInputEnvelope
+  connect?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+}
+
+export type CommerceEventUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.CommerceEventCreateWithoutPharmacyInput, Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput> | Prisma.CommerceEventCreateWithoutPharmacyInput[] | Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CommerceEventCreateOrConnectWithoutPharmacyInput | Prisma.CommerceEventCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.CommerceEventUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.CommerceEventUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.CommerceEventCreateManyPharmacyInputEnvelope
+  set?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+  disconnect?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+  delete?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+  connect?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+  update?: Prisma.CommerceEventUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.CommerceEventUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.CommerceEventUpdateManyWithWhereWithoutPharmacyInput | Prisma.CommerceEventUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.CommerceEventScalarWhereInput | Prisma.CommerceEventScalarWhereInput[]
+}
+
+export type CommerceEventUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.CommerceEventCreateWithoutPharmacyInput, Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput> | Prisma.CommerceEventCreateWithoutPharmacyInput[] | Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CommerceEventCreateOrConnectWithoutPharmacyInput | Prisma.CommerceEventCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.CommerceEventUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.CommerceEventUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.CommerceEventCreateManyPharmacyInputEnvelope
+  set?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+  disconnect?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+  delete?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+  connect?: Prisma.CommerceEventWhereUniqueInput | Prisma.CommerceEventWhereUniqueInput[]
+  update?: Prisma.CommerceEventUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.CommerceEventUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.CommerceEventUpdateManyWithWhereWithoutPharmacyInput | Prisma.CommerceEventUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.CommerceEventScalarWhereInput | Prisma.CommerceEventScalarWhereInput[]
 }
 
 export type CommerceEventCreateNestedManyWithoutOrderInput = {
@@ -555,6 +621,81 @@ export type EnumCommerceEventTypeFieldUpdateOperationsInput = {
   set?: $Enums.CommerceEventType
 }
 
+export type CommerceEventCreateWithoutPharmacyInput = {
+  id?: string
+  eventType: $Enums.CommerceEventType
+  entityType: string
+  entityId: string
+  customerId?: string | null
+  actorId?: string | null
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Date | string
+  createdAt?: Date | string
+  order?: Prisma.OrderCreateNestedOneWithoutCommerceEventsInput
+}
+
+export type CommerceEventUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  eventType: $Enums.CommerceEventType
+  entityType: string
+  entityId: string
+  orderId?: string | null
+  customerId?: string | null
+  actorId?: string | null
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Date | string
+  createdAt?: Date | string
+}
+
+export type CommerceEventCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.CommerceEventWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommerceEventCreateWithoutPharmacyInput, Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput>
+}
+
+export type CommerceEventCreateManyPharmacyInputEnvelope = {
+  data: Prisma.CommerceEventCreateManyPharmacyInput | Prisma.CommerceEventCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommerceEventUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.CommerceEventWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommerceEventUpdateWithoutPharmacyInput, Prisma.CommerceEventUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.CommerceEventCreateWithoutPharmacyInput, Prisma.CommerceEventUncheckedCreateWithoutPharmacyInput>
+}
+
+export type CommerceEventUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.CommerceEventWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommerceEventUpdateWithoutPharmacyInput, Prisma.CommerceEventUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type CommerceEventUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.CommerceEventScalarWhereInput
+  data: Prisma.XOR<Prisma.CommerceEventUpdateManyMutationInput, Prisma.CommerceEventUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type CommerceEventScalarWhereInput = {
+  AND?: Prisma.CommerceEventScalarWhereInput | Prisma.CommerceEventScalarWhereInput[]
+  OR?: Prisma.CommerceEventScalarWhereInput[]
+  NOT?: Prisma.CommerceEventScalarWhereInput | Prisma.CommerceEventScalarWhereInput[]
+  id?: Prisma.UuidFilter<"CommerceEvent"> | string
+  pharmacyId?: Prisma.UuidFilter<"CommerceEvent"> | string
+  eventType?: Prisma.EnumCommerceEventTypeFilter<"CommerceEvent"> | $Enums.CommerceEventType
+  entityType?: Prisma.StringFilter<"CommerceEvent"> | string
+  entityId?: Prisma.UuidFilter<"CommerceEvent"> | string
+  orderId?: Prisma.UuidNullableFilter<"CommerceEvent"> | string | null
+  customerId?: Prisma.UuidNullableFilter<"CommerceEvent"> | string | null
+  actorId?: Prisma.UuidNullableFilter<"CommerceEvent"> | string | null
+  amount?: Prisma.DecimalNullableFilter<"CommerceEvent"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFilter<"CommerceEvent"> | string
+  metadata?: Prisma.JsonFilter<"CommerceEvent">
+  occurredAt?: Prisma.DateTimeFilter<"CommerceEvent"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"CommerceEvent"> | Date | string
+}
+
 export type CommerceEventCreateWithoutOrderInput = {
   id?: string
   eventType: $Enums.CommerceEventType
@@ -567,10 +708,12 @@ export type CommerceEventCreateWithoutOrderInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Date | string
   createdAt?: Date | string
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCommerceEventsInput
 }
 
 export type CommerceEventUncheckedCreateWithoutOrderInput = {
   id?: string
+  pharmacyId: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string
@@ -609,26 +752,69 @@ export type CommerceEventUpdateManyWithWhereWithoutOrderInput = {
   data: Prisma.XOR<Prisma.CommerceEventUpdateManyMutationInput, Prisma.CommerceEventUncheckedUpdateManyWithoutOrderInput>
 }
 
-export type CommerceEventScalarWhereInput = {
-  AND?: Prisma.CommerceEventScalarWhereInput | Prisma.CommerceEventScalarWhereInput[]
-  OR?: Prisma.CommerceEventScalarWhereInput[]
-  NOT?: Prisma.CommerceEventScalarWhereInput | Prisma.CommerceEventScalarWhereInput[]
-  id?: Prisma.UuidFilter<"CommerceEvent"> | string
-  eventType?: Prisma.EnumCommerceEventTypeFilter<"CommerceEvent"> | $Enums.CommerceEventType
-  entityType?: Prisma.StringFilter<"CommerceEvent"> | string
-  entityId?: Prisma.UuidFilter<"CommerceEvent"> | string
-  orderId?: Prisma.UuidNullableFilter<"CommerceEvent"> | string | null
-  customerId?: Prisma.UuidNullableFilter<"CommerceEvent"> | string | null
-  actorId?: Prisma.UuidNullableFilter<"CommerceEvent"> | string | null
-  amount?: Prisma.DecimalNullableFilter<"CommerceEvent"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  currency?: Prisma.StringFilter<"CommerceEvent"> | string
-  metadata?: Prisma.JsonFilter<"CommerceEvent">
-  occurredAt?: Prisma.DateTimeFilter<"CommerceEvent"> | Date | string
-  createdAt?: Prisma.DateTimeFilter<"CommerceEvent"> | Date | string
+export type CommerceEventCreateManyPharmacyInput = {
+  id?: string
+  eventType: $Enums.CommerceEventType
+  entityType: string
+  entityId: string
+  orderId?: string | null
+  customerId?: string | null
+  actorId?: string | null
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Date | string
+  createdAt?: Date | string
+}
+
+export type CommerceEventUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventType?: Prisma.EnumCommerceEventTypeFieldUpdateOperationsInput | $Enums.CommerceEventType
+  entityType?: Prisma.StringFieldUpdateOperationsInput | string
+  entityId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.OrderUpdateOneWithoutCommerceEventsNestedInput
+}
+
+export type CommerceEventUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventType?: Prisma.EnumCommerceEventTypeFieldUpdateOperationsInput | $Enums.CommerceEventType
+  entityType?: Prisma.StringFieldUpdateOperationsInput | string
+  entityId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CommerceEventUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventType?: Prisma.EnumCommerceEventTypeFieldUpdateOperationsInput | $Enums.CommerceEventType
+  entityType?: Prisma.StringFieldUpdateOperationsInput | string
+  entityId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CommerceEventCreateManyOrderInput = {
   id?: string
+  pharmacyId: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string
@@ -653,10 +839,12 @@ export type CommerceEventUpdateWithoutOrderInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCommerceEventsNestedInput
 }
 
 export type CommerceEventUncheckedUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   eventType?: Prisma.EnumCommerceEventTypeFieldUpdateOperationsInput | $Enums.CommerceEventType
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
   entityId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -671,6 +859,7 @@ export type CommerceEventUncheckedUpdateWithoutOrderInput = {
 
 export type CommerceEventUncheckedUpdateManyWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   eventType?: Prisma.EnumCommerceEventTypeFieldUpdateOperationsInput | $Enums.CommerceEventType
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
   entityId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -687,6 +876,7 @@ export type CommerceEventUncheckedUpdateManyWithoutOrderInput = {
 
 export type CommerceEventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   eventType?: boolean
   entityType?: boolean
   entityId?: boolean
@@ -699,10 +889,12 @@ export type CommerceEventSelect<ExtArgs extends runtime.Types.Extensions.Interna
   occurredAt?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.CommerceEvent$orderArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commerceEvent"]>
 
 export type CommerceEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   eventType?: boolean
   entityType?: boolean
   entityId?: boolean
@@ -715,10 +907,12 @@ export type CommerceEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   occurredAt?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.CommerceEvent$orderArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commerceEvent"]>
 
 export type CommerceEventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   eventType?: boolean
   entityType?: boolean
   entityId?: boolean
@@ -731,10 +925,12 @@ export type CommerceEventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   occurredAt?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.CommerceEvent$orderArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commerceEvent"]>
 
 export type CommerceEventSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   eventType?: boolean
   entityType?: boolean
   entityId?: boolean
@@ -748,24 +944,29 @@ export type CommerceEventSelectScalar = {
   createdAt?: boolean
 }
 
-export type CommerceEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventType" | "entityType" | "entityId" | "orderId" | "customerId" | "actorId" | "amount" | "currency" | "metadata" | "occurredAt" | "createdAt", ExtArgs["result"]["commerceEvent"]>
+export type CommerceEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "eventType" | "entityType" | "entityId" | "orderId" | "customerId" | "actorId" | "amount" | "currency" | "metadata" | "occurredAt" | "createdAt", ExtArgs["result"]["commerceEvent"]>
 export type CommerceEventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.CommerceEvent$orderArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type CommerceEventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.CommerceEvent$orderArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type CommerceEventIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.CommerceEvent$orderArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $CommerceEventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CommerceEvent"
   objects: {
     order: Prisma.$OrderPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     eventType: $Enums.CommerceEventType
     entityType: string
     entityId: string
@@ -1172,6 +1373,7 @@ readonly fields: CommerceEventFieldRefs;
 export interface Prisma__CommerceEventClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   order<T extends Prisma.CommerceEvent$orderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommerceEvent$orderArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1202,6 +1404,7 @@ export interface Prisma__CommerceEventClient<T, Null = never, ExtArgs extends ru
  */
 export interface CommerceEventFieldRefs {
   readonly id: Prisma.FieldRef<"CommerceEvent", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"CommerceEvent", 'String'>
   readonly eventType: Prisma.FieldRef<"CommerceEvent", 'CommerceEventType'>
   readonly entityType: Prisma.FieldRef<"CommerceEvent", 'String'>
   readonly entityId: Prisma.FieldRef<"CommerceEvent", 'String'>

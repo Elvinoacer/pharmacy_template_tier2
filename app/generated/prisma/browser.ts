@@ -18,6 +18,36 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
+ * Model Pharmacy
+ * A tenant on the Aether network. One row per pharmacy business.
+ */
+export type Pharmacy = Prisma.PharmacyModel
+/**
+ * Model PharmacyMembership
+ * 
+ */
+export type PharmacyMembership = Prisma.PharmacyMembershipModel
+/**
+ * Model CustomerPharmacy
+ * A customer's relationship with a pharmacy (orders, prescriptions, loyalty).
+ */
+export type CustomerPharmacy = Prisma.CustomerPharmacyModel
+/**
+ * Model PharmacyIntegration
+ * Per-pharmacy integration credentials & locale. Secrets are encrypted at rest.
+ */
+export type PharmacyIntegration = Prisma.PharmacyIntegrationModel
+/**
+ * Model PharmacyOnboardingEvent
+ * 
+ */
+export type PharmacyOnboardingEvent = Prisma.PharmacyOnboardingEventModel
+/**
+ * Model PlatformSettings
+ * Platform-level CMS / branding (super admin). Singleton row id="platform".
+ */
+export type PlatformSettings = Prisma.PlatformSettingsModel
+/**
  * Model User
  * 
  */

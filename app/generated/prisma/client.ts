@@ -31,8 +31,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more Pharmacies
+ * const pharmacies = await prisma.pharmacy.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -41,6 +41,36 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model Pharmacy
+ * A tenant on the Aether network. One row per pharmacy business.
+ */
+export type Pharmacy = Prisma.PharmacyModel
+/**
+ * Model PharmacyMembership
+ * 
+ */
+export type PharmacyMembership = Prisma.PharmacyMembershipModel
+/**
+ * Model CustomerPharmacy
+ * A customer's relationship with a pharmacy (orders, prescriptions, loyalty).
+ */
+export type CustomerPharmacy = Prisma.CustomerPharmacyModel
+/**
+ * Model PharmacyIntegration
+ * Per-pharmacy integration credentials & locale. Secrets are encrypted at rest.
+ */
+export type PharmacyIntegration = Prisma.PharmacyIntegrationModel
+/**
+ * Model PharmacyOnboardingEvent
+ * 
+ */
+export type PharmacyOnboardingEvent = Prisma.PharmacyOnboardingEventModel
+/**
+ * Model PlatformSettings
+ * Platform-level CMS / branding (super admin). Singleton row id="platform".
+ */
+export type PlatformSettings = Prisma.PlatformSettingsModel
 /**
  * Model User
  * 

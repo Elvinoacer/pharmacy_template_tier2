@@ -129,7 +129,7 @@ export async function loginAction(
     const user = await loginWithPassword(email, password);
     await writeAuditLog(user.id, "login", "user", user.id);
     postLoginPath = resolvePostLoginPath(
-      { role: user.role, customerId: user.customerId },
+      { role: user.role, customerId: user.customerId, platformAdmin: user.platformAdmin },
       next || null,
     );
   } catch (e) {

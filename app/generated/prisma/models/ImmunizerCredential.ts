@@ -26,6 +26,7 @@ export type AggregateImmunizerCredential = {
 
 export type ImmunizerCredentialMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   userId: string | null
   credentialType: string | null
   title: string | null
@@ -41,6 +42,7 @@ export type ImmunizerCredentialMinAggregateOutputType = {
 
 export type ImmunizerCredentialMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   userId: string | null
   credentialType: string | null
   title: string | null
@@ -56,6 +58,7 @@ export type ImmunizerCredentialMaxAggregateOutputType = {
 
 export type ImmunizerCredentialCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   userId: number
   credentialType: number
   title: number
@@ -73,6 +76,7 @@ export type ImmunizerCredentialCountAggregateOutputType = {
 
 export type ImmunizerCredentialMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   userId?: true
   credentialType?: true
   title?: true
@@ -88,6 +92,7 @@ export type ImmunizerCredentialMinAggregateInputType = {
 
 export type ImmunizerCredentialMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   userId?: true
   credentialType?: true
   title?: true
@@ -103,6 +108,7 @@ export type ImmunizerCredentialMaxAggregateInputType = {
 
 export type ImmunizerCredentialCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   userId?: true
   credentialType?: true
   title?: true
@@ -191,6 +197,7 @@ export type ImmunizerCredentialGroupByArgs<ExtArgs extends runtime.Types.Extensi
 
 export type ImmunizerCredentialGroupByOutputType = {
   id: string
+  pharmacyId: string
   userId: string
   credentialType: string
   title: string
@@ -227,6 +234,7 @@ export type ImmunizerCredentialWhereInput = {
   OR?: Prisma.ImmunizerCredentialWhereInput[]
   NOT?: Prisma.ImmunizerCredentialWhereInput | Prisma.ImmunizerCredentialWhereInput[]
   id?: Prisma.UuidFilter<"ImmunizerCredential"> | string
+  pharmacyId?: Prisma.UuidFilter<"ImmunizerCredential"> | string
   userId?: Prisma.UuidFilter<"ImmunizerCredential"> | string
   credentialType?: Prisma.StringFilter<"ImmunizerCredential"> | string
   title?: Prisma.StringFilter<"ImmunizerCredential"> | string
@@ -239,10 +247,12 @@ export type ImmunizerCredentialWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ImmunizerCredential"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ImmunizerCredential"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type ImmunizerCredentialOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   credentialType?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -255,6 +265,7 @@ export type ImmunizerCredentialOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type ImmunizerCredentialWhereUniqueInput = Prisma.AtLeast<{
@@ -262,6 +273,7 @@ export type ImmunizerCredentialWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ImmunizerCredentialWhereInput | Prisma.ImmunizerCredentialWhereInput[]
   OR?: Prisma.ImmunizerCredentialWhereInput[]
   NOT?: Prisma.ImmunizerCredentialWhereInput | Prisma.ImmunizerCredentialWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"ImmunizerCredential"> | string
   userId?: Prisma.UuidFilter<"ImmunizerCredential"> | string
   credentialType?: Prisma.StringFilter<"ImmunizerCredential"> | string
   title?: Prisma.StringFilter<"ImmunizerCredential"> | string
@@ -274,10 +286,12 @@ export type ImmunizerCredentialWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"ImmunizerCredential"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ImmunizerCredential"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type ImmunizerCredentialOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   credentialType?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -299,6 +313,7 @@ export type ImmunizerCredentialScalarWhereWithAggregatesInput = {
   OR?: Prisma.ImmunizerCredentialScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ImmunizerCredentialScalarWhereWithAggregatesInput | Prisma.ImmunizerCredentialScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"ImmunizerCredential"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"ImmunizerCredential"> | string
   userId?: Prisma.UuidWithAggregatesFilter<"ImmunizerCredential"> | string
   credentialType?: Prisma.StringWithAggregatesFilter<"ImmunizerCredential"> | string
   title?: Prisma.StringWithAggregatesFilter<"ImmunizerCredential"> | string
@@ -325,10 +340,12 @@ export type ImmunizerCredentialCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutImmunizerCredentialsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizerCredentialsInput
 }
 
 export type ImmunizerCredentialUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   userId: string
   credentialType: string
   title: string
@@ -355,10 +372,12 @@ export type ImmunizerCredentialUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutImmunizerCredentialsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizerCredentialsNestedInput
 }
 
 export type ImmunizerCredentialUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   credentialType?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -374,6 +393,7 @@ export type ImmunizerCredentialUncheckedUpdateInput = {
 
 export type ImmunizerCredentialCreateManyInput = {
   id?: string
+  pharmacyId: string
   userId: string
   credentialType: string
   title: string
@@ -403,6 +423,7 @@ export type ImmunizerCredentialUpdateManyMutationInput = {
 
 export type ImmunizerCredentialUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   credentialType?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -428,6 +449,7 @@ export type ImmunizerCredentialOrderByRelationAggregateInput = {
 
 export type ImmunizerCredentialCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   credentialType?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -443,6 +465,7 @@ export type ImmunizerCredentialCountOrderByAggregateInput = {
 
 export type ImmunizerCredentialMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   credentialType?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -458,6 +481,7 @@ export type ImmunizerCredentialMaxOrderByAggregateInput = {
 
 export type ImmunizerCredentialMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   credentialType?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -469,6 +493,48 @@ export type ImmunizerCredentialMinOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ImmunizerCredentialCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.ImmunizerCredentialCreateWithoutPharmacyInput, Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput> | Prisma.ImmunizerCredentialCreateWithoutPharmacyInput[] | Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ImmunizerCredentialCreateOrConnectWithoutPharmacyInput | Prisma.ImmunizerCredentialCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.ImmunizerCredentialCreateManyPharmacyInputEnvelope
+  connect?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+}
+
+export type ImmunizerCredentialUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.ImmunizerCredentialCreateWithoutPharmacyInput, Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput> | Prisma.ImmunizerCredentialCreateWithoutPharmacyInput[] | Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ImmunizerCredentialCreateOrConnectWithoutPharmacyInput | Prisma.ImmunizerCredentialCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.ImmunizerCredentialCreateManyPharmacyInputEnvelope
+  connect?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+}
+
+export type ImmunizerCredentialUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.ImmunizerCredentialCreateWithoutPharmacyInput, Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput> | Prisma.ImmunizerCredentialCreateWithoutPharmacyInput[] | Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ImmunizerCredentialCreateOrConnectWithoutPharmacyInput | Prisma.ImmunizerCredentialCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.ImmunizerCredentialUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.ImmunizerCredentialUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.ImmunizerCredentialCreateManyPharmacyInputEnvelope
+  set?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+  disconnect?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+  delete?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+  connect?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+  update?: Prisma.ImmunizerCredentialUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.ImmunizerCredentialUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.ImmunizerCredentialUpdateManyWithWhereWithoutPharmacyInput | Prisma.ImmunizerCredentialUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.ImmunizerCredentialScalarWhereInput | Prisma.ImmunizerCredentialScalarWhereInput[]
+}
+
+export type ImmunizerCredentialUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.ImmunizerCredentialCreateWithoutPharmacyInput, Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput> | Prisma.ImmunizerCredentialCreateWithoutPharmacyInput[] | Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ImmunizerCredentialCreateOrConnectWithoutPharmacyInput | Prisma.ImmunizerCredentialCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.ImmunizerCredentialUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.ImmunizerCredentialUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.ImmunizerCredentialCreateManyPharmacyInputEnvelope
+  set?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+  disconnect?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+  delete?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+  connect?: Prisma.ImmunizerCredentialWhereUniqueInput | Prisma.ImmunizerCredentialWhereUniqueInput[]
+  update?: Prisma.ImmunizerCredentialUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.ImmunizerCredentialUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.ImmunizerCredentialUpdateManyWithWhereWithoutPharmacyInput | Prisma.ImmunizerCredentialUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.ImmunizerCredentialScalarWhereInput | Prisma.ImmunizerCredentialScalarWhereInput[]
 }
 
 export type ImmunizerCredentialCreateNestedManyWithoutUserInput = {
@@ -513,8 +579,24 @@ export type ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.ImmunizerCredentialScalarWhereInput | Prisma.ImmunizerCredentialScalarWhereInput[]
 }
 
-export type ImmunizerCredentialCreateWithoutUserInput = {
+export type ImmunizerCredentialCreateWithoutPharmacyInput = {
   id?: string
+  credentialType: string
+  title: string
+  licenseNumber?: string | null
+  issuedBy: string
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  verified?: boolean
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutImmunizerCredentialsInput
+}
+
+export type ImmunizerCredentialUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  userId: string
   credentialType: string
   title: string
   licenseNumber?: string | null
@@ -527,8 +609,69 @@ export type ImmunizerCredentialCreateWithoutUserInput = {
   updatedAt?: Date | string
 }
 
+export type ImmunizerCredentialCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.ImmunizerCredentialWhereUniqueInput
+  create: Prisma.XOR<Prisma.ImmunizerCredentialCreateWithoutPharmacyInput, Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput>
+}
+
+export type ImmunizerCredentialCreateManyPharmacyInputEnvelope = {
+  data: Prisma.ImmunizerCredentialCreateManyPharmacyInput | Prisma.ImmunizerCredentialCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type ImmunizerCredentialUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.ImmunizerCredentialWhereUniqueInput
+  update: Prisma.XOR<Prisma.ImmunizerCredentialUpdateWithoutPharmacyInput, Prisma.ImmunizerCredentialUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.ImmunizerCredentialCreateWithoutPharmacyInput, Prisma.ImmunizerCredentialUncheckedCreateWithoutPharmacyInput>
+}
+
+export type ImmunizerCredentialUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.ImmunizerCredentialWhereUniqueInput
+  data: Prisma.XOR<Prisma.ImmunizerCredentialUpdateWithoutPharmacyInput, Prisma.ImmunizerCredentialUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type ImmunizerCredentialUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.ImmunizerCredentialScalarWhereInput
+  data: Prisma.XOR<Prisma.ImmunizerCredentialUpdateManyMutationInput, Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type ImmunizerCredentialScalarWhereInput = {
+  AND?: Prisma.ImmunizerCredentialScalarWhereInput | Prisma.ImmunizerCredentialScalarWhereInput[]
+  OR?: Prisma.ImmunizerCredentialScalarWhereInput[]
+  NOT?: Prisma.ImmunizerCredentialScalarWhereInput | Prisma.ImmunizerCredentialScalarWhereInput[]
+  id?: Prisma.UuidFilter<"ImmunizerCredential"> | string
+  pharmacyId?: Prisma.UuidFilter<"ImmunizerCredential"> | string
+  userId?: Prisma.UuidFilter<"ImmunizerCredential"> | string
+  credentialType?: Prisma.StringFilter<"ImmunizerCredential"> | string
+  title?: Prisma.StringFilter<"ImmunizerCredential"> | string
+  licenseNumber?: Prisma.StringNullableFilter<"ImmunizerCredential"> | string | null
+  issuedBy?: Prisma.StringFilter<"ImmunizerCredential"> | string
+  issuedAt?: Prisma.DateTimeNullableFilter<"ImmunizerCredential"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"ImmunizerCredential"> | Date | string | null
+  verified?: Prisma.BoolFilter<"ImmunizerCredential"> | boolean
+  notes?: Prisma.StringNullableFilter<"ImmunizerCredential"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"ImmunizerCredential"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"ImmunizerCredential"> | Date | string
+}
+
+export type ImmunizerCredentialCreateWithoutUserInput = {
+  id?: string
+  credentialType: string
+  title: string
+  licenseNumber?: string | null
+  issuedBy: string
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  verified?: boolean
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizerCredentialsInput
+}
+
 export type ImmunizerCredentialUncheckedCreateWithoutUserInput = {
   id?: string
+  pharmacyId: string
   credentialType: string
   title: string
   licenseNumber?: string | null
@@ -567,26 +710,69 @@ export type ImmunizerCredentialUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.ImmunizerCredentialUpdateManyMutationInput, Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserInput>
 }
 
-export type ImmunizerCredentialScalarWhereInput = {
-  AND?: Prisma.ImmunizerCredentialScalarWhereInput | Prisma.ImmunizerCredentialScalarWhereInput[]
-  OR?: Prisma.ImmunizerCredentialScalarWhereInput[]
-  NOT?: Prisma.ImmunizerCredentialScalarWhereInput | Prisma.ImmunizerCredentialScalarWhereInput[]
-  id?: Prisma.UuidFilter<"ImmunizerCredential"> | string
-  userId?: Prisma.UuidFilter<"ImmunizerCredential"> | string
-  credentialType?: Prisma.StringFilter<"ImmunizerCredential"> | string
-  title?: Prisma.StringFilter<"ImmunizerCredential"> | string
-  licenseNumber?: Prisma.StringNullableFilter<"ImmunizerCredential"> | string | null
-  issuedBy?: Prisma.StringFilter<"ImmunizerCredential"> | string
-  issuedAt?: Prisma.DateTimeNullableFilter<"ImmunizerCredential"> | Date | string | null
-  expiresAt?: Prisma.DateTimeNullableFilter<"ImmunizerCredential"> | Date | string | null
-  verified?: Prisma.BoolFilter<"ImmunizerCredential"> | boolean
-  notes?: Prisma.StringNullableFilter<"ImmunizerCredential"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"ImmunizerCredential"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"ImmunizerCredential"> | Date | string
+export type ImmunizerCredentialCreateManyPharmacyInput = {
+  id?: string
+  userId: string
+  credentialType: string
+  title: string
+  licenseNumber?: string | null
+  issuedBy: string
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  verified?: boolean
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ImmunizerCredentialUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  credentialType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutImmunizerCredentialsNestedInput
+}
+
+export type ImmunizerCredentialUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  credentialType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ImmunizerCredentialUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  credentialType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ImmunizerCredentialCreateManyUserInput = {
   id?: string
+  pharmacyId: string
   credentialType: string
   title: string
   licenseNumber?: string | null
@@ -611,10 +797,12 @@ export type ImmunizerCredentialUpdateWithoutUserInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizerCredentialsNestedInput
 }
 
 export type ImmunizerCredentialUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   credentialType?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -629,6 +817,7 @@ export type ImmunizerCredentialUncheckedUpdateWithoutUserInput = {
 
 export type ImmunizerCredentialUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   credentialType?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -645,6 +834,7 @@ export type ImmunizerCredentialUncheckedUpdateManyWithoutUserInput = {
 
 export type ImmunizerCredentialSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   userId?: boolean
   credentialType?: boolean
   title?: boolean
@@ -657,10 +847,12 @@ export type ImmunizerCredentialSelect<ExtArgs extends runtime.Types.Extensions.I
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["immunizerCredential"]>
 
 export type ImmunizerCredentialSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   userId?: boolean
   credentialType?: boolean
   title?: boolean
@@ -673,10 +865,12 @@ export type ImmunizerCredentialSelectCreateManyAndReturn<ExtArgs extends runtime
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["immunizerCredential"]>
 
 export type ImmunizerCredentialSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   userId?: boolean
   credentialType?: boolean
   title?: boolean
@@ -689,10 +883,12 @@ export type ImmunizerCredentialSelectUpdateManyAndReturn<ExtArgs extends runtime
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["immunizerCredential"]>
 
 export type ImmunizerCredentialSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   userId?: boolean
   credentialType?: boolean
   title?: boolean
@@ -706,24 +902,29 @@ export type ImmunizerCredentialSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ImmunizerCredentialOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "credentialType" | "title" | "licenseNumber" | "issuedBy" | "issuedAt" | "expiresAt" | "verified" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["immunizerCredential"]>
+export type ImmunizerCredentialOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "userId" | "credentialType" | "title" | "licenseNumber" | "issuedBy" | "issuedAt" | "expiresAt" | "verified" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["immunizerCredential"]>
 export type ImmunizerCredentialInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type ImmunizerCredentialIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type ImmunizerCredentialIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $ImmunizerCredentialPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ImmunizerCredential"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     userId: string
     /**
      * immunization_certificate | cpr_bls | anaphylaxis | acls | ppb_licence
@@ -1133,6 +1334,7 @@ readonly fields: ImmunizerCredentialFieldRefs;
 export interface Prisma__ImmunizerCredentialClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1163,6 +1365,7 @@ export interface Prisma__ImmunizerCredentialClient<T, Null = never, ExtArgs exte
  */
 export interface ImmunizerCredentialFieldRefs {
   readonly id: Prisma.FieldRef<"ImmunizerCredential", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"ImmunizerCredential", 'String'>
   readonly userId: Prisma.FieldRef<"ImmunizerCredential", 'String'>
   readonly credentialType: Prisma.FieldRef<"ImmunizerCredential", 'String'>
   readonly title: Prisma.FieldRef<"ImmunizerCredential", 'String'>

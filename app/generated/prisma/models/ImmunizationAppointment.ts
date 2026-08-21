@@ -26,6 +26,7 @@ export type AggregateImmunizationAppointment = {
 
 export type ImmunizationAppointmentMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   vaccineProductId: string | null
   customerId: string | null
   serviceBookingId: string | null
@@ -48,6 +49,7 @@ export type ImmunizationAppointmentMinAggregateOutputType = {
 
 export type ImmunizationAppointmentMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   vaccineProductId: string | null
   customerId: string | null
   serviceBookingId: string | null
@@ -70,6 +72,7 @@ export type ImmunizationAppointmentMaxAggregateOutputType = {
 
 export type ImmunizationAppointmentCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   vaccineProductId: number
   customerId: number
   serviceBookingId: number
@@ -94,6 +97,7 @@ export type ImmunizationAppointmentCountAggregateOutputType = {
 
 export type ImmunizationAppointmentMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   vaccineProductId?: true
   customerId?: true
   serviceBookingId?: true
@@ -116,6 +120,7 @@ export type ImmunizationAppointmentMinAggregateInputType = {
 
 export type ImmunizationAppointmentMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   vaccineProductId?: true
   customerId?: true
   serviceBookingId?: true
@@ -138,6 +143,7 @@ export type ImmunizationAppointmentMaxAggregateInputType = {
 
 export type ImmunizationAppointmentCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   vaccineProductId?: true
   customerId?: true
   serviceBookingId?: true
@@ -233,6 +239,7 @@ export type ImmunizationAppointmentGroupByArgs<ExtArgs extends runtime.Types.Ext
 
 export type ImmunizationAppointmentGroupByOutputType = {
   id: string
+  pharmacyId: string
   vaccineProductId: string
   customerId: string | null
   serviceBookingId: string | null
@@ -276,6 +283,7 @@ export type ImmunizationAppointmentWhereInput = {
   OR?: Prisma.ImmunizationAppointmentWhereInput[]
   NOT?: Prisma.ImmunizationAppointmentWhereInput | Prisma.ImmunizationAppointmentWhereInput[]
   id?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
+  pharmacyId?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
   vaccineProductId?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
   customerId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
   serviceBookingId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
@@ -301,10 +309,12 @@ export type ImmunizationAppointmentWhereInput = {
   screening?: Prisma.XOR<Prisma.PreVaccinationScreeningNullableScalarRelationFilter, Prisma.PreVaccinationScreeningWhereInput> | null
   consent?: Prisma.XOR<Prisma.VaccinationConsentNullableScalarRelationFilter, Prisma.VaccinationConsentWhereInput> | null
   record?: Prisma.XOR<Prisma.ImmunizationRecordNullableScalarRelationFilter, Prisma.ImmunizationRecordWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type ImmunizationAppointmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   vaccineProductId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   serviceBookingId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -330,6 +340,7 @@ export type ImmunizationAppointmentOrderByWithRelationInput = {
   screening?: Prisma.PreVaccinationScreeningOrderByWithRelationInput
   consent?: Prisma.VaccinationConsentOrderByWithRelationInput
   record?: Prisma.ImmunizationRecordOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type ImmunizationAppointmentWhereUniqueInput = Prisma.AtLeast<{
@@ -338,6 +349,7 @@ export type ImmunizationAppointmentWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ImmunizationAppointmentWhereInput | Prisma.ImmunizationAppointmentWhereInput[]
   OR?: Prisma.ImmunizationAppointmentWhereInput[]
   NOT?: Prisma.ImmunizationAppointmentWhereInput | Prisma.ImmunizationAppointmentWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
   vaccineProductId?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
   customerId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
   campaignId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
@@ -362,10 +374,12 @@ export type ImmunizationAppointmentWhereUniqueInput = Prisma.AtLeast<{
   screening?: Prisma.XOR<Prisma.PreVaccinationScreeningNullableScalarRelationFilter, Prisma.PreVaccinationScreeningWhereInput> | null
   consent?: Prisma.XOR<Prisma.VaccinationConsentNullableScalarRelationFilter, Prisma.VaccinationConsentWhereInput> | null
   record?: Prisma.XOR<Prisma.ImmunizationRecordNullableScalarRelationFilter, Prisma.ImmunizationRecordWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id" | "serviceBookingId">
 
 export type ImmunizationAppointmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   vaccineProductId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   serviceBookingId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -394,6 +408,7 @@ export type ImmunizationAppointmentScalarWhereWithAggregatesInput = {
   OR?: Prisma.ImmunizationAppointmentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ImmunizationAppointmentScalarWhereWithAggregatesInput | Prisma.ImmunizationAppointmentScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"ImmunizationAppointment"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"ImmunizationAppointment"> | string
   vaccineProductId?: Prisma.UuidWithAggregatesFilter<"ImmunizationAppointment"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"ImmunizationAppointment"> | string | null
   serviceBookingId?: Prisma.UuidNullableWithAggregatesFilter<"ImmunizationAppointment"> | string | null
@@ -437,10 +452,12 @@ export type ImmunizationAppointmentCreateInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -487,10 +504,12 @@ export type ImmunizationAppointmentUpdateInput = {
   screening?: Prisma.PreVaccinationScreeningUpdateOneWithoutAppointmentNestedInput
   consent?: Prisma.VaccinationConsentUpdateOneWithoutAppointmentNestedInput
   record?: Prisma.ImmunizationRecordUpdateOneWithoutAppointmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationAppointmentsNestedInput
 }
 
 export type ImmunizationAppointmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -516,6 +535,7 @@ export type ImmunizationAppointmentUncheckedUpdateInput = {
 
 export type ImmunizationAppointmentCreateManyInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -556,6 +576,7 @@ export type ImmunizationAppointmentUpdateManyMutationInput = {
 
 export type ImmunizationAppointmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -593,6 +614,7 @@ export type ImmunizationAppointmentNullableScalarRelationFilter = {
 
 export type ImmunizationAppointmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   vaccineProductId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   serviceBookingId?: Prisma.SortOrder
@@ -615,6 +637,7 @@ export type ImmunizationAppointmentCountOrderByAggregateInput = {
 
 export type ImmunizationAppointmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   vaccineProductId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   serviceBookingId?: Prisma.SortOrder
@@ -637,6 +660,7 @@ export type ImmunizationAppointmentMaxOrderByAggregateInput = {
 
 export type ImmunizationAppointmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   vaccineProductId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   serviceBookingId?: Prisma.SortOrder
@@ -660,6 +684,48 @@ export type ImmunizationAppointmentMinOrderByAggregateInput = {
 export type ImmunizationAppointmentScalarRelationFilter = {
   is?: Prisma.ImmunizationAppointmentWhereInput
   isNot?: Prisma.ImmunizationAppointmentWhereInput
+}
+
+export type ImmunizationAppointmentCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput, Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput> | Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput[] | Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput | Prisma.ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.ImmunizationAppointmentCreateManyPharmacyInputEnvelope
+  connect?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+}
+
+export type ImmunizationAppointmentUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput, Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput> | Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput[] | Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput | Prisma.ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.ImmunizationAppointmentCreateManyPharmacyInputEnvelope
+  connect?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+}
+
+export type ImmunizationAppointmentUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput, Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput> | Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput[] | Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput | Prisma.ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.ImmunizationAppointmentUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.ImmunizationAppointmentUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.ImmunizationAppointmentCreateManyPharmacyInputEnvelope
+  set?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+  disconnect?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+  delete?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+  connect?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+  update?: Prisma.ImmunizationAppointmentUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.ImmunizationAppointmentUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.ImmunizationAppointmentUpdateManyWithWhereWithoutPharmacyInput | Prisma.ImmunizationAppointmentUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.ImmunizationAppointmentScalarWhereInput | Prisma.ImmunizationAppointmentScalarWhereInput[]
+}
+
+export type ImmunizationAppointmentUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput, Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput> | Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput[] | Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput | Prisma.ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.ImmunizationAppointmentUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.ImmunizationAppointmentUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.ImmunizationAppointmentCreateManyPharmacyInputEnvelope
+  set?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+  disconnect?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+  delete?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+  connect?: Prisma.ImmunizationAppointmentWhereUniqueInput | Prisma.ImmunizationAppointmentWhereUniqueInput[]
+  update?: Prisma.ImmunizationAppointmentUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.ImmunizationAppointmentUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.ImmunizationAppointmentUpdateManyWithWhereWithoutPharmacyInput | Prisma.ImmunizationAppointmentUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.ImmunizationAppointmentScalarWhereInput | Prisma.ImmunizationAppointmentScalarWhereInput[]
 }
 
 export type ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput = {
@@ -864,6 +930,108 @@ export type ImmunizationAppointmentUpdateOneWithoutRecordNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ImmunizationAppointmentUpdateToOneWithWhereWithoutRecordInput, Prisma.ImmunizationAppointmentUpdateWithoutRecordInput>, Prisma.ImmunizationAppointmentUncheckedUpdateWithoutRecordInput>
 }
 
+export type ImmunizationAppointmentCreateWithoutPharmacyInput = {
+  id?: string
+  campaignId?: string | null
+  patientName: string
+  patientPhone: string
+  patientEmail?: string | null
+  patientDob?: Date | string | null
+  patientGender?: string | null
+  preferredDate?: string | null
+  preferredTime?: string | null
+  status?: string
+  source?: string
+  notes?: string | null
+  staffNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  vaccine: Prisma.VaccineProductCreateNestedOneWithoutAppointmentsInput
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutImmunizationAppointmentsInput
+  booking?: Prisma.ServiceBookingCreateNestedOneWithoutImmunizationAppointmentInput
+  assignedTo?: Prisma.UserCreateNestedOneWithoutImmunizationAssignedInput
+  screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
+  consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
+  record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
+}
+
+export type ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  vaccineProductId: string
+  customerId?: string | null
+  serviceBookingId?: string | null
+  campaignId?: string | null
+  patientName: string
+  patientPhone: string
+  patientEmail?: string | null
+  patientDob?: Date | string | null
+  patientGender?: string | null
+  preferredDate?: string | null
+  preferredTime?: string | null
+  status?: string
+  source?: string
+  notes?: string | null
+  staffNotes?: string | null
+  assignedToId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  screening?: Prisma.PreVaccinationScreeningUncheckedCreateNestedOneWithoutAppointmentInput
+  consent?: Prisma.VaccinationConsentUncheckedCreateNestedOneWithoutAppointmentInput
+  record?: Prisma.ImmunizationRecordUncheckedCreateNestedOneWithoutAppointmentInput
+}
+
+export type ImmunizationAppointmentCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.ImmunizationAppointmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput, Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput>
+}
+
+export type ImmunizationAppointmentCreateManyPharmacyInputEnvelope = {
+  data: Prisma.ImmunizationAppointmentCreateManyPharmacyInput | Prisma.ImmunizationAppointmentCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type ImmunizationAppointmentUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.ImmunizationAppointmentWhereUniqueInput
+  update: Prisma.XOR<Prisma.ImmunizationAppointmentUpdateWithoutPharmacyInput, Prisma.ImmunizationAppointmentUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.ImmunizationAppointmentCreateWithoutPharmacyInput, Prisma.ImmunizationAppointmentUncheckedCreateWithoutPharmacyInput>
+}
+
+export type ImmunizationAppointmentUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.ImmunizationAppointmentWhereUniqueInput
+  data: Prisma.XOR<Prisma.ImmunizationAppointmentUpdateWithoutPharmacyInput, Prisma.ImmunizationAppointmentUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type ImmunizationAppointmentUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.ImmunizationAppointmentScalarWhereInput
+  data: Prisma.XOR<Prisma.ImmunizationAppointmentUpdateManyMutationInput, Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type ImmunizationAppointmentScalarWhereInput = {
+  AND?: Prisma.ImmunizationAppointmentScalarWhereInput | Prisma.ImmunizationAppointmentScalarWhereInput[]
+  OR?: Prisma.ImmunizationAppointmentScalarWhereInput[]
+  NOT?: Prisma.ImmunizationAppointmentScalarWhereInput | Prisma.ImmunizationAppointmentScalarWhereInput[]
+  id?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
+  pharmacyId?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
+  vaccineProductId?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
+  customerId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
+  serviceBookingId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
+  campaignId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
+  patientName?: Prisma.StringFilter<"ImmunizationAppointment"> | string
+  patientPhone?: Prisma.StringFilter<"ImmunizationAppointment"> | string
+  patientEmail?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
+  patientDob?: Prisma.DateTimeNullableFilter<"ImmunizationAppointment"> | Date | string | null
+  patientGender?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
+  preferredDate?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
+  preferredTime?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
+  status?: Prisma.StringFilter<"ImmunizationAppointment"> | string
+  source?: Prisma.StringFilter<"ImmunizationAppointment"> | string
+  notes?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
+  staffNotes?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
+  assignedToId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"ImmunizationAppointment"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"ImmunizationAppointment"> | Date | string
+}
+
 export type ImmunizationAppointmentCreateWithoutAssignedToInput = {
   id?: string
   campaignId?: string | null
@@ -886,10 +1054,12 @@ export type ImmunizationAppointmentCreateWithoutAssignedToInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutAssignedToInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -938,31 +1108,6 @@ export type ImmunizationAppointmentUpdateManyWithWhereWithoutAssignedToInput = {
   data: Prisma.XOR<Prisma.ImmunizationAppointmentUpdateManyMutationInput, Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToInput>
 }
 
-export type ImmunizationAppointmentScalarWhereInput = {
-  AND?: Prisma.ImmunizationAppointmentScalarWhereInput | Prisma.ImmunizationAppointmentScalarWhereInput[]
-  OR?: Prisma.ImmunizationAppointmentScalarWhereInput[]
-  NOT?: Prisma.ImmunizationAppointmentScalarWhereInput | Prisma.ImmunizationAppointmentScalarWhereInput[]
-  id?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
-  vaccineProductId?: Prisma.UuidFilter<"ImmunizationAppointment"> | string
-  customerId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
-  serviceBookingId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
-  campaignId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
-  patientName?: Prisma.StringFilter<"ImmunizationAppointment"> | string
-  patientPhone?: Prisma.StringFilter<"ImmunizationAppointment"> | string
-  patientEmail?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
-  patientDob?: Prisma.DateTimeNullableFilter<"ImmunizationAppointment"> | Date | string | null
-  patientGender?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
-  preferredDate?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
-  preferredTime?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
-  status?: Prisma.StringFilter<"ImmunizationAppointment"> | string
-  source?: Prisma.StringFilter<"ImmunizationAppointment"> | string
-  notes?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
-  staffNotes?: Prisma.StringNullableFilter<"ImmunizationAppointment"> | string | null
-  assignedToId?: Prisma.UuidNullableFilter<"ImmunizationAppointment"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"ImmunizationAppointment"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"ImmunizationAppointment"> | Date | string
-}
-
 export type ImmunizationAppointmentCreateWithoutCustomerInput = {
   id?: string
   campaignId?: string | null
@@ -985,10 +1130,12 @@ export type ImmunizationAppointmentCreateWithoutCustomerInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   serviceBookingId?: string | null
   campaignId?: string | null
@@ -1059,10 +1206,12 @@ export type ImmunizationAppointmentCreateWithoutBookingInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutBookingInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   customerId?: string | null
   campaignId?: string | null
@@ -1123,10 +1272,12 @@ export type ImmunizationAppointmentUpdateWithoutBookingInput = {
   screening?: Prisma.PreVaccinationScreeningUpdateOneWithoutAppointmentNestedInput
   consent?: Prisma.VaccinationConsentUpdateOneWithoutAppointmentNestedInput
   record?: Prisma.ImmunizationRecordUpdateOneWithoutAppointmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationAppointmentsNestedInput
 }
 
 export type ImmunizationAppointmentUncheckedUpdateWithoutBookingInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1171,10 +1322,12 @@ export type ImmunizationAppointmentCreateWithoutVaccineInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutVaccineInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   serviceBookingId?: string | null
   campaignId?: string | null
@@ -1245,10 +1398,12 @@ export type ImmunizationAppointmentCreateWithoutScreeningInput = {
   assignedTo?: Prisma.UserCreateNestedOneWithoutImmunizationAssignedInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutScreeningInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1309,10 +1464,12 @@ export type ImmunizationAppointmentUpdateWithoutScreeningInput = {
   assignedTo?: Prisma.UserUpdateOneWithoutImmunizationAssignedNestedInput
   consent?: Prisma.VaccinationConsentUpdateOneWithoutAppointmentNestedInput
   record?: Prisma.ImmunizationRecordUpdateOneWithoutAppointmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationAppointmentsNestedInput
 }
 
 export type ImmunizationAppointmentUncheckedUpdateWithoutScreeningInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1357,10 +1514,12 @@ export type ImmunizationAppointmentCreateWithoutConsentInput = {
   assignedTo?: Prisma.UserCreateNestedOneWithoutImmunizationAssignedInput
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutConsentInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1421,10 +1580,12 @@ export type ImmunizationAppointmentUpdateWithoutConsentInput = {
   assignedTo?: Prisma.UserUpdateOneWithoutImmunizationAssignedNestedInput
   screening?: Prisma.PreVaccinationScreeningUpdateOneWithoutAppointmentNestedInput
   record?: Prisma.ImmunizationRecordUpdateOneWithoutAppointmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationAppointmentsNestedInput
 }
 
 export type ImmunizationAppointmentUncheckedUpdateWithoutConsentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1469,10 +1630,12 @@ export type ImmunizationAppointmentCreateWithoutRecordInput = {
   assignedTo?: Prisma.UserCreateNestedOneWithoutImmunizationAssignedInput
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutRecordInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1533,10 +1696,12 @@ export type ImmunizationAppointmentUpdateWithoutRecordInput = {
   assignedTo?: Prisma.UserUpdateOneWithoutImmunizationAssignedNestedInput
   screening?: Prisma.PreVaccinationScreeningUpdateOneWithoutAppointmentNestedInput
   consent?: Prisma.VaccinationConsentUpdateOneWithoutAppointmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationAppointmentsNestedInput
 }
 
 export type ImmunizationAppointmentUncheckedUpdateWithoutRecordInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1559,8 +1724,103 @@ export type ImmunizationAppointmentUncheckedUpdateWithoutRecordInput = {
   consent?: Prisma.VaccinationConsentUncheckedUpdateOneWithoutAppointmentNestedInput
 }
 
+export type ImmunizationAppointmentCreateManyPharmacyInput = {
+  id?: string
+  vaccineProductId: string
+  customerId?: string | null
+  serviceBookingId?: string | null
+  campaignId?: string | null
+  patientName: string
+  patientPhone: string
+  patientEmail?: string | null
+  patientDob?: Date | string | null
+  patientGender?: string | null
+  preferredDate?: string | null
+  preferredTime?: string | null
+  status?: string
+  source?: string
+  notes?: string | null
+  staffNotes?: string | null
+  assignedToId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ImmunizationAppointmentUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientDob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  vaccine?: Prisma.VaccineProductUpdateOneRequiredWithoutAppointmentsNestedInput
+  customer?: Prisma.CustomerProfileUpdateOneWithoutImmunizationAppointmentsNestedInput
+  booking?: Prisma.ServiceBookingUpdateOneWithoutImmunizationAppointmentNestedInput
+  assignedTo?: Prisma.UserUpdateOneWithoutImmunizationAssignedNestedInput
+  screening?: Prisma.PreVaccinationScreeningUpdateOneWithoutAppointmentNestedInput
+  consent?: Prisma.VaccinationConsentUpdateOneWithoutAppointmentNestedInput
+  record?: Prisma.ImmunizationRecordUpdateOneWithoutAppointmentNestedInput
+}
+
+export type ImmunizationAppointmentUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientDob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  screening?: Prisma.PreVaccinationScreeningUncheckedUpdateOneWithoutAppointmentNestedInput
+  consent?: Prisma.VaccinationConsentUncheckedUpdateOneWithoutAppointmentNestedInput
+  record?: Prisma.ImmunizationRecordUncheckedUpdateOneWithoutAppointmentNestedInput
+}
+
+export type ImmunizationAppointmentUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientDob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ImmunizationAppointmentCreateManyAssignedToInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1602,10 +1862,12 @@ export type ImmunizationAppointmentUpdateWithoutAssignedToInput = {
   screening?: Prisma.PreVaccinationScreeningUpdateOneWithoutAppointmentNestedInput
   consent?: Prisma.VaccinationConsentUpdateOneWithoutAppointmentNestedInput
   record?: Prisma.ImmunizationRecordUpdateOneWithoutAppointmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationAppointmentsNestedInput
 }
 
 export type ImmunizationAppointmentUncheckedUpdateWithoutAssignedToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1630,6 +1892,7 @@ export type ImmunizationAppointmentUncheckedUpdateWithoutAssignedToInput = {
 
 export type ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1651,6 +1914,7 @@ export type ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToInput = {
 
 export type ImmunizationAppointmentCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   vaccineProductId: string
   serviceBookingId?: string | null
   campaignId?: string | null
@@ -1692,10 +1956,12 @@ export type ImmunizationAppointmentUpdateWithoutCustomerInput = {
   screening?: Prisma.PreVaccinationScreeningUpdateOneWithoutAppointmentNestedInput
   consent?: Prisma.VaccinationConsentUpdateOneWithoutAppointmentNestedInput
   record?: Prisma.ImmunizationRecordUpdateOneWithoutAppointmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationAppointmentsNestedInput
 }
 
 export type ImmunizationAppointmentUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1720,6 +1986,7 @@ export type ImmunizationAppointmentUncheckedUpdateWithoutCustomerInput = {
 
 export type ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   vaccineProductId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1741,6 +2008,7 @@ export type ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerInput = {
 
 export type ImmunizationAppointmentCreateManyVaccineInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   serviceBookingId?: string | null
   campaignId?: string | null
@@ -1782,10 +2050,12 @@ export type ImmunizationAppointmentUpdateWithoutVaccineInput = {
   screening?: Prisma.PreVaccinationScreeningUpdateOneWithoutAppointmentNestedInput
   consent?: Prisma.VaccinationConsentUpdateOneWithoutAppointmentNestedInput
   record?: Prisma.ImmunizationRecordUpdateOneWithoutAppointmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationAppointmentsNestedInput
 }
 
 export type ImmunizationAppointmentUncheckedUpdateWithoutVaccineInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1810,6 +2080,7 @@ export type ImmunizationAppointmentUncheckedUpdateWithoutVaccineInput = {
 
 export type ImmunizationAppointmentUncheckedUpdateManyWithoutVaccineInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1833,6 +2104,7 @@ export type ImmunizationAppointmentUncheckedUpdateManyWithoutVaccineInput = {
 
 export type ImmunizationAppointmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   vaccineProductId?: boolean
   customerId?: boolean
   serviceBookingId?: boolean
@@ -1858,10 +2130,12 @@ export type ImmunizationAppointmentSelect<ExtArgs extends runtime.Types.Extensio
   screening?: boolean | Prisma.ImmunizationAppointment$screeningArgs<ExtArgs>
   consent?: boolean | Prisma.ImmunizationAppointment$consentArgs<ExtArgs>
   record?: boolean | Prisma.ImmunizationAppointment$recordArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["immunizationAppointment"]>
 
 export type ImmunizationAppointmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   vaccineProductId?: boolean
   customerId?: boolean
   serviceBookingId?: boolean
@@ -1884,10 +2158,12 @@ export type ImmunizationAppointmentSelectCreateManyAndReturn<ExtArgs extends run
   customer?: boolean | Prisma.ImmunizationAppointment$customerArgs<ExtArgs>
   booking?: boolean | Prisma.ImmunizationAppointment$bookingArgs<ExtArgs>
   assignedTo?: boolean | Prisma.ImmunizationAppointment$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["immunizationAppointment"]>
 
 export type ImmunizationAppointmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   vaccineProductId?: boolean
   customerId?: boolean
   serviceBookingId?: boolean
@@ -1910,10 +2186,12 @@ export type ImmunizationAppointmentSelectUpdateManyAndReturn<ExtArgs extends run
   customer?: boolean | Prisma.ImmunizationAppointment$customerArgs<ExtArgs>
   booking?: boolean | Prisma.ImmunizationAppointment$bookingArgs<ExtArgs>
   assignedTo?: boolean | Prisma.ImmunizationAppointment$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["immunizationAppointment"]>
 
 export type ImmunizationAppointmentSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   vaccineProductId?: boolean
   customerId?: boolean
   serviceBookingId?: boolean
@@ -1934,7 +2212,7 @@ export type ImmunizationAppointmentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ImmunizationAppointmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vaccineProductId" | "customerId" | "serviceBookingId" | "campaignId" | "patientName" | "patientPhone" | "patientEmail" | "patientDob" | "patientGender" | "preferredDate" | "preferredTime" | "status" | "source" | "notes" | "staffNotes" | "assignedToId" | "createdAt" | "updatedAt", ExtArgs["result"]["immunizationAppointment"]>
+export type ImmunizationAppointmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "vaccineProductId" | "customerId" | "serviceBookingId" | "campaignId" | "patientName" | "patientPhone" | "patientEmail" | "patientDob" | "patientGender" | "preferredDate" | "preferredTime" | "status" | "source" | "notes" | "staffNotes" | "assignedToId" | "createdAt" | "updatedAt", ExtArgs["result"]["immunizationAppointment"]>
 export type ImmunizationAppointmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   vaccine?: boolean | Prisma.VaccineProductDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ImmunizationAppointment$customerArgs<ExtArgs>
@@ -1943,18 +2221,21 @@ export type ImmunizationAppointmentInclude<ExtArgs extends runtime.Types.Extensi
   screening?: boolean | Prisma.ImmunizationAppointment$screeningArgs<ExtArgs>
   consent?: boolean | Prisma.ImmunizationAppointment$consentArgs<ExtArgs>
   record?: boolean | Prisma.ImmunizationAppointment$recordArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type ImmunizationAppointmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   vaccine?: boolean | Prisma.VaccineProductDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ImmunizationAppointment$customerArgs<ExtArgs>
   booking?: boolean | Prisma.ImmunizationAppointment$bookingArgs<ExtArgs>
   assignedTo?: boolean | Prisma.ImmunizationAppointment$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type ImmunizationAppointmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   vaccine?: boolean | Prisma.VaccineProductDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ImmunizationAppointment$customerArgs<ExtArgs>
   booking?: boolean | Prisma.ImmunizationAppointment$bookingArgs<ExtArgs>
   assignedTo?: boolean | Prisma.ImmunizationAppointment$assignedToArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $ImmunizationAppointmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1967,9 +2248,11 @@ export type $ImmunizationAppointmentPayload<ExtArgs extends runtime.Types.Extens
     screening: Prisma.$PreVaccinationScreeningPayload<ExtArgs> | null
     consent: Prisma.$VaccinationConsentPayload<ExtArgs> | null
     record: Prisma.$ImmunizationRecordPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     vaccineProductId: string
     customerId: string | null
     serviceBookingId: string | null
@@ -2395,6 +2678,7 @@ export interface Prisma__ImmunizationAppointmentClient<T, Null = never, ExtArgs 
   screening<T extends Prisma.ImmunizationAppointment$screeningArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ImmunizationAppointment$screeningArgs<ExtArgs>>): Prisma.Prisma__PreVaccinationScreeningClient<runtime.Types.Result.GetResult<Prisma.$PreVaccinationScreeningPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   consent<T extends Prisma.ImmunizationAppointment$consentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ImmunizationAppointment$consentArgs<ExtArgs>>): Prisma.Prisma__VaccinationConsentClient<runtime.Types.Result.GetResult<Prisma.$VaccinationConsentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   record<T extends Prisma.ImmunizationAppointment$recordArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ImmunizationAppointment$recordArgs<ExtArgs>>): Prisma.Prisma__ImmunizationRecordClient<runtime.Types.Result.GetResult<Prisma.$ImmunizationRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2425,6 +2709,7 @@ export interface Prisma__ImmunizationAppointmentClient<T, Null = never, ExtArgs 
  */
 export interface ImmunizationAppointmentFieldRefs {
   readonly id: Prisma.FieldRef<"ImmunizationAppointment", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"ImmunizationAppointment", 'String'>
   readonly vaccineProductId: Prisma.FieldRef<"ImmunizationAppointment", 'String'>
   readonly customerId: Prisma.FieldRef<"ImmunizationAppointment", 'String'>
   readonly serviceBookingId: Prisma.FieldRef<"ImmunizationAppointment", 'String'>

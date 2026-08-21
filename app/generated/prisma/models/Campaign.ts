@@ -26,6 +26,7 @@ export type AggregateCampaign = {
 
 export type CampaignMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   name: string | null
   description: string | null
   channel: $Enums.CampaignChannel | null
@@ -42,6 +43,7 @@ export type CampaignMinAggregateOutputType = {
 
 export type CampaignMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   name: string | null
   description: string | null
   channel: $Enums.CampaignChannel | null
@@ -58,6 +60,7 @@ export type CampaignMaxAggregateOutputType = {
 
 export type CampaignCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   name: number
   description: number
   channel: number
@@ -77,6 +80,7 @@ export type CampaignCountAggregateOutputType = {
 
 export type CampaignMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   description?: true
   channel?: true
@@ -93,6 +97,7 @@ export type CampaignMinAggregateInputType = {
 
 export type CampaignMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   description?: true
   channel?: true
@@ -109,6 +114,7 @@ export type CampaignMaxAggregateInputType = {
 
 export type CampaignCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   description?: true
   channel?: true
@@ -199,6 +205,7 @@ export type CampaignGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type CampaignGroupByOutputType = {
   id: string
+  pharmacyId: string
   name: string
   description: string | null
   channel: $Enums.CampaignChannel
@@ -237,6 +244,7 @@ export type CampaignWhereInput = {
   OR?: Prisma.CampaignWhereInput[]
   NOT?: Prisma.CampaignWhereInput | Prisma.CampaignWhereInput[]
   id?: Prisma.UuidFilter<"Campaign"> | string
+  pharmacyId?: Prisma.UuidFilter<"Campaign"> | string
   name?: Prisma.StringFilter<"Campaign"> | string
   description?: Prisma.StringNullableFilter<"Campaign"> | string | null
   channel?: Prisma.EnumCampaignChannelFilter<"Campaign"> | $Enums.CampaignChannel
@@ -253,10 +261,12 @@ export type CampaignWhereInput = {
   segment?: Prisma.XOR<Prisma.SegmentNullableScalarRelationFilter, Prisma.SegmentWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   publicHealthCampaign?: Prisma.XOR<Prisma.PublicHealthCampaignNullableScalarRelationFilter, Prisma.PublicHealthCampaignWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type CampaignOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -273,6 +283,7 @@ export type CampaignOrderByWithRelationInput = {
   segment?: Prisma.SegmentOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type CampaignWhereUniqueInput = Prisma.AtLeast<{
@@ -280,6 +291,7 @@ export type CampaignWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CampaignWhereInput | Prisma.CampaignWhereInput[]
   OR?: Prisma.CampaignWhereInput[]
   NOT?: Prisma.CampaignWhereInput | Prisma.CampaignWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"Campaign"> | string
   name?: Prisma.StringFilter<"Campaign"> | string
   description?: Prisma.StringNullableFilter<"Campaign"> | string | null
   channel?: Prisma.EnumCampaignChannelFilter<"Campaign"> | $Enums.CampaignChannel
@@ -296,10 +308,12 @@ export type CampaignWhereUniqueInput = Prisma.AtLeast<{
   segment?: Prisma.XOR<Prisma.SegmentNullableScalarRelationFilter, Prisma.SegmentWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   publicHealthCampaign?: Prisma.XOR<Prisma.PublicHealthCampaignNullableScalarRelationFilter, Prisma.PublicHealthCampaignWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type CampaignOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -323,6 +337,7 @@ export type CampaignScalarWhereWithAggregatesInput = {
   OR?: Prisma.CampaignScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CampaignScalarWhereWithAggregatesInput | Prisma.CampaignScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"Campaign"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"Campaign"> | string
   name?: Prisma.StringWithAggregatesFilter<"Campaign"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Campaign"> | string | null
   channel?: Prisma.EnumCampaignChannelWithAggregatesFilter<"Campaign"> | $Enums.CampaignChannel
@@ -354,10 +369,12 @@ export type CampaignCreateInput = {
   segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
 }
 
 export type CampaignUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -390,10 +407,12 @@ export type CampaignUpdateInput = {
   segment?: Prisma.SegmentUpdateOneWithoutCampaignsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCampaignsCreatedNestedInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignUpdateOneWithoutCrmCampaignNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCampaignsNestedInput
 }
 
 export type CampaignUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
@@ -412,6 +431,7 @@ export type CampaignUncheckedUpdateInput = {
 
 export type CampaignCreateManyInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -444,6 +464,7 @@ export type CampaignUpdateManyMutationInput = {
 
 export type CampaignUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
@@ -471,6 +492,7 @@ export type CampaignOrderByRelationAggregateInput = {
 
 export type CampaignCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -488,6 +510,7 @@ export type CampaignCountOrderByAggregateInput = {
 
 export type CampaignMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -504,6 +527,7 @@ export type CampaignMaxOrderByAggregateInput = {
 
 export type CampaignMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   channel?: Prisma.SortOrder
@@ -521,6 +545,48 @@ export type CampaignMinOrderByAggregateInput = {
 export type CampaignNullableScalarRelationFilter = {
   is?: Prisma.CampaignWhereInput | null
   isNot?: Prisma.CampaignWhereInput | null
+}
+
+export type CampaignCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.CampaignCreateWithoutPharmacyInput, Prisma.CampaignUncheckedCreateWithoutPharmacyInput> | Prisma.CampaignCreateWithoutPharmacyInput[] | Prisma.CampaignUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutPharmacyInput | Prisma.CampaignCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.CampaignCreateManyPharmacyInputEnvelope
+  connect?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+}
+
+export type CampaignUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.CampaignCreateWithoutPharmacyInput, Prisma.CampaignUncheckedCreateWithoutPharmacyInput> | Prisma.CampaignCreateWithoutPharmacyInput[] | Prisma.CampaignUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutPharmacyInput | Prisma.CampaignCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.CampaignCreateManyPharmacyInputEnvelope
+  connect?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+}
+
+export type CampaignUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.CampaignCreateWithoutPharmacyInput, Prisma.CampaignUncheckedCreateWithoutPharmacyInput> | Prisma.CampaignCreateWithoutPharmacyInput[] | Prisma.CampaignUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutPharmacyInput | Prisma.CampaignCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.CampaignUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.CampaignUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.CampaignCreateManyPharmacyInputEnvelope
+  set?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+  disconnect?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+  delete?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+  connect?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+  update?: Prisma.CampaignUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.CampaignUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.CampaignUpdateManyWithWhereWithoutPharmacyInput | Prisma.CampaignUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.CampaignScalarWhereInput | Prisma.CampaignScalarWhereInput[]
+}
+
+export type CampaignUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.CampaignCreateWithoutPharmacyInput, Prisma.CampaignUncheckedCreateWithoutPharmacyInput> | Prisma.CampaignCreateWithoutPharmacyInput[] | Prisma.CampaignUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutPharmacyInput | Prisma.CampaignCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.CampaignUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.CampaignUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.CampaignCreateManyPharmacyInputEnvelope
+  set?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+  disconnect?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+  delete?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+  connect?: Prisma.CampaignWhereUniqueInput | Prisma.CampaignWhereUniqueInput[]
+  update?: Prisma.CampaignUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.CampaignUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.CampaignUpdateManyWithWhereWithoutPharmacyInput | Prisma.CampaignUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.CampaignScalarWhereInput | Prisma.CampaignScalarWhereInput[]
 }
 
 export type CampaignCreateNestedManyWithoutCreatedByInput = {
@@ -631,6 +697,89 @@ export type CampaignUpdateOneWithoutPublicHealthCampaignNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CampaignUpdateToOneWithWhereWithoutPublicHealthCampaignInput, Prisma.CampaignUpdateWithoutPublicHealthCampaignInput>, Prisma.CampaignUncheckedUpdateWithoutPublicHealthCampaignInput>
 }
 
+export type CampaignCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  channel: $Enums.CampaignChannel
+  subject?: string | null
+  body: string
+  status?: $Enums.CampaignStatus
+  scheduledFor?: Date | string | null
+  sentAt?: Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
+}
+
+export type CampaignUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  channel: $Enums.CampaignChannel
+  segmentId?: string | null
+  subject?: string | null
+  body: string
+  status?: $Enums.CampaignStatus
+  scheduledFor?: Date | string | null
+  sentAt?: Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUncheckedCreateNestedOneWithoutCrmCampaignInput
+}
+
+export type CampaignCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.CampaignWhereUniqueInput
+  create: Prisma.XOR<Prisma.CampaignCreateWithoutPharmacyInput, Prisma.CampaignUncheckedCreateWithoutPharmacyInput>
+}
+
+export type CampaignCreateManyPharmacyInputEnvelope = {
+  data: Prisma.CampaignCreateManyPharmacyInput | Prisma.CampaignCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type CampaignUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.CampaignWhereUniqueInput
+  update: Prisma.XOR<Prisma.CampaignUpdateWithoutPharmacyInput, Prisma.CampaignUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.CampaignCreateWithoutPharmacyInput, Prisma.CampaignUncheckedCreateWithoutPharmacyInput>
+}
+
+export type CampaignUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.CampaignWhereUniqueInput
+  data: Prisma.XOR<Prisma.CampaignUpdateWithoutPharmacyInput, Prisma.CampaignUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type CampaignUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.CampaignScalarWhereInput
+  data: Prisma.XOR<Prisma.CampaignUpdateManyMutationInput, Prisma.CampaignUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type CampaignScalarWhereInput = {
+  AND?: Prisma.CampaignScalarWhereInput | Prisma.CampaignScalarWhereInput[]
+  OR?: Prisma.CampaignScalarWhereInput[]
+  NOT?: Prisma.CampaignScalarWhereInput | Prisma.CampaignScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Campaign"> | string
+  pharmacyId?: Prisma.UuidFilter<"Campaign"> | string
+  name?: Prisma.StringFilter<"Campaign"> | string
+  description?: Prisma.StringNullableFilter<"Campaign"> | string | null
+  channel?: Prisma.EnumCampaignChannelFilter<"Campaign"> | $Enums.CampaignChannel
+  segmentId?: Prisma.UuidNullableFilter<"Campaign"> | string | null
+  subject?: Prisma.StringNullableFilter<"Campaign"> | string | null
+  body?: Prisma.StringFilter<"Campaign"> | string
+  status?: Prisma.EnumCampaignStatusFilter<"Campaign"> | $Enums.CampaignStatus
+  scheduledFor?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
+  stats?: Prisma.JsonFilter<"Campaign">
+  createdById?: Prisma.UuidNullableFilter<"Campaign"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
+}
+
 export type CampaignCreateWithoutCreatedByInput = {
   id?: string
   name: string
@@ -646,10 +795,12 @@ export type CampaignCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
 }
 
 export type CampaignUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -691,26 +842,6 @@ export type CampaignUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.CampaignUpdateManyMutationInput, Prisma.CampaignUncheckedUpdateManyWithoutCreatedByInput>
 }
 
-export type CampaignScalarWhereInput = {
-  AND?: Prisma.CampaignScalarWhereInput | Prisma.CampaignScalarWhereInput[]
-  OR?: Prisma.CampaignScalarWhereInput[]
-  NOT?: Prisma.CampaignScalarWhereInput | Prisma.CampaignScalarWhereInput[]
-  id?: Prisma.UuidFilter<"Campaign"> | string
-  name?: Prisma.StringFilter<"Campaign"> | string
-  description?: Prisma.StringNullableFilter<"Campaign"> | string | null
-  channel?: Prisma.EnumCampaignChannelFilter<"Campaign"> | $Enums.CampaignChannel
-  segmentId?: Prisma.UuidNullableFilter<"Campaign"> | string | null
-  subject?: Prisma.StringNullableFilter<"Campaign"> | string | null
-  body?: Prisma.StringFilter<"Campaign"> | string
-  status?: Prisma.EnumCampaignStatusFilter<"Campaign"> | $Enums.CampaignStatus
-  scheduledFor?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
-  sentAt?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
-  stats?: Prisma.JsonFilter<"Campaign">
-  createdById?: Prisma.UuidNullableFilter<"Campaign"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
-}
-
 export type CampaignCreateWithoutSegmentInput = {
   id?: string
   name: string
@@ -726,10 +857,12 @@ export type CampaignCreateWithoutSegmentInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
 }
 
 export type CampaignUncheckedCreateWithoutSegmentInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -786,10 +919,12 @@ export type CampaignCreateWithoutPublicHealthCampaignInput = {
   updatedAt?: Date | string
   segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
 }
 
 export type CampaignUncheckedCreateWithoutPublicHealthCampaignInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -836,9 +971,81 @@ export type CampaignUpdateWithoutPublicHealthCampaignInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   segment?: Prisma.SegmentUpdateOneWithoutCampaignsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCampaignsCreatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCampaignsNestedInput
 }
 
 export type CampaignUncheckedUpdateWithoutPublicHealthCampaignInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
+  segmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  scheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CampaignCreateManyPharmacyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  channel: $Enums.CampaignChannel
+  segmentId?: string | null
+  subject?: string | null
+  body: string
+  status?: $Enums.CampaignStatus
+  scheduledFor?: Date | string | null
+  sentAt?: Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CampaignUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  scheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  segment?: Prisma.SegmentUpdateOneWithoutCampaignsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCampaignsCreatedNestedInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUpdateOneWithoutCrmCampaignNestedInput
+}
+
+export type CampaignUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
+  segmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  scheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUncheckedUpdateOneWithoutCrmCampaignNestedInput
+}
+
+export type CampaignUncheckedUpdateManyWithoutPharmacyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -857,6 +1064,7 @@ export type CampaignUncheckedUpdateWithoutPublicHealthCampaignInput = {
 
 export type CampaignCreateManyCreatedByInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -886,10 +1094,12 @@ export type CampaignUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   segment?: Prisma.SegmentUpdateOneWithoutCampaignsNestedInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignUpdateOneWithoutCrmCampaignNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCampaignsNestedInput
 }
 
 export type CampaignUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
@@ -907,6 +1117,7 @@ export type CampaignUncheckedUpdateWithoutCreatedByInput = {
 
 export type CampaignUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
@@ -923,6 +1134,7 @@ export type CampaignUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type CampaignCreateManySegmentInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -952,10 +1164,12 @@ export type CampaignUpdateWithoutSegmentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutCampaignsCreatedNestedInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignUpdateOneWithoutCrmCampaignNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCampaignsNestedInput
 }
 
 export type CampaignUncheckedUpdateWithoutSegmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
@@ -973,6 +1187,7 @@ export type CampaignUncheckedUpdateWithoutSegmentInput = {
 
 export type CampaignUncheckedUpdateManyWithoutSegmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
@@ -991,6 +1206,7 @@ export type CampaignUncheckedUpdateManyWithoutSegmentInput = {
 
 export type CampaignSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   description?: boolean
   channel?: boolean
@@ -1007,10 +1223,12 @@ export type CampaignSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Campaign$createdByArgs<ExtArgs>
   publicHealthCampaign?: boolean | Prisma.Campaign$publicHealthCampaignArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["campaign"]>
 
 export type CampaignSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   description?: boolean
   channel?: boolean
@@ -1026,10 +1244,12 @@ export type CampaignSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   updatedAt?: boolean
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Campaign$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["campaign"]>
 
 export type CampaignSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   description?: boolean
   channel?: boolean
@@ -1045,10 +1265,12 @@ export type CampaignSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   updatedAt?: boolean
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Campaign$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["campaign"]>
 
 export type CampaignSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   description?: boolean
   channel?: boolean
@@ -1064,19 +1286,22 @@ export type CampaignSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CampaignOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "channel" | "segmentId" | "subject" | "body" | "status" | "scheduledFor" | "sentAt" | "stats" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["campaign"]>
+export type CampaignOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "name" | "description" | "channel" | "segmentId" | "subject" | "body" | "status" | "scheduledFor" | "sentAt" | "stats" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["campaign"]>
 export type CampaignInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Campaign$createdByArgs<ExtArgs>
   publicHealthCampaign?: boolean | Prisma.Campaign$publicHealthCampaignArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type CampaignIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Campaign$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type CampaignIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Campaign$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $CampaignPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1085,9 +1310,11 @@ export type $CampaignPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     segment: Prisma.$SegmentPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     publicHealthCampaign: Prisma.$PublicHealthCampaignPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     name: string
     description: string | null
     channel: $Enums.CampaignChannel
@@ -1498,6 +1725,7 @@ export interface Prisma__CampaignClient<T, Null = never, ExtArgs extends runtime
   segment<T extends Prisma.Campaign$segmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Campaign$segmentArgs<ExtArgs>>): Prisma.Prisma__SegmentClient<runtime.Types.Result.GetResult<Prisma.$SegmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.Campaign$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Campaign$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   publicHealthCampaign<T extends Prisma.Campaign$publicHealthCampaignArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Campaign$publicHealthCampaignArgs<ExtArgs>>): Prisma.Prisma__PublicHealthCampaignClient<runtime.Types.Result.GetResult<Prisma.$PublicHealthCampaignPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1528,6 +1756,7 @@ export interface Prisma__CampaignClient<T, Null = never, ExtArgs extends runtime
  */
 export interface CampaignFieldRefs {
   readonly id: Prisma.FieldRef<"Campaign", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"Campaign", 'String'>
   readonly name: Prisma.FieldRef<"Campaign", 'String'>
   readonly description: Prisma.FieldRef<"Campaign", 'String'>
   readonly channel: Prisma.FieldRef<"Campaign", 'CampaignChannel'>

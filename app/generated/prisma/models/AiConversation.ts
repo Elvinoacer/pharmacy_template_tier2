@@ -36,6 +36,7 @@ export type AiConversationSumAggregateOutputType = {
 
 export type AiConversationMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   userId: string | null
   sessionKey: string | null
@@ -50,6 +51,7 @@ export type AiConversationMinAggregateOutputType = {
 
 export type AiConversationMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   userId: string | null
   sessionKey: string | null
@@ -64,6 +66,7 @@ export type AiConversationMaxAggregateOutputType = {
 
 export type AiConversationCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   userId: number
   sessionKey: number
@@ -88,6 +91,7 @@ export type AiConversationSumAggregateInputType = {
 
 export type AiConversationMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   sessionKey?: true
@@ -102,6 +106,7 @@ export type AiConversationMinAggregateInputType = {
 
 export type AiConversationMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   sessionKey?: true
@@ -116,6 +121,7 @@ export type AiConversationMaxAggregateInputType = {
 
 export type AiConversationCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   sessionKey?: true
@@ -217,6 +223,7 @@ export type AiConversationGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type AiConversationGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string | null
   userId: string | null
   sessionKey: string | null
@@ -254,6 +261,7 @@ export type AiConversationWhereInput = {
   OR?: Prisma.AiConversationWhereInput[]
   NOT?: Prisma.AiConversationWhereInput | Prisma.AiConversationWhereInput[]
   id?: Prisma.UuidFilter<"AiConversation"> | string
+  pharmacyId?: Prisma.UuidFilter<"AiConversation"> | string
   customerId?: Prisma.UuidNullableFilter<"AiConversation"> | string | null
   userId?: Prisma.UuidNullableFilter<"AiConversation"> | string | null
   sessionKey?: Prisma.StringNullableFilter<"AiConversation"> | string | null
@@ -267,10 +275,12 @@ export type AiConversationWhereInput = {
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   messages?: Prisma.AiMessageListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type AiConversationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   sessionKey?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -284,6 +294,7 @@ export type AiConversationOrderByWithRelationInput = {
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   messages?: Prisma.AiMessageOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type AiConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -291,6 +302,7 @@ export type AiConversationWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.AiConversationWhereInput | Prisma.AiConversationWhereInput[]
   OR?: Prisma.AiConversationWhereInput[]
   NOT?: Prisma.AiConversationWhereInput | Prisma.AiConversationWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"AiConversation"> | string
   customerId?: Prisma.UuidNullableFilter<"AiConversation"> | string | null
   userId?: Prisma.UuidNullableFilter<"AiConversation"> | string | null
   sessionKey?: Prisma.StringNullableFilter<"AiConversation"> | string | null
@@ -304,10 +316,12 @@ export type AiConversationWhereUniqueInput = Prisma.AtLeast<{
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   messages?: Prisma.AiMessageListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type AiConversationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   sessionKey?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -330,6 +344,7 @@ export type AiConversationScalarWhereWithAggregatesInput = {
   OR?: Prisma.AiConversationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.AiConversationScalarWhereWithAggregatesInput | Prisma.AiConversationScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"AiConversation"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"AiConversation"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"AiConversation"> | string | null
   userId?: Prisma.UuidNullableWithAggregatesFilter<"AiConversation"> | string | null
   sessionKey?: Prisma.StringNullableWithAggregatesFilter<"AiConversation"> | string | null
@@ -355,10 +370,12 @@ export type AiConversationCreateInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutAiConversationsInput
   user?: Prisma.UserCreateNestedOneWithoutAiConversationsInput
   messages?: Prisma.AiMessageCreateNestedManyWithoutConversationInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
 }
 
 export type AiConversationUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   sessionKey?: string | null
@@ -385,10 +402,12 @@ export type AiConversationUpdateInput = {
   customer?: Prisma.CustomerProfileUpdateOneWithoutAiConversationsNestedInput
   user?: Prisma.UserUpdateOneWithoutAiConversationsNestedInput
   messages?: Prisma.AiMessageUpdateManyWithoutConversationNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutAiConversationsNestedInput
 }
 
 export type AiConversationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -404,6 +423,7 @@ export type AiConversationUncheckedUpdateInput = {
 
 export type AiConversationCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   sessionKey?: string | null
@@ -430,6 +450,7 @@ export type AiConversationUpdateManyMutationInput = {
 
 export type AiConversationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -454,6 +475,7 @@ export type AiConversationOrderByRelationAggregateInput = {
 
 export type AiConversationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   sessionKey?: Prisma.SortOrder
@@ -472,6 +494,7 @@ export type AiConversationAvgOrderByAggregateInput = {
 
 export type AiConversationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   sessionKey?: Prisma.SortOrder
@@ -486,6 +509,7 @@ export type AiConversationMaxOrderByAggregateInput = {
 
 export type AiConversationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   sessionKey?: Prisma.SortOrder
@@ -505,6 +529,48 @@ export type AiConversationSumOrderByAggregateInput = {
 export type AiConversationScalarRelationFilter = {
   is?: Prisma.AiConversationWhereInput
   isNot?: Prisma.AiConversationWhereInput
+}
+
+export type AiConversationCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.AiConversationCreateWithoutPharmacyInput, Prisma.AiConversationUncheckedCreateWithoutPharmacyInput> | Prisma.AiConversationCreateWithoutPharmacyInput[] | Prisma.AiConversationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.AiConversationCreateOrConnectWithoutPharmacyInput | Prisma.AiConversationCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.AiConversationCreateManyPharmacyInputEnvelope
+  connect?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+}
+
+export type AiConversationUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.AiConversationCreateWithoutPharmacyInput, Prisma.AiConversationUncheckedCreateWithoutPharmacyInput> | Prisma.AiConversationCreateWithoutPharmacyInput[] | Prisma.AiConversationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.AiConversationCreateOrConnectWithoutPharmacyInput | Prisma.AiConversationCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.AiConversationCreateManyPharmacyInputEnvelope
+  connect?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+}
+
+export type AiConversationUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.AiConversationCreateWithoutPharmacyInput, Prisma.AiConversationUncheckedCreateWithoutPharmacyInput> | Prisma.AiConversationCreateWithoutPharmacyInput[] | Prisma.AiConversationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.AiConversationCreateOrConnectWithoutPharmacyInput | Prisma.AiConversationCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.AiConversationUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.AiConversationUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.AiConversationCreateManyPharmacyInputEnvelope
+  set?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+  disconnect?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+  delete?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+  connect?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+  update?: Prisma.AiConversationUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.AiConversationUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.AiConversationUpdateManyWithWhereWithoutPharmacyInput | Prisma.AiConversationUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.AiConversationScalarWhereInput | Prisma.AiConversationScalarWhereInput[]
+}
+
+export type AiConversationUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.AiConversationCreateWithoutPharmacyInput, Prisma.AiConversationUncheckedCreateWithoutPharmacyInput> | Prisma.AiConversationCreateWithoutPharmacyInput[] | Prisma.AiConversationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.AiConversationCreateOrConnectWithoutPharmacyInput | Prisma.AiConversationCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.AiConversationUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.AiConversationUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.AiConversationCreateManyPharmacyInputEnvelope
+  set?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+  disconnect?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+  delete?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+  connect?: Prisma.AiConversationWhereUniqueInput | Prisma.AiConversationWhereUniqueInput[]
+  update?: Prisma.AiConversationUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.AiConversationUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.AiConversationUpdateManyWithWhereWithoutPharmacyInput | Prisma.AiConversationUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.AiConversationScalarWhereInput | Prisma.AiConversationScalarWhereInput[]
 }
 
 export type AiConversationCreateNestedManyWithoutUserInput = {
@@ -609,6 +675,80 @@ export type AiConversationUpdateOneRequiredWithoutMessagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AiConversationUpdateToOneWithWhereWithoutMessagesInput, Prisma.AiConversationUpdateWithoutMessagesInput>, Prisma.AiConversationUncheckedUpdateWithoutMessagesInput>
 }
 
+export type AiConversationCreateWithoutPharmacyInput = {
+  id?: string
+  sessionKey?: string | null
+  channel?: $Enums.AiChannel
+  escalated?: boolean
+  escalatedAt?: Date | string | null
+  messageCount?: number
+  summary?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutAiConversationsInput
+  user?: Prisma.UserCreateNestedOneWithoutAiConversationsInput
+  messages?: Prisma.AiMessageCreateNestedManyWithoutConversationInput
+}
+
+export type AiConversationUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  userId?: string | null
+  sessionKey?: string | null
+  channel?: $Enums.AiChannel
+  escalated?: boolean
+  escalatedAt?: Date | string | null
+  messageCount?: number
+  summary?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  messages?: Prisma.AiMessageUncheckedCreateNestedManyWithoutConversationInput
+}
+
+export type AiConversationCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.AiConversationWhereUniqueInput
+  create: Prisma.XOR<Prisma.AiConversationCreateWithoutPharmacyInput, Prisma.AiConversationUncheckedCreateWithoutPharmacyInput>
+}
+
+export type AiConversationCreateManyPharmacyInputEnvelope = {
+  data: Prisma.AiConversationCreateManyPharmacyInput | Prisma.AiConversationCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type AiConversationUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.AiConversationWhereUniqueInput
+  update: Prisma.XOR<Prisma.AiConversationUpdateWithoutPharmacyInput, Prisma.AiConversationUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.AiConversationCreateWithoutPharmacyInput, Prisma.AiConversationUncheckedCreateWithoutPharmacyInput>
+}
+
+export type AiConversationUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.AiConversationWhereUniqueInput
+  data: Prisma.XOR<Prisma.AiConversationUpdateWithoutPharmacyInput, Prisma.AiConversationUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type AiConversationUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.AiConversationScalarWhereInput
+  data: Prisma.XOR<Prisma.AiConversationUpdateManyMutationInput, Prisma.AiConversationUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type AiConversationScalarWhereInput = {
+  AND?: Prisma.AiConversationScalarWhereInput | Prisma.AiConversationScalarWhereInput[]
+  OR?: Prisma.AiConversationScalarWhereInput[]
+  NOT?: Prisma.AiConversationScalarWhereInput | Prisma.AiConversationScalarWhereInput[]
+  id?: Prisma.UuidFilter<"AiConversation"> | string
+  pharmacyId?: Prisma.UuidFilter<"AiConversation"> | string
+  customerId?: Prisma.UuidNullableFilter<"AiConversation"> | string | null
+  userId?: Prisma.UuidNullableFilter<"AiConversation"> | string | null
+  sessionKey?: Prisma.StringNullableFilter<"AiConversation"> | string | null
+  channel?: Prisma.EnumAiChannelFilter<"AiConversation"> | $Enums.AiChannel
+  escalated?: Prisma.BoolFilter<"AiConversation"> | boolean
+  escalatedAt?: Prisma.DateTimeNullableFilter<"AiConversation"> | Date | string | null
+  messageCount?: Prisma.IntFilter<"AiConversation"> | number
+  summary?: Prisma.StringNullableFilter<"AiConversation"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"AiConversation"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"AiConversation"> | Date | string
+}
+
 export type AiConversationCreateWithoutUserInput = {
   id?: string
   sessionKey?: string | null
@@ -621,10 +761,12 @@ export type AiConversationCreateWithoutUserInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutAiConversationsInput
   messages?: Prisma.AiMessageCreateNestedManyWithoutConversationInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
 }
 
 export type AiConversationUncheckedCreateWithoutUserInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   sessionKey?: string | null
   channel?: $Enums.AiChannel
@@ -663,23 +805,6 @@ export type AiConversationUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.AiConversationUpdateManyMutationInput, Prisma.AiConversationUncheckedUpdateManyWithoutUserInput>
 }
 
-export type AiConversationScalarWhereInput = {
-  AND?: Prisma.AiConversationScalarWhereInput | Prisma.AiConversationScalarWhereInput[]
-  OR?: Prisma.AiConversationScalarWhereInput[]
-  NOT?: Prisma.AiConversationScalarWhereInput | Prisma.AiConversationScalarWhereInput[]
-  id?: Prisma.UuidFilter<"AiConversation"> | string
-  customerId?: Prisma.UuidNullableFilter<"AiConversation"> | string | null
-  userId?: Prisma.UuidNullableFilter<"AiConversation"> | string | null
-  sessionKey?: Prisma.StringNullableFilter<"AiConversation"> | string | null
-  channel?: Prisma.EnumAiChannelFilter<"AiConversation"> | $Enums.AiChannel
-  escalated?: Prisma.BoolFilter<"AiConversation"> | boolean
-  escalatedAt?: Prisma.DateTimeNullableFilter<"AiConversation"> | Date | string | null
-  messageCount?: Prisma.IntFilter<"AiConversation"> | number
-  summary?: Prisma.StringNullableFilter<"AiConversation"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"AiConversation"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"AiConversation"> | Date | string
-}
-
 export type AiConversationCreateWithoutCustomerInput = {
   id?: string
   sessionKey?: string | null
@@ -692,10 +817,12 @@ export type AiConversationCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutAiConversationsInput
   messages?: Prisma.AiMessageCreateNestedManyWithoutConversationInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
 }
 
 export type AiConversationUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   userId?: string | null
   sessionKey?: string | null
   channel?: $Enums.AiChannel
@@ -746,10 +873,12 @@ export type AiConversationCreateWithoutMessagesInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutAiConversationsInput
   user?: Prisma.UserCreateNestedOneWithoutAiConversationsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
 }
 
 export type AiConversationUncheckedCreateWithoutMessagesInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   sessionKey?: string | null
@@ -790,9 +919,69 @@ export type AiConversationUpdateWithoutMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutAiConversationsNestedInput
   user?: Prisma.UserUpdateOneWithoutAiConversationsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutAiConversationsNestedInput
 }
 
 export type AiConversationUncheckedUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumAiChannelFieldUpdateOperationsInput | $Enums.AiChannel
+  escalated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  escalatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  messageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AiConversationCreateManyPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  userId?: string | null
+  sessionKey?: string | null
+  channel?: $Enums.AiChannel
+  escalated?: boolean
+  escalatedAt?: Date | string | null
+  messageCount?: number
+  summary?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AiConversationUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumAiChannelFieldUpdateOperationsInput | $Enums.AiChannel
+  escalated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  escalatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  messageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneWithoutAiConversationsNestedInput
+  user?: Prisma.UserUpdateOneWithoutAiConversationsNestedInput
+  messages?: Prisma.AiMessageUpdateManyWithoutConversationNestedInput
+}
+
+export type AiConversationUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumAiChannelFieldUpdateOperationsInput | $Enums.AiChannel
+  escalated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  escalatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  messageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  messages?: Prisma.AiMessageUncheckedUpdateManyWithoutConversationNestedInput
+}
+
+export type AiConversationUncheckedUpdateManyWithoutPharmacyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -808,6 +997,7 @@ export type AiConversationUncheckedUpdateWithoutMessagesInput = {
 
 export type AiConversationCreateManyUserInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   sessionKey?: string | null
   channel?: $Enums.AiChannel
@@ -831,10 +1021,12 @@ export type AiConversationUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutAiConversationsNestedInput
   messages?: Prisma.AiMessageUpdateManyWithoutConversationNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutAiConversationsNestedInput
 }
 
 export type AiConversationUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumAiChannelFieldUpdateOperationsInput | $Enums.AiChannel
@@ -849,6 +1041,7 @@ export type AiConversationUncheckedUpdateWithoutUserInput = {
 
 export type AiConversationUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumAiChannelFieldUpdateOperationsInput | $Enums.AiChannel
@@ -862,6 +1055,7 @@ export type AiConversationUncheckedUpdateManyWithoutUserInput = {
 
 export type AiConversationCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   userId?: string | null
   sessionKey?: string | null
   channel?: $Enums.AiChannel
@@ -885,10 +1079,12 @@ export type AiConversationUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutAiConversationsNestedInput
   messages?: Prisma.AiMessageUpdateManyWithoutConversationNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutAiConversationsNestedInput
 }
 
 export type AiConversationUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumAiChannelFieldUpdateOperationsInput | $Enums.AiChannel
@@ -903,6 +1099,7 @@ export type AiConversationUncheckedUpdateWithoutCustomerInput = {
 
 export type AiConversationUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channel?: Prisma.EnumAiChannelFieldUpdateOperationsInput | $Enums.AiChannel
@@ -947,6 +1144,7 @@ export type AiConversationCountOutputTypeCountMessagesArgs<ExtArgs extends runti
 
 export type AiConversationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   sessionKey?: boolean
@@ -960,11 +1158,13 @@ export type AiConversationSelect<ExtArgs extends runtime.Types.Extensions.Intern
   customer?: boolean | Prisma.AiConversation$customerArgs<ExtArgs>
   user?: boolean | Prisma.AiConversation$userArgs<ExtArgs>
   messages?: boolean | Prisma.AiConversation$messagesArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.AiConversationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiConversation"]>
 
 export type AiConversationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   sessionKey?: boolean
@@ -977,10 +1177,12 @@ export type AiConversationSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   customer?: boolean | Prisma.AiConversation$customerArgs<ExtArgs>
   user?: boolean | Prisma.AiConversation$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiConversation"]>
 
 export type AiConversationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   sessionKey?: boolean
@@ -993,10 +1195,12 @@ export type AiConversationSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   customer?: boolean | Prisma.AiConversation$customerArgs<ExtArgs>
   user?: boolean | Prisma.AiConversation$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiConversation"]>
 
 export type AiConversationSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   sessionKey?: boolean
@@ -1009,20 +1213,23 @@ export type AiConversationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AiConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "userId" | "sessionKey" | "channel" | "escalated" | "escalatedAt" | "messageCount" | "summary" | "createdAt" | "updatedAt", ExtArgs["result"]["aiConversation"]>
+export type AiConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "userId" | "sessionKey" | "channel" | "escalated" | "escalatedAt" | "messageCount" | "summary" | "createdAt" | "updatedAt", ExtArgs["result"]["aiConversation"]>
 export type AiConversationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.AiConversation$customerArgs<ExtArgs>
   user?: boolean | Prisma.AiConversation$userArgs<ExtArgs>
   messages?: boolean | Prisma.AiConversation$messagesArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.AiConversationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AiConversationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.AiConversation$customerArgs<ExtArgs>
   user?: boolean | Prisma.AiConversation$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type AiConversationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.AiConversation$customerArgs<ExtArgs>
   user?: boolean | Prisma.AiConversation$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $AiConversationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1031,9 +1238,11 @@ export type $AiConversationPayload<ExtArgs extends runtime.Types.Extensions.Inte
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs> | null
     messages: Prisma.$AiMessagePayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string | null
     userId: string | null
     sessionKey: string | null
@@ -1441,6 +1650,7 @@ export interface Prisma__AiConversationClient<T, Null = never, ExtArgs extends r
   customer<T extends Prisma.AiConversation$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AiConversation$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.AiConversation$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AiConversation$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   messages<T extends Prisma.AiConversation$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AiConversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1471,6 +1681,7 @@ export interface Prisma__AiConversationClient<T, Null = never, ExtArgs extends r
  */
 export interface AiConversationFieldRefs {
   readonly id: Prisma.FieldRef<"AiConversation", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"AiConversation", 'String'>
   readonly customerId: Prisma.FieldRef<"AiConversation", 'String'>
   readonly userId: Prisma.FieldRef<"AiConversation", 'String'>
   readonly sessionKey: Prisma.FieldRef<"AiConversation", 'String'>

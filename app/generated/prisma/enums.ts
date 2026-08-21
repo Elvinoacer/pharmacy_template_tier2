@@ -372,6 +372,39 @@ export const AiChannel = {
 export type AiChannel = (typeof AiChannel)[keyof typeof AiChannel]
 
 
+export const PharmacyStatus = {
+  draft: 'draft',
+  submitted: 'submitted',
+  under_review: 'under_review',
+  needs_info: 'needs_info',
+  approved: 'approved',
+  active: 'active',
+  suspended: 'suspended',
+  rejected: 'rejected'
+} as const
+
+export type PharmacyStatus = (typeof PharmacyStatus)[keyof typeof PharmacyStatus]
+
+
+export const PharmacyMemberRole = {
+  owner: 'owner',
+  manager: 'manager',
+  pharmacist: 'pharmacist',
+  staff: 'staff'
+} as const
+
+export type PharmacyMemberRole = (typeof PharmacyMemberRole)[keyof typeof PharmacyMemberRole]
+
+
+export const PharmacyMemberStatus = {
+  invited: 'invited',
+  active: 'active',
+  suspended: 'suspended'
+} as const
+
+export type PharmacyMemberStatus = (typeof PharmacyMemberStatus)[keyof typeof PharmacyMemberStatus]
+
+
 export const PaymentStatus = {
   pending: 'pending',
   completed: 'completed',

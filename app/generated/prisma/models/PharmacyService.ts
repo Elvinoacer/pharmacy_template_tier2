@@ -40,6 +40,7 @@ export type PharmacyServiceSumAggregateOutputType = {
 
 export type PharmacyServiceMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   slug: string | null
   title: string | null
   short: string | null
@@ -58,6 +59,7 @@ export type PharmacyServiceMinAggregateOutputType = {
 
 export type PharmacyServiceMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   slug: string | null
   title: string | null
   short: string | null
@@ -76,6 +78,7 @@ export type PharmacyServiceMaxAggregateOutputType = {
 
 export type PharmacyServiceCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   slug: number
   title: number
   short: number
@@ -107,6 +110,7 @@ export type PharmacyServiceSumAggregateInputType = {
 
 export type PharmacyServiceMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   slug?: true
   title?: true
   short?: true
@@ -125,6 +129,7 @@ export type PharmacyServiceMinAggregateInputType = {
 
 export type PharmacyServiceMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   slug?: true
   title?: true
   short?: true
@@ -143,6 +148,7 @@ export type PharmacyServiceMaxAggregateInputType = {
 
 export type PharmacyServiceCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   slug?: true
   title?: true
   short?: true
@@ -249,6 +255,7 @@ export type PharmacyServiceGroupByArgs<ExtArgs extends runtime.Types.Extensions.
 
 export type PharmacyServiceGroupByOutputType = {
   id: string
+  pharmacyId: string
   slug: string
   title: string
   short: string
@@ -291,6 +298,7 @@ export type PharmacyServiceWhereInput = {
   OR?: Prisma.PharmacyServiceWhereInput[]
   NOT?: Prisma.PharmacyServiceWhereInput | Prisma.PharmacyServiceWhereInput[]
   id?: Prisma.UuidFilter<"PharmacyService"> | string
+  pharmacyId?: Prisma.UuidFilter<"PharmacyService"> | string
   slug?: Prisma.StringFilter<"PharmacyService"> | string
   title?: Prisma.StringFilter<"PharmacyService"> | string
   short?: Prisma.StringFilter<"PharmacyService"> | string
@@ -307,10 +315,12 @@ export type PharmacyServiceWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PharmacyService"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PharmacyService"> | Date | string
   bookings?: Prisma.ServiceBookingListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type PharmacyServiceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   short?: Prisma.SortOrder
@@ -327,14 +337,17 @@ export type PharmacyServiceOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   bookings?: Prisma.ServiceBookingOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type PharmacyServiceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  slug?: string
+  pharmacyId_slug?: Prisma.PharmacyServicePharmacyIdSlugCompoundUniqueInput
   AND?: Prisma.PharmacyServiceWhereInput | Prisma.PharmacyServiceWhereInput[]
   OR?: Prisma.PharmacyServiceWhereInput[]
   NOT?: Prisma.PharmacyServiceWhereInput | Prisma.PharmacyServiceWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"PharmacyService"> | string
+  slug?: Prisma.StringFilter<"PharmacyService"> | string
   title?: Prisma.StringFilter<"PharmacyService"> | string
   short?: Prisma.StringFilter<"PharmacyService"> | string
   description?: Prisma.StringFilter<"PharmacyService"> | string
@@ -350,10 +363,12 @@ export type PharmacyServiceWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PharmacyService"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PharmacyService"> | Date | string
   bookings?: Prisma.ServiceBookingListRelationFilter
-}, "id" | "slug">
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
+}, "id" | "pharmacyId_slug">
 
 export type PharmacyServiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   short?: Prisma.SortOrder
@@ -381,6 +396,7 @@ export type PharmacyServiceScalarWhereWithAggregatesInput = {
   OR?: Prisma.PharmacyServiceScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PharmacyServiceScalarWhereWithAggregatesInput | Prisma.PharmacyServiceScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"PharmacyService"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"PharmacyService"> | string
   slug?: Prisma.StringWithAggregatesFilter<"PharmacyService"> | string
   title?: Prisma.StringWithAggregatesFilter<"PharmacyService"> | string
   short?: Prisma.StringWithAggregatesFilter<"PharmacyService"> | string
@@ -416,10 +432,12 @@ export type PharmacyServiceCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.ServiceBookingCreateNestedManyWithoutServiceInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServicesInput
 }
 
 export type PharmacyServiceUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   slug: string
   title: string
   short: string
@@ -456,10 +474,12 @@ export type PharmacyServiceUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.ServiceBookingUpdateManyWithoutServiceNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutServicesNestedInput
 }
 
 export type PharmacyServiceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   short?: Prisma.StringFieldUpdateOperationsInput | string
@@ -480,6 +500,7 @@ export type PharmacyServiceUncheckedUpdateInput = {
 
 export type PharmacyServiceCreateManyInput = {
   id?: string
+  pharmacyId: string
   slug: string
   title: string
   short: string
@@ -518,6 +539,7 @@ export type PharmacyServiceUpdateManyMutationInput = {
 
 export type PharmacyServiceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   short?: Prisma.StringFieldUpdateOperationsInput | string
@@ -535,8 +557,24 @@ export type PharmacyServiceUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type PharmacyServiceListRelationFilter = {
+  every?: Prisma.PharmacyServiceWhereInput
+  some?: Prisma.PharmacyServiceWhereInput
+  none?: Prisma.PharmacyServiceWhereInput
+}
+
+export type PharmacyServiceOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type PharmacyServicePharmacyIdSlugCompoundUniqueInput = {
+  pharmacyId: string
+  slug: string
+}
+
 export type PharmacyServiceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   short?: Prisma.SortOrder
@@ -561,6 +599,7 @@ export type PharmacyServiceAvgOrderByAggregateInput = {
 
 export type PharmacyServiceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   short?: Prisma.SortOrder
@@ -579,6 +618,7 @@ export type PharmacyServiceMaxOrderByAggregateInput = {
 
 export type PharmacyServiceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   short?: Prisma.SortOrder
@@ -605,6 +645,48 @@ export type PharmacyServiceScalarRelationFilter = {
   isNot?: Prisma.PharmacyServiceWhereInput
 }
 
+export type PharmacyServiceCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PharmacyServiceCreateWithoutPharmacyInput, Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput> | Prisma.PharmacyServiceCreateWithoutPharmacyInput[] | Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PharmacyServiceCreateOrConnectWithoutPharmacyInput | Prisma.PharmacyServiceCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.PharmacyServiceCreateManyPharmacyInputEnvelope
+  connect?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+}
+
+export type PharmacyServiceUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PharmacyServiceCreateWithoutPharmacyInput, Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput> | Prisma.PharmacyServiceCreateWithoutPharmacyInput[] | Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PharmacyServiceCreateOrConnectWithoutPharmacyInput | Prisma.PharmacyServiceCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.PharmacyServiceCreateManyPharmacyInputEnvelope
+  connect?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+}
+
+export type PharmacyServiceUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacyServiceCreateWithoutPharmacyInput, Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput> | Prisma.PharmacyServiceCreateWithoutPharmacyInput[] | Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PharmacyServiceCreateOrConnectWithoutPharmacyInput | Prisma.PharmacyServiceCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.PharmacyServiceUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.PharmacyServiceUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.PharmacyServiceCreateManyPharmacyInputEnvelope
+  set?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+  disconnect?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+  delete?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+  connect?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+  update?: Prisma.PharmacyServiceUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.PharmacyServiceUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.PharmacyServiceUpdateManyWithWhereWithoutPharmacyInput | Prisma.PharmacyServiceUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.PharmacyServiceScalarWhereInput | Prisma.PharmacyServiceScalarWhereInput[]
+}
+
+export type PharmacyServiceUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacyServiceCreateWithoutPharmacyInput, Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput> | Prisma.PharmacyServiceCreateWithoutPharmacyInput[] | Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PharmacyServiceCreateOrConnectWithoutPharmacyInput | Prisma.PharmacyServiceCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.PharmacyServiceUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.PharmacyServiceUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.PharmacyServiceCreateManyPharmacyInputEnvelope
+  set?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+  disconnect?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+  delete?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+  connect?: Prisma.PharmacyServiceWhereUniqueInput | Prisma.PharmacyServiceWhereUniqueInput[]
+  update?: Prisma.PharmacyServiceUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.PharmacyServiceUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.PharmacyServiceUpdateManyWithWhereWithoutPharmacyInput | Prisma.PharmacyServiceUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.PharmacyServiceScalarWhereInput | Prisma.PharmacyServiceScalarWhereInput[]
+}
+
 export type PharmacyServiceCreatebenefitsInput = {
   set: string[]
 }
@@ -628,6 +710,95 @@ export type PharmacyServiceUpdateOneRequiredWithoutBookingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PharmacyServiceUpdateToOneWithWhereWithoutBookingsInput, Prisma.PharmacyServiceUpdateWithoutBookingsInput>, Prisma.PharmacyServiceUncheckedUpdateWithoutBookingsInput>
 }
 
+export type PharmacyServiceCreateWithoutPharmacyInput = {
+  id?: string
+  slug: string
+  title: string
+  short: string
+  description: string
+  benefits?: Prisma.PharmacyServiceCreatebenefitsInput | string[]
+  eligibility?: string | null
+  duration?: string | null
+  imageUrl?: string | null
+  icon?: string | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bookable?: boolean
+  active?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.ServiceBookingCreateNestedManyWithoutServiceInput
+}
+
+export type PharmacyServiceUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  slug: string
+  title: string
+  short: string
+  description: string
+  benefits?: Prisma.PharmacyServiceCreatebenefitsInput | string[]
+  eligibility?: string | null
+  duration?: string | null
+  imageUrl?: string | null
+  icon?: string | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bookable?: boolean
+  active?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutServiceInput
+}
+
+export type PharmacyServiceCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.PharmacyServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.PharmacyServiceCreateWithoutPharmacyInput, Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PharmacyServiceCreateManyPharmacyInputEnvelope = {
+  data: Prisma.PharmacyServiceCreateManyPharmacyInput | Prisma.PharmacyServiceCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type PharmacyServiceUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.PharmacyServiceWhereUniqueInput
+  update: Prisma.XOR<Prisma.PharmacyServiceUpdateWithoutPharmacyInput, Prisma.PharmacyServiceUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.PharmacyServiceCreateWithoutPharmacyInput, Prisma.PharmacyServiceUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PharmacyServiceUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.PharmacyServiceWhereUniqueInput
+  data: Prisma.XOR<Prisma.PharmacyServiceUpdateWithoutPharmacyInput, Prisma.PharmacyServiceUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type PharmacyServiceUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.PharmacyServiceScalarWhereInput
+  data: Prisma.XOR<Prisma.PharmacyServiceUpdateManyMutationInput, Prisma.PharmacyServiceUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type PharmacyServiceScalarWhereInput = {
+  AND?: Prisma.PharmacyServiceScalarWhereInput | Prisma.PharmacyServiceScalarWhereInput[]
+  OR?: Prisma.PharmacyServiceScalarWhereInput[]
+  NOT?: Prisma.PharmacyServiceScalarWhereInput | Prisma.PharmacyServiceScalarWhereInput[]
+  id?: Prisma.UuidFilter<"PharmacyService"> | string
+  pharmacyId?: Prisma.UuidFilter<"PharmacyService"> | string
+  slug?: Prisma.StringFilter<"PharmacyService"> | string
+  title?: Prisma.StringFilter<"PharmacyService"> | string
+  short?: Prisma.StringFilter<"PharmacyService"> | string
+  description?: Prisma.StringFilter<"PharmacyService"> | string
+  benefits?: Prisma.StringNullableListFilter<"PharmacyService">
+  eligibility?: Prisma.StringNullableFilter<"PharmacyService"> | string | null
+  duration?: Prisma.StringNullableFilter<"PharmacyService"> | string | null
+  imageUrl?: Prisma.StringNullableFilter<"PharmacyService"> | string | null
+  icon?: Prisma.StringNullableFilter<"PharmacyService"> | string | null
+  price?: Prisma.DecimalNullableFilter<"PharmacyService"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bookable?: Prisma.BoolFilter<"PharmacyService"> | boolean
+  active?: Prisma.BoolFilter<"PharmacyService"> | boolean
+  sortOrder?: Prisma.IntFilter<"PharmacyService"> | number
+  createdAt?: Prisma.DateTimeFilter<"PharmacyService"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PharmacyService"> | Date | string
+}
+
 export type PharmacyServiceCreateWithoutBookingsInput = {
   id?: string
   slug: string
@@ -645,10 +816,12 @@ export type PharmacyServiceCreateWithoutBookingsInput = {
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServicesInput
 }
 
 export type PharmacyServiceUncheckedCreateWithoutBookingsInput = {
   id?: string
+  pharmacyId: string
   slug: string
   title: string
   short: string
@@ -699,9 +872,89 @@ export type PharmacyServiceUpdateWithoutBookingsInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutServicesNestedInput
 }
 
 export type PharmacyServiceUncheckedUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  short?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  benefits?: Prisma.PharmacyServiceUpdatebenefitsInput | string[]
+  eligibility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bookable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PharmacyServiceCreateManyPharmacyInput = {
+  id?: string
+  slug: string
+  title: string
+  short: string
+  description: string
+  benefits?: Prisma.PharmacyServiceCreatebenefitsInput | string[]
+  eligibility?: string | null
+  duration?: string | null
+  imageUrl?: string | null
+  icon?: string | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bookable?: boolean
+  active?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PharmacyServiceUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  short?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  benefits?: Prisma.PharmacyServiceUpdatebenefitsInput | string[]
+  eligibility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bookable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.ServiceBookingUpdateManyWithoutServiceNestedInput
+}
+
+export type PharmacyServiceUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  short?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  benefits?: Prisma.PharmacyServiceUpdatebenefitsInput | string[]
+  eligibility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bookable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutServiceNestedInput
+}
+
+export type PharmacyServiceUncheckedUpdateManyWithoutPharmacyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -753,6 +1006,7 @@ export type PharmacyServiceCountOutputTypeCountBookingsArgs<ExtArgs extends runt
 
 export type PharmacyServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   slug?: boolean
   title?: boolean
   short?: boolean
@@ -769,11 +1023,13 @@ export type PharmacyServiceSelect<ExtArgs extends runtime.Types.Extensions.Inter
   createdAt?: boolean
   updatedAt?: boolean
   bookings?: boolean | Prisma.PharmacyService$bookingsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PharmacyServiceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyService"]>
 
 export type PharmacyServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   slug?: boolean
   title?: boolean
   short?: boolean
@@ -789,10 +1045,12 @@ export type PharmacyServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyService"]>
 
 export type PharmacyServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   slug?: boolean
   title?: boolean
   short?: boolean
@@ -808,10 +1066,12 @@ export type PharmacyServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyService"]>
 
 export type PharmacyServiceSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   slug?: boolean
   title?: boolean
   short?: boolean
@@ -829,21 +1089,28 @@ export type PharmacyServiceSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PharmacyServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "short" | "description" | "benefits" | "eligibility" | "duration" | "imageUrl" | "icon" | "price" | "bookable" | "active" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacyService"]>
+export type PharmacyServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "slug" | "title" | "short" | "description" | "benefits" | "eligibility" | "duration" | "imageUrl" | "icon" | "price" | "bookable" | "active" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacyService"]>
 export type PharmacyServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bookings?: boolean | Prisma.PharmacyService$bookingsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PharmacyServiceCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type PharmacyServiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type PharmacyServiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type PharmacyServiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
+export type PharmacyServiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
 
 export type $PharmacyServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PharmacyService"
   objects: {
     bookings: Prisma.$ServiceBookingPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     slug: string
     title: string
     /**
@@ -1263,6 +1530,7 @@ readonly fields: PharmacyServiceFieldRefs;
 export interface Prisma__PharmacyServiceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   bookings<T extends Prisma.PharmacyService$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyService$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1293,6 +1561,7 @@ export interface Prisma__PharmacyServiceClient<T, Null = never, ExtArgs extends 
  */
 export interface PharmacyServiceFieldRefs {
   readonly id: Prisma.FieldRef<"PharmacyService", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"PharmacyService", 'String'>
   readonly slug: Prisma.FieldRef<"PharmacyService", 'String'>
   readonly title: Prisma.FieldRef<"PharmacyService", 'String'>
   readonly short: Prisma.FieldRef<"PharmacyService", 'String'>
@@ -1562,6 +1831,10 @@ export type PharmacyServiceCreateManyAndReturnArgs<ExtArgs extends runtime.Types
    */
   data: Prisma.PharmacyServiceCreateManyInput | Prisma.PharmacyServiceCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PharmacyServiceIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1632,6 +1905,10 @@ export type PharmacyServiceUpdateManyAndReturnArgs<ExtArgs extends runtime.Types
    * Limit how many PharmacyServices to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PharmacyServiceIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

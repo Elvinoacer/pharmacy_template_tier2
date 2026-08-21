@@ -36,6 +36,7 @@ export type PreventiveCounsellingSessionSumAggregateOutputType = {
 
 export type PreventiveCounsellingSessionMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   counsellorId: string | null
   campaignId: string | null
@@ -56,6 +57,7 @@ export type PreventiveCounsellingSessionMinAggregateOutputType = {
 
 export type PreventiveCounsellingSessionMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   counsellorId: string | null
   campaignId: string | null
@@ -76,6 +78,7 @@ export type PreventiveCounsellingSessionMaxAggregateOutputType = {
 
 export type PreventiveCounsellingSessionCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   counsellorId: number
   campaignId: number
@@ -108,6 +111,7 @@ export type PreventiveCounsellingSessionSumAggregateInputType = {
 
 export type PreventiveCounsellingSessionMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   counsellorId?: true
   campaignId?: true
@@ -128,6 +132,7 @@ export type PreventiveCounsellingSessionMinAggregateInputType = {
 
 export type PreventiveCounsellingSessionMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   counsellorId?: true
   campaignId?: true
@@ -148,6 +153,7 @@ export type PreventiveCounsellingSessionMaxAggregateInputType = {
 
 export type PreventiveCounsellingSessionCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   counsellorId?: true
   campaignId?: true
@@ -257,6 +263,7 @@ export type PreventiveCounsellingSessionGroupByArgs<ExtArgs extends runtime.Type
 
 export type PreventiveCounsellingSessionGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string | null
   counsellorId: string | null
   campaignId: string | null
@@ -302,6 +309,7 @@ export type PreventiveCounsellingSessionWhereInput = {
   OR?: Prisma.PreventiveCounsellingSessionWhereInput[]
   NOT?: Prisma.PreventiveCounsellingSessionWhereInput | Prisma.PreventiveCounsellingSessionWhereInput[]
   id?: Prisma.UuidFilter<"PreventiveCounsellingSession"> | string
+  pharmacyId?: Prisma.UuidFilter<"PreventiveCounsellingSession"> | string
   customerId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
   counsellorId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
   campaignId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
@@ -322,10 +330,12 @@ export type PreventiveCounsellingSessionWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"PreventiveCounsellingSession"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   counsellor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type PreventiveCounsellingSessionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   counsellorId?: Prisma.SortOrderInput | Prisma.SortOrder
   campaignId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -346,6 +356,7 @@ export type PreventiveCounsellingSessionOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   counsellor?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type PreventiveCounsellingSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -353,6 +364,7 @@ export type PreventiveCounsellingSessionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PreventiveCounsellingSessionWhereInput | Prisma.PreventiveCounsellingSessionWhereInput[]
   OR?: Prisma.PreventiveCounsellingSessionWhereInput[]
   NOT?: Prisma.PreventiveCounsellingSessionWhereInput | Prisma.PreventiveCounsellingSessionWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"PreventiveCounsellingSession"> | string
   customerId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
   counsellorId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
   campaignId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
@@ -373,10 +385,12 @@ export type PreventiveCounsellingSessionWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"PreventiveCounsellingSession"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   counsellor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type PreventiveCounsellingSessionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   counsellorId?: Prisma.SortOrderInput | Prisma.SortOrder
   campaignId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -407,6 +421,7 @@ export type PreventiveCounsellingSessionScalarWhereWithAggregatesInput = {
   OR?: Prisma.PreventiveCounsellingSessionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PreventiveCounsellingSessionScalarWhereWithAggregatesInput | Prisma.PreventiveCounsellingSessionScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"PreventiveCounsellingSession"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"PreventiveCounsellingSession"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"PreventiveCounsellingSession"> | string | null
   counsellorId?: Prisma.UuidNullableWithAggregatesFilter<"PreventiveCounsellingSession"> | string | null
   campaignId?: Prisma.UuidNullableWithAggregatesFilter<"PreventiveCounsellingSession"> | string | null
@@ -447,10 +462,12 @@ export type PreventiveCounsellingSessionCreateInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutCounsellingSessionsInput
   counsellor?: Prisma.UserCreateNestedOneWithoutCounsellingSessionsGivenInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
 }
 
 export type PreventiveCounsellingSessionUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   counsellorId?: string | null
   campaignId?: string | null
@@ -491,10 +508,12 @@ export type PreventiveCounsellingSessionUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutCounsellingSessionsNestedInput
   counsellor?: Prisma.UserUpdateOneWithoutCounsellingSessionsGivenNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCounsellingSessionsNestedInput
 }
 
 export type PreventiveCounsellingSessionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   counsellorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -517,6 +536,7 @@ export type PreventiveCounsellingSessionUncheckedUpdateInput = {
 
 export type PreventiveCounsellingSessionCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   counsellorId?: string | null
   campaignId?: string | null
@@ -559,6 +579,7 @@ export type PreventiveCounsellingSessionUpdateManyMutationInput = {
 
 export type PreventiveCounsellingSessionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   counsellorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -591,6 +612,7 @@ export type PreventiveCounsellingSessionOrderByRelationAggregateInput = {
 
 export type PreventiveCounsellingSessionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   counsellorId?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -617,6 +639,7 @@ export type PreventiveCounsellingSessionAvgOrderByAggregateInput = {
 
 export type PreventiveCounsellingSessionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   counsellorId?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -637,6 +660,7 @@ export type PreventiveCounsellingSessionMaxOrderByAggregateInput = {
 
 export type PreventiveCounsellingSessionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   counsellorId?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -657,6 +681,48 @@ export type PreventiveCounsellingSessionMinOrderByAggregateInput = {
 
 export type PreventiveCounsellingSessionSumOrderByAggregateInput = {
   durationMinutes?: Prisma.SortOrder
+}
+
+export type PreventiveCounsellingSessionCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput, Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput> | Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput[] | Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.PreventiveCounsellingSessionCreateManyPharmacyInputEnvelope
+  connect?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+}
+
+export type PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput, Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput> | Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput[] | Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.PreventiveCounsellingSessionCreateManyPharmacyInputEnvelope
+  connect?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+}
+
+export type PreventiveCounsellingSessionUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput, Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput> | Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput[] | Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.PreventiveCounsellingSessionUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.PreventiveCounsellingSessionCreateManyPharmacyInputEnvelope
+  set?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+  disconnect?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+  delete?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+  connect?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+  update?: Prisma.PreventiveCounsellingSessionUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.PreventiveCounsellingSessionUpdateManyWithWhereWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.PreventiveCounsellingSessionScalarWhereInput | Prisma.PreventiveCounsellingSessionScalarWhereInput[]
+}
+
+export type PreventiveCounsellingSessionUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput, Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput> | Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput[] | Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.PreventiveCounsellingSessionUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.PreventiveCounsellingSessionCreateManyPharmacyInputEnvelope
+  set?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+  disconnect?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+  delete?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+  connect?: Prisma.PreventiveCounsellingSessionWhereUniqueInput | Prisma.PreventiveCounsellingSessionWhereUniqueInput[]
+  update?: Prisma.PreventiveCounsellingSessionUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.PreventiveCounsellingSessionUpdateManyWithWhereWithoutPharmacyInput | Prisma.PreventiveCounsellingSessionUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.PreventiveCounsellingSessionScalarWhereInput | Prisma.PreventiveCounsellingSessionScalarWhereInput[]
 }
 
 export type PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput = {
@@ -761,6 +827,102 @@ export type PreventiveCounsellingSessionUpdateresourcesGivenInput = {
   push?: string | string[]
 }
 
+export type PreventiveCounsellingSessionCreateWithoutPharmacyInput = {
+  id?: string
+  campaignId?: string | null
+  topic: string
+  format?: string
+  durationMinutes?: number
+  patientName: string
+  patientPhone?: string | null
+  summary?: string | null
+  goals?: Prisma.PreventiveCounsellingSessionCreategoalsInput | string[]
+  resourcesGiven?: Prisma.PreventiveCounsellingSessionCreateresourcesGivenInput | string[]
+  followUpDate?: Date | string | null
+  preferredDate?: string | null
+  preferredTime?: string | null
+  status?: string
+  source?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutCounsellingSessionsInput
+  counsellor?: Prisma.UserCreateNestedOneWithoutCounsellingSessionsGivenInput
+}
+
+export type PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  counsellorId?: string | null
+  campaignId?: string | null
+  topic: string
+  format?: string
+  durationMinutes?: number
+  patientName: string
+  patientPhone?: string | null
+  summary?: string | null
+  goals?: Prisma.PreventiveCounsellingSessionCreategoalsInput | string[]
+  resourcesGiven?: Prisma.PreventiveCounsellingSessionCreateresourcesGivenInput | string[]
+  followUpDate?: Date | string | null
+  preferredDate?: string | null
+  preferredTime?: string | null
+  status?: string
+  source?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PreventiveCounsellingSessionCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.PreventiveCounsellingSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput, Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PreventiveCounsellingSessionCreateManyPharmacyInputEnvelope = {
+  data: Prisma.PreventiveCounsellingSessionCreateManyPharmacyInput | Prisma.PreventiveCounsellingSessionCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type PreventiveCounsellingSessionUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.PreventiveCounsellingSessionWhereUniqueInput
+  update: Prisma.XOR<Prisma.PreventiveCounsellingSessionUpdateWithoutPharmacyInput, Prisma.PreventiveCounsellingSessionUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.PreventiveCounsellingSessionCreateWithoutPharmacyInput, Prisma.PreventiveCounsellingSessionUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PreventiveCounsellingSessionUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.PreventiveCounsellingSessionWhereUniqueInput
+  data: Prisma.XOR<Prisma.PreventiveCounsellingSessionUpdateWithoutPharmacyInput, Prisma.PreventiveCounsellingSessionUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type PreventiveCounsellingSessionUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.PreventiveCounsellingSessionScalarWhereInput
+  data: Prisma.XOR<Prisma.PreventiveCounsellingSessionUpdateManyMutationInput, Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type PreventiveCounsellingSessionScalarWhereInput = {
+  AND?: Prisma.PreventiveCounsellingSessionScalarWhereInput | Prisma.PreventiveCounsellingSessionScalarWhereInput[]
+  OR?: Prisma.PreventiveCounsellingSessionScalarWhereInput[]
+  NOT?: Prisma.PreventiveCounsellingSessionScalarWhereInput | Prisma.PreventiveCounsellingSessionScalarWhereInput[]
+  id?: Prisma.UuidFilter<"PreventiveCounsellingSession"> | string
+  pharmacyId?: Prisma.UuidFilter<"PreventiveCounsellingSession"> | string
+  customerId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
+  counsellorId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
+  campaignId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
+  topic?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
+  format?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
+  durationMinutes?: Prisma.IntFilter<"PreventiveCounsellingSession"> | number
+  patientName?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
+  patientPhone?: Prisma.StringNullableFilter<"PreventiveCounsellingSession"> | string | null
+  summary?: Prisma.StringNullableFilter<"PreventiveCounsellingSession"> | string | null
+  goals?: Prisma.StringNullableListFilter<"PreventiveCounsellingSession">
+  resourcesGiven?: Prisma.StringNullableListFilter<"PreventiveCounsellingSession">
+  followUpDate?: Prisma.DateTimeNullableFilter<"PreventiveCounsellingSession"> | Date | string | null
+  preferredDate?: Prisma.StringNullableFilter<"PreventiveCounsellingSession"> | string | null
+  preferredTime?: Prisma.StringNullableFilter<"PreventiveCounsellingSession"> | string | null
+  status?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
+  source?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
+  createdAt?: Prisma.DateTimeFilter<"PreventiveCounsellingSession"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PreventiveCounsellingSession"> | Date | string
+}
+
 export type PreventiveCounsellingSessionCreateWithoutCounsellorInput = {
   id?: string
   campaignId?: string | null
@@ -780,10 +942,12 @@ export type PreventiveCounsellingSessionCreateWithoutCounsellorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutCounsellingSessionsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
 }
 
 export type PreventiveCounsellingSessionUncheckedCreateWithoutCounsellorInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   campaignId?: string | null
   topic: string
@@ -829,31 +993,6 @@ export type PreventiveCounsellingSessionUpdateManyWithWhereWithoutCounsellorInpu
   data: Prisma.XOR<Prisma.PreventiveCounsellingSessionUpdateManyMutationInput, Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorInput>
 }
 
-export type PreventiveCounsellingSessionScalarWhereInput = {
-  AND?: Prisma.PreventiveCounsellingSessionScalarWhereInput | Prisma.PreventiveCounsellingSessionScalarWhereInput[]
-  OR?: Prisma.PreventiveCounsellingSessionScalarWhereInput[]
-  NOT?: Prisma.PreventiveCounsellingSessionScalarWhereInput | Prisma.PreventiveCounsellingSessionScalarWhereInput[]
-  id?: Prisma.UuidFilter<"PreventiveCounsellingSession"> | string
-  customerId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
-  counsellorId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
-  campaignId?: Prisma.UuidNullableFilter<"PreventiveCounsellingSession"> | string | null
-  topic?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
-  format?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
-  durationMinutes?: Prisma.IntFilter<"PreventiveCounsellingSession"> | number
-  patientName?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
-  patientPhone?: Prisma.StringNullableFilter<"PreventiveCounsellingSession"> | string | null
-  summary?: Prisma.StringNullableFilter<"PreventiveCounsellingSession"> | string | null
-  goals?: Prisma.StringNullableListFilter<"PreventiveCounsellingSession">
-  resourcesGiven?: Prisma.StringNullableListFilter<"PreventiveCounsellingSession">
-  followUpDate?: Prisma.DateTimeNullableFilter<"PreventiveCounsellingSession"> | Date | string | null
-  preferredDate?: Prisma.StringNullableFilter<"PreventiveCounsellingSession"> | string | null
-  preferredTime?: Prisma.StringNullableFilter<"PreventiveCounsellingSession"> | string | null
-  status?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
-  source?: Prisma.StringFilter<"PreventiveCounsellingSession"> | string
-  createdAt?: Prisma.DateTimeFilter<"PreventiveCounsellingSession"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"PreventiveCounsellingSession"> | Date | string
-}
-
 export type PreventiveCounsellingSessionCreateWithoutCustomerInput = {
   id?: string
   campaignId?: string | null
@@ -873,10 +1012,12 @@ export type PreventiveCounsellingSessionCreateWithoutCustomerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   counsellor?: Prisma.UserCreateNestedOneWithoutCounsellingSessionsGivenInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
 }
 
 export type PreventiveCounsellingSessionUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   counsellorId?: string | null
   campaignId?: string | null
   topic: string
@@ -922,8 +1063,97 @@ export type PreventiveCounsellingSessionUpdateManyWithWhereWithoutCustomerInput 
   data: Prisma.XOR<Prisma.PreventiveCounsellingSessionUpdateManyMutationInput, Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type PreventiveCounsellingSessionCreateManyPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  counsellorId?: string | null
+  campaignId?: string | null
+  topic: string
+  format?: string
+  durationMinutes?: number
+  patientName: string
+  patientPhone?: string | null
+  summary?: string | null
+  goals?: Prisma.PreventiveCounsellingSessionCreategoalsInput | string[]
+  resourcesGiven?: Prisma.PreventiveCounsellingSessionCreateresourcesGivenInput | string[]
+  followUpDate?: Date | string | null
+  preferredDate?: string | null
+  preferredTime?: string | null
+  status?: string
+  source?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PreventiveCounsellingSessionUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  format?: Prisma.StringFieldUpdateOperationsInput | string
+  durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  goals?: Prisma.PreventiveCounsellingSessionUpdategoalsInput | string[]
+  resourcesGiven?: Prisma.PreventiveCounsellingSessionUpdateresourcesGivenInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneWithoutCounsellingSessionsNestedInput
+  counsellor?: Prisma.UserUpdateOneWithoutCounsellingSessionsGivenNestedInput
+}
+
+export type PreventiveCounsellingSessionUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  counsellorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  format?: Prisma.StringFieldUpdateOperationsInput | string
+  durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  goals?: Prisma.PreventiveCounsellingSessionUpdategoalsInput | string[]
+  resourcesGiven?: Prisma.PreventiveCounsellingSessionUpdateresourcesGivenInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PreventiveCounsellingSessionUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  counsellorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  format?: Prisma.StringFieldUpdateOperationsInput | string
+  durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  goals?: Prisma.PreventiveCounsellingSessionUpdategoalsInput | string[]
+  resourcesGiven?: Prisma.PreventiveCounsellingSessionUpdateresourcesGivenInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type PreventiveCounsellingSessionCreateManyCounsellorInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   campaignId?: string | null
   topic: string
@@ -962,10 +1192,12 @@ export type PreventiveCounsellingSessionUpdateWithoutCounsellorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutCounsellingSessionsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCounsellingSessionsNestedInput
 }
 
 export type PreventiveCounsellingSessionUncheckedUpdateWithoutCounsellorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   topic?: Prisma.StringFieldUpdateOperationsInput | string
@@ -987,6 +1219,7 @@ export type PreventiveCounsellingSessionUncheckedUpdateWithoutCounsellorInput = 
 
 export type PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   topic?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1008,6 +1241,7 @@ export type PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorInpu
 
 export type PreventiveCounsellingSessionCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   counsellorId?: string | null
   campaignId?: string | null
   topic: string
@@ -1046,10 +1280,12 @@ export type PreventiveCounsellingSessionUpdateWithoutCustomerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   counsellor?: Prisma.UserUpdateOneWithoutCounsellingSessionsGivenNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCounsellingSessionsNestedInput
 }
 
 export type PreventiveCounsellingSessionUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   counsellorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   topic?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1071,6 +1307,7 @@ export type PreventiveCounsellingSessionUncheckedUpdateWithoutCustomerInput = {
 
 export type PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   counsellorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   topic?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1094,6 +1331,7 @@ export type PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerInput 
 
 export type PreventiveCounsellingSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   counsellorId?: boolean
   campaignId?: boolean
@@ -1114,10 +1352,12 @@ export type PreventiveCounsellingSessionSelect<ExtArgs extends runtime.Types.Ext
   updatedAt?: boolean
   customer?: boolean | Prisma.PreventiveCounsellingSession$customerArgs<ExtArgs>
   counsellor?: boolean | Prisma.PreventiveCounsellingSession$counsellorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["preventiveCounsellingSession"]>
 
 export type PreventiveCounsellingSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   counsellorId?: boolean
   campaignId?: boolean
@@ -1138,10 +1378,12 @@ export type PreventiveCounsellingSessionSelectCreateManyAndReturn<ExtArgs extend
   updatedAt?: boolean
   customer?: boolean | Prisma.PreventiveCounsellingSession$customerArgs<ExtArgs>
   counsellor?: boolean | Prisma.PreventiveCounsellingSession$counsellorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["preventiveCounsellingSession"]>
 
 export type PreventiveCounsellingSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   counsellorId?: boolean
   campaignId?: boolean
@@ -1162,10 +1404,12 @@ export type PreventiveCounsellingSessionSelectUpdateManyAndReturn<ExtArgs extend
   updatedAt?: boolean
   customer?: boolean | Prisma.PreventiveCounsellingSession$customerArgs<ExtArgs>
   counsellor?: boolean | Prisma.PreventiveCounsellingSession$counsellorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["preventiveCounsellingSession"]>
 
 export type PreventiveCounsellingSessionSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   counsellorId?: boolean
   campaignId?: boolean
@@ -1186,18 +1430,21 @@ export type PreventiveCounsellingSessionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PreventiveCounsellingSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "counsellorId" | "campaignId" | "topic" | "format" | "durationMinutes" | "patientName" | "patientPhone" | "summary" | "goals" | "resourcesGiven" | "followUpDate" | "preferredDate" | "preferredTime" | "status" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["preventiveCounsellingSession"]>
+export type PreventiveCounsellingSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "counsellorId" | "campaignId" | "topic" | "format" | "durationMinutes" | "patientName" | "patientPhone" | "summary" | "goals" | "resourcesGiven" | "followUpDate" | "preferredDate" | "preferredTime" | "status" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["preventiveCounsellingSession"]>
 export type PreventiveCounsellingSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.PreventiveCounsellingSession$customerArgs<ExtArgs>
   counsellor?: boolean | Prisma.PreventiveCounsellingSession$counsellorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PreventiveCounsellingSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.PreventiveCounsellingSession$customerArgs<ExtArgs>
   counsellor?: boolean | Prisma.PreventiveCounsellingSession$counsellorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PreventiveCounsellingSessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.PreventiveCounsellingSession$customerArgs<ExtArgs>
   counsellor?: boolean | Prisma.PreventiveCounsellingSession$counsellorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $PreventiveCounsellingSessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1205,9 +1452,11 @@ export type $PreventiveCounsellingSessionPayload<ExtArgs extends runtime.Types.E
   objects: {
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     counsellor: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string | null
     counsellorId: string | null
     campaignId: string | null
@@ -1631,6 +1880,7 @@ export interface Prisma__PreventiveCounsellingSessionClient<T, Null = never, Ext
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.PreventiveCounsellingSession$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PreventiveCounsellingSession$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   counsellor<T extends Prisma.PreventiveCounsellingSession$counsellorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PreventiveCounsellingSession$counsellorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1661,6 +1911,7 @@ export interface Prisma__PreventiveCounsellingSessionClient<T, Null = never, Ext
  */
 export interface PreventiveCounsellingSessionFieldRefs {
   readonly id: Prisma.FieldRef<"PreventiveCounsellingSession", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"PreventiveCounsellingSession", 'String'>
   readonly customerId: Prisma.FieldRef<"PreventiveCounsellingSession", 'String'>
   readonly counsellorId: Prisma.FieldRef<"PreventiveCounsellingSession", 'String'>
   readonly campaignId: Prisma.FieldRef<"PreventiveCounsellingSession", 'String'>

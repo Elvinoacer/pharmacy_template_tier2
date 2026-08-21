@@ -50,6 +50,7 @@ export type VaccineProductSumAggregateOutputType = {
 
 export type VaccineProductMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   slug: string | null
   name: string | null
   antigen: string | null
@@ -83,6 +84,7 @@ export type VaccineProductMinAggregateOutputType = {
 
 export type VaccineProductMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   slug: string | null
   name: string | null
   antigen: string | null
@@ -116,6 +118,7 @@ export type VaccineProductMaxAggregateOutputType = {
 
 export type VaccineProductCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   slug: number
   name: number
   antigen: number
@@ -181,6 +184,7 @@ export type VaccineProductSumAggregateInputType = {
 
 export type VaccineProductMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   slug?: true
   name?: true
   antigen?: true
@@ -214,6 +218,7 @@ export type VaccineProductMinAggregateInputType = {
 
 export type VaccineProductMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   slug?: true
   name?: true
   antigen?: true
@@ -247,6 +252,7 @@ export type VaccineProductMaxAggregateInputType = {
 
 export type VaccineProductCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   slug?: true
   name?: true
   antigen?: true
@@ -375,6 +381,7 @@ export type VaccineProductGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type VaccineProductGroupByOutputType = {
   id: string
+  pharmacyId: string
   slug: string
   name: string
   antigen: string
@@ -439,6 +446,7 @@ export type VaccineProductWhereInput = {
   OR?: Prisma.VaccineProductWhereInput[]
   NOT?: Prisma.VaccineProductWhereInput | Prisma.VaccineProductWhereInput[]
   id?: Prisma.UuidFilter<"VaccineProduct"> | string
+  pharmacyId?: Prisma.UuidFilter<"VaccineProduct"> | string
   slug?: Prisma.StringFilter<"VaccineProduct"> | string
   name?: Prisma.StringFilter<"VaccineProduct"> | string
   antigen?: Prisma.StringFilter<"VaccineProduct"> | string
@@ -479,10 +487,12 @@ export type VaccineProductWhereInput = {
   appointments?: Prisma.ImmunizationAppointmentListRelationFilter
   consents?: Prisma.VaccinationConsentListRelationFilter
   records?: Prisma.ImmunizationRecordListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type VaccineProductOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   antigen?: Prisma.SortOrder
@@ -523,14 +533,17 @@ export type VaccineProductOrderByWithRelationInput = {
   appointments?: Prisma.ImmunizationAppointmentOrderByRelationAggregateInput
   consents?: Prisma.VaccinationConsentOrderByRelationAggregateInput
   records?: Prisma.ImmunizationRecordOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type VaccineProductWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  slug?: string
+  pharmacyId_slug?: Prisma.VaccineProductPharmacyIdSlugCompoundUniqueInput
   AND?: Prisma.VaccineProductWhereInput | Prisma.VaccineProductWhereInput[]
   OR?: Prisma.VaccineProductWhereInput[]
   NOT?: Prisma.VaccineProductWhereInput | Prisma.VaccineProductWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"VaccineProduct"> | string
+  slug?: Prisma.StringFilter<"VaccineProduct"> | string
   name?: Prisma.StringFilter<"VaccineProduct"> | string
   antigen?: Prisma.StringFilter<"VaccineProduct"> | string
   brandName?: Prisma.StringNullableFilter<"VaccineProduct"> | string | null
@@ -570,10 +583,12 @@ export type VaccineProductWhereUniqueInput = Prisma.AtLeast<{
   appointments?: Prisma.ImmunizationAppointmentListRelationFilter
   consents?: Prisma.VaccinationConsentListRelationFilter
   records?: Prisma.ImmunizationRecordListRelationFilter
-}, "id" | "slug">
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
+}, "id" | "pharmacyId_slug">
 
 export type VaccineProductOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   antigen?: Prisma.SortOrder
@@ -623,6 +638,7 @@ export type VaccineProductScalarWhereWithAggregatesInput = {
   OR?: Prisma.VaccineProductScalarWhereWithAggregatesInput[]
   NOT?: Prisma.VaccineProductScalarWhereWithAggregatesInput | Prisma.VaccineProductScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"VaccineProduct"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"VaccineProduct"> | string
   slug?: Prisma.StringWithAggregatesFilter<"VaccineProduct"> | string
   name?: Prisma.StringWithAggregatesFilter<"VaccineProduct"> | string
   antigen?: Prisma.StringWithAggregatesFilter<"VaccineProduct"> | string
@@ -704,10 +720,12 @@ export type VaccineProductCreateInput = {
   appointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutVaccineInput
   consents?: Prisma.VaccinationConsentCreateNestedManyWithoutVaccineInput
   records?: Prisma.ImmunizationRecordCreateNestedManyWithoutVaccineInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
 }
 
 export type VaccineProductUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   slug: string
   name: string
   antigen: string
@@ -792,10 +810,12 @@ export type VaccineProductUpdateInput = {
   appointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutVaccineNestedInput
   consents?: Prisma.VaccinationConsentUpdateManyWithoutVaccineNestedInput
   records?: Prisma.ImmunizationRecordUpdateManyWithoutVaccineNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutVaccineProductsNestedInput
 }
 
 export type VaccineProductUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   antigen?: Prisma.StringFieldUpdateOperationsInput | string
@@ -840,6 +860,7 @@ export type VaccineProductUncheckedUpdateInput = {
 
 export type VaccineProductCreateManyInput = {
   id?: string
+  pharmacyId: string
   slug: string
   name: string
   antigen: string
@@ -922,6 +943,7 @@ export type VaccineProductUpdateManyMutationInput = {
 
 export type VaccineProductUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   antigen?: Prisma.StringFieldUpdateOperationsInput | string
@@ -961,8 +983,24 @@ export type VaccineProductUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type VaccineProductListRelationFilter = {
+  every?: Prisma.VaccineProductWhereInput
+  some?: Prisma.VaccineProductWhereInput
+  none?: Prisma.VaccineProductWhereInput
+}
+
+export type VaccineProductOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type VaccineProductPharmacyIdSlugCompoundUniqueInput = {
+  pharmacyId: string
+  slug: string
+}
+
 export type VaccineProductCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   antigen?: Prisma.SortOrder
@@ -1015,6 +1053,7 @@ export type VaccineProductAvgOrderByAggregateInput = {
 
 export type VaccineProductMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   antigen?: Prisma.SortOrder
@@ -1048,6 +1087,7 @@ export type VaccineProductMaxOrderByAggregateInput = {
 
 export type VaccineProductMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   antigen?: Prisma.SortOrder
@@ -1093,6 +1133,48 @@ export type VaccineProductSumOrderByAggregateInput = {
 export type VaccineProductScalarRelationFilter = {
   is?: Prisma.VaccineProductWhereInput
   isNot?: Prisma.VaccineProductWhereInput
+}
+
+export type VaccineProductCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.VaccineProductCreateWithoutPharmacyInput, Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput> | Prisma.VaccineProductCreateWithoutPharmacyInput[] | Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.VaccineProductCreateOrConnectWithoutPharmacyInput | Prisma.VaccineProductCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.VaccineProductCreateManyPharmacyInputEnvelope
+  connect?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+}
+
+export type VaccineProductUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.VaccineProductCreateWithoutPharmacyInput, Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput> | Prisma.VaccineProductCreateWithoutPharmacyInput[] | Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.VaccineProductCreateOrConnectWithoutPharmacyInput | Prisma.VaccineProductCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.VaccineProductCreateManyPharmacyInputEnvelope
+  connect?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+}
+
+export type VaccineProductUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.VaccineProductCreateWithoutPharmacyInput, Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput> | Prisma.VaccineProductCreateWithoutPharmacyInput[] | Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.VaccineProductCreateOrConnectWithoutPharmacyInput | Prisma.VaccineProductCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.VaccineProductUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.VaccineProductUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.VaccineProductCreateManyPharmacyInputEnvelope
+  set?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+  disconnect?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+  delete?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+  connect?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+  update?: Prisma.VaccineProductUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.VaccineProductUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.VaccineProductUpdateManyWithWhereWithoutPharmacyInput | Prisma.VaccineProductUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.VaccineProductScalarWhereInput | Prisma.VaccineProductScalarWhereInput[]
+}
+
+export type VaccineProductUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.VaccineProductCreateWithoutPharmacyInput, Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput> | Prisma.VaccineProductCreateWithoutPharmacyInput[] | Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.VaccineProductCreateOrConnectWithoutPharmacyInput | Prisma.VaccineProductCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.VaccineProductUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.VaccineProductUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.VaccineProductCreateManyPharmacyInputEnvelope
+  set?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+  disconnect?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+  delete?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+  connect?: Prisma.VaccineProductWhereUniqueInput | Prisma.VaccineProductWhereUniqueInput[]
+  update?: Prisma.VaccineProductUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.VaccineProductUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.VaccineProductUpdateManyWithWhereWithoutPharmacyInput | Prisma.VaccineProductUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.VaccineProductScalarWhereInput | Prisma.VaccineProductScalarWhereInput[]
 }
 
 export type VaccineProductCreatediseasesPreventedInput = {
@@ -1209,6 +1291,165 @@ export type VaccineProductUpdateOneRequiredWithoutRecordsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.VaccineProductUpdateToOneWithWhereWithoutRecordsInput, Prisma.VaccineProductUpdateWithoutRecordsInput>, Prisma.VaccineProductUncheckedUpdateWithoutRecordsInput>
 }
 
+export type VaccineProductCreateWithoutPharmacyInput = {
+  id?: string
+  slug: string
+  name: string
+  antigen: string
+  brandName?: string | null
+  manufacturer?: string | null
+  category: string
+  diseasesPrevented?: Prisma.VaccineProductCreatediseasesPreventedInput | string[]
+  description: string
+  indications: string
+  whoShouldGet?: Prisma.VaccineProductCreatewhoShouldGetInput | string[]
+  whoShouldWait?: Prisma.VaccineProductCreatewhoShouldWaitInput | string[]
+  contraindications?: Prisma.VaccineProductCreatecontraindicationsInput | string[]
+  precautions?: Prisma.VaccineProductCreateprecautionsInput | string[]
+  commonSideEffects?: Prisma.VaccineProductCreatecommonSideEffectsInput | string[]
+  rareRisks?: Prisma.VaccineProductCreaterareRisksInput | string[]
+  route?: string
+  siteOptions?: Prisma.VaccineProductCreatesiteOptionsInput | string[]
+  doseMl?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  seriesDoses?: number
+  seriesIntervalDays?: number | null
+  boosterIntervalMonths?: number | null
+  minAgeMonths?: number
+  maxAgeMonths?: number | null
+  visTitle?: string | null
+  visVersion?: string | null
+  visSummary: string
+  storageRequirements?: string
+  priceKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: boolean
+  bookable?: boolean
+  pharmacyAdministered?: boolean
+  travelRelated?: boolean
+  seasonLabel?: string | null
+  regulatoryNotes?: string | null
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  appointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutVaccineInput
+  consents?: Prisma.VaccinationConsentCreateNestedManyWithoutVaccineInput
+  records?: Prisma.ImmunizationRecordCreateNestedManyWithoutVaccineInput
+}
+
+export type VaccineProductUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  slug: string
+  name: string
+  antigen: string
+  brandName?: string | null
+  manufacturer?: string | null
+  category: string
+  diseasesPrevented?: Prisma.VaccineProductCreatediseasesPreventedInput | string[]
+  description: string
+  indications: string
+  whoShouldGet?: Prisma.VaccineProductCreatewhoShouldGetInput | string[]
+  whoShouldWait?: Prisma.VaccineProductCreatewhoShouldWaitInput | string[]
+  contraindications?: Prisma.VaccineProductCreatecontraindicationsInput | string[]
+  precautions?: Prisma.VaccineProductCreateprecautionsInput | string[]
+  commonSideEffects?: Prisma.VaccineProductCreatecommonSideEffectsInput | string[]
+  rareRisks?: Prisma.VaccineProductCreaterareRisksInput | string[]
+  route?: string
+  siteOptions?: Prisma.VaccineProductCreatesiteOptionsInput | string[]
+  doseMl?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  seriesDoses?: number
+  seriesIntervalDays?: number | null
+  boosterIntervalMonths?: number | null
+  minAgeMonths?: number
+  maxAgeMonths?: number | null
+  visTitle?: string | null
+  visVersion?: string | null
+  visSummary: string
+  storageRequirements?: string
+  priceKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: boolean
+  bookable?: boolean
+  pharmacyAdministered?: boolean
+  travelRelated?: boolean
+  seasonLabel?: string | null
+  regulatoryNotes?: string | null
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  appointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutVaccineInput
+  consents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutVaccineInput
+  records?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutVaccineInput
+}
+
+export type VaccineProductCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.VaccineProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.VaccineProductCreateWithoutPharmacyInput, Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput>
+}
+
+export type VaccineProductCreateManyPharmacyInputEnvelope = {
+  data: Prisma.VaccineProductCreateManyPharmacyInput | Prisma.VaccineProductCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type VaccineProductUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.VaccineProductWhereUniqueInput
+  update: Prisma.XOR<Prisma.VaccineProductUpdateWithoutPharmacyInput, Prisma.VaccineProductUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.VaccineProductCreateWithoutPharmacyInput, Prisma.VaccineProductUncheckedCreateWithoutPharmacyInput>
+}
+
+export type VaccineProductUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.VaccineProductWhereUniqueInput
+  data: Prisma.XOR<Prisma.VaccineProductUpdateWithoutPharmacyInput, Prisma.VaccineProductUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type VaccineProductUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.VaccineProductScalarWhereInput
+  data: Prisma.XOR<Prisma.VaccineProductUpdateManyMutationInput, Prisma.VaccineProductUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type VaccineProductScalarWhereInput = {
+  AND?: Prisma.VaccineProductScalarWhereInput | Prisma.VaccineProductScalarWhereInput[]
+  OR?: Prisma.VaccineProductScalarWhereInput[]
+  NOT?: Prisma.VaccineProductScalarWhereInput | Prisma.VaccineProductScalarWhereInput[]
+  id?: Prisma.UuidFilter<"VaccineProduct"> | string
+  pharmacyId?: Prisma.UuidFilter<"VaccineProduct"> | string
+  slug?: Prisma.StringFilter<"VaccineProduct"> | string
+  name?: Prisma.StringFilter<"VaccineProduct"> | string
+  antigen?: Prisma.StringFilter<"VaccineProduct"> | string
+  brandName?: Prisma.StringNullableFilter<"VaccineProduct"> | string | null
+  manufacturer?: Prisma.StringNullableFilter<"VaccineProduct"> | string | null
+  category?: Prisma.StringFilter<"VaccineProduct"> | string
+  diseasesPrevented?: Prisma.StringNullableListFilter<"VaccineProduct">
+  description?: Prisma.StringFilter<"VaccineProduct"> | string
+  indications?: Prisma.StringFilter<"VaccineProduct"> | string
+  whoShouldGet?: Prisma.StringNullableListFilter<"VaccineProduct">
+  whoShouldWait?: Prisma.StringNullableListFilter<"VaccineProduct">
+  contraindications?: Prisma.StringNullableListFilter<"VaccineProduct">
+  precautions?: Prisma.StringNullableListFilter<"VaccineProduct">
+  commonSideEffects?: Prisma.StringNullableListFilter<"VaccineProduct">
+  rareRisks?: Prisma.StringNullableListFilter<"VaccineProduct">
+  route?: Prisma.StringFilter<"VaccineProduct"> | string
+  siteOptions?: Prisma.StringNullableListFilter<"VaccineProduct">
+  doseMl?: Prisma.DecimalNullableFilter<"VaccineProduct"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  seriesDoses?: Prisma.IntFilter<"VaccineProduct"> | number
+  seriesIntervalDays?: Prisma.IntNullableFilter<"VaccineProduct"> | number | null
+  boosterIntervalMonths?: Prisma.IntNullableFilter<"VaccineProduct"> | number | null
+  minAgeMonths?: Prisma.IntFilter<"VaccineProduct"> | number
+  maxAgeMonths?: Prisma.IntNullableFilter<"VaccineProduct"> | number | null
+  visTitle?: Prisma.StringNullableFilter<"VaccineProduct"> | string | null
+  visVersion?: Prisma.StringNullableFilter<"VaccineProduct"> | string | null
+  visSummary?: Prisma.StringFilter<"VaccineProduct"> | string
+  storageRequirements?: Prisma.StringFilter<"VaccineProduct"> | string
+  priceKes?: Prisma.DecimalNullableFilter<"VaccineProduct"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: Prisma.BoolFilter<"VaccineProduct"> | boolean
+  bookable?: Prisma.BoolFilter<"VaccineProduct"> | boolean
+  pharmacyAdministered?: Prisma.BoolFilter<"VaccineProduct"> | boolean
+  travelRelated?: Prisma.BoolFilter<"VaccineProduct"> | boolean
+  seasonLabel?: Prisma.StringNullableFilter<"VaccineProduct"> | string | null
+  regulatoryNotes?: Prisma.StringNullableFilter<"VaccineProduct"> | string | null
+  sortOrder?: Prisma.IntFilter<"VaccineProduct"> | number
+  createdAt?: Prisma.DateTimeFilter<"VaccineProduct"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"VaccineProduct"> | Date | string
+}
+
 export type VaccineProductCreateWithoutAppointmentsInput = {
   id?: string
   slug: string
@@ -1250,10 +1491,12 @@ export type VaccineProductCreateWithoutAppointmentsInput = {
   updatedAt?: Date | string
   consents?: Prisma.VaccinationConsentCreateNestedManyWithoutVaccineInput
   records?: Prisma.ImmunizationRecordCreateNestedManyWithoutVaccineInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
 }
 
 export type VaccineProductUncheckedCreateWithoutAppointmentsInput = {
   id?: string
+  pharmacyId: string
   slug: string
   name: string
   antigen: string
@@ -1352,10 +1595,12 @@ export type VaccineProductUpdateWithoutAppointmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   consents?: Prisma.VaccinationConsentUpdateManyWithoutVaccineNestedInput
   records?: Prisma.ImmunizationRecordUpdateManyWithoutVaccineNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutVaccineProductsNestedInput
 }
 
 export type VaccineProductUncheckedUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   antigen?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1438,10 +1683,12 @@ export type VaccineProductCreateWithoutConsentsInput = {
   updatedAt?: Date | string
   appointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutVaccineInput
   records?: Prisma.ImmunizationRecordCreateNestedManyWithoutVaccineInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
 }
 
 export type VaccineProductUncheckedCreateWithoutConsentsInput = {
   id?: string
+  pharmacyId: string
   slug: string
   name: string
   antigen: string
@@ -1540,10 +1787,12 @@ export type VaccineProductUpdateWithoutConsentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   appointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutVaccineNestedInput
   records?: Prisma.ImmunizationRecordUpdateManyWithoutVaccineNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutVaccineProductsNestedInput
 }
 
 export type VaccineProductUncheckedUpdateWithoutConsentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   antigen?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1626,10 +1875,12 @@ export type VaccineProductCreateWithoutRecordsInput = {
   updatedAt?: Date | string
   appointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutVaccineInput
   consents?: Prisma.VaccinationConsentCreateNestedManyWithoutVaccineInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
 }
 
 export type VaccineProductUncheckedCreateWithoutRecordsInput = {
   id?: string
+  pharmacyId: string
   slug: string
   name: string
   antigen: string
@@ -1728,9 +1979,139 @@ export type VaccineProductUpdateWithoutRecordsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   appointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutVaccineNestedInput
   consents?: Prisma.VaccinationConsentUpdateManyWithoutVaccineNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutVaccineProductsNestedInput
 }
 
 export type VaccineProductUncheckedUpdateWithoutRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  antigen?: Prisma.StringFieldUpdateOperationsInput | string
+  brandName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  diseasesPrevented?: Prisma.VaccineProductUpdatediseasesPreventedInput | string[]
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  indications?: Prisma.StringFieldUpdateOperationsInput | string
+  whoShouldGet?: Prisma.VaccineProductUpdatewhoShouldGetInput | string[]
+  whoShouldWait?: Prisma.VaccineProductUpdatewhoShouldWaitInput | string[]
+  contraindications?: Prisma.VaccineProductUpdatecontraindicationsInput | string[]
+  precautions?: Prisma.VaccineProductUpdateprecautionsInput | string[]
+  commonSideEffects?: Prisma.VaccineProductUpdatecommonSideEffectsInput | string[]
+  rareRisks?: Prisma.VaccineProductUpdaterareRisksInput | string[]
+  route?: Prisma.StringFieldUpdateOperationsInput | string
+  siteOptions?: Prisma.VaccineProductUpdatesiteOptionsInput | string[]
+  doseMl?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  seriesDoses?: Prisma.IntFieldUpdateOperationsInput | number
+  seriesIntervalDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  boosterIntervalMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  minAgeMonths?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAgeMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  visTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visSummary?: Prisma.StringFieldUpdateOperationsInput | string
+  storageRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  priceKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bookable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pharmacyAdministered?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  travelRelated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seasonLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regulatoryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  appointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutVaccineNestedInput
+  consents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutVaccineNestedInput
+}
+
+export type VaccineProductCreateManyPharmacyInput = {
+  id?: string
+  slug: string
+  name: string
+  antigen: string
+  brandName?: string | null
+  manufacturer?: string | null
+  category: string
+  diseasesPrevented?: Prisma.VaccineProductCreatediseasesPreventedInput | string[]
+  description: string
+  indications: string
+  whoShouldGet?: Prisma.VaccineProductCreatewhoShouldGetInput | string[]
+  whoShouldWait?: Prisma.VaccineProductCreatewhoShouldWaitInput | string[]
+  contraindications?: Prisma.VaccineProductCreatecontraindicationsInput | string[]
+  precautions?: Prisma.VaccineProductCreateprecautionsInput | string[]
+  commonSideEffects?: Prisma.VaccineProductCreatecommonSideEffectsInput | string[]
+  rareRisks?: Prisma.VaccineProductCreaterareRisksInput | string[]
+  route?: string
+  siteOptions?: Prisma.VaccineProductCreatesiteOptionsInput | string[]
+  doseMl?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  seriesDoses?: number
+  seriesIntervalDays?: number | null
+  boosterIntervalMonths?: number | null
+  minAgeMonths?: number
+  maxAgeMonths?: number | null
+  visTitle?: string | null
+  visVersion?: string | null
+  visSummary: string
+  storageRequirements?: string
+  priceKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: boolean
+  bookable?: boolean
+  pharmacyAdministered?: boolean
+  travelRelated?: boolean
+  seasonLabel?: string | null
+  regulatoryNotes?: string | null
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type VaccineProductUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  antigen?: Prisma.StringFieldUpdateOperationsInput | string
+  brandName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  diseasesPrevented?: Prisma.VaccineProductUpdatediseasesPreventedInput | string[]
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  indications?: Prisma.StringFieldUpdateOperationsInput | string
+  whoShouldGet?: Prisma.VaccineProductUpdatewhoShouldGetInput | string[]
+  whoShouldWait?: Prisma.VaccineProductUpdatewhoShouldWaitInput | string[]
+  contraindications?: Prisma.VaccineProductUpdatecontraindicationsInput | string[]
+  precautions?: Prisma.VaccineProductUpdateprecautionsInput | string[]
+  commonSideEffects?: Prisma.VaccineProductUpdatecommonSideEffectsInput | string[]
+  rareRisks?: Prisma.VaccineProductUpdaterareRisksInput | string[]
+  route?: Prisma.StringFieldUpdateOperationsInput | string
+  siteOptions?: Prisma.VaccineProductUpdatesiteOptionsInput | string[]
+  doseMl?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  seriesDoses?: Prisma.IntFieldUpdateOperationsInput | number
+  seriesIntervalDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  boosterIntervalMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  minAgeMonths?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAgeMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  visTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visSummary?: Prisma.StringFieldUpdateOperationsInput | string
+  storageRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  priceKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bookable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pharmacyAdministered?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  travelRelated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seasonLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regulatoryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  appointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutVaccineNestedInput
+  consents?: Prisma.VaccinationConsentUpdateManyWithoutVaccineNestedInput
+  records?: Prisma.ImmunizationRecordUpdateManyWithoutVaccineNestedInput
+}
+
+export type VaccineProductUncheckedUpdateWithoutPharmacyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1771,6 +2152,48 @@ export type VaccineProductUncheckedUpdateWithoutRecordsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   appointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutVaccineNestedInput
   consents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutVaccineNestedInput
+  records?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutVaccineNestedInput
+}
+
+export type VaccineProductUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  antigen?: Prisma.StringFieldUpdateOperationsInput | string
+  brandName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  diseasesPrevented?: Prisma.VaccineProductUpdatediseasesPreventedInput | string[]
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  indications?: Prisma.StringFieldUpdateOperationsInput | string
+  whoShouldGet?: Prisma.VaccineProductUpdatewhoShouldGetInput | string[]
+  whoShouldWait?: Prisma.VaccineProductUpdatewhoShouldWaitInput | string[]
+  contraindications?: Prisma.VaccineProductUpdatecontraindicationsInput | string[]
+  precautions?: Prisma.VaccineProductUpdateprecautionsInput | string[]
+  commonSideEffects?: Prisma.VaccineProductUpdatecommonSideEffectsInput | string[]
+  rareRisks?: Prisma.VaccineProductUpdaterareRisksInput | string[]
+  route?: Prisma.StringFieldUpdateOperationsInput | string
+  siteOptions?: Prisma.VaccineProductUpdatesiteOptionsInput | string[]
+  doseMl?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  seriesDoses?: Prisma.IntFieldUpdateOperationsInput | number
+  seriesIntervalDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  boosterIntervalMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  minAgeMonths?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAgeMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  visTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visSummary?: Prisma.StringFieldUpdateOperationsInput | string
+  storageRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  priceKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bookable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pharmacyAdministered?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  travelRelated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seasonLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regulatoryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -1824,6 +2247,7 @@ export type VaccineProductCountOutputTypeCountRecordsArgs<ExtArgs extends runtim
 
 export type VaccineProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   slug?: boolean
   name?: boolean
   antigen?: boolean
@@ -1864,11 +2288,13 @@ export type VaccineProductSelect<ExtArgs extends runtime.Types.Extensions.Intern
   appointments?: boolean | Prisma.VaccineProduct$appointmentsArgs<ExtArgs>
   consents?: boolean | Prisma.VaccineProduct$consentsArgs<ExtArgs>
   records?: boolean | Prisma.VaccineProduct$recordsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.VaccineProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vaccineProduct"]>
 
 export type VaccineProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   slug?: boolean
   name?: boolean
   antigen?: boolean
@@ -1906,10 +2332,12 @@ export type VaccineProductSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vaccineProduct"]>
 
 export type VaccineProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   slug?: boolean
   name?: boolean
   antigen?: boolean
@@ -1947,10 +2375,12 @@ export type VaccineProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vaccineProduct"]>
 
 export type VaccineProductSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   slug?: boolean
   name?: boolean
   antigen?: boolean
@@ -1990,15 +2420,20 @@ export type VaccineProductSelectScalar = {
   updatedAt?: boolean
 }
 
-export type VaccineProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "antigen" | "brandName" | "manufacturer" | "category" | "diseasesPrevented" | "description" | "indications" | "whoShouldGet" | "whoShouldWait" | "contraindications" | "precautions" | "commonSideEffects" | "rareRisks" | "route" | "siteOptions" | "doseMl" | "seriesDoses" | "seriesIntervalDays" | "boosterIntervalMonths" | "minAgeMonths" | "maxAgeMonths" | "visTitle" | "visVersion" | "visSummary" | "storageRequirements" | "priceKes" | "active" | "bookable" | "pharmacyAdministered" | "travelRelated" | "seasonLabel" | "regulatoryNotes" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["vaccineProduct"]>
+export type VaccineProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "slug" | "name" | "antigen" | "brandName" | "manufacturer" | "category" | "diseasesPrevented" | "description" | "indications" | "whoShouldGet" | "whoShouldWait" | "contraindications" | "precautions" | "commonSideEffects" | "rareRisks" | "route" | "siteOptions" | "doseMl" | "seriesDoses" | "seriesIntervalDays" | "boosterIntervalMonths" | "minAgeMonths" | "maxAgeMonths" | "visTitle" | "visVersion" | "visSummary" | "storageRequirements" | "priceKes" | "active" | "bookable" | "pharmacyAdministered" | "travelRelated" | "seasonLabel" | "regulatoryNotes" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["vaccineProduct"]>
 export type VaccineProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   appointments?: boolean | Prisma.VaccineProduct$appointmentsArgs<ExtArgs>
   consents?: boolean | Prisma.VaccineProduct$consentsArgs<ExtArgs>
   records?: boolean | Prisma.VaccineProduct$recordsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.VaccineProductCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type VaccineProductIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type VaccineProductIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type VaccineProductIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
+export type VaccineProductIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
 
 export type $VaccineProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "VaccineProduct"
@@ -2006,9 +2441,11 @@ export type $VaccineProductPayload<ExtArgs extends runtime.Types.Extensions.Inte
     appointments: Prisma.$ImmunizationAppointmentPayload<ExtArgs>[]
     consents: Prisma.$VaccinationConsentPayload<ExtArgs>[]
     records: Prisma.$ImmunizationRecordPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     slug: string
     name: string
     antigen: string
@@ -2452,6 +2889,7 @@ export interface Prisma__VaccineProductClient<T, Null = never, ExtArgs extends r
   appointments<T extends Prisma.VaccineProduct$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VaccineProduct$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationAppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   consents<T extends Prisma.VaccineProduct$consentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VaccineProduct$consentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaccinationConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   records<T extends Prisma.VaccineProduct$recordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VaccineProduct$recordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2482,6 +2920,7 @@ export interface Prisma__VaccineProductClient<T, Null = never, ExtArgs extends r
  */
 export interface VaccineProductFieldRefs {
   readonly id: Prisma.FieldRef<"VaccineProduct", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"VaccineProduct", 'String'>
   readonly slug: Prisma.FieldRef<"VaccineProduct", 'String'>
   readonly name: Prisma.FieldRef<"VaccineProduct", 'String'>
   readonly antigen: Prisma.FieldRef<"VaccineProduct", 'String'>
@@ -2773,6 +3212,10 @@ export type VaccineProductCreateManyAndReturnArgs<ExtArgs extends runtime.Types.
    */
   data: Prisma.VaccineProductCreateManyInput | Prisma.VaccineProductCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VaccineProductIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2843,6 +3286,10 @@ export type VaccineProductUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.
    * Limit how many VaccineProducts to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VaccineProductIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

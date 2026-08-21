@@ -89,7 +89,7 @@ export async function computeLineItemPricing(
   let discountApplied = 0;
   let couponId: string | null = null;
   if (input.couponCode) {
-    const coupon = await prisma.coupon.findUnique({
+    const coupon = await prisma.coupon.findFirst({
       where: { code: input.couponCode.toUpperCase() },
     });
     if (!coupon) return { ok: false, error: `Coupon ${input.couponCode.toUpperCase()} does not exist.` };

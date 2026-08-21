@@ -42,6 +42,7 @@ export type CashierSessionSumAggregateOutputType = {
 
 export type CashierSessionMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   userId: string | null
   openedAt: Date | null
   openingFloat: runtime.Decimal | null
@@ -56,6 +57,7 @@ export type CashierSessionMinAggregateOutputType = {
 
 export type CashierSessionMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   userId: string | null
   openedAt: Date | null
   openingFloat: runtime.Decimal | null
@@ -70,6 +72,7 @@ export type CashierSessionMaxAggregateOutputType = {
 
 export type CashierSessionCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   userId: number
   openedAt: number
   openingFloat: number
@@ -100,6 +103,7 @@ export type CashierSessionSumAggregateInputType = {
 
 export type CashierSessionMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   userId?: true
   openedAt?: true
   openingFloat?: true
@@ -114,6 +118,7 @@ export type CashierSessionMinAggregateInputType = {
 
 export type CashierSessionMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   userId?: true
   openedAt?: true
   openingFloat?: true
@@ -128,6 +133,7 @@ export type CashierSessionMaxAggregateInputType = {
 
 export type CashierSessionCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   userId?: true
   openedAt?: true
   openingFloat?: true
@@ -229,6 +235,7 @@ export type CashierSessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type CashierSessionGroupByOutputType = {
   id: string
+  pharmacyId: string
   userId: string
   openedAt: Date
   openingFloat: runtime.Decimal
@@ -266,6 +273,7 @@ export type CashierSessionWhereInput = {
   OR?: Prisma.CashierSessionWhereInput[]
   NOT?: Prisma.CashierSessionWhereInput | Prisma.CashierSessionWhereInput[]
   id?: Prisma.UuidFilter<"CashierSession"> | string
+  pharmacyId?: Prisma.UuidFilter<"CashierSession"> | string
   userId?: Prisma.UuidFilter<"CashierSession"> | string
   openedAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
   openingFloat?: Prisma.DecimalFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -277,10 +285,12 @@ export type CashierSessionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type CashierSessionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   openingFloat?: Prisma.SortOrder
@@ -292,6 +302,7 @@ export type CashierSessionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type CashierSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -299,6 +310,7 @@ export type CashierSessionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CashierSessionWhereInput | Prisma.CashierSessionWhereInput[]
   OR?: Prisma.CashierSessionWhereInput[]
   NOT?: Prisma.CashierSessionWhereInput | Prisma.CashierSessionWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"CashierSession"> | string
   userId?: Prisma.UuidFilter<"CashierSession"> | string
   openedAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
   openingFloat?: Prisma.DecimalFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -310,10 +322,12 @@ export type CashierSessionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type CashierSessionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   openingFloat?: Prisma.SortOrder
@@ -336,6 +350,7 @@ export type CashierSessionScalarWhereWithAggregatesInput = {
   OR?: Prisma.CashierSessionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CashierSessionScalarWhereWithAggregatesInput | Prisma.CashierSessionScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"CashierSession"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"CashierSession"> | string
   userId?: Prisma.UuidWithAggregatesFilter<"CashierSession"> | string
   openedAt?: Prisma.DateTimeWithAggregatesFilter<"CashierSession"> | Date | string
   openingFloat?: Prisma.DecimalWithAggregatesFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -360,10 +375,12 @@ export type CashierSessionCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCashierSessionsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCashierSessionsInput
 }
 
 export type CashierSessionUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   userId: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -388,10 +405,12 @@ export type CashierSessionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCashierSessionsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCashierSessionsNestedInput
 }
 
 export type CashierSessionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   openingFloat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -406,6 +425,7 @@ export type CashierSessionUncheckedUpdateInput = {
 
 export type CashierSessionCreateManyInput = {
   id?: string
+  pharmacyId: string
   userId: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -433,6 +453,7 @@ export type CashierSessionUpdateManyMutationInput = {
 
 export type CashierSessionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   openingFloat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -457,6 +478,7 @@ export type CashierSessionOrderByRelationAggregateInput = {
 
 export type CashierSessionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   openingFloat?: Prisma.SortOrder
@@ -478,6 +500,7 @@ export type CashierSessionAvgOrderByAggregateInput = {
 
 export type CashierSessionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   openingFloat?: Prisma.SortOrder
@@ -492,6 +515,7 @@ export type CashierSessionMaxOrderByAggregateInput = {
 
 export type CashierSessionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   openingFloat?: Prisma.SortOrder
@@ -509,6 +533,48 @@ export type CashierSessionSumOrderByAggregateInput = {
   closingCash?: Prisma.SortOrder
   expectedCash?: Prisma.SortOrder
   variance?: Prisma.SortOrder
+}
+
+export type CashierSessionCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.CashierSessionCreateWithoutPharmacyInput, Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput> | Prisma.CashierSessionCreateWithoutPharmacyInput[] | Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CashierSessionCreateOrConnectWithoutPharmacyInput | Prisma.CashierSessionCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.CashierSessionCreateManyPharmacyInputEnvelope
+  connect?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+}
+
+export type CashierSessionUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.CashierSessionCreateWithoutPharmacyInput, Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput> | Prisma.CashierSessionCreateWithoutPharmacyInput[] | Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CashierSessionCreateOrConnectWithoutPharmacyInput | Prisma.CashierSessionCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.CashierSessionCreateManyPharmacyInputEnvelope
+  connect?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+}
+
+export type CashierSessionUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.CashierSessionCreateWithoutPharmacyInput, Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput> | Prisma.CashierSessionCreateWithoutPharmacyInput[] | Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CashierSessionCreateOrConnectWithoutPharmacyInput | Prisma.CashierSessionCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.CashierSessionUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.CashierSessionUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.CashierSessionCreateManyPharmacyInputEnvelope
+  set?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+  disconnect?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+  delete?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+  connect?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+  update?: Prisma.CashierSessionUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.CashierSessionUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.CashierSessionUpdateManyWithWhereWithoutPharmacyInput | Prisma.CashierSessionUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.CashierSessionScalarWhereInput | Prisma.CashierSessionScalarWhereInput[]
+}
+
+export type CashierSessionUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.CashierSessionCreateWithoutPharmacyInput, Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput> | Prisma.CashierSessionCreateWithoutPharmacyInput[] | Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CashierSessionCreateOrConnectWithoutPharmacyInput | Prisma.CashierSessionCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.CashierSessionUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.CashierSessionUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.CashierSessionCreateManyPharmacyInputEnvelope
+  set?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+  disconnect?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+  delete?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+  connect?: Prisma.CashierSessionWhereUniqueInput | Prisma.CashierSessionWhereUniqueInput[]
+  update?: Prisma.CashierSessionUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.CashierSessionUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.CashierSessionUpdateManyWithWhereWithoutPharmacyInput | Prisma.CashierSessionUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.CashierSessionScalarWhereInput | Prisma.CashierSessionScalarWhereInput[]
 }
 
 export type CashierSessionCreateNestedManyWithoutUserInput = {
@@ -553,8 +619,23 @@ export type CashierSessionUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.CashierSessionScalarWhereInput | Prisma.CashierSessionScalarWhereInput[]
 }
 
-export type CashierSessionCreateWithoutUserInput = {
+export type CashierSessionCreateWithoutPharmacyInput = {
   id?: string
+  openedAt?: Date | string
+  openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  closedAt?: Date | string | null
+  closingCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  variance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutCashierSessionsInput
+}
+
+export type CashierSessionUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  userId: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closedAt?: Date | string | null
@@ -566,8 +647,67 @@ export type CashierSessionCreateWithoutUserInput = {
   updatedAt?: Date | string
 }
 
+export type CashierSessionCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.CashierSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.CashierSessionCreateWithoutPharmacyInput, Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput>
+}
+
+export type CashierSessionCreateManyPharmacyInputEnvelope = {
+  data: Prisma.CashierSessionCreateManyPharmacyInput | Prisma.CashierSessionCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type CashierSessionUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.CashierSessionWhereUniqueInput
+  update: Prisma.XOR<Prisma.CashierSessionUpdateWithoutPharmacyInput, Prisma.CashierSessionUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.CashierSessionCreateWithoutPharmacyInput, Prisma.CashierSessionUncheckedCreateWithoutPharmacyInput>
+}
+
+export type CashierSessionUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.CashierSessionWhereUniqueInput
+  data: Prisma.XOR<Prisma.CashierSessionUpdateWithoutPharmacyInput, Prisma.CashierSessionUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type CashierSessionUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.CashierSessionScalarWhereInput
+  data: Prisma.XOR<Prisma.CashierSessionUpdateManyMutationInput, Prisma.CashierSessionUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type CashierSessionScalarWhereInput = {
+  AND?: Prisma.CashierSessionScalarWhereInput | Prisma.CashierSessionScalarWhereInput[]
+  OR?: Prisma.CashierSessionScalarWhereInput[]
+  NOT?: Prisma.CashierSessionScalarWhereInput | Prisma.CashierSessionScalarWhereInput[]
+  id?: Prisma.UuidFilter<"CashierSession"> | string
+  pharmacyId?: Prisma.UuidFilter<"CashierSession"> | string
+  userId?: Prisma.UuidFilter<"CashierSession"> | string
+  openedAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
+  openingFloat?: Prisma.DecimalFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  closedAt?: Prisma.DateTimeNullableFilter<"CashierSession"> | Date | string | null
+  closingCash?: Prisma.DecimalNullableFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  expectedCash?: Prisma.DecimalNullableFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  variance?: Prisma.DecimalNullableFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.StringNullableFilter<"CashierSession"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
+}
+
+export type CashierSessionCreateWithoutUserInput = {
+  id?: string
+  openedAt?: Date | string
+  openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  closedAt?: Date | string | null
+  closingCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  variance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCashierSessionsInput
+}
+
 export type CashierSessionUncheckedCreateWithoutUserInput = {
   id?: string
+  pharmacyId: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closedAt?: Date | string | null
@@ -605,25 +745,65 @@ export type CashierSessionUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.CashierSessionUpdateManyMutationInput, Prisma.CashierSessionUncheckedUpdateManyWithoutUserInput>
 }
 
-export type CashierSessionScalarWhereInput = {
-  AND?: Prisma.CashierSessionScalarWhereInput | Prisma.CashierSessionScalarWhereInput[]
-  OR?: Prisma.CashierSessionScalarWhereInput[]
-  NOT?: Prisma.CashierSessionScalarWhereInput | Prisma.CashierSessionScalarWhereInput[]
-  id?: Prisma.UuidFilter<"CashierSession"> | string
-  userId?: Prisma.UuidFilter<"CashierSession"> | string
-  openedAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
-  openingFloat?: Prisma.DecimalFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  closedAt?: Prisma.DateTimeNullableFilter<"CashierSession"> | Date | string | null
-  closingCash?: Prisma.DecimalNullableFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  expectedCash?: Prisma.DecimalNullableFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  variance?: Prisma.DecimalNullableFilter<"CashierSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  notes?: Prisma.StringNullableFilter<"CashierSession"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"CashierSession"> | Date | string
+export type CashierSessionCreateManyPharmacyInput = {
+  id?: string
+  userId: string
+  openedAt?: Date | string
+  openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  closedAt?: Date | string | null
+  closingCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  variance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CashierSessionUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  openingFloat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closingCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  expectedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  variance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutCashierSessionsNestedInput
+}
+
+export type CashierSessionUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  openingFloat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closingCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  expectedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  variance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CashierSessionUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  openingFloat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closingCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  expectedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  variance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CashierSessionCreateManyUserInput = {
   id?: string
+  pharmacyId: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closedAt?: Date | string | null
@@ -646,10 +826,12 @@ export type CashierSessionUpdateWithoutUserInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCashierSessionsNestedInput
 }
 
 export type CashierSessionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   openingFloat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -663,6 +845,7 @@ export type CashierSessionUncheckedUpdateWithoutUserInput = {
 
 export type CashierSessionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   openingFloat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -678,6 +861,7 @@ export type CashierSessionUncheckedUpdateManyWithoutUserInput = {
 
 export type CashierSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   userId?: boolean
   openedAt?: boolean
   openingFloat?: boolean
@@ -689,10 +873,12 @@ export type CashierSessionSelect<ExtArgs extends runtime.Types.Extensions.Intern
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashierSession"]>
 
 export type CashierSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   userId?: boolean
   openedAt?: boolean
   openingFloat?: boolean
@@ -704,10 +890,12 @@ export type CashierSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashierSession"]>
 
 export type CashierSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   userId?: boolean
   openedAt?: boolean
   openingFloat?: boolean
@@ -719,10 +907,12 @@ export type CashierSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashierSession"]>
 
 export type CashierSessionSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   userId?: boolean
   openedAt?: boolean
   openingFloat?: boolean
@@ -735,24 +925,29 @@ export type CashierSessionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CashierSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "openedAt" | "openingFloat" | "closedAt" | "closingCash" | "expectedCash" | "variance" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["cashierSession"]>
+export type CashierSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "userId" | "openedAt" | "openingFloat" | "closedAt" | "closingCash" | "expectedCash" | "variance" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["cashierSession"]>
 export type CashierSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type CashierSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type CashierSessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $CashierSessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CashierSession"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     userId: string
     openedAt: Date
     openingFloat: runtime.Decimal
@@ -1158,6 +1353,7 @@ readonly fields: CashierSessionFieldRefs;
 export interface Prisma__CashierSessionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1188,6 +1384,7 @@ export interface Prisma__CashierSessionClient<T, Null = never, ExtArgs extends r
  */
 export interface CashierSessionFieldRefs {
   readonly id: Prisma.FieldRef<"CashierSession", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"CashierSession", 'String'>
   readonly userId: Prisma.FieldRef<"CashierSession", 'String'>
   readonly openedAt: Prisma.FieldRef<"CashierSession", 'DateTime'>
   readonly openingFloat: Prisma.FieldRef<"CashierSession", 'Decimal'>

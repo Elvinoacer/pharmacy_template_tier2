@@ -51,6 +51,7 @@ export type OrderSumAggregateOutputType = {
 
 export type OrderMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   source: string | null
   refillId: string | null
@@ -101,6 +102,7 @@ export type OrderMinAggregateOutputType = {
 
 export type OrderMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   source: string | null
   refillId: string | null
@@ -151,6 +153,7 @@ export type OrderMaxAggregateOutputType = {
 
 export type OrderCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   source: number
   refillId: number
@@ -225,6 +228,7 @@ export type OrderSumAggregateInputType = {
 
 export type OrderMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   source?: true
   refillId?: true
@@ -275,6 +279,7 @@ export type OrderMinAggregateInputType = {
 
 export type OrderMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   source?: true
   refillId?: true
@@ -325,6 +330,7 @@ export type OrderMaxAggregateInputType = {
 
 export type OrderCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   source?: true
   refillId?: true
@@ -462,6 +468,7 @@ export type OrderGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type OrderGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string | null
   source: string
   refillId: string | null
@@ -535,6 +542,7 @@ export type OrderWhereInput = {
   OR?: Prisma.OrderWhereInput[]
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   id?: Prisma.UuidFilter<"Order"> | string
+  pharmacyId?: Prisma.UuidFilter<"Order"> | string
   customerId?: Prisma.UuidNullableFilter<"Order"> | string | null
   source?: Prisma.StringFilter<"Order"> | string
   refillId?: Prisma.UuidNullableFilter<"Order"> | string | null
@@ -591,10 +599,12 @@ export type OrderWhereInput = {
   inventoryReservations?: Prisma.InventoryReservationListRelationFilter
   prescriptionFill?: Prisma.XOR<Prisma.PrescriptionFillNullableScalarRelationFilter, Prisma.PrescriptionFillWhereInput> | null
   dispensedPrescriptions?: Prisma.PrescriptionListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type OrderOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   refillId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -651,6 +661,7 @@ export type OrderOrderByWithRelationInput = {
   inventoryReservations?: Prisma.InventoryReservationOrderByRelationAggregateInput
   prescriptionFill?: Prisma.PrescriptionFillOrderByWithRelationInput
   dispensedPrescriptions?: Prisma.PrescriptionOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -658,6 +669,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   OR?: Prisma.OrderWhereInput[]
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"Order"> | string
   customerId?: Prisma.UuidNullableFilter<"Order"> | string | null
   source?: Prisma.StringFilter<"Order"> | string
   refillId?: Prisma.UuidNullableFilter<"Order"> | string | null
@@ -714,10 +726,12 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   inventoryReservations?: Prisma.InventoryReservationListRelationFilter
   prescriptionFill?: Prisma.XOR<Prisma.PrescriptionFillNullableScalarRelationFilter, Prisma.PrescriptionFillWhereInput> | null
   dispensedPrescriptions?: Prisma.PrescriptionListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type OrderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   refillId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -776,6 +790,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   OR?: Prisma.OrderScalarWhereWithAggregatesInput[]
   NOT?: Prisma.OrderScalarWhereWithAggregatesInput | Prisma.OrderScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"Order"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"Order"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"Order"> | string | null
   source?: Prisma.StringWithAggregatesFilter<"Order"> | string
   refillId?: Prisma.UuidNullableWithAggregatesFilter<"Order"> | string | null
@@ -880,10 +895,12 @@ export type OrderCreateInput = {
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -996,10 +1013,12 @@ export type OrderUpdateInput = {
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1058,6 +1077,7 @@ export type OrderUncheckedUpdateInput = {
 
 export type OrderCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -1156,6 +1176,7 @@ export type OrderUpdateManyMutationInput = {
 
 export type OrderUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1221,6 +1242,7 @@ export type OrderNullableScalarRelationFilter = {
 
 export type OrderCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   refillId?: Prisma.SortOrder
@@ -1282,6 +1304,7 @@ export type OrderAvgOrderByAggregateInput = {
 
 export type OrderMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   refillId?: Prisma.SortOrder
@@ -1332,6 +1355,7 @@ export type OrderMaxOrderByAggregateInput = {
 
 export type OrderMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   refillId?: Prisma.SortOrder
@@ -1394,6 +1418,48 @@ export type OrderSumOrderByAggregateInput = {
 export type OrderScalarRelationFilter = {
   is?: Prisma.OrderWhereInput
   isNot?: Prisma.OrderWhereInput
+}
+
+export type OrderCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutPharmacyInput, Prisma.OrderUncheckedCreateWithoutPharmacyInput> | Prisma.OrderCreateWithoutPharmacyInput[] | Prisma.OrderUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPharmacyInput | Prisma.OrderCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.OrderCreateManyPharmacyInputEnvelope
+  connect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+}
+
+export type OrderUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutPharmacyInput, Prisma.OrderUncheckedCreateWithoutPharmacyInput> | Prisma.OrderCreateWithoutPharmacyInput[] | Prisma.OrderUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPharmacyInput | Prisma.OrderCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.OrderCreateManyPharmacyInputEnvelope
+  connect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+}
+
+export type OrderUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutPharmacyInput, Prisma.OrderUncheckedCreateWithoutPharmacyInput> | Prisma.OrderCreateWithoutPharmacyInput[] | Prisma.OrderUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPharmacyInput | Prisma.OrderCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.OrderUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.OrderUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.OrderCreateManyPharmacyInputEnvelope
+  set?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  disconnect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  delete?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  connect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  update?: Prisma.OrderUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.OrderUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.OrderUpdateManyWithWhereWithoutPharmacyInput | Prisma.OrderUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
+}
+
+export type OrderUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutPharmacyInput, Prisma.OrderUncheckedCreateWithoutPharmacyInput> | Prisma.OrderCreateWithoutPharmacyInput[] | Prisma.OrderUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPharmacyInput | Prisma.OrderCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.OrderUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.OrderUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.OrderCreateManyPharmacyInputEnvelope
+  set?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  disconnect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  delete?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  connect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  update?: Prisma.OrderUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.OrderUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.OrderUpdateManyWithWhereWithoutPharmacyInput | Prisma.OrderUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
 }
 
 export type OrderCreateNestedManyWithoutDispenserNoteByInput = {
@@ -1616,6 +1682,202 @@ export type OrderUpdateOneWithoutCommerceEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutCommerceEventsInput, Prisma.OrderUpdateWithoutCommerceEventsInput>, Prisma.OrderUncheckedUpdateWithoutCommerceEventsInput>
 }
 
+export type OrderCreateWithoutPharmacyInput = {
+  id?: string
+  source?: string
+  refillId?: string | null
+  status?: string
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  waived?: boolean
+  waivedReason?: string | null
+  waivedScope?: string | null
+  waivedUntil?: Date | string | null
+  notes?: string | null
+  reason?: string | null
+  dispenserNote?: string | null
+  dispenserNoteAt?: Date | string | null
+  guestName?: string | null
+  guestPhone?: string | null
+  guestEmail?: string | null
+  fulfillment?: string
+  dispatchedAt?: Date | string | null
+  dispatchedById?: string | null
+  servedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  type?: $Enums.OrderType | null
+  lifecycleStatus?: $Enums.OrderLifecycleStatus | null
+  paymentStage?: $Enums.PaymentStage | null
+  fulfillmentStage?: $Enums.FulfillmentStage | null
+  currency?: string
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountRefunded?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountDue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reservedAt?: Date | string | null
+  paymentInitiatedAt?: Date | string | null
+  paidAt?: Date | string | null
+  preparingAt?: Date | string | null
+  readyAt?: Date | string | null
+  outForDeliveryAt?: Date | string | null
+  fulfilledAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  expiredAt?: Date | string | null
+  expiresAt?: Date | string | null
+  cancellationReason?: string | null
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutOrdersInput
+  dispenserNoteBy?: Prisma.UserCreateNestedOneWithoutOrderDispenserNotesInput
+  items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrderInput
+  serviceBooking?: Prisma.ServiceBookingCreateNestedOneWithoutOrderInput
+  commerceEvents?: Prisma.CommerceEventCreateNestedManyWithoutOrderInput
+  refunds?: Prisma.RefundCreateNestedManyWithoutOrderInput
+  inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
+  prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
+  dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+}
+
+export type OrderUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  source?: string
+  refillId?: string | null
+  status?: string
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  waived?: boolean
+  waivedReason?: string | null
+  waivedScope?: string | null
+  waivedUntil?: Date | string | null
+  notes?: string | null
+  reason?: string | null
+  dispenserNote?: string | null
+  dispenserNoteAt?: Date | string | null
+  dispenserNoteById?: string | null
+  guestName?: string | null
+  guestPhone?: string | null
+  guestEmail?: string | null
+  fulfillment?: string
+  dispatchedAt?: Date | string | null
+  dispatchedById?: string | null
+  servedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  type?: $Enums.OrderType | null
+  lifecycleStatus?: $Enums.OrderLifecycleStatus | null
+  paymentStage?: $Enums.PaymentStage | null
+  fulfillmentStage?: $Enums.FulfillmentStage | null
+  currency?: string
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountRefunded?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountDue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reservedAt?: Date | string | null
+  paymentInitiatedAt?: Date | string | null
+  paidAt?: Date | string | null
+  preparingAt?: Date | string | null
+  readyAt?: Date | string | null
+  outForDeliveryAt?: Date | string | null
+  fulfilledAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  expiredAt?: Date | string | null
+  expiresAt?: Date | string | null
+  cancellationReason?: string | null
+  items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
+  serviceBooking?: Prisma.ServiceBookingUncheckedCreateNestedOneWithoutOrderInput
+  commerceEvents?: Prisma.CommerceEventUncheckedCreateNestedManyWithoutOrderInput
+  refunds?: Prisma.RefundUncheckedCreateNestedManyWithoutOrderInput
+  inventoryReservations?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutOrderInput
+  prescriptionFill?: Prisma.PrescriptionFillUncheckedCreateNestedOneWithoutOrderInput
+  dispensedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispensingOrderInput
+}
+
+export type OrderCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutPharmacyInput, Prisma.OrderUncheckedCreateWithoutPharmacyInput>
+}
+
+export type OrderCreateManyPharmacyInputEnvelope = {
+  data: Prisma.OrderCreateManyPharmacyInput | Prisma.OrderCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type OrderUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.OrderWhereUniqueInput
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutPharmacyInput, Prisma.OrderUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutPharmacyInput, Prisma.OrderUncheckedCreateWithoutPharmacyInput>
+}
+
+export type OrderUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.OrderWhereUniqueInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutPharmacyInput, Prisma.OrderUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type OrderUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.OrderScalarWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateManyMutationInput, Prisma.OrderUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type OrderScalarWhereInput = {
+  AND?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
+  OR?: Prisma.OrderScalarWhereInput[]
+  NOT?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Order"> | string
+  pharmacyId?: Prisma.UuidFilter<"Order"> | string
+  customerId?: Prisma.UuidNullableFilter<"Order"> | string | null
+  source?: Prisma.StringFilter<"Order"> | string
+  refillId?: Prisma.UuidNullableFilter<"Order"> | string | null
+  status?: Prisma.StringFilter<"Order"> | string
+  total?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  waived?: Prisma.BoolFilter<"Order"> | boolean
+  waivedReason?: Prisma.StringNullableFilter<"Order"> | string | null
+  waivedScope?: Prisma.StringNullableFilter<"Order"> | string | null
+  waivedUntil?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  notes?: Prisma.StringNullableFilter<"Order"> | string | null
+  reason?: Prisma.StringNullableFilter<"Order"> | string | null
+  dispenserNote?: Prisma.StringNullableFilter<"Order"> | string | null
+  dispenserNoteAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  dispenserNoteById?: Prisma.UuidNullableFilter<"Order"> | string | null
+  guestName?: Prisma.StringNullableFilter<"Order"> | string | null
+  guestPhone?: Prisma.StringNullableFilter<"Order"> | string | null
+  guestEmail?: Prisma.StringNullableFilter<"Order"> | string | null
+  fulfillment?: Prisma.StringFilter<"Order"> | string
+  dispatchedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  dispatchedById?: Prisma.UuidNullableFilter<"Order"> | string | null
+  servedById?: Prisma.UuidNullableFilter<"Order"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  type?: Prisma.EnumOrderTypeNullableFilter<"Order"> | $Enums.OrderType | null
+  lifecycleStatus?: Prisma.EnumOrderLifecycleStatusNullableFilter<"Order"> | $Enums.OrderLifecycleStatus | null
+  paymentStage?: Prisma.EnumPaymentStageNullableFilter<"Order"> | $Enums.PaymentStage | null
+  fulfillmentStage?: Prisma.EnumFulfillmentStageNullableFilter<"Order"> | $Enums.FulfillmentStage | null
+  currency?: Prisma.StringFilter<"Order"> | string
+  subtotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountTotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxTotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netTotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountPaid?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountRefunded?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountDue?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reservedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  paymentInitiatedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  preparingAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  readyAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  outForDeliveryAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  fulfilledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  cancelledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  expiredAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  cancellationReason?: Prisma.StringNullableFilter<"Order"> | string | null
+}
+
 export type OrderCreateWithoutDispenserNoteByInput = {
   id?: string
   source?: string
@@ -1671,10 +1933,12 @@ export type OrderCreateWithoutDispenserNoteByInput = {
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutDispenserNoteByInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -1756,59 +2020,6 @@ export type OrderUpdateManyWithWhereWithoutDispenserNoteByInput = {
   data: Prisma.XOR<Prisma.OrderUpdateManyMutationInput, Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByInput>
 }
 
-export type OrderScalarWhereInput = {
-  AND?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
-  OR?: Prisma.OrderScalarWhereInput[]
-  NOT?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
-  id?: Prisma.UuidFilter<"Order"> | string
-  customerId?: Prisma.UuidNullableFilter<"Order"> | string | null
-  source?: Prisma.StringFilter<"Order"> | string
-  refillId?: Prisma.UuidNullableFilter<"Order"> | string | null
-  status?: Prisma.StringFilter<"Order"> | string
-  total?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  waived?: Prisma.BoolFilter<"Order"> | boolean
-  waivedReason?: Prisma.StringNullableFilter<"Order"> | string | null
-  waivedScope?: Prisma.StringNullableFilter<"Order"> | string | null
-  waivedUntil?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  notes?: Prisma.StringNullableFilter<"Order"> | string | null
-  reason?: Prisma.StringNullableFilter<"Order"> | string | null
-  dispenserNote?: Prisma.StringNullableFilter<"Order"> | string | null
-  dispenserNoteAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  dispenserNoteById?: Prisma.UuidNullableFilter<"Order"> | string | null
-  guestName?: Prisma.StringNullableFilter<"Order"> | string | null
-  guestPhone?: Prisma.StringNullableFilter<"Order"> | string | null
-  guestEmail?: Prisma.StringNullableFilter<"Order"> | string | null
-  fulfillment?: Prisma.StringFilter<"Order"> | string
-  dispatchedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  dispatchedById?: Prisma.UuidNullableFilter<"Order"> | string | null
-  servedById?: Prisma.UuidNullableFilter<"Order"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
-  type?: Prisma.EnumOrderTypeNullableFilter<"Order"> | $Enums.OrderType | null
-  lifecycleStatus?: Prisma.EnumOrderLifecycleStatusNullableFilter<"Order"> | $Enums.OrderLifecycleStatus | null
-  paymentStage?: Prisma.EnumPaymentStageNullableFilter<"Order"> | $Enums.PaymentStage | null
-  fulfillmentStage?: Prisma.EnumFulfillmentStageNullableFilter<"Order"> | $Enums.FulfillmentStage | null
-  currency?: Prisma.StringFilter<"Order"> | string
-  subtotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  discountTotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  taxTotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  netTotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  amountPaid?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  amountRefunded?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  amountDue?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  reservedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  paymentInitiatedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  preparingAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  readyAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  outForDeliveryAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  fulfilledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  cancelledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  expiredAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  expiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  cancellationReason?: Prisma.StringNullableFilter<"Order"> | string | null
-}
-
 export type OrderCreateWithoutCustomerInput = {
   id?: string
   source?: string
@@ -1864,10 +2075,12 @@ export type OrderCreateWithoutCustomerInput = {
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   source?: string
   refillId?: string | null
   status?: string
@@ -2004,10 +2217,12 @@ export type OrderCreateWithoutDispensedPrescriptionsInput = {
   refunds?: Prisma.RefundCreateNestedManyWithoutOrderInput
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutDispensedPrescriptionsInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -2134,10 +2349,12 @@ export type OrderUpdateWithoutDispensedPrescriptionsInput = {
   refunds?: Prisma.RefundUpdateManyWithoutOrderNestedInput
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutDispensedPrescriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2248,10 +2465,12 @@ export type OrderCreateWithoutItemsInput = {
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutItemsInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -2378,10 +2597,12 @@ export type OrderUpdateWithoutItemsInput = {
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2492,10 +2713,12 @@ export type OrderCreateWithoutPaymentsInput = {
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutPaymentsInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -2622,10 +2845,12 @@ export type OrderUpdateWithoutPaymentsInput = {
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2736,10 +2961,12 @@ export type OrderCreateWithoutServiceBookingInput = {
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutServiceBookingInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -2866,10 +3093,12 @@ export type OrderUpdateWithoutServiceBookingInput = {
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutServiceBookingInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2980,10 +3209,12 @@ export type OrderCreateWithoutPrescriptionFillInput = {
   refunds?: Prisma.RefundCreateNestedManyWithoutOrderInput
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutPrescriptionFillInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -3110,10 +3341,12 @@ export type OrderUpdateWithoutPrescriptionFillInput = {
   refunds?: Prisma.RefundUpdateManyWithoutOrderNestedInput
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutPrescriptionFillInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3224,10 +3457,12 @@ export type OrderCreateWithoutInventoryReservationsInput = {
   refunds?: Prisma.RefundCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutInventoryReservationsInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -3354,10 +3589,12 @@ export type OrderUpdateWithoutInventoryReservationsInput = {
   refunds?: Prisma.RefundUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutInventoryReservationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3468,10 +3705,12 @@ export type OrderCreateWithoutRefundsInput = {
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutRefundsInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -3598,10 +3837,12 @@ export type OrderUpdateWithoutRefundsInput = {
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutRefundsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3712,10 +3953,12 @@ export type OrderCreateWithoutCommerceEventsInput = {
   inventoryReservations?: Prisma.InventoryReservationCreateNestedManyWithoutOrderInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutOrderInput
   dispensedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispensingOrderInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderUncheckedCreateWithoutCommerceEventsInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -3842,10 +4085,12 @@ export type OrderUpdateWithoutCommerceEventsInput = {
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCommerceEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3901,8 +4146,225 @@ export type OrderUncheckedUpdateWithoutCommerceEventsInput = {
   dispensedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispensingOrderNestedInput
 }
 
+export type OrderCreateManyPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  source?: string
+  refillId?: string | null
+  status?: string
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  waived?: boolean
+  waivedReason?: string | null
+  waivedScope?: string | null
+  waivedUntil?: Date | string | null
+  notes?: string | null
+  reason?: string | null
+  dispenserNote?: string | null
+  dispenserNoteAt?: Date | string | null
+  dispenserNoteById?: string | null
+  guestName?: string | null
+  guestPhone?: string | null
+  guestEmail?: string | null
+  fulfillment?: string
+  dispatchedAt?: Date | string | null
+  dispatchedById?: string | null
+  servedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  type?: $Enums.OrderType | null
+  lifecycleStatus?: $Enums.OrderLifecycleStatus | null
+  paymentStage?: $Enums.PaymentStage | null
+  fulfillmentStage?: $Enums.FulfillmentStage | null
+  currency?: string
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountRefunded?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountDue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reservedAt?: Date | string | null
+  paymentInitiatedAt?: Date | string | null
+  paidAt?: Date | string | null
+  preparingAt?: Date | string | null
+  readyAt?: Date | string | null
+  outForDeliveryAt?: Date | string | null
+  fulfilledAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  expiredAt?: Date | string | null
+  expiresAt?: Date | string | null
+  cancellationReason?: string | null
+}
+
+export type OrderUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  waived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  waivedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waivedScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waivedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispenserNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispenserNoteAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fulfillment?: Prisma.StringFieldUpdateOperationsInput | string
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  servedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  type?: Prisma.NullableEnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType | null
+  lifecycleStatus?: Prisma.NullableEnumOrderLifecycleStatusFieldUpdateOperationsInput | $Enums.OrderLifecycleStatus | null
+  paymentStage?: Prisma.NullableEnumPaymentStageFieldUpdateOperationsInput | $Enums.PaymentStage | null
+  fulfillmentStage?: Prisma.NullableEnumFulfillmentStageFieldUpdateOperationsInput | $Enums.FulfillmentStage | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountRefunded?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountDue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reservedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentInitiatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preparingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  outForDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customer?: Prisma.CustomerProfileUpdateOneWithoutOrdersNestedInput
+  dispenserNoteBy?: Prisma.UserUpdateOneWithoutOrderDispenserNotesNestedInput
+  items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrderNestedInput
+  serviceBooking?: Prisma.ServiceBookingUpdateOneWithoutOrderNestedInput
+  commerceEvents?: Prisma.CommerceEventUpdateManyWithoutOrderNestedInput
+  refunds?: Prisma.RefundUpdateManyWithoutOrderNestedInput
+  inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
+  prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
+  dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  waived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  waivedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waivedScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waivedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispenserNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispenserNoteAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispenserNoteById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fulfillment?: Prisma.StringFieldUpdateOperationsInput | string
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  servedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  type?: Prisma.NullableEnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType | null
+  lifecycleStatus?: Prisma.NullableEnumOrderLifecycleStatusFieldUpdateOperationsInput | $Enums.OrderLifecycleStatus | null
+  paymentStage?: Prisma.NullableEnumPaymentStageFieldUpdateOperationsInput | $Enums.PaymentStage | null
+  fulfillmentStage?: Prisma.NullableEnumFulfillmentStageFieldUpdateOperationsInput | $Enums.FulfillmentStage | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountRefunded?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountDue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reservedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentInitiatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preparingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  outForDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
+  serviceBooking?: Prisma.ServiceBookingUncheckedUpdateOneWithoutOrderNestedInput
+  commerceEvents?: Prisma.CommerceEventUncheckedUpdateManyWithoutOrderNestedInput
+  refunds?: Prisma.RefundUncheckedUpdateManyWithoutOrderNestedInput
+  inventoryReservations?: Prisma.InventoryReservationUncheckedUpdateManyWithoutOrderNestedInput
+  prescriptionFill?: Prisma.PrescriptionFillUncheckedUpdateOneWithoutOrderNestedInput
+  dispensedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispensingOrderNestedInput
+}
+
+export type OrderUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  waived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  waivedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waivedScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waivedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispenserNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dispenserNoteAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispenserNoteById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fulfillment?: Prisma.StringFieldUpdateOperationsInput | string
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  servedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  type?: Prisma.NullableEnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType | null
+  lifecycleStatus?: Prisma.NullableEnumOrderLifecycleStatusFieldUpdateOperationsInput | $Enums.OrderLifecycleStatus | null
+  paymentStage?: Prisma.NullableEnumPaymentStageFieldUpdateOperationsInput | $Enums.PaymentStage | null
+  fulfillmentStage?: Prisma.NullableEnumFulfillmentStageFieldUpdateOperationsInput | $Enums.FulfillmentStage | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountRefunded?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amountDue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reservedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentInitiatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preparingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  outForDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
 export type OrderCreateManyDispenserNoteByInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   source?: string
   refillId?: string | null
@@ -4005,10 +4467,12 @@ export type OrderUpdateWithoutDispenserNoteByInput = {
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutDispenserNoteByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4066,6 +4530,7 @@ export type OrderUncheckedUpdateWithoutDispenserNoteByInput = {
 
 export type OrderUncheckedUpdateManyWithoutDispenserNoteByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4115,6 +4580,7 @@ export type OrderUncheckedUpdateManyWithoutDispenserNoteByInput = {
 
 export type OrderCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   source?: string
   refillId?: string | null
   status?: string
@@ -4217,10 +4683,12 @@ export type OrderUpdateWithoutCustomerInput = {
   inventoryReservations?: Prisma.InventoryReservationUpdateManyWithoutOrderNestedInput
   prescriptionFill?: Prisma.PrescriptionFillUpdateOneWithoutOrderNestedInput
   dispensedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispensingOrderNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -4278,6 +4746,7 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
 
 export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   refillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -4403,6 +4872,7 @@ export type OrderCountOutputTypeCountDispensedPrescriptionsArgs<ExtArgs extends 
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   source?: boolean
   refillId?: boolean
@@ -4459,11 +4929,13 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   inventoryReservations?: boolean | Prisma.Order$inventoryReservationsArgs<ExtArgs>
   prescriptionFill?: boolean | Prisma.Order$prescriptionFillArgs<ExtArgs>
   dispensedPrescriptions?: boolean | Prisma.Order$dispensedPrescriptionsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
 export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   source?: boolean
   refillId?: boolean
@@ -4512,10 +4984,12 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   cancellationReason?: boolean
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
   dispenserNoteBy?: boolean | Prisma.Order$dispenserNoteByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
 export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   source?: boolean
   refillId?: boolean
@@ -4564,10 +5038,12 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   cancellationReason?: boolean
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
   dispenserNoteBy?: boolean | Prisma.Order$dispenserNoteByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
 export type OrderSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   source?: boolean
   refillId?: boolean
@@ -4616,7 +5092,7 @@ export type OrderSelectScalar = {
   cancellationReason?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "source" | "refillId" | "status" | "total" | "waived" | "waivedReason" | "waivedScope" | "waivedUntil" | "notes" | "reason" | "dispenserNote" | "dispenserNoteAt" | "dispenserNoteById" | "guestName" | "guestPhone" | "guestEmail" | "fulfillment" | "dispatchedAt" | "dispatchedById" | "servedById" | "createdAt" | "updatedAt" | "type" | "lifecycleStatus" | "paymentStage" | "fulfillmentStage" | "currency" | "subtotal" | "discountTotal" | "taxTotal" | "netTotal" | "amountPaid" | "amountRefunded" | "amountDue" | "reservedAt" | "paymentInitiatedAt" | "paidAt" | "preparingAt" | "readyAt" | "outForDeliveryAt" | "fulfilledAt" | "cancelledAt" | "expiredAt" | "expiresAt" | "cancellationReason", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "source" | "refillId" | "status" | "total" | "waived" | "waivedReason" | "waivedScope" | "waivedUntil" | "notes" | "reason" | "dispenserNote" | "dispenserNoteAt" | "dispenserNoteById" | "guestName" | "guestPhone" | "guestEmail" | "fulfillment" | "dispatchedAt" | "dispatchedById" | "servedById" | "createdAt" | "updatedAt" | "type" | "lifecycleStatus" | "paymentStage" | "fulfillmentStage" | "currency" | "subtotal" | "discountTotal" | "taxTotal" | "netTotal" | "amountPaid" | "amountRefunded" | "amountDue" | "reservedAt" | "paymentInitiatedAt" | "paidAt" | "preparingAt" | "readyAt" | "outForDeliveryAt" | "fulfilledAt" | "cancelledAt" | "expiredAt" | "expiresAt" | "cancellationReason", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
   dispenserNoteBy?: boolean | Prisma.Order$dispenserNoteByArgs<ExtArgs>
@@ -4628,15 +5104,18 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   inventoryReservations?: boolean | Prisma.Order$inventoryReservationsArgs<ExtArgs>
   prescriptionFill?: boolean | Prisma.Order$prescriptionFillArgs<ExtArgs>
   dispensedPrescriptions?: boolean | Prisma.Order$dispensedPrescriptionsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
   dispenserNoteBy?: boolean | Prisma.Order$dispenserNoteByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type OrderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
   dispenserNoteBy?: boolean | Prisma.Order$dispenserNoteByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4670,9 +5149,11 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
      * Prescriptions converted into this dispensing order.
      */
     dispensedPrescriptions: Prisma.$PrescriptionPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string | null
     /**
      * Where the order originated: counter (staff at POS), portal (customer online), refill (linked to a RefillRequest), website (guest).
@@ -5197,6 +5678,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   inventoryReservations<T extends Prisma.Order$inventoryReservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$inventoryReservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   prescriptionFill<T extends Prisma.Order$prescriptionFillArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$prescriptionFillArgs<ExtArgs>>): Prisma.Prisma__PrescriptionFillClient<runtime.Types.Result.GetResult<Prisma.$PrescriptionFillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   dispensedPrescriptions<T extends Prisma.Order$dispensedPrescriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$dispensedPrescriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5227,6 +5709,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface OrderFieldRefs {
   readonly id: Prisma.FieldRef<"Order", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"Order", 'String'>
   readonly customerId: Prisma.FieldRef<"Order", 'String'>
   readonly source: Prisma.FieldRef<"Order", 'String'>
   readonly refillId: Prisma.FieldRef<"Order", 'String'>

@@ -36,6 +36,7 @@ export type PharmacyImmunizationPolicySumAggregateOutputType = {
 
 export type PharmacyImmunizationPolicyMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   enabled: boolean | null
   jurisdiction: string | null
   authorizingBody: string | null
@@ -56,6 +57,7 @@ export type PharmacyImmunizationPolicyMinAggregateOutputType = {
 
 export type PharmacyImmunizationPolicyMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   enabled: boolean | null
   jurisdiction: string | null
   authorizingBody: string | null
@@ -76,6 +78,7 @@ export type PharmacyImmunizationPolicyMaxAggregateOutputType = {
 
 export type PharmacyImmunizationPolicyCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   enabled: number
   jurisdiction: number
   authorizingBody: number
@@ -106,6 +109,7 @@ export type PharmacyImmunizationPolicySumAggregateInputType = {
 
 export type PharmacyImmunizationPolicyMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   enabled?: true
   jurisdiction?: true
   authorizingBody?: true
@@ -126,6 +130,7 @@ export type PharmacyImmunizationPolicyMinAggregateInputType = {
 
 export type PharmacyImmunizationPolicyMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   enabled?: true
   jurisdiction?: true
   authorizingBody?: true
@@ -146,6 +151,7 @@ export type PharmacyImmunizationPolicyMaxAggregateInputType = {
 
 export type PharmacyImmunizationPolicyCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   enabled?: true
   jurisdiction?: true
   authorizingBody?: true
@@ -253,6 +259,7 @@ export type PharmacyImmunizationPolicyGroupByArgs<ExtArgs extends runtime.Types.
 
 export type PharmacyImmunizationPolicyGroupByOutputType = {
   id: string
+  pharmacyId: string
   enabled: boolean
   jurisdiction: string
   authorizingBody: string
@@ -295,7 +302,8 @@ export type PharmacyImmunizationPolicyWhereInput = {
   AND?: Prisma.PharmacyImmunizationPolicyWhereInput | Prisma.PharmacyImmunizationPolicyWhereInput[]
   OR?: Prisma.PharmacyImmunizationPolicyWhereInput[]
   NOT?: Prisma.PharmacyImmunizationPolicyWhereInput | Prisma.PharmacyImmunizationPolicyWhereInput[]
-  id?: Prisma.StringFilter<"PharmacyImmunizationPolicy"> | string
+  id?: Prisma.UuidFilter<"PharmacyImmunizationPolicy"> | string
+  pharmacyId?: Prisma.UuidFilter<"PharmacyImmunizationPolicy"> | string
   enabled?: Prisma.BoolFilter<"PharmacyImmunizationPolicy"> | boolean
   jurisdiction?: Prisma.StringFilter<"PharmacyImmunizationPolicy"> | string
   authorizingBody?: Prisma.StringFilter<"PharmacyImmunizationPolicy"> | string
@@ -313,10 +321,12 @@ export type PharmacyImmunizationPolicyWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PharmacyImmunizationPolicy"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PharmacyImmunizationPolicy"> | Date | string
   updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type PharmacyImmunizationPolicyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   enabled?: Prisma.SortOrder
   jurisdiction?: Prisma.SortOrder
   authorizingBody?: Prisma.SortOrder
@@ -334,10 +344,12 @@ export type PharmacyImmunizationPolicyOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type PharmacyImmunizationPolicyWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  pharmacyId?: string
   AND?: Prisma.PharmacyImmunizationPolicyWhereInput | Prisma.PharmacyImmunizationPolicyWhereInput[]
   OR?: Prisma.PharmacyImmunizationPolicyWhereInput[]
   NOT?: Prisma.PharmacyImmunizationPolicyWhereInput | Prisma.PharmacyImmunizationPolicyWhereInput[]
@@ -358,10 +370,12 @@ export type PharmacyImmunizationPolicyWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PharmacyImmunizationPolicy"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PharmacyImmunizationPolicy"> | Date | string
   updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-}, "id">
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
+}, "id" | "pharmacyId">
 
 export type PharmacyImmunizationPolicyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   enabled?: Prisma.SortOrder
   jurisdiction?: Prisma.SortOrder
   authorizingBody?: Prisma.SortOrder
@@ -389,7 +403,8 @@ export type PharmacyImmunizationPolicyScalarWhereWithAggregatesInput = {
   AND?: Prisma.PharmacyImmunizationPolicyScalarWhereWithAggregatesInput | Prisma.PharmacyImmunizationPolicyScalarWhereWithAggregatesInput[]
   OR?: Prisma.PharmacyImmunizationPolicyScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PharmacyImmunizationPolicyScalarWhereWithAggregatesInput | Prisma.PharmacyImmunizationPolicyScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"PharmacyImmunizationPolicy"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"PharmacyImmunizationPolicy"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"PharmacyImmunizationPolicy"> | string
   enabled?: Prisma.BoolWithAggregatesFilter<"PharmacyImmunizationPolicy"> | boolean
   jurisdiction?: Prisma.StringWithAggregatesFilter<"PharmacyImmunizationPolicy"> | string
   authorizingBody?: Prisma.StringWithAggregatesFilter<"PharmacyImmunizationPolicy"> | string
@@ -426,10 +441,12 @@ export type PharmacyImmunizationPolicyCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutImmunizationPolicyUpdatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationPolicyInput
 }
 
 export type PharmacyImmunizationPolicyUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   enabled?: boolean
   jurisdiction?: string
   authorizingBody?: string
@@ -466,10 +483,12 @@ export type PharmacyImmunizationPolicyUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.UserUpdateOneWithoutImmunizationPolicyUpdatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationPolicyNestedInput
 }
 
 export type PharmacyImmunizationPolicyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   jurisdiction?: Prisma.StringFieldUpdateOperationsInput | string
   authorizingBody?: Prisma.StringFieldUpdateOperationsInput | string
@@ -490,6 +509,7 @@ export type PharmacyImmunizationPolicyUncheckedUpdateInput = {
 
 export type PharmacyImmunizationPolicyCreateManyInput = {
   id?: string
+  pharmacyId: string
   enabled?: boolean
   jurisdiction?: string
   authorizingBody?: string
@@ -529,6 +549,7 @@ export type PharmacyImmunizationPolicyUpdateManyMutationInput = {
 
 export type PharmacyImmunizationPolicyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   jurisdiction?: Prisma.StringFieldUpdateOperationsInput | string
   authorizingBody?: Prisma.StringFieldUpdateOperationsInput | string
@@ -547,6 +568,11 @@ export type PharmacyImmunizationPolicyUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type PharmacyImmunizationPolicyNullableScalarRelationFilter = {
+  is?: Prisma.PharmacyImmunizationPolicyWhereInput | null
+  isNot?: Prisma.PharmacyImmunizationPolicyWhereInput | null
+}
+
 export type PharmacyImmunizationPolicyListRelationFilter = {
   every?: Prisma.PharmacyImmunizationPolicyWhereInput
   some?: Prisma.PharmacyImmunizationPolicyWhereInput
@@ -559,6 +585,7 @@ export type PharmacyImmunizationPolicyOrderByRelationAggregateInput = {
 
 export type PharmacyImmunizationPolicyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   enabled?: Prisma.SortOrder
   jurisdiction?: Prisma.SortOrder
   authorizingBody?: Prisma.SortOrder
@@ -583,6 +610,7 @@ export type PharmacyImmunizationPolicyAvgOrderByAggregateInput = {
 
 export type PharmacyImmunizationPolicyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   enabled?: Prisma.SortOrder
   jurisdiction?: Prisma.SortOrder
   authorizingBody?: Prisma.SortOrder
@@ -603,6 +631,7 @@ export type PharmacyImmunizationPolicyMaxOrderByAggregateInput = {
 
 export type PharmacyImmunizationPolicyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   enabled?: Prisma.SortOrder
   jurisdiction?: Prisma.SortOrder
   authorizingBody?: Prisma.SortOrder
@@ -623,6 +652,38 @@ export type PharmacyImmunizationPolicyMinOrderByAggregateInput = {
 
 export type PharmacyImmunizationPolicySumOrderByAggregateInput = {
   observationMinutesDefault?: Prisma.SortOrder
+}
+
+export type PharmacyImmunizationPolicyCreateNestedOneWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PharmacyImmunizationPolicyCreateWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUncheckedCreateWithoutPharmacyInput>
+  connectOrCreate?: Prisma.PharmacyImmunizationPolicyCreateOrConnectWithoutPharmacyInput
+  connect?: Prisma.PharmacyImmunizationPolicyWhereUniqueInput
+}
+
+export type PharmacyImmunizationPolicyUncheckedCreateNestedOneWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PharmacyImmunizationPolicyCreateWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUncheckedCreateWithoutPharmacyInput>
+  connectOrCreate?: Prisma.PharmacyImmunizationPolicyCreateOrConnectWithoutPharmacyInput
+  connect?: Prisma.PharmacyImmunizationPolicyWhereUniqueInput
+}
+
+export type PharmacyImmunizationPolicyUpdateOneWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacyImmunizationPolicyCreateWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUncheckedCreateWithoutPharmacyInput>
+  connectOrCreate?: Prisma.PharmacyImmunizationPolicyCreateOrConnectWithoutPharmacyInput
+  upsert?: Prisma.PharmacyImmunizationPolicyUpsertWithoutPharmacyInput
+  disconnect?: Prisma.PharmacyImmunizationPolicyWhereInput | boolean
+  delete?: Prisma.PharmacyImmunizationPolicyWhereInput | boolean
+  connect?: Prisma.PharmacyImmunizationPolicyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PharmacyImmunizationPolicyUpdateToOneWithWhereWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUpdateWithoutPharmacyInput>, Prisma.PharmacyImmunizationPolicyUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type PharmacyImmunizationPolicyUncheckedUpdateOneWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacyImmunizationPolicyCreateWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUncheckedCreateWithoutPharmacyInput>
+  connectOrCreate?: Prisma.PharmacyImmunizationPolicyCreateOrConnectWithoutPharmacyInput
+  upsert?: Prisma.PharmacyImmunizationPolicyUpsertWithoutPharmacyInput
+  disconnect?: Prisma.PharmacyImmunizationPolicyWhereInput | boolean
+  delete?: Prisma.PharmacyImmunizationPolicyWhereInput | boolean
+  connect?: Prisma.PharmacyImmunizationPolicyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PharmacyImmunizationPolicyUpdateToOneWithWhereWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUpdateWithoutPharmacyInput>, Prisma.PharmacyImmunizationPolicyUncheckedUpdateWithoutPharmacyInput>
 }
 
 export type PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput = {
@@ -667,6 +728,102 @@ export type PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedI
   deleteMany?: Prisma.PharmacyImmunizationPolicyScalarWhereInput | Prisma.PharmacyImmunizationPolicyScalarWhereInput[]
 }
 
+export type PharmacyImmunizationPolicyCreateWithoutPharmacyInput = {
+  id?: string
+  enabled?: boolean
+  jurisdiction?: string
+  authorizingBody?: string
+  authorizingRegulation?: string | null
+  supervisingPharmacistRequired?: boolean
+  observationMinutesDefault?: number
+  visRequired?: boolean
+  aefiReportingContact?: string | null
+  aefiReportingAuthority?: string
+  coldChainNotes?: string | null
+  publicDisclaimer?: string | null
+  walkInAccepted?: boolean
+  paediatricOnSite?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  updatedBy?: Prisma.UserCreateNestedOneWithoutImmunizationPolicyUpdatedInput
+}
+
+export type PharmacyImmunizationPolicyUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  enabled?: boolean
+  jurisdiction?: string
+  authorizingBody?: string
+  authorizingRegulation?: string | null
+  supervisingPharmacistRequired?: boolean
+  observationMinutesDefault?: number
+  visRequired?: boolean
+  aefiReportingContact?: string | null
+  aefiReportingAuthority?: string
+  coldChainNotes?: string | null
+  publicDisclaimer?: string | null
+  walkInAccepted?: boolean
+  paediatricOnSite?: boolean
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PharmacyImmunizationPolicyCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.PharmacyImmunizationPolicyWhereUniqueInput
+  create: Prisma.XOR<Prisma.PharmacyImmunizationPolicyCreateWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PharmacyImmunizationPolicyUpsertWithoutPharmacyInput = {
+  update: Prisma.XOR<Prisma.PharmacyImmunizationPolicyUpdateWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.PharmacyImmunizationPolicyCreateWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUncheckedCreateWithoutPharmacyInput>
+  where?: Prisma.PharmacyImmunizationPolicyWhereInput
+}
+
+export type PharmacyImmunizationPolicyUpdateToOneWithWhereWithoutPharmacyInput = {
+  where?: Prisma.PharmacyImmunizationPolicyWhereInput
+  data: Prisma.XOR<Prisma.PharmacyImmunizationPolicyUpdateWithoutPharmacyInput, Prisma.PharmacyImmunizationPolicyUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type PharmacyImmunizationPolicyUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  jurisdiction?: Prisma.StringFieldUpdateOperationsInput | string
+  authorizingBody?: Prisma.StringFieldUpdateOperationsInput | string
+  authorizingRegulation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisingPharmacistRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  observationMinutesDefault?: Prisma.IntFieldUpdateOperationsInput | number
+  visRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  aefiReportingContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aefiReportingAuthority?: Prisma.StringFieldUpdateOperationsInput | string
+  coldChainNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicDisclaimer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walkInAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paediatricOnSite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedBy?: Prisma.UserUpdateOneWithoutImmunizationPolicyUpdatedNestedInput
+}
+
+export type PharmacyImmunizationPolicyUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  jurisdiction?: Prisma.StringFieldUpdateOperationsInput | string
+  authorizingBody?: Prisma.StringFieldUpdateOperationsInput | string
+  authorizingRegulation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisingPharmacistRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  observationMinutesDefault?: Prisma.IntFieldUpdateOperationsInput | number
+  visRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  aefiReportingContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aefiReportingAuthority?: Prisma.StringFieldUpdateOperationsInput | string
+  coldChainNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicDisclaimer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walkInAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paediatricOnSite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type PharmacyImmunizationPolicyCreateWithoutUpdatedByInput = {
   id?: string
   enabled?: boolean
@@ -684,10 +841,12 @@ export type PharmacyImmunizationPolicyCreateWithoutUpdatedByInput = {
   paediatricOnSite?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationPolicyInput
 }
 
 export type PharmacyImmunizationPolicyUncheckedCreateWithoutUpdatedByInput = {
   id?: string
+  pharmacyId: string
   enabled?: boolean
   jurisdiction?: string
   authorizingBody?: string
@@ -735,7 +894,8 @@ export type PharmacyImmunizationPolicyScalarWhereInput = {
   AND?: Prisma.PharmacyImmunizationPolicyScalarWhereInput | Prisma.PharmacyImmunizationPolicyScalarWhereInput[]
   OR?: Prisma.PharmacyImmunizationPolicyScalarWhereInput[]
   NOT?: Prisma.PharmacyImmunizationPolicyScalarWhereInput | Prisma.PharmacyImmunizationPolicyScalarWhereInput[]
-  id?: Prisma.StringFilter<"PharmacyImmunizationPolicy"> | string
+  id?: Prisma.UuidFilter<"PharmacyImmunizationPolicy"> | string
+  pharmacyId?: Prisma.UuidFilter<"PharmacyImmunizationPolicy"> | string
   enabled?: Prisma.BoolFilter<"PharmacyImmunizationPolicy"> | boolean
   jurisdiction?: Prisma.StringFilter<"PharmacyImmunizationPolicy"> | string
   authorizingBody?: Prisma.StringFilter<"PharmacyImmunizationPolicy"> | string
@@ -756,6 +916,7 @@ export type PharmacyImmunizationPolicyScalarWhereInput = {
 
 export type PharmacyImmunizationPolicyCreateManyUpdatedByInput = {
   id?: string
+  pharmacyId: string
   enabled?: boolean
   jurisdiction?: string
   authorizingBody?: string
@@ -790,10 +951,12 @@ export type PharmacyImmunizationPolicyUpdateWithoutUpdatedByInput = {
   paediatricOnSite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutImmunizationPolicyNestedInput
 }
 
 export type PharmacyImmunizationPolicyUncheckedUpdateWithoutUpdatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   jurisdiction?: Prisma.StringFieldUpdateOperationsInput | string
   authorizingBody?: Prisma.StringFieldUpdateOperationsInput | string
@@ -813,6 +976,7 @@ export type PharmacyImmunizationPolicyUncheckedUpdateWithoutUpdatedByInput = {
 
 export type PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   jurisdiction?: Prisma.StringFieldUpdateOperationsInput | string
   authorizingBody?: Prisma.StringFieldUpdateOperationsInput | string
@@ -834,6 +998,7 @@ export type PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByInput =
 
 export type PharmacyImmunizationPolicySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   enabled?: boolean
   jurisdiction?: boolean
   authorizingBody?: boolean
@@ -851,10 +1016,12 @@ export type PharmacyImmunizationPolicySelect<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   updatedBy?: boolean | Prisma.PharmacyImmunizationPolicy$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyImmunizationPolicy"]>
 
 export type PharmacyImmunizationPolicySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   enabled?: boolean
   jurisdiction?: boolean
   authorizingBody?: boolean
@@ -872,10 +1039,12 @@ export type PharmacyImmunizationPolicySelectCreateManyAndReturn<ExtArgs extends 
   createdAt?: boolean
   updatedAt?: boolean
   updatedBy?: boolean | Prisma.PharmacyImmunizationPolicy$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyImmunizationPolicy"]>
 
 export type PharmacyImmunizationPolicySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   enabled?: boolean
   jurisdiction?: boolean
   authorizingBody?: boolean
@@ -893,10 +1062,12 @@ export type PharmacyImmunizationPolicySelectUpdateManyAndReturn<ExtArgs extends 
   createdAt?: boolean
   updatedAt?: boolean
   updatedBy?: boolean | Prisma.PharmacyImmunizationPolicy$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacyImmunizationPolicy"]>
 
 export type PharmacyImmunizationPolicySelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   enabled?: boolean
   jurisdiction?: boolean
   authorizingBody?: boolean
@@ -915,24 +1086,29 @@ export type PharmacyImmunizationPolicySelectScalar = {
   updatedAt?: boolean
 }
 
-export type PharmacyImmunizationPolicyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "enabled" | "jurisdiction" | "authorizingBody" | "authorizingRegulation" | "supervisingPharmacistRequired" | "observationMinutesDefault" | "visRequired" | "aefiReportingContact" | "aefiReportingAuthority" | "coldChainNotes" | "publicDisclaimer" | "walkInAccepted" | "paediatricOnSite" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacyImmunizationPolicy"]>
+export type PharmacyImmunizationPolicyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "enabled" | "jurisdiction" | "authorizingBody" | "authorizingRegulation" | "supervisingPharmacistRequired" | "observationMinutesDefault" | "visRequired" | "aefiReportingContact" | "aefiReportingAuthority" | "coldChainNotes" | "publicDisclaimer" | "walkInAccepted" | "paediatricOnSite" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacyImmunizationPolicy"]>
 export type PharmacyImmunizationPolicyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   updatedBy?: boolean | Prisma.PharmacyImmunizationPolicy$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PharmacyImmunizationPolicyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   updatedBy?: boolean | Prisma.PharmacyImmunizationPolicy$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PharmacyImmunizationPolicyIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   updatedBy?: boolean | Prisma.PharmacyImmunizationPolicy$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $PharmacyImmunizationPolicyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PharmacyImmunizationPolicy"
   objects: {
     updatedBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     enabled: boolean
     jurisdiction: string
     authorizingBody: string
@@ -1344,6 +1520,7 @@ readonly fields: PharmacyImmunizationPolicyFieldRefs;
 export interface Prisma__PharmacyImmunizationPolicyClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   updatedBy<T extends Prisma.PharmacyImmunizationPolicy$updatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyImmunizationPolicy$updatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1374,6 +1551,7 @@ export interface Prisma__PharmacyImmunizationPolicyClient<T, Null = never, ExtAr
  */
 export interface PharmacyImmunizationPolicyFieldRefs {
   readonly id: Prisma.FieldRef<"PharmacyImmunizationPolicy", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"PharmacyImmunizationPolicy", 'String'>
   readonly enabled: Prisma.FieldRef<"PharmacyImmunizationPolicy", 'Boolean'>
   readonly jurisdiction: Prisma.FieldRef<"PharmacyImmunizationPolicy", 'String'>
   readonly authorizingBody: Prisma.FieldRef<"PharmacyImmunizationPolicy", 'String'>

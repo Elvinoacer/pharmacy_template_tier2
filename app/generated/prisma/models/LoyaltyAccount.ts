@@ -38,6 +38,7 @@ export type LoyaltyAccountSumAggregateOutputType = {
 
 export type LoyaltyAccountMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   points: number | null
   tier: $Enums.LoyaltyTier | null
@@ -50,6 +51,7 @@ export type LoyaltyAccountMinAggregateOutputType = {
 
 export type LoyaltyAccountMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   points: number | null
   tier: $Enums.LoyaltyTier | null
@@ -62,6 +64,7 @@ export type LoyaltyAccountMaxAggregateOutputType = {
 
 export type LoyaltyAccountCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   points: number
   tier: number
@@ -86,6 +89,7 @@ export type LoyaltyAccountSumAggregateInputType = {
 
 export type LoyaltyAccountMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   points?: true
   tier?: true
@@ -98,6 +102,7 @@ export type LoyaltyAccountMinAggregateInputType = {
 
 export type LoyaltyAccountMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   points?: true
   tier?: true
@@ -110,6 +115,7 @@ export type LoyaltyAccountMaxAggregateInputType = {
 
 export type LoyaltyAccountCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   points?: true
   tier?: true
@@ -209,6 +215,7 @@ export type LoyaltyAccountGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type LoyaltyAccountGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string
   points: number
   tier: $Enums.LoyaltyTier
@@ -244,6 +251,7 @@ export type LoyaltyAccountWhereInput = {
   OR?: Prisma.LoyaltyAccountWhereInput[]
   NOT?: Prisma.LoyaltyAccountWhereInput | Prisma.LoyaltyAccountWhereInput[]
   id?: Prisma.UuidFilter<"LoyaltyAccount"> | string
+  pharmacyId?: Prisma.UuidFilter<"LoyaltyAccount"> | string
   customerId?: Prisma.UuidFilter<"LoyaltyAccount"> | string
   points?: Prisma.IntFilter<"LoyaltyAccount"> | number
   tier?: Prisma.EnumLoyaltyTierFilter<"LoyaltyAccount"> | $Enums.LoyaltyTier
@@ -255,10 +263,12 @@ export type LoyaltyAccountWhereInput = {
   customer?: Prisma.XOR<Prisma.CustomerProfileScalarRelationFilter, Prisma.CustomerProfileWhereInput>
   referredBy?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   transactions?: Prisma.LoyaltyTransactionListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type LoyaltyAccountOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   points?: Prisma.SortOrder
   tier?: Prisma.SortOrder
@@ -270,28 +280,34 @@ export type LoyaltyAccountOrderByWithRelationInput = {
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   referredBy?: Prisma.CustomerProfileOrderByWithRelationInput
   transactions?: Prisma.LoyaltyTransactionOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type LoyaltyAccountWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  customerId?: string
-  referralCode?: string
+  pharmacyId_customerId?: Prisma.LoyaltyAccountPharmacyIdCustomerIdCompoundUniqueInput
+  pharmacyId_referralCode?: Prisma.LoyaltyAccountPharmacyIdReferralCodeCompoundUniqueInput
   AND?: Prisma.LoyaltyAccountWhereInput | Prisma.LoyaltyAccountWhereInput[]
   OR?: Prisma.LoyaltyAccountWhereInput[]
   NOT?: Prisma.LoyaltyAccountWhereInput | Prisma.LoyaltyAccountWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"LoyaltyAccount"> | string
+  customerId?: Prisma.UuidFilter<"LoyaltyAccount"> | string
   points?: Prisma.IntFilter<"LoyaltyAccount"> | number
   tier?: Prisma.EnumLoyaltyTierFilter<"LoyaltyAccount"> | $Enums.LoyaltyTier
   lifetimePoints?: Prisma.IntFilter<"LoyaltyAccount"> | number
+  referralCode?: Prisma.StringNullableFilter<"LoyaltyAccount"> | string | null
   referredById?: Prisma.UuidNullableFilter<"LoyaltyAccount"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LoyaltyAccount"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LoyaltyAccount"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileScalarRelationFilter, Prisma.CustomerProfileWhereInput>
   referredBy?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   transactions?: Prisma.LoyaltyTransactionListRelationFilter
-}, "id" | "customerId" | "referralCode">
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
+}, "id" | "pharmacyId_customerId" | "pharmacyId_referralCode">
 
 export type LoyaltyAccountOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   points?: Prisma.SortOrder
   tier?: Prisma.SortOrder
@@ -312,6 +328,7 @@ export type LoyaltyAccountScalarWhereWithAggregatesInput = {
   OR?: Prisma.LoyaltyAccountScalarWhereWithAggregatesInput[]
   NOT?: Prisma.LoyaltyAccountScalarWhereWithAggregatesInput | Prisma.LoyaltyAccountScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"LoyaltyAccount"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"LoyaltyAccount"> | string
   customerId?: Prisma.UuidWithAggregatesFilter<"LoyaltyAccount"> | string
   points?: Prisma.IntWithAggregatesFilter<"LoyaltyAccount"> | number
   tier?: Prisma.EnumLoyaltyTierWithAggregatesFilter<"LoyaltyAccount"> | $Enums.LoyaltyTier
@@ -330,13 +347,15 @@ export type LoyaltyAccountCreateInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountInput
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountsInput
   referredBy?: Prisma.CustomerProfileCreateNestedOneWithoutReferredLoyaltyInput
   transactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutAccountInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
 }
 
 export type LoyaltyAccountUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -356,13 +375,15 @@ export type LoyaltyAccountUpdateInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountNestedInput
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountsNestedInput
   referredBy?: Prisma.CustomerProfileUpdateOneWithoutReferredLoyaltyNestedInput
   transactions?: Prisma.LoyaltyTransactionUpdateManyWithoutAccountNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutLoyaltyAccountsNestedInput
 }
 
 export type LoyaltyAccountUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
@@ -376,6 +397,7 @@ export type LoyaltyAccountUncheckedUpdateInput = {
 
 export type LoyaltyAccountCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -398,6 +420,7 @@ export type LoyaltyAccountUpdateManyMutationInput = {
 
 export type LoyaltyAccountUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
@@ -406,11 +429,6 @@ export type LoyaltyAccountUncheckedUpdateManyInput = {
   referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type LoyaltyAccountNullableScalarRelationFilter = {
-  is?: Prisma.LoyaltyAccountWhereInput | null
-  isNot?: Prisma.LoyaltyAccountWhereInput | null
 }
 
 export type LoyaltyAccountListRelationFilter = {
@@ -423,8 +441,19 @@ export type LoyaltyAccountOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type LoyaltyAccountPharmacyIdCustomerIdCompoundUniqueInput = {
+  pharmacyId: string
+  customerId: string
+}
+
+export type LoyaltyAccountPharmacyIdReferralCodeCompoundUniqueInput = {
+  pharmacyId: string
+  referralCode: string
+}
+
 export type LoyaltyAccountCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   points?: Prisma.SortOrder
   tier?: Prisma.SortOrder
@@ -442,6 +471,7 @@ export type LoyaltyAccountAvgOrderByAggregateInput = {
 
 export type LoyaltyAccountMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   points?: Prisma.SortOrder
   tier?: Prisma.SortOrder
@@ -454,6 +484,7 @@ export type LoyaltyAccountMaxOrderByAggregateInput = {
 
 export type LoyaltyAccountMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   points?: Prisma.SortOrder
   tier?: Prisma.SortOrder
@@ -474,10 +505,53 @@ export type LoyaltyAccountScalarRelationFilter = {
   isNot?: Prisma.LoyaltyAccountWhereInput
 }
 
-export type LoyaltyAccountCreateNestedOneWithoutCustomerInput = {
-  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput>
-  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput
-  connect?: Prisma.LoyaltyAccountWhereUniqueInput
+export type LoyaltyAccountCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutPharmacyInput, Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput> | Prisma.LoyaltyAccountCreateWithoutPharmacyInput[] | Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutPharmacyInput | Prisma.LoyaltyAccountCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.LoyaltyAccountCreateManyPharmacyInputEnvelope
+  connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+}
+
+export type LoyaltyAccountUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutPharmacyInput, Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput> | Prisma.LoyaltyAccountCreateWithoutPharmacyInput[] | Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutPharmacyInput | Prisma.LoyaltyAccountCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.LoyaltyAccountCreateManyPharmacyInputEnvelope
+  connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+}
+
+export type LoyaltyAccountUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutPharmacyInput, Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput> | Prisma.LoyaltyAccountCreateWithoutPharmacyInput[] | Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutPharmacyInput | Prisma.LoyaltyAccountCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.LoyaltyAccountUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.LoyaltyAccountUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.LoyaltyAccountCreateManyPharmacyInputEnvelope
+  set?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  disconnect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  delete?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  update?: Prisma.LoyaltyAccountUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.LoyaltyAccountUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.LoyaltyAccountUpdateManyWithWhereWithoutPharmacyInput | Prisma.LoyaltyAccountUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
+}
+
+export type LoyaltyAccountUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutPharmacyInput, Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput> | Prisma.LoyaltyAccountCreateWithoutPharmacyInput[] | Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutPharmacyInput | Prisma.LoyaltyAccountCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.LoyaltyAccountUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.LoyaltyAccountUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.LoyaltyAccountCreateManyPharmacyInputEnvelope
+  set?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  disconnect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  delete?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  update?: Prisma.LoyaltyAccountUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.LoyaltyAccountUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.LoyaltyAccountUpdateManyWithWhereWithoutPharmacyInput | Prisma.LoyaltyAccountUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
+}
+
+export type LoyaltyAccountCreateNestedManyWithoutCustomerInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput> | Prisma.LoyaltyAccountCreateWithoutCustomerInput[] | Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput | Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput[]
+  createMany?: Prisma.LoyaltyAccountCreateManyCustomerInputEnvelope
+  connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
 }
 
 export type LoyaltyAccountCreateNestedManyWithoutReferredByInput = {
@@ -487,10 +561,11 @@ export type LoyaltyAccountCreateNestedManyWithoutReferredByInput = {
   connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
 }
 
-export type LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput = {
-  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput>
-  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput
-  connect?: Prisma.LoyaltyAccountWhereUniqueInput
+export type LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput> | Prisma.LoyaltyAccountCreateWithoutCustomerInput[] | Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput | Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput[]
+  createMany?: Prisma.LoyaltyAccountCreateManyCustomerInputEnvelope
+  connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
 }
 
 export type LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput = {
@@ -500,14 +575,18 @@ export type LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput = {
   connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
 }
 
-export type LoyaltyAccountUpdateOneWithoutCustomerNestedInput = {
-  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput>
-  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput
-  upsert?: Prisma.LoyaltyAccountUpsertWithoutCustomerInput
-  disconnect?: Prisma.LoyaltyAccountWhereInput | boolean
-  delete?: Prisma.LoyaltyAccountWhereInput | boolean
-  connect?: Prisma.LoyaltyAccountWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.LoyaltyAccountUpdateToOneWithWhereWithoutCustomerInput, Prisma.LoyaltyAccountUpdateWithoutCustomerInput>, Prisma.LoyaltyAccountUncheckedUpdateWithoutCustomerInput>
+export type LoyaltyAccountUpdateManyWithoutCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput> | Prisma.LoyaltyAccountCreateWithoutCustomerInput[] | Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput | Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput[]
+  upsert?: Prisma.LoyaltyAccountUpsertWithWhereUniqueWithoutCustomerInput | Prisma.LoyaltyAccountUpsertWithWhereUniqueWithoutCustomerInput[]
+  createMany?: Prisma.LoyaltyAccountCreateManyCustomerInputEnvelope
+  set?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  disconnect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  delete?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  update?: Prisma.LoyaltyAccountUpdateWithWhereUniqueWithoutCustomerInput | Prisma.LoyaltyAccountUpdateWithWhereUniqueWithoutCustomerInput[]
+  updateMany?: Prisma.LoyaltyAccountUpdateManyWithWhereWithoutCustomerInput | Prisma.LoyaltyAccountUpdateManyWithWhereWithoutCustomerInput[]
+  deleteMany?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
 }
 
 export type LoyaltyAccountUpdateManyWithoutReferredByNestedInput = {
@@ -524,14 +603,18 @@ export type LoyaltyAccountUpdateManyWithoutReferredByNestedInput = {
   deleteMany?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
 }
 
-export type LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput = {
-  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput>
-  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput
-  upsert?: Prisma.LoyaltyAccountUpsertWithoutCustomerInput
-  disconnect?: Prisma.LoyaltyAccountWhereInput | boolean
-  delete?: Prisma.LoyaltyAccountWhereInput | boolean
-  connect?: Prisma.LoyaltyAccountWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.LoyaltyAccountUpdateToOneWithWhereWithoutCustomerInput, Prisma.LoyaltyAccountUpdateWithoutCustomerInput>, Prisma.LoyaltyAccountUncheckedUpdateWithoutCustomerInput>
+export type LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput> | Prisma.LoyaltyAccountCreateWithoutCustomerInput[] | Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput | Prisma.LoyaltyAccountCreateOrConnectWithoutCustomerInput[]
+  upsert?: Prisma.LoyaltyAccountUpsertWithWhereUniqueWithoutCustomerInput | Prisma.LoyaltyAccountUpsertWithWhereUniqueWithoutCustomerInput[]
+  createMany?: Prisma.LoyaltyAccountCreateManyCustomerInputEnvelope
+  set?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  disconnect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  delete?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  connect?: Prisma.LoyaltyAccountWhereUniqueInput | Prisma.LoyaltyAccountWhereUniqueInput[]
+  update?: Prisma.LoyaltyAccountUpdateWithWhereUniqueWithoutCustomerInput | Prisma.LoyaltyAccountUpdateWithWhereUniqueWithoutCustomerInput[]
+  updateMany?: Prisma.LoyaltyAccountUpdateManyWithWhereWithoutCustomerInput | Prisma.LoyaltyAccountUpdateManyWithWhereWithoutCustomerInput[]
+  deleteMany?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
 }
 
 export type LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput = {
@@ -566,6 +649,74 @@ export type LoyaltyAccountUpdateOneRequiredWithoutTransactionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LoyaltyAccountUpdateToOneWithWhereWithoutTransactionsInput, Prisma.LoyaltyAccountUpdateWithoutTransactionsInput>, Prisma.LoyaltyAccountUncheckedUpdateWithoutTransactionsInput>
 }
 
+export type LoyaltyAccountCreateWithoutPharmacyInput = {
+  id?: string
+  points?: number
+  tier?: $Enums.LoyaltyTier
+  lifetimePoints?: number
+  referralCode?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountsInput
+  referredBy?: Prisma.CustomerProfileCreateNestedOneWithoutReferredLoyaltyInput
+  transactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutAccountInput
+}
+
+export type LoyaltyAccountUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId: string
+  points?: number
+  tier?: $Enums.LoyaltyTier
+  lifetimePoints?: number
+  referralCode?: string | null
+  referredById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutAccountInput
+}
+
+export type LoyaltyAccountCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.LoyaltyAccountWhereUniqueInput
+  create: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutPharmacyInput, Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput>
+}
+
+export type LoyaltyAccountCreateManyPharmacyInputEnvelope = {
+  data: Prisma.LoyaltyAccountCreateManyPharmacyInput | Prisma.LoyaltyAccountCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type LoyaltyAccountUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.LoyaltyAccountWhereUniqueInput
+  update: Prisma.XOR<Prisma.LoyaltyAccountUpdateWithoutPharmacyInput, Prisma.LoyaltyAccountUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutPharmacyInput, Prisma.LoyaltyAccountUncheckedCreateWithoutPharmacyInput>
+}
+
+export type LoyaltyAccountUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.LoyaltyAccountWhereUniqueInput
+  data: Prisma.XOR<Prisma.LoyaltyAccountUpdateWithoutPharmacyInput, Prisma.LoyaltyAccountUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type LoyaltyAccountUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.LoyaltyAccountScalarWhereInput
+  data: Prisma.XOR<Prisma.LoyaltyAccountUpdateManyMutationInput, Prisma.LoyaltyAccountUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type LoyaltyAccountScalarWhereInput = {
+  AND?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
+  OR?: Prisma.LoyaltyAccountScalarWhereInput[]
+  NOT?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
+  id?: Prisma.UuidFilter<"LoyaltyAccount"> | string
+  pharmacyId?: Prisma.UuidFilter<"LoyaltyAccount"> | string
+  customerId?: Prisma.UuidFilter<"LoyaltyAccount"> | string
+  points?: Prisma.IntFilter<"LoyaltyAccount"> | number
+  tier?: Prisma.EnumLoyaltyTierFilter<"LoyaltyAccount"> | $Enums.LoyaltyTier
+  lifetimePoints?: Prisma.IntFilter<"LoyaltyAccount"> | number
+  referralCode?: Prisma.StringNullableFilter<"LoyaltyAccount"> | string | null
+  referredById?: Prisma.UuidNullableFilter<"LoyaltyAccount"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"LoyaltyAccount"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"LoyaltyAccount"> | Date | string
+}
+
 export type LoyaltyAccountCreateWithoutCustomerInput = {
   id?: string
   points?: number
@@ -576,10 +727,12 @@ export type LoyaltyAccountCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   referredBy?: Prisma.CustomerProfileCreateNestedOneWithoutReferredLoyaltyInput
   transactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutAccountInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
 }
 
 export type LoyaltyAccountUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   points?: number
   tier?: $Enums.LoyaltyTier
   lifetimePoints?: number
@@ -595,6 +748,11 @@ export type LoyaltyAccountCreateOrConnectWithoutCustomerInput = {
   create: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput>
 }
 
+export type LoyaltyAccountCreateManyCustomerInputEnvelope = {
+  data: Prisma.LoyaltyAccountCreateManyCustomerInput | Prisma.LoyaltyAccountCreateManyCustomerInput[]
+  skipDuplicates?: boolean
+}
+
 export type LoyaltyAccountCreateWithoutReferredByInput = {
   id?: string
   points?: number
@@ -603,12 +761,14 @@ export type LoyaltyAccountCreateWithoutReferredByInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountInput
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountsInput
   transactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutAccountInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
 }
 
 export type LoyaltyAccountUncheckedCreateWithoutReferredByInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -629,39 +789,20 @@ export type LoyaltyAccountCreateManyReferredByInputEnvelope = {
   skipDuplicates?: boolean
 }
 
-export type LoyaltyAccountUpsertWithoutCustomerInput = {
+export type LoyaltyAccountUpsertWithWhereUniqueWithoutCustomerInput = {
+  where: Prisma.LoyaltyAccountWhereUniqueInput
   update: Prisma.XOR<Prisma.LoyaltyAccountUpdateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedUpdateWithoutCustomerInput>
   create: Prisma.XOR<Prisma.LoyaltyAccountCreateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedCreateWithoutCustomerInput>
-  where?: Prisma.LoyaltyAccountWhereInput
 }
 
-export type LoyaltyAccountUpdateToOneWithWhereWithoutCustomerInput = {
-  where?: Prisma.LoyaltyAccountWhereInput
+export type LoyaltyAccountUpdateWithWhereUniqueWithoutCustomerInput = {
+  where: Prisma.LoyaltyAccountWhereUniqueInput
   data: Prisma.XOR<Prisma.LoyaltyAccountUpdateWithoutCustomerInput, Prisma.LoyaltyAccountUncheckedUpdateWithoutCustomerInput>
 }
 
-export type LoyaltyAccountUpdateWithoutCustomerInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  points?: Prisma.IntFieldUpdateOperationsInput | number
-  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
-  lifetimePoints?: Prisma.IntFieldUpdateOperationsInput | number
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referredBy?: Prisma.CustomerProfileUpdateOneWithoutReferredLoyaltyNestedInput
-  transactions?: Prisma.LoyaltyTransactionUpdateManyWithoutAccountNestedInput
-}
-
-export type LoyaltyAccountUncheckedUpdateWithoutCustomerInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  points?: Prisma.IntFieldUpdateOperationsInput | number
-  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
-  lifetimePoints?: Prisma.IntFieldUpdateOperationsInput | number
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  transactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutAccountNestedInput
+export type LoyaltyAccountUpdateManyWithWhereWithoutCustomerInput = {
+  where: Prisma.LoyaltyAccountScalarWhereInput
+  data: Prisma.XOR<Prisma.LoyaltyAccountUpdateManyMutationInput, Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerInput>
 }
 
 export type LoyaltyAccountUpsertWithWhereUniqueWithoutReferredByInput = {
@@ -680,21 +821,6 @@ export type LoyaltyAccountUpdateManyWithWhereWithoutReferredByInput = {
   data: Prisma.XOR<Prisma.LoyaltyAccountUpdateManyMutationInput, Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByInput>
 }
 
-export type LoyaltyAccountScalarWhereInput = {
-  AND?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
-  OR?: Prisma.LoyaltyAccountScalarWhereInput[]
-  NOT?: Prisma.LoyaltyAccountScalarWhereInput | Prisma.LoyaltyAccountScalarWhereInput[]
-  id?: Prisma.UuidFilter<"LoyaltyAccount"> | string
-  customerId?: Prisma.UuidFilter<"LoyaltyAccount"> | string
-  points?: Prisma.IntFilter<"LoyaltyAccount"> | number
-  tier?: Prisma.EnumLoyaltyTierFilter<"LoyaltyAccount"> | $Enums.LoyaltyTier
-  lifetimePoints?: Prisma.IntFilter<"LoyaltyAccount"> | number
-  referralCode?: Prisma.StringNullableFilter<"LoyaltyAccount"> | string | null
-  referredById?: Prisma.UuidNullableFilter<"LoyaltyAccount"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"LoyaltyAccount"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"LoyaltyAccount"> | Date | string
-}
-
 export type LoyaltyAccountCreateWithoutTransactionsInput = {
   id?: string
   points?: number
@@ -703,12 +829,14 @@ export type LoyaltyAccountCreateWithoutTransactionsInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountInput
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountsInput
   referredBy?: Prisma.CustomerProfileCreateNestedOneWithoutReferredLoyaltyInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
 }
 
 export type LoyaltyAccountUncheckedCreateWithoutTransactionsInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -743,11 +871,63 @@ export type LoyaltyAccountUpdateWithoutTransactionsInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountNestedInput
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountsNestedInput
   referredBy?: Prisma.CustomerProfileUpdateOneWithoutReferredLoyaltyNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutLoyaltyAccountsNestedInput
 }
 
 export type LoyaltyAccountUncheckedUpdateWithoutTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
+  lifetimePoints?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LoyaltyAccountCreateManyPharmacyInput = {
+  id?: string
+  customerId: string
+  points?: number
+  tier?: $Enums.LoyaltyTier
+  lifetimePoints?: number
+  referralCode?: string | null
+  referredById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LoyaltyAccountUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
+  lifetimePoints?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountsNestedInput
+  referredBy?: Prisma.CustomerProfileUpdateOneWithoutReferredLoyaltyNestedInput
+  transactions?: Prisma.LoyaltyTransactionUpdateManyWithoutAccountNestedInput
+}
+
+export type LoyaltyAccountUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
+  lifetimePoints?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutAccountNestedInput
+}
+
+export type LoyaltyAccountUncheckedUpdateManyWithoutPharmacyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
@@ -759,8 +939,21 @@ export type LoyaltyAccountUncheckedUpdateWithoutTransactionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type LoyaltyAccountCreateManyCustomerInput = {
+  id?: string
+  pharmacyId: string
+  points?: number
+  tier?: $Enums.LoyaltyTier
+  lifetimePoints?: number
+  referralCode?: string | null
+  referredById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
 export type LoyaltyAccountCreateManyReferredByInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -768,6 +961,44 @@ export type LoyaltyAccountCreateManyReferredByInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+}
+
+export type LoyaltyAccountUpdateWithoutCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
+  lifetimePoints?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  referredBy?: Prisma.CustomerProfileUpdateOneWithoutReferredLoyaltyNestedInput
+  transactions?: Prisma.LoyaltyTransactionUpdateManyWithoutAccountNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutLoyaltyAccountsNestedInput
+}
+
+export type LoyaltyAccountUncheckedUpdateWithoutCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
+  lifetimePoints?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutAccountNestedInput
+}
+
+export type LoyaltyAccountUncheckedUpdateManyWithoutCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
+  lifetimePoints?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LoyaltyAccountUpdateWithoutReferredByInput = {
@@ -778,12 +1009,14 @@ export type LoyaltyAccountUpdateWithoutReferredByInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountNestedInput
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountsNestedInput
   transactions?: Prisma.LoyaltyTransactionUpdateManyWithoutAccountNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutLoyaltyAccountsNestedInput
 }
 
 export type LoyaltyAccountUncheckedUpdateWithoutReferredByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
@@ -796,6 +1029,7 @@ export type LoyaltyAccountUncheckedUpdateWithoutReferredByInput = {
 
 export type LoyaltyAccountUncheckedUpdateManyWithoutReferredByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
@@ -838,6 +1072,7 @@ export type LoyaltyAccountCountOutputTypeCountTransactionsArgs<ExtArgs extends r
 
 export type LoyaltyAccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   points?: boolean
   tier?: boolean
@@ -849,11 +1084,13 @@ export type LoyaltyAccountSelect<ExtArgs extends runtime.Types.Extensions.Intern
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.LoyaltyAccount$referredByArgs<ExtArgs>
   transactions?: boolean | Prisma.LoyaltyAccount$transactionsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.LoyaltyAccountCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loyaltyAccount"]>
 
 export type LoyaltyAccountSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   points?: boolean
   tier?: boolean
@@ -864,10 +1101,12 @@ export type LoyaltyAccountSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.LoyaltyAccount$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loyaltyAccount"]>
 
 export type LoyaltyAccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   points?: boolean
   tier?: boolean
@@ -878,10 +1117,12 @@ export type LoyaltyAccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.LoyaltyAccount$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loyaltyAccount"]>
 
 export type LoyaltyAccountSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   points?: boolean
   tier?: boolean
@@ -892,20 +1133,23 @@ export type LoyaltyAccountSelectScalar = {
   updatedAt?: boolean
 }
 
-export type LoyaltyAccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "points" | "tier" | "lifetimePoints" | "referralCode" | "referredById" | "createdAt" | "updatedAt", ExtArgs["result"]["loyaltyAccount"]>
+export type LoyaltyAccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "points" | "tier" | "lifetimePoints" | "referralCode" | "referredById" | "createdAt" | "updatedAt", ExtArgs["result"]["loyaltyAccount"]>
 export type LoyaltyAccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.LoyaltyAccount$referredByArgs<ExtArgs>
   transactions?: boolean | Prisma.LoyaltyAccount$transactionsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.LoyaltyAccountCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LoyaltyAccountIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.LoyaltyAccount$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type LoyaltyAccountIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.LoyaltyAccount$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $LoyaltyAccountPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -914,9 +1158,11 @@ export type $LoyaltyAccountPayload<ExtArgs extends runtime.Types.Extensions.Inte
     customer: Prisma.$CustomerProfilePayload<ExtArgs>
     referredBy: Prisma.$CustomerProfilePayload<ExtArgs> | null
     transactions: Prisma.$LoyaltyTransactionPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string
     points: number
     tier: $Enums.LoyaltyTier
@@ -1322,6 +1568,7 @@ export interface Prisma__LoyaltyAccountClient<T, Null = never, ExtArgs extends r
   customer<T extends Prisma.CustomerProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   referredBy<T extends Prisma.LoyaltyAccount$referredByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LoyaltyAccount$referredByArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   transactions<T extends Prisma.LoyaltyAccount$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LoyaltyAccount$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LoyaltyTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1352,6 +1599,7 @@ export interface Prisma__LoyaltyAccountClient<T, Null = never, ExtArgs extends r
  */
 export interface LoyaltyAccountFieldRefs {
   readonly id: Prisma.FieldRef<"LoyaltyAccount", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"LoyaltyAccount", 'String'>
   readonly customerId: Prisma.FieldRef<"LoyaltyAccount", 'String'>
   readonly points: Prisma.FieldRef<"LoyaltyAccount", 'Int'>
   readonly tier: Prisma.FieldRef<"LoyaltyAccount", 'LoyaltyTier'>

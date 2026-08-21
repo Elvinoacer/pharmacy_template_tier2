@@ -2,10 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { getSessionUser, addTimelineEvent, writeAuditLog } from "@/app/lib/auth";
-import { prisma } from "@/app/lib/db";
+import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { createRefillRequest, createFeedback } from "@/app/lib/services/crm";
 import { ageSegmentFromDob, isFuture, parseLocalDateInput } from "@/app/lib/time";
+import { PUBLIC_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 
 export type ActionState = { error?: string; success?: string };
 
@@ -358,8 +360,8 @@ export async function redeemCouponAction(
 
   const result = await prisma.$transaction(async (tx) => {
     const [account, coupon] = await Promise.all([
-      tx.loyaltyAccount.findUnique({ where: { customerId: user.customerId! } }),
-      tx.coupon.findUnique({ where: { id: couponId } }),
+      tx.loyaltyAccount.findFirst({ where: { customerId: user.customerId! } }),
+      tx.coupon.findFirst({ where: { id: couponId } }),
     ]);
 
     const now = new Date();
@@ -536,7 +538,7 @@ export async function portalCreateOrderAction(
   let discount = 0;
   let couponId: string | null = null;
   if (couponCode) {
-    const coupon = await prisma.coupon.findUnique({ where: { code: couponCode } });
+    const coupon = await prisma.coupon.findFirst({ where: { code: couponCode } });
     if (!coupon || !coupon.active) return { error: "Invalid or inactive coupon." };
     const now = new Date();
     if (coupon.validFrom && coupon.validFrom > now) return { error: "Coupon not yet valid." };
@@ -931,5 +933,65 @@ export async function portalUploadPrescriptionAction(
     console.error("[portalUploadPrescriptionAction]", e);
     return { error: e instanceof Error ? e.message : "Failed to upload prescription." };
   }
+}
+
+/** Bind the signed-in customer to a pharmacy (loyalty + prescriptions scoped there). */
+export async function chooseCustomerPharmacyAction(formData: FormData): Promise<void> {
+  const user = await getSessionUser();
+  if (!user?.customerId) redirect("/login?next=/portal/pharmacies");
+
+  const pharmacyId = String(formData.get("pharmacyId") || "");
+  const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
+  if (!pharmacy || pharmacy.status !== "active" || !pharmacy.listed) {
+    redirect("/portal/pharmacies");
+  }
+
+  await prismaUnscoped.customerPharmacy.upsert({
+    where: {
+      customerId_pharmacyId: { customerId: user.customerId, pharmacyId: pharmacy.id },
+    },
+    create: { customerId: user.customerId, pharmacyId: pharmacy.id, preferred: true },
+    update: { preferred: true },
+  });
+  await prismaUnscoped.customerPharmacy.updateMany({
+    where: { customerId: user.customerId, pharmacyId: { not: pharmacy.id } },
+    data: { preferred: false },
+  });
+
+  const existingLoyalty = await prismaUnscoped.loyaltyAccount.findFirst({
+    where: { customerId: user.customerId, pharmacyId: pharmacy.id },
+  });
+  if (!existingLoyalty) {
+    const code = `AE${user.customerId.replace(/-/g, "").slice(0, 6).toUpperCase()}${pharmacy.slug.slice(0, 4).toUpperCase()}`;
+    const loyalty = await prismaUnscoped.loyaltyAccount.create({
+      data: {
+        pharmacyId: pharmacy.id,
+        customerId: user.customerId,
+        points: 50,
+        lifetimePoints: 50,
+        referralCode: code,
+        tier: "bronze",
+      },
+    });
+    await prismaUnscoped.loyaltyTransaction.create({
+      data: {
+        accountId: loyalty.id,
+        points: 50,
+        type: "bonus",
+        description: `Welcome bonus — ${pharmacy.name}`,
+        source: "portal:join",
+      },
+    });
+  }
+
+  const jar = await cookies();
+  jar.set(PUBLIC_PHARMACY_COOKIE, pharmacy.slug, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  revalidatePath("/portal");
+  redirect("/portal");
 }
 

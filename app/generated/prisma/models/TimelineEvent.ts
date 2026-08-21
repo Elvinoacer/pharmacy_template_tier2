@@ -26,6 +26,7 @@ export type AggregateTimelineEvent = {
 
 export type TimelineEventMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   userId: string | null
   eventType: string | null
@@ -37,6 +38,7 @@ export type TimelineEventMinAggregateOutputType = {
 
 export type TimelineEventMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   userId: string | null
   eventType: string | null
@@ -48,6 +50,7 @@ export type TimelineEventMaxAggregateOutputType = {
 
 export type TimelineEventCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   userId: number
   eventType: number
@@ -62,6 +65,7 @@ export type TimelineEventCountAggregateOutputType = {
 
 export type TimelineEventMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   eventType?: true
@@ -73,6 +77,7 @@ export type TimelineEventMinAggregateInputType = {
 
 export type TimelineEventMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   eventType?: true
@@ -84,6 +89,7 @@ export type TimelineEventMaxAggregateInputType = {
 
 export type TimelineEventCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   userId?: true
   eventType?: true
@@ -169,6 +175,7 @@ export type TimelineEventGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 
 export type TimelineEventGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string | null
   userId: string | null
   eventType: string
@@ -202,6 +209,7 @@ export type TimelineEventWhereInput = {
   OR?: Prisma.TimelineEventWhereInput[]
   NOT?: Prisma.TimelineEventWhereInput | Prisma.TimelineEventWhereInput[]
   id?: Prisma.UuidFilter<"TimelineEvent"> | string
+  pharmacyId?: Prisma.UuidFilter<"TimelineEvent"> | string
   customerId?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
   userId?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
   eventType?: Prisma.StringFilter<"TimelineEvent"> | string
@@ -213,10 +221,12 @@ export type TimelineEventWhereInput = {
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type TimelineEventOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   eventType?: Prisma.SortOrder
@@ -228,6 +238,7 @@ export type TimelineEventOrderByWithRelationInput = {
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type TimelineEventWhereUniqueInput = Prisma.AtLeast<{
@@ -235,6 +246,7 @@ export type TimelineEventWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TimelineEventWhereInput | Prisma.TimelineEventWhereInput[]
   OR?: Prisma.TimelineEventWhereInput[]
   NOT?: Prisma.TimelineEventWhereInput | Prisma.TimelineEventWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"TimelineEvent"> | string
   customerId?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
   userId?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
   eventType?: Prisma.StringFilter<"TimelineEvent"> | string
@@ -246,10 +258,12 @@ export type TimelineEventWhereUniqueInput = Prisma.AtLeast<{
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type TimelineEventOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   eventType?: Prisma.SortOrder
@@ -268,6 +282,7 @@ export type TimelineEventScalarWhereWithAggregatesInput = {
   OR?: Prisma.TimelineEventScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TimelineEventScalarWhereWithAggregatesInput | Prisma.TimelineEventScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"TimelineEvent"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"TimelineEvent"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"TimelineEvent"> | string | null
   userId?: Prisma.UuidNullableWithAggregatesFilter<"TimelineEvent"> | string | null
   eventType?: Prisma.StringWithAggregatesFilter<"TimelineEvent"> | string
@@ -288,10 +303,12 @@ export type TimelineEventCreateInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutTimelineEventsInput
   user?: Prisma.UserCreateNestedOneWithoutTimelineAsUserInput
   createdBy?: Prisma.UserCreateNestedOneWithoutTimelineCreatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
 }
 
 export type TimelineEventUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   eventType: string
@@ -312,10 +329,12 @@ export type TimelineEventUpdateInput = {
   customer?: Prisma.CustomerProfileUpdateOneWithoutTimelineEventsNestedInput
   user?: Prisma.UserUpdateOneWithoutTimelineAsUserNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutTimelineCreatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutTimelineEventsNestedInput
 }
 
 export type TimelineEventUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventType?: Prisma.StringFieldUpdateOperationsInput | string
@@ -328,6 +347,7 @@ export type TimelineEventUncheckedUpdateInput = {
 
 export type TimelineEventCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   eventType: string
@@ -349,6 +369,7 @@ export type TimelineEventUpdateManyMutationInput = {
 
 export type TimelineEventUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventType?: Prisma.StringFieldUpdateOperationsInput | string
@@ -371,6 +392,7 @@ export type TimelineEventOrderByRelationAggregateInput = {
 
 export type TimelineEventCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   eventType?: Prisma.SortOrder
@@ -383,6 +405,7 @@ export type TimelineEventCountOrderByAggregateInput = {
 
 export type TimelineEventMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   eventType?: Prisma.SortOrder
@@ -394,6 +417,7 @@ export type TimelineEventMaxOrderByAggregateInput = {
 
 export type TimelineEventMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   eventType?: Prisma.SortOrder
@@ -401,6 +425,48 @@ export type TimelineEventMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type TimelineEventCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.TimelineEventCreateWithoutPharmacyInput, Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput> | Prisma.TimelineEventCreateWithoutPharmacyInput[] | Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.TimelineEventCreateOrConnectWithoutPharmacyInput | Prisma.TimelineEventCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.TimelineEventCreateManyPharmacyInputEnvelope
+  connect?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+}
+
+export type TimelineEventUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.TimelineEventCreateWithoutPharmacyInput, Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput> | Prisma.TimelineEventCreateWithoutPharmacyInput[] | Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.TimelineEventCreateOrConnectWithoutPharmacyInput | Prisma.TimelineEventCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.TimelineEventCreateManyPharmacyInputEnvelope
+  connect?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+}
+
+export type TimelineEventUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.TimelineEventCreateWithoutPharmacyInput, Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput> | Prisma.TimelineEventCreateWithoutPharmacyInput[] | Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.TimelineEventCreateOrConnectWithoutPharmacyInput | Prisma.TimelineEventCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.TimelineEventUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.TimelineEventUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.TimelineEventCreateManyPharmacyInputEnvelope
+  set?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+  disconnect?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+  delete?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+  connect?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+  update?: Prisma.TimelineEventUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.TimelineEventUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.TimelineEventUpdateManyWithWhereWithoutPharmacyInput | Prisma.TimelineEventUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.TimelineEventScalarWhereInput | Prisma.TimelineEventScalarWhereInput[]
+}
+
+export type TimelineEventUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.TimelineEventCreateWithoutPharmacyInput, Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput> | Prisma.TimelineEventCreateWithoutPharmacyInput[] | Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.TimelineEventCreateOrConnectWithoutPharmacyInput | Prisma.TimelineEventCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.TimelineEventUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.TimelineEventUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.TimelineEventCreateManyPharmacyInputEnvelope
+  set?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+  disconnect?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+  delete?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+  connect?: Prisma.TimelineEventWhereUniqueInput | Prisma.TimelineEventWhereUniqueInput[]
+  update?: Prisma.TimelineEventUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.TimelineEventUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.TimelineEventUpdateManyWithWhereWithoutPharmacyInput | Prisma.TimelineEventUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.TimelineEventScalarWhereInput | Prisma.TimelineEventScalarWhereInput[]
 }
 
 export type TimelineEventCreateNestedManyWithoutUserInput = {
@@ -529,6 +595,72 @@ export type TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput = {
   deleteMany?: Prisma.TimelineEventScalarWhereInput | Prisma.TimelineEventScalarWhereInput[]
 }
 
+export type TimelineEventCreateWithoutPharmacyInput = {
+  id?: string
+  eventType: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutTimelineEventsInput
+  user?: Prisma.UserCreateNestedOneWithoutTimelineAsUserInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutTimelineCreatedInput
+}
+
+export type TimelineEventUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  userId?: string | null
+  eventType: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: string | null
+  createdAt?: Date | string
+}
+
+export type TimelineEventCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.TimelineEventWhereUniqueInput
+  create: Prisma.XOR<Prisma.TimelineEventCreateWithoutPharmacyInput, Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput>
+}
+
+export type TimelineEventCreateManyPharmacyInputEnvelope = {
+  data: Prisma.TimelineEventCreateManyPharmacyInput | Prisma.TimelineEventCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type TimelineEventUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.TimelineEventWhereUniqueInput
+  update: Prisma.XOR<Prisma.TimelineEventUpdateWithoutPharmacyInput, Prisma.TimelineEventUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.TimelineEventCreateWithoutPharmacyInput, Prisma.TimelineEventUncheckedCreateWithoutPharmacyInput>
+}
+
+export type TimelineEventUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.TimelineEventWhereUniqueInput
+  data: Prisma.XOR<Prisma.TimelineEventUpdateWithoutPharmacyInput, Prisma.TimelineEventUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type TimelineEventUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.TimelineEventScalarWhereInput
+  data: Prisma.XOR<Prisma.TimelineEventUpdateManyMutationInput, Prisma.TimelineEventUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type TimelineEventScalarWhereInput = {
+  AND?: Prisma.TimelineEventScalarWhereInput | Prisma.TimelineEventScalarWhereInput[]
+  OR?: Prisma.TimelineEventScalarWhereInput[]
+  NOT?: Prisma.TimelineEventScalarWhereInput | Prisma.TimelineEventScalarWhereInput[]
+  id?: Prisma.UuidFilter<"TimelineEvent"> | string
+  pharmacyId?: Prisma.UuidFilter<"TimelineEvent"> | string
+  customerId?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
+  userId?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
+  eventType?: Prisma.StringFilter<"TimelineEvent"> | string
+  title?: Prisma.StringFilter<"TimelineEvent"> | string
+  description?: Prisma.StringNullableFilter<"TimelineEvent"> | string | null
+  metadata?: Prisma.JsonFilter<"TimelineEvent">
+  createdById?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"TimelineEvent"> | Date | string
+}
+
 export type TimelineEventCreateWithoutUserInput = {
   id?: string
   eventType: string
@@ -538,10 +670,12 @@ export type TimelineEventCreateWithoutUserInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutTimelineEventsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutTimelineCreatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
 }
 
 export type TimelineEventUncheckedCreateWithoutUserInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   eventType: string
   title: string
@@ -570,10 +704,12 @@ export type TimelineEventCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutTimelineEventsInput
   user?: Prisma.UserCreateNestedOneWithoutTimelineAsUserInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
 }
 
 export type TimelineEventUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   eventType: string
@@ -609,21 +745,6 @@ export type TimelineEventUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.TimelineEventUpdateManyMutationInput, Prisma.TimelineEventUncheckedUpdateManyWithoutUserInput>
 }
 
-export type TimelineEventScalarWhereInput = {
-  AND?: Prisma.TimelineEventScalarWhereInput | Prisma.TimelineEventScalarWhereInput[]
-  OR?: Prisma.TimelineEventScalarWhereInput[]
-  NOT?: Prisma.TimelineEventScalarWhereInput | Prisma.TimelineEventScalarWhereInput[]
-  id?: Prisma.UuidFilter<"TimelineEvent"> | string
-  customerId?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
-  userId?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
-  eventType?: Prisma.StringFilter<"TimelineEvent"> | string
-  title?: Prisma.StringFilter<"TimelineEvent"> | string
-  description?: Prisma.StringNullableFilter<"TimelineEvent"> | string | null
-  metadata?: Prisma.JsonFilter<"TimelineEvent">
-  createdById?: Prisma.UuidNullableFilter<"TimelineEvent"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"TimelineEvent"> | Date | string
-}
-
 export type TimelineEventUpsertWithWhereUniqueWithoutCreatedByInput = {
   where: Prisma.TimelineEventWhereUniqueInput
   update: Prisma.XOR<Prisma.TimelineEventUpdateWithoutCreatedByInput, Prisma.TimelineEventUncheckedUpdateWithoutCreatedByInput>
@@ -649,10 +770,12 @@ export type TimelineEventCreateWithoutCustomerInput = {
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutTimelineAsUserInput
   createdBy?: Prisma.UserCreateNestedOneWithoutTimelineCreatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
 }
 
 export type TimelineEventUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   userId?: string | null
   eventType: string
   title: string
@@ -688,8 +811,57 @@ export type TimelineEventUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.TimelineEventUpdateManyMutationInput, Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type TimelineEventCreateManyPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  userId?: string | null
+  eventType: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: string | null
+  createdAt?: Date | string
+}
+
+export type TimelineEventUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneWithoutTimelineEventsNestedInput
+  user?: Prisma.UserUpdateOneWithoutTimelineAsUserNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutTimelineCreatedNestedInput
+}
+
+export type TimelineEventUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TimelineEventUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TimelineEventCreateManyUserInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   eventType: string
   title: string
@@ -701,6 +873,7 @@ export type TimelineEventCreateManyUserInput = {
 
 export type TimelineEventCreateManyCreatedByInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   userId?: string | null
   eventType: string
@@ -719,10 +892,12 @@ export type TimelineEventUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutTimelineEventsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutTimelineCreatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutTimelineEventsNestedInput
 }
 
 export type TimelineEventUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventType?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -734,6 +909,7 @@ export type TimelineEventUncheckedUpdateWithoutUserInput = {
 
 export type TimelineEventUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventType?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -752,10 +928,12 @@ export type TimelineEventUpdateWithoutCreatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutTimelineEventsNestedInput
   user?: Prisma.UserUpdateOneWithoutTimelineAsUserNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutTimelineEventsNestedInput
 }
 
 export type TimelineEventUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventType?: Prisma.StringFieldUpdateOperationsInput | string
@@ -767,6 +945,7 @@ export type TimelineEventUncheckedUpdateWithoutCreatedByInput = {
 
 export type TimelineEventUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventType?: Prisma.StringFieldUpdateOperationsInput | string
@@ -778,6 +957,7 @@ export type TimelineEventUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type TimelineEventCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   userId?: string | null
   eventType: string
   title: string
@@ -796,10 +976,12 @@ export type TimelineEventUpdateWithoutCustomerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutTimelineAsUserNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutTimelineCreatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutTimelineEventsNestedInput
 }
 
 export type TimelineEventUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventType?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -811,6 +993,7 @@ export type TimelineEventUncheckedUpdateWithoutCustomerInput = {
 
 export type TimelineEventUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventType?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -824,6 +1007,7 @@ export type TimelineEventUncheckedUpdateManyWithoutCustomerInput = {
 
 export type TimelineEventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   eventType?: boolean
@@ -835,10 +1019,12 @@ export type TimelineEventSelect<ExtArgs extends runtime.Types.Extensions.Interna
   customer?: boolean | Prisma.TimelineEvent$customerArgs<ExtArgs>
   user?: boolean | Prisma.TimelineEvent$userArgs<ExtArgs>
   createdBy?: boolean | Prisma.TimelineEvent$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["timelineEvent"]>
 
 export type TimelineEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   eventType?: boolean
@@ -850,10 +1036,12 @@ export type TimelineEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   customer?: boolean | Prisma.TimelineEvent$customerArgs<ExtArgs>
   user?: boolean | Prisma.TimelineEvent$userArgs<ExtArgs>
   createdBy?: boolean | Prisma.TimelineEvent$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["timelineEvent"]>
 
 export type TimelineEventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   eventType?: boolean
@@ -865,10 +1053,12 @@ export type TimelineEventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   customer?: boolean | Prisma.TimelineEvent$customerArgs<ExtArgs>
   user?: boolean | Prisma.TimelineEvent$userArgs<ExtArgs>
   createdBy?: boolean | Prisma.TimelineEvent$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["timelineEvent"]>
 
 export type TimelineEventSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   userId?: boolean
   eventType?: boolean
@@ -879,21 +1069,24 @@ export type TimelineEventSelectScalar = {
   createdAt?: boolean
 }
 
-export type TimelineEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "userId" | "eventType" | "title" | "description" | "metadata" | "createdById" | "createdAt", ExtArgs["result"]["timelineEvent"]>
+export type TimelineEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "userId" | "eventType" | "title" | "description" | "metadata" | "createdById" | "createdAt", ExtArgs["result"]["timelineEvent"]>
 export type TimelineEventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.TimelineEvent$customerArgs<ExtArgs>
   user?: boolean | Prisma.TimelineEvent$userArgs<ExtArgs>
   createdBy?: boolean | Prisma.TimelineEvent$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type TimelineEventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.TimelineEvent$customerArgs<ExtArgs>
   user?: boolean | Prisma.TimelineEvent$userArgs<ExtArgs>
   createdBy?: boolean | Prisma.TimelineEvent$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type TimelineEventIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.TimelineEvent$customerArgs<ExtArgs>
   user?: boolean | Prisma.TimelineEvent$userArgs<ExtArgs>
   createdBy?: boolean | Prisma.TimelineEvent$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $TimelineEventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -902,9 +1095,11 @@ export type $TimelineEventPayload<ExtArgs extends runtime.Types.Extensions.Inter
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string | null
     userId: string | null
     eventType: string
@@ -1310,6 +1505,7 @@ export interface Prisma__TimelineEventClient<T, Null = never, ExtArgs extends ru
   customer<T extends Prisma.TimelineEvent$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TimelineEvent$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.TimelineEvent$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TimelineEvent$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.TimelineEvent$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TimelineEvent$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1340,6 +1536,7 @@ export interface Prisma__TimelineEventClient<T, Null = never, ExtArgs extends ru
  */
 export interface TimelineEventFieldRefs {
   readonly id: Prisma.FieldRef<"TimelineEvent", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"TimelineEvent", 'String'>
   readonly customerId: Prisma.FieldRef<"TimelineEvent", 'String'>
   readonly userId: Prisma.FieldRef<"TimelineEvent", 'String'>
   readonly eventType: Prisma.FieldRef<"TimelineEvent", 'String'>

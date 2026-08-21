@@ -38,6 +38,7 @@ export type MedicationPriceHistorySumAggregateOutputType = {
 
 export type MedicationPriceHistoryMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   inventoryId: string | null
   price: runtime.Decimal | null
   costPrice: runtime.Decimal | null
@@ -50,6 +51,7 @@ export type MedicationPriceHistoryMinAggregateOutputType = {
 
 export type MedicationPriceHistoryMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   inventoryId: string | null
   price: runtime.Decimal | null
   costPrice: runtime.Decimal | null
@@ -62,6 +64,7 @@ export type MedicationPriceHistoryMaxAggregateOutputType = {
 
 export type MedicationPriceHistoryCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   inventoryId: number
   price: number
   costPrice: number
@@ -86,6 +89,7 @@ export type MedicationPriceHistorySumAggregateInputType = {
 
 export type MedicationPriceHistoryMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   inventoryId?: true
   price?: true
   costPrice?: true
@@ -98,6 +102,7 @@ export type MedicationPriceHistoryMinAggregateInputType = {
 
 export type MedicationPriceHistoryMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   inventoryId?: true
   price?: true
   costPrice?: true
@@ -110,6 +115,7 @@ export type MedicationPriceHistoryMaxAggregateInputType = {
 
 export type MedicationPriceHistoryCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   inventoryId?: true
   price?: true
   costPrice?: true
@@ -209,6 +215,7 @@ export type MedicationPriceHistoryGroupByArgs<ExtArgs extends runtime.Types.Exte
 
 export type MedicationPriceHistoryGroupByOutputType = {
   id: string
+  pharmacyId: string
   inventoryId: string
   price: runtime.Decimal
   costPrice: runtime.Decimal | null
@@ -244,6 +251,7 @@ export type MedicationPriceHistoryWhereInput = {
   OR?: Prisma.MedicationPriceHistoryWhereInput[]
   NOT?: Prisma.MedicationPriceHistoryWhereInput | Prisma.MedicationPriceHistoryWhereInput[]
   id?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
+  pharmacyId?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
   inventoryId?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
   price?: Prisma.DecimalFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.DecimalNullableFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -254,10 +262,12 @@ export type MedicationPriceHistoryWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"MedicationPriceHistory"> | Date | string
   inventory?: Prisma.XOR<Prisma.PharmacyInventoryScalarRelationFilter, Prisma.PharmacyInventoryWhereInput>
   changedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type MedicationPriceHistoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   inventoryId?: Prisma.SortOrder
   price?: Prisma.SortOrder
   costPrice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -268,6 +278,7 @@ export type MedicationPriceHistoryOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   inventory?: Prisma.PharmacyInventoryOrderByWithRelationInput
   changedBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type MedicationPriceHistoryWhereUniqueInput = Prisma.AtLeast<{
@@ -275,6 +286,7 @@ export type MedicationPriceHistoryWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.MedicationPriceHistoryWhereInput | Prisma.MedicationPriceHistoryWhereInput[]
   OR?: Prisma.MedicationPriceHistoryWhereInput[]
   NOT?: Prisma.MedicationPriceHistoryWhereInput | Prisma.MedicationPriceHistoryWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
   inventoryId?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
   price?: Prisma.DecimalFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.DecimalNullableFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -285,10 +297,12 @@ export type MedicationPriceHistoryWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"MedicationPriceHistory"> | Date | string
   inventory?: Prisma.XOR<Prisma.PharmacyInventoryScalarRelationFilter, Prisma.PharmacyInventoryWhereInput>
   changedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type MedicationPriceHistoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   inventoryId?: Prisma.SortOrder
   price?: Prisma.SortOrder
   costPrice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -309,6 +323,7 @@ export type MedicationPriceHistoryScalarWhereWithAggregatesInput = {
   OR?: Prisma.MedicationPriceHistoryScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MedicationPriceHistoryScalarWhereWithAggregatesInput | Prisma.MedicationPriceHistoryScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"MedicationPriceHistory"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"MedicationPriceHistory"> | string
   inventoryId?: Prisma.UuidWithAggregatesFilter<"MedicationPriceHistory"> | string
   price?: Prisma.DecimalWithAggregatesFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.DecimalNullableWithAggregatesFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -329,10 +344,12 @@ export type MedicationPriceHistoryCreateInput = {
   createdAt?: Date | string
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutPriceHistoryInput
   changedBy?: Prisma.UserCreateNestedOneWithoutPriceHistoryChangesInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
 }
 
 export type MedicationPriceHistoryUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   inventoryId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -353,10 +370,12 @@ export type MedicationPriceHistoryUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventory?: Prisma.PharmacyInventoryUpdateOneRequiredWithoutPriceHistoryNestedInput
   changedBy?: Prisma.UserUpdateOneWithoutPriceHistoryChangesNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPriceHistoryNestedInput
 }
 
 export type MedicationPriceHistoryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryId?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -369,6 +388,7 @@ export type MedicationPriceHistoryUncheckedUpdateInput = {
 
 export type MedicationPriceHistoryCreateManyInput = {
   id?: string
+  pharmacyId: string
   inventoryId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -391,6 +411,7 @@ export type MedicationPriceHistoryUpdateManyMutationInput = {
 
 export type MedicationPriceHistoryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryId?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -413,6 +434,7 @@ export type MedicationPriceHistoryOrderByRelationAggregateInput = {
 
 export type MedicationPriceHistoryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   inventoryId?: Prisma.SortOrder
   price?: Prisma.SortOrder
   costPrice?: Prisma.SortOrder
@@ -430,6 +452,7 @@ export type MedicationPriceHistoryAvgOrderByAggregateInput = {
 
 export type MedicationPriceHistoryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   inventoryId?: Prisma.SortOrder
   price?: Prisma.SortOrder
   costPrice?: Prisma.SortOrder
@@ -442,6 +465,7 @@ export type MedicationPriceHistoryMaxOrderByAggregateInput = {
 
 export type MedicationPriceHistoryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   inventoryId?: Prisma.SortOrder
   price?: Prisma.SortOrder
   costPrice?: Prisma.SortOrder
@@ -455,6 +479,48 @@ export type MedicationPriceHistoryMinOrderByAggregateInput = {
 export type MedicationPriceHistorySumOrderByAggregateInput = {
   price?: Prisma.SortOrder
   costPrice?: Prisma.SortOrder
+}
+
+export type MedicationPriceHistoryCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput, Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput> | Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput[] | Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput | Prisma.MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.MedicationPriceHistoryCreateManyPharmacyInputEnvelope
+  connect?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+}
+
+export type MedicationPriceHistoryUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput, Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput> | Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput[] | Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput | Prisma.MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.MedicationPriceHistoryCreateManyPharmacyInputEnvelope
+  connect?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+}
+
+export type MedicationPriceHistoryUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput, Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput> | Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput[] | Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput | Prisma.MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.MedicationPriceHistoryUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.MedicationPriceHistoryUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.MedicationPriceHistoryCreateManyPharmacyInputEnvelope
+  set?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+  disconnect?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+  delete?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+  connect?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+  update?: Prisma.MedicationPriceHistoryUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.MedicationPriceHistoryUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.MedicationPriceHistoryUpdateManyWithWhereWithoutPharmacyInput | Prisma.MedicationPriceHistoryUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.MedicationPriceHistoryScalarWhereInput | Prisma.MedicationPriceHistoryScalarWhereInput[]
+}
+
+export type MedicationPriceHistoryUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput, Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput> | Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput[] | Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput | Prisma.MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.MedicationPriceHistoryUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.MedicationPriceHistoryUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.MedicationPriceHistoryCreateManyPharmacyInputEnvelope
+  set?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+  disconnect?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+  delete?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+  connect?: Prisma.MedicationPriceHistoryWhereUniqueInput | Prisma.MedicationPriceHistoryWhereUniqueInput[]
+  update?: Prisma.MedicationPriceHistoryUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.MedicationPriceHistoryUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.MedicationPriceHistoryUpdateManyWithWhereWithoutPharmacyInput | Prisma.MedicationPriceHistoryUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.MedicationPriceHistoryScalarWhereInput | Prisma.MedicationPriceHistoryScalarWhereInput[]
 }
 
 export type MedicationPriceHistoryCreateNestedManyWithoutChangedByInput = {
@@ -541,6 +607,72 @@ export type MedicationPriceHistoryUncheckedUpdateManyWithoutInventoryNestedInput
   deleteMany?: Prisma.MedicationPriceHistoryScalarWhereInput | Prisma.MedicationPriceHistoryScalarWhereInput[]
 }
 
+export type MedicationPriceHistoryCreateWithoutPharmacyInput = {
+  id?: string
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  reason?: string
+  effectiveFrom?: Date | string
+  effectiveTo?: Date | string | null
+  createdAt?: Date | string
+  inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutPriceHistoryInput
+  changedBy?: Prisma.UserCreateNestedOneWithoutPriceHistoryChangesInput
+}
+
+export type MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  inventoryId: string
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  reason?: string
+  effectiveFrom?: Date | string
+  effectiveTo?: Date | string | null
+  changedById?: string | null
+  createdAt?: Date | string
+}
+
+export type MedicationPriceHistoryCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.MedicationPriceHistoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput, Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput>
+}
+
+export type MedicationPriceHistoryCreateManyPharmacyInputEnvelope = {
+  data: Prisma.MedicationPriceHistoryCreateManyPharmacyInput | Prisma.MedicationPriceHistoryCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type MedicationPriceHistoryUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.MedicationPriceHistoryWhereUniqueInput
+  update: Prisma.XOR<Prisma.MedicationPriceHistoryUpdateWithoutPharmacyInput, Prisma.MedicationPriceHistoryUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.MedicationPriceHistoryCreateWithoutPharmacyInput, Prisma.MedicationPriceHistoryUncheckedCreateWithoutPharmacyInput>
+}
+
+export type MedicationPriceHistoryUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.MedicationPriceHistoryWhereUniqueInput
+  data: Prisma.XOR<Prisma.MedicationPriceHistoryUpdateWithoutPharmacyInput, Prisma.MedicationPriceHistoryUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type MedicationPriceHistoryUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.MedicationPriceHistoryScalarWhereInput
+  data: Prisma.XOR<Prisma.MedicationPriceHistoryUpdateManyMutationInput, Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type MedicationPriceHistoryScalarWhereInput = {
+  AND?: Prisma.MedicationPriceHistoryScalarWhereInput | Prisma.MedicationPriceHistoryScalarWhereInput[]
+  OR?: Prisma.MedicationPriceHistoryScalarWhereInput[]
+  NOT?: Prisma.MedicationPriceHistoryScalarWhereInput | Prisma.MedicationPriceHistoryScalarWhereInput[]
+  id?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
+  pharmacyId?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
+  inventoryId?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
+  price?: Prisma.DecimalFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPrice?: Prisma.DecimalNullableFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  reason?: Prisma.StringFilter<"MedicationPriceHistory"> | string
+  effectiveFrom?: Prisma.DateTimeFilter<"MedicationPriceHistory"> | Date | string
+  effectiveTo?: Prisma.DateTimeNullableFilter<"MedicationPriceHistory"> | Date | string | null
+  changedById?: Prisma.UuidNullableFilter<"MedicationPriceHistory"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"MedicationPriceHistory"> | Date | string
+}
+
 export type MedicationPriceHistoryCreateWithoutChangedByInput = {
   id?: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -550,10 +682,12 @@ export type MedicationPriceHistoryCreateWithoutChangedByInput = {
   effectiveTo?: Date | string | null
   createdAt?: Date | string
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutPriceHistoryInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
 }
 
 export type MedicationPriceHistoryUncheckedCreateWithoutChangedByInput = {
   id?: string
+  pharmacyId: string
   inventoryId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -589,21 +723,6 @@ export type MedicationPriceHistoryUpdateManyWithWhereWithoutChangedByInput = {
   data: Prisma.XOR<Prisma.MedicationPriceHistoryUpdateManyMutationInput, Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByInput>
 }
 
-export type MedicationPriceHistoryScalarWhereInput = {
-  AND?: Prisma.MedicationPriceHistoryScalarWhereInput | Prisma.MedicationPriceHistoryScalarWhereInput[]
-  OR?: Prisma.MedicationPriceHistoryScalarWhereInput[]
-  NOT?: Prisma.MedicationPriceHistoryScalarWhereInput | Prisma.MedicationPriceHistoryScalarWhereInput[]
-  id?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
-  inventoryId?: Prisma.UuidFilter<"MedicationPriceHistory"> | string
-  price?: Prisma.DecimalFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  costPrice?: Prisma.DecimalNullableFilter<"MedicationPriceHistory"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  reason?: Prisma.StringFilter<"MedicationPriceHistory"> | string
-  effectiveFrom?: Prisma.DateTimeFilter<"MedicationPriceHistory"> | Date | string
-  effectiveTo?: Prisma.DateTimeNullableFilter<"MedicationPriceHistory"> | Date | string | null
-  changedById?: Prisma.UuidNullableFilter<"MedicationPriceHistory"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"MedicationPriceHistory"> | Date | string
-}
-
 export type MedicationPriceHistoryCreateWithoutInventoryInput = {
   id?: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -613,10 +732,12 @@ export type MedicationPriceHistoryCreateWithoutInventoryInput = {
   effectiveTo?: Date | string | null
   createdAt?: Date | string
   changedBy?: Prisma.UserCreateNestedOneWithoutPriceHistoryChangesInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
 }
 
 export type MedicationPriceHistoryUncheckedCreateWithoutInventoryInput = {
   id?: string
+  pharmacyId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   reason?: string
@@ -652,8 +773,57 @@ export type MedicationPriceHistoryUpdateManyWithWhereWithoutInventoryInput = {
   data: Prisma.XOR<Prisma.MedicationPriceHistoryUpdateManyMutationInput, Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutInventoryInput>
 }
 
+export type MedicationPriceHistoryCreateManyPharmacyInput = {
+  id?: string
+  inventoryId: string
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  reason?: string
+  effectiveFrom?: Date | string
+  effectiveTo?: Date | string | null
+  changedById?: string | null
+  createdAt?: Date | string
+}
+
+export type MedicationPriceHistoryUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  effectiveFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  effectiveTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventory?: Prisma.PharmacyInventoryUpdateOneRequiredWithoutPriceHistoryNestedInput
+  changedBy?: Prisma.UserUpdateOneWithoutPriceHistoryChangesNestedInput
+}
+
+export type MedicationPriceHistoryUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  effectiveFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  effectiveTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  changedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MedicationPriceHistoryUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  effectiveFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  effectiveTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  changedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type MedicationPriceHistoryCreateManyChangedByInput = {
   id?: string
+  pharmacyId: string
   inventoryId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -672,10 +842,12 @@ export type MedicationPriceHistoryUpdateWithoutChangedByInput = {
   effectiveTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventory?: Prisma.PharmacyInventoryUpdateOneRequiredWithoutPriceHistoryNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPriceHistoryNestedInput
 }
 
 export type MedicationPriceHistoryUncheckedUpdateWithoutChangedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryId?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -687,6 +859,7 @@ export type MedicationPriceHistoryUncheckedUpdateWithoutChangedByInput = {
 
 export type MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryId?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -698,6 +871,7 @@ export type MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByInput = {
 
 export type MedicationPriceHistoryCreateManyInventoryInput = {
   id?: string
+  pharmacyId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   reason?: string
@@ -716,10 +890,12 @@ export type MedicationPriceHistoryUpdateWithoutInventoryInput = {
   effectiveTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   changedBy?: Prisma.UserUpdateOneWithoutPriceHistoryChangesNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPriceHistoryNestedInput
 }
 
 export type MedicationPriceHistoryUncheckedUpdateWithoutInventoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   reason?: Prisma.StringFieldUpdateOperationsInput | string
@@ -731,6 +907,7 @@ export type MedicationPriceHistoryUncheckedUpdateWithoutInventoryInput = {
 
 export type MedicationPriceHistoryUncheckedUpdateManyWithoutInventoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   reason?: Prisma.StringFieldUpdateOperationsInput | string
@@ -744,6 +921,7 @@ export type MedicationPriceHistoryUncheckedUpdateManyWithoutInventoryInput = {
 
 export type MedicationPriceHistorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   inventoryId?: boolean
   price?: boolean
   costPrice?: boolean
@@ -754,10 +932,12 @@ export type MedicationPriceHistorySelect<ExtArgs extends runtime.Types.Extension
   createdAt?: boolean
   inventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   changedBy?: boolean | Prisma.MedicationPriceHistory$changedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medicationPriceHistory"]>
 
 export type MedicationPriceHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   inventoryId?: boolean
   price?: boolean
   costPrice?: boolean
@@ -768,10 +948,12 @@ export type MedicationPriceHistorySelectCreateManyAndReturn<ExtArgs extends runt
   createdAt?: boolean
   inventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   changedBy?: boolean | Prisma.MedicationPriceHistory$changedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medicationPriceHistory"]>
 
 export type MedicationPriceHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   inventoryId?: boolean
   price?: boolean
   costPrice?: boolean
@@ -782,10 +964,12 @@ export type MedicationPriceHistorySelectUpdateManyAndReturn<ExtArgs extends runt
   createdAt?: boolean
   inventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   changedBy?: boolean | Prisma.MedicationPriceHistory$changedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medicationPriceHistory"]>
 
 export type MedicationPriceHistorySelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   inventoryId?: boolean
   price?: boolean
   costPrice?: boolean
@@ -796,18 +980,21 @@ export type MedicationPriceHistorySelectScalar = {
   createdAt?: boolean
 }
 
-export type MedicationPriceHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "inventoryId" | "price" | "costPrice" | "reason" | "effectiveFrom" | "effectiveTo" | "changedById" | "createdAt", ExtArgs["result"]["medicationPriceHistory"]>
+export type MedicationPriceHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "inventoryId" | "price" | "costPrice" | "reason" | "effectiveFrom" | "effectiveTo" | "changedById" | "createdAt", ExtArgs["result"]["medicationPriceHistory"]>
 export type MedicationPriceHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   changedBy?: boolean | Prisma.MedicationPriceHistory$changedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type MedicationPriceHistoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   changedBy?: boolean | Prisma.MedicationPriceHistory$changedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type MedicationPriceHistoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   changedBy?: boolean | Prisma.MedicationPriceHistory$changedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $MedicationPriceHistoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -815,9 +1002,11 @@ export type $MedicationPriceHistoryPayload<ExtArgs extends runtime.Types.Extensi
   objects: {
     inventory: Prisma.$PharmacyInventoryPayload<ExtArgs>
     changedBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     inventoryId: string
     price: runtime.Decimal
     costPrice: runtime.Decimal | null
@@ -1225,6 +1414,7 @@ export interface Prisma__MedicationPriceHistoryClient<T, Null = never, ExtArgs e
   readonly [Symbol.toStringTag]: "PrismaPromise"
   inventory<T extends Prisma.PharmacyInventoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyInventoryDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyInventoryClient<runtime.Types.Result.GetResult<Prisma.$PharmacyInventoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   changedBy<T extends Prisma.MedicationPriceHistory$changedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MedicationPriceHistory$changedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1255,6 +1445,7 @@ export interface Prisma__MedicationPriceHistoryClient<T, Null = never, ExtArgs e
  */
 export interface MedicationPriceHistoryFieldRefs {
   readonly id: Prisma.FieldRef<"MedicationPriceHistory", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"MedicationPriceHistory", 'String'>
   readonly inventoryId: Prisma.FieldRef<"MedicationPriceHistory", 'String'>
   readonly price: Prisma.FieldRef<"MedicationPriceHistory", 'Decimal'>
   readonly costPrice: Prisma.FieldRef<"MedicationPriceHistory", 'Decimal'>

@@ -56,6 +56,7 @@ export type HealthScreeningRecordSumAggregateOutputType = {
 
 export type HealthScreeningRecordMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   conductedById: string | null
   screeningType: string | null
@@ -93,6 +94,7 @@ export type HealthScreeningRecordMinAggregateOutputType = {
 
 export type HealthScreeningRecordMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   conductedById: string | null
   screeningType: string | null
@@ -130,6 +132,7 @@ export type HealthScreeningRecordMaxAggregateOutputType = {
 
 export type HealthScreeningRecordCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   conductedById: number
   screeningType: number
@@ -198,6 +201,7 @@ export type HealthScreeningRecordSumAggregateInputType = {
 
 export type HealthScreeningRecordMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   conductedById?: true
   screeningType?: true
@@ -235,6 +239,7 @@ export type HealthScreeningRecordMinAggregateInputType = {
 
 export type HealthScreeningRecordMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   conductedById?: true
   screeningType?: true
@@ -272,6 +277,7 @@ export type HealthScreeningRecordMaxAggregateInputType = {
 
 export type HealthScreeningRecordCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   conductedById?: true
   screeningType?: true
@@ -397,6 +403,7 @@ export type HealthScreeningRecordGroupByArgs<ExtArgs extends runtime.Types.Exten
 
 export type HealthScreeningRecordGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string | null
   conductedById: string | null
   screeningType: string
@@ -458,6 +465,7 @@ export type HealthScreeningRecordWhereInput = {
   OR?: Prisma.HealthScreeningRecordWhereInput[]
   NOT?: Prisma.HealthScreeningRecordWhereInput | Prisma.HealthScreeningRecordWhereInput[]
   id?: Prisma.UuidFilter<"HealthScreeningRecord"> | string
+  pharmacyId?: Prisma.UuidFilter<"HealthScreeningRecord"> | string
   customerId?: Prisma.UuidNullableFilter<"HealthScreeningRecord"> | string | null
   conductedById?: Prisma.UuidNullableFilter<"HealthScreeningRecord"> | string | null
   screeningType?: Prisma.StringFilter<"HealthScreeningRecord"> | string
@@ -495,10 +503,12 @@ export type HealthScreeningRecordWhereInput = {
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   conductedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   referrals?: Prisma.ClinicalReferralListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type HealthScreeningRecordOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   conductedById?: Prisma.SortOrderInput | Prisma.SortOrder
   screeningType?: Prisma.SortOrder
@@ -536,6 +546,7 @@ export type HealthScreeningRecordOrderByWithRelationInput = {
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   conductedBy?: Prisma.UserOrderByWithRelationInput
   referrals?: Prisma.ClinicalReferralOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type HealthScreeningRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -543,6 +554,7 @@ export type HealthScreeningRecordWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.HealthScreeningRecordWhereInput | Prisma.HealthScreeningRecordWhereInput[]
   OR?: Prisma.HealthScreeningRecordWhereInput[]
   NOT?: Prisma.HealthScreeningRecordWhereInput | Prisma.HealthScreeningRecordWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"HealthScreeningRecord"> | string
   customerId?: Prisma.UuidNullableFilter<"HealthScreeningRecord"> | string | null
   conductedById?: Prisma.UuidNullableFilter<"HealthScreeningRecord"> | string | null
   screeningType?: Prisma.StringFilter<"HealthScreeningRecord"> | string
@@ -580,10 +592,12 @@ export type HealthScreeningRecordWhereUniqueInput = Prisma.AtLeast<{
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   conductedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   referrals?: Prisma.ClinicalReferralListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type HealthScreeningRecordOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   conductedById?: Prisma.SortOrderInput | Prisma.SortOrder
   screeningType?: Prisma.SortOrder
@@ -630,6 +644,7 @@ export type HealthScreeningRecordScalarWhereWithAggregatesInput = {
   OR?: Prisma.HealthScreeningRecordScalarWhereWithAggregatesInput[]
   NOT?: Prisma.HealthScreeningRecordScalarWhereWithAggregatesInput | Prisma.HealthScreeningRecordScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"HealthScreeningRecord"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"HealthScreeningRecord"> | string
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"HealthScreeningRecord"> | string | null
   conductedById?: Prisma.UuidNullableWithAggregatesFilter<"HealthScreeningRecord"> | string | null
   screeningType?: Prisma.StringWithAggregatesFilter<"HealthScreeningRecord"> | string
@@ -703,10 +718,12 @@ export type HealthScreeningRecordCreateInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutScreeningRecordsInput
   conductedBy?: Prisma.UserCreateNestedOneWithoutScreeningsConductedInput
   referrals?: Prisma.ClinicalReferralCreateNestedManyWithoutScreeningInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
 }
 
 export type HealthScreeningRecordUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   conductedById?: string | null
   screeningType?: string
@@ -781,10 +798,12 @@ export type HealthScreeningRecordUpdateInput = {
   customer?: Prisma.CustomerProfileUpdateOneWithoutScreeningRecordsNestedInput
   conductedBy?: Prisma.UserUpdateOneWithoutScreeningsConductedNestedInput
   referrals?: Prisma.ClinicalReferralUpdateManyWithoutScreeningNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutScreeningsNestedInput
 }
 
 export type HealthScreeningRecordUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   conductedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   screeningType?: Prisma.StringFieldUpdateOperationsInput | string
@@ -824,6 +843,7 @@ export type HealthScreeningRecordUncheckedUpdateInput = {
 
 export type HealthScreeningRecordCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   conductedById?: string | null
   screeningType?: string
@@ -898,6 +918,7 @@ export type HealthScreeningRecordUpdateManyMutationInput = {
 
 export type HealthScreeningRecordUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   conductedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   screeningType?: Prisma.StringFieldUpdateOperationsInput | string
@@ -946,6 +967,7 @@ export type HealthScreeningRecordOrderByRelationAggregateInput = {
 
 export type HealthScreeningRecordCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   conductedById?: Prisma.SortOrder
   screeningType?: Prisma.SortOrder
@@ -998,6 +1020,7 @@ export type HealthScreeningRecordAvgOrderByAggregateInput = {
 
 export type HealthScreeningRecordMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   conductedById?: Prisma.SortOrder
   screeningType?: Prisma.SortOrder
@@ -1035,6 +1058,7 @@ export type HealthScreeningRecordMaxOrderByAggregateInput = {
 
 export type HealthScreeningRecordMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   conductedById?: Prisma.SortOrder
   screeningType?: Prisma.SortOrder
@@ -1087,6 +1111,48 @@ export type HealthScreeningRecordSumOrderByAggregateInput = {
 export type HealthScreeningRecordNullableScalarRelationFilter = {
   is?: Prisma.HealthScreeningRecordWhereInput | null
   isNot?: Prisma.HealthScreeningRecordWhereInput | null
+}
+
+export type HealthScreeningRecordCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.HealthScreeningRecordCreateWithoutPharmacyInput, Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput> | Prisma.HealthScreeningRecordCreateWithoutPharmacyInput[] | Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.HealthScreeningRecordCreateOrConnectWithoutPharmacyInput | Prisma.HealthScreeningRecordCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.HealthScreeningRecordCreateManyPharmacyInputEnvelope
+  connect?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+}
+
+export type HealthScreeningRecordUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.HealthScreeningRecordCreateWithoutPharmacyInput, Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput> | Prisma.HealthScreeningRecordCreateWithoutPharmacyInput[] | Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.HealthScreeningRecordCreateOrConnectWithoutPharmacyInput | Prisma.HealthScreeningRecordCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.HealthScreeningRecordCreateManyPharmacyInputEnvelope
+  connect?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+}
+
+export type HealthScreeningRecordUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.HealthScreeningRecordCreateWithoutPharmacyInput, Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput> | Prisma.HealthScreeningRecordCreateWithoutPharmacyInput[] | Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.HealthScreeningRecordCreateOrConnectWithoutPharmacyInput | Prisma.HealthScreeningRecordCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.HealthScreeningRecordUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.HealthScreeningRecordUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.HealthScreeningRecordCreateManyPharmacyInputEnvelope
+  set?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+  disconnect?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+  delete?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+  connect?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+  update?: Prisma.HealthScreeningRecordUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.HealthScreeningRecordUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.HealthScreeningRecordUpdateManyWithWhereWithoutPharmacyInput | Prisma.HealthScreeningRecordUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.HealthScreeningRecordScalarWhereInput | Prisma.HealthScreeningRecordScalarWhereInput[]
+}
+
+export type HealthScreeningRecordUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.HealthScreeningRecordCreateWithoutPharmacyInput, Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput> | Prisma.HealthScreeningRecordCreateWithoutPharmacyInput[] | Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.HealthScreeningRecordCreateOrConnectWithoutPharmacyInput | Prisma.HealthScreeningRecordCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.HealthScreeningRecordUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.HealthScreeningRecordUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.HealthScreeningRecordCreateManyPharmacyInputEnvelope
+  set?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+  disconnect?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+  delete?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+  connect?: Prisma.HealthScreeningRecordWhereUniqueInput | Prisma.HealthScreeningRecordWhereUniqueInput[]
+  update?: Prisma.HealthScreeningRecordUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.HealthScreeningRecordUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.HealthScreeningRecordUpdateManyWithWhereWithoutPharmacyInput | Prisma.HealthScreeningRecordUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.HealthScreeningRecordScalarWhereInput | Prisma.HealthScreeningRecordScalarWhereInput[]
 }
 
 export type HealthScreeningRecordCreateNestedManyWithoutConductedByInput = {
@@ -1189,6 +1255,152 @@ export type HealthScreeningRecordUpdateOneWithoutReferralsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.HealthScreeningRecordUpdateToOneWithWhereWithoutReferralsInput, Prisma.HealthScreeningRecordUpdateWithoutReferralsInput>, Prisma.HealthScreeningRecordUncheckedUpdateWithoutReferralsInput>
 }
 
+export type HealthScreeningRecordCreateWithoutPharmacyInput = {
+  id?: string
+  screeningType?: string
+  patientName: string
+  patientPhone?: string | null
+  patientEmail?: string | null
+  patientAge?: number | null
+  patientGender?: string | null
+  systolicBp?: number | null
+  diastolicBp?: number | null
+  pulseRate?: number | null
+  bpCategory?: string | null
+  bloodGlucose?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  glucoseUnit?: string | null
+  fastingStatus?: string | null
+  glucoseCategory?: string | null
+  weightKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heightCm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmi?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmiCategory?: string | null
+  waistCircumferenceCm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  temperatureC?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  tempCategory?: string | null
+  spO2Percent?: number | null
+  poctType?: string | null
+  poctResult?: string | null
+  poctValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: string | null
+  nonDiagnosticDisclaimer?: boolean
+  equipmentUsed?: string | null
+  requiresReferral?: boolean
+  referralUrgency?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutScreeningRecordsInput
+  conductedBy?: Prisma.UserCreateNestedOneWithoutScreeningsConductedInput
+  referrals?: Prisma.ClinicalReferralCreateNestedManyWithoutScreeningInput
+}
+
+export type HealthScreeningRecordUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  conductedById?: string | null
+  screeningType?: string
+  patientName: string
+  patientPhone?: string | null
+  patientEmail?: string | null
+  patientAge?: number | null
+  patientGender?: string | null
+  systolicBp?: number | null
+  diastolicBp?: number | null
+  pulseRate?: number | null
+  bpCategory?: string | null
+  bloodGlucose?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  glucoseUnit?: string | null
+  fastingStatus?: string | null
+  glucoseCategory?: string | null
+  weightKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heightCm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmi?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmiCategory?: string | null
+  waistCircumferenceCm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  temperatureC?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  tempCategory?: string | null
+  spO2Percent?: number | null
+  poctType?: string | null
+  poctResult?: string | null
+  poctValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: string | null
+  nonDiagnosticDisclaimer?: boolean
+  equipmentUsed?: string | null
+  requiresReferral?: boolean
+  referralUrgency?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  referrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutScreeningInput
+}
+
+export type HealthScreeningRecordCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.HealthScreeningRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.HealthScreeningRecordCreateWithoutPharmacyInput, Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput>
+}
+
+export type HealthScreeningRecordCreateManyPharmacyInputEnvelope = {
+  data: Prisma.HealthScreeningRecordCreateManyPharmacyInput | Prisma.HealthScreeningRecordCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type HealthScreeningRecordUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.HealthScreeningRecordWhereUniqueInput
+  update: Prisma.XOR<Prisma.HealthScreeningRecordUpdateWithoutPharmacyInput, Prisma.HealthScreeningRecordUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.HealthScreeningRecordCreateWithoutPharmacyInput, Prisma.HealthScreeningRecordUncheckedCreateWithoutPharmacyInput>
+}
+
+export type HealthScreeningRecordUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.HealthScreeningRecordWhereUniqueInput
+  data: Prisma.XOR<Prisma.HealthScreeningRecordUpdateWithoutPharmacyInput, Prisma.HealthScreeningRecordUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type HealthScreeningRecordUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.HealthScreeningRecordScalarWhereInput
+  data: Prisma.XOR<Prisma.HealthScreeningRecordUpdateManyMutationInput, Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type HealthScreeningRecordScalarWhereInput = {
+  AND?: Prisma.HealthScreeningRecordScalarWhereInput | Prisma.HealthScreeningRecordScalarWhereInput[]
+  OR?: Prisma.HealthScreeningRecordScalarWhereInput[]
+  NOT?: Prisma.HealthScreeningRecordScalarWhereInput | Prisma.HealthScreeningRecordScalarWhereInput[]
+  id?: Prisma.UuidFilter<"HealthScreeningRecord"> | string
+  pharmacyId?: Prisma.UuidFilter<"HealthScreeningRecord"> | string
+  customerId?: Prisma.UuidNullableFilter<"HealthScreeningRecord"> | string | null
+  conductedById?: Prisma.UuidNullableFilter<"HealthScreeningRecord"> | string | null
+  screeningType?: Prisma.StringFilter<"HealthScreeningRecord"> | string
+  patientName?: Prisma.StringFilter<"HealthScreeningRecord"> | string
+  patientPhone?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  patientEmail?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  patientAge?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
+  patientGender?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  systolicBp?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
+  diastolicBp?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
+  pulseRate?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
+  bpCategory?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  bloodGlucose?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  glucoseUnit?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  fastingStatus?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  glucoseCategory?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  weightKg?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heightCm?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmi?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmiCategory?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  waistCircumferenceCm?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  temperatureC?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  tempCategory?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  spO2Percent?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
+  poctType?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  poctResult?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  poctValues?: Prisma.JsonFilter<"HealthScreeningRecord">
+  notes?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  nonDiagnosticDisclaimer?: Prisma.BoolFilter<"HealthScreeningRecord"> | boolean
+  equipmentUsed?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  requiresReferral?: Prisma.BoolFilter<"HealthScreeningRecord"> | boolean
+  referralUrgency?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"HealthScreeningRecord"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"HealthScreeningRecord"> | Date | string
+}
+
 export type HealthScreeningRecordCreateWithoutConductedByInput = {
   id?: string
   screeningType?: string
@@ -1225,10 +1437,12 @@ export type HealthScreeningRecordCreateWithoutConductedByInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutScreeningRecordsInput
   referrals?: Prisma.ClinicalReferralCreateNestedManyWithoutScreeningInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
 }
 
 export type HealthScreeningRecordUncheckedCreateWithoutConductedByInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   screeningType?: string
   patientName: string
@@ -1291,47 +1505,6 @@ export type HealthScreeningRecordUpdateManyWithWhereWithoutConductedByInput = {
   data: Prisma.XOR<Prisma.HealthScreeningRecordUpdateManyMutationInput, Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByInput>
 }
 
-export type HealthScreeningRecordScalarWhereInput = {
-  AND?: Prisma.HealthScreeningRecordScalarWhereInput | Prisma.HealthScreeningRecordScalarWhereInput[]
-  OR?: Prisma.HealthScreeningRecordScalarWhereInput[]
-  NOT?: Prisma.HealthScreeningRecordScalarWhereInput | Prisma.HealthScreeningRecordScalarWhereInput[]
-  id?: Prisma.UuidFilter<"HealthScreeningRecord"> | string
-  customerId?: Prisma.UuidNullableFilter<"HealthScreeningRecord"> | string | null
-  conductedById?: Prisma.UuidNullableFilter<"HealthScreeningRecord"> | string | null
-  screeningType?: Prisma.StringFilter<"HealthScreeningRecord"> | string
-  patientName?: Prisma.StringFilter<"HealthScreeningRecord"> | string
-  patientPhone?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  patientEmail?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  patientAge?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
-  patientGender?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  systolicBp?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
-  diastolicBp?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
-  pulseRate?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
-  bpCategory?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  bloodGlucose?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  glucoseUnit?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  fastingStatus?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  glucoseCategory?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  weightKg?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  heightCm?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  bmi?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  bmiCategory?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  waistCircumferenceCm?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  temperatureC?: Prisma.DecimalNullableFilter<"HealthScreeningRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  tempCategory?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  spO2Percent?: Prisma.IntNullableFilter<"HealthScreeningRecord"> | number | null
-  poctType?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  poctResult?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  poctValues?: Prisma.JsonFilter<"HealthScreeningRecord">
-  notes?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  nonDiagnosticDisclaimer?: Prisma.BoolFilter<"HealthScreeningRecord"> | boolean
-  equipmentUsed?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  requiresReferral?: Prisma.BoolFilter<"HealthScreeningRecord"> | boolean
-  referralUrgency?: Prisma.StringNullableFilter<"HealthScreeningRecord"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"HealthScreeningRecord"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"HealthScreeningRecord"> | Date | string
-}
-
 export type HealthScreeningRecordCreateWithoutCustomerInput = {
   id?: string
   screeningType?: string
@@ -1368,10 +1541,12 @@ export type HealthScreeningRecordCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   conductedBy?: Prisma.UserCreateNestedOneWithoutScreeningsConductedInput
   referrals?: Prisma.ClinicalReferralCreateNestedManyWithoutScreeningInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
 }
 
 export type HealthScreeningRecordUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   conductedById?: string | null
   screeningType?: string
   patientName: string
@@ -1470,10 +1645,12 @@ export type HealthScreeningRecordCreateWithoutReferralsInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutScreeningRecordsInput
   conductedBy?: Prisma.UserCreateNestedOneWithoutScreeningsConductedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
 }
 
 export type HealthScreeningRecordUncheckedCreateWithoutReferralsInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   conductedById?: string | null
   screeningType?: string
@@ -1562,9 +1739,165 @@ export type HealthScreeningRecordUpdateWithoutReferralsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutScreeningRecordsNestedInput
   conductedBy?: Prisma.UserUpdateOneWithoutScreeningsConductedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutScreeningsNestedInput
 }
 
 export type HealthScreeningRecordUncheckedUpdateWithoutReferralsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  screeningType?: Prisma.StringFieldUpdateOperationsInput | string
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientAge?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  systolicBp?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  diastolicBp?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pulseRate?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGlucose?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  glucoseUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fastingStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glucoseCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  weightKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heightCm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmi?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmiCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waistCircumferenceCm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  temperatureC?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  tempCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spO2Percent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  poctType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poctResult?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poctValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nonDiagnosticDisclaimer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  equipmentUsed?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresReferral?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  referralUrgency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type HealthScreeningRecordCreateManyPharmacyInput = {
+  id?: string
+  customerId?: string | null
+  conductedById?: string | null
+  screeningType?: string
+  patientName: string
+  patientPhone?: string | null
+  patientEmail?: string | null
+  patientAge?: number | null
+  patientGender?: string | null
+  systolicBp?: number | null
+  diastolicBp?: number | null
+  pulseRate?: number | null
+  bpCategory?: string | null
+  bloodGlucose?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  glucoseUnit?: string | null
+  fastingStatus?: string | null
+  glucoseCategory?: string | null
+  weightKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heightCm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmi?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmiCategory?: string | null
+  waistCircumferenceCm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  temperatureC?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  tempCategory?: string | null
+  spO2Percent?: number | null
+  poctType?: string | null
+  poctResult?: string | null
+  poctValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: string | null
+  nonDiagnosticDisclaimer?: boolean
+  equipmentUsed?: string | null
+  requiresReferral?: boolean
+  referralUrgency?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type HealthScreeningRecordUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  screeningType?: Prisma.StringFieldUpdateOperationsInput | string
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientAge?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  systolicBp?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  diastolicBp?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pulseRate?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGlucose?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  glucoseUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fastingStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glucoseCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  weightKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heightCm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmi?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmiCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waistCircumferenceCm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  temperatureC?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  tempCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spO2Percent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  poctType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poctResult?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poctValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nonDiagnosticDisclaimer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  equipmentUsed?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresReferral?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  referralUrgency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneWithoutScreeningRecordsNestedInput
+  conductedBy?: Prisma.UserUpdateOneWithoutScreeningsConductedNestedInput
+  referrals?: Prisma.ClinicalReferralUpdateManyWithoutScreeningNestedInput
+}
+
+export type HealthScreeningRecordUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  screeningType?: Prisma.StringFieldUpdateOperationsInput | string
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientAge?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  systolicBp?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  diastolicBp?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pulseRate?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGlucose?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  glucoseUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fastingStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glucoseCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  weightKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heightCm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmi?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bmiCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waistCircumferenceCm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  temperatureC?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  tempCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spO2Percent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  poctType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poctResult?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poctValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nonDiagnosticDisclaimer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  equipmentUsed?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresReferral?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  referralUrgency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  referrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutScreeningNestedInput
+}
+
+export type HealthScreeningRecordUncheckedUpdateManyWithoutPharmacyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   conductedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1604,6 +1937,7 @@ export type HealthScreeningRecordUncheckedUpdateWithoutReferralsInput = {
 
 export type HealthScreeningRecordCreateManyConductedByInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   screeningType?: string
   patientName: string
@@ -1675,10 +2009,12 @@ export type HealthScreeningRecordUpdateWithoutConductedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutScreeningRecordsNestedInput
   referrals?: Prisma.ClinicalReferralUpdateManyWithoutScreeningNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutScreeningsNestedInput
 }
 
 export type HealthScreeningRecordUncheckedUpdateWithoutConductedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   screeningType?: Prisma.StringFieldUpdateOperationsInput | string
   patientName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1717,6 +2053,7 @@ export type HealthScreeningRecordUncheckedUpdateWithoutConductedByInput = {
 
 export type HealthScreeningRecordUncheckedUpdateManyWithoutConductedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   screeningType?: Prisma.StringFieldUpdateOperationsInput | string
   patientName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1754,6 +2091,7 @@ export type HealthScreeningRecordUncheckedUpdateManyWithoutConductedByInput = {
 
 export type HealthScreeningRecordCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   conductedById?: string | null
   screeningType?: string
   patientName: string
@@ -1825,10 +2163,12 @@ export type HealthScreeningRecordUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conductedBy?: Prisma.UserUpdateOneWithoutScreeningsConductedNestedInput
   referrals?: Prisma.ClinicalReferralUpdateManyWithoutScreeningNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutScreeningsNestedInput
 }
 
 export type HealthScreeningRecordUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   conductedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   screeningType?: Prisma.StringFieldUpdateOperationsInput | string
   patientName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1867,6 +2207,7 @@ export type HealthScreeningRecordUncheckedUpdateWithoutCustomerInput = {
 
 export type HealthScreeningRecordUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   conductedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   screeningType?: Prisma.StringFieldUpdateOperationsInput | string
   patientName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1935,6 +2276,7 @@ export type HealthScreeningRecordCountOutputTypeCountReferralsArgs<ExtArgs exten
 
 export type HealthScreeningRecordSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   conductedById?: boolean
   screeningType?: boolean
@@ -1972,11 +2314,13 @@ export type HealthScreeningRecordSelect<ExtArgs extends runtime.Types.Extensions
   customer?: boolean | Prisma.HealthScreeningRecord$customerArgs<ExtArgs>
   conductedBy?: boolean | Prisma.HealthScreeningRecord$conductedByArgs<ExtArgs>
   referrals?: boolean | Prisma.HealthScreeningRecord$referralsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.HealthScreeningRecordCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["healthScreeningRecord"]>
 
 export type HealthScreeningRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   conductedById?: boolean
   screeningType?: boolean
@@ -2013,10 +2357,12 @@ export type HealthScreeningRecordSelectCreateManyAndReturn<ExtArgs extends runti
   updatedAt?: boolean
   customer?: boolean | Prisma.HealthScreeningRecord$customerArgs<ExtArgs>
   conductedBy?: boolean | Prisma.HealthScreeningRecord$conductedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["healthScreeningRecord"]>
 
 export type HealthScreeningRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   conductedById?: boolean
   screeningType?: boolean
@@ -2053,10 +2399,12 @@ export type HealthScreeningRecordSelectUpdateManyAndReturn<ExtArgs extends runti
   updatedAt?: boolean
   customer?: boolean | Prisma.HealthScreeningRecord$customerArgs<ExtArgs>
   conductedBy?: boolean | Prisma.HealthScreeningRecord$conductedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["healthScreeningRecord"]>
 
 export type HealthScreeningRecordSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   conductedById?: boolean
   screeningType?: boolean
@@ -2093,20 +2441,23 @@ export type HealthScreeningRecordSelectScalar = {
   updatedAt?: boolean
 }
 
-export type HealthScreeningRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "conductedById" | "screeningType" | "patientName" | "patientPhone" | "patientEmail" | "patientAge" | "patientGender" | "systolicBp" | "diastolicBp" | "pulseRate" | "bpCategory" | "bloodGlucose" | "glucoseUnit" | "fastingStatus" | "glucoseCategory" | "weightKg" | "heightCm" | "bmi" | "bmiCategory" | "waistCircumferenceCm" | "temperatureC" | "tempCategory" | "spO2Percent" | "poctType" | "poctResult" | "poctValues" | "notes" | "nonDiagnosticDisclaimer" | "equipmentUsed" | "requiresReferral" | "referralUrgency" | "createdAt" | "updatedAt", ExtArgs["result"]["healthScreeningRecord"]>
+export type HealthScreeningRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "conductedById" | "screeningType" | "patientName" | "patientPhone" | "patientEmail" | "patientAge" | "patientGender" | "systolicBp" | "diastolicBp" | "pulseRate" | "bpCategory" | "bloodGlucose" | "glucoseUnit" | "fastingStatus" | "glucoseCategory" | "weightKg" | "heightCm" | "bmi" | "bmiCategory" | "waistCircumferenceCm" | "temperatureC" | "tempCategory" | "spO2Percent" | "poctType" | "poctResult" | "poctValues" | "notes" | "nonDiagnosticDisclaimer" | "equipmentUsed" | "requiresReferral" | "referralUrgency" | "createdAt" | "updatedAt", ExtArgs["result"]["healthScreeningRecord"]>
 export type HealthScreeningRecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.HealthScreeningRecord$customerArgs<ExtArgs>
   conductedBy?: boolean | Prisma.HealthScreeningRecord$conductedByArgs<ExtArgs>
   referrals?: boolean | Prisma.HealthScreeningRecord$referralsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.HealthScreeningRecordCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type HealthScreeningRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.HealthScreeningRecord$customerArgs<ExtArgs>
   conductedBy?: boolean | Prisma.HealthScreeningRecord$conductedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type HealthScreeningRecordIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.HealthScreeningRecord$customerArgs<ExtArgs>
   conductedBy?: boolean | Prisma.HealthScreeningRecord$conductedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $HealthScreeningRecordPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2115,9 +2466,11 @@ export type $HealthScreeningRecordPayload<ExtArgs extends runtime.Types.Extensio
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     conductedBy: Prisma.$UserPayload<ExtArgs> | null
     referrals: Prisma.$ClinicalReferralPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string | null
     conductedById: string | null
     screeningType: string
@@ -2549,6 +2902,7 @@ export interface Prisma__HealthScreeningRecordClient<T, Null = never, ExtArgs ex
   customer<T extends Prisma.HealthScreeningRecord$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HealthScreeningRecord$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   conductedBy<T extends Prisma.HealthScreeningRecord$conductedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HealthScreeningRecord$conductedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   referrals<T extends Prisma.HealthScreeningRecord$referralsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HealthScreeningRecord$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicalReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2579,6 +2933,7 @@ export interface Prisma__HealthScreeningRecordClient<T, Null = never, ExtArgs ex
  */
 export interface HealthScreeningRecordFieldRefs {
   readonly id: Prisma.FieldRef<"HealthScreeningRecord", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"HealthScreeningRecord", 'String'>
   readonly customerId: Prisma.FieldRef<"HealthScreeningRecord", 'String'>
   readonly conductedById: Prisma.FieldRef<"HealthScreeningRecord", 'String'>
   readonly screeningType: Prisma.FieldRef<"HealthScreeningRecord", 'String'>

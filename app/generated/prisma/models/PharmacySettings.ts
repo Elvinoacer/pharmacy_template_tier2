@@ -30,15 +30,20 @@ export type AggregatePharmacySettings = {
 export type PharmacySettingsAvgAggregateOutputType = {
   latitude: number | null
   longitude: number | null
+  deliveryFeeKes: runtime.Decimal | null
+  deliveryRadiusKm: number | null
 }
 
 export type PharmacySettingsSumAggregateOutputType = {
   latitude: number | null
   longitude: number | null
+  deliveryFeeKes: runtime.Decimal | null
+  deliveryRadiusKm: number | null
 }
 
 export type PharmacySettingsMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   displayName: string | null
   phone: string | null
   email: string | null
@@ -53,6 +58,16 @@ export type PharmacySettingsMinAggregateOutputType = {
   longitude: number | null
   placeId: string | null
   mapsEmbedUrl: string | null
+  tagline: string | null
+  about: string | null
+  logoUrl: string | null
+  coverImageUrl: string | null
+  brandPrimary: string | null
+  brandAccent: string | null
+  deliveryNotes: string | null
+  deliveryFeeKes: runtime.Decimal | null
+  deliveryRadiusKm: number | null
+  careersEmail: string | null
   updatedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -60,6 +75,7 @@ export type PharmacySettingsMinAggregateOutputType = {
 
 export type PharmacySettingsMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   displayName: string | null
   phone: string | null
   email: string | null
@@ -74,6 +90,16 @@ export type PharmacySettingsMaxAggregateOutputType = {
   longitude: number | null
   placeId: string | null
   mapsEmbedUrl: string | null
+  tagline: string | null
+  about: string | null
+  logoUrl: string | null
+  coverImageUrl: string | null
+  brandPrimary: string | null
+  brandAccent: string | null
+  deliveryNotes: string | null
+  deliveryFeeKes: runtime.Decimal | null
+  deliveryRadiusKm: number | null
+  careersEmail: string | null
   updatedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -81,6 +107,7 @@ export type PharmacySettingsMaxAggregateOutputType = {
 
 export type PharmacySettingsCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   displayName: number
   phone: number
   email: number
@@ -96,6 +123,22 @@ export type PharmacySettingsCountAggregateOutputType = {
   placeId: number
   mapsEmbedUrl: number
   hours: number
+  tagline: number
+  about: number
+  logoUrl: number
+  coverImageUrl: number
+  brandPrimary: number
+  brandAccent: number
+  social: number
+  team: number
+  testimonials: number
+  faq: number
+  insurance: number
+  certifications: number
+  deliveryNotes: number
+  deliveryFeeKes: number
+  deliveryRadiusKm: number
+  careersEmail: number
   updatedById: number
   createdAt: number
   updatedAt: number
@@ -106,15 +149,20 @@ export type PharmacySettingsCountAggregateOutputType = {
 export type PharmacySettingsAvgAggregateInputType = {
   latitude?: true
   longitude?: true
+  deliveryFeeKes?: true
+  deliveryRadiusKm?: true
 }
 
 export type PharmacySettingsSumAggregateInputType = {
   latitude?: true
   longitude?: true
+  deliveryFeeKes?: true
+  deliveryRadiusKm?: true
 }
 
 export type PharmacySettingsMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   displayName?: true
   phone?: true
   email?: true
@@ -129,6 +177,16 @@ export type PharmacySettingsMinAggregateInputType = {
   longitude?: true
   placeId?: true
   mapsEmbedUrl?: true
+  tagline?: true
+  about?: true
+  logoUrl?: true
+  coverImageUrl?: true
+  brandPrimary?: true
+  brandAccent?: true
+  deliveryNotes?: true
+  deliveryFeeKes?: true
+  deliveryRadiusKm?: true
+  careersEmail?: true
   updatedById?: true
   createdAt?: true
   updatedAt?: true
@@ -136,6 +194,7 @@ export type PharmacySettingsMinAggregateInputType = {
 
 export type PharmacySettingsMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   displayName?: true
   phone?: true
   email?: true
@@ -150,6 +209,16 @@ export type PharmacySettingsMaxAggregateInputType = {
   longitude?: true
   placeId?: true
   mapsEmbedUrl?: true
+  tagline?: true
+  about?: true
+  logoUrl?: true
+  coverImageUrl?: true
+  brandPrimary?: true
+  brandAccent?: true
+  deliveryNotes?: true
+  deliveryFeeKes?: true
+  deliveryRadiusKm?: true
+  careersEmail?: true
   updatedById?: true
   createdAt?: true
   updatedAt?: true
@@ -157,6 +226,7 @@ export type PharmacySettingsMaxAggregateInputType = {
 
 export type PharmacySettingsCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   displayName?: true
   phone?: true
   email?: true
@@ -172,6 +242,22 @@ export type PharmacySettingsCountAggregateInputType = {
   placeId?: true
   mapsEmbedUrl?: true
   hours?: true
+  tagline?: true
+  about?: true
+  logoUrl?: true
+  coverImageUrl?: true
+  brandPrimary?: true
+  brandAccent?: true
+  social?: true
+  team?: true
+  testimonials?: true
+  faq?: true
+  insurance?: true
+  certifications?: true
+  deliveryNotes?: true
+  deliveryFeeKes?: true
+  deliveryRadiusKm?: true
+  careersEmail?: true
   updatedById?: true
   createdAt?: true
   updatedAt?: true
@@ -266,6 +352,7 @@ export type PharmacySettingsGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type PharmacySettingsGroupByOutputType = {
   id: string
+  pharmacyId: string
   displayName: string | null
   phone: string | null
   email: string | null
@@ -281,6 +368,22 @@ export type PharmacySettingsGroupByOutputType = {
   placeId: string | null
   mapsEmbedUrl: string | null
   hours: runtime.JsonValue
+  tagline: string | null
+  about: string | null
+  logoUrl: string | null
+  coverImageUrl: string | null
+  brandPrimary: string | null
+  brandAccent: string | null
+  social: runtime.JsonValue
+  team: runtime.JsonValue
+  testimonials: runtime.JsonValue
+  faq: runtime.JsonValue
+  insurance: runtime.JsonValue
+  certifications: runtime.JsonValue
+  deliveryNotes: string | null
+  deliveryFeeKes: runtime.Decimal | null
+  deliveryRadiusKm: number | null
+  careersEmail: string | null
   updatedById: string | null
   createdAt: Date
   updatedAt: Date
@@ -310,7 +413,8 @@ export type PharmacySettingsWhereInput = {
   AND?: Prisma.PharmacySettingsWhereInput | Prisma.PharmacySettingsWhereInput[]
   OR?: Prisma.PharmacySettingsWhereInput[]
   NOT?: Prisma.PharmacySettingsWhereInput | Prisma.PharmacySettingsWhereInput[]
-  id?: Prisma.StringFilter<"PharmacySettings"> | string
+  id?: Prisma.UuidFilter<"PharmacySettings"> | string
+  pharmacyId?: Prisma.UuidFilter<"PharmacySettings"> | string
   displayName?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   phone?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   email?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
@@ -326,14 +430,32 @@ export type PharmacySettingsWhereInput = {
   placeId?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   mapsEmbedUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   hours?: Prisma.JsonFilter<"PharmacySettings">
+  tagline?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  about?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  logoUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  coverImageUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  brandPrimary?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  brandAccent?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  social?: Prisma.JsonFilter<"PharmacySettings">
+  team?: Prisma.JsonFilter<"PharmacySettings">
+  testimonials?: Prisma.JsonFilter<"PharmacySettings">
+  faq?: Prisma.JsonFilter<"PharmacySettings">
+  insurance?: Prisma.JsonFilter<"PharmacySettings">
+  certifications?: Prisma.JsonFilter<"PharmacySettings">
+  deliveryNotes?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  deliveryFeeKes?: Prisma.DecimalNullableFilter<"PharmacySettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.FloatNullableFilter<"PharmacySettings"> | number | null
+  careersEmail?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   updatedById?: Prisma.UuidNullableFilter<"PharmacySettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PharmacySettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PharmacySettings"> | Date | string
   updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type PharmacySettingsOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   displayName?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -349,14 +471,32 @@ export type PharmacySettingsOrderByWithRelationInput = {
   placeId?: Prisma.SortOrderInput | Prisma.SortOrder
   mapsEmbedUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   hours?: Prisma.SortOrder
+  tagline?: Prisma.SortOrderInput | Prisma.SortOrder
+  about?: Prisma.SortOrderInput | Prisma.SortOrder
+  logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  brandPrimary?: Prisma.SortOrderInput | Prisma.SortOrder
+  brandAccent?: Prisma.SortOrderInput | Prisma.SortOrder
+  social?: Prisma.SortOrder
+  team?: Prisma.SortOrder
+  testimonials?: Prisma.SortOrder
+  faq?: Prisma.SortOrder
+  insurance?: Prisma.SortOrder
+  certifications?: Prisma.SortOrder
+  deliveryNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryFeeKes?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryRadiusKm?: Prisma.SortOrderInput | Prisma.SortOrder
+  careersEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type PharmacySettingsWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  pharmacyId?: string
   AND?: Prisma.PharmacySettingsWhereInput | Prisma.PharmacySettingsWhereInput[]
   OR?: Prisma.PharmacySettingsWhereInput[]
   NOT?: Prisma.PharmacySettingsWhereInput | Prisma.PharmacySettingsWhereInput[]
@@ -375,14 +515,32 @@ export type PharmacySettingsWhereUniqueInput = Prisma.AtLeast<{
   placeId?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   mapsEmbedUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   hours?: Prisma.JsonFilter<"PharmacySettings">
+  tagline?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  about?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  logoUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  coverImageUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  brandPrimary?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  brandAccent?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  social?: Prisma.JsonFilter<"PharmacySettings">
+  team?: Prisma.JsonFilter<"PharmacySettings">
+  testimonials?: Prisma.JsonFilter<"PharmacySettings">
+  faq?: Prisma.JsonFilter<"PharmacySettings">
+  insurance?: Prisma.JsonFilter<"PharmacySettings">
+  certifications?: Prisma.JsonFilter<"PharmacySettings">
+  deliveryNotes?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  deliveryFeeKes?: Prisma.DecimalNullableFilter<"PharmacySettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.FloatNullableFilter<"PharmacySettings"> | number | null
+  careersEmail?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   updatedById?: Prisma.UuidNullableFilter<"PharmacySettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PharmacySettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PharmacySettings"> | Date | string
   updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-}, "id">
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
+}, "id" | "pharmacyId">
 
 export type PharmacySettingsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   displayName?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -398,6 +556,22 @@ export type PharmacySettingsOrderByWithAggregationInput = {
   placeId?: Prisma.SortOrderInput | Prisma.SortOrder
   mapsEmbedUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   hours?: Prisma.SortOrder
+  tagline?: Prisma.SortOrderInput | Prisma.SortOrder
+  about?: Prisma.SortOrderInput | Prisma.SortOrder
+  logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  brandPrimary?: Prisma.SortOrderInput | Prisma.SortOrder
+  brandAccent?: Prisma.SortOrderInput | Prisma.SortOrder
+  social?: Prisma.SortOrder
+  team?: Prisma.SortOrder
+  testimonials?: Prisma.SortOrder
+  faq?: Prisma.SortOrder
+  insurance?: Prisma.SortOrder
+  certifications?: Prisma.SortOrder
+  deliveryNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryFeeKes?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryRadiusKm?: Prisma.SortOrderInput | Prisma.SortOrder
+  careersEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -412,7 +586,8 @@ export type PharmacySettingsScalarWhereWithAggregatesInput = {
   AND?: Prisma.PharmacySettingsScalarWhereWithAggregatesInput | Prisma.PharmacySettingsScalarWhereWithAggregatesInput[]
   OR?: Prisma.PharmacySettingsScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PharmacySettingsScalarWhereWithAggregatesInput | Prisma.PharmacySettingsScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"PharmacySettings"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"PharmacySettings"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"PharmacySettings"> | string
   displayName?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
@@ -428,6 +603,22 @@ export type PharmacySettingsScalarWhereWithAggregatesInput = {
   placeId?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
   mapsEmbedUrl?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
   hours?: Prisma.JsonWithAggregatesFilter<"PharmacySettings">
+  tagline?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
+  about?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
+  logoUrl?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
+  coverImageUrl?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
+  brandPrimary?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
+  brandAccent?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
+  social?: Prisma.JsonWithAggregatesFilter<"PharmacySettings">
+  team?: Prisma.JsonWithAggregatesFilter<"PharmacySettings">
+  testimonials?: Prisma.JsonWithAggregatesFilter<"PharmacySettings">
+  faq?: Prisma.JsonWithAggregatesFilter<"PharmacySettings">
+  insurance?: Prisma.JsonWithAggregatesFilter<"PharmacySettings">
+  certifications?: Prisma.JsonWithAggregatesFilter<"PharmacySettings">
+  deliveryNotes?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
+  deliveryFeeKes?: Prisma.DecimalNullableWithAggregatesFilter<"PharmacySettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.FloatNullableWithAggregatesFilter<"PharmacySettings"> | number | null
+  careersEmail?: Prisma.StringNullableWithAggregatesFilter<"PharmacySettings"> | string | null
   updatedById?: Prisma.UuidNullableWithAggregatesFilter<"PharmacySettings"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PharmacySettings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PharmacySettings"> | Date | string
@@ -450,13 +641,31 @@ export type PharmacySettingsCreateInput = {
   placeId?: string | null
   mapsEmbedUrl?: string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: string | null
+  about?: string | null
+  logoUrl?: string | null
+  coverImageUrl?: string | null
+  brandPrimary?: string | null
+  brandAccent?: string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: string | null
+  deliveryFeeKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: number | null
+  careersEmail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutPharmacySettingsUpdatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSettingsInput
 }
 
 export type PharmacySettingsUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   displayName?: string | null
   phone?: string | null
   email?: string | null
@@ -472,6 +681,22 @@ export type PharmacySettingsUncheckedCreateInput = {
   placeId?: string | null
   mapsEmbedUrl?: string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: string | null
+  about?: string | null
+  logoUrl?: string | null
+  coverImageUrl?: string | null
+  brandPrimary?: string | null
+  brandAccent?: string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: string | null
+  deliveryFeeKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: number | null
+  careersEmail?: string | null
   updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -494,13 +719,31 @@ export type PharmacySettingsUpdateInput = {
   placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.UserUpdateOneWithoutPharmacySettingsUpdatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSettingsNestedInput
 }
 
 export type PharmacySettingsUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -516,6 +759,22 @@ export type PharmacySettingsUncheckedUpdateInput = {
   placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -523,6 +782,7 @@ export type PharmacySettingsUncheckedUpdateInput = {
 
 export type PharmacySettingsCreateManyInput = {
   id?: string
+  pharmacyId: string
   displayName?: string | null
   phone?: string | null
   email?: string | null
@@ -538,6 +798,22 @@ export type PharmacySettingsCreateManyInput = {
   placeId?: string | null
   mapsEmbedUrl?: string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: string | null
+  about?: string | null
+  logoUrl?: string | null
+  coverImageUrl?: string | null
+  brandPrimary?: string | null
+  brandAccent?: string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: string | null
+  deliveryFeeKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: number | null
+  careersEmail?: string | null
   updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -560,12 +836,29 @@ export type PharmacySettingsUpdateManyMutationInput = {
   placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PharmacySettingsUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -581,9 +874,30 @@ export type PharmacySettingsUncheckedUpdateManyInput = {
   placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PharmacySettingsNullableScalarRelationFilter = {
+  is?: Prisma.PharmacySettingsWhereInput | null
+  isNot?: Prisma.PharmacySettingsWhereInput | null
 }
 
 export type PharmacySettingsListRelationFilter = {
@@ -598,6 +912,7 @@ export type PharmacySettingsOrderByRelationAggregateInput = {
 
 export type PharmacySettingsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -613,6 +928,22 @@ export type PharmacySettingsCountOrderByAggregateInput = {
   placeId?: Prisma.SortOrder
   mapsEmbedUrl?: Prisma.SortOrder
   hours?: Prisma.SortOrder
+  tagline?: Prisma.SortOrder
+  about?: Prisma.SortOrder
+  logoUrl?: Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrder
+  brandPrimary?: Prisma.SortOrder
+  brandAccent?: Prisma.SortOrder
+  social?: Prisma.SortOrder
+  team?: Prisma.SortOrder
+  testimonials?: Prisma.SortOrder
+  faq?: Prisma.SortOrder
+  insurance?: Prisma.SortOrder
+  certifications?: Prisma.SortOrder
+  deliveryNotes?: Prisma.SortOrder
+  deliveryFeeKes?: Prisma.SortOrder
+  deliveryRadiusKm?: Prisma.SortOrder
+  careersEmail?: Prisma.SortOrder
   updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -621,10 +952,13 @@ export type PharmacySettingsCountOrderByAggregateInput = {
 export type PharmacySettingsAvgOrderByAggregateInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
+  deliveryFeeKes?: Prisma.SortOrder
+  deliveryRadiusKm?: Prisma.SortOrder
 }
 
 export type PharmacySettingsMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -639,6 +973,16 @@ export type PharmacySettingsMaxOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   placeId?: Prisma.SortOrder
   mapsEmbedUrl?: Prisma.SortOrder
+  tagline?: Prisma.SortOrder
+  about?: Prisma.SortOrder
+  logoUrl?: Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrder
+  brandPrimary?: Prisma.SortOrder
+  brandAccent?: Prisma.SortOrder
+  deliveryNotes?: Prisma.SortOrder
+  deliveryFeeKes?: Prisma.SortOrder
+  deliveryRadiusKm?: Prisma.SortOrder
+  careersEmail?: Prisma.SortOrder
   updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -646,6 +990,7 @@ export type PharmacySettingsMaxOrderByAggregateInput = {
 
 export type PharmacySettingsMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -660,6 +1005,16 @@ export type PharmacySettingsMinOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   placeId?: Prisma.SortOrder
   mapsEmbedUrl?: Prisma.SortOrder
+  tagline?: Prisma.SortOrder
+  about?: Prisma.SortOrder
+  logoUrl?: Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrder
+  brandPrimary?: Prisma.SortOrder
+  brandAccent?: Prisma.SortOrder
+  deliveryNotes?: Prisma.SortOrder
+  deliveryFeeKes?: Prisma.SortOrder
+  deliveryRadiusKm?: Prisma.SortOrder
+  careersEmail?: Prisma.SortOrder
   updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -668,6 +1023,40 @@ export type PharmacySettingsMinOrderByAggregateInput = {
 export type PharmacySettingsSumOrderByAggregateInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
+  deliveryFeeKes?: Prisma.SortOrder
+  deliveryRadiusKm?: Prisma.SortOrder
+}
+
+export type PharmacySettingsCreateNestedOneWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PharmacySettingsCreateWithoutPharmacyInput, Prisma.PharmacySettingsUncheckedCreateWithoutPharmacyInput>
+  connectOrCreate?: Prisma.PharmacySettingsCreateOrConnectWithoutPharmacyInput
+  connect?: Prisma.PharmacySettingsWhereUniqueInput
+}
+
+export type PharmacySettingsUncheckedCreateNestedOneWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PharmacySettingsCreateWithoutPharmacyInput, Prisma.PharmacySettingsUncheckedCreateWithoutPharmacyInput>
+  connectOrCreate?: Prisma.PharmacySettingsCreateOrConnectWithoutPharmacyInput
+  connect?: Prisma.PharmacySettingsWhereUniqueInput
+}
+
+export type PharmacySettingsUpdateOneWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacySettingsCreateWithoutPharmacyInput, Prisma.PharmacySettingsUncheckedCreateWithoutPharmacyInput>
+  connectOrCreate?: Prisma.PharmacySettingsCreateOrConnectWithoutPharmacyInput
+  upsert?: Prisma.PharmacySettingsUpsertWithoutPharmacyInput
+  disconnect?: Prisma.PharmacySettingsWhereInput | boolean
+  delete?: Prisma.PharmacySettingsWhereInput | boolean
+  connect?: Prisma.PharmacySettingsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PharmacySettingsUpdateToOneWithWhereWithoutPharmacyInput, Prisma.PharmacySettingsUpdateWithoutPharmacyInput>, Prisma.PharmacySettingsUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type PharmacySettingsUncheckedUpdateOneWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacySettingsCreateWithoutPharmacyInput, Prisma.PharmacySettingsUncheckedCreateWithoutPharmacyInput>
+  connectOrCreate?: Prisma.PharmacySettingsCreateOrConnectWithoutPharmacyInput
+  upsert?: Prisma.PharmacySettingsUpsertWithoutPharmacyInput
+  disconnect?: Prisma.PharmacySettingsWhereInput | boolean
+  delete?: Prisma.PharmacySettingsWhereInput | boolean
+  connect?: Prisma.PharmacySettingsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PharmacySettingsUpdateToOneWithWhereWithoutPharmacyInput, Prisma.PharmacySettingsUpdateWithoutPharmacyInput>, Prisma.PharmacySettingsUncheckedUpdateWithoutPharmacyInput>
 }
 
 export type PharmacySettingsCreateNestedManyWithoutUpdatedByInput = {
@@ -712,12 +1101,172 @@ export type PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput = {
   deleteMany?: Prisma.PharmacySettingsScalarWhereInput | Prisma.PharmacySettingsScalarWhereInput[]
 }
 
-export type NullableFloatFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type PharmacySettingsCreateWithoutPharmacyInput = {
+  id?: string
+  displayName?: string | null
+  phone?: string | null
+  email?: string | null
+  whatsapp?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  placeId?: string | null
+  mapsEmbedUrl?: string | null
+  hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: string | null
+  about?: string | null
+  logoUrl?: string | null
+  coverImageUrl?: string | null
+  brandPrimary?: string | null
+  brandAccent?: string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: string | null
+  deliveryFeeKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: number | null
+  careersEmail?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPharmacySettingsUpdatedInput
+}
+
+export type PharmacySettingsUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  displayName?: string | null
+  phone?: string | null
+  email?: string | null
+  whatsapp?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  placeId?: string | null
+  mapsEmbedUrl?: string | null
+  hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: string | null
+  about?: string | null
+  logoUrl?: string | null
+  coverImageUrl?: string | null
+  brandPrimary?: string | null
+  brandAccent?: string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: string | null
+  deliveryFeeKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: number | null
+  careersEmail?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PharmacySettingsCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.PharmacySettingsWhereUniqueInput
+  create: Prisma.XOR<Prisma.PharmacySettingsCreateWithoutPharmacyInput, Prisma.PharmacySettingsUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PharmacySettingsUpsertWithoutPharmacyInput = {
+  update: Prisma.XOR<Prisma.PharmacySettingsUpdateWithoutPharmacyInput, Prisma.PharmacySettingsUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.PharmacySettingsCreateWithoutPharmacyInput, Prisma.PharmacySettingsUncheckedCreateWithoutPharmacyInput>
+  where?: Prisma.PharmacySettingsWhereInput
+}
+
+export type PharmacySettingsUpdateToOneWithWhereWithoutPharmacyInput = {
+  where?: Prisma.PharmacySettingsWhereInput
+  data: Prisma.XOR<Prisma.PharmacySettingsUpdateWithoutPharmacyInput, Prisma.PharmacySettingsUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type PharmacySettingsUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedBy?: Prisma.UserUpdateOneWithoutPharmacySettingsUpdatedNestedInput
+}
+
+export type PharmacySettingsUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PharmacySettingsCreateWithoutUpdatedByInput = {
@@ -737,12 +1286,30 @@ export type PharmacySettingsCreateWithoutUpdatedByInput = {
   placeId?: string | null
   mapsEmbedUrl?: string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: string | null
+  about?: string | null
+  logoUrl?: string | null
+  coverImageUrl?: string | null
+  brandPrimary?: string | null
+  brandAccent?: string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: string | null
+  deliveryFeeKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: number | null
+  careersEmail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSettingsInput
 }
 
 export type PharmacySettingsUncheckedCreateWithoutUpdatedByInput = {
   id?: string
+  pharmacyId: string
   displayName?: string | null
   phone?: string | null
   email?: string | null
@@ -758,6 +1325,22 @@ export type PharmacySettingsUncheckedCreateWithoutUpdatedByInput = {
   placeId?: string | null
   mapsEmbedUrl?: string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: string | null
+  about?: string | null
+  logoUrl?: string | null
+  coverImageUrl?: string | null
+  brandPrimary?: string | null
+  brandAccent?: string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: string | null
+  deliveryFeeKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: number | null
+  careersEmail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -792,7 +1375,8 @@ export type PharmacySettingsScalarWhereInput = {
   AND?: Prisma.PharmacySettingsScalarWhereInput | Prisma.PharmacySettingsScalarWhereInput[]
   OR?: Prisma.PharmacySettingsScalarWhereInput[]
   NOT?: Prisma.PharmacySettingsScalarWhereInput | Prisma.PharmacySettingsScalarWhereInput[]
-  id?: Prisma.StringFilter<"PharmacySettings"> | string
+  id?: Prisma.UuidFilter<"PharmacySettings"> | string
+  pharmacyId?: Prisma.UuidFilter<"PharmacySettings"> | string
   displayName?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   phone?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   email?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
@@ -808,6 +1392,22 @@ export type PharmacySettingsScalarWhereInput = {
   placeId?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   mapsEmbedUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   hours?: Prisma.JsonFilter<"PharmacySettings">
+  tagline?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  about?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  logoUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  coverImageUrl?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  brandPrimary?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  brandAccent?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  social?: Prisma.JsonFilter<"PharmacySettings">
+  team?: Prisma.JsonFilter<"PharmacySettings">
+  testimonials?: Prisma.JsonFilter<"PharmacySettings">
+  faq?: Prisma.JsonFilter<"PharmacySettings">
+  insurance?: Prisma.JsonFilter<"PharmacySettings">
+  certifications?: Prisma.JsonFilter<"PharmacySettings">
+  deliveryNotes?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
+  deliveryFeeKes?: Prisma.DecimalNullableFilter<"PharmacySettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.FloatNullableFilter<"PharmacySettings"> | number | null
+  careersEmail?: Prisma.StringNullableFilter<"PharmacySettings"> | string | null
   updatedById?: Prisma.UuidNullableFilter<"PharmacySettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PharmacySettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PharmacySettings"> | Date | string
@@ -815,6 +1415,7 @@ export type PharmacySettingsScalarWhereInput = {
 
 export type PharmacySettingsCreateManyUpdatedByInput = {
   id?: string
+  pharmacyId: string
   displayName?: string | null
   phone?: string | null
   email?: string | null
@@ -830,6 +1431,22 @@ export type PharmacySettingsCreateManyUpdatedByInput = {
   placeId?: string | null
   mapsEmbedUrl?: string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: string | null
+  about?: string | null
+  logoUrl?: string | null
+  coverImageUrl?: string | null
+  brandPrimary?: string | null
+  brandAccent?: string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: string | null
+  deliveryFeeKes?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: number | null
+  careersEmail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -851,12 +1468,30 @@ export type PharmacySettingsUpdateWithoutUpdatedByInput = {
   placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSettingsNestedInput
 }
 
 export type PharmacySettingsUncheckedUpdateWithoutUpdatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -872,12 +1507,29 @@ export type PharmacySettingsUncheckedUpdateWithoutUpdatedByInput = {
   placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PharmacySettingsUncheckedUpdateManyWithoutUpdatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -893,6 +1545,22 @@ export type PharmacySettingsUncheckedUpdateManyWithoutUpdatedByInput = {
   placeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapsEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  about?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandPrimary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandAccent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  social?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  team?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  testimonials?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  faq?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  insurance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  certifications?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deliveryNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryFeeKes?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deliveryRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  careersEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -901,6 +1569,7 @@ export type PharmacySettingsUncheckedUpdateManyWithoutUpdatedByInput = {
 
 export type PharmacySettingsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   displayName?: boolean
   phone?: boolean
   email?: boolean
@@ -916,14 +1585,32 @@ export type PharmacySettingsSelect<ExtArgs extends runtime.Types.Extensions.Inte
   placeId?: boolean
   mapsEmbedUrl?: boolean
   hours?: boolean
+  tagline?: boolean
+  about?: boolean
+  logoUrl?: boolean
+  coverImageUrl?: boolean
+  brandPrimary?: boolean
+  brandAccent?: boolean
+  social?: boolean
+  team?: boolean
+  testimonials?: boolean
+  faq?: boolean
+  insurance?: boolean
+  certifications?: boolean
+  deliveryNotes?: boolean
+  deliveryFeeKes?: boolean
+  deliveryRadiusKm?: boolean
+  careersEmail?: boolean
   updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   updatedBy?: boolean | Prisma.PharmacySettings$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacySettings"]>
 
 export type PharmacySettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   displayName?: boolean
   phone?: boolean
   email?: boolean
@@ -939,14 +1626,32 @@ export type PharmacySettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   placeId?: boolean
   mapsEmbedUrl?: boolean
   hours?: boolean
+  tagline?: boolean
+  about?: boolean
+  logoUrl?: boolean
+  coverImageUrl?: boolean
+  brandPrimary?: boolean
+  brandAccent?: boolean
+  social?: boolean
+  team?: boolean
+  testimonials?: boolean
+  faq?: boolean
+  insurance?: boolean
+  certifications?: boolean
+  deliveryNotes?: boolean
+  deliveryFeeKes?: boolean
+  deliveryRadiusKm?: boolean
+  careersEmail?: boolean
   updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   updatedBy?: boolean | Prisma.PharmacySettings$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacySettings"]>
 
 export type PharmacySettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   displayName?: boolean
   phone?: boolean
   email?: boolean
@@ -962,14 +1667,32 @@ export type PharmacySettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   placeId?: boolean
   mapsEmbedUrl?: boolean
   hours?: boolean
+  tagline?: boolean
+  about?: boolean
+  logoUrl?: boolean
+  coverImageUrl?: boolean
+  brandPrimary?: boolean
+  brandAccent?: boolean
+  social?: boolean
+  team?: boolean
+  testimonials?: boolean
+  faq?: boolean
+  insurance?: boolean
+  certifications?: boolean
+  deliveryNotes?: boolean
+  deliveryFeeKes?: boolean
+  deliveryRadiusKm?: boolean
+  careersEmail?: boolean
   updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   updatedBy?: boolean | Prisma.PharmacySettings$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacySettings"]>
 
 export type PharmacySettingsSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   displayName?: boolean
   phone?: boolean
   email?: boolean
@@ -985,29 +1708,50 @@ export type PharmacySettingsSelectScalar = {
   placeId?: boolean
   mapsEmbedUrl?: boolean
   hours?: boolean
+  tagline?: boolean
+  about?: boolean
+  logoUrl?: boolean
+  coverImageUrl?: boolean
+  brandPrimary?: boolean
+  brandAccent?: boolean
+  social?: boolean
+  team?: boolean
+  testimonials?: boolean
+  faq?: boolean
+  insurance?: boolean
+  certifications?: boolean
+  deliveryNotes?: boolean
+  deliveryFeeKes?: boolean
+  deliveryRadiusKm?: boolean
+  careersEmail?: boolean
   updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PharmacySettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "displayName" | "phone" | "email" | "whatsapp" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "latitude" | "longitude" | "placeId" | "mapsEmbedUrl" | "hours" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacySettings"]>
+export type PharmacySettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "displayName" | "phone" | "email" | "whatsapp" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "latitude" | "longitude" | "placeId" | "mapsEmbedUrl" | "hours" | "tagline" | "about" | "logoUrl" | "coverImageUrl" | "brandPrimary" | "brandAccent" | "social" | "team" | "testimonials" | "faq" | "insurance" | "certifications" | "deliveryNotes" | "deliveryFeeKes" | "deliveryRadiusKm" | "careersEmail" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacySettings"]>
 export type PharmacySettingsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   updatedBy?: boolean | Prisma.PharmacySettings$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PharmacySettingsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   updatedBy?: boolean | Prisma.PharmacySettings$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PharmacySettingsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   updatedBy?: boolean | Prisma.PharmacySettings$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $PharmacySettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PharmacySettings"
   objects: {
     updatedBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     displayName: string | null
     phone: string | null
     email: string | null
@@ -1038,6 +1782,22 @@ export type $PharmacySettingsPayload<ExtArgs extends runtime.Types.Extensions.In
      * Free-form hours JSON: [{ "day": "Monday – Friday", "time": "8:00 AM – 8:00 PM" }, ...]
      */
     hours: runtime.JsonValue
+    tagline: string | null
+    about: string | null
+    logoUrl: string | null
+    coverImageUrl: string | null
+    brandPrimary: string | null
+    brandAccent: string | null
+    social: runtime.JsonValue
+    team: runtime.JsonValue
+    testimonials: runtime.JsonValue
+    faq: runtime.JsonValue
+    insurance: runtime.JsonValue
+    certifications: runtime.JsonValue
+    deliveryNotes: string | null
+    deliveryFeeKes: runtime.Decimal | null
+    deliveryRadiusKm: number | null
+    careersEmail: string | null
     updatedById: string | null
     createdAt: Date
     updatedAt: Date
@@ -1436,6 +2196,7 @@ readonly fields: PharmacySettingsFieldRefs;
 export interface Prisma__PharmacySettingsClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   updatedBy<T extends Prisma.PharmacySettings$updatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacySettings$updatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1466,6 +2227,7 @@ export interface Prisma__PharmacySettingsClient<T, Null = never, ExtArgs extends
  */
 export interface PharmacySettingsFieldRefs {
   readonly id: Prisma.FieldRef<"PharmacySettings", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"PharmacySettings", 'String'>
   readonly displayName: Prisma.FieldRef<"PharmacySettings", 'String'>
   readonly phone: Prisma.FieldRef<"PharmacySettings", 'String'>
   readonly email: Prisma.FieldRef<"PharmacySettings", 'String'>
@@ -1481,6 +2243,22 @@ export interface PharmacySettingsFieldRefs {
   readonly placeId: Prisma.FieldRef<"PharmacySettings", 'String'>
   readonly mapsEmbedUrl: Prisma.FieldRef<"PharmacySettings", 'String'>
   readonly hours: Prisma.FieldRef<"PharmacySettings", 'Json'>
+  readonly tagline: Prisma.FieldRef<"PharmacySettings", 'String'>
+  readonly about: Prisma.FieldRef<"PharmacySettings", 'String'>
+  readonly logoUrl: Prisma.FieldRef<"PharmacySettings", 'String'>
+  readonly coverImageUrl: Prisma.FieldRef<"PharmacySettings", 'String'>
+  readonly brandPrimary: Prisma.FieldRef<"PharmacySettings", 'String'>
+  readonly brandAccent: Prisma.FieldRef<"PharmacySettings", 'String'>
+  readonly social: Prisma.FieldRef<"PharmacySettings", 'Json'>
+  readonly team: Prisma.FieldRef<"PharmacySettings", 'Json'>
+  readonly testimonials: Prisma.FieldRef<"PharmacySettings", 'Json'>
+  readonly faq: Prisma.FieldRef<"PharmacySettings", 'Json'>
+  readonly insurance: Prisma.FieldRef<"PharmacySettings", 'Json'>
+  readonly certifications: Prisma.FieldRef<"PharmacySettings", 'Json'>
+  readonly deliveryNotes: Prisma.FieldRef<"PharmacySettings", 'String'>
+  readonly deliveryFeeKes: Prisma.FieldRef<"PharmacySettings", 'Decimal'>
+  readonly deliveryRadiusKm: Prisma.FieldRef<"PharmacySettings", 'Float'>
+  readonly careersEmail: Prisma.FieldRef<"PharmacySettings", 'String'>
   readonly updatedById: Prisma.FieldRef<"PharmacySettings", 'String'>
   readonly createdAt: Prisma.FieldRef<"PharmacySettings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PharmacySettings", 'DateTime'>

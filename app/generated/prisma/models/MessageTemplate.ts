@@ -26,6 +26,7 @@ export type AggregateMessageTemplate = {
 
 export type MessageTemplateMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   name: string | null
   channel: $Enums.ConversationChannel | null
   subject: string | null
@@ -39,6 +40,7 @@ export type MessageTemplateMinAggregateOutputType = {
 
 export type MessageTemplateMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   name: string | null
   channel: $Enums.ConversationChannel | null
   subject: string | null
@@ -52,6 +54,7 @@ export type MessageTemplateMaxAggregateOutputType = {
 
 export type MessageTemplateCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   name: number
   channel: number
   subject: number
@@ -67,6 +70,7 @@ export type MessageTemplateCountAggregateOutputType = {
 
 export type MessageTemplateMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   channel?: true
   subject?: true
@@ -80,6 +84,7 @@ export type MessageTemplateMinAggregateInputType = {
 
 export type MessageTemplateMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   channel?: true
   subject?: true
@@ -93,6 +98,7 @@ export type MessageTemplateMaxAggregateInputType = {
 
 export type MessageTemplateCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   channel?: true
   subject?: true
@@ -179,6 +185,7 @@ export type MessageTemplateGroupByArgs<ExtArgs extends runtime.Types.Extensions.
 
 export type MessageTemplateGroupByOutputType = {
   id: string
+  pharmacyId: string
   name: string
   channel: $Enums.ConversationChannel
   subject: string | null
@@ -213,6 +220,7 @@ export type MessageTemplateWhereInput = {
   OR?: Prisma.MessageTemplateWhereInput[]
   NOT?: Prisma.MessageTemplateWhereInput | Prisma.MessageTemplateWhereInput[]
   id?: Prisma.UuidFilter<"MessageTemplate"> | string
+  pharmacyId?: Prisma.UuidFilter<"MessageTemplate"> | string
   name?: Prisma.StringFilter<"MessageTemplate"> | string
   channel?: Prisma.EnumConversationChannelFilter<"MessageTemplate"> | $Enums.ConversationChannel
   subject?: Prisma.StringNullableFilter<"MessageTemplate"> | string | null
@@ -224,10 +232,12 @@ export type MessageTemplateWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"MessageTemplate"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type MessageTemplateOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
   subject?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -239,6 +249,7 @@ export type MessageTemplateOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.UserOrderByWithRelationInput
   updatedBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type MessageTemplateWhereUniqueInput = Prisma.AtLeast<{
@@ -246,6 +257,7 @@ export type MessageTemplateWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.MessageTemplateWhereInput | Prisma.MessageTemplateWhereInput[]
   OR?: Prisma.MessageTemplateWhereInput[]
   NOT?: Prisma.MessageTemplateWhereInput | Prisma.MessageTemplateWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"MessageTemplate"> | string
   name?: Prisma.StringFilter<"MessageTemplate"> | string
   channel?: Prisma.EnumConversationChannelFilter<"MessageTemplate"> | $Enums.ConversationChannel
   subject?: Prisma.StringNullableFilter<"MessageTemplate"> | string | null
@@ -257,10 +269,12 @@ export type MessageTemplateWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"MessageTemplate"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type MessageTemplateOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
   subject?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -280,6 +294,7 @@ export type MessageTemplateScalarWhereWithAggregatesInput = {
   OR?: Prisma.MessageTemplateScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MessageTemplateScalarWhereWithAggregatesInput | Prisma.MessageTemplateScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"MessageTemplate"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"MessageTemplate"> | string
   name?: Prisma.StringWithAggregatesFilter<"MessageTemplate"> | string
   channel?: Prisma.EnumConversationChannelWithAggregatesFilter<"MessageTemplate"> | $Enums.ConversationChannel
   subject?: Prisma.StringNullableWithAggregatesFilter<"MessageTemplate"> | string | null
@@ -302,10 +317,12 @@ export type MessageTemplateCreateInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutTemplatesCreatedInput
   updatedBy?: Prisma.UserCreateNestedOneWithoutTemplatesUpdatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
 }
 
 export type MessageTemplateUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -328,10 +345,12 @@ export type MessageTemplateUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutTemplatesCreatedNestedInput
   updatedBy?: Prisma.UserUpdateOneWithoutTemplatesUpdatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutMessageTemplatesNestedInput
 }
 
 export type MessageTemplateUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -345,6 +364,7 @@ export type MessageTemplateUncheckedUpdateInput = {
 
 export type MessageTemplateCreateManyInput = {
   id?: string
+  pharmacyId: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -369,6 +389,7 @@ export type MessageTemplateUpdateManyMutationInput = {
 
 export type MessageTemplateUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -392,6 +413,7 @@ export type MessageTemplateOrderByRelationAggregateInput = {
 
 export type MessageTemplateCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
   subject?: Prisma.SortOrder
@@ -405,6 +427,7 @@ export type MessageTemplateCountOrderByAggregateInput = {
 
 export type MessageTemplateMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
   subject?: Prisma.SortOrder
@@ -418,6 +441,7 @@ export type MessageTemplateMaxOrderByAggregateInput = {
 
 export type MessageTemplateMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
   subject?: Prisma.SortOrder
@@ -427,6 +451,48 @@ export type MessageTemplateMinOrderByAggregateInput = {
   updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type MessageTemplateCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.MessageTemplateCreateWithoutPharmacyInput, Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput> | Prisma.MessageTemplateCreateWithoutPharmacyInput[] | Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MessageTemplateCreateOrConnectWithoutPharmacyInput | Prisma.MessageTemplateCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.MessageTemplateCreateManyPharmacyInputEnvelope
+  connect?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+}
+
+export type MessageTemplateUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.MessageTemplateCreateWithoutPharmacyInput, Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput> | Prisma.MessageTemplateCreateWithoutPharmacyInput[] | Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MessageTemplateCreateOrConnectWithoutPharmacyInput | Prisma.MessageTemplateCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.MessageTemplateCreateManyPharmacyInputEnvelope
+  connect?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+}
+
+export type MessageTemplateUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageTemplateCreateWithoutPharmacyInput, Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput> | Prisma.MessageTemplateCreateWithoutPharmacyInput[] | Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MessageTemplateCreateOrConnectWithoutPharmacyInput | Prisma.MessageTemplateCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.MessageTemplateUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.MessageTemplateUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.MessageTemplateCreateManyPharmacyInputEnvelope
+  set?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+  disconnect?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+  delete?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+  connect?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+  update?: Prisma.MessageTemplateUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.MessageTemplateUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.MessageTemplateUpdateManyWithWhereWithoutPharmacyInput | Prisma.MessageTemplateUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.MessageTemplateScalarWhereInput | Prisma.MessageTemplateScalarWhereInput[]
+}
+
+export type MessageTemplateUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageTemplateCreateWithoutPharmacyInput, Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput> | Prisma.MessageTemplateCreateWithoutPharmacyInput[] | Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MessageTemplateCreateOrConnectWithoutPharmacyInput | Prisma.MessageTemplateCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.MessageTemplateUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.MessageTemplateUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.MessageTemplateCreateManyPharmacyInputEnvelope
+  set?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+  disconnect?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+  delete?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+  connect?: Prisma.MessageTemplateWhereUniqueInput | Prisma.MessageTemplateWhereUniqueInput[]
+  update?: Prisma.MessageTemplateUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.MessageTemplateUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.MessageTemplateUpdateManyWithWhereWithoutPharmacyInput | Prisma.MessageTemplateUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.MessageTemplateScalarWhereInput | Prisma.MessageTemplateScalarWhereInput[]
 }
 
 export type MessageTemplateCreateNestedManyWithoutCreatedByInput = {
@@ -513,6 +579,75 @@ export type MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput = {
   deleteMany?: Prisma.MessageTemplateScalarWhereInput | Prisma.MessageTemplateScalarWhereInput[]
 }
 
+export type MessageTemplateCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  channel: $Enums.ConversationChannel
+  subject?: string | null
+  body: string
+  category?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: Prisma.UserCreateNestedOneWithoutTemplatesCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutTemplatesUpdatedInput
+}
+
+export type MessageTemplateUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  channel: $Enums.ConversationChannel
+  subject?: string | null
+  body: string
+  category?: string
+  createdById?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MessageTemplateCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.MessageTemplateWhereUniqueInput
+  create: Prisma.XOR<Prisma.MessageTemplateCreateWithoutPharmacyInput, Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput>
+}
+
+export type MessageTemplateCreateManyPharmacyInputEnvelope = {
+  data: Prisma.MessageTemplateCreateManyPharmacyInput | Prisma.MessageTemplateCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type MessageTemplateUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.MessageTemplateWhereUniqueInput
+  update: Prisma.XOR<Prisma.MessageTemplateUpdateWithoutPharmacyInput, Prisma.MessageTemplateUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.MessageTemplateCreateWithoutPharmacyInput, Prisma.MessageTemplateUncheckedCreateWithoutPharmacyInput>
+}
+
+export type MessageTemplateUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.MessageTemplateWhereUniqueInput
+  data: Prisma.XOR<Prisma.MessageTemplateUpdateWithoutPharmacyInput, Prisma.MessageTemplateUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type MessageTemplateUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.MessageTemplateScalarWhereInput
+  data: Prisma.XOR<Prisma.MessageTemplateUpdateManyMutationInput, Prisma.MessageTemplateUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type MessageTemplateScalarWhereInput = {
+  AND?: Prisma.MessageTemplateScalarWhereInput | Prisma.MessageTemplateScalarWhereInput[]
+  OR?: Prisma.MessageTemplateScalarWhereInput[]
+  NOT?: Prisma.MessageTemplateScalarWhereInput | Prisma.MessageTemplateScalarWhereInput[]
+  id?: Prisma.UuidFilter<"MessageTemplate"> | string
+  pharmacyId?: Prisma.UuidFilter<"MessageTemplate"> | string
+  name?: Prisma.StringFilter<"MessageTemplate"> | string
+  channel?: Prisma.EnumConversationChannelFilter<"MessageTemplate"> | $Enums.ConversationChannel
+  subject?: Prisma.StringNullableFilter<"MessageTemplate"> | string | null
+  body?: Prisma.StringFilter<"MessageTemplate"> | string
+  category?: Prisma.StringFilter<"MessageTemplate"> | string
+  createdById?: Prisma.UuidNullableFilter<"MessageTemplate"> | string | null
+  updatedById?: Prisma.UuidNullableFilter<"MessageTemplate"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"MessageTemplate"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"MessageTemplate"> | Date | string
+}
+
 export type MessageTemplateCreateWithoutCreatedByInput = {
   id?: string
   name: string
@@ -523,10 +658,12 @@ export type MessageTemplateCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutTemplatesUpdatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
 }
 
 export type MessageTemplateUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  pharmacyId: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -557,10 +694,12 @@ export type MessageTemplateCreateWithoutUpdatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutTemplatesCreatedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
 }
 
 export type MessageTemplateUncheckedCreateWithoutUpdatedByInput = {
   id?: string
+  pharmacyId: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -597,22 +736,6 @@ export type MessageTemplateUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.MessageTemplateUpdateManyMutationInput, Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByInput>
 }
 
-export type MessageTemplateScalarWhereInput = {
-  AND?: Prisma.MessageTemplateScalarWhereInput | Prisma.MessageTemplateScalarWhereInput[]
-  OR?: Prisma.MessageTemplateScalarWhereInput[]
-  NOT?: Prisma.MessageTemplateScalarWhereInput | Prisma.MessageTemplateScalarWhereInput[]
-  id?: Prisma.UuidFilter<"MessageTemplate"> | string
-  name?: Prisma.StringFilter<"MessageTemplate"> | string
-  channel?: Prisma.EnumConversationChannelFilter<"MessageTemplate"> | $Enums.ConversationChannel
-  subject?: Prisma.StringNullableFilter<"MessageTemplate"> | string | null
-  body?: Prisma.StringFilter<"MessageTemplate"> | string
-  category?: Prisma.StringFilter<"MessageTemplate"> | string
-  createdById?: Prisma.UuidNullableFilter<"MessageTemplate"> | string | null
-  updatedById?: Prisma.UuidNullableFilter<"MessageTemplate"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"MessageTemplate"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"MessageTemplate"> | Date | string
-}
-
 export type MessageTemplateUpsertWithWhereUniqueWithoutUpdatedByInput = {
   where: Prisma.MessageTemplateWhereUniqueInput
   update: Prisma.XOR<Prisma.MessageTemplateUpdateWithoutUpdatedByInput, Prisma.MessageTemplateUncheckedUpdateWithoutUpdatedByInput>
@@ -629,8 +752,61 @@ export type MessageTemplateUpdateManyWithWhereWithoutUpdatedByInput = {
   data: Prisma.XOR<Prisma.MessageTemplateUpdateManyMutationInput, Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByInput>
 }
 
+export type MessageTemplateCreateManyPharmacyInput = {
+  id?: string
+  name: string
+  channel: $Enums.ConversationChannel
+  subject?: string | null
+  body: string
+  category?: string
+  createdById?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MessageTemplateUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneWithoutTemplatesCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutTemplatesUpdatedNestedInput
+}
+
+export type MessageTemplateUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MessageTemplateUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type MessageTemplateCreateManyCreatedByInput = {
   id?: string
+  pharmacyId: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -643,6 +819,7 @@ export type MessageTemplateCreateManyCreatedByInput = {
 
 export type MessageTemplateCreateManyUpdatedByInput = {
   id?: string
+  pharmacyId: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -663,10 +840,12 @@ export type MessageTemplateUpdateWithoutCreatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.UserUpdateOneWithoutTemplatesUpdatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutMessageTemplatesNestedInput
 }
 
 export type MessageTemplateUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -679,6 +858,7 @@ export type MessageTemplateUncheckedUpdateWithoutCreatedByInput = {
 
 export type MessageTemplateUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -699,10 +879,12 @@ export type MessageTemplateUpdateWithoutUpdatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutTemplatesCreatedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutMessageTemplatesNestedInput
 }
 
 export type MessageTemplateUncheckedUpdateWithoutUpdatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -715,6 +897,7 @@ export type MessageTemplateUncheckedUpdateWithoutUpdatedByInput = {
 
 export type MessageTemplateUncheckedUpdateManyWithoutUpdatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumConversationChannelFieldUpdateOperationsInput | $Enums.ConversationChannel
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -729,6 +912,7 @@ export type MessageTemplateUncheckedUpdateManyWithoutUpdatedByInput = {
 
 export type MessageTemplateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   channel?: boolean
   subject?: boolean
@@ -740,10 +924,12 @@ export type MessageTemplateSelect<ExtArgs extends runtime.Types.Extensions.Inter
   updatedAt?: boolean
   createdBy?: boolean | Prisma.MessageTemplate$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.MessageTemplate$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["messageTemplate"]>
 
 export type MessageTemplateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   channel?: boolean
   subject?: boolean
@@ -755,10 +941,12 @@ export type MessageTemplateSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   updatedAt?: boolean
   createdBy?: boolean | Prisma.MessageTemplate$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.MessageTemplate$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["messageTemplate"]>
 
 export type MessageTemplateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   channel?: boolean
   subject?: boolean
@@ -770,10 +958,12 @@ export type MessageTemplateSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   updatedAt?: boolean
   createdBy?: boolean | Prisma.MessageTemplate$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.MessageTemplate$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["messageTemplate"]>
 
 export type MessageTemplateSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   channel?: boolean
   subject?: boolean
@@ -785,18 +975,21 @@ export type MessageTemplateSelectScalar = {
   updatedAt?: boolean
 }
 
-export type MessageTemplateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "channel" | "subject" | "body" | "category" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["messageTemplate"]>
+export type MessageTemplateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "name" | "channel" | "subject" | "body" | "category" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["messageTemplate"]>
 export type MessageTemplateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.MessageTemplate$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.MessageTemplate$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type MessageTemplateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.MessageTemplate$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.MessageTemplate$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type MessageTemplateIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.MessageTemplate$createdByArgs<ExtArgs>
   updatedBy?: boolean | Prisma.MessageTemplate$updatedByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $MessageTemplatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -804,9 +997,11 @@ export type $MessageTemplatePayload<ExtArgs extends runtime.Types.Extensions.Int
   objects: {
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     updatedBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     name: string
     channel: $Enums.ConversationChannel
     subject: string | null
@@ -1212,6 +1407,7 @@ export interface Prisma__MessageTemplateClient<T, Null = never, ExtArgs extends 
   readonly [Symbol.toStringTag]: "PrismaPromise"
   createdBy<T extends Prisma.MessageTemplate$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MessageTemplate$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   updatedBy<T extends Prisma.MessageTemplate$updatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MessageTemplate$updatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1242,6 +1438,7 @@ export interface Prisma__MessageTemplateClient<T, Null = never, ExtArgs extends 
  */
 export interface MessageTemplateFieldRefs {
   readonly id: Prisma.FieldRef<"MessageTemplate", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"MessageTemplate", 'String'>
   readonly name: Prisma.FieldRef<"MessageTemplate", 'String'>
   readonly channel: Prisma.FieldRef<"MessageTemplate", 'ConversationChannel'>
   readonly subject: Prisma.FieldRef<"MessageTemplate", 'String'>

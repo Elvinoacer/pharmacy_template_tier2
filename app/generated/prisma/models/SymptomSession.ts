@@ -37,6 +37,7 @@ export type SymptomSessionSumAggregateOutputType = {
 
 export type SymptomSessionMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   guestKey: string | null
   customerId: string | null
   userId: string | null
@@ -62,6 +63,7 @@ export type SymptomSessionMinAggregateOutputType = {
 
 export type SymptomSessionMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   guestKey: string | null
   customerId: string | null
   userId: string | null
@@ -87,6 +89,7 @@ export type SymptomSessionMaxAggregateOutputType = {
 
 export type SymptomSessionCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   guestKey: number
   customerId: number
   userId: number
@@ -123,6 +126,7 @@ export type SymptomSessionSumAggregateInputType = {
 
 export type SymptomSessionMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   guestKey?: true
   customerId?: true
   userId?: true
@@ -148,6 +152,7 @@ export type SymptomSessionMinAggregateInputType = {
 
 export type SymptomSessionMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   guestKey?: true
   customerId?: true
   userId?: true
@@ -173,6 +178,7 @@ export type SymptomSessionMaxAggregateInputType = {
 
 export type SymptomSessionCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   guestKey?: true
   customerId?: true
   userId?: true
@@ -286,6 +292,7 @@ export type SymptomSessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type SymptomSessionGroupByOutputType = {
   id: string
+  pharmacyId: string
   guestKey: string | null
   customerId: string | null
   userId: string | null
@@ -335,6 +342,7 @@ export type SymptomSessionWhereInput = {
   OR?: Prisma.SymptomSessionWhereInput[]
   NOT?: Prisma.SymptomSessionWhereInput | Prisma.SymptomSessionWhereInput[]
   id?: Prisma.UuidFilter<"SymptomSession"> | string
+  pharmacyId?: Prisma.UuidFilter<"SymptomSession"> | string
   guestKey?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
   customerId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
   userId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
@@ -361,10 +369,12 @@ export type SymptomSessionWhereInput = {
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   messages?: Prisma.SymptomMessageListRelationFilter
   checkIns?: Prisma.SymptomCheckInListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type SymptomSessionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   guestKey?: Prisma.SortOrderInput | Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -391,6 +401,7 @@ export type SymptomSessionOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   messages?: Prisma.SymptomMessageOrderByRelationAggregateInput
   checkIns?: Prisma.SymptomCheckInOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type SymptomSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -398,6 +409,7 @@ export type SymptomSessionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.SymptomSessionWhereInput | Prisma.SymptomSessionWhereInput[]
   OR?: Prisma.SymptomSessionWhereInput[]
   NOT?: Prisma.SymptomSessionWhereInput | Prisma.SymptomSessionWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"SymptomSession"> | string
   guestKey?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
   customerId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
   userId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
@@ -424,10 +436,12 @@ export type SymptomSessionWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   messages?: Prisma.SymptomMessageListRelationFilter
   checkIns?: Prisma.SymptomCheckInListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type SymptomSessionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   guestKey?: Prisma.SortOrderInput | Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -462,6 +476,7 @@ export type SymptomSessionScalarWhereWithAggregatesInput = {
   OR?: Prisma.SymptomSessionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SymptomSessionScalarWhereWithAggregatesInput | Prisma.SymptomSessionScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"SymptomSession"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"SymptomSession"> | string
   guestKey?: Prisma.StringNullableWithAggregatesFilter<"SymptomSession"> | string | null
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"SymptomSession"> | string | null
   userId?: Prisma.UuidNullableWithAggregatesFilter<"SymptomSession"> | string | null
@@ -512,10 +527,12 @@ export type SymptomSessionCreateInput = {
   user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
   messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
   checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   guestKey?: string | null
   customerId?: string | null
   userId?: string | null
@@ -568,10 +585,12 @@ export type SymptomSessionUpdateInput = {
   user?: Prisma.UserUpdateOneWithoutSymptomSessionsNestedInput
   messages?: Prisma.SymptomMessageUpdateManyWithoutSessionNestedInput
   checkIns?: Prisma.SymptomCheckInUpdateManyWithoutSessionNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSymptomSessionsNestedInput
 }
 
 export type SymptomSessionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -600,6 +619,7 @@ export type SymptomSessionUncheckedUpdateInput = {
 
 export type SymptomSessionCreateManyInput = {
   id?: string
+  pharmacyId: string
   guestKey?: string | null
   customerId?: string | null
   userId?: string | null
@@ -650,6 +670,7 @@ export type SymptomSessionUpdateManyMutationInput = {
 
 export type SymptomSessionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -686,6 +707,7 @@ export type SymptomSessionOrderByRelationAggregateInput = {
 
 export type SymptomSessionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   guestKey?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -716,6 +738,7 @@ export type SymptomSessionAvgOrderByAggregateInput = {
 
 export type SymptomSessionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   guestKey?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -741,6 +764,7 @@ export type SymptomSessionMaxOrderByAggregateInput = {
 
 export type SymptomSessionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   guestKey?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -771,6 +795,48 @@ export type SymptomSessionSumOrderByAggregateInput = {
 export type SymptomSessionScalarRelationFilter = {
   is?: Prisma.SymptomSessionWhereInput
   isNot?: Prisma.SymptomSessionWhereInput
+}
+
+export type SymptomSessionCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.SymptomSessionCreateWithoutPharmacyInput, Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput> | Prisma.SymptomSessionCreateWithoutPharmacyInput[] | Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.SymptomSessionCreateOrConnectWithoutPharmacyInput | Prisma.SymptomSessionCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.SymptomSessionCreateManyPharmacyInputEnvelope
+  connect?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+}
+
+export type SymptomSessionUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.SymptomSessionCreateWithoutPharmacyInput, Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput> | Prisma.SymptomSessionCreateWithoutPharmacyInput[] | Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.SymptomSessionCreateOrConnectWithoutPharmacyInput | Prisma.SymptomSessionCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.SymptomSessionCreateManyPharmacyInputEnvelope
+  connect?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+}
+
+export type SymptomSessionUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.SymptomSessionCreateWithoutPharmacyInput, Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput> | Prisma.SymptomSessionCreateWithoutPharmacyInput[] | Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.SymptomSessionCreateOrConnectWithoutPharmacyInput | Prisma.SymptomSessionCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.SymptomSessionUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.SymptomSessionUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.SymptomSessionCreateManyPharmacyInputEnvelope
+  set?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+  disconnect?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+  delete?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+  connect?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+  update?: Prisma.SymptomSessionUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.SymptomSessionUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.SymptomSessionUpdateManyWithWhereWithoutPharmacyInput | Prisma.SymptomSessionUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.SymptomSessionScalarWhereInput | Prisma.SymptomSessionScalarWhereInput[]
+}
+
+export type SymptomSessionUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.SymptomSessionCreateWithoutPharmacyInput, Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput> | Prisma.SymptomSessionCreateWithoutPharmacyInput[] | Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.SymptomSessionCreateOrConnectWithoutPharmacyInput | Prisma.SymptomSessionCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.SymptomSessionUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.SymptomSessionUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.SymptomSessionCreateManyPharmacyInputEnvelope
+  set?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+  disconnect?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+  delete?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+  connect?: Prisma.SymptomSessionWhereUniqueInput | Prisma.SymptomSessionWhereUniqueInput[]
+  update?: Prisma.SymptomSessionUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.SymptomSessionUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.SymptomSessionUpdateManyWithWhereWithoutPharmacyInput | Prisma.SymptomSessionUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.SymptomSessionScalarWhereInput | Prisma.SymptomSessionScalarWhereInput[]
 }
 
 export type SymptomSessionCreateNestedManyWithoutUserInput = {
@@ -897,6 +963,118 @@ export type SymptomSessionUpdateOneRequiredWithoutCheckInsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SymptomSessionUpdateToOneWithWhereWithoutCheckInsInput, Prisma.SymptomSessionUpdateWithoutCheckInsInput>, Prisma.SymptomSessionUncheckedUpdateWithoutCheckInsInput>
 }
 
+export type SymptomSessionCreateWithoutPharmacyInput = {
+  id?: string
+  guestKey?: string | null
+  status?: $Enums.SymptomSessionStatus
+  category?: string | null
+  chiefComplaint?: string | null
+  structuredAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiSummary?: string | null
+  provisionalLabel?: string | null
+  severity?: $Enums.SymptomSeverity | null
+  feelingTrend?: $Enums.SymptomFeeling | null
+  escalatedAt?: Date | string | null
+  escalatedReason?: string | null
+  conversationId?: string | null
+  enquiryId?: string | null
+  lastCheckInAt?: Date | string | null
+  nextCheckInAt?: Date | string | null
+  messageCount?: number
+  lastMessageAt?: Date | string | null
+  assignedToId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutSymptomSessionsInput
+  user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
+  messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
+  checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
+}
+
+export type SymptomSessionUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  guestKey?: string | null
+  customerId?: string | null
+  userId?: string | null
+  status?: $Enums.SymptomSessionStatus
+  category?: string | null
+  chiefComplaint?: string | null
+  structuredAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiSummary?: string | null
+  provisionalLabel?: string | null
+  severity?: $Enums.SymptomSeverity | null
+  feelingTrend?: $Enums.SymptomFeeling | null
+  escalatedAt?: Date | string | null
+  escalatedReason?: string | null
+  conversationId?: string | null
+  enquiryId?: string | null
+  lastCheckInAt?: Date | string | null
+  nextCheckInAt?: Date | string | null
+  messageCount?: number
+  lastMessageAt?: Date | string | null
+  assignedToId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  messages?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSessionInput
+  checkIns?: Prisma.SymptomCheckInUncheckedCreateNestedManyWithoutSessionInput
+}
+
+export type SymptomSessionCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.SymptomSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.SymptomSessionCreateWithoutPharmacyInput, Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput>
+}
+
+export type SymptomSessionCreateManyPharmacyInputEnvelope = {
+  data: Prisma.SymptomSessionCreateManyPharmacyInput | Prisma.SymptomSessionCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type SymptomSessionUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.SymptomSessionWhereUniqueInput
+  update: Prisma.XOR<Prisma.SymptomSessionUpdateWithoutPharmacyInput, Prisma.SymptomSessionUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.SymptomSessionCreateWithoutPharmacyInput, Prisma.SymptomSessionUncheckedCreateWithoutPharmacyInput>
+}
+
+export type SymptomSessionUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.SymptomSessionWhereUniqueInput
+  data: Prisma.XOR<Prisma.SymptomSessionUpdateWithoutPharmacyInput, Prisma.SymptomSessionUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type SymptomSessionUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.SymptomSessionScalarWhereInput
+  data: Prisma.XOR<Prisma.SymptomSessionUpdateManyMutationInput, Prisma.SymptomSessionUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type SymptomSessionScalarWhereInput = {
+  AND?: Prisma.SymptomSessionScalarWhereInput | Prisma.SymptomSessionScalarWhereInput[]
+  OR?: Prisma.SymptomSessionScalarWhereInput[]
+  NOT?: Prisma.SymptomSessionScalarWhereInput | Prisma.SymptomSessionScalarWhereInput[]
+  id?: Prisma.UuidFilter<"SymptomSession"> | string
+  pharmacyId?: Prisma.UuidFilter<"SymptomSession"> | string
+  guestKey?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
+  customerId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
+  userId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
+  status?: Prisma.EnumSymptomSessionStatusFilter<"SymptomSession"> | $Enums.SymptomSessionStatus
+  category?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
+  chiefComplaint?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
+  structuredAnswers?: Prisma.JsonFilter<"SymptomSession">
+  aiSummary?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
+  provisionalLabel?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
+  severity?: Prisma.EnumSymptomSeverityNullableFilter<"SymptomSession"> | $Enums.SymptomSeverity | null
+  feelingTrend?: Prisma.EnumSymptomFeelingNullableFilter<"SymptomSession"> | $Enums.SymptomFeeling | null
+  escalatedAt?: Prisma.DateTimeNullableFilter<"SymptomSession"> | Date | string | null
+  escalatedReason?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
+  conversationId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
+  enquiryId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
+  lastCheckInAt?: Prisma.DateTimeNullableFilter<"SymptomSession"> | Date | string | null
+  nextCheckInAt?: Prisma.DateTimeNullableFilter<"SymptomSession"> | Date | string | null
+  messageCount?: Prisma.IntFilter<"SymptomSession"> | number
+  lastMessageAt?: Prisma.DateTimeNullableFilter<"SymptomSession"> | Date | string | null
+  assignedToId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"SymptomSession"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"SymptomSession"> | Date | string
+}
+
 export type SymptomSessionCreateWithoutUserInput = {
   id?: string
   guestKey?: string | null
@@ -922,10 +1100,12 @@ export type SymptomSessionCreateWithoutUserInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutSymptomSessionsInput
   messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
   checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateWithoutUserInput = {
   id?: string
+  pharmacyId: string
   guestKey?: string | null
   customerId?: string | null
   status?: $Enums.SymptomSessionStatus
@@ -977,35 +1157,6 @@ export type SymptomSessionUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.SymptomSessionUpdateManyMutationInput, Prisma.SymptomSessionUncheckedUpdateManyWithoutUserInput>
 }
 
-export type SymptomSessionScalarWhereInput = {
-  AND?: Prisma.SymptomSessionScalarWhereInput | Prisma.SymptomSessionScalarWhereInput[]
-  OR?: Prisma.SymptomSessionScalarWhereInput[]
-  NOT?: Prisma.SymptomSessionScalarWhereInput | Prisma.SymptomSessionScalarWhereInput[]
-  id?: Prisma.UuidFilter<"SymptomSession"> | string
-  guestKey?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
-  customerId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
-  userId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
-  status?: Prisma.EnumSymptomSessionStatusFilter<"SymptomSession"> | $Enums.SymptomSessionStatus
-  category?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
-  chiefComplaint?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
-  structuredAnswers?: Prisma.JsonFilter<"SymptomSession">
-  aiSummary?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
-  provisionalLabel?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
-  severity?: Prisma.EnumSymptomSeverityNullableFilter<"SymptomSession"> | $Enums.SymptomSeverity | null
-  feelingTrend?: Prisma.EnumSymptomFeelingNullableFilter<"SymptomSession"> | $Enums.SymptomFeeling | null
-  escalatedAt?: Prisma.DateTimeNullableFilter<"SymptomSession"> | Date | string | null
-  escalatedReason?: Prisma.StringNullableFilter<"SymptomSession"> | string | null
-  conversationId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
-  enquiryId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
-  lastCheckInAt?: Prisma.DateTimeNullableFilter<"SymptomSession"> | Date | string | null
-  nextCheckInAt?: Prisma.DateTimeNullableFilter<"SymptomSession"> | Date | string | null
-  messageCount?: Prisma.IntFilter<"SymptomSession"> | number
-  lastMessageAt?: Prisma.DateTimeNullableFilter<"SymptomSession"> | Date | string | null
-  assignedToId?: Prisma.UuidNullableFilter<"SymptomSession"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"SymptomSession"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"SymptomSession"> | Date | string
-}
-
 export type SymptomSessionCreateWithoutCustomerInput = {
   id?: string
   guestKey?: string | null
@@ -1031,10 +1182,12 @@ export type SymptomSessionCreateWithoutCustomerInput = {
   user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
   messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
   checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   guestKey?: string | null
   userId?: string | null
   status?: $Enums.SymptomSessionStatus
@@ -1111,10 +1264,12 @@ export type SymptomSessionCreateWithoutMessagesInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutSymptomSessionsInput
   user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
   checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateWithoutMessagesInput = {
   id?: string
+  pharmacyId: string
   guestKey?: string | null
   customerId?: string | null
   userId?: string | null
@@ -1181,10 +1336,12 @@ export type SymptomSessionUpdateWithoutMessagesInput = {
   customer?: Prisma.CustomerProfileUpdateOneWithoutSymptomSessionsNestedInput
   user?: Prisma.UserUpdateOneWithoutSymptomSessionsNestedInput
   checkIns?: Prisma.SymptomCheckInUpdateManyWithoutSessionNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSymptomSessionsNestedInput
 }
 
 export type SymptomSessionUncheckedUpdateWithoutMessagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1235,10 +1392,12 @@ export type SymptomSessionCreateWithoutCheckInsInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutSymptomSessionsInput
   user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
   messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateWithoutCheckInsInput = {
   id?: string
+  pharmacyId: string
   guestKey?: string | null
   customerId?: string | null
   userId?: string | null
@@ -1305,10 +1464,12 @@ export type SymptomSessionUpdateWithoutCheckInsInput = {
   customer?: Prisma.CustomerProfileUpdateOneWithoutSymptomSessionsNestedInput
   user?: Prisma.UserUpdateOneWithoutSymptomSessionsNestedInput
   messages?: Prisma.SymptomMessageUpdateManyWithoutSessionNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSymptomSessionsNestedInput
 }
 
 export type SymptomSessionUncheckedUpdateWithoutCheckInsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1334,8 +1495,117 @@ export type SymptomSessionUncheckedUpdateWithoutCheckInsInput = {
   messages?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSessionNestedInput
 }
 
+export type SymptomSessionCreateManyPharmacyInput = {
+  id?: string
+  guestKey?: string | null
+  customerId?: string | null
+  userId?: string | null
+  status?: $Enums.SymptomSessionStatus
+  category?: string | null
+  chiefComplaint?: string | null
+  structuredAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiSummary?: string | null
+  provisionalLabel?: string | null
+  severity?: $Enums.SymptomSeverity | null
+  feelingTrend?: $Enums.SymptomFeeling | null
+  escalatedAt?: Date | string | null
+  escalatedReason?: string | null
+  conversationId?: string | null
+  enquiryId?: string | null
+  lastCheckInAt?: Date | string | null
+  nextCheckInAt?: Date | string | null
+  messageCount?: number
+  lastMessageAt?: Date | string | null
+  assignedToId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SymptomSessionUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumSymptomSessionStatusFieldUpdateOperationsInput | $Enums.SymptomSessionStatus
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chiefComplaint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  structuredAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provisionalLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.NullableEnumSymptomSeverityFieldUpdateOperationsInput | $Enums.SymptomSeverity | null
+  feelingTrend?: Prisma.NullableEnumSymptomFeelingFieldUpdateOperationsInput | $Enums.SymptomFeeling | null
+  escalatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  escalatedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enquiryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextCheckInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  messageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneWithoutSymptomSessionsNestedInput
+  user?: Prisma.UserUpdateOneWithoutSymptomSessionsNestedInput
+  messages?: Prisma.SymptomMessageUpdateManyWithoutSessionNestedInput
+  checkIns?: Prisma.SymptomCheckInUpdateManyWithoutSessionNestedInput
+}
+
+export type SymptomSessionUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumSymptomSessionStatusFieldUpdateOperationsInput | $Enums.SymptomSessionStatus
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chiefComplaint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  structuredAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provisionalLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.NullableEnumSymptomSeverityFieldUpdateOperationsInput | $Enums.SymptomSeverity | null
+  feelingTrend?: Prisma.NullableEnumSymptomFeelingFieldUpdateOperationsInput | $Enums.SymptomFeeling | null
+  escalatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  escalatedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enquiryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextCheckInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  messageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  messages?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSessionNestedInput
+  checkIns?: Prisma.SymptomCheckInUncheckedUpdateManyWithoutSessionNestedInput
+}
+
+export type SymptomSessionUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumSymptomSessionStatusFieldUpdateOperationsInput | $Enums.SymptomSessionStatus
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chiefComplaint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  structuredAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provisionalLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.NullableEnumSymptomSeverityFieldUpdateOperationsInput | $Enums.SymptomSeverity | null
+  feelingTrend?: Prisma.NullableEnumSymptomFeelingFieldUpdateOperationsInput | $Enums.SymptomFeeling | null
+  escalatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  escalatedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enquiryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextCheckInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  messageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type SymptomSessionCreateManyUserInput = {
   id?: string
+  pharmacyId: string
   guestKey?: string | null
   customerId?: string | null
   status?: $Enums.SymptomSessionStatus
@@ -1384,10 +1654,12 @@ export type SymptomSessionUpdateWithoutUserInput = {
   customer?: Prisma.CustomerProfileUpdateOneWithoutSymptomSessionsNestedInput
   messages?: Prisma.SymptomMessageUpdateManyWithoutSessionNestedInput
   checkIns?: Prisma.SymptomCheckInUpdateManyWithoutSessionNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSymptomSessionsNestedInput
 }
 
 export type SymptomSessionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSymptomSessionStatusFieldUpdateOperationsInput | $Enums.SymptomSessionStatus
@@ -1415,6 +1687,7 @@ export type SymptomSessionUncheckedUpdateWithoutUserInput = {
 
 export type SymptomSessionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSymptomSessionStatusFieldUpdateOperationsInput | $Enums.SymptomSessionStatus
@@ -1440,6 +1713,7 @@ export type SymptomSessionUncheckedUpdateManyWithoutUserInput = {
 
 export type SymptomSessionCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   guestKey?: string | null
   userId?: string | null
   status?: $Enums.SymptomSessionStatus
@@ -1488,10 +1762,12 @@ export type SymptomSessionUpdateWithoutCustomerInput = {
   user?: Prisma.UserUpdateOneWithoutSymptomSessionsNestedInput
   messages?: Prisma.SymptomMessageUpdateManyWithoutSessionNestedInput
   checkIns?: Prisma.SymptomCheckInUpdateManyWithoutSessionNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSymptomSessionsNestedInput
 }
 
 export type SymptomSessionUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSymptomSessionStatusFieldUpdateOperationsInput | $Enums.SymptomSessionStatus
@@ -1519,6 +1795,7 @@ export type SymptomSessionUncheckedUpdateWithoutCustomerInput = {
 
 export type SymptomSessionUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   guestKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSymptomSessionStatusFieldUpdateOperationsInput | $Enums.SymptomSessionStatus
@@ -1584,6 +1861,7 @@ export type SymptomSessionCountOutputTypeCountCheckInsArgs<ExtArgs extends runti
 
 export type SymptomSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   guestKey?: boolean
   customerId?: boolean
   userId?: boolean
@@ -1610,11 +1888,13 @@ export type SymptomSessionSelect<ExtArgs extends runtime.Types.Extensions.Intern
   user?: boolean | Prisma.SymptomSession$userArgs<ExtArgs>
   messages?: boolean | Prisma.SymptomSession$messagesArgs<ExtArgs>
   checkIns?: boolean | Prisma.SymptomSession$checkInsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SymptomSessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["symptomSession"]>
 
 export type SymptomSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   guestKey?: boolean
   customerId?: boolean
   userId?: boolean
@@ -1639,10 +1919,12 @@ export type SymptomSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   customer?: boolean | Prisma.SymptomSession$customerArgs<ExtArgs>
   user?: boolean | Prisma.SymptomSession$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["symptomSession"]>
 
 export type SymptomSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   guestKey?: boolean
   customerId?: boolean
   userId?: boolean
@@ -1667,10 +1949,12 @@ export type SymptomSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   customer?: boolean | Prisma.SymptomSession$customerArgs<ExtArgs>
   user?: boolean | Prisma.SymptomSession$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["symptomSession"]>
 
 export type SymptomSessionSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   guestKey?: boolean
   customerId?: boolean
   userId?: boolean
@@ -1695,21 +1979,24 @@ export type SymptomSessionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SymptomSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "guestKey" | "customerId" | "userId" | "status" | "category" | "chiefComplaint" | "structuredAnswers" | "aiSummary" | "provisionalLabel" | "severity" | "feelingTrend" | "escalatedAt" | "escalatedReason" | "conversationId" | "enquiryId" | "lastCheckInAt" | "nextCheckInAt" | "messageCount" | "lastMessageAt" | "assignedToId" | "createdAt" | "updatedAt", ExtArgs["result"]["symptomSession"]>
+export type SymptomSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "guestKey" | "customerId" | "userId" | "status" | "category" | "chiefComplaint" | "structuredAnswers" | "aiSummary" | "provisionalLabel" | "severity" | "feelingTrend" | "escalatedAt" | "escalatedReason" | "conversationId" | "enquiryId" | "lastCheckInAt" | "nextCheckInAt" | "messageCount" | "lastMessageAt" | "assignedToId" | "createdAt" | "updatedAt", ExtArgs["result"]["symptomSession"]>
 export type SymptomSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.SymptomSession$customerArgs<ExtArgs>
   user?: boolean | Prisma.SymptomSession$userArgs<ExtArgs>
   messages?: boolean | Prisma.SymptomSession$messagesArgs<ExtArgs>
   checkIns?: boolean | Prisma.SymptomSession$checkInsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SymptomSessionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SymptomSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.SymptomSession$customerArgs<ExtArgs>
   user?: boolean | Prisma.SymptomSession$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type SymptomSessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.SymptomSession$customerArgs<ExtArgs>
   user?: boolean | Prisma.SymptomSession$userArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $SymptomSessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1719,9 +2006,11 @@ export type $SymptomSessionPayload<ExtArgs extends runtime.Types.Extensions.Inte
     user: Prisma.$UserPayload<ExtArgs> | null
     messages: Prisma.$SymptomMessagePayload<ExtArgs>[]
     checkIns: Prisma.$SymptomCheckInPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     /**
      * Opaque browser key for guest sessions (stored in localStorage).
      */
@@ -2169,6 +2458,7 @@ export interface Prisma__SymptomSessionClient<T, Null = never, ExtArgs extends r
   user<T extends Prisma.SymptomSession$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SymptomSession$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   messages<T extends Prisma.SymptomSession$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SymptomSession$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SymptomMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   checkIns<T extends Prisma.SymptomSession$checkInsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SymptomSession$checkInsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SymptomCheckInPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2199,6 +2489,7 @@ export interface Prisma__SymptomSessionClient<T, Null = never, ExtArgs extends r
  */
 export interface SymptomSessionFieldRefs {
   readonly id: Prisma.FieldRef<"SymptomSession", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"SymptomSession", 'String'>
   readonly guestKey: Prisma.FieldRef<"SymptomSession", 'String'>
   readonly customerId: Prisma.FieldRef<"SymptomSession", 'String'>
   readonly userId: Prisma.FieldRef<"SymptomSession", 'String'>

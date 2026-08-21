@@ -29,7 +29,7 @@ export async function getCustomerDashboard(customerId: string) {
         orderBy: { createdAt: "desc" },
         take: 8,
       }),
-      prisma.loyaltyAccount.findUnique({
+      prisma.loyaltyAccount.findFirst({
         where: { customerId },
         include: { transactions: { orderBy: { createdAt: "desc" }, take: 5 } },
       }),
@@ -613,12 +613,12 @@ export async function listCustomers(
 
   const include = {
     user: { select: { email: true, lastLoginAt: true, status: true } },
-    loyaltyAccount: true,
+    loyaltyAccounts: { take: 1 },
     segments: { include: { segment: true } },
     _count: { select: { refillRequests: true, prescriptions: true } },
   } as const;
 
-  const [total, customers] = await Promise.all([
+  const [total, rows] = await Promise.all([
     prisma.customerProfile.count({ where }),
     prisma.customerProfile.findMany({
       where,
@@ -629,11 +629,17 @@ export async function listCustomers(
     }),
   ]);
 
-  return { total, customers };
+  return {
+    total,
+    customers: rows.map((c) => ({
+      ...c,
+      loyaltyAccount: c.loyaltyAccounts[0] ?? null,
+    })),
+  };
 }
 
 export async function getCustomerDetail(customerId: string) {
-  return prisma.customerProfile.findUnique({
+  const row = await prisma.customerProfile.findUnique({
     where: { id: customerId },
     include: {
       user: true,
@@ -645,7 +651,7 @@ export async function getCustomerDetail(customerId: string) {
       segments: { include: { segment: true } },
       notifications: { orderBy: { createdAt: "desc" }, take: 20 },
       reminders: { orderBy: { scheduledFor: "desc" }, take: 20 },
-      loyaltyAccount: { include: { transactions: { orderBy: { createdAt: "desc" }, take: 10 } } },
+      loyaltyAccounts: { take: 1, include: { transactions: { orderBy: { createdAt: "desc" }, take: 10 } } },
       staffNotes: { include: { author: { select: { email: true } } }, orderBy: [{ isPinned: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }] },
       conversations: {
         include: { messages: { orderBy: { createdAt: "asc" } } },
@@ -655,6 +661,8 @@ export async function getCustomerDetail(customerId: string) {
       feedback: { orderBy: { createdAt: "desc" } },
     },
   });
+  if (!row) return null;
+  return { ...row, loyaltyAccount: row.loyaltyAccounts[0] ?? null };
 }
 
 export async function createEnquiry(data: {
@@ -842,7 +850,7 @@ export async function sendStaffMessage(data: {
     where: { id: data.customerId },
     include: {
       user: { select: { id: true, email: true } },
-      loyaltyAccount: { select: { points: true, tier: true } },
+      loyaltyAccounts: { take: 1, select: { points: true, tier: true } },
       preferences: true,
     },
   });
@@ -852,8 +860,8 @@ export async function sendStaffMessage(data: {
         name: customer.fullName,
         fullName: customer.fullName,
         email: customer.user.email,
-        points: customer.loyaltyAccount?.points ?? 0,
-        tier: customer.loyaltyAccount?.tier ?? "bronze",
+        points: customer.loyaltyAccounts?.[0]?.points ?? 0,
+        tier: customer.loyaltyAccounts?.[0]?.tier ?? "bronze",
       }
     : {};
   const personalizedSubject = data.subject ? interpolateTemplate(data.subject, vars) : undefined;
@@ -975,8 +983,8 @@ async function buildCustomerVars(customer: {
     name: customer.fullName,
     fullName: customer.fullName,
     email: customer.user.email,
-    points: customer.loyaltyAccount?.points ?? 0,
-    tier: customer.loyaltyAccount?.tier ?? "bronze",
+    points: customer.loyaltyAccounts?.[0]?.points ?? 0,
+    tier: customer.loyaltyAccounts?.[0]?.tier ?? "bronze",
     customerId: customer.id,
   };
 }
@@ -995,7 +1003,7 @@ export async function launchCampaign(campaignId: string, actorId: string) {
     where: { id: { in: memberIds } },
     include: {
       user: { select: { id: true, email: true } },
-      loyaltyAccount: { select: { points: true, tier: true } },
+      loyaltyAccounts: { take: 1, select: { points: true, tier: true } },
       preferences: true,
     },
   });

@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
   const med = await prisma.pharmacyInventory
-    .findUnique({
+    .findFirst({
       where: { slug },
       include: {
         medicationMaster: { select: { name: true, description: true, dosage: true } },
@@ -354,7 +354,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
 
   // ── Medication detail ──────────────────────────────────────
   const med = await prisma.pharmacyInventory
-    .findUnique({
+    .findFirst({
       where: { slug },
       include: {
         medicationMaster: {

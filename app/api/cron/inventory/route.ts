@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { runInventoryHealthScan } from "@/app/lib/services/stock";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const result = await runInventoryHealthScan();
+    const result = await withPlatformBypass(async () => runInventoryHealthScan());
     return NextResponse.json({ ok: true, ...result, at: new Date().toISOString() });
   } catch (err) {
     console.error("[cron/inventory]", err);

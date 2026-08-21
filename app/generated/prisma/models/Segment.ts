@@ -26,6 +26,7 @@ export type AggregateSegment = {
 
 export type SegmentMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   name: string | null
   description: string | null
   isSystem: boolean | null
@@ -36,6 +37,7 @@ export type SegmentMinAggregateOutputType = {
 
 export type SegmentMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   name: string | null
   description: string | null
   isSystem: boolean | null
@@ -46,6 +48,7 @@ export type SegmentMaxAggregateOutputType = {
 
 export type SegmentCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   name: number
   description: number
   rules: number
@@ -59,6 +62,7 @@ export type SegmentCountAggregateOutputType = {
 
 export type SegmentMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   description?: true
   isSystem?: true
@@ -69,6 +73,7 @@ export type SegmentMinAggregateInputType = {
 
 export type SegmentMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   description?: true
   isSystem?: true
@@ -79,6 +84,7 @@ export type SegmentMaxAggregateInputType = {
 
 export type SegmentCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   description?: true
   rules?: true
@@ -163,6 +169,7 @@ export type SegmentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type SegmentGroupByOutputType = {
   id: string
+  pharmacyId: string
   name: string
   description: string | null
   rules: runtime.JsonValue
@@ -195,6 +202,7 @@ export type SegmentWhereInput = {
   OR?: Prisma.SegmentWhereInput[]
   NOT?: Prisma.SegmentWhereInput | Prisma.SegmentWhereInput[]
   id?: Prisma.UuidFilter<"Segment"> | string
+  pharmacyId?: Prisma.UuidFilter<"Segment"> | string
   name?: Prisma.StringFilter<"Segment"> | string
   description?: Prisma.StringNullableFilter<"Segment"> | string | null
   rules?: Prisma.JsonFilter<"Segment">
@@ -205,10 +213,12 @@ export type SegmentWhereInput = {
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   members?: Prisma.CustomerSegmentListRelationFilter
   campaigns?: Prisma.CampaignListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type SegmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   rules?: Prisma.SortOrder
@@ -219,14 +229,17 @@ export type SegmentOrderByWithRelationInput = {
   createdBy?: Prisma.UserOrderByWithRelationInput
   members?: Prisma.CustomerSegmentOrderByRelationAggregateInput
   campaigns?: Prisma.CampaignOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type SegmentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  name?: string
+  pharmacyId_name?: Prisma.SegmentPharmacyIdNameCompoundUniqueInput
   AND?: Prisma.SegmentWhereInput | Prisma.SegmentWhereInput[]
   OR?: Prisma.SegmentWhereInput[]
   NOT?: Prisma.SegmentWhereInput | Prisma.SegmentWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"Segment"> | string
+  name?: Prisma.StringFilter<"Segment"> | string
   description?: Prisma.StringNullableFilter<"Segment"> | string | null
   rules?: Prisma.JsonFilter<"Segment">
   isSystem?: Prisma.BoolFilter<"Segment"> | boolean
@@ -236,10 +249,12 @@ export type SegmentWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   members?: Prisma.CustomerSegmentListRelationFilter
   campaigns?: Prisma.CampaignListRelationFilter
-}, "id" | "name">
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
+}, "id" | "pharmacyId_name">
 
 export type SegmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   rules?: Prisma.SortOrder
@@ -257,6 +272,7 @@ export type SegmentScalarWhereWithAggregatesInput = {
   OR?: Prisma.SegmentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SegmentScalarWhereWithAggregatesInput | Prisma.SegmentScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"Segment"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"Segment"> | string
   name?: Prisma.StringWithAggregatesFilter<"Segment"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Segment"> | string | null
   rules?: Prisma.JsonWithAggregatesFilter<"Segment">
@@ -277,10 +293,12 @@ export type SegmentCreateInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutSegmentsCreatedInput
   members?: Prisma.CustomerSegmentCreateNestedManyWithoutSegmentInput
   campaigns?: Prisma.CampaignCreateNestedManyWithoutSegmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
 }
 
 export type SegmentUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -303,10 +321,12 @@ export type SegmentUpdateInput = {
   createdBy?: Prisma.UserUpdateOneWithoutSegmentsCreatedNestedInput
   members?: Prisma.CustomerSegmentUpdateManyWithoutSegmentNestedInput
   campaigns?: Prisma.CampaignUpdateManyWithoutSegmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSegmentsNestedInput
 }
 
 export type SegmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -320,6 +340,7 @@ export type SegmentUncheckedUpdateInput = {
 
 export type SegmentCreateManyInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -341,6 +362,7 @@ export type SegmentUpdateManyMutationInput = {
 
 export type SegmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -360,8 +382,14 @@ export type SegmentOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type SegmentPharmacyIdNameCompoundUniqueInput = {
+  pharmacyId: string
+  name: string
+}
+
 export type SegmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   rules?: Prisma.SortOrder
@@ -373,6 +401,7 @@ export type SegmentCountOrderByAggregateInput = {
 
 export type SegmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
@@ -383,6 +412,7 @@ export type SegmentMaxOrderByAggregateInput = {
 
 export type SegmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
@@ -399,6 +429,48 @@ export type SegmentScalarRelationFilter = {
 export type SegmentNullableScalarRelationFilter = {
   is?: Prisma.SegmentWhereInput | null
   isNot?: Prisma.SegmentWhereInput | null
+}
+
+export type SegmentCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.SegmentCreateWithoutPharmacyInput, Prisma.SegmentUncheckedCreateWithoutPharmacyInput> | Prisma.SegmentCreateWithoutPharmacyInput[] | Prisma.SegmentUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.SegmentCreateOrConnectWithoutPharmacyInput | Prisma.SegmentCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.SegmentCreateManyPharmacyInputEnvelope
+  connect?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+}
+
+export type SegmentUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.SegmentCreateWithoutPharmacyInput, Prisma.SegmentUncheckedCreateWithoutPharmacyInput> | Prisma.SegmentCreateWithoutPharmacyInput[] | Prisma.SegmentUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.SegmentCreateOrConnectWithoutPharmacyInput | Prisma.SegmentCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.SegmentCreateManyPharmacyInputEnvelope
+  connect?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+}
+
+export type SegmentUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.SegmentCreateWithoutPharmacyInput, Prisma.SegmentUncheckedCreateWithoutPharmacyInput> | Prisma.SegmentCreateWithoutPharmacyInput[] | Prisma.SegmentUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.SegmentCreateOrConnectWithoutPharmacyInput | Prisma.SegmentCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.SegmentUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.SegmentUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.SegmentCreateManyPharmacyInputEnvelope
+  set?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+  disconnect?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+  delete?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+  connect?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+  update?: Prisma.SegmentUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.SegmentUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.SegmentUpdateManyWithWhereWithoutPharmacyInput | Prisma.SegmentUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.SegmentScalarWhereInput | Prisma.SegmentScalarWhereInput[]
+}
+
+export type SegmentUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.SegmentCreateWithoutPharmacyInput, Prisma.SegmentUncheckedCreateWithoutPharmacyInput> | Prisma.SegmentCreateWithoutPharmacyInput[] | Prisma.SegmentUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.SegmentCreateOrConnectWithoutPharmacyInput | Prisma.SegmentCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.SegmentUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.SegmentUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.SegmentCreateManyPharmacyInputEnvelope
+  set?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+  disconnect?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+  delete?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+  connect?: Prisma.SegmentWhereUniqueInput | Prisma.SegmentWhereUniqueInput[]
+  update?: Prisma.SegmentUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.SegmentUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.SegmentUpdateManyWithWhereWithoutPharmacyInput | Prisma.SegmentUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.SegmentScalarWhereInput | Prisma.SegmentScalarWhereInput[]
 }
 
 export type SegmentCreateNestedManyWithoutCreatedByInput = {
@@ -473,6 +545,73 @@ export type SegmentUpdateOneWithoutCampaignsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SegmentUpdateToOneWithWhereWithoutCampaignsInput, Prisma.SegmentUpdateWithoutCampaignsInput>, Prisma.SegmentUncheckedUpdateWithoutCampaignsInput>
 }
 
+export type SegmentCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: Prisma.UserCreateNestedOneWithoutSegmentsCreatedInput
+  members?: Prisma.CustomerSegmentCreateNestedManyWithoutSegmentInput
+  campaigns?: Prisma.CampaignCreateNestedManyWithoutSegmentInput
+}
+
+export type SegmentUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isSystem?: boolean
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutSegmentInput
+  campaigns?: Prisma.CampaignUncheckedCreateNestedManyWithoutSegmentInput
+}
+
+export type SegmentCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.SegmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.SegmentCreateWithoutPharmacyInput, Prisma.SegmentUncheckedCreateWithoutPharmacyInput>
+}
+
+export type SegmentCreateManyPharmacyInputEnvelope = {
+  data: Prisma.SegmentCreateManyPharmacyInput | Prisma.SegmentCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type SegmentUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.SegmentWhereUniqueInput
+  update: Prisma.XOR<Prisma.SegmentUpdateWithoutPharmacyInput, Prisma.SegmentUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.SegmentCreateWithoutPharmacyInput, Prisma.SegmentUncheckedCreateWithoutPharmacyInput>
+}
+
+export type SegmentUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.SegmentWhereUniqueInput
+  data: Prisma.XOR<Prisma.SegmentUpdateWithoutPharmacyInput, Prisma.SegmentUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type SegmentUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.SegmentScalarWhereInput
+  data: Prisma.XOR<Prisma.SegmentUpdateManyMutationInput, Prisma.SegmentUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type SegmentScalarWhereInput = {
+  AND?: Prisma.SegmentScalarWhereInput | Prisma.SegmentScalarWhereInput[]
+  OR?: Prisma.SegmentScalarWhereInput[]
+  NOT?: Prisma.SegmentScalarWhereInput | Prisma.SegmentScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Segment"> | string
+  pharmacyId?: Prisma.UuidFilter<"Segment"> | string
+  name?: Prisma.StringFilter<"Segment"> | string
+  description?: Prisma.StringNullableFilter<"Segment"> | string | null
+  rules?: Prisma.JsonFilter<"Segment">
+  isSystem?: Prisma.BoolFilter<"Segment"> | boolean
+  createdById?: Prisma.UuidNullableFilter<"Segment"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Segment"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Segment"> | Date | string
+}
+
 export type SegmentCreateWithoutCreatedByInput = {
   id?: string
   name: string
@@ -483,10 +622,12 @@ export type SegmentCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   members?: Prisma.CustomerSegmentCreateNestedManyWithoutSegmentInput
   campaigns?: Prisma.CampaignCreateNestedManyWithoutSegmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
 }
 
 export type SegmentUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -523,20 +664,6 @@ export type SegmentUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.SegmentUpdateManyMutationInput, Prisma.SegmentUncheckedUpdateManyWithoutCreatedByInput>
 }
 
-export type SegmentScalarWhereInput = {
-  AND?: Prisma.SegmentScalarWhereInput | Prisma.SegmentScalarWhereInput[]
-  OR?: Prisma.SegmentScalarWhereInput[]
-  NOT?: Prisma.SegmentScalarWhereInput | Prisma.SegmentScalarWhereInput[]
-  id?: Prisma.UuidFilter<"Segment"> | string
-  name?: Prisma.StringFilter<"Segment"> | string
-  description?: Prisma.StringNullableFilter<"Segment"> | string | null
-  rules?: Prisma.JsonFilter<"Segment">
-  isSystem?: Prisma.BoolFilter<"Segment"> | boolean
-  createdById?: Prisma.UuidNullableFilter<"Segment"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Segment"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Segment"> | Date | string
-}
-
 export type SegmentCreateWithoutMembersInput = {
   id?: string
   name: string
@@ -547,10 +674,12 @@ export type SegmentCreateWithoutMembersInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutSegmentsCreatedInput
   campaigns?: Prisma.CampaignCreateNestedManyWithoutSegmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
 }
 
 export type SegmentUncheckedCreateWithoutMembersInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -587,10 +716,12 @@ export type SegmentUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutSegmentsCreatedNestedInput
   campaigns?: Prisma.CampaignUpdateManyWithoutSegmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSegmentsNestedInput
 }
 
 export type SegmentUncheckedUpdateWithoutMembersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -611,10 +742,12 @@ export type SegmentCreateWithoutCampaignsInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutSegmentsCreatedInput
   members?: Prisma.CustomerSegmentCreateNestedManyWithoutSegmentInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
 }
 
 export type SegmentUncheckedCreateWithoutCampaignsInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -651,10 +784,12 @@ export type SegmentUpdateWithoutCampaignsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutSegmentsCreatedNestedInput
   members?: Prisma.CustomerSegmentUpdateManyWithoutSegmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSegmentsNestedInput
 }
 
 export type SegmentUncheckedUpdateWithoutCampaignsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -665,8 +800,57 @@ export type SegmentUncheckedUpdateWithoutCampaignsInput = {
   members?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutSegmentNestedInput
 }
 
+export type SegmentCreateManyPharmacyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isSystem?: boolean
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SegmentUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneWithoutSegmentsCreatedNestedInput
+  members?: Prisma.CustomerSegmentUpdateManyWithoutSegmentNestedInput
+  campaigns?: Prisma.CampaignUpdateManyWithoutSegmentNestedInput
+}
+
+export type SegmentUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutSegmentNestedInput
+  campaigns?: Prisma.CampaignUncheckedUpdateManyWithoutSegmentNestedInput
+}
+
+export type SegmentUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type SegmentCreateManyCreatedByInput = {
   id?: string
+  pharmacyId: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -685,10 +869,12 @@ export type SegmentUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.CustomerSegmentUpdateManyWithoutSegmentNestedInput
   campaigns?: Prisma.CampaignUpdateManyWithoutSegmentNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutSegmentsNestedInput
 }
 
 export type SegmentUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -701,6 +887,7 @@ export type SegmentUncheckedUpdateWithoutCreatedByInput = {
 
 export type SegmentUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -751,6 +938,7 @@ export type SegmentCountOutputTypeCountCampaignsArgs<ExtArgs extends runtime.Typ
 
 export type SegmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   description?: boolean
   rules?: boolean
@@ -761,11 +949,13 @@ export type SegmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdBy?: boolean | Prisma.Segment$createdByArgs<ExtArgs>
   members?: boolean | Prisma.Segment$membersArgs<ExtArgs>
   campaigns?: boolean | Prisma.Segment$campaignsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SegmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["segment"]>
 
 export type SegmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   description?: boolean
   rules?: boolean
@@ -774,10 +964,12 @@ export type SegmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.Segment$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["segment"]>
 
 export type SegmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   description?: boolean
   rules?: boolean
@@ -786,10 +978,12 @@ export type SegmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.Segment$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["segment"]>
 
 export type SegmentSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   description?: boolean
   rules?: boolean
@@ -799,18 +993,21 @@ export type SegmentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SegmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "rules" | "isSystem" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["segment"]>
+export type SegmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "name" | "description" | "rules" | "isSystem" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["segment"]>
 export type SegmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.Segment$createdByArgs<ExtArgs>
   members?: boolean | Prisma.Segment$membersArgs<ExtArgs>
   campaigns?: boolean | Prisma.Segment$campaignsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SegmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SegmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.Segment$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type SegmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.Segment$createdByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $SegmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -819,9 +1016,11 @@ export type $SegmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     members: Prisma.$CustomerSegmentPayload<ExtArgs>[]
     campaigns: Prisma.$CampaignPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     name: string
     description: string | null
     rules: runtime.JsonValue
@@ -1226,6 +1425,7 @@ export interface Prisma__SegmentClient<T, Null = never, ExtArgs extends runtime.
   createdBy<T extends Prisma.Segment$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Segment$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   members<T extends Prisma.Segment$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Segment$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerSegmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   campaigns<T extends Prisma.Segment$campaignsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Segment$campaignsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1256,6 +1456,7 @@ export interface Prisma__SegmentClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface SegmentFieldRefs {
   readonly id: Prisma.FieldRef<"Segment", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"Segment", 'String'>
   readonly name: Prisma.FieldRef<"Segment", 'String'>
   readonly description: Prisma.FieldRef<"Segment", 'String'>
   readonly rules: Prisma.FieldRef<"Segment", 'Json'>

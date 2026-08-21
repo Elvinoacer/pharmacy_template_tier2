@@ -11,7 +11,7 @@ export const metadata = { title: "Create account" };
 export default async function RegisterPage() {
   const session = await getSessionUser().catch(() => null);
   if (session) {
-    redirect(resolvePostLoginPath({ role: session.role, customerId: session.customerId }));
+    redirect(resolvePostLoginPath({ role: session.role, customerId: session.customerId, platformAdmin: session.platformAdmin }));
   }
 
   return (

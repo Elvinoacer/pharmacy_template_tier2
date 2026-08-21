@@ -166,7 +166,7 @@ async function handleCreate(
     );
   }
 
-  const existing = await prisma.medicationCategory.findUnique({ where: { slug } });
+  const existing = await prisma.medicationCategory.findFirst({ where: { slug } });
   if (existing) {
     return NextResponse.json(
       { error: "duplicate", message: `Category "${slug}" already exists.` },
@@ -206,7 +206,7 @@ async function handleUpdate(
   userId: string,
   body: z.infer<typeof UpdateBody>,
 ) {
-  const current = await prisma.medicationCategory.findUnique({
+  const current = await prisma.medicationCategory.findFirst({
     where: { id: body.id },
   });
   if (!current) {
@@ -217,7 +217,7 @@ async function handleUpdate(
   const nextSlug = body.slug ? slugifyCategory(body.slug) : undefined;
 
   if (nextSlug && nextSlug !== current.slug) {
-    const clash = await prisma.medicationCategory.findUnique({
+    const clash = await prisma.medicationCategory.findFirst({
       where: { slug: nextSlug },
     });
     if (clash) {
@@ -285,7 +285,7 @@ async function handleDelete(
   userId: string,
   body: z.infer<typeof DeleteBody>,
 ) {
-  const current = await prisma.medicationCategory.findUnique({
+  const current = await prisma.medicationCategory.findFirst({
     where: { id: body.id },
   });
   if (!current) {
@@ -320,8 +320,9 @@ async function handleDelete(
     });
     await tx.medicationCategory.delete({ where: { id: current.id } });
     await tx.medicationCategory.upsert({
-      where: { slug: reassignTo },
+      where: { pharmacyId_slug: { pharmacyId: current.pharmacyId, slug: reassignTo } },
       create: {
+        pharmacyId: current.pharmacyId,
         name: titleFromSlug(reassignTo),
         slug: reassignTo,
         active: true,
@@ -353,8 +354,8 @@ async function handleMerge(
   }
 
   const [from, to] = await Promise.all([
-    prisma.medicationCategory.findUnique({ where: { id: body.fromId } }),
-    prisma.medicationCategory.findUnique({ where: { id: body.toId } }),
+    prisma.medicationCategory.findFirst({ where: { id: body.fromId } }),
+    prisma.medicationCategory.findFirst({ where: { id: body.toId } }),
   ]);
 
   if (!from || !to) {

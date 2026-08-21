@@ -5,6 +5,16 @@ import { searchVaccines } from "./vaccination-catalog";
  * Replace with CMS-driven content in production.
  */
 
+export const platform = {
+  name: "Aether",
+  tagline: "The pharmacy network for Kenya",
+  description:
+    "One account. Every neighbourhood pharmacy. Prescriptions, refills, vaccinations, and care — from a licensed pharmacy close to home.",
+  email: "support@gtss.software",
+  phone: "+254790670542",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://pharmacy-template-tier2.vercel.app",
+};
+
 export const pharmacy = {
   name: "Aether Pharmacy",
   tagline: "Your neighbourhood pharmacy, built on trust",

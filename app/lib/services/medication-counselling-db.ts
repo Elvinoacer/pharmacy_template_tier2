@@ -23,7 +23,7 @@ export async function getMedicationCounsellingBySlug(
 
   // Look up in database
   const inventoryItem = await prisma.pharmacyInventory
-    .findUnique({
+    .findFirst({
       where: { slug: normSlug },
       include: {
         medicationMaster: {

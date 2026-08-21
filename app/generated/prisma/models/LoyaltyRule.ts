@@ -40,6 +40,7 @@ export type LoyaltyRuleSumAggregateOutputType = {
 
 export type LoyaltyRuleMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   name: string | null
   trigger: string | null
   points: number | null
@@ -51,6 +52,7 @@ export type LoyaltyRuleMinAggregateOutputType = {
 
 export type LoyaltyRuleMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   name: string | null
   trigger: string | null
   points: number | null
@@ -62,6 +64,7 @@ export type LoyaltyRuleMaxAggregateOutputType = {
 
 export type LoyaltyRuleCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   name: number
   trigger: number
   points: number
@@ -85,6 +88,7 @@ export type LoyaltyRuleSumAggregateInputType = {
 
 export type LoyaltyRuleMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   trigger?: true
   points?: true
@@ -96,6 +100,7 @@ export type LoyaltyRuleMinAggregateInputType = {
 
 export type LoyaltyRuleMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   trigger?: true
   points?: true
@@ -107,6 +112,7 @@ export type LoyaltyRuleMaxAggregateInputType = {
 
 export type LoyaltyRuleCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   name?: true
   trigger?: true
   points?: true
@@ -205,6 +211,7 @@ export type LoyaltyRuleGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type LoyaltyRuleGroupByOutputType = {
   id: string
+  pharmacyId: string
   name: string
   trigger: string
   points: number
@@ -239,6 +246,7 @@ export type LoyaltyRuleWhereInput = {
   OR?: Prisma.LoyaltyRuleWhereInput[]
   NOT?: Prisma.LoyaltyRuleWhereInput | Prisma.LoyaltyRuleWhereInput[]
   id?: Prisma.UuidFilter<"LoyaltyRule"> | string
+  pharmacyId?: Prisma.UuidFilter<"LoyaltyRule"> | string
   name?: Prisma.StringFilter<"LoyaltyRule"> | string
   trigger?: Prisma.StringFilter<"LoyaltyRule"> | string
   points?: Prisma.IntFilter<"LoyaltyRule"> | number
@@ -246,10 +254,12 @@ export type LoyaltyRuleWhereInput = {
   active?: Prisma.BoolFilter<"LoyaltyRule"> | boolean
   createdAt?: Prisma.DateTimeFilter<"LoyaltyRule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LoyaltyRule"> | Date | string
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type LoyaltyRuleOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   trigger?: Prisma.SortOrder
   points?: Prisma.SortOrder
@@ -257,24 +267,29 @@ export type LoyaltyRuleOrderByWithRelationInput = {
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type LoyaltyRuleWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  name?: string
+  pharmacyId_name?: Prisma.LoyaltyRulePharmacyIdNameCompoundUniqueInput
   AND?: Prisma.LoyaltyRuleWhereInput | Prisma.LoyaltyRuleWhereInput[]
   OR?: Prisma.LoyaltyRuleWhereInput[]
   NOT?: Prisma.LoyaltyRuleWhereInput | Prisma.LoyaltyRuleWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"LoyaltyRule"> | string
+  name?: Prisma.StringFilter<"LoyaltyRule"> | string
   trigger?: Prisma.StringFilter<"LoyaltyRule"> | string
   points?: Prisma.IntFilter<"LoyaltyRule"> | number
   multiplier?: Prisma.DecimalNullableFilter<"LoyaltyRule"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   active?: Prisma.BoolFilter<"LoyaltyRule"> | boolean
   createdAt?: Prisma.DateTimeFilter<"LoyaltyRule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LoyaltyRule"> | Date | string
-}, "id" | "name">
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
+}, "id" | "pharmacyId_name">
 
 export type LoyaltyRuleOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   trigger?: Prisma.SortOrder
   points?: Prisma.SortOrder
@@ -294,6 +309,7 @@ export type LoyaltyRuleScalarWhereWithAggregatesInput = {
   OR?: Prisma.LoyaltyRuleScalarWhereWithAggregatesInput[]
   NOT?: Prisma.LoyaltyRuleScalarWhereWithAggregatesInput | Prisma.LoyaltyRuleScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"LoyaltyRule"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"LoyaltyRule"> | string
   name?: Prisma.StringWithAggregatesFilter<"LoyaltyRule"> | string
   trigger?: Prisma.StringWithAggregatesFilter<"LoyaltyRule"> | string
   points?: Prisma.IntWithAggregatesFilter<"LoyaltyRule"> | number
@@ -312,10 +328,12 @@ export type LoyaltyRuleCreateInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyRulesInput
 }
 
 export type LoyaltyRuleUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   name: string
   trigger: string
   points?: number
@@ -334,10 +352,12 @@ export type LoyaltyRuleUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutLoyaltyRulesNestedInput
 }
 
 export type LoyaltyRuleUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   trigger?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
@@ -349,6 +369,7 @@ export type LoyaltyRuleUncheckedUpdateInput = {
 
 export type LoyaltyRuleCreateManyInput = {
   id?: string
+  pharmacyId: string
   name: string
   trigger: string
   points?: number
@@ -371,6 +392,7 @@ export type LoyaltyRuleUpdateManyMutationInput = {
 
 export type LoyaltyRuleUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   trigger?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
@@ -380,8 +402,24 @@ export type LoyaltyRuleUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type LoyaltyRuleListRelationFilter = {
+  every?: Prisma.LoyaltyRuleWhereInput
+  some?: Prisma.LoyaltyRuleWhereInput
+  none?: Prisma.LoyaltyRuleWhereInput
+}
+
+export type LoyaltyRuleOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type LoyaltyRulePharmacyIdNameCompoundUniqueInput = {
+  pharmacyId: string
+  name: string
+}
+
 export type LoyaltyRuleCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   trigger?: Prisma.SortOrder
   points?: Prisma.SortOrder
@@ -398,6 +436,7 @@ export type LoyaltyRuleAvgOrderByAggregateInput = {
 
 export type LoyaltyRuleMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   trigger?: Prisma.SortOrder
   points?: Prisma.SortOrder
@@ -409,6 +448,7 @@ export type LoyaltyRuleMaxOrderByAggregateInput = {
 
 export type LoyaltyRuleMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   trigger?: Prisma.SortOrder
   points?: Prisma.SortOrder
@@ -423,10 +463,160 @@ export type LoyaltyRuleSumOrderByAggregateInput = {
   multiplier?: Prisma.SortOrder
 }
 
+export type LoyaltyRuleCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyRuleCreateWithoutPharmacyInput, Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput> | Prisma.LoyaltyRuleCreateWithoutPharmacyInput[] | Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.LoyaltyRuleCreateOrConnectWithoutPharmacyInput | Prisma.LoyaltyRuleCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.LoyaltyRuleCreateManyPharmacyInputEnvelope
+  connect?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+}
+
+export type LoyaltyRuleUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyRuleCreateWithoutPharmacyInput, Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput> | Prisma.LoyaltyRuleCreateWithoutPharmacyInput[] | Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.LoyaltyRuleCreateOrConnectWithoutPharmacyInput | Prisma.LoyaltyRuleCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.LoyaltyRuleCreateManyPharmacyInputEnvelope
+  connect?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+}
+
+export type LoyaltyRuleUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyRuleCreateWithoutPharmacyInput, Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput> | Prisma.LoyaltyRuleCreateWithoutPharmacyInput[] | Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.LoyaltyRuleCreateOrConnectWithoutPharmacyInput | Prisma.LoyaltyRuleCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.LoyaltyRuleUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.LoyaltyRuleUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.LoyaltyRuleCreateManyPharmacyInputEnvelope
+  set?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+  disconnect?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+  delete?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+  connect?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+  update?: Prisma.LoyaltyRuleUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.LoyaltyRuleUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.LoyaltyRuleUpdateManyWithWhereWithoutPharmacyInput | Prisma.LoyaltyRuleUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.LoyaltyRuleScalarWhereInput | Prisma.LoyaltyRuleScalarWhereInput[]
+}
+
+export type LoyaltyRuleUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.LoyaltyRuleCreateWithoutPharmacyInput, Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput> | Prisma.LoyaltyRuleCreateWithoutPharmacyInput[] | Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.LoyaltyRuleCreateOrConnectWithoutPharmacyInput | Prisma.LoyaltyRuleCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.LoyaltyRuleUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.LoyaltyRuleUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.LoyaltyRuleCreateManyPharmacyInputEnvelope
+  set?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+  disconnect?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+  delete?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+  connect?: Prisma.LoyaltyRuleWhereUniqueInput | Prisma.LoyaltyRuleWhereUniqueInput[]
+  update?: Prisma.LoyaltyRuleUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.LoyaltyRuleUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.LoyaltyRuleUpdateManyWithWhereWithoutPharmacyInput | Prisma.LoyaltyRuleUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.LoyaltyRuleScalarWhereInput | Prisma.LoyaltyRuleScalarWhereInput[]
+}
+
+export type LoyaltyRuleCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  trigger: string
+  points?: number
+  multiplier?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LoyaltyRuleUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  name: string
+  trigger: string
+  points?: number
+  multiplier?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LoyaltyRuleCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.LoyaltyRuleWhereUniqueInput
+  create: Prisma.XOR<Prisma.LoyaltyRuleCreateWithoutPharmacyInput, Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput>
+}
+
+export type LoyaltyRuleCreateManyPharmacyInputEnvelope = {
+  data: Prisma.LoyaltyRuleCreateManyPharmacyInput | Prisma.LoyaltyRuleCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type LoyaltyRuleUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.LoyaltyRuleWhereUniqueInput
+  update: Prisma.XOR<Prisma.LoyaltyRuleUpdateWithoutPharmacyInput, Prisma.LoyaltyRuleUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.LoyaltyRuleCreateWithoutPharmacyInput, Prisma.LoyaltyRuleUncheckedCreateWithoutPharmacyInput>
+}
+
+export type LoyaltyRuleUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.LoyaltyRuleWhereUniqueInput
+  data: Prisma.XOR<Prisma.LoyaltyRuleUpdateWithoutPharmacyInput, Prisma.LoyaltyRuleUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type LoyaltyRuleUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.LoyaltyRuleScalarWhereInput
+  data: Prisma.XOR<Prisma.LoyaltyRuleUpdateManyMutationInput, Prisma.LoyaltyRuleUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type LoyaltyRuleScalarWhereInput = {
+  AND?: Prisma.LoyaltyRuleScalarWhereInput | Prisma.LoyaltyRuleScalarWhereInput[]
+  OR?: Prisma.LoyaltyRuleScalarWhereInput[]
+  NOT?: Prisma.LoyaltyRuleScalarWhereInput | Prisma.LoyaltyRuleScalarWhereInput[]
+  id?: Prisma.UuidFilter<"LoyaltyRule"> | string
+  pharmacyId?: Prisma.UuidFilter<"LoyaltyRule"> | string
+  name?: Prisma.StringFilter<"LoyaltyRule"> | string
+  trigger?: Prisma.StringFilter<"LoyaltyRule"> | string
+  points?: Prisma.IntFilter<"LoyaltyRule"> | number
+  multiplier?: Prisma.DecimalNullableFilter<"LoyaltyRule"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: Prisma.BoolFilter<"LoyaltyRule"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"LoyaltyRule"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"LoyaltyRule"> | Date | string
+}
+
+export type LoyaltyRuleCreateManyPharmacyInput = {
+  id?: string
+  name: string
+  trigger: string
+  points?: number
+  multiplier?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LoyaltyRuleUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  multiplier?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LoyaltyRuleUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  multiplier?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LoyaltyRuleUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.StringFieldUpdateOperationsInput | string
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  multiplier?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 
 
 export type LoyaltyRuleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   trigger?: boolean
   points?: boolean
@@ -434,10 +624,12 @@ export type LoyaltyRuleSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loyaltyRule"]>
 
 export type LoyaltyRuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   trigger?: boolean
   points?: boolean
@@ -445,10 +637,12 @@ export type LoyaltyRuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loyaltyRule"]>
 
 export type LoyaltyRuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   trigger?: boolean
   points?: boolean
@@ -456,10 +650,12 @@ export type LoyaltyRuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loyaltyRule"]>
 
 export type LoyaltyRuleSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   name?: boolean
   trigger?: boolean
   points?: boolean
@@ -469,13 +665,25 @@ export type LoyaltyRuleSelectScalar = {
   updatedAt?: boolean
 }
 
-export type LoyaltyRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "trigger" | "points" | "multiplier" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["loyaltyRule"]>
+export type LoyaltyRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "name" | "trigger" | "points" | "multiplier" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["loyaltyRule"]>
+export type LoyaltyRuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
+export type LoyaltyRuleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
+export type LoyaltyRuleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
 
 export type $LoyaltyRulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "LoyaltyRule"
-  objects: {}
+  objects: {
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     name: string
     trigger: string
     points: number
@@ -880,6 +1088,7 @@ readonly fields: LoyaltyRuleFieldRefs;
  */
 export interface Prisma__LoyaltyRuleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -910,6 +1119,7 @@ export interface Prisma__LoyaltyRuleClient<T, Null = never, ExtArgs extends runt
  */
 export interface LoyaltyRuleFieldRefs {
   readonly id: Prisma.FieldRef<"LoyaltyRule", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"LoyaltyRule", 'String'>
   readonly name: Prisma.FieldRef<"LoyaltyRule", 'String'>
   readonly trigger: Prisma.FieldRef<"LoyaltyRule", 'String'>
   readonly points: Prisma.FieldRef<"LoyaltyRule", 'Int'>
@@ -934,6 +1144,10 @@ export type LoyaltyRuleFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
+  /**
    * Filter, which LoyaltyRule to fetch.
    */
   where: Prisma.LoyaltyRuleWhereUniqueInput
@@ -952,6 +1166,10 @@ export type LoyaltyRuleFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
+  /**
    * Filter, which LoyaltyRule to fetch.
    */
   where: Prisma.LoyaltyRuleWhereUniqueInput
@@ -969,6 +1187,10 @@ export type LoyaltyRuleFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the LoyaltyRule
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
   /**
    * Filter, which LoyaltyRule to fetch.
    */
@@ -1018,6 +1240,10 @@ export type LoyaltyRuleFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
+  /**
    * Filter, which LoyaltyRule to fetch.
    */
   where?: Prisma.LoyaltyRuleWhereInput
@@ -1065,6 +1291,10 @@ export type LoyaltyRuleFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the LoyaltyRule
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
   /**
    * Filter, which LoyaltyRules to fetch.
    */
@@ -1114,6 +1344,10 @@ export type LoyaltyRuleCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
+  /**
    * The data needed to create a LoyaltyRule.
    */
   data: Prisma.XOR<Prisma.LoyaltyRuleCreateInput, Prisma.LoyaltyRuleUncheckedCreateInput>
@@ -1147,6 +1381,10 @@ export type LoyaltyRuleCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    */
   data: Prisma.LoyaltyRuleCreateManyInput | Prisma.LoyaltyRuleCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1161,6 +1399,10 @@ export type LoyaltyRuleUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the LoyaltyRule
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
   /**
    * The data needed to update a LoyaltyRule.
    */
@@ -1213,6 +1455,10 @@ export type LoyaltyRuleUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    * Limit how many LoyaltyRules to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1227,6 +1473,10 @@ export type LoyaltyRuleUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the LoyaltyRule
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
   /**
    * The filter to search for the LoyaltyRule to update in case it exists.
    */
@@ -1253,6 +1503,10 @@ export type LoyaltyRuleDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the LoyaltyRule
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
   /**
    * Filter which LoyaltyRule to delete.
    */
@@ -1285,4 +1539,8 @@ export type LoyaltyRuleDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the LoyaltyRule
    */
   omit?: Prisma.LoyaltyRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyRuleInclude<ExtArgs> | null
 }

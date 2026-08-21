@@ -7,6 +7,7 @@ import { PortalShell } from "@/app/components/portal/PortalShell";
 import { StatCard, Panel, Badge, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { redirect } from "next/navigation";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
+import { getTenant } from "@/app/lib/tenant";
 import {
   FileText,
   Pill,
@@ -27,6 +28,7 @@ export default async function PortalDashboardPage() {
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
 
+  const tenant = await getTenant().catch(() => ({ pharmacyId: null as string | null }));
   const data = await getCustomerDashboard(user.customerId);
   const activeRefills = data.refills.filter(
     (r) => !["collected", "cancelled"].includes(r.status),
@@ -45,6 +47,14 @@ export default async function PortalDashboardPage() {
         </Link>
       }
     >
+      {!tenant.pharmacyId && (
+        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          Pick a pharmacy to load prescriptions, loyalty, and messages for that store.{" "}
+          <Link href="/portal/pharmacies" className="font-semibold underline">
+            My pharmacies
+          </Link>
+        </div>
+      )}
       {/* Stat cards */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

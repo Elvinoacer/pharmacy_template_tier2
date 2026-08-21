@@ -39,6 +39,7 @@ export type StockMovementSumAggregateOutputType = {
 
 export type StockMovementMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   pharmacyInventoryId: string | null
   inventoryLotId: string | null
   reason: string | null
@@ -53,6 +54,7 @@ export type StockMovementMinAggregateOutputType = {
 
 export type StockMovementMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   pharmacyInventoryId: string | null
   inventoryLotId: string | null
   reason: string | null
@@ -67,6 +69,7 @@ export type StockMovementMaxAggregateOutputType = {
 
 export type StockMovementCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   pharmacyInventoryId: number
   inventoryLotId: number
   reason: number
@@ -93,6 +96,7 @@ export type StockMovementSumAggregateInputType = {
 
 export type StockMovementMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   pharmacyInventoryId?: true
   inventoryLotId?: true
   reason?: true
@@ -107,6 +111,7 @@ export type StockMovementMinAggregateInputType = {
 
 export type StockMovementMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   pharmacyInventoryId?: true
   inventoryLotId?: true
   reason?: true
@@ -121,6 +126,7 @@ export type StockMovementMaxAggregateInputType = {
 
 export type StockMovementCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   pharmacyInventoryId?: true
   inventoryLotId?: true
   reason?: true
@@ -222,6 +228,7 @@ export type StockMovementGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 
 export type StockMovementGroupByOutputType = {
   id: string
+  pharmacyId: string
   pharmacyInventoryId: string
   inventoryLotId: string | null
   reason: string
@@ -259,6 +266,7 @@ export type StockMovementWhereInput = {
   OR?: Prisma.StockMovementWhereInput[]
   NOT?: Prisma.StockMovementWhereInput | Prisma.StockMovementWhereInput[]
   id?: Prisma.UuidFilter<"StockMovement"> | string
+  pharmacyId?: Prisma.UuidFilter<"StockMovement"> | string
   pharmacyInventoryId?: Prisma.UuidFilter<"StockMovement"> | string
   inventoryLotId?: Prisma.UuidNullableFilter<"StockMovement"> | string | null
   reason?: Prisma.StringFilter<"StockMovement"> | string
@@ -271,10 +279,12 @@ export type StockMovementWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"StockMovement"> | Date | string
   pharmacyInventory?: Prisma.XOR<Prisma.PharmacyInventoryScalarRelationFilter, Prisma.PharmacyInventoryWhereInput>
   inventoryLot?: Prisma.XOR<Prisma.InventoryLotNullableScalarRelationFilter, Prisma.InventoryLotWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type StockMovementOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   pharmacyInventoryId?: Prisma.SortOrder
   inventoryLotId?: Prisma.SortOrderInput | Prisma.SortOrder
   reason?: Prisma.SortOrder
@@ -287,6 +297,7 @@ export type StockMovementOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   pharmacyInventory?: Prisma.PharmacyInventoryOrderByWithRelationInput
   inventoryLot?: Prisma.InventoryLotOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type StockMovementWhereUniqueInput = Prisma.AtLeast<{
@@ -294,6 +305,7 @@ export type StockMovementWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.StockMovementWhereInput | Prisma.StockMovementWhereInput[]
   OR?: Prisma.StockMovementWhereInput[]
   NOT?: Prisma.StockMovementWhereInput | Prisma.StockMovementWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"StockMovement"> | string
   pharmacyInventoryId?: Prisma.UuidFilter<"StockMovement"> | string
   inventoryLotId?: Prisma.UuidNullableFilter<"StockMovement"> | string | null
   reason?: Prisma.StringFilter<"StockMovement"> | string
@@ -306,10 +318,12 @@ export type StockMovementWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"StockMovement"> | Date | string
   pharmacyInventory?: Prisma.XOR<Prisma.PharmacyInventoryScalarRelationFilter, Prisma.PharmacyInventoryWhereInput>
   inventoryLot?: Prisma.XOR<Prisma.InventoryLotNullableScalarRelationFilter, Prisma.InventoryLotWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type StockMovementOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   pharmacyInventoryId?: Prisma.SortOrder
   inventoryLotId?: Prisma.SortOrderInput | Prisma.SortOrder
   reason?: Prisma.SortOrder
@@ -332,6 +346,7 @@ export type StockMovementScalarWhereWithAggregatesInput = {
   OR?: Prisma.StockMovementScalarWhereWithAggregatesInput[]
   NOT?: Prisma.StockMovementScalarWhereWithAggregatesInput | Prisma.StockMovementScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"StockMovement"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"StockMovement"> | string
   pharmacyInventoryId?: Prisma.UuidWithAggregatesFilter<"StockMovement"> | string
   inventoryLotId?: Prisma.UuidNullableWithAggregatesFilter<"StockMovement"> | string | null
   reason?: Prisma.StringWithAggregatesFilter<"StockMovement"> | string
@@ -356,10 +371,12 @@ export type StockMovementCreateInput = {
   createdAt?: Date | string
   pharmacyInventory: Prisma.PharmacyInventoryCreateNestedOneWithoutMovementsInput
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutMovementsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
 }
 
 export type StockMovementUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   pharmacyInventoryId: string
   inventoryLotId?: string | null
   reason: string
@@ -384,10 +401,12 @@ export type StockMovementUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pharmacyInventory?: Prisma.PharmacyInventoryUpdateOneRequiredWithoutMovementsNestedInput
   inventoryLot?: Prisma.InventoryLotUpdateOneWithoutMovementsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutStockMovementsNestedInput
 }
 
 export type StockMovementUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   pharmacyInventoryId?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reason?: Prisma.StringFieldUpdateOperationsInput | string
@@ -402,6 +421,7 @@ export type StockMovementUncheckedUpdateInput = {
 
 export type StockMovementCreateManyInput = {
   id?: string
+  pharmacyId: string
   pharmacyInventoryId: string
   inventoryLotId?: string | null
   reason: string
@@ -428,6 +448,7 @@ export type StockMovementUpdateManyMutationInput = {
 
 export type StockMovementUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   pharmacyInventoryId?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reason?: Prisma.StringFieldUpdateOperationsInput | string
@@ -452,6 +473,7 @@ export type StockMovementOrderByRelationAggregateInput = {
 
 export type StockMovementCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   pharmacyInventoryId?: Prisma.SortOrder
   inventoryLotId?: Prisma.SortOrder
   reason?: Prisma.SortOrder
@@ -471,6 +493,7 @@ export type StockMovementAvgOrderByAggregateInput = {
 
 export type StockMovementMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   pharmacyInventoryId?: Prisma.SortOrder
   inventoryLotId?: Prisma.SortOrder
   reason?: Prisma.SortOrder
@@ -485,6 +508,7 @@ export type StockMovementMaxOrderByAggregateInput = {
 
 export type StockMovementMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   pharmacyInventoryId?: Prisma.SortOrder
   inventoryLotId?: Prisma.SortOrder
   reason?: Prisma.SortOrder
@@ -500,6 +524,48 @@ export type StockMovementMinOrderByAggregateInput = {
 export type StockMovementSumOrderByAggregateInput = {
   quantityDelta?: Prisma.SortOrder
   balanceAfter?: Prisma.SortOrder
+}
+
+export type StockMovementCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.StockMovementCreateWithoutPharmacyInput, Prisma.StockMovementUncheckedCreateWithoutPharmacyInput> | Prisma.StockMovementCreateWithoutPharmacyInput[] | Prisma.StockMovementUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.StockMovementCreateOrConnectWithoutPharmacyInput | Prisma.StockMovementCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.StockMovementCreateManyPharmacyInputEnvelope
+  connect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+}
+
+export type StockMovementUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.StockMovementCreateWithoutPharmacyInput, Prisma.StockMovementUncheckedCreateWithoutPharmacyInput> | Prisma.StockMovementCreateWithoutPharmacyInput[] | Prisma.StockMovementUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.StockMovementCreateOrConnectWithoutPharmacyInput | Prisma.StockMovementCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.StockMovementCreateManyPharmacyInputEnvelope
+  connect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+}
+
+export type StockMovementUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.StockMovementCreateWithoutPharmacyInput, Prisma.StockMovementUncheckedCreateWithoutPharmacyInput> | Prisma.StockMovementCreateWithoutPharmacyInput[] | Prisma.StockMovementUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.StockMovementCreateOrConnectWithoutPharmacyInput | Prisma.StockMovementCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.StockMovementUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.StockMovementUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.StockMovementCreateManyPharmacyInputEnvelope
+  set?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  disconnect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  delete?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  connect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  update?: Prisma.StockMovementUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.StockMovementUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.StockMovementUpdateManyWithWhereWithoutPharmacyInput | Prisma.StockMovementUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
+}
+
+export type StockMovementUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.StockMovementCreateWithoutPharmacyInput, Prisma.StockMovementUncheckedCreateWithoutPharmacyInput> | Prisma.StockMovementCreateWithoutPharmacyInput[] | Prisma.StockMovementUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.StockMovementCreateOrConnectWithoutPharmacyInput | Prisma.StockMovementCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.StockMovementUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.StockMovementUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.StockMovementCreateManyPharmacyInputEnvelope
+  set?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  disconnect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  delete?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  connect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  update?: Prisma.StockMovementUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.StockMovementUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.StockMovementUpdateManyWithWhereWithoutPharmacyInput | Prisma.StockMovementUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
 }
 
 export type StockMovementCreateNestedManyWithoutPharmacyInventoryInput = {
@@ -586,6 +652,78 @@ export type StockMovementUncheckedUpdateManyWithoutInventoryLotNestedInput = {
   deleteMany?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
 }
 
+export type StockMovementCreateWithoutPharmacyInput = {
+  id?: string
+  reason: string
+  quantityDelta: number
+  balanceAfter: number
+  notes?: string | null
+  relatedType?: string | null
+  relatedId?: string | null
+  actorId?: string | null
+  createdAt?: Date | string
+  pharmacyInventory: Prisma.PharmacyInventoryCreateNestedOneWithoutMovementsInput
+  inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutMovementsInput
+}
+
+export type StockMovementUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  pharmacyInventoryId: string
+  inventoryLotId?: string | null
+  reason: string
+  quantityDelta: number
+  balanceAfter: number
+  notes?: string | null
+  relatedType?: string | null
+  relatedId?: string | null
+  actorId?: string | null
+  createdAt?: Date | string
+}
+
+export type StockMovementCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.StockMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.StockMovementCreateWithoutPharmacyInput, Prisma.StockMovementUncheckedCreateWithoutPharmacyInput>
+}
+
+export type StockMovementCreateManyPharmacyInputEnvelope = {
+  data: Prisma.StockMovementCreateManyPharmacyInput | Prisma.StockMovementCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type StockMovementUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.StockMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.StockMovementUpdateWithoutPharmacyInput, Prisma.StockMovementUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.StockMovementCreateWithoutPharmacyInput, Prisma.StockMovementUncheckedCreateWithoutPharmacyInput>
+}
+
+export type StockMovementUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.StockMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.StockMovementUpdateWithoutPharmacyInput, Prisma.StockMovementUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type StockMovementUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.StockMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.StockMovementUpdateManyMutationInput, Prisma.StockMovementUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type StockMovementScalarWhereInput = {
+  AND?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
+  OR?: Prisma.StockMovementScalarWhereInput[]
+  NOT?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
+  id?: Prisma.UuidFilter<"StockMovement"> | string
+  pharmacyId?: Prisma.UuidFilter<"StockMovement"> | string
+  pharmacyInventoryId?: Prisma.UuidFilter<"StockMovement"> | string
+  inventoryLotId?: Prisma.UuidNullableFilter<"StockMovement"> | string | null
+  reason?: Prisma.StringFilter<"StockMovement"> | string
+  quantityDelta?: Prisma.IntFilter<"StockMovement"> | number
+  balanceAfter?: Prisma.IntFilter<"StockMovement"> | number
+  notes?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  relatedType?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  relatedId?: Prisma.UuidNullableFilter<"StockMovement"> | string | null
+  actorId?: Prisma.UuidNullableFilter<"StockMovement"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"StockMovement"> | Date | string
+}
+
 export type StockMovementCreateWithoutPharmacyInventoryInput = {
   id?: string
   reason: string
@@ -597,10 +735,12 @@ export type StockMovementCreateWithoutPharmacyInventoryInput = {
   actorId?: string | null
   createdAt?: Date | string
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutMovementsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
 }
 
 export type StockMovementUncheckedCreateWithoutPharmacyInventoryInput = {
   id?: string
+  pharmacyId: string
   inventoryLotId?: string | null
   reason: string
   quantityDelta: number
@@ -638,23 +778,6 @@ export type StockMovementUpdateManyWithWhereWithoutPharmacyInventoryInput = {
   data: Prisma.XOR<Prisma.StockMovementUpdateManyMutationInput, Prisma.StockMovementUncheckedUpdateManyWithoutPharmacyInventoryInput>
 }
 
-export type StockMovementScalarWhereInput = {
-  AND?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
-  OR?: Prisma.StockMovementScalarWhereInput[]
-  NOT?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
-  id?: Prisma.UuidFilter<"StockMovement"> | string
-  pharmacyInventoryId?: Prisma.UuidFilter<"StockMovement"> | string
-  inventoryLotId?: Prisma.UuidNullableFilter<"StockMovement"> | string | null
-  reason?: Prisma.StringFilter<"StockMovement"> | string
-  quantityDelta?: Prisma.IntFilter<"StockMovement"> | number
-  balanceAfter?: Prisma.IntFilter<"StockMovement"> | number
-  notes?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-  relatedType?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-  relatedId?: Prisma.UuidNullableFilter<"StockMovement"> | string | null
-  actorId?: Prisma.UuidNullableFilter<"StockMovement"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"StockMovement"> | Date | string
-}
-
 export type StockMovementCreateWithoutInventoryLotInput = {
   id?: string
   reason: string
@@ -666,10 +789,12 @@ export type StockMovementCreateWithoutInventoryLotInput = {
   actorId?: string | null
   createdAt?: Date | string
   pharmacyInventory: Prisma.PharmacyInventoryCreateNestedOneWithoutMovementsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
 }
 
 export type StockMovementUncheckedCreateWithoutInventoryLotInput = {
   id?: string
+  pharmacyId: string
   pharmacyInventoryId: string
   reason: string
   quantityDelta: number
@@ -707,8 +832,65 @@ export type StockMovementUpdateManyWithWhereWithoutInventoryLotInput = {
   data: Prisma.XOR<Prisma.StockMovementUpdateManyMutationInput, Prisma.StockMovementUncheckedUpdateManyWithoutInventoryLotInput>
 }
 
+export type StockMovementCreateManyPharmacyInput = {
+  id?: string
+  pharmacyInventoryId: string
+  inventoryLotId?: string | null
+  reason: string
+  quantityDelta: number
+  balanceAfter: number
+  notes?: string | null
+  relatedType?: string | null
+  relatedId?: string | null
+  actorId?: string | null
+  createdAt?: Date | string
+}
+
+export type StockMovementUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  quantityDelta?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacyInventory?: Prisma.PharmacyInventoryUpdateOneRequiredWithoutMovementsNestedInput
+  inventoryLot?: Prisma.InventoryLotUpdateOneWithoutMovementsNestedInput
+}
+
+export type StockMovementUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyInventoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  quantityDelta?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type StockMovementUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyInventoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  quantityDelta?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type StockMovementCreateManyPharmacyInventoryInput = {
   id?: string
+  pharmacyId: string
   inventoryLotId?: string | null
   reason: string
   quantityDelta: number
@@ -731,10 +913,12 @@ export type StockMovementUpdateWithoutPharmacyInventoryInput = {
   actorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryLot?: Prisma.InventoryLotUpdateOneWithoutMovementsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutStockMovementsNestedInput
 }
 
 export type StockMovementUncheckedUpdateWithoutPharmacyInventoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   quantityDelta?: Prisma.IntFieldUpdateOperationsInput | number
@@ -748,6 +932,7 @@ export type StockMovementUncheckedUpdateWithoutPharmacyInventoryInput = {
 
 export type StockMovementUncheckedUpdateManyWithoutPharmacyInventoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   quantityDelta?: Prisma.IntFieldUpdateOperationsInput | number
@@ -761,6 +946,7 @@ export type StockMovementUncheckedUpdateManyWithoutPharmacyInventoryInput = {
 
 export type StockMovementCreateManyInventoryLotInput = {
   id?: string
+  pharmacyId: string
   pharmacyInventoryId: string
   reason: string
   quantityDelta: number
@@ -783,10 +969,12 @@ export type StockMovementUpdateWithoutInventoryLotInput = {
   actorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pharmacyInventory?: Prisma.PharmacyInventoryUpdateOneRequiredWithoutMovementsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutStockMovementsNestedInput
 }
 
 export type StockMovementUncheckedUpdateWithoutInventoryLotInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   pharmacyInventoryId?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   quantityDelta?: Prisma.IntFieldUpdateOperationsInput | number
@@ -800,6 +988,7 @@ export type StockMovementUncheckedUpdateWithoutInventoryLotInput = {
 
 export type StockMovementUncheckedUpdateManyWithoutInventoryLotInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   pharmacyInventoryId?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   quantityDelta?: Prisma.IntFieldUpdateOperationsInput | number
@@ -815,6 +1004,7 @@ export type StockMovementUncheckedUpdateManyWithoutInventoryLotInput = {
 
 export type StockMovementSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   pharmacyInventoryId?: boolean
   inventoryLotId?: boolean
   reason?: boolean
@@ -827,10 +1017,12 @@ export type StockMovementSelect<ExtArgs extends runtime.Types.Extensions.Interna
   createdAt?: boolean
   pharmacyInventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   inventoryLot?: boolean | Prisma.StockMovement$inventoryLotArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockMovement"]>
 
 export type StockMovementSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   pharmacyInventoryId?: boolean
   inventoryLotId?: boolean
   reason?: boolean
@@ -843,10 +1035,12 @@ export type StockMovementSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   createdAt?: boolean
   pharmacyInventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   inventoryLot?: boolean | Prisma.StockMovement$inventoryLotArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockMovement"]>
 
 export type StockMovementSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   pharmacyInventoryId?: boolean
   inventoryLotId?: boolean
   reason?: boolean
@@ -859,10 +1053,12 @@ export type StockMovementSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   createdAt?: boolean
   pharmacyInventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   inventoryLot?: boolean | Prisma.StockMovement$inventoryLotArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockMovement"]>
 
 export type StockMovementSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   pharmacyInventoryId?: boolean
   inventoryLotId?: boolean
   reason?: boolean
@@ -875,18 +1071,21 @@ export type StockMovementSelectScalar = {
   createdAt?: boolean
 }
 
-export type StockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyInventoryId" | "inventoryLotId" | "reason" | "quantityDelta" | "balanceAfter" | "notes" | "relatedType" | "relatedId" | "actorId" | "createdAt", ExtArgs["result"]["stockMovement"]>
+export type StockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "pharmacyInventoryId" | "inventoryLotId" | "reason" | "quantityDelta" | "balanceAfter" | "notes" | "relatedType" | "relatedId" | "actorId" | "createdAt", ExtArgs["result"]["stockMovement"]>
 export type StockMovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pharmacyInventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   inventoryLot?: boolean | Prisma.StockMovement$inventoryLotArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type StockMovementIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pharmacyInventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   inventoryLot?: boolean | Prisma.StockMovement$inventoryLotArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type StockMovementIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pharmacyInventory?: boolean | Prisma.PharmacyInventoryDefaultArgs<ExtArgs>
   inventoryLot?: boolean | Prisma.StockMovement$inventoryLotArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $StockMovementPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -894,9 +1093,11 @@ export type $StockMovementPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     pharmacyInventory: Prisma.$PharmacyInventoryPayload<ExtArgs>
     inventoryLot: Prisma.$InventoryLotPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     pharmacyInventoryId: string
     inventoryLotId: string | null
     /**
@@ -1318,6 +1519,7 @@ export interface Prisma__StockMovementClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   pharmacyInventory<T extends Prisma.PharmacyInventoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyInventoryDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyInventoryClient<runtime.Types.Result.GetResult<Prisma.$PharmacyInventoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   inventoryLot<T extends Prisma.StockMovement$inventoryLotArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockMovement$inventoryLotArgs<ExtArgs>>): Prisma.Prisma__InventoryLotClient<runtime.Types.Result.GetResult<Prisma.$InventoryLotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1348,6 +1550,7 @@ export interface Prisma__StockMovementClient<T, Null = never, ExtArgs extends ru
  */
 export interface StockMovementFieldRefs {
   readonly id: Prisma.FieldRef<"StockMovement", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"StockMovement", 'String'>
   readonly pharmacyInventoryId: Prisma.FieldRef<"StockMovement", 'String'>
   readonly inventoryLotId: Prisma.FieldRef<"StockMovement", 'String'>
   readonly reason: Prisma.FieldRef<"StockMovement", 'String'>

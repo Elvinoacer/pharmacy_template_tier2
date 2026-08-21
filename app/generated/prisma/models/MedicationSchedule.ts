@@ -40,6 +40,7 @@ export type MedicationScheduleSumAggregateOutputType = {
 
 export type MedicationScheduleMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   prescriptionId: string | null
   customerId: string | null
   timeOfDay: string | null
@@ -52,6 +53,7 @@ export type MedicationScheduleMinAggregateOutputType = {
 
 export type MedicationScheduleMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   prescriptionId: string | null
   customerId: string | null
   timeOfDay: string | null
@@ -64,6 +66,7 @@ export type MedicationScheduleMaxAggregateOutputType = {
 
 export type MedicationScheduleCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   prescriptionId: number
   customerId: number
   timeOfDay: number
@@ -86,6 +89,7 @@ export type MedicationScheduleSumAggregateInputType = {
 
 export type MedicationScheduleMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   prescriptionId?: true
   customerId?: true
   timeOfDay?: true
@@ -98,6 +102,7 @@ export type MedicationScheduleMinAggregateInputType = {
 
 export type MedicationScheduleMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   prescriptionId?: true
   customerId?: true
   timeOfDay?: true
@@ -110,6 +115,7 @@ export type MedicationScheduleMaxAggregateInputType = {
 
 export type MedicationScheduleCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   prescriptionId?: true
   customerId?: true
   timeOfDay?: true
@@ -209,6 +215,7 @@ export type MedicationScheduleGroupByArgs<ExtArgs extends runtime.Types.Extensio
 
 export type MedicationScheduleGroupByOutputType = {
   id: string
+  pharmacyId: string
   prescriptionId: string
   customerId: string
   timeOfDay: string
@@ -244,6 +251,7 @@ export type MedicationScheduleWhereInput = {
   OR?: Prisma.MedicationScheduleWhereInput[]
   NOT?: Prisma.MedicationScheduleWhereInput | Prisma.MedicationScheduleWhereInput[]
   id?: Prisma.UuidFilter<"MedicationSchedule"> | string
+  pharmacyId?: Prisma.UuidFilter<"MedicationSchedule"> | string
   prescriptionId?: Prisma.UuidFilter<"MedicationSchedule"> | string
   customerId?: Prisma.UuidFilter<"MedicationSchedule"> | string
   timeOfDay?: Prisma.StringFilter<"MedicationSchedule"> | string
@@ -255,10 +263,12 @@ export type MedicationScheduleWhereInput = {
   prescription?: Prisma.XOR<Prisma.PrescriptionScalarRelationFilter, Prisma.PrescriptionWhereInput>
   customer?: Prisma.XOR<Prisma.CustomerProfileScalarRelationFilter, Prisma.CustomerProfileWhereInput>
   doseLogs?: Prisma.DoseLogListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type MedicationScheduleOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   timeOfDay?: Prisma.SortOrder
@@ -270,6 +280,7 @@ export type MedicationScheduleOrderByWithRelationInput = {
   prescription?: Prisma.PrescriptionOrderByWithRelationInput
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   doseLogs?: Prisma.DoseLogOrderByRelationAggregateInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type MedicationScheduleWhereUniqueInput = Prisma.AtLeast<{
@@ -278,6 +289,7 @@ export type MedicationScheduleWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.MedicationScheduleWhereInput | Prisma.MedicationScheduleWhereInput[]
   OR?: Prisma.MedicationScheduleWhereInput[]
   NOT?: Prisma.MedicationScheduleWhereInput | Prisma.MedicationScheduleWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"MedicationSchedule"> | string
   prescriptionId?: Prisma.UuidFilter<"MedicationSchedule"> | string
   customerId?: Prisma.UuidFilter<"MedicationSchedule"> | string
   timeOfDay?: Prisma.StringFilter<"MedicationSchedule"> | string
@@ -289,10 +301,12 @@ export type MedicationScheduleWhereUniqueInput = Prisma.AtLeast<{
   prescription?: Prisma.XOR<Prisma.PrescriptionScalarRelationFilter, Prisma.PrescriptionWhereInput>
   customer?: Prisma.XOR<Prisma.CustomerProfileScalarRelationFilter, Prisma.CustomerProfileWhereInput>
   doseLogs?: Prisma.DoseLogListRelationFilter
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id" | "prescriptionId_timeOfDay">
 
 export type MedicationScheduleOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   timeOfDay?: Prisma.SortOrder
@@ -313,6 +327,7 @@ export type MedicationScheduleScalarWhereWithAggregatesInput = {
   OR?: Prisma.MedicationScheduleScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MedicationScheduleScalarWhereWithAggregatesInput | Prisma.MedicationScheduleScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"MedicationSchedule"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"MedicationSchedule"> | string
   prescriptionId?: Prisma.UuidWithAggregatesFilter<"MedicationSchedule"> | string
   customerId?: Prisma.UuidWithAggregatesFilter<"MedicationSchedule"> | string
   timeOfDay?: Prisma.StringWithAggregatesFilter<"MedicationSchedule"> | string
@@ -334,10 +349,12 @@ export type MedicationScheduleCreateInput = {
   prescription: Prisma.PrescriptionCreateNestedOneWithoutDoseScheduleInput
   customer: Prisma.CustomerProfileCreateNestedOneWithoutMedicationSchedulesInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutScheduleInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
 }
 
 export type MedicationScheduleUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   customerId: string
   timeOfDay: string
@@ -360,10 +377,12 @@ export type MedicationScheduleUpdateInput = {
   prescription?: Prisma.PrescriptionUpdateOneRequiredWithoutDoseScheduleNestedInput
   customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutMedicationSchedulesNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutScheduleNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutMedicationSchedulesNestedInput
 }
 
 export type MedicationScheduleUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
@@ -377,6 +396,7 @@ export type MedicationScheduleUncheckedUpdateInput = {
 
 export type MedicationScheduleCreateManyInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   customerId: string
   timeOfDay: string
@@ -399,6 +419,7 @@ export type MedicationScheduleUpdateManyMutationInput = {
 
 export type MedicationScheduleUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
@@ -426,6 +447,7 @@ export type MedicationSchedulePrescriptionIdTimeOfDayCompoundUniqueInput = {
 
 export type MedicationScheduleCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   timeOfDay?: Prisma.SortOrder
@@ -442,6 +464,7 @@ export type MedicationScheduleAvgOrderByAggregateInput = {
 
 export type MedicationScheduleMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   timeOfDay?: Prisma.SortOrder
@@ -454,6 +477,7 @@ export type MedicationScheduleMaxOrderByAggregateInput = {
 
 export type MedicationScheduleMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   timeOfDay?: Prisma.SortOrder
@@ -471,6 +495,48 @@ export type MedicationScheduleSumOrderByAggregateInput = {
 export type MedicationScheduleNullableScalarRelationFilter = {
   is?: Prisma.MedicationScheduleWhereInput | null
   isNot?: Prisma.MedicationScheduleWhereInput | null
+}
+
+export type MedicationScheduleCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.MedicationScheduleCreateWithoutPharmacyInput, Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput> | Prisma.MedicationScheduleCreateWithoutPharmacyInput[] | Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MedicationScheduleCreateOrConnectWithoutPharmacyInput | Prisma.MedicationScheduleCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.MedicationScheduleCreateManyPharmacyInputEnvelope
+  connect?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+}
+
+export type MedicationScheduleUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.MedicationScheduleCreateWithoutPharmacyInput, Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput> | Prisma.MedicationScheduleCreateWithoutPharmacyInput[] | Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MedicationScheduleCreateOrConnectWithoutPharmacyInput | Prisma.MedicationScheduleCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.MedicationScheduleCreateManyPharmacyInputEnvelope
+  connect?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+}
+
+export type MedicationScheduleUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationScheduleCreateWithoutPharmacyInput, Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput> | Prisma.MedicationScheduleCreateWithoutPharmacyInput[] | Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MedicationScheduleCreateOrConnectWithoutPharmacyInput | Prisma.MedicationScheduleCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.MedicationScheduleUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.MedicationScheduleUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.MedicationScheduleCreateManyPharmacyInputEnvelope
+  set?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+  disconnect?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+  delete?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+  connect?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+  update?: Prisma.MedicationScheduleUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.MedicationScheduleUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.MedicationScheduleUpdateManyWithWhereWithoutPharmacyInput | Prisma.MedicationScheduleUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.MedicationScheduleScalarWhereInput | Prisma.MedicationScheduleScalarWhereInput[]
+}
+
+export type MedicationScheduleUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationScheduleCreateWithoutPharmacyInput, Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput> | Prisma.MedicationScheduleCreateWithoutPharmacyInput[] | Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.MedicationScheduleCreateOrConnectWithoutPharmacyInput | Prisma.MedicationScheduleCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.MedicationScheduleUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.MedicationScheduleUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.MedicationScheduleCreateManyPharmacyInputEnvelope
+  set?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+  disconnect?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+  delete?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+  connect?: Prisma.MedicationScheduleWhereUniqueInput | Prisma.MedicationScheduleWhereUniqueInput[]
+  update?: Prisma.MedicationScheduleUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.MedicationScheduleUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.MedicationScheduleUpdateManyWithWhereWithoutPharmacyInput | Prisma.MedicationScheduleUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.MedicationScheduleScalarWhereInput | Prisma.MedicationScheduleScalarWhereInput[]
 }
 
 export type MedicationScheduleCreateNestedManyWithoutCustomerInput = {
@@ -573,6 +639,74 @@ export type MedicationScheduleUpdateOneWithoutDoseLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MedicationScheduleUpdateToOneWithWhereWithoutDoseLogsInput, Prisma.MedicationScheduleUpdateWithoutDoseLogsInput>, Prisma.MedicationScheduleUncheckedUpdateWithoutDoseLogsInput>
 }
 
+export type MedicationScheduleCreateWithoutPharmacyInput = {
+  id?: string
+  timeOfDay: string
+  doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  label?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prescription: Prisma.PrescriptionCreateNestedOneWithoutDoseScheduleInput
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutMedicationSchedulesInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutScheduleInput
+}
+
+export type MedicationScheduleUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  prescriptionId: string
+  customerId: string
+  timeOfDay: string
+  doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  label?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutScheduleInput
+}
+
+export type MedicationScheduleCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.MedicationScheduleWhereUniqueInput
+  create: Prisma.XOR<Prisma.MedicationScheduleCreateWithoutPharmacyInput, Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput>
+}
+
+export type MedicationScheduleCreateManyPharmacyInputEnvelope = {
+  data: Prisma.MedicationScheduleCreateManyPharmacyInput | Prisma.MedicationScheduleCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type MedicationScheduleUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.MedicationScheduleWhereUniqueInput
+  update: Prisma.XOR<Prisma.MedicationScheduleUpdateWithoutPharmacyInput, Prisma.MedicationScheduleUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.MedicationScheduleCreateWithoutPharmacyInput, Prisma.MedicationScheduleUncheckedCreateWithoutPharmacyInput>
+}
+
+export type MedicationScheduleUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.MedicationScheduleWhereUniqueInput
+  data: Prisma.XOR<Prisma.MedicationScheduleUpdateWithoutPharmacyInput, Prisma.MedicationScheduleUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type MedicationScheduleUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.MedicationScheduleScalarWhereInput
+  data: Prisma.XOR<Prisma.MedicationScheduleUpdateManyMutationInput, Prisma.MedicationScheduleUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type MedicationScheduleScalarWhereInput = {
+  AND?: Prisma.MedicationScheduleScalarWhereInput | Prisma.MedicationScheduleScalarWhereInput[]
+  OR?: Prisma.MedicationScheduleScalarWhereInput[]
+  NOT?: Prisma.MedicationScheduleScalarWhereInput | Prisma.MedicationScheduleScalarWhereInput[]
+  id?: Prisma.UuidFilter<"MedicationSchedule"> | string
+  pharmacyId?: Prisma.UuidFilter<"MedicationSchedule"> | string
+  prescriptionId?: Prisma.UuidFilter<"MedicationSchedule"> | string
+  customerId?: Prisma.UuidFilter<"MedicationSchedule"> | string
+  timeOfDay?: Prisma.StringFilter<"MedicationSchedule"> | string
+  doseQuantity?: Prisma.DecimalFilter<"MedicationSchedule"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  label?: Prisma.StringNullableFilter<"MedicationSchedule"> | string | null
+  active?: Prisma.BoolFilter<"MedicationSchedule"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"MedicationSchedule"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"MedicationSchedule"> | Date | string
+}
+
 export type MedicationScheduleCreateWithoutCustomerInput = {
   id?: string
   timeOfDay: string
@@ -583,10 +717,12 @@ export type MedicationScheduleCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   prescription: Prisma.PrescriptionCreateNestedOneWithoutDoseScheduleInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutScheduleInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
 }
 
 export type MedicationScheduleUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   timeOfDay: string
   doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -623,21 +759,6 @@ export type MedicationScheduleUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.MedicationScheduleUpdateManyMutationInput, Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerInput>
 }
 
-export type MedicationScheduleScalarWhereInput = {
-  AND?: Prisma.MedicationScheduleScalarWhereInput | Prisma.MedicationScheduleScalarWhereInput[]
-  OR?: Prisma.MedicationScheduleScalarWhereInput[]
-  NOT?: Prisma.MedicationScheduleScalarWhereInput | Prisma.MedicationScheduleScalarWhereInput[]
-  id?: Prisma.UuidFilter<"MedicationSchedule"> | string
-  prescriptionId?: Prisma.UuidFilter<"MedicationSchedule"> | string
-  customerId?: Prisma.UuidFilter<"MedicationSchedule"> | string
-  timeOfDay?: Prisma.StringFilter<"MedicationSchedule"> | string
-  doseQuantity?: Prisma.DecimalFilter<"MedicationSchedule"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  label?: Prisma.StringNullableFilter<"MedicationSchedule"> | string | null
-  active?: Prisma.BoolFilter<"MedicationSchedule"> | boolean
-  createdAt?: Prisma.DateTimeFilter<"MedicationSchedule"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"MedicationSchedule"> | Date | string
-}
-
 export type MedicationScheduleCreateWithoutPrescriptionInput = {
   id?: string
   timeOfDay: string
@@ -648,10 +769,12 @@ export type MedicationScheduleCreateWithoutPrescriptionInput = {
   updatedAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutMedicationSchedulesInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutScheduleInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
 }
 
 export type MedicationScheduleUncheckedCreateWithoutPrescriptionInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   timeOfDay: string
   doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -698,10 +821,12 @@ export type MedicationScheduleCreateWithoutDoseLogsInput = {
   updatedAt?: Date | string
   prescription: Prisma.PrescriptionCreateNestedOneWithoutDoseScheduleInput
   customer: Prisma.CustomerProfileCreateNestedOneWithoutMedicationSchedulesInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
 }
 
 export type MedicationScheduleUncheckedCreateWithoutDoseLogsInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   customerId: string
   timeOfDay: string
@@ -738,9 +863,61 @@ export type MedicationScheduleUpdateWithoutDoseLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   prescription?: Prisma.PrescriptionUpdateOneRequiredWithoutDoseScheduleNestedInput
   customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutMedicationSchedulesNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutMedicationSchedulesNestedInput
 }
 
 export type MedicationScheduleUncheckedUpdateWithoutDoseLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
+  prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  doseQuantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MedicationScheduleCreateManyPharmacyInput = {
+  id?: string
+  prescriptionId: string
+  customerId: string
+  timeOfDay: string
+  doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  label?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MedicationScheduleUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  doseQuantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prescription?: Prisma.PrescriptionUpdateOneRequiredWithoutDoseScheduleNestedInput
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutMedicationSchedulesNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutScheduleNestedInput
+}
+
+export type MedicationScheduleUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  doseQuantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutScheduleNestedInput
+}
+
+export type MedicationScheduleUncheckedUpdateManyWithoutPharmacyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -754,6 +931,7 @@ export type MedicationScheduleUncheckedUpdateWithoutDoseLogsInput = {
 
 export type MedicationScheduleCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   timeOfDay: string
   doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -773,10 +951,12 @@ export type MedicationScheduleUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   prescription?: Prisma.PrescriptionUpdateOneRequiredWithoutDoseScheduleNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutScheduleNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutMedicationSchedulesNestedInput
 }
 
 export type MedicationScheduleUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
   doseQuantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -789,6 +969,7 @@ export type MedicationScheduleUncheckedUpdateWithoutCustomerInput = {
 
 export type MedicationScheduleUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
   doseQuantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -800,6 +981,7 @@ export type MedicationScheduleUncheckedUpdateManyWithoutCustomerInput = {
 
 export type MedicationScheduleCreateManyPrescriptionInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   timeOfDay: string
   doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -819,10 +1001,12 @@ export type MedicationScheduleUpdateWithoutPrescriptionInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutMedicationSchedulesNestedInput
   doseLogs?: Prisma.DoseLogUpdateManyWithoutScheduleNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutMedicationSchedulesNestedInput
 }
 
 export type MedicationScheduleUncheckedUpdateWithoutPrescriptionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
   doseQuantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -835,6 +1019,7 @@ export type MedicationScheduleUncheckedUpdateWithoutPrescriptionInput = {
 
 export type MedicationScheduleUncheckedUpdateManyWithoutPrescriptionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
   doseQuantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -877,6 +1062,7 @@ export type MedicationScheduleCountOutputTypeCountDoseLogsArgs<ExtArgs extends r
 
 export type MedicationScheduleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   prescriptionId?: boolean
   customerId?: boolean
   timeOfDay?: boolean
@@ -888,11 +1074,13 @@ export type MedicationScheduleSelect<ExtArgs extends runtime.Types.Extensions.In
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   doseLogs?: boolean | Prisma.MedicationSchedule$doseLogsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.MedicationScheduleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medicationSchedule"]>
 
 export type MedicationScheduleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   prescriptionId?: boolean
   customerId?: boolean
   timeOfDay?: boolean
@@ -903,10 +1091,12 @@ export type MedicationScheduleSelectCreateManyAndReturn<ExtArgs extends runtime.
   updatedAt?: boolean
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medicationSchedule"]>
 
 export type MedicationScheduleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   prescriptionId?: boolean
   customerId?: boolean
   timeOfDay?: boolean
@@ -917,10 +1107,12 @@ export type MedicationScheduleSelectUpdateManyAndReturn<ExtArgs extends runtime.
   updatedAt?: boolean
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medicationSchedule"]>
 
 export type MedicationScheduleSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   prescriptionId?: boolean
   customerId?: boolean
   timeOfDay?: boolean
@@ -931,20 +1123,23 @@ export type MedicationScheduleSelectScalar = {
   updatedAt?: boolean
 }
 
-export type MedicationScheduleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "prescriptionId" | "customerId" | "timeOfDay" | "doseQuantity" | "label" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["medicationSchedule"]>
+export type MedicationScheduleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "prescriptionId" | "customerId" | "timeOfDay" | "doseQuantity" | "label" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["medicationSchedule"]>
 export type MedicationScheduleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   doseLogs?: boolean | Prisma.MedicationSchedule$doseLogsArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.MedicationScheduleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MedicationScheduleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type MedicationScheduleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $MedicationSchedulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -953,9 +1148,11 @@ export type $MedicationSchedulePayload<ExtArgs extends runtime.Types.Extensions.
     prescription: Prisma.$PrescriptionPayload<ExtArgs>
     customer: Prisma.$CustomerProfilePayload<ExtArgs>
     doseLogs: Prisma.$DoseLogPayload<ExtArgs>[]
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     prescriptionId: string
     customerId: string
     /**
@@ -1371,6 +1568,7 @@ export interface Prisma__MedicationScheduleClient<T, Null = never, ExtArgs exten
   prescription<T extends Prisma.PrescriptionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrescriptionDefaultArgs<ExtArgs>>): Prisma.Prisma__PrescriptionClient<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.CustomerProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   doseLogs<T extends Prisma.MedicationSchedule$doseLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MedicationSchedule$doseLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoseLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1401,6 +1599,7 @@ export interface Prisma__MedicationScheduleClient<T, Null = never, ExtArgs exten
  */
 export interface MedicationScheduleFieldRefs {
   readonly id: Prisma.FieldRef<"MedicationSchedule", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"MedicationSchedule", 'String'>
   readonly prescriptionId: Prisma.FieldRef<"MedicationSchedule", 'String'>
   readonly customerId: Prisma.FieldRef<"MedicationSchedule", 'String'>
   readonly timeOfDay: Prisma.FieldRef<"MedicationSchedule", 'String'>

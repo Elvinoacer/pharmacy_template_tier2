@@ -22,7 +22,7 @@ export default async function LoginPage({
   if (session) {
     redirect(
       resolvePostLoginPath(
-        { role: session.role, customerId: session.customerId },
+        { role: session.role, customerId: session.customerId, platformAdmin: session.platformAdmin },
         next || null,
       ),
     );
@@ -57,9 +57,13 @@ export default async function LoginPage({
               </Link>
             </p>
             <p className="mt-4 rounded-2xl border border-teal-900/8 bg-teal-50/70 px-3 py-2.5 text-xs leading-relaxed text-[#5a6b62]">
-              Demo: <code className="rounded bg-white px-1 py-0.5 text-[11px]">jane@example.com</code> or{" "}
-              <code className="rounded bg-white px-1 py-0.5 text-[11px]">manager@aetherpharmacy.com</code> /{" "}
-              <code className="rounded bg-white px-1 py-0.5 text-[11px]">Password123!</code>
+              Demo password for all: <code className="rounded bg-white px-1 py-0.5 text-[11px]">Password123!</code>
+              <br />
+              Super-admin <code className="rounded bg-white px-1 py-0.5 text-[11px]">platform@aether.health</code> → /platform
+              <br />
+              Pharmacy manager <code className="rounded bg-white px-1 py-0.5 text-[11px]">manager@aetherpharmacy.com</code> → /admin
+              <br />
+              Patient <code className="rounded bg-white px-1 py-0.5 text-[11px]">jane@example.com</code> → /portal
             </p>
           </>
         }

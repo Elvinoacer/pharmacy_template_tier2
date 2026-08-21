@@ -36,6 +36,7 @@ export type CustomerNoteSumAggregateOutputType = {
 
 export type CustomerNoteMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   authorId: string | null
   body: string | null
@@ -46,6 +47,7 @@ export type CustomerNoteMinAggregateOutputType = {
 
 export type CustomerNoteMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   customerId: string | null
   authorId: string | null
   body: string | null
@@ -56,6 +58,7 @@ export type CustomerNoteMaxAggregateOutputType = {
 
 export type CustomerNoteCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   customerId: number
   authorId: number
   body: number
@@ -76,6 +79,7 @@ export type CustomerNoteSumAggregateInputType = {
 
 export type CustomerNoteMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   authorId?: true
   body?: true
@@ -86,6 +90,7 @@ export type CustomerNoteMinAggregateInputType = {
 
 export type CustomerNoteMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   authorId?: true
   body?: true
@@ -96,6 +101,7 @@ export type CustomerNoteMaxAggregateInputType = {
 
 export type CustomerNoteCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   customerId?: true
   authorId?: true
   body?: true
@@ -193,6 +199,7 @@ export type CustomerNoteGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 
 export type CustomerNoteGroupByOutputType = {
   id: string
+  pharmacyId: string
   customerId: string
   authorId: string | null
   body: string
@@ -226,6 +233,7 @@ export type CustomerNoteWhereInput = {
   OR?: Prisma.CustomerNoteWhereInput[]
   NOT?: Prisma.CustomerNoteWhereInput | Prisma.CustomerNoteWhereInput[]
   id?: Prisma.UuidFilter<"CustomerNote"> | string
+  pharmacyId?: Prisma.UuidFilter<"CustomerNote"> | string
   customerId?: Prisma.UuidFilter<"CustomerNote"> | string
   authorId?: Prisma.UuidNullableFilter<"CustomerNote"> | string | null
   body?: Prisma.StringFilter<"CustomerNote"> | string
@@ -234,10 +242,12 @@ export type CustomerNoteWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"CustomerNote"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileScalarRelationFilter, Prisma.CustomerProfileWhereInput>
   author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type CustomerNoteOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   authorId?: Prisma.SortOrderInput | Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -246,6 +256,7 @@ export type CustomerNoteOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   author?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type CustomerNoteWhereUniqueInput = Prisma.AtLeast<{
@@ -253,6 +264,7 @@ export type CustomerNoteWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CustomerNoteWhereInput | Prisma.CustomerNoteWhereInput[]
   OR?: Prisma.CustomerNoteWhereInput[]
   NOT?: Prisma.CustomerNoteWhereInput | Prisma.CustomerNoteWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"CustomerNote"> | string
   customerId?: Prisma.UuidFilter<"CustomerNote"> | string
   authorId?: Prisma.UuidNullableFilter<"CustomerNote"> | string | null
   body?: Prisma.StringFilter<"CustomerNote"> | string
@@ -261,10 +273,12 @@ export type CustomerNoteWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"CustomerNote"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerProfileScalarRelationFilter, Prisma.CustomerProfileWhereInput>
   author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type CustomerNoteOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   authorId?: Prisma.SortOrderInput | Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -283,6 +297,7 @@ export type CustomerNoteScalarWhereWithAggregatesInput = {
   OR?: Prisma.CustomerNoteScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CustomerNoteScalarWhereWithAggregatesInput | Prisma.CustomerNoteScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"CustomerNote"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"CustomerNote"> | string
   customerId?: Prisma.UuidWithAggregatesFilter<"CustomerNote"> | string
   authorId?: Prisma.UuidNullableWithAggregatesFilter<"CustomerNote"> | string | null
   body?: Prisma.StringWithAggregatesFilter<"CustomerNote"> | string
@@ -299,10 +314,12 @@ export type CustomerNoteCreateInput = {
   createdAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutStaffNotesInput
   author?: Prisma.UserCreateNestedOneWithoutCustomerNotesInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
 }
 
 export type CustomerNoteUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   authorId?: string | null
   body: string
@@ -319,10 +336,12 @@ export type CustomerNoteUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutStaffNotesNestedInput
   author?: Prisma.UserUpdateOneWithoutCustomerNotesNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCustomerNotesNestedInput
 }
 
 export type CustomerNoteUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -333,6 +352,7 @@ export type CustomerNoteUncheckedUpdateInput = {
 
 export type CustomerNoteCreateManyInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   authorId?: string | null
   body: string
@@ -351,6 +371,7 @@ export type CustomerNoteUpdateManyMutationInput = {
 
 export type CustomerNoteUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -371,6 +392,7 @@ export type CustomerNoteOrderByRelationAggregateInput = {
 
 export type CustomerNoteCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -385,6 +407,7 @@ export type CustomerNoteAvgOrderByAggregateInput = {
 
 export type CustomerNoteMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -395,6 +418,7 @@ export type CustomerNoteMaxOrderByAggregateInput = {
 
 export type CustomerNoteMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -405,6 +429,48 @@ export type CustomerNoteMinOrderByAggregateInput = {
 
 export type CustomerNoteSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
+}
+
+export type CustomerNoteCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.CustomerNoteCreateWithoutPharmacyInput, Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput> | Prisma.CustomerNoteCreateWithoutPharmacyInput[] | Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CustomerNoteCreateOrConnectWithoutPharmacyInput | Prisma.CustomerNoteCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.CustomerNoteCreateManyPharmacyInputEnvelope
+  connect?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+}
+
+export type CustomerNoteUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.CustomerNoteCreateWithoutPharmacyInput, Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput> | Prisma.CustomerNoteCreateWithoutPharmacyInput[] | Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CustomerNoteCreateOrConnectWithoutPharmacyInput | Prisma.CustomerNoteCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.CustomerNoteCreateManyPharmacyInputEnvelope
+  connect?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+}
+
+export type CustomerNoteUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerNoteCreateWithoutPharmacyInput, Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput> | Prisma.CustomerNoteCreateWithoutPharmacyInput[] | Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CustomerNoteCreateOrConnectWithoutPharmacyInput | Prisma.CustomerNoteCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.CustomerNoteUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.CustomerNoteUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.CustomerNoteCreateManyPharmacyInputEnvelope
+  set?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+  disconnect?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+  delete?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+  connect?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+  update?: Prisma.CustomerNoteUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.CustomerNoteUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.CustomerNoteUpdateManyWithWhereWithoutPharmacyInput | Prisma.CustomerNoteUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.CustomerNoteScalarWhereInput | Prisma.CustomerNoteScalarWhereInput[]
+}
+
+export type CustomerNoteUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerNoteCreateWithoutPharmacyInput, Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput> | Prisma.CustomerNoteCreateWithoutPharmacyInput[] | Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.CustomerNoteCreateOrConnectWithoutPharmacyInput | Prisma.CustomerNoteCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.CustomerNoteUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.CustomerNoteUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.CustomerNoteCreateManyPharmacyInputEnvelope
+  set?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+  disconnect?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+  delete?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+  connect?: Prisma.CustomerNoteWhereUniqueInput | Prisma.CustomerNoteWhereUniqueInput[]
+  update?: Prisma.CustomerNoteUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.CustomerNoteUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.CustomerNoteUpdateManyWithWhereWithoutPharmacyInput | Prisma.CustomerNoteUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.CustomerNoteScalarWhereInput | Prisma.CustomerNoteScalarWhereInput[]
 }
 
 export type CustomerNoteCreateNestedManyWithoutAuthorInput = {
@@ -491,6 +557,66 @@ export type CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput = {
   deleteMany?: Prisma.CustomerNoteScalarWhereInput | Prisma.CustomerNoteScalarWhereInput[]
 }
 
+export type CustomerNoteCreateWithoutPharmacyInput = {
+  id?: string
+  body: string
+  isPinned?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  customer: Prisma.CustomerProfileCreateNestedOneWithoutStaffNotesInput
+  author?: Prisma.UserCreateNestedOneWithoutCustomerNotesInput
+}
+
+export type CustomerNoteUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  customerId: string
+  authorId?: string | null
+  body: string
+  isPinned?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+}
+
+export type CustomerNoteCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.CustomerNoteWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerNoteCreateWithoutPharmacyInput, Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput>
+}
+
+export type CustomerNoteCreateManyPharmacyInputEnvelope = {
+  data: Prisma.CustomerNoteCreateManyPharmacyInput | Prisma.CustomerNoteCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type CustomerNoteUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.CustomerNoteWhereUniqueInput
+  update: Prisma.XOR<Prisma.CustomerNoteUpdateWithoutPharmacyInput, Prisma.CustomerNoteUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.CustomerNoteCreateWithoutPharmacyInput, Prisma.CustomerNoteUncheckedCreateWithoutPharmacyInput>
+}
+
+export type CustomerNoteUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.CustomerNoteWhereUniqueInput
+  data: Prisma.XOR<Prisma.CustomerNoteUpdateWithoutPharmacyInput, Prisma.CustomerNoteUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type CustomerNoteUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.CustomerNoteScalarWhereInput
+  data: Prisma.XOR<Prisma.CustomerNoteUpdateManyMutationInput, Prisma.CustomerNoteUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type CustomerNoteScalarWhereInput = {
+  AND?: Prisma.CustomerNoteScalarWhereInput | Prisma.CustomerNoteScalarWhereInput[]
+  OR?: Prisma.CustomerNoteScalarWhereInput[]
+  NOT?: Prisma.CustomerNoteScalarWhereInput | Prisma.CustomerNoteScalarWhereInput[]
+  id?: Prisma.UuidFilter<"CustomerNote"> | string
+  pharmacyId?: Prisma.UuidFilter<"CustomerNote"> | string
+  customerId?: Prisma.UuidFilter<"CustomerNote"> | string
+  authorId?: Prisma.UuidNullableFilter<"CustomerNote"> | string | null
+  body?: Prisma.StringFilter<"CustomerNote"> | string
+  isPinned?: Prisma.BoolFilter<"CustomerNote"> | boolean
+  sortOrder?: Prisma.IntFilter<"CustomerNote"> | number
+  createdAt?: Prisma.DateTimeFilter<"CustomerNote"> | Date | string
+}
+
 export type CustomerNoteCreateWithoutAuthorInput = {
   id?: string
   body: string
@@ -498,10 +624,12 @@ export type CustomerNoteCreateWithoutAuthorInput = {
   sortOrder?: number
   createdAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutStaffNotesInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
 }
 
 export type CustomerNoteUncheckedCreateWithoutAuthorInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   body: string
   isPinned?: boolean
@@ -535,19 +663,6 @@ export type CustomerNoteUpdateManyWithWhereWithoutAuthorInput = {
   data: Prisma.XOR<Prisma.CustomerNoteUpdateManyMutationInput, Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorInput>
 }
 
-export type CustomerNoteScalarWhereInput = {
-  AND?: Prisma.CustomerNoteScalarWhereInput | Prisma.CustomerNoteScalarWhereInput[]
-  OR?: Prisma.CustomerNoteScalarWhereInput[]
-  NOT?: Prisma.CustomerNoteScalarWhereInput | Prisma.CustomerNoteScalarWhereInput[]
-  id?: Prisma.UuidFilter<"CustomerNote"> | string
-  customerId?: Prisma.UuidFilter<"CustomerNote"> | string
-  authorId?: Prisma.UuidNullableFilter<"CustomerNote"> | string | null
-  body?: Prisma.StringFilter<"CustomerNote"> | string
-  isPinned?: Prisma.BoolFilter<"CustomerNote"> | boolean
-  sortOrder?: Prisma.IntFilter<"CustomerNote"> | number
-  createdAt?: Prisma.DateTimeFilter<"CustomerNote"> | Date | string
-}
-
 export type CustomerNoteCreateWithoutCustomerInput = {
   id?: string
   body: string
@@ -555,10 +670,12 @@ export type CustomerNoteCreateWithoutCustomerInput = {
   sortOrder?: number
   createdAt?: Date | string
   author?: Prisma.UserCreateNestedOneWithoutCustomerNotesInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
 }
 
 export type CustomerNoteUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   authorId?: string | null
   body: string
   isPinned?: boolean
@@ -592,8 +709,49 @@ export type CustomerNoteUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.CustomerNoteUpdateManyMutationInput, Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type CustomerNoteCreateManyPharmacyInput = {
+  id?: string
+  customerId: string
+  authorId?: string | null
+  body: string
+  isPinned?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+}
+
+export type CustomerNoteUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutStaffNotesNestedInput
+  author?: Prisma.UserUpdateOneWithoutCustomerNotesNestedInput
+}
+
+export type CustomerNoteUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CustomerNoteUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type CustomerNoteCreateManyAuthorInput = {
   id?: string
+  pharmacyId: string
   customerId: string
   body: string
   isPinned?: boolean
@@ -608,10 +766,12 @@ export type CustomerNoteUpdateWithoutAuthorInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneRequiredWithoutStaffNotesNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCustomerNotesNestedInput
 }
 
 export type CustomerNoteUncheckedUpdateWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -621,6 +781,7 @@ export type CustomerNoteUncheckedUpdateWithoutAuthorInput = {
 
 export type CustomerNoteUncheckedUpdateManyWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -630,6 +791,7 @@ export type CustomerNoteUncheckedUpdateManyWithoutAuthorInput = {
 
 export type CustomerNoteCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   authorId?: string | null
   body: string
   isPinned?: boolean
@@ -644,10 +806,12 @@ export type CustomerNoteUpdateWithoutCustomerInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneWithoutCustomerNotesNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutCustomerNotesNestedInput
 }
 
 export type CustomerNoteUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   body?: Prisma.StringFieldUpdateOperationsInput | string
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -657,6 +821,7 @@ export type CustomerNoteUncheckedUpdateWithoutCustomerInput = {
 
 export type CustomerNoteUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   body?: Prisma.StringFieldUpdateOperationsInput | string
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -668,6 +833,7 @@ export type CustomerNoteUncheckedUpdateManyWithoutCustomerInput = {
 
 export type CustomerNoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   authorId?: boolean
   body?: boolean
@@ -676,10 +842,12 @@ export type CustomerNoteSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   author?: boolean | Prisma.CustomerNote$authorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customerNote"]>
 
 export type CustomerNoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   authorId?: boolean
   body?: boolean
@@ -688,10 +856,12 @@ export type CustomerNoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   author?: boolean | Prisma.CustomerNote$authorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customerNote"]>
 
 export type CustomerNoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   authorId?: boolean
   body?: boolean
@@ -700,10 +870,12 @@ export type CustomerNoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   author?: boolean | Prisma.CustomerNote$authorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customerNote"]>
 
 export type CustomerNoteSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   customerId?: boolean
   authorId?: boolean
   body?: boolean
@@ -712,18 +884,21 @@ export type CustomerNoteSelectScalar = {
   createdAt?: boolean
 }
 
-export type CustomerNoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "authorId" | "body" | "isPinned" | "sortOrder" | "createdAt", ExtArgs["result"]["customerNote"]>
+export type CustomerNoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "customerId" | "authorId" | "body" | "isPinned" | "sortOrder" | "createdAt", ExtArgs["result"]["customerNote"]>
 export type CustomerNoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   author?: boolean | Prisma.CustomerNote$authorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type CustomerNoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   author?: boolean | Prisma.CustomerNote$authorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type CustomerNoteIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerProfileDefaultArgs<ExtArgs>
   author?: boolean | Prisma.CustomerNote$authorArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $CustomerNotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -731,9 +906,11 @@ export type $CustomerNotePayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     customer: Prisma.$CustomerProfilePayload<ExtArgs>
     author: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     customerId: string
     authorId: string | null
     body: string
@@ -1139,6 +1316,7 @@ export interface Prisma__CustomerNoteClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.CustomerProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   author<T extends Prisma.CustomerNote$authorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerNote$authorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1169,6 +1347,7 @@ export interface Prisma__CustomerNoteClient<T, Null = never, ExtArgs extends run
  */
 export interface CustomerNoteFieldRefs {
   readonly id: Prisma.FieldRef<"CustomerNote", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"CustomerNote", 'String'>
   readonly customerId: Prisma.FieldRef<"CustomerNote", 'String'>
   readonly authorId: Prisma.FieldRef<"CustomerNote", 'String'>
   readonly body: Prisma.FieldRef<"CustomerNote", 'String'>

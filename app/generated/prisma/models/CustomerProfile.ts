@@ -318,7 +318,7 @@ export type CustomerProfileWhereInput = {
   conversations?: Prisma.ConversationListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   reminders?: Prisma.ReminderListRelationFilter
-  loyaltyAccount?: Prisma.XOR<Prisma.LoyaltyAccountNullableScalarRelationFilter, Prisma.LoyaltyAccountWhereInput> | null
+  loyaltyAccounts?: Prisma.LoyaltyAccountListRelationFilter
   referredLoyalty?: Prisma.LoyaltyAccountListRelationFilter
   enquiries?: Prisma.EnquiryListRelationFilter
   feedback?: Prisma.FeedbackListRelationFilter
@@ -341,6 +341,7 @@ export type CustomerProfileWhereInput = {
   vaccinationConsents?: Prisma.VaccinationConsentListRelationFilter
   immunizationRecords?: Prisma.ImmunizationRecordListRelationFilter
   counsellingSessions?: Prisma.PreventiveCounsellingSessionListRelationFilter
+  pharmacies?: Prisma.CustomerPharmacyListRelationFilter
 }
 
 export type CustomerProfileOrderByWithRelationInput = {
@@ -375,7 +376,7 @@ export type CustomerProfileOrderByWithRelationInput = {
   conversations?: Prisma.ConversationOrderByRelationAggregateInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   reminders?: Prisma.ReminderOrderByRelationAggregateInput
-  loyaltyAccount?: Prisma.LoyaltyAccountOrderByWithRelationInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountOrderByRelationAggregateInput
   referredLoyalty?: Prisma.LoyaltyAccountOrderByRelationAggregateInput
   enquiries?: Prisma.EnquiryOrderByRelationAggregateInput
   feedback?: Prisma.FeedbackOrderByRelationAggregateInput
@@ -398,6 +399,7 @@ export type CustomerProfileOrderByWithRelationInput = {
   vaccinationConsents?: Prisma.VaccinationConsentOrderByRelationAggregateInput
   immunizationRecords?: Prisma.ImmunizationRecordOrderByRelationAggregateInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionOrderByRelationAggregateInput
+  pharmacies?: Prisma.CustomerPharmacyOrderByRelationAggregateInput
 }
 
 export type CustomerProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -435,7 +437,7 @@ export type CustomerProfileWhereUniqueInput = Prisma.AtLeast<{
   conversations?: Prisma.ConversationListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   reminders?: Prisma.ReminderListRelationFilter
-  loyaltyAccount?: Prisma.XOR<Prisma.LoyaltyAccountNullableScalarRelationFilter, Prisma.LoyaltyAccountWhereInput> | null
+  loyaltyAccounts?: Prisma.LoyaltyAccountListRelationFilter
   referredLoyalty?: Prisma.LoyaltyAccountListRelationFilter
   enquiries?: Prisma.EnquiryListRelationFilter
   feedback?: Prisma.FeedbackListRelationFilter
@@ -458,6 +460,7 @@ export type CustomerProfileWhereUniqueInput = Prisma.AtLeast<{
   vaccinationConsents?: Prisma.VaccinationConsentListRelationFilter
   immunizationRecords?: Prisma.ImmunizationRecordListRelationFilter
   counsellingSessions?: Prisma.PreventiveCounsellingSessionListRelationFilter
+  pharmacies?: Prisma.CustomerPharmacyListRelationFilter
 }, "id" | "userId">
 
 export type CustomerProfileOrderByWithAggregationInput = {
@@ -545,7 +548,7 @@ export type CustomerProfileCreateInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -568,6 +571,7 @@ export type CustomerProfileCreateInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateInput = {
@@ -601,7 +605,7 @@ export type CustomerProfileUncheckedCreateInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -624,6 +628,7 @@ export type CustomerProfileUncheckedCreateInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUpdateInput = {
@@ -657,7 +662,7 @@ export type CustomerProfileUpdateInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -680,6 +685,7 @@ export type CustomerProfileUpdateInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateInput = {
@@ -713,7 +719,7 @@ export type CustomerProfileUncheckedUpdateInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -736,6 +742,7 @@ export type CustomerProfileUncheckedUpdateInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateManyInput = {
@@ -807,6 +814,11 @@ export type CustomerProfileUncheckedUpdateManyInput = {
   onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CustomerProfileScalarRelationFilter = {
+  is?: Prisma.CustomerProfileWhereInput
+  isNot?: Prisma.CustomerProfileWhereInput
 }
 
 export type CustomerProfileNullableScalarRelationFilter = {
@@ -892,9 +904,18 @@ export type CustomerProfileMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type CustomerProfileScalarRelationFilter = {
-  is?: Prisma.CustomerProfileWhereInput
-  isNot?: Prisma.CustomerProfileWhereInput
+export type CustomerProfileCreateNestedOneWithoutPharmaciesInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutPharmaciesInput, Prisma.CustomerProfileUncheckedCreateWithoutPharmaciesInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutPharmaciesInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+}
+
+export type CustomerProfileUpdateOneRequiredWithoutPharmaciesNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutPharmaciesInput, Prisma.CustomerProfileUncheckedCreateWithoutPharmaciesInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutPharmaciesInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutPharmaciesInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutPharmaciesInput, Prisma.CustomerProfileUpdateWithoutPharmaciesInput>, Prisma.CustomerProfileUncheckedUpdateWithoutPharmaciesInput>
 }
 
 export type CustomerProfileCreateNestedOneWithoutUserInput = {
@@ -1080,9 +1101,9 @@ export type CustomerProfileUpdateOneRequiredWithoutRemindersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutRemindersInput, Prisma.CustomerProfileUpdateWithoutRemindersInput>, Prisma.CustomerProfileUncheckedUpdateWithoutRemindersInput>
 }
 
-export type CustomerProfileCreateNestedOneWithoutLoyaltyAccountInput = {
-  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutLoyaltyAccountInput, Prisma.CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput>
-  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutLoyaltyAccountInput
+export type CustomerProfileCreateNestedOneWithoutLoyaltyAccountsInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutLoyaltyAccountsInput, Prisma.CustomerProfileUncheckedCreateWithoutLoyaltyAccountsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutLoyaltyAccountsInput
   connect?: Prisma.CustomerProfileWhereUniqueInput
 }
 
@@ -1092,12 +1113,12 @@ export type CustomerProfileCreateNestedOneWithoutReferredLoyaltyInput = {
   connect?: Prisma.CustomerProfileWhereUniqueInput
 }
 
-export type CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutLoyaltyAccountInput, Prisma.CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput>
-  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutLoyaltyAccountInput
-  upsert?: Prisma.CustomerProfileUpsertWithoutLoyaltyAccountInput
+export type CustomerProfileUpdateOneRequiredWithoutLoyaltyAccountsNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutLoyaltyAccountsInput, Prisma.CustomerProfileUncheckedCreateWithoutLoyaltyAccountsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutLoyaltyAccountsInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutLoyaltyAccountsInput
   connect?: Prisma.CustomerProfileWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutLoyaltyAccountInput, Prisma.CustomerProfileUpdateWithoutLoyaltyAccountInput>, Prisma.CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutLoyaltyAccountsInput, Prisma.CustomerProfileUpdateWithoutLoyaltyAccountsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutLoyaltyAccountsInput>
 }
 
 export type CustomerProfileUpdateOneWithoutReferredLoyaltyNestedInput = {
@@ -1432,6 +1453,246 @@ export type CustomerProfileUpdateOneWithoutCounsellingSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutCounsellingSessionsInput, Prisma.CustomerProfileUpdateWithoutCounsellingSessionsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutCounsellingSessionsInput>
 }
 
+export type CustomerProfileCreateWithoutPharmaciesInput = {
+  id?: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProfileInput
+  preferences?: Prisma.CustomerPreferenceCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileUncheckedCreateWithoutPharmaciesInput = {
+  id?: string
+  userId: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileCreateOrConnectWithoutPharmaciesInput = {
+  where: Prisma.CustomerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutPharmaciesInput, Prisma.CustomerProfileUncheckedCreateWithoutPharmaciesInput>
+}
+
+export type CustomerProfileUpsertWithoutPharmaciesInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutPharmaciesInput, Prisma.CustomerProfileUncheckedUpdateWithoutPharmaciesInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutPharmaciesInput, Prisma.CustomerProfileUncheckedCreateWithoutPharmaciesInput>
+  where?: Prisma.CustomerProfileWhereInput
+}
+
+export type CustomerProfileUpdateToOneWithWhereWithoutPharmaciesInput = {
+  where?: Prisma.CustomerProfileWhereInput
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutPharmaciesInput, Prisma.CustomerProfileUncheckedUpdateWithoutPharmaciesInput>
+}
+
+export type CustomerProfileUpdateWithoutPharmaciesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
+  preferences?: Prisma.CustomerPreferenceUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileUncheckedUpdateWithoutPharmaciesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUncheckedUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
 export type CustomerProfileCreateWithoutUserInput = {
   id?: string
   fullName: string
@@ -1462,7 +1723,7 @@ export type CustomerProfileCreateWithoutUserInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -1485,6 +1746,7 @@ export type CustomerProfileCreateWithoutUserInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutUserInput = {
@@ -1517,7 +1779,7 @@ export type CustomerProfileUncheckedCreateWithoutUserInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -1540,6 +1802,7 @@ export type CustomerProfileUncheckedCreateWithoutUserInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutUserInput = {
@@ -1588,7 +1851,7 @@ export type CustomerProfileUpdateWithoutUserInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -1611,6 +1874,7 @@ export type CustomerProfileUpdateWithoutUserInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutUserInput = {
@@ -1643,7 +1907,7 @@ export type CustomerProfileUncheckedUpdateWithoutUserInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -1666,6 +1930,7 @@ export type CustomerProfileUncheckedUpdateWithoutUserInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutCaregiversInput = {
@@ -1698,7 +1963,7 @@ export type CustomerProfileCreateWithoutCaregiversInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -1721,6 +1986,7 @@ export type CustomerProfileCreateWithoutCaregiversInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutCaregiversInput = {
@@ -1753,7 +2019,7 @@ export type CustomerProfileUncheckedCreateWithoutCaregiversInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -1776,6 +2042,7 @@ export type CustomerProfileUncheckedCreateWithoutCaregiversInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutCaregiversInput = {
@@ -1824,7 +2091,7 @@ export type CustomerProfileUpdateWithoutCaregiversInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -1847,6 +2114,7 @@ export type CustomerProfileUpdateWithoutCaregiversInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutCaregiversInput = {
@@ -1879,7 +2147,7 @@ export type CustomerProfileUncheckedUpdateWithoutCaregiversInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -1902,6 +2170,7 @@ export type CustomerProfileUncheckedUpdateWithoutCaregiversInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPreferencesInput = {
@@ -1934,7 +2203,7 @@ export type CustomerProfileCreateWithoutPreferencesInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -1957,6 +2226,7 @@ export type CustomerProfileCreateWithoutPreferencesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPreferencesInput = {
@@ -1989,7 +2259,7 @@ export type CustomerProfileUncheckedCreateWithoutPreferencesInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -2012,6 +2282,7 @@ export type CustomerProfileUncheckedCreateWithoutPreferencesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPreferencesInput = {
@@ -2060,7 +2331,7 @@ export type CustomerProfileUpdateWithoutPreferencesInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -2083,6 +2354,7 @@ export type CustomerProfileUpdateWithoutPreferencesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPreferencesInput = {
@@ -2115,7 +2387,7 @@ export type CustomerProfileUncheckedUpdateWithoutPreferencesInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -2138,6 +2410,7 @@ export type CustomerProfileUncheckedUpdateWithoutPreferencesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPrescriptionsInput = {
@@ -2170,7 +2443,7 @@ export type CustomerProfileCreateWithoutPrescriptionsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -2193,6 +2466,7 @@ export type CustomerProfileCreateWithoutPrescriptionsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPrescriptionsInput = {
@@ -2225,7 +2499,7 @@ export type CustomerProfileUncheckedCreateWithoutPrescriptionsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -2248,6 +2522,7 @@ export type CustomerProfileUncheckedCreateWithoutPrescriptionsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPrescriptionsInput = {
@@ -2296,7 +2571,7 @@ export type CustomerProfileUpdateWithoutPrescriptionsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -2319,6 +2594,7 @@ export type CustomerProfileUpdateWithoutPrescriptionsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPrescriptionsInput = {
@@ -2351,7 +2627,7 @@ export type CustomerProfileUncheckedUpdateWithoutPrescriptionsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -2374,6 +2650,7 @@ export type CustomerProfileUncheckedUpdateWithoutPrescriptionsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutRefillRequestsInput = {
@@ -2406,7 +2683,7 @@ export type CustomerProfileCreateWithoutRefillRequestsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -2429,6 +2706,7 @@ export type CustomerProfileCreateWithoutRefillRequestsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutRefillRequestsInput = {
@@ -2461,7 +2739,7 @@ export type CustomerProfileUncheckedCreateWithoutRefillRequestsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -2484,6 +2762,7 @@ export type CustomerProfileUncheckedCreateWithoutRefillRequestsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutRefillRequestsInput = {
@@ -2532,7 +2811,7 @@ export type CustomerProfileUpdateWithoutRefillRequestsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -2555,6 +2834,7 @@ export type CustomerProfileUpdateWithoutRefillRequestsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutRefillRequestsInput = {
@@ -2587,7 +2867,7 @@ export type CustomerProfileUncheckedUpdateWithoutRefillRequestsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -2610,6 +2890,7 @@ export type CustomerProfileUncheckedUpdateWithoutRefillRequestsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutTimelineEventsInput = {
@@ -2642,7 +2923,7 @@ export type CustomerProfileCreateWithoutTimelineEventsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -2665,6 +2946,7 @@ export type CustomerProfileCreateWithoutTimelineEventsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutTimelineEventsInput = {
@@ -2697,7 +2979,7 @@ export type CustomerProfileUncheckedCreateWithoutTimelineEventsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -2720,6 +3002,7 @@ export type CustomerProfileUncheckedCreateWithoutTimelineEventsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutTimelineEventsInput = {
@@ -2768,7 +3051,7 @@ export type CustomerProfileUpdateWithoutTimelineEventsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -2791,6 +3074,7 @@ export type CustomerProfileUpdateWithoutTimelineEventsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutTimelineEventsInput = {
@@ -2823,7 +3107,7 @@ export type CustomerProfileUncheckedUpdateWithoutTimelineEventsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -2846,6 +3130,7 @@ export type CustomerProfileUncheckedUpdateWithoutTimelineEventsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSegmentsInput = {
@@ -2878,7 +3163,7 @@ export type CustomerProfileCreateWithoutSegmentsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -2901,6 +3186,7 @@ export type CustomerProfileCreateWithoutSegmentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSegmentsInput = {
@@ -2933,7 +3219,7 @@ export type CustomerProfileUncheckedCreateWithoutSegmentsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -2956,6 +3242,7 @@ export type CustomerProfileUncheckedCreateWithoutSegmentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSegmentsInput = {
@@ -3004,7 +3291,7 @@ export type CustomerProfileUpdateWithoutSegmentsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -3027,6 +3314,7 @@ export type CustomerProfileUpdateWithoutSegmentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSegmentsInput = {
@@ -3059,7 +3347,7 @@ export type CustomerProfileUncheckedUpdateWithoutSegmentsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -3082,6 +3370,7 @@ export type CustomerProfileUncheckedUpdateWithoutSegmentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutConversationsInput = {
@@ -3114,7 +3403,7 @@ export type CustomerProfileCreateWithoutConversationsInput = {
   segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -3137,6 +3426,7 @@ export type CustomerProfileCreateWithoutConversationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutConversationsInput = {
@@ -3169,7 +3459,7 @@ export type CustomerProfileUncheckedCreateWithoutConversationsInput = {
   segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -3192,6 +3482,7 @@ export type CustomerProfileUncheckedCreateWithoutConversationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutConversationsInput = {
@@ -3240,7 +3531,7 @@ export type CustomerProfileUpdateWithoutConversationsInput = {
   segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -3263,6 +3554,7 @@ export type CustomerProfileUpdateWithoutConversationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutConversationsInput = {
@@ -3295,7 +3587,7 @@ export type CustomerProfileUncheckedUpdateWithoutConversationsInput = {
   segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -3318,6 +3610,7 @@ export type CustomerProfileUncheckedUpdateWithoutConversationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutNotificationsInput = {
@@ -3350,7 +3643,7 @@ export type CustomerProfileCreateWithoutNotificationsInput = {
   segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -3373,6 +3666,7 @@ export type CustomerProfileCreateWithoutNotificationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutNotificationsInput = {
@@ -3405,7 +3699,7 @@ export type CustomerProfileUncheckedCreateWithoutNotificationsInput = {
   segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -3428,6 +3722,7 @@ export type CustomerProfileUncheckedCreateWithoutNotificationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutNotificationsInput = {
@@ -3476,7 +3771,7 @@ export type CustomerProfileUpdateWithoutNotificationsInput = {
   segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -3499,6 +3794,7 @@ export type CustomerProfileUpdateWithoutNotificationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutNotificationsInput = {
@@ -3531,7 +3827,7 @@ export type CustomerProfileUncheckedUpdateWithoutNotificationsInput = {
   segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -3554,6 +3850,7 @@ export type CustomerProfileUncheckedUpdateWithoutNotificationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutRemindersInput = {
@@ -3586,7 +3883,7 @@ export type CustomerProfileCreateWithoutRemindersInput = {
   segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -3609,6 +3906,7 @@ export type CustomerProfileCreateWithoutRemindersInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutRemindersInput = {
@@ -3641,7 +3939,7 @@ export type CustomerProfileUncheckedCreateWithoutRemindersInput = {
   segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -3664,6 +3962,7 @@ export type CustomerProfileUncheckedCreateWithoutRemindersInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutRemindersInput = {
@@ -3712,7 +4011,7 @@ export type CustomerProfileUpdateWithoutRemindersInput = {
   segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -3735,6 +4034,7 @@ export type CustomerProfileUpdateWithoutRemindersInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutRemindersInput = {
@@ -3767,7 +4067,7 @@ export type CustomerProfileUncheckedUpdateWithoutRemindersInput = {
   segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -3790,9 +4090,10 @@ export type CustomerProfileUncheckedUpdateWithoutRemindersInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
-export type CustomerProfileCreateWithoutLoyaltyAccountInput = {
+export type CustomerProfileCreateWithoutLoyaltyAccountsInput = {
   id?: string
   fullName: string
   phone?: string | null
@@ -3845,9 +4146,10 @@ export type CustomerProfileCreateWithoutLoyaltyAccountInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
-export type CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput = {
+export type CustomerProfileUncheckedCreateWithoutLoyaltyAccountsInput = {
   id?: string
   userId: string
   fullName: string
@@ -3900,11 +4202,12 @@ export type CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
-export type CustomerProfileCreateOrConnectWithoutLoyaltyAccountInput = {
+export type CustomerProfileCreateOrConnectWithoutLoyaltyAccountsInput = {
   where: Prisma.CustomerProfileWhereUniqueInput
-  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutLoyaltyAccountInput, Prisma.CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutLoyaltyAccountsInput, Prisma.CustomerProfileUncheckedCreateWithoutLoyaltyAccountsInput>
 }
 
 export type CustomerProfileCreateWithoutReferredLoyaltyInput = {
@@ -3938,7 +4241,7 @@ export type CustomerProfileCreateWithoutReferredLoyaltyInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
   aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
@@ -3960,6 +4263,7 @@ export type CustomerProfileCreateWithoutReferredLoyaltyInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutReferredLoyaltyInput = {
@@ -3993,7 +4297,7 @@ export type CustomerProfileUncheckedCreateWithoutReferredLoyaltyInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
   aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
@@ -4015,6 +4319,7 @@ export type CustomerProfileUncheckedCreateWithoutReferredLoyaltyInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutReferredLoyaltyInput = {
@@ -4022,18 +4327,18 @@ export type CustomerProfileCreateOrConnectWithoutReferredLoyaltyInput = {
   create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutReferredLoyaltyInput, Prisma.CustomerProfileUncheckedCreateWithoutReferredLoyaltyInput>
 }
 
-export type CustomerProfileUpsertWithoutLoyaltyAccountInput = {
-  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutLoyaltyAccountInput, Prisma.CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput>
-  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutLoyaltyAccountInput, Prisma.CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput>
+export type CustomerProfileUpsertWithoutLoyaltyAccountsInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutLoyaltyAccountsInput, Prisma.CustomerProfileUncheckedUpdateWithoutLoyaltyAccountsInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutLoyaltyAccountsInput, Prisma.CustomerProfileUncheckedCreateWithoutLoyaltyAccountsInput>
   where?: Prisma.CustomerProfileWhereInput
 }
 
-export type CustomerProfileUpdateToOneWithWhereWithoutLoyaltyAccountInput = {
+export type CustomerProfileUpdateToOneWithWhereWithoutLoyaltyAccountsInput = {
   where?: Prisma.CustomerProfileWhereInput
-  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutLoyaltyAccountInput, Prisma.CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput>
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutLoyaltyAccountsInput, Prisma.CustomerProfileUncheckedUpdateWithoutLoyaltyAccountsInput>
 }
 
-export type CustomerProfileUpdateWithoutLoyaltyAccountInput = {
+export type CustomerProfileUpdateWithoutLoyaltyAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4086,9 +4391,10 @@ export type CustomerProfileUpdateWithoutLoyaltyAccountInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
-export type CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput = {
+export type CustomerProfileUncheckedUpdateWithoutLoyaltyAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -4141,6 +4447,7 @@ export type CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUpsertWithoutReferredLoyaltyInput = {
@@ -4185,7 +4492,7 @@ export type CustomerProfileUpdateWithoutReferredLoyaltyInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
   aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
@@ -4207,6 +4514,7 @@ export type CustomerProfileUpdateWithoutReferredLoyaltyInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutReferredLoyaltyInput = {
@@ -4240,7 +4548,7 @@ export type CustomerProfileUncheckedUpdateWithoutReferredLoyaltyInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
   aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
@@ -4262,6 +4570,7 @@ export type CustomerProfileUncheckedUpdateWithoutReferredLoyaltyInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutEnquiriesInput = {
@@ -4295,7 +4604,7 @@ export type CustomerProfileCreateWithoutEnquiriesInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
   aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
@@ -4317,6 +4626,7 @@ export type CustomerProfileCreateWithoutEnquiriesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutEnquiriesInput = {
@@ -4350,7 +4660,7 @@ export type CustomerProfileUncheckedCreateWithoutEnquiriesInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
   aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
@@ -4372,6 +4682,7 @@ export type CustomerProfileUncheckedCreateWithoutEnquiriesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutEnquiriesInput = {
@@ -4421,7 +4732,7 @@ export type CustomerProfileUpdateWithoutEnquiriesInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
   aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
@@ -4443,6 +4754,7 @@ export type CustomerProfileUpdateWithoutEnquiriesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutEnquiriesInput = {
@@ -4476,7 +4788,7 @@ export type CustomerProfileUncheckedUpdateWithoutEnquiriesInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
   aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
@@ -4498,6 +4810,7 @@ export type CustomerProfileUncheckedUpdateWithoutEnquiriesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutFeedbackInput = {
@@ -4531,7 +4844,7 @@ export type CustomerProfileCreateWithoutFeedbackInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
@@ -4553,6 +4866,7 @@ export type CustomerProfileCreateWithoutFeedbackInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutFeedbackInput = {
@@ -4586,7 +4900,7 @@ export type CustomerProfileUncheckedCreateWithoutFeedbackInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
@@ -4608,6 +4922,7 @@ export type CustomerProfileUncheckedCreateWithoutFeedbackInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutFeedbackInput = {
@@ -4657,7 +4972,7 @@ export type CustomerProfileUpdateWithoutFeedbackInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
@@ -4679,6 +4994,7 @@ export type CustomerProfileUpdateWithoutFeedbackInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutFeedbackInput = {
@@ -4712,7 +5028,7 @@ export type CustomerProfileUncheckedUpdateWithoutFeedbackInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
@@ -4734,6 +5050,7 @@ export type CustomerProfileUncheckedUpdateWithoutFeedbackInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAiConversationsInput = {
@@ -4767,7 +5084,7 @@ export type CustomerProfileCreateWithoutAiConversationsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -4789,6 +5106,7 @@ export type CustomerProfileCreateWithoutAiConversationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAiConversationsInput = {
@@ -4822,7 +5140,7 @@ export type CustomerProfileUncheckedCreateWithoutAiConversationsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -4844,6 +5162,7 @@ export type CustomerProfileUncheckedCreateWithoutAiConversationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAiConversationsInput = {
@@ -4893,7 +5212,7 @@ export type CustomerProfileUpdateWithoutAiConversationsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -4915,6 +5234,7 @@ export type CustomerProfileUpdateWithoutAiConversationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAiConversationsInput = {
@@ -4948,7 +5268,7 @@ export type CustomerProfileUncheckedUpdateWithoutAiConversationsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -4970,6 +5290,7 @@ export type CustomerProfileUncheckedUpdateWithoutAiConversationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutStaffNotesInput = {
@@ -5003,7 +5324,7 @@ export type CustomerProfileCreateWithoutStaffNotesInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -5025,6 +5346,7 @@ export type CustomerProfileCreateWithoutStaffNotesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutStaffNotesInput = {
@@ -5058,7 +5380,7 @@ export type CustomerProfileUncheckedCreateWithoutStaffNotesInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -5080,6 +5402,7 @@ export type CustomerProfileUncheckedCreateWithoutStaffNotesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutStaffNotesInput = {
@@ -5129,7 +5452,7 @@ export type CustomerProfileUpdateWithoutStaffNotesInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -5151,6 +5474,7 @@ export type CustomerProfileUpdateWithoutStaffNotesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutStaffNotesInput = {
@@ -5184,7 +5508,7 @@ export type CustomerProfileUncheckedUpdateWithoutStaffNotesInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -5206,6 +5530,7 @@ export type CustomerProfileUncheckedUpdateWithoutStaffNotesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceLogsInput = {
@@ -5239,7 +5564,7 @@ export type CustomerProfileCreateWithoutAdherenceLogsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -5261,6 +5586,7 @@ export type CustomerProfileCreateWithoutAdherenceLogsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceLogsInput = {
@@ -5294,7 +5620,7 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceLogsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -5316,6 +5642,7 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceLogsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceLogsInput = {
@@ -5365,7 +5692,7 @@ export type CustomerProfileUpdateWithoutAdherenceLogsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -5387,6 +5714,7 @@ export type CustomerProfileUpdateWithoutAdherenceLogsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceLogsInput = {
@@ -5420,7 +5748,7 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceLogsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -5442,6 +5770,7 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceLogsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutMedicationSchedulesInput = {
@@ -5475,7 +5804,7 @@ export type CustomerProfileCreateWithoutMedicationSchedulesInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -5497,6 +5826,7 @@ export type CustomerProfileCreateWithoutMedicationSchedulesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutMedicationSchedulesInput = {
@@ -5530,7 +5860,7 @@ export type CustomerProfileUncheckedCreateWithoutMedicationSchedulesInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -5552,6 +5882,7 @@ export type CustomerProfileUncheckedCreateWithoutMedicationSchedulesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutMedicationSchedulesInput = {
@@ -5601,7 +5932,7 @@ export type CustomerProfileUpdateWithoutMedicationSchedulesInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -5623,6 +5954,7 @@ export type CustomerProfileUpdateWithoutMedicationSchedulesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutMedicationSchedulesInput = {
@@ -5656,7 +5988,7 @@ export type CustomerProfileUncheckedUpdateWithoutMedicationSchedulesInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -5678,6 +6010,7 @@ export type CustomerProfileUncheckedUpdateWithoutMedicationSchedulesInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutDoseLogsInput = {
@@ -5711,7 +6044,7 @@ export type CustomerProfileCreateWithoutDoseLogsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -5733,6 +6066,7 @@ export type CustomerProfileCreateWithoutDoseLogsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutDoseLogsInput = {
@@ -5766,7 +6100,7 @@ export type CustomerProfileUncheckedCreateWithoutDoseLogsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -5788,6 +6122,7 @@ export type CustomerProfileUncheckedCreateWithoutDoseLogsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutDoseLogsInput = {
@@ -5837,7 +6172,7 @@ export type CustomerProfileUpdateWithoutDoseLogsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -5859,6 +6194,7 @@ export type CustomerProfileUpdateWithoutDoseLogsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutDoseLogsInput = {
@@ -5892,7 +6228,7 @@ export type CustomerProfileUncheckedUpdateWithoutDoseLogsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -5914,6 +6250,7 @@ export type CustomerProfileUncheckedUpdateWithoutDoseLogsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceEscalationsInput = {
@@ -5947,7 +6284,7 @@ export type CustomerProfileCreateWithoutAdherenceEscalationsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -5969,6 +6306,7 @@ export type CustomerProfileCreateWithoutAdherenceEscalationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceEscalationsInput = {
@@ -6002,7 +6340,7 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceEscalationsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -6024,6 +6362,7 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceEscalationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceEscalationsInput = {
@@ -6073,7 +6412,7 @@ export type CustomerProfileUpdateWithoutAdherenceEscalationsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -6095,6 +6434,7 @@ export type CustomerProfileUpdateWithoutAdherenceEscalationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceEscalationsInput = {
@@ -6128,7 +6468,7 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceEscalationsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -6150,6 +6490,7 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceEscalationsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSyncEnrollmentInput = {
@@ -6183,7 +6524,7 @@ export type CustomerProfileCreateWithoutSyncEnrollmentInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -6205,6 +6546,7 @@ export type CustomerProfileCreateWithoutSyncEnrollmentInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSyncEnrollmentInput = {
@@ -6238,7 +6580,7 @@ export type CustomerProfileUncheckedCreateWithoutSyncEnrollmentInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -6260,6 +6602,7 @@ export type CustomerProfileUncheckedCreateWithoutSyncEnrollmentInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSyncEnrollmentInput = {
@@ -6309,7 +6652,7 @@ export type CustomerProfileUpdateWithoutSyncEnrollmentInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -6331,6 +6674,7 @@ export type CustomerProfileUpdateWithoutSyncEnrollmentInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSyncEnrollmentInput = {
@@ -6364,7 +6708,7 @@ export type CustomerProfileUncheckedUpdateWithoutSyncEnrollmentInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -6386,6 +6730,7 @@ export type CustomerProfileUncheckedUpdateWithoutSyncEnrollmentInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceFollowUpsInput = {
@@ -6419,7 +6764,7 @@ export type CustomerProfileCreateWithoutAdherenceFollowUpsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -6441,6 +6786,7 @@ export type CustomerProfileCreateWithoutAdherenceFollowUpsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceFollowUpsInput = {
@@ -6474,7 +6820,7 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceFollowUpsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -6496,6 +6842,7 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceFollowUpsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceFollowUpsInput = {
@@ -6545,7 +6892,7 @@ export type CustomerProfileUpdateWithoutAdherenceFollowUpsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -6567,6 +6914,7 @@ export type CustomerProfileUpdateWithoutAdherenceFollowUpsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceFollowUpsInput = {
@@ -6600,7 +6948,7 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceFollowUpsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -6622,6 +6970,7 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceFollowUpsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutOrdersInput = {
@@ -6655,7 +7004,7 @@ export type CustomerProfileCreateWithoutOrdersInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -6677,6 +7026,7 @@ export type CustomerProfileCreateWithoutOrdersInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutOrdersInput = {
@@ -6710,7 +7060,7 @@ export type CustomerProfileUncheckedCreateWithoutOrdersInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -6732,6 +7082,7 @@ export type CustomerProfileUncheckedCreateWithoutOrdersInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutOrdersInput = {
@@ -6781,7 +7132,7 @@ export type CustomerProfileUpdateWithoutOrdersInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -6803,6 +7154,7 @@ export type CustomerProfileUpdateWithoutOrdersInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutOrdersInput = {
@@ -6836,7 +7188,7 @@ export type CustomerProfileUncheckedUpdateWithoutOrdersInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -6858,6 +7210,7 @@ export type CustomerProfileUncheckedUpdateWithoutOrdersInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPaymentsInput = {
@@ -6891,7 +7244,7 @@ export type CustomerProfileCreateWithoutPaymentsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -6913,6 +7266,7 @@ export type CustomerProfileCreateWithoutPaymentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPaymentsInput = {
@@ -6946,7 +7300,7 @@ export type CustomerProfileUncheckedCreateWithoutPaymentsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -6968,6 +7322,7 @@ export type CustomerProfileUncheckedCreateWithoutPaymentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPaymentsInput = {
@@ -7017,7 +7372,7 @@ export type CustomerProfileUpdateWithoutPaymentsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -7039,6 +7394,7 @@ export type CustomerProfileUpdateWithoutPaymentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPaymentsInput = {
@@ -7072,7 +7428,7 @@ export type CustomerProfileUncheckedUpdateWithoutPaymentsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -7094,6 +7450,7 @@ export type CustomerProfileUncheckedUpdateWithoutPaymentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutServiceBookingsInput = {
@@ -7127,7 +7484,7 @@ export type CustomerProfileCreateWithoutServiceBookingsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -7149,6 +7506,7 @@ export type CustomerProfileCreateWithoutServiceBookingsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutServiceBookingsInput = {
@@ -7182,7 +7540,7 @@ export type CustomerProfileUncheckedCreateWithoutServiceBookingsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -7204,6 +7562,7 @@ export type CustomerProfileUncheckedCreateWithoutServiceBookingsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutServiceBookingsInput = {
@@ -7253,7 +7612,7 @@ export type CustomerProfileUpdateWithoutServiceBookingsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -7275,6 +7634,7 @@ export type CustomerProfileUpdateWithoutServiceBookingsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutServiceBookingsInput = {
@@ -7308,7 +7668,7 @@ export type CustomerProfileUncheckedUpdateWithoutServiceBookingsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -7330,6 +7690,7 @@ export type CustomerProfileUncheckedUpdateWithoutServiceBookingsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSymptomSessionsInput = {
@@ -7363,7 +7724,7 @@ export type CustomerProfileCreateWithoutSymptomSessionsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -7385,6 +7746,7 @@ export type CustomerProfileCreateWithoutSymptomSessionsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSymptomSessionsInput = {
@@ -7418,7 +7780,7 @@ export type CustomerProfileUncheckedCreateWithoutSymptomSessionsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -7440,6 +7802,7 @@ export type CustomerProfileUncheckedCreateWithoutSymptomSessionsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSymptomSessionsInput = {
@@ -7489,7 +7852,7 @@ export type CustomerProfileUpdateWithoutSymptomSessionsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -7511,6 +7874,7 @@ export type CustomerProfileUpdateWithoutSymptomSessionsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSymptomSessionsInput = {
@@ -7544,7 +7908,7 @@ export type CustomerProfileUncheckedUpdateWithoutSymptomSessionsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -7566,6 +7930,7 @@ export type CustomerProfileUncheckedUpdateWithoutSymptomSessionsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutScreeningRecordsInput = {
@@ -7599,7 +7964,7 @@ export type CustomerProfileCreateWithoutScreeningRecordsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -7621,6 +7986,7 @@ export type CustomerProfileCreateWithoutScreeningRecordsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutScreeningRecordsInput = {
@@ -7654,7 +8020,7 @@ export type CustomerProfileUncheckedCreateWithoutScreeningRecordsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -7676,6 +8042,7 @@ export type CustomerProfileUncheckedCreateWithoutScreeningRecordsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutScreeningRecordsInput = {
@@ -7725,7 +8092,7 @@ export type CustomerProfileUpdateWithoutScreeningRecordsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -7747,6 +8114,7 @@ export type CustomerProfileUpdateWithoutScreeningRecordsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput = {
@@ -7780,7 +8148,7 @@ export type CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -7802,6 +8170,7 @@ export type CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutClinicalReferralsInput = {
@@ -7835,7 +8204,7 @@ export type CustomerProfileCreateWithoutClinicalReferralsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -7857,6 +8226,7 @@ export type CustomerProfileCreateWithoutClinicalReferralsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutClinicalReferralsInput = {
@@ -7890,7 +8260,7 @@ export type CustomerProfileUncheckedCreateWithoutClinicalReferralsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -7912,6 +8282,7 @@ export type CustomerProfileUncheckedCreateWithoutClinicalReferralsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutClinicalReferralsInput = {
@@ -7961,7 +8332,7 @@ export type CustomerProfileUpdateWithoutClinicalReferralsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -7983,6 +8354,7 @@ export type CustomerProfileUpdateWithoutClinicalReferralsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput = {
@@ -8016,7 +8388,7 @@ export type CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -8038,6 +8410,7 @@ export type CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutImmunizationAppointmentsInput = {
@@ -8071,7 +8444,7 @@ export type CustomerProfileCreateWithoutImmunizationAppointmentsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -8093,6 +8466,7 @@ export type CustomerProfileCreateWithoutImmunizationAppointmentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutImmunizationAppointmentsInput = {
@@ -8126,7 +8500,7 @@ export type CustomerProfileUncheckedCreateWithoutImmunizationAppointmentsInput =
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -8148,6 +8522,7 @@ export type CustomerProfileUncheckedCreateWithoutImmunizationAppointmentsInput =
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutImmunizationAppointmentsInput = {
@@ -8197,7 +8572,7 @@ export type CustomerProfileUpdateWithoutImmunizationAppointmentsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -8219,6 +8594,7 @@ export type CustomerProfileUpdateWithoutImmunizationAppointmentsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutImmunizationAppointmentsInput = {
@@ -8252,7 +8628,7 @@ export type CustomerProfileUncheckedUpdateWithoutImmunizationAppointmentsInput =
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -8274,6 +8650,7 @@ export type CustomerProfileUncheckedUpdateWithoutImmunizationAppointmentsInput =
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPreVaccinationScreeningsInput = {
@@ -8307,7 +8684,7 @@ export type CustomerProfileCreateWithoutPreVaccinationScreeningsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -8329,6 +8706,7 @@ export type CustomerProfileCreateWithoutPreVaccinationScreeningsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPreVaccinationScreeningsInput = {
@@ -8362,7 +8740,7 @@ export type CustomerProfileUncheckedCreateWithoutPreVaccinationScreeningsInput =
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -8384,6 +8762,7 @@ export type CustomerProfileUncheckedCreateWithoutPreVaccinationScreeningsInput =
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPreVaccinationScreeningsInput = {
@@ -8433,7 +8812,7 @@ export type CustomerProfileUpdateWithoutPreVaccinationScreeningsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -8455,6 +8834,7 @@ export type CustomerProfileUpdateWithoutPreVaccinationScreeningsInput = {
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPreVaccinationScreeningsInput = {
@@ -8488,7 +8868,7 @@ export type CustomerProfileUncheckedUpdateWithoutPreVaccinationScreeningsInput =
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -8510,6 +8890,7 @@ export type CustomerProfileUncheckedUpdateWithoutPreVaccinationScreeningsInput =
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutVaccinationConsentsInput = {
@@ -8543,7 +8924,7 @@ export type CustomerProfileCreateWithoutVaccinationConsentsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -8565,6 +8946,7 @@ export type CustomerProfileCreateWithoutVaccinationConsentsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutVaccinationConsentsInput = {
@@ -8598,7 +8980,7 @@ export type CustomerProfileUncheckedCreateWithoutVaccinationConsentsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -8620,6 +9002,7 @@ export type CustomerProfileUncheckedCreateWithoutVaccinationConsentsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutVaccinationConsentsInput = {
@@ -8669,7 +9052,7 @@ export type CustomerProfileUpdateWithoutVaccinationConsentsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -8691,6 +9074,7 @@ export type CustomerProfileUpdateWithoutVaccinationConsentsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutVaccinationConsentsInput = {
@@ -8724,7 +9108,7 @@ export type CustomerProfileUncheckedUpdateWithoutVaccinationConsentsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -8746,6 +9130,7 @@ export type CustomerProfileUncheckedUpdateWithoutVaccinationConsentsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutImmunizationRecordsInput = {
@@ -8779,7 +9164,7 @@ export type CustomerProfileCreateWithoutImmunizationRecordsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -8801,6 +9186,7 @@ export type CustomerProfileCreateWithoutImmunizationRecordsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutImmunizationRecordsInput = {
@@ -8834,7 +9220,7 @@ export type CustomerProfileUncheckedCreateWithoutImmunizationRecordsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -8856,6 +9242,7 @@ export type CustomerProfileUncheckedCreateWithoutImmunizationRecordsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutImmunizationRecordsInput = {
@@ -8905,7 +9292,7 @@ export type CustomerProfileUpdateWithoutImmunizationRecordsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -8927,6 +9314,7 @@ export type CustomerProfileUpdateWithoutImmunizationRecordsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutImmunizationRecordsInput = {
@@ -8960,7 +9348,7 @@ export type CustomerProfileUncheckedUpdateWithoutImmunizationRecordsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -8982,6 +9370,7 @@ export type CustomerProfileUncheckedUpdateWithoutImmunizationRecordsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutCounsellingSessionsInput = {
@@ -9015,7 +9404,7 @@ export type CustomerProfileCreateWithoutCounsellingSessionsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
@@ -9037,6 +9426,7 @@ export type CustomerProfileCreateWithoutCounsellingSessionsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
   vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutCounsellingSessionsInput = {
@@ -9070,7 +9460,7 @@ export type CustomerProfileUncheckedCreateWithoutCounsellingSessionsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutCustomerInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
   enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
   feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
@@ -9092,6 +9482,7 @@ export type CustomerProfileUncheckedCreateWithoutCounsellingSessionsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutCounsellingSessionsInput = {
@@ -9141,7 +9532,7 @@ export type CustomerProfileUpdateWithoutCounsellingSessionsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
@@ -9163,6 +9554,7 @@ export type CustomerProfileUpdateWithoutCounsellingSessionsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
   vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutCounsellingSessionsInput = {
@@ -9196,7 +9588,7 @@ export type CustomerProfileUncheckedUpdateWithoutCounsellingSessionsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  loyaltyAccounts?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutCustomerNestedInput
   referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
   enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
   feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
@@ -9218,6 +9610,7 @@ export type CustomerProfileUncheckedUpdateWithoutCounsellingSessionsInput = {
   preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
   vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
   immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  pharmacies?: Prisma.CustomerPharmacyUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 
@@ -9234,6 +9627,7 @@ export type CustomerProfileCountOutputType = {
   conversations: number
   notifications: number
   reminders: number
+  loyaltyAccounts: number
   referredLoyalty: number
   enquiries: number
   feedback: number
@@ -9255,6 +9649,7 @@ export type CustomerProfileCountOutputType = {
   vaccinationConsents: number
   immunizationRecords: number
   counsellingSessions: number
+  pharmacies: number
 }
 
 export type CustomerProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -9266,6 +9661,7 @@ export type CustomerProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.E
   conversations?: boolean | CustomerProfileCountOutputTypeCountConversationsArgs
   notifications?: boolean | CustomerProfileCountOutputTypeCountNotificationsArgs
   reminders?: boolean | CustomerProfileCountOutputTypeCountRemindersArgs
+  loyaltyAccounts?: boolean | CustomerProfileCountOutputTypeCountLoyaltyAccountsArgs
   referredLoyalty?: boolean | CustomerProfileCountOutputTypeCountReferredLoyaltyArgs
   enquiries?: boolean | CustomerProfileCountOutputTypeCountEnquiriesArgs
   feedback?: boolean | CustomerProfileCountOutputTypeCountFeedbackArgs
@@ -9287,6 +9683,7 @@ export type CustomerProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.E
   vaccinationConsents?: boolean | CustomerProfileCountOutputTypeCountVaccinationConsentsArgs
   immunizationRecords?: boolean | CustomerProfileCountOutputTypeCountImmunizationRecordsArgs
   counsellingSessions?: boolean | CustomerProfileCountOutputTypeCountCounsellingSessionsArgs
+  pharmacies?: boolean | CustomerProfileCountOutputTypeCountPharmaciesArgs
 }
 
 /**
@@ -9353,6 +9750,13 @@ export type CustomerProfileCountOutputTypeCountNotificationsArgs<ExtArgs extends
  */
 export type CustomerProfileCountOutputTypeCountRemindersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ReminderWhereInput
+}
+
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountLoyaltyAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LoyaltyAccountWhereInput
 }
 
 /**
@@ -9502,6 +9906,13 @@ export type CustomerProfileCountOutputTypeCountCounsellingSessionsArgs<ExtArgs e
   where?: Prisma.PreventiveCounsellingSessionWhereInput
 }
 
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountPharmaciesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CustomerPharmacyWhereInput
+}
+
 
 export type CustomerProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -9535,7 +9946,7 @@ export type CustomerProfileSelect<ExtArgs extends runtime.Types.Extensions.Inter
   conversations?: boolean | Prisma.CustomerProfile$conversationsArgs<ExtArgs>
   notifications?: boolean | Prisma.CustomerProfile$notificationsArgs<ExtArgs>
   reminders?: boolean | Prisma.CustomerProfile$remindersArgs<ExtArgs>
-  loyaltyAccount?: boolean | Prisma.CustomerProfile$loyaltyAccountArgs<ExtArgs>
+  loyaltyAccounts?: boolean | Prisma.CustomerProfile$loyaltyAccountsArgs<ExtArgs>
   referredLoyalty?: boolean | Prisma.CustomerProfile$referredLoyaltyArgs<ExtArgs>
   enquiries?: boolean | Prisma.CustomerProfile$enquiriesArgs<ExtArgs>
   feedback?: boolean | Prisma.CustomerProfile$feedbackArgs<ExtArgs>
@@ -9558,6 +9969,7 @@ export type CustomerProfileSelect<ExtArgs extends runtime.Types.Extensions.Inter
   vaccinationConsents?: boolean | Prisma.CustomerProfile$vaccinationConsentsArgs<ExtArgs>
   immunizationRecords?: boolean | Prisma.CustomerProfile$immunizationRecordsArgs<ExtArgs>
   counsellingSessions?: boolean | Prisma.CustomerProfile$counsellingSessionsArgs<ExtArgs>
+  pharmacies?: boolean | Prisma.CustomerProfile$pharmaciesArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customerProfile"]>
 
@@ -9647,7 +10059,7 @@ export type CustomerProfileInclude<ExtArgs extends runtime.Types.Extensions.Inte
   conversations?: boolean | Prisma.CustomerProfile$conversationsArgs<ExtArgs>
   notifications?: boolean | Prisma.CustomerProfile$notificationsArgs<ExtArgs>
   reminders?: boolean | Prisma.CustomerProfile$remindersArgs<ExtArgs>
-  loyaltyAccount?: boolean | Prisma.CustomerProfile$loyaltyAccountArgs<ExtArgs>
+  loyaltyAccounts?: boolean | Prisma.CustomerProfile$loyaltyAccountsArgs<ExtArgs>
   referredLoyalty?: boolean | Prisma.CustomerProfile$referredLoyaltyArgs<ExtArgs>
   enquiries?: boolean | Prisma.CustomerProfile$enquiriesArgs<ExtArgs>
   feedback?: boolean | Prisma.CustomerProfile$feedbackArgs<ExtArgs>
@@ -9670,6 +10082,7 @@ export type CustomerProfileInclude<ExtArgs extends runtime.Types.Extensions.Inte
   vaccinationConsents?: boolean | Prisma.CustomerProfile$vaccinationConsentsArgs<ExtArgs>
   immunizationRecords?: boolean | Prisma.CustomerProfile$immunizationRecordsArgs<ExtArgs>
   counsellingSessions?: boolean | Prisma.CustomerProfile$counsellingSessionsArgs<ExtArgs>
+  pharmacies?: boolean | Prisma.CustomerProfile$pharmaciesArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CustomerProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -9692,7 +10105,7 @@ export type $CustomerProfilePayload<ExtArgs extends runtime.Types.Extensions.Int
     conversations: Prisma.$ConversationPayload<ExtArgs>[]
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     reminders: Prisma.$ReminderPayload<ExtArgs>[]
-    loyaltyAccount: Prisma.$LoyaltyAccountPayload<ExtArgs> | null
+    loyaltyAccounts: Prisma.$LoyaltyAccountPayload<ExtArgs>[]
     referredLoyalty: Prisma.$LoyaltyAccountPayload<ExtArgs>[]
     enquiries: Prisma.$EnquiryPayload<ExtArgs>[]
     feedback: Prisma.$FeedbackPayload<ExtArgs>[]
@@ -9715,6 +10128,7 @@ export type $CustomerProfilePayload<ExtArgs extends runtime.Types.Extensions.Int
     vaccinationConsents: Prisma.$VaccinationConsentPayload<ExtArgs>[]
     immunizationRecords: Prisma.$ImmunizationRecordPayload<ExtArgs>[]
     counsellingSessions: Prisma.$PreventiveCounsellingSessionPayload<ExtArgs>[]
+    pharmacies: Prisma.$CustomerPharmacyPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -10148,7 +10562,7 @@ export interface Prisma__CustomerProfileClient<T, Null = never, ExtArgs extends 
   conversations<T extends Prisma.CustomerProfile$conversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.CustomerProfile$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reminders<T extends Prisma.CustomerProfile$remindersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  loyaltyAccount<T extends Prisma.CustomerProfile$loyaltyAccountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$loyaltyAccountArgs<ExtArgs>>): Prisma.Prisma__LoyaltyAccountClient<runtime.Types.Result.GetResult<Prisma.$LoyaltyAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  loyaltyAccounts<T extends Prisma.CustomerProfile$loyaltyAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$loyaltyAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LoyaltyAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   referredLoyalty<T extends Prisma.CustomerProfile$referredLoyaltyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$referredLoyaltyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LoyaltyAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   enquiries<T extends Prisma.CustomerProfile$enquiriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$enquiriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnquiryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   feedback<T extends Prisma.CustomerProfile$feedbackArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$feedbackArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -10171,6 +10585,7 @@ export interface Prisma__CustomerProfileClient<T, Null = never, ExtArgs extends 
   vaccinationConsents<T extends Prisma.CustomerProfile$vaccinationConsentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$vaccinationConsentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaccinationConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   immunizationRecords<T extends Prisma.CustomerProfile$immunizationRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$immunizationRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   counsellingSessions<T extends Prisma.CustomerProfile$counsellingSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$counsellingSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PreventiveCounsellingSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pharmacies<T extends Prisma.CustomerProfile$pharmaciesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$pharmaciesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPharmacyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10833,9 +11248,9 @@ export type CustomerProfile$remindersArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
- * CustomerProfile.loyaltyAccount
+ * CustomerProfile.loyaltyAccounts
  */
-export type CustomerProfile$loyaltyAccountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type CustomerProfile$loyaltyAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the LoyaltyAccount
    */
@@ -10849,6 +11264,11 @@ export type CustomerProfile$loyaltyAccountArgs<ExtArgs extends runtime.Types.Ext
    */
   include?: Prisma.LoyaltyAccountInclude<ExtArgs> | null
   where?: Prisma.LoyaltyAccountWhereInput
+  orderBy?: Prisma.LoyaltyAccountOrderByWithRelationInput | Prisma.LoyaltyAccountOrderByWithRelationInput[]
+  cursor?: Prisma.LoyaltyAccountWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LoyaltyAccountScalarFieldEnum | Prisma.LoyaltyAccountScalarFieldEnum[]
 }
 
 /**
@@ -11372,6 +11792,30 @@ export type CustomerProfile$counsellingSessionsArgs<ExtArgs extends runtime.Type
   take?: number
   skip?: number
   distinct?: Prisma.PreventiveCounsellingSessionScalarFieldEnum | Prisma.PreventiveCounsellingSessionScalarFieldEnum[]
+}
+
+/**
+ * CustomerProfile.pharmacies
+ */
+export type CustomerProfile$pharmaciesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CustomerPharmacy
+   */
+  select?: Prisma.CustomerPharmacySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CustomerPharmacy
+   */
+  omit?: Prisma.CustomerPharmacyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CustomerPharmacyInclude<ExtArgs> | null
+  where?: Prisma.CustomerPharmacyWhereInput
+  orderBy?: Prisma.CustomerPharmacyOrderByWithRelationInput | Prisma.CustomerPharmacyOrderByWithRelationInput[]
+  cursor?: Prisma.CustomerPharmacyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CustomerPharmacyScalarFieldEnum | Prisma.CustomerPharmacyScalarFieldEnum[]
 }
 
 /**

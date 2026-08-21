@@ -46,6 +46,7 @@ export type PrescriptionFillSumAggregateOutputType = {
 
 export type PrescriptionFillMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   prescriptionId: string | null
   orderId: string | null
   refillRequestId: string | null
@@ -70,6 +71,7 @@ export type PrescriptionFillMinAggregateOutputType = {
 
 export type PrescriptionFillMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   prescriptionId: string | null
   orderId: string | null
   refillRequestId: string | null
@@ -94,6 +96,7 @@ export type PrescriptionFillMaxAggregateOutputType = {
 
 export type PrescriptionFillCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   prescriptionId: number
   orderId: number
   refillRequestId: number
@@ -139,6 +142,7 @@ export type PrescriptionFillSumAggregateInputType = {
 
 export type PrescriptionFillMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   prescriptionId?: true
   orderId?: true
   refillRequestId?: true
@@ -163,6 +167,7 @@ export type PrescriptionFillMinAggregateInputType = {
 
 export type PrescriptionFillMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   prescriptionId?: true
   orderId?: true
   refillRequestId?: true
@@ -187,6 +192,7 @@ export type PrescriptionFillMaxAggregateInputType = {
 
 export type PrescriptionFillCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   prescriptionId?: true
   orderId?: true
   refillRequestId?: true
@@ -299,6 +305,7 @@ export type PrescriptionFillGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type PrescriptionFillGroupByOutputType = {
   id: string
+  pharmacyId: string
   prescriptionId: string
   orderId: string | null
   refillRequestId: string | null
@@ -347,6 +354,7 @@ export type PrescriptionFillWhereInput = {
   OR?: Prisma.PrescriptionFillWhereInput[]
   NOT?: Prisma.PrescriptionFillWhereInput | Prisma.PrescriptionFillWhereInput[]
   id?: Prisma.UuidFilter<"PrescriptionFill"> | string
+  pharmacyId?: Prisma.UuidFilter<"PrescriptionFill"> | string
   prescriptionId?: Prisma.UuidFilter<"PrescriptionFill"> | string
   orderId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
   refillRequestId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
@@ -373,10 +381,12 @@ export type PrescriptionFillWhereInput = {
   refillRequest?: Prisma.XOR<Prisma.RefillRequestNullableScalarRelationFilter, Prisma.RefillRequestWhereInput> | null
   dispensedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   medication?: Prisma.XOR<Prisma.PharmacyInventoryNullableScalarRelationFilter, Prisma.PharmacyInventoryWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type PrescriptionFillOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
   refillRequestId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -403,6 +413,7 @@ export type PrescriptionFillOrderByWithRelationInput = {
   refillRequest?: Prisma.RefillRequestOrderByWithRelationInput
   dispensedBy?: Prisma.UserOrderByWithRelationInput
   medication?: Prisma.PharmacyInventoryOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type PrescriptionFillWhereUniqueInput = Prisma.AtLeast<{
@@ -413,6 +424,7 @@ export type PrescriptionFillWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PrescriptionFillWhereInput | Prisma.PrescriptionFillWhereInput[]
   OR?: Prisma.PrescriptionFillWhereInput[]
   NOT?: Prisma.PrescriptionFillWhereInput | Prisma.PrescriptionFillWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"PrescriptionFill"> | string
   prescriptionId?: Prisma.UuidFilter<"PrescriptionFill"> | string
   fillNumber?: Prisma.IntFilter<"PrescriptionFill"> | number
   quantity?: Prisma.IntFilter<"PrescriptionFill"> | number
@@ -437,10 +449,12 @@ export type PrescriptionFillWhereUniqueInput = Prisma.AtLeast<{
   refillRequest?: Prisma.XOR<Prisma.RefillRequestNullableScalarRelationFilter, Prisma.RefillRequestWhereInput> | null
   dispensedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   medication?: Prisma.XOR<Prisma.PharmacyInventoryNullableScalarRelationFilter, Prisma.PharmacyInventoryWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id" | "orderId" | "refillRequestId" | "prescriptionId_fillNumber">
 
 export type PrescriptionFillOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
   refillRequestId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -474,6 +488,7 @@ export type PrescriptionFillScalarWhereWithAggregatesInput = {
   OR?: Prisma.PrescriptionFillScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PrescriptionFillScalarWhereWithAggregatesInput | Prisma.PrescriptionFillScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"PrescriptionFill"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"PrescriptionFill"> | string
   prescriptionId?: Prisma.UuidWithAggregatesFilter<"PrescriptionFill"> | string
   orderId?: Prisma.UuidNullableWithAggregatesFilter<"PrescriptionFill"> | string | null
   refillRequestId?: Prisma.UuidNullableWithAggregatesFilter<"PrescriptionFill"> | string | null
@@ -520,10 +535,12 @@ export type PrescriptionFillCreateInput = {
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -570,10 +587,12 @@ export type PrescriptionFillUpdateInput = {
   refillRequest?: Prisma.RefillRequestUpdateOneWithoutPrescriptionFillNestedInput
   dispensedBy?: Prisma.UserUpdateOneWithoutPrescriptionFillsDispensedNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionFillsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPrescriptionFillsNestedInput
 }
 
 export type PrescriptionFillUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -599,6 +618,7 @@ export type PrescriptionFillUncheckedUpdateInput = {
 
 export type PrescriptionFillCreateManyInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -644,6 +664,7 @@ export type PrescriptionFillUpdateManyMutationInput = {
 
 export type PrescriptionFillUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -689,6 +710,7 @@ export type PrescriptionFillPrescriptionIdFillNumberCompoundUniqueInput = {
 
 export type PrescriptionFillCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   refillRequestId?: Prisma.SortOrder
@@ -723,6 +745,7 @@ export type PrescriptionFillAvgOrderByAggregateInput = {
 
 export type PrescriptionFillMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   refillRequestId?: Prisma.SortOrder
@@ -747,6 +770,7 @@ export type PrescriptionFillMaxOrderByAggregateInput = {
 
 export type PrescriptionFillMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   prescriptionId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   refillRequestId?: Prisma.SortOrder
@@ -776,6 +800,48 @@ export type PrescriptionFillSumOrderByAggregateInput = {
   discountAmount?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
   costPriceSnapshot?: Prisma.SortOrder
+}
+
+export type PrescriptionFillCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionFillCreateWithoutPharmacyInput, Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput> | Prisma.PrescriptionFillCreateWithoutPharmacyInput[] | Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PrescriptionFillCreateOrConnectWithoutPharmacyInput | Prisma.PrescriptionFillCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.PrescriptionFillCreateManyPharmacyInputEnvelope
+  connect?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+}
+
+export type PrescriptionFillUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionFillCreateWithoutPharmacyInput, Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput> | Prisma.PrescriptionFillCreateWithoutPharmacyInput[] | Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PrescriptionFillCreateOrConnectWithoutPharmacyInput | Prisma.PrescriptionFillCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.PrescriptionFillCreateManyPharmacyInputEnvelope
+  connect?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+}
+
+export type PrescriptionFillUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionFillCreateWithoutPharmacyInput, Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput> | Prisma.PrescriptionFillCreateWithoutPharmacyInput[] | Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PrescriptionFillCreateOrConnectWithoutPharmacyInput | Prisma.PrescriptionFillCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.PrescriptionFillUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.PrescriptionFillUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.PrescriptionFillCreateManyPharmacyInputEnvelope
+  set?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+  disconnect?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+  delete?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+  connect?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+  update?: Prisma.PrescriptionFillUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.PrescriptionFillUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.PrescriptionFillUpdateManyWithWhereWithoutPharmacyInput | Prisma.PrescriptionFillUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.PrescriptionFillScalarWhereInput | Prisma.PrescriptionFillScalarWhereInput[]
+}
+
+export type PrescriptionFillUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.PrescriptionFillCreateWithoutPharmacyInput, Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput> | Prisma.PrescriptionFillCreateWithoutPharmacyInput[] | Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.PrescriptionFillCreateOrConnectWithoutPharmacyInput | Prisma.PrescriptionFillCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.PrescriptionFillUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.PrescriptionFillUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.PrescriptionFillCreateManyPharmacyInputEnvelope
+  set?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+  disconnect?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+  delete?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+  connect?: Prisma.PrescriptionFillWhereUniqueInput | Prisma.PrescriptionFillWhereUniqueInput[]
+  update?: Prisma.PrescriptionFillUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.PrescriptionFillUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.PrescriptionFillUpdateManyWithWhereWithoutPharmacyInput | Prisma.PrescriptionFillUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.PrescriptionFillScalarWhereInput | Prisma.PrescriptionFillScalarWhereInput[]
 }
 
 export type PrescriptionFillCreateNestedManyWithoutDispensedByInput = {
@@ -972,6 +1038,111 @@ export type EnumPrescriptionFillStatusFieldUpdateOperationsInput = {
   set?: $Enums.PrescriptionFillStatus
 }
 
+export type PrescriptionFillCreateWithoutPharmacyInput = {
+  id?: string
+  fillNumber: number
+  quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
+  unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.PrescriptionFillStatus
+  filledAt?: Date | string | null
+  dispatchedAt?: Date | string | null
+  collectedAt?: Date | string | null
+  medicationName: string
+  lotIds?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prescription: Prisma.PrescriptionCreateNestedOneWithoutFillsInput
+  order?: Prisma.OrderCreateNestedOneWithoutPrescriptionFillInput
+  refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
+  dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
+  medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
+}
+
+export type PrescriptionFillUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  prescriptionId: string
+  orderId?: string | null
+  refillRequestId?: string | null
+  fillNumber: number
+  quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
+  unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.PrescriptionFillStatus
+  filledAt?: Date | string | null
+  dispatchedAt?: Date | string | null
+  collectedAt?: Date | string | null
+  dispensedById?: string | null
+  medicationId?: string | null
+  medicationName: string
+  lotIds?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PrescriptionFillCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.PrescriptionFillWhereUniqueInput
+  create: Prisma.XOR<Prisma.PrescriptionFillCreateWithoutPharmacyInput, Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PrescriptionFillCreateManyPharmacyInputEnvelope = {
+  data: Prisma.PrescriptionFillCreateManyPharmacyInput | Prisma.PrescriptionFillCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type PrescriptionFillUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.PrescriptionFillWhereUniqueInput
+  update: Prisma.XOR<Prisma.PrescriptionFillUpdateWithoutPharmacyInput, Prisma.PrescriptionFillUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.PrescriptionFillCreateWithoutPharmacyInput, Prisma.PrescriptionFillUncheckedCreateWithoutPharmacyInput>
+}
+
+export type PrescriptionFillUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.PrescriptionFillWhereUniqueInput
+  data: Prisma.XOR<Prisma.PrescriptionFillUpdateWithoutPharmacyInput, Prisma.PrescriptionFillUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type PrescriptionFillUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.PrescriptionFillScalarWhereInput
+  data: Prisma.XOR<Prisma.PrescriptionFillUpdateManyMutationInput, Prisma.PrescriptionFillUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type PrescriptionFillScalarWhereInput = {
+  AND?: Prisma.PrescriptionFillScalarWhereInput | Prisma.PrescriptionFillScalarWhereInput[]
+  OR?: Prisma.PrescriptionFillScalarWhereInput[]
+  NOT?: Prisma.PrescriptionFillScalarWhereInput | Prisma.PrescriptionFillScalarWhereInput[]
+  id?: Prisma.UuidFilter<"PrescriptionFill"> | string
+  pharmacyId?: Prisma.UuidFilter<"PrescriptionFill"> | string
+  prescriptionId?: Prisma.UuidFilter<"PrescriptionFill"> | string
+  orderId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
+  refillRequestId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
+  fillNumber?: Prisma.IntFilter<"PrescriptionFill"> | number
+  quantity?: Prisma.IntFilter<"PrescriptionFill"> | number
+  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"PrescriptionFill"> | $Enums.BillingUnit | null
+  unitPriceSnapshot?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPriceSnapshot?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumPrescriptionFillStatusFilter<"PrescriptionFill"> | $Enums.PrescriptionFillStatus
+  filledAt?: Prisma.DateTimeNullableFilter<"PrescriptionFill"> | Date | string | null
+  dispatchedAt?: Prisma.DateTimeNullableFilter<"PrescriptionFill"> | Date | string | null
+  collectedAt?: Prisma.DateTimeNullableFilter<"PrescriptionFill"> | Date | string | null
+  dispensedById?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
+  medicationId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
+  medicationName?: Prisma.StringFilter<"PrescriptionFill"> | string
+  lotIds?: Prisma.JsonFilter<"PrescriptionFill">
+  notes?: Prisma.StringNullableFilter<"PrescriptionFill"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"PrescriptionFill"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PrescriptionFill"> | Date | string
+}
+
 export type PrescriptionFillCreateWithoutDispensedByInput = {
   id?: string
   fillNumber: number
@@ -994,10 +1165,12 @@ export type PrescriptionFillCreateWithoutDispensedByInput = {
   order?: Prisma.OrderCreateNestedOneWithoutPrescriptionFillInput
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutDispensedByInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -1046,34 +1219,6 @@ export type PrescriptionFillUpdateManyWithWhereWithoutDispensedByInput = {
   data: Prisma.XOR<Prisma.PrescriptionFillUpdateManyMutationInput, Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByInput>
 }
 
-export type PrescriptionFillScalarWhereInput = {
-  AND?: Prisma.PrescriptionFillScalarWhereInput | Prisma.PrescriptionFillScalarWhereInput[]
-  OR?: Prisma.PrescriptionFillScalarWhereInput[]
-  NOT?: Prisma.PrescriptionFillScalarWhereInput | Prisma.PrescriptionFillScalarWhereInput[]
-  id?: Prisma.UuidFilter<"PrescriptionFill"> | string
-  prescriptionId?: Prisma.UuidFilter<"PrescriptionFill"> | string
-  orderId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
-  refillRequestId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
-  fillNumber?: Prisma.IntFilter<"PrescriptionFill"> | number
-  quantity?: Prisma.IntFilter<"PrescriptionFill"> | number
-  billingUnit?: Prisma.EnumBillingUnitNullableFilter<"PrescriptionFill"> | $Enums.BillingUnit | null
-  unitPriceSnapshot?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  discountAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  netAmount?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  costPriceSnapshot?: Prisma.DecimalFilter<"PrescriptionFill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  status?: Prisma.EnumPrescriptionFillStatusFilter<"PrescriptionFill"> | $Enums.PrescriptionFillStatus
-  filledAt?: Prisma.DateTimeNullableFilter<"PrescriptionFill"> | Date | string | null
-  dispatchedAt?: Prisma.DateTimeNullableFilter<"PrescriptionFill"> | Date | string | null
-  collectedAt?: Prisma.DateTimeNullableFilter<"PrescriptionFill"> | Date | string | null
-  dispensedById?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
-  medicationId?: Prisma.UuidNullableFilter<"PrescriptionFill"> | string | null
-  medicationName?: Prisma.StringFilter<"PrescriptionFill"> | string
-  lotIds?: Prisma.JsonFilter<"PrescriptionFill">
-  notes?: Prisma.StringNullableFilter<"PrescriptionFill"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"PrescriptionFill"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"PrescriptionFill"> | Date | string
-}
-
 export type PrescriptionFillCreateWithoutPrescriptionInput = {
   id?: string
   fillNumber: number
@@ -1096,10 +1241,12 @@ export type PrescriptionFillCreateWithoutPrescriptionInput = {
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutPrescriptionInput = {
   id?: string
+  pharmacyId: string
   orderId?: string | null
   refillRequestId?: string | null
   fillNumber: number
@@ -1170,10 +1317,12 @@ export type PrescriptionFillCreateWithoutRefillRequestInput = {
   order?: Prisma.OrderCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutRefillRequestInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   orderId?: string | null
   fillNumber: number
@@ -1234,10 +1383,12 @@ export type PrescriptionFillUpdateWithoutRefillRequestInput = {
   order?: Prisma.OrderUpdateOneWithoutPrescriptionFillNestedInput
   dispensedBy?: Prisma.UserUpdateOneWithoutPrescriptionFillsDispensedNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionFillsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPrescriptionFillsNestedInput
 }
 
 export type PrescriptionFillUncheckedUpdateWithoutRefillRequestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1282,10 +1433,12 @@ export type PrescriptionFillCreateWithoutMedicationInput = {
   order?: Prisma.OrderCreateNestedOneWithoutPrescriptionFillInput
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutMedicationInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -1356,10 +1509,12 @@ export type PrescriptionFillCreateWithoutOrderInput = {
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutOrderInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   refillRequestId?: string | null
   fillNumber: number
@@ -1420,11 +1575,113 @@ export type PrescriptionFillUpdateWithoutOrderInput = {
   refillRequest?: Prisma.RefillRequestUpdateOneWithoutPrescriptionFillNestedInput
   dispensedBy?: Prisma.UserUpdateOneWithoutPrescriptionFillsDispensedNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionFillsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPrescriptionFillsNestedInput
 }
 
 export type PrescriptionFillUncheckedUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
+  refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumPrescriptionFillStatusFieldUpdateOperationsInput | $Enums.PrescriptionFillStatus
+  filledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  collectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispensedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationName?: Prisma.StringFieldUpdateOperationsInput | string
+  lotIds?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PrescriptionFillCreateManyPharmacyInput = {
+  id?: string
+  prescriptionId: string
+  orderId?: string | null
+  refillRequestId?: string | null
+  fillNumber: number
+  quantity?: number
+  billingUnit?: $Enums.BillingUnit | null
+  unitPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.PrescriptionFillStatus
+  filledAt?: Date | string | null
+  dispatchedAt?: Date | string | null
+  collectedAt?: Date | string | null
+  dispensedById?: string | null
+  medicationId?: string | null
+  medicationName: string
+  lotIds?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PrescriptionFillUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumPrescriptionFillStatusFieldUpdateOperationsInput | $Enums.PrescriptionFillStatus
+  filledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  collectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  medicationName?: Prisma.StringFieldUpdateOperationsInput | string
+  lotIds?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prescription?: Prisma.PrescriptionUpdateOneRequiredWithoutFillsNestedInput
+  order?: Prisma.OrderUpdateOneWithoutPrescriptionFillNestedInput
+  refillRequest?: Prisma.RefillRequestUpdateOneWithoutPrescriptionFillNestedInput
+  dispensedBy?: Prisma.UserUpdateOneWithoutPrescriptionFillsDispensedNestedInput
+  medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionFillsNestedInput
+}
+
+export type PrescriptionFillUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  billingUnit?: Prisma.NullableEnumBillingUnitFieldUpdateOperationsInput | $Enums.BillingUnit | null
+  unitPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  costPriceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumPrescriptionFillStatusFieldUpdateOperationsInput | $Enums.PrescriptionFillStatus
+  filledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispatchedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  collectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dispensedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationName?: Prisma.StringFieldUpdateOperationsInput | string
+  lotIds?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PrescriptionFillUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1448,6 +1705,7 @@ export type PrescriptionFillUncheckedUpdateWithoutOrderInput = {
 
 export type PrescriptionFillCreateManyDispensedByInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -1492,10 +1750,12 @@ export type PrescriptionFillUpdateWithoutDispensedByInput = {
   order?: Prisma.OrderUpdateOneWithoutPrescriptionFillNestedInput
   refillRequest?: Prisma.RefillRequestUpdateOneWithoutPrescriptionFillNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionFillsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPrescriptionFillsNestedInput
 }
 
 export type PrescriptionFillUncheckedUpdateWithoutDispensedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1520,6 +1780,7 @@ export type PrescriptionFillUncheckedUpdateWithoutDispensedByInput = {
 
 export type PrescriptionFillUncheckedUpdateManyWithoutDispensedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1544,6 +1805,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutDispensedByInput = {
 
 export type PrescriptionFillCreateManyPrescriptionInput = {
   id?: string
+  pharmacyId: string
   orderId?: string | null
   refillRequestId?: string | null
   fillNumber: number
@@ -1588,10 +1850,12 @@ export type PrescriptionFillUpdateWithoutPrescriptionInput = {
   refillRequest?: Prisma.RefillRequestUpdateOneWithoutPrescriptionFillNestedInput
   dispensedBy?: Prisma.UserUpdateOneWithoutPrescriptionFillsDispensedNestedInput
   medication?: Prisma.PharmacyInventoryUpdateOneWithoutPrescriptionFillsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPrescriptionFillsNestedInput
 }
 
 export type PrescriptionFillUncheckedUpdateWithoutPrescriptionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1616,6 +1880,7 @@ export type PrescriptionFillUncheckedUpdateWithoutPrescriptionInput = {
 
 export type PrescriptionFillUncheckedUpdateManyWithoutPrescriptionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fillNumber?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1640,6 +1905,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutPrescriptionInput = {
 
 export type PrescriptionFillCreateManyMedicationInput = {
   id?: string
+  pharmacyId: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -1684,10 +1950,12 @@ export type PrescriptionFillUpdateWithoutMedicationInput = {
   order?: Prisma.OrderUpdateOneWithoutPrescriptionFillNestedInput
   refillRequest?: Prisma.RefillRequestUpdateOneWithoutPrescriptionFillNestedInput
   dispensedBy?: Prisma.UserUpdateOneWithoutPrescriptionFillsDispensedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutPrescriptionFillsNestedInput
 }
 
 export type PrescriptionFillUncheckedUpdateWithoutMedicationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1712,6 +1980,7 @@ export type PrescriptionFillUncheckedUpdateWithoutMedicationInput = {
 
 export type PrescriptionFillUncheckedUpdateManyWithoutMedicationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   prescriptionId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refillRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1738,6 +2007,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutMedicationInput = {
 
 export type PrescriptionFillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   prescriptionId?: boolean
   orderId?: boolean
   refillRequestId?: boolean
@@ -1764,10 +2034,12 @@ export type PrescriptionFillSelect<ExtArgs extends runtime.Types.Extensions.Inte
   refillRequest?: boolean | Prisma.PrescriptionFill$refillRequestArgs<ExtArgs>
   dispensedBy?: boolean | Prisma.PrescriptionFill$dispensedByArgs<ExtArgs>
   medication?: boolean | Prisma.PrescriptionFill$medicationArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["prescriptionFill"]>
 
 export type PrescriptionFillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   prescriptionId?: boolean
   orderId?: boolean
   refillRequestId?: boolean
@@ -1794,10 +2066,12 @@ export type PrescriptionFillSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   refillRequest?: boolean | Prisma.PrescriptionFill$refillRequestArgs<ExtArgs>
   dispensedBy?: boolean | Prisma.PrescriptionFill$dispensedByArgs<ExtArgs>
   medication?: boolean | Prisma.PrescriptionFill$medicationArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["prescriptionFill"]>
 
 export type PrescriptionFillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   prescriptionId?: boolean
   orderId?: boolean
   refillRequestId?: boolean
@@ -1824,10 +2098,12 @@ export type PrescriptionFillSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   refillRequest?: boolean | Prisma.PrescriptionFill$refillRequestArgs<ExtArgs>
   dispensedBy?: boolean | Prisma.PrescriptionFill$dispensedByArgs<ExtArgs>
   medication?: boolean | Prisma.PrescriptionFill$medicationArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["prescriptionFill"]>
 
 export type PrescriptionFillSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   prescriptionId?: boolean
   orderId?: boolean
   refillRequestId?: boolean
@@ -1851,13 +2127,14 @@ export type PrescriptionFillSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PrescriptionFillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "prescriptionId" | "orderId" | "refillRequestId" | "fillNumber" | "quantity" | "billingUnit" | "unitPriceSnapshot" | "discountAmount" | "netAmount" | "costPriceSnapshot" | "status" | "filledAt" | "dispatchedAt" | "collectedAt" | "dispensedById" | "medicationId" | "medicationName" | "lotIds" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["prescriptionFill"]>
+export type PrescriptionFillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "prescriptionId" | "orderId" | "refillRequestId" | "fillNumber" | "quantity" | "billingUnit" | "unitPriceSnapshot" | "discountAmount" | "netAmount" | "costPriceSnapshot" | "status" | "filledAt" | "dispatchedAt" | "collectedAt" | "dispensedById" | "medicationId" | "medicationName" | "lotIds" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["prescriptionFill"]>
 export type PrescriptionFillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
   order?: boolean | Prisma.PrescriptionFill$orderArgs<ExtArgs>
   refillRequest?: boolean | Prisma.PrescriptionFill$refillRequestArgs<ExtArgs>
   dispensedBy?: boolean | Prisma.PrescriptionFill$dispensedByArgs<ExtArgs>
   medication?: boolean | Prisma.PrescriptionFill$medicationArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PrescriptionFillIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
@@ -1865,6 +2142,7 @@ export type PrescriptionFillIncludeCreateManyAndReturn<ExtArgs extends runtime.T
   refillRequest?: boolean | Prisma.PrescriptionFill$refillRequestArgs<ExtArgs>
   dispensedBy?: boolean | Prisma.PrescriptionFill$dispensedByArgs<ExtArgs>
   medication?: boolean | Prisma.PrescriptionFill$medicationArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type PrescriptionFillIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescription?: boolean | Prisma.PrescriptionDefaultArgs<ExtArgs>
@@ -1872,6 +2150,7 @@ export type PrescriptionFillIncludeUpdateManyAndReturn<ExtArgs extends runtime.T
   refillRequest?: boolean | Prisma.PrescriptionFill$refillRequestArgs<ExtArgs>
   dispensedBy?: boolean | Prisma.PrescriptionFill$dispensedByArgs<ExtArgs>
   medication?: boolean | Prisma.PrescriptionFill$medicationArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $PrescriptionFillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1882,9 +2161,11 @@ export type $PrescriptionFillPayload<ExtArgs extends runtime.Types.Extensions.In
     refillRequest: Prisma.$RefillRequestPayload<ExtArgs> | null
     dispensedBy: Prisma.$UserPayload<ExtArgs> | null
     medication: Prisma.$PharmacyInventoryPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     prescriptionId: string
     /**
      * Linked commercial order that paid for this fill (nullable for legacy / dispatched-without-charge).
@@ -2329,6 +2610,7 @@ export interface Prisma__PrescriptionFillClient<T, Null = never, ExtArgs extends
   refillRequest<T extends Prisma.PrescriptionFill$refillRequestArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrescriptionFill$refillRequestArgs<ExtArgs>>): Prisma.Prisma__RefillRequestClient<runtime.Types.Result.GetResult<Prisma.$RefillRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   dispensedBy<T extends Prisma.PrescriptionFill$dispensedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrescriptionFill$dispensedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   medication<T extends Prisma.PrescriptionFill$medicationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrescriptionFill$medicationArgs<ExtArgs>>): Prisma.Prisma__PharmacyInventoryClient<runtime.Types.Result.GetResult<Prisma.$PharmacyInventoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2359,6 +2641,7 @@ export interface Prisma__PrescriptionFillClient<T, Null = never, ExtArgs extends
  */
 export interface PrescriptionFillFieldRefs {
   readonly id: Prisma.FieldRef<"PrescriptionFill", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"PrescriptionFill", 'String'>
   readonly prescriptionId: Prisma.FieldRef<"PrescriptionFill", 'String'>
   readonly orderId: Prisma.FieldRef<"PrescriptionFill", 'String'>
   readonly refillRequestId: Prisma.FieldRef<"PrescriptionFill", 'String'>

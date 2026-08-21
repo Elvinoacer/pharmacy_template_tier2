@@ -1,12 +1,17 @@
 import "server-only";
 
-import { prisma } from "@/app/lib/db";
+import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { pharmacy as staticPharmacy } from "@/app/lib/data";
+import { findPharmacyById, findPharmacyBySlug, getTenant } from "@/app/lib/tenant";
 
 export type PharmacyHour = { day: string; time: string };
 
 export type ResolvedPharmacy = {
+  id: string | null;
+  slug: string | null;
   name: string;
+  tagline: string;
+  description: string;
   phone: string;
   phoneHref: string;
   email: string;
@@ -27,6 +32,12 @@ export type ResolvedPharmacy = {
   mapsEmbed: string;
   mapsDirections: string;
   hours: PharmacyHour[];
+  logoUrl: string | null;
+  coverImageUrl: string | null;
+  about: string | null;
+  deliveryNotes: string | null;
+  deliveryFeeKes: number | null;
+  deliveryRadiusKm: number | null;
   /** True when values came from admin-configured PharmacySettings row. */
   fromDb: boolean;
 };
@@ -51,7 +62,6 @@ function buildFullAddress(parts: {
 
 /** Build a Google Maps embed URL from lat/lng (no API key required for basic embed). */
 export function buildMapsEmbed(lat: number, lng: number, zoom = 16): string {
-  // Using the open embed pattern that works without a Maps API key for simple pins.
   return `https://maps.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}&z=${zoom}&output=embed`;
 }
 
@@ -60,7 +70,6 @@ export function buildMapsDirections(lat: number, lng: number, label?: string): s
   const destination = label
     ? encodeURIComponent(label)
     : encodeURIComponent(`${lat},${lng}`);
-  // Prefer coordinates for accuracy; label helps human-readable destination text.
   if (label) {
     return `https://www.google.com/maps/dir/?api=1&destination=${destination}&destination_place_id=`;
   }
@@ -85,56 +94,87 @@ function parseHours(raw: unknown): PharmacyHour[] {
   return parsed.length > 0 ? parsed : staticPharmacy.hours;
 }
 
+function fallbackResolved(): ResolvedPharmacy {
+  return {
+    id: null,
+    slug: null,
+    name: staticPharmacy.name,
+    tagline: staticPharmacy.tagline,
+    description: staticPharmacy.description,
+    phone: staticPharmacy.phone,
+    phoneHref: staticPharmacy.phoneHref,
+    email: staticPharmacy.email,
+    whatsapp: staticPharmacy.whatsapp,
+    whatsappHref: staticPharmacy.whatsappHref,
+    address: { ...staticPharmacy.address },
+    latitude: null,
+    longitude: null,
+    placeId: null,
+    mapsEmbed: staticPharmacy.mapsEmbed,
+    mapsDirections: staticPharmacy.mapsDirections,
+    hours: staticPharmacy.hours,
+    logoUrl: null,
+    coverImageUrl: null,
+    about: null,
+    deliveryNotes: null,
+    deliveryFeeKes: null,
+    deliveryRadiusKm: null,
+    fromDb: false,
+  };
+}
+
 /**
- * Resolve pharmacy public profile: DB settings win over static seed data.
+ * Resolve pharmacy public profile: tenant Pharmacy + PharmacySettings win over static seed data.
  * Safe to call from server components and route handlers.
  */
-export async function getResolvedPharmacy(): Promise<ResolvedPharmacy> {
-  let row: Awaited<ReturnType<typeof prisma.pharmacySettings.findUnique>> = null;
+export async function getResolvedPharmacy(opts?: {
+  slug?: string | null;
+  pharmacyId?: string | null;
+}): Promise<ResolvedPharmacy> {
+  let pharmacyId = opts?.pharmacyId ?? null;
+  let slug = opts?.slug ?? null;
+
+  if (!pharmacyId && !slug) {
+    const tenant = await getTenant().catch(() => ({ pharmacyId: null, slug: null }));
+    pharmacyId = tenant.pharmacyId;
+    slug = tenant.slug;
+  }
+
+  let pharmacy =
+    (pharmacyId ? await findPharmacyById(pharmacyId) : null) ||
+    (slug ? await findPharmacyBySlug(slug) : null);
+
+  if (!pharmacy) return fallbackResolved();
+
+  let row: Awaited<ReturnType<typeof prismaUnscoped.pharmacySettings.findUnique>> = null;
   try {
-    row = await prisma.pharmacySettings.findUnique({ where: { id: "default" } });
+    row = await prismaUnscoped.pharmacySettings.findUnique({
+      where: { pharmacyId: pharmacy.id },
+    });
   } catch {
-    // DB may be unavailable during build; fall back to static.
+    // DB may be unavailable during build; fall back to pharmacy row + static.
   }
 
-  if (!row) {
-    return {
-      name: staticPharmacy.name,
-      phone: staticPharmacy.phone,
-      phoneHref: staticPharmacy.phoneHref,
-      email: staticPharmacy.email,
-      whatsapp: staticPharmacy.whatsapp,
-      whatsappHref: staticPharmacy.whatsappHref,
-      address: { ...staticPharmacy.address },
-      latitude: null,
-      longitude: null,
-      placeId: null,
-      mapsEmbed: staticPharmacy.mapsEmbed,
-      mapsDirections: staticPharmacy.mapsDirections,
-      hours: staticPharmacy.hours,
-      fromDb: false,
-    };
-  }
-
-  const phone = row.phone?.trim() || staticPharmacy.phone;
-  const email = row.email?.trim() || staticPharmacy.email;
-  const whatsapp = row.whatsapp?.trim() || row.phone?.trim() || staticPharmacy.whatsapp;
-  const street = row.addressLine1?.trim() || staticPharmacy.address.street;
-  const city = row.city?.trim() || staticPharmacy.address.city;
-  const state = row.state?.trim() || staticPharmacy.address.state;
-  const zip = row.zip?.trim() || staticPharmacy.address.zip;
+  const phone = row?.phone?.trim() || pharmacy.phone || staticPharmacy.phone;
+  const email = row?.email?.trim() || pharmacy.email || staticPharmacy.email;
+  const whatsapp =
+    row?.whatsapp?.trim() || pharmacy.whatsapp || row?.phone?.trim() || pharmacy.phone || staticPharmacy.whatsapp;
+  const street = row?.addressLine1?.trim() || staticPharmacy.address.street;
+  const city = row?.city?.trim() || pharmacy.city || staticPharmacy.address.city;
+  const state = row?.state?.trim() || pharmacy.county || staticPharmacy.address.state;
+  const zip = row?.zip?.trim() || staticPharmacy.address.zip;
   const full =
     buildFullAddress({
-      line1: row.addressLine1,
-      line2: row.addressLine2,
-      city: row.city,
-      state: row.state,
-      zip: row.zip,
-      country: row.country,
+      line1: row?.addressLine1,
+      line2: row?.addressLine2,
+      city: row?.city || pharmacy.city,
+      state: row?.state || pharmacy.county,
+      zip: row?.zip,
+      country: row?.country || pharmacy.country,
     }) || staticPharmacy.address.full;
 
-  const lat = row.latitude;
-  const lng = row.longitude;
+  const lat = row?.latitude ?? pharmacy.latitude;
+  const lng = row?.longitude ?? pharmacy.longitude;
   const hasCoords =
     typeof lat === "number" &&
     typeof lng === "number" &&
@@ -142,7 +182,7 @@ export async function getResolvedPharmacy(): Promise<ResolvedPharmacy> {
     Number.isFinite(lng);
 
   const mapsEmbed =
-    row.mapsEmbedUrl?.trim() ||
+    row?.mapsEmbedUrl?.trim() ||
     (hasCoords ? buildMapsEmbed(lat!, lng!) : staticPharmacy.mapsEmbed);
 
   const mapsDirections = hasCoords
@@ -150,7 +190,11 @@ export async function getResolvedPharmacy(): Promise<ResolvedPharmacy> {
     : buildMapsDirectionsFromAddress(full);
 
   return {
-    name: row.displayName?.trim() || staticPharmacy.name,
+    id: pharmacy.id,
+    slug: pharmacy.slug,
+    name: row?.displayName?.trim() || pharmacy.name,
+    tagline: row?.tagline?.trim() || pharmacy.tagline || staticPharmacy.tagline,
+    description: pharmacy.description || staticPharmacy.description,
     phone,
     phoneHref: `tel:${phone.replace(/\s+/g, "")}`,
     email,
@@ -162,21 +206,29 @@ export async function getResolvedPharmacy(): Promise<ResolvedPharmacy> {
       state,
       zip,
       full,
-      line2: row.addressLine2,
-      country: row.country,
+      line2: row?.addressLine2,
+      country: row?.country || pharmacy.country,
     },
     latitude: hasCoords ? lat! : null,
     longitude: hasCoords ? lng! : null,
-    placeId: row.placeId,
+    placeId: row?.placeId ?? null,
     mapsEmbed,
     mapsDirections,
-    hours: parseHours(row.hours),
-    fromDb: true,
+    hours: parseHours(row?.hours),
+    logoUrl: row?.logoUrl || pharmacy.logoUrl,
+    coverImageUrl: row?.coverImageUrl || pharmacy.coverImageUrl,
+    about: row?.about ?? pharmacy.description,
+    deliveryNotes: row?.deliveryNotes ?? null,
+    deliveryFeeKes: row?.deliveryFeeKes != null ? Number(row.deliveryFeeKes) : null,
+    deliveryRadiusKm: row?.deliveryRadiusKm ?? null,
+    fromDb: Boolean(row),
   };
 }
 
 export type PharmacySettingsInput = {
   displayName?: string | null;
+  tagline?: string | null;
+  about?: string | null;
   phone?: string | null;
   email?: string | null;
   whatsapp?: string | null;
@@ -191,12 +243,24 @@ export type PharmacySettingsInput = {
   placeId?: string | null;
   mapsEmbedUrl?: string | null;
   hours?: PharmacyHour[];
+  logoUrl?: string | null;
+  coverImageUrl?: string | null;
+  deliveryNotes?: string | null;
+  deliveryFeeKes?: number | null;
+  deliveryRadiusKm?: number | null;
+  careersEmail?: string | null;
   updatedById?: string | null;
 };
 
 export async function upsertPharmacySettings(input: PharmacySettingsInput) {
+  const tenant = await getTenant();
+  const pharmacyId = tenant.pharmacyId;
+  if (!pharmacyId) throw new Error("No active pharmacy in context");
+
   const data = {
     displayName: input.displayName?.trim() || null,
+    tagline: input.tagline?.trim() || null,
+    about: input.about?.trim() || null,
     phone: input.phone?.trim() || null,
     email: input.email?.trim() || null,
     whatsapp: input.whatsapp?.trim() || null,
@@ -217,12 +281,24 @@ export async function upsertPharmacySettings(input: PharmacySettingsInput) {
     placeId: input.placeId?.trim() || null,
     mapsEmbedUrl: input.mapsEmbedUrl?.trim() || null,
     hours: (input.hours ?? []) as object,
+    logoUrl: input.logoUrl?.trim() || null,
+    coverImageUrl: input.coverImageUrl?.trim() || null,
+    deliveryNotes: input.deliveryNotes?.trim() || null,
+    deliveryFeeKes:
+      typeof input.deliveryFeeKes === "number" && Number.isFinite(input.deliveryFeeKes)
+        ? input.deliveryFeeKes
+        : null,
+    deliveryRadiusKm:
+      typeof input.deliveryRadiusKm === "number" && Number.isFinite(input.deliveryRadiusKm)
+        ? input.deliveryRadiusKm
+        : null,
+    careersEmail: input.careersEmail?.trim() || null,
     updatedById: input.updatedById ?? null,
   };
 
   return prisma.pharmacySettings.upsert({
-    where: { id: "default" },
-    create: { id: "default", ...data },
+    where: { pharmacyId },
+    create: { pharmacyId, ...data },
     update: data,
   });
 }

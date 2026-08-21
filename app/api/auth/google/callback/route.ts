@@ -124,6 +124,7 @@ export async function GET(request: Request) {
     const target = resolvePostLoginPath({
       role: user.role,
       customerId: user.profile?.id ?? null,
+      platformAdmin: user.platformAdmin === true,
     });
     return NextResponse.redirect(new URL(target, origin));
   } catch (error) {

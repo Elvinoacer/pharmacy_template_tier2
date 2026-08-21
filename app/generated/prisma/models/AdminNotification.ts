@@ -28,6 +28,7 @@ export type AggregateAdminNotification = {
 
 export type AdminNotificationMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   type: string | null
   title: string | null
   body: string | null
@@ -42,6 +43,7 @@ export type AdminNotificationMinAggregateOutputType = {
 
 export type AdminNotificationMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   type: string | null
   title: string | null
   body: string | null
@@ -56,6 +58,7 @@ export type AdminNotificationMaxAggregateOutputType = {
 
 export type AdminNotificationCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   type: number
   title: number
   body: number
@@ -73,6 +76,7 @@ export type AdminNotificationCountAggregateOutputType = {
 
 export type AdminNotificationMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   type?: true
   title?: true
   body?: true
@@ -87,6 +91,7 @@ export type AdminNotificationMinAggregateInputType = {
 
 export type AdminNotificationMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   type?: true
   title?: true
   body?: true
@@ -101,6 +106,7 @@ export type AdminNotificationMaxAggregateInputType = {
 
 export type AdminNotificationCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   type?: true
   title?: true
   body?: true
@@ -189,6 +195,7 @@ export type AdminNotificationGroupByArgs<ExtArgs extends runtime.Types.Extension
 
 export type AdminNotificationGroupByOutputType = {
   id: string
+  pharmacyId: string
   type: string
   title: string
   body: string
@@ -225,6 +232,7 @@ export type AdminNotificationWhereInput = {
   OR?: Prisma.AdminNotificationWhereInput[]
   NOT?: Prisma.AdminNotificationWhereInput | Prisma.AdminNotificationWhereInput[]
   id?: Prisma.UuidFilter<"AdminNotification"> | string
+  pharmacyId?: Prisma.UuidFilter<"AdminNotification"> | string
   type?: Prisma.StringFilter<"AdminNotification"> | string
   title?: Prisma.StringFilter<"AdminNotification"> | string
   body?: Prisma.StringFilter<"AdminNotification"> | string
@@ -236,10 +244,12 @@ export type AdminNotificationWhereInput = {
   retryAction?: Prisma.StringNullableFilter<"AdminNotification"> | string | null
   retryPayload?: Prisma.JsonNullableFilter<"AdminNotification">
   createdAt?: Prisma.DateTimeFilter<"AdminNotification"> | Date | string
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type AdminNotificationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -251,6 +261,7 @@ export type AdminNotificationOrderByWithRelationInput = {
   retryAction?: Prisma.SortOrderInput | Prisma.SortOrder
   retryPayload?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type AdminNotificationWhereUniqueInput = Prisma.AtLeast<{
@@ -258,6 +269,7 @@ export type AdminNotificationWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.AdminNotificationWhereInput | Prisma.AdminNotificationWhereInput[]
   OR?: Prisma.AdminNotificationWhereInput[]
   NOT?: Prisma.AdminNotificationWhereInput | Prisma.AdminNotificationWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"AdminNotification"> | string
   type?: Prisma.StringFilter<"AdminNotification"> | string
   title?: Prisma.StringFilter<"AdminNotification"> | string
   body?: Prisma.StringFilter<"AdminNotification"> | string
@@ -269,10 +281,12 @@ export type AdminNotificationWhereUniqueInput = Prisma.AtLeast<{
   retryAction?: Prisma.StringNullableFilter<"AdminNotification"> | string | null
   retryPayload?: Prisma.JsonNullableFilter<"AdminNotification">
   createdAt?: Prisma.DateTimeFilter<"AdminNotification"> | Date | string
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id">
 
 export type AdminNotificationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -294,6 +308,7 @@ export type AdminNotificationScalarWhereWithAggregatesInput = {
   OR?: Prisma.AdminNotificationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.AdminNotificationScalarWhereWithAggregatesInput | Prisma.AdminNotificationScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"AdminNotification"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"AdminNotification"> | string
   type?: Prisma.StringWithAggregatesFilter<"AdminNotification"> | string
   title?: Prisma.StringWithAggregatesFilter<"AdminNotification"> | string
   body?: Prisma.StringWithAggregatesFilter<"AdminNotification"> | string
@@ -320,10 +335,12 @@ export type AdminNotificationCreateInput = {
   retryAction?: string | null
   retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAdminNotificationsInput
 }
 
 export type AdminNotificationUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   type: string
   title: string
   body: string
@@ -350,10 +367,12 @@ export type AdminNotificationUpdateInput = {
   retryAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutAdminNotificationsNestedInput
 }
 
 export type AdminNotificationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -369,6 +388,7 @@ export type AdminNotificationUncheckedUpdateInput = {
 
 export type AdminNotificationCreateManyInput = {
   id?: string
+  pharmacyId: string
   type: string
   title: string
   body: string
@@ -399,6 +419,7 @@ export type AdminNotificationUpdateManyMutationInput = {
 
 export type AdminNotificationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -412,8 +433,19 @@ export type AdminNotificationUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type AdminNotificationListRelationFilter = {
+  every?: Prisma.AdminNotificationWhereInput
+  some?: Prisma.AdminNotificationWhereInput
+  none?: Prisma.AdminNotificationWhereInput
+}
+
+export type AdminNotificationOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type AdminNotificationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -429,6 +461,7 @@ export type AdminNotificationCountOrderByAggregateInput = {
 
 export type AdminNotificationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -443,6 +476,7 @@ export type AdminNotificationMaxOrderByAggregateInput = {
 
 export type AdminNotificationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -455,10 +489,188 @@ export type AdminNotificationMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
+export type AdminNotificationCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.AdminNotificationCreateWithoutPharmacyInput, Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput> | Prisma.AdminNotificationCreateWithoutPharmacyInput[] | Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.AdminNotificationCreateOrConnectWithoutPharmacyInput | Prisma.AdminNotificationCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.AdminNotificationCreateManyPharmacyInputEnvelope
+  connect?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+}
+
+export type AdminNotificationUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.AdminNotificationCreateWithoutPharmacyInput, Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput> | Prisma.AdminNotificationCreateWithoutPharmacyInput[] | Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.AdminNotificationCreateOrConnectWithoutPharmacyInput | Prisma.AdminNotificationCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.AdminNotificationCreateManyPharmacyInputEnvelope
+  connect?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+}
+
+export type AdminNotificationUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminNotificationCreateWithoutPharmacyInput, Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput> | Prisma.AdminNotificationCreateWithoutPharmacyInput[] | Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.AdminNotificationCreateOrConnectWithoutPharmacyInput | Prisma.AdminNotificationCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.AdminNotificationUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.AdminNotificationUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.AdminNotificationCreateManyPharmacyInputEnvelope
+  set?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+  disconnect?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+  delete?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+  connect?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+  update?: Prisma.AdminNotificationUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.AdminNotificationUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.AdminNotificationUpdateManyWithWhereWithoutPharmacyInput | Prisma.AdminNotificationUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.AdminNotificationScalarWhereInput | Prisma.AdminNotificationScalarWhereInput[]
+}
+
+export type AdminNotificationUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminNotificationCreateWithoutPharmacyInput, Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput> | Prisma.AdminNotificationCreateWithoutPharmacyInput[] | Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.AdminNotificationCreateOrConnectWithoutPharmacyInput | Prisma.AdminNotificationCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.AdminNotificationUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.AdminNotificationUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.AdminNotificationCreateManyPharmacyInputEnvelope
+  set?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+  disconnect?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+  delete?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+  connect?: Prisma.AdminNotificationWhereUniqueInput | Prisma.AdminNotificationWhereUniqueInput[]
+  update?: Prisma.AdminNotificationUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.AdminNotificationUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.AdminNotificationUpdateManyWithWhereWithoutPharmacyInput | Prisma.AdminNotificationUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.AdminNotificationScalarWhereInput | Prisma.AdminNotificationScalarWhereInput[]
+}
+
+export type AdminNotificationCreateWithoutPharmacyInput = {
+  id?: string
+  type: string
+  title: string
+  body: string
+  severity?: string
+  relatedType?: string | null
+  relatedId?: string | null
+  isRead?: boolean
+  readAt?: Date | string | null
+  retryAction?: string | null
+  retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+}
+
+export type AdminNotificationUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  type: string
+  title: string
+  body: string
+  severity?: string
+  relatedType?: string | null
+  relatedId?: string | null
+  isRead?: boolean
+  readAt?: Date | string | null
+  retryAction?: string | null
+  retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+}
+
+export type AdminNotificationCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.AdminNotificationWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminNotificationCreateWithoutPharmacyInput, Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput>
+}
+
+export type AdminNotificationCreateManyPharmacyInputEnvelope = {
+  data: Prisma.AdminNotificationCreateManyPharmacyInput | Prisma.AdminNotificationCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type AdminNotificationUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.AdminNotificationWhereUniqueInput
+  update: Prisma.XOR<Prisma.AdminNotificationUpdateWithoutPharmacyInput, Prisma.AdminNotificationUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.AdminNotificationCreateWithoutPharmacyInput, Prisma.AdminNotificationUncheckedCreateWithoutPharmacyInput>
+}
+
+export type AdminNotificationUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.AdminNotificationWhereUniqueInput
+  data: Prisma.XOR<Prisma.AdminNotificationUpdateWithoutPharmacyInput, Prisma.AdminNotificationUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type AdminNotificationUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.AdminNotificationScalarWhereInput
+  data: Prisma.XOR<Prisma.AdminNotificationUpdateManyMutationInput, Prisma.AdminNotificationUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type AdminNotificationScalarWhereInput = {
+  AND?: Prisma.AdminNotificationScalarWhereInput | Prisma.AdminNotificationScalarWhereInput[]
+  OR?: Prisma.AdminNotificationScalarWhereInput[]
+  NOT?: Prisma.AdminNotificationScalarWhereInput | Prisma.AdminNotificationScalarWhereInput[]
+  id?: Prisma.UuidFilter<"AdminNotification"> | string
+  pharmacyId?: Prisma.UuidFilter<"AdminNotification"> | string
+  type?: Prisma.StringFilter<"AdminNotification"> | string
+  title?: Prisma.StringFilter<"AdminNotification"> | string
+  body?: Prisma.StringFilter<"AdminNotification"> | string
+  severity?: Prisma.StringFilter<"AdminNotification"> | string
+  relatedType?: Prisma.StringNullableFilter<"AdminNotification"> | string | null
+  relatedId?: Prisma.UuidNullableFilter<"AdminNotification"> | string | null
+  isRead?: Prisma.BoolFilter<"AdminNotification"> | boolean
+  readAt?: Prisma.DateTimeNullableFilter<"AdminNotification"> | Date | string | null
+  retryAction?: Prisma.StringNullableFilter<"AdminNotification"> | string | null
+  retryPayload?: Prisma.JsonNullableFilter<"AdminNotification">
+  createdAt?: Prisma.DateTimeFilter<"AdminNotification"> | Date | string
+}
+
+export type AdminNotificationCreateManyPharmacyInput = {
+  id?: string
+  type: string
+  title: string
+  body: string
+  severity?: string
+  relatedType?: string | null
+  relatedId?: string | null
+  isRead?: boolean
+  readAt?: Date | string | null
+  retryAction?: string | null
+  retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+}
+
+export type AdminNotificationUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  severity?: Prisma.StringFieldUpdateOperationsInput | string
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retryAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AdminNotificationUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  severity?: Prisma.StringFieldUpdateOperationsInput | string
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retryAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AdminNotificationUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  severity?: Prisma.StringFieldUpdateOperationsInput | string
+  relatedType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isRead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retryAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 
 
 export type AdminNotificationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   type?: boolean
   title?: boolean
   body?: boolean
@@ -470,10 +682,12 @@ export type AdminNotificationSelect<ExtArgs extends runtime.Types.Extensions.Int
   retryAction?: boolean
   retryPayload?: boolean
   createdAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["adminNotification"]>
 
 export type AdminNotificationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   type?: boolean
   title?: boolean
   body?: boolean
@@ -485,10 +699,12 @@ export type AdminNotificationSelectCreateManyAndReturn<ExtArgs extends runtime.T
   retryAction?: boolean
   retryPayload?: boolean
   createdAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["adminNotification"]>
 
 export type AdminNotificationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   type?: boolean
   title?: boolean
   body?: boolean
@@ -500,10 +716,12 @@ export type AdminNotificationSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   retryAction?: boolean
   retryPayload?: boolean
   createdAt?: boolean
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["adminNotification"]>
 
 export type AdminNotificationSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   type?: boolean
   title?: boolean
   body?: boolean
@@ -517,13 +735,25 @@ export type AdminNotificationSelectScalar = {
   createdAt?: boolean
 }
 
-export type AdminNotificationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "title" | "body" | "severity" | "relatedType" | "relatedId" | "isRead" | "readAt" | "retryAction" | "retryPayload" | "createdAt", ExtArgs["result"]["adminNotification"]>
+export type AdminNotificationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "type" | "title" | "body" | "severity" | "relatedType" | "relatedId" | "isRead" | "readAt" | "retryAction" | "retryPayload" | "createdAt", ExtArgs["result"]["adminNotification"]>
+export type AdminNotificationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
+export type AdminNotificationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
+export type AdminNotificationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
+}
 
 export type $AdminNotificationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AdminNotification"
-  objects: {}
+  objects: {
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     /**
      * Type of event: refill_new | enquiry_new | feedback_low | ai_escalation | stock_low | payment_failed | campaign_failed | reminder_failed | symptom_escalation | symptom_checkin
      */
@@ -935,6 +1165,7 @@ readonly fields: AdminNotificationFieldRefs;
  */
 export interface Prisma__AdminNotificationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -965,6 +1196,7 @@ export interface Prisma__AdminNotificationClient<T, Null = never, ExtArgs extend
  */
 export interface AdminNotificationFieldRefs {
   readonly id: Prisma.FieldRef<"AdminNotification", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"AdminNotification", 'String'>
   readonly type: Prisma.FieldRef<"AdminNotification", 'String'>
   readonly title: Prisma.FieldRef<"AdminNotification", 'String'>
   readonly body: Prisma.FieldRef<"AdminNotification", 'String'>
@@ -993,6 +1225,10 @@ export type AdminNotificationFindUniqueArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
+  /**
    * Filter, which AdminNotification to fetch.
    */
   where: Prisma.AdminNotificationWhereUniqueInput
@@ -1011,6 +1247,10 @@ export type AdminNotificationFindUniqueOrThrowArgs<ExtArgs extends runtime.Types
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
+  /**
    * Filter, which AdminNotification to fetch.
    */
   where: Prisma.AdminNotificationWhereUniqueInput
@@ -1028,6 +1268,10 @@ export type AdminNotificationFindFirstArgs<ExtArgs extends runtime.Types.Extensi
    * Omit specific fields from the AdminNotification
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
   /**
    * Filter, which AdminNotification to fetch.
    */
@@ -1077,6 +1321,10 @@ export type AdminNotificationFindFirstOrThrowArgs<ExtArgs extends runtime.Types.
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
+  /**
    * Filter, which AdminNotification to fetch.
    */
   where?: Prisma.AdminNotificationWhereInput
@@ -1124,6 +1372,10 @@ export type AdminNotificationFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Omit specific fields from the AdminNotification
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
   /**
    * Filter, which AdminNotifications to fetch.
    */
@@ -1173,6 +1425,10 @@ export type AdminNotificationCreateArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
+  /**
    * The data needed to create a AdminNotification.
    */
   data: Prisma.XOR<Prisma.AdminNotificationCreateInput, Prisma.AdminNotificationUncheckedCreateInput>
@@ -1206,6 +1462,10 @@ export type AdminNotificationCreateManyAndReturnArgs<ExtArgs extends runtime.Typ
    */
   data: Prisma.AdminNotificationCreateManyInput | Prisma.AdminNotificationCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1220,6 +1480,10 @@ export type AdminNotificationUpdateArgs<ExtArgs extends runtime.Types.Extensions
    * Omit specific fields from the AdminNotification
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
   /**
    * The data needed to update a AdminNotification.
    */
@@ -1272,6 +1536,10 @@ export type AdminNotificationUpdateManyAndReturnArgs<ExtArgs extends runtime.Typ
    * Limit how many AdminNotifications to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1286,6 +1554,10 @@ export type AdminNotificationUpsertArgs<ExtArgs extends runtime.Types.Extensions
    * Omit specific fields from the AdminNotification
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
   /**
    * The filter to search for the AdminNotification to update in case it exists.
    */
@@ -1312,6 +1584,10 @@ export type AdminNotificationDeleteArgs<ExtArgs extends runtime.Types.Extensions
    * Omit specific fields from the AdminNotification
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
   /**
    * Filter which AdminNotification to delete.
    */
@@ -1344,4 +1620,8 @@ export type AdminNotificationDefaultArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the AdminNotification
    */
   omit?: Prisma.AdminNotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminNotificationInclude<ExtArgs> | null
 }

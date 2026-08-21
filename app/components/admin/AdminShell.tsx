@@ -55,6 +55,7 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
+import { PharmacySwitcher } from "@/app/components/admin/PharmacySwitcher";
 import {
   useSidebarEnhanced,
   useSidebarScroll,
@@ -218,6 +219,13 @@ export const ADMIN_LINKS = [
     icon: Settings,
     group: "intelligence",
     description: "Store & branch config",
+  },
+  {
+    href: "/admin/setup",
+    label: "Go-live checklist",
+    icon: ClipboardCheck,
+    group: "intelligence",
+    description: "Onboarding remaining items",
   },
 ] as const;
 
@@ -387,11 +395,18 @@ export function AdminShell({
             {!collapsed && (
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold leading-tight admin-text">
-                  Pharmacy Care
+                  {user.memberships.find((m) => m.pharmacyId === user.activePharmacyId)?.name ||
+                    user.memberships[0]?.name ||
+                    "Pharmacy Care"}
                 </p>
                 <p className="truncate text-[10px] uppercase tracking-widest font-semibold text-emerald-700 dark:text-emerald-400">
                   {user.role} workspace
                 </p>
+                {!collapsed && (user.memberships.length > 1 || user.platformAdmin) && (
+                  <div className="mt-1">
+                    <PharmacySwitcher user={user} compact />
+                  </div>
+                )}
               </div>
             )}
           </Link>

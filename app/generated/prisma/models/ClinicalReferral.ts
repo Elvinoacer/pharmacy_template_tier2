@@ -26,6 +26,7 @@ export type AggregateClinicalReferral = {
 
 export type ClinicalReferralMinAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   screeningId: string | null
   customerId: string | null
   referredById: string | null
@@ -51,6 +52,7 @@ export type ClinicalReferralMinAggregateOutputType = {
 
 export type ClinicalReferralMaxAggregateOutputType = {
   id: string | null
+  pharmacyId: string | null
   screeningId: string | null
   customerId: string | null
   referredById: string | null
@@ -76,6 +78,7 @@ export type ClinicalReferralMaxAggregateOutputType = {
 
 export type ClinicalReferralCountAggregateOutputType = {
   id: number
+  pharmacyId: number
   screeningId: number
   customerId: number
   referredById: number
@@ -103,6 +106,7 @@ export type ClinicalReferralCountAggregateOutputType = {
 
 export type ClinicalReferralMinAggregateInputType = {
   id?: true
+  pharmacyId?: true
   screeningId?: true
   customerId?: true
   referredById?: true
@@ -128,6 +132,7 @@ export type ClinicalReferralMinAggregateInputType = {
 
 export type ClinicalReferralMaxAggregateInputType = {
   id?: true
+  pharmacyId?: true
   screeningId?: true
   customerId?: true
   referredById?: true
@@ -153,6 +158,7 @@ export type ClinicalReferralMaxAggregateInputType = {
 
 export type ClinicalReferralCountAggregateInputType = {
   id?: true
+  pharmacyId?: true
   screeningId?: true
   customerId?: true
   referredById?: true
@@ -251,6 +257,7 @@ export type ClinicalReferralGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type ClinicalReferralGroupByOutputType = {
   id: string
+  pharmacyId: string
   screeningId: string | null
   customerId: string | null
   referredById: string | null
@@ -297,6 +304,7 @@ export type ClinicalReferralWhereInput = {
   OR?: Prisma.ClinicalReferralWhereInput[]
   NOT?: Prisma.ClinicalReferralWhereInput | Prisma.ClinicalReferralWhereInput[]
   id?: Prisma.UuidFilter<"ClinicalReferral"> | string
+  pharmacyId?: Prisma.UuidFilter<"ClinicalReferral"> | string
   screeningId?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
   customerId?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
   referredById?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
@@ -321,10 +329,12 @@ export type ClinicalReferralWhereInput = {
   screening?: Prisma.XOR<Prisma.HealthScreeningRecordNullableScalarRelationFilter, Prisma.HealthScreeningRecordWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   referredBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }
 
 export type ClinicalReferralOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   screeningId?: Prisma.SortOrderInput | Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   referredById?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -349,6 +359,7 @@ export type ClinicalReferralOrderByWithRelationInput = {
   screening?: Prisma.HealthScreeningRecordOrderByWithRelationInput
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   referredBy?: Prisma.UserOrderByWithRelationInput
+  pharmacy?: Prisma.PharmacyOrderByWithRelationInput
 }
 
 export type ClinicalReferralWhereUniqueInput = Prisma.AtLeast<{
@@ -357,6 +368,7 @@ export type ClinicalReferralWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ClinicalReferralWhereInput | Prisma.ClinicalReferralWhereInput[]
   OR?: Prisma.ClinicalReferralWhereInput[]
   NOT?: Prisma.ClinicalReferralWhereInput | Prisma.ClinicalReferralWhereInput[]
+  pharmacyId?: Prisma.UuidFilter<"ClinicalReferral"> | string
   screeningId?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
   customerId?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
   referredById?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
@@ -380,10 +392,12 @@ export type ClinicalReferralWhereUniqueInput = Prisma.AtLeast<{
   screening?: Prisma.XOR<Prisma.HealthScreeningRecordNullableScalarRelationFilter, Prisma.HealthScreeningRecordWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   referredBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  pharmacy?: Prisma.XOR<Prisma.PharmacyScalarRelationFilter, Prisma.PharmacyWhereInput>
 }, "id" | "referenceCode">
 
 export type ClinicalReferralOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   screeningId?: Prisma.SortOrderInput | Prisma.SortOrder
   customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   referredById?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -415,6 +429,7 @@ export type ClinicalReferralScalarWhereWithAggregatesInput = {
   OR?: Prisma.ClinicalReferralScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ClinicalReferralScalarWhereWithAggregatesInput | Prisma.ClinicalReferralScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"ClinicalReferral"> | string
+  pharmacyId?: Prisma.UuidWithAggregatesFilter<"ClinicalReferral"> | string
   screeningId?: Prisma.UuidNullableWithAggregatesFilter<"ClinicalReferral"> | string | null
   customerId?: Prisma.UuidNullableWithAggregatesFilter<"ClinicalReferral"> | string | null
   referredById?: Prisma.UuidNullableWithAggregatesFilter<"ClinicalReferral"> | string | null
@@ -461,10 +476,12 @@ export type ClinicalReferralCreateInput = {
   screening?: Prisma.HealthScreeningRecordCreateNestedOneWithoutReferralsInput
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutClinicalReferralsInput
   referredBy?: Prisma.UserCreateNestedOneWithoutReferralsIssuedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutReferralsInput
 }
 
 export type ClinicalReferralUncheckedCreateInput = {
   id?: string
+  pharmacyId: string
   screeningId?: string | null
   customerId?: string | null
   referredById?: string | null
@@ -511,10 +528,12 @@ export type ClinicalReferralUpdateInput = {
   screening?: Prisma.HealthScreeningRecordUpdateOneWithoutReferralsNestedInput
   customer?: Prisma.CustomerProfileUpdateOneWithoutClinicalReferralsNestedInput
   referredBy?: Prisma.UserUpdateOneWithoutReferralsIssuedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutReferralsNestedInput
 }
 
 export type ClinicalReferralUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   screeningId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -540,6 +559,7 @@ export type ClinicalReferralUncheckedUpdateInput = {
 
 export type ClinicalReferralCreateManyInput = {
   id?: string
+  pharmacyId: string
   screeningId?: string | null
   customerId?: string | null
   referredById?: string | null
@@ -587,6 +607,7 @@ export type ClinicalReferralUpdateManyMutationInput = {
 
 export type ClinicalReferralUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   screeningId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -622,6 +643,7 @@ export type ClinicalReferralOrderByRelationAggregateInput = {
 
 export type ClinicalReferralCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   screeningId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   referredById?: Prisma.SortOrder
@@ -647,6 +669,7 @@ export type ClinicalReferralCountOrderByAggregateInput = {
 
 export type ClinicalReferralMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   screeningId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   referredById?: Prisma.SortOrder
@@ -672,6 +695,7 @@ export type ClinicalReferralMaxOrderByAggregateInput = {
 
 export type ClinicalReferralMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  pharmacyId?: Prisma.SortOrder
   screeningId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   referredById?: Prisma.SortOrder
@@ -693,6 +717,48 @@ export type ClinicalReferralMinOrderByAggregateInput = {
   issuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ClinicalReferralCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.ClinicalReferralCreateWithoutPharmacyInput, Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput> | Prisma.ClinicalReferralCreateWithoutPharmacyInput[] | Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ClinicalReferralCreateOrConnectWithoutPharmacyInput | Prisma.ClinicalReferralCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.ClinicalReferralCreateManyPharmacyInputEnvelope
+  connect?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+}
+
+export type ClinicalReferralUncheckedCreateNestedManyWithoutPharmacyInput = {
+  create?: Prisma.XOR<Prisma.ClinicalReferralCreateWithoutPharmacyInput, Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput> | Prisma.ClinicalReferralCreateWithoutPharmacyInput[] | Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ClinicalReferralCreateOrConnectWithoutPharmacyInput | Prisma.ClinicalReferralCreateOrConnectWithoutPharmacyInput[]
+  createMany?: Prisma.ClinicalReferralCreateManyPharmacyInputEnvelope
+  connect?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+}
+
+export type ClinicalReferralUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.ClinicalReferralCreateWithoutPharmacyInput, Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput> | Prisma.ClinicalReferralCreateWithoutPharmacyInput[] | Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ClinicalReferralCreateOrConnectWithoutPharmacyInput | Prisma.ClinicalReferralCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.ClinicalReferralUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.ClinicalReferralUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.ClinicalReferralCreateManyPharmacyInputEnvelope
+  set?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+  disconnect?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+  delete?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+  connect?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+  update?: Prisma.ClinicalReferralUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.ClinicalReferralUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.ClinicalReferralUpdateManyWithWhereWithoutPharmacyInput | Prisma.ClinicalReferralUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.ClinicalReferralScalarWhereInput | Prisma.ClinicalReferralScalarWhereInput[]
+}
+
+export type ClinicalReferralUncheckedUpdateManyWithoutPharmacyNestedInput = {
+  create?: Prisma.XOR<Prisma.ClinicalReferralCreateWithoutPharmacyInput, Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput> | Prisma.ClinicalReferralCreateWithoutPharmacyInput[] | Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput[]
+  connectOrCreate?: Prisma.ClinicalReferralCreateOrConnectWithoutPharmacyInput | Prisma.ClinicalReferralCreateOrConnectWithoutPharmacyInput[]
+  upsert?: Prisma.ClinicalReferralUpsertWithWhereUniqueWithoutPharmacyInput | Prisma.ClinicalReferralUpsertWithWhereUniqueWithoutPharmacyInput[]
+  createMany?: Prisma.ClinicalReferralCreateManyPharmacyInputEnvelope
+  set?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+  disconnect?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+  delete?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+  connect?: Prisma.ClinicalReferralWhereUniqueInput | Prisma.ClinicalReferralWhereUniqueInput[]
+  update?: Prisma.ClinicalReferralUpdateWithWhereUniqueWithoutPharmacyInput | Prisma.ClinicalReferralUpdateWithWhereUniqueWithoutPharmacyInput[]
+  updateMany?: Prisma.ClinicalReferralUpdateManyWithWhereWithoutPharmacyInput | Prisma.ClinicalReferralUpdateManyWithWhereWithoutPharmacyInput[]
+  deleteMany?: Prisma.ClinicalReferralScalarWhereInput | Prisma.ClinicalReferralScalarWhereInput[]
 }
 
 export type ClinicalReferralCreateNestedManyWithoutReferredByInput = {
@@ -821,6 +887,111 @@ export type ClinicalReferralUncheckedUpdateManyWithoutScreeningNestedInput = {
   deleteMany?: Prisma.ClinicalReferralScalarWhereInput | Prisma.ClinicalReferralScalarWhereInput[]
 }
 
+export type ClinicalReferralCreateWithoutPharmacyInput = {
+  id?: string
+  referenceCode: string
+  patientName: string
+  patientPhone?: string | null
+  patientEmail?: string | null
+  patientDob?: Date | string | null
+  patientGender?: string | null
+  destinationType: string
+  facilityName: string
+  facilityContact?: string | null
+  specialistType?: string | null
+  urgency?: string
+  reason: string
+  clinicalSummary: string
+  pharmacistRecommendations?: string | null
+  status?: string
+  issuedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  screening?: Prisma.HealthScreeningRecordCreateNestedOneWithoutReferralsInput
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutClinicalReferralsInput
+  referredBy?: Prisma.UserCreateNestedOneWithoutReferralsIssuedInput
+}
+
+export type ClinicalReferralUncheckedCreateWithoutPharmacyInput = {
+  id?: string
+  screeningId?: string | null
+  customerId?: string | null
+  referredById?: string | null
+  referenceCode: string
+  patientName: string
+  patientPhone?: string | null
+  patientEmail?: string | null
+  patientDob?: Date | string | null
+  patientGender?: string | null
+  destinationType: string
+  facilityName: string
+  facilityContact?: string | null
+  specialistType?: string | null
+  urgency?: string
+  reason: string
+  clinicalSummary: string
+  pharmacistRecommendations?: string | null
+  status?: string
+  issuedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ClinicalReferralCreateOrConnectWithoutPharmacyInput = {
+  where: Prisma.ClinicalReferralWhereUniqueInput
+  create: Prisma.XOR<Prisma.ClinicalReferralCreateWithoutPharmacyInput, Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput>
+}
+
+export type ClinicalReferralCreateManyPharmacyInputEnvelope = {
+  data: Prisma.ClinicalReferralCreateManyPharmacyInput | Prisma.ClinicalReferralCreateManyPharmacyInput[]
+  skipDuplicates?: boolean
+}
+
+export type ClinicalReferralUpsertWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.ClinicalReferralWhereUniqueInput
+  update: Prisma.XOR<Prisma.ClinicalReferralUpdateWithoutPharmacyInput, Prisma.ClinicalReferralUncheckedUpdateWithoutPharmacyInput>
+  create: Prisma.XOR<Prisma.ClinicalReferralCreateWithoutPharmacyInput, Prisma.ClinicalReferralUncheckedCreateWithoutPharmacyInput>
+}
+
+export type ClinicalReferralUpdateWithWhereUniqueWithoutPharmacyInput = {
+  where: Prisma.ClinicalReferralWhereUniqueInput
+  data: Prisma.XOR<Prisma.ClinicalReferralUpdateWithoutPharmacyInput, Prisma.ClinicalReferralUncheckedUpdateWithoutPharmacyInput>
+}
+
+export type ClinicalReferralUpdateManyWithWhereWithoutPharmacyInput = {
+  where: Prisma.ClinicalReferralScalarWhereInput
+  data: Prisma.XOR<Prisma.ClinicalReferralUpdateManyMutationInput, Prisma.ClinicalReferralUncheckedUpdateManyWithoutPharmacyInput>
+}
+
+export type ClinicalReferralScalarWhereInput = {
+  AND?: Prisma.ClinicalReferralScalarWhereInput | Prisma.ClinicalReferralScalarWhereInput[]
+  OR?: Prisma.ClinicalReferralScalarWhereInput[]
+  NOT?: Prisma.ClinicalReferralScalarWhereInput | Prisma.ClinicalReferralScalarWhereInput[]
+  id?: Prisma.UuidFilter<"ClinicalReferral"> | string
+  pharmacyId?: Prisma.UuidFilter<"ClinicalReferral"> | string
+  screeningId?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
+  customerId?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
+  referredById?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
+  referenceCode?: Prisma.StringFilter<"ClinicalReferral"> | string
+  patientName?: Prisma.StringFilter<"ClinicalReferral"> | string
+  patientPhone?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
+  patientEmail?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
+  patientDob?: Prisma.DateTimeNullableFilter<"ClinicalReferral"> | Date | string | null
+  patientGender?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
+  destinationType?: Prisma.StringFilter<"ClinicalReferral"> | string
+  facilityName?: Prisma.StringFilter<"ClinicalReferral"> | string
+  facilityContact?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
+  specialistType?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
+  urgency?: Prisma.StringFilter<"ClinicalReferral"> | string
+  reason?: Prisma.StringFilter<"ClinicalReferral"> | string
+  clinicalSummary?: Prisma.StringFilter<"ClinicalReferral"> | string
+  pharmacistRecommendations?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
+  status?: Prisma.StringFilter<"ClinicalReferral"> | string
+  issuedAt?: Prisma.DateTimeFilter<"ClinicalReferral"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"ClinicalReferral"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"ClinicalReferral"> | Date | string
+}
+
 export type ClinicalReferralCreateWithoutReferredByInput = {
   id?: string
   referenceCode: string
@@ -843,10 +1014,12 @@ export type ClinicalReferralCreateWithoutReferredByInput = {
   updatedAt?: Date | string
   screening?: Prisma.HealthScreeningRecordCreateNestedOneWithoutReferralsInput
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutClinicalReferralsInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutReferralsInput
 }
 
 export type ClinicalReferralUncheckedCreateWithoutReferredByInput = {
   id?: string
+  pharmacyId: string
   screeningId?: string | null
   customerId?: string | null
   referenceCode: string
@@ -895,34 +1068,6 @@ export type ClinicalReferralUpdateManyWithWhereWithoutReferredByInput = {
   data: Prisma.XOR<Prisma.ClinicalReferralUpdateManyMutationInput, Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByInput>
 }
 
-export type ClinicalReferralScalarWhereInput = {
-  AND?: Prisma.ClinicalReferralScalarWhereInput | Prisma.ClinicalReferralScalarWhereInput[]
-  OR?: Prisma.ClinicalReferralScalarWhereInput[]
-  NOT?: Prisma.ClinicalReferralScalarWhereInput | Prisma.ClinicalReferralScalarWhereInput[]
-  id?: Prisma.UuidFilter<"ClinicalReferral"> | string
-  screeningId?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
-  customerId?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
-  referredById?: Prisma.UuidNullableFilter<"ClinicalReferral"> | string | null
-  referenceCode?: Prisma.StringFilter<"ClinicalReferral"> | string
-  patientName?: Prisma.StringFilter<"ClinicalReferral"> | string
-  patientPhone?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
-  patientEmail?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
-  patientDob?: Prisma.DateTimeNullableFilter<"ClinicalReferral"> | Date | string | null
-  patientGender?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
-  destinationType?: Prisma.StringFilter<"ClinicalReferral"> | string
-  facilityName?: Prisma.StringFilter<"ClinicalReferral"> | string
-  facilityContact?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
-  specialistType?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
-  urgency?: Prisma.StringFilter<"ClinicalReferral"> | string
-  reason?: Prisma.StringFilter<"ClinicalReferral"> | string
-  clinicalSummary?: Prisma.StringFilter<"ClinicalReferral"> | string
-  pharmacistRecommendations?: Prisma.StringNullableFilter<"ClinicalReferral"> | string | null
-  status?: Prisma.StringFilter<"ClinicalReferral"> | string
-  issuedAt?: Prisma.DateTimeFilter<"ClinicalReferral"> | Date | string
-  createdAt?: Prisma.DateTimeFilter<"ClinicalReferral"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"ClinicalReferral"> | Date | string
-}
-
 export type ClinicalReferralCreateWithoutCustomerInput = {
   id?: string
   referenceCode: string
@@ -945,10 +1090,12 @@ export type ClinicalReferralCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   screening?: Prisma.HealthScreeningRecordCreateNestedOneWithoutReferralsInput
   referredBy?: Prisma.UserCreateNestedOneWithoutReferralsIssuedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutReferralsInput
 }
 
 export type ClinicalReferralUncheckedCreateWithoutCustomerInput = {
   id?: string
+  pharmacyId: string
   screeningId?: string | null
   referredById?: string | null
   referenceCode: string
@@ -1019,10 +1166,12 @@ export type ClinicalReferralCreateWithoutScreeningInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutClinicalReferralsInput
   referredBy?: Prisma.UserCreateNestedOneWithoutReferralsIssuedInput
+  pharmacy: Prisma.PharmacyCreateNestedOneWithoutReferralsInput
 }
 
 export type ClinicalReferralUncheckedCreateWithoutScreeningInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   referredById?: string | null
   referenceCode: string
@@ -1071,8 +1220,109 @@ export type ClinicalReferralUpdateManyWithWhereWithoutScreeningInput = {
   data: Prisma.XOR<Prisma.ClinicalReferralUpdateManyMutationInput, Prisma.ClinicalReferralUncheckedUpdateManyWithoutScreeningInput>
 }
 
+export type ClinicalReferralCreateManyPharmacyInput = {
+  id?: string
+  screeningId?: string | null
+  customerId?: string | null
+  referredById?: string | null
+  referenceCode: string
+  patientName: string
+  patientPhone?: string | null
+  patientEmail?: string | null
+  patientDob?: Date | string | null
+  patientGender?: string | null
+  destinationType: string
+  facilityName: string
+  facilityContact?: string | null
+  specialistType?: string | null
+  urgency?: string
+  reason: string
+  clinicalSummary: string
+  pharmacistRecommendations?: string | null
+  status?: string
+  issuedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ClinicalReferralUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientDob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinationType?: Prisma.StringFieldUpdateOperationsInput | string
+  facilityName?: Prisma.StringFieldUpdateOperationsInput | string
+  facilityContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialistType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  urgency?: Prisma.StringFieldUpdateOperationsInput | string
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  clinicalSummary?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacistRecommendations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  screening?: Prisma.HealthScreeningRecordUpdateOneWithoutReferralsNestedInput
+  customer?: Prisma.CustomerProfileUpdateOneWithoutClinicalReferralsNestedInput
+  referredBy?: Prisma.UserUpdateOneWithoutReferralsIssuedNestedInput
+}
+
+export type ClinicalReferralUncheckedUpdateWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  screeningId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientDob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinationType?: Prisma.StringFieldUpdateOperationsInput | string
+  facilityName?: Prisma.StringFieldUpdateOperationsInput | string
+  facilityContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialistType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  urgency?: Prisma.StringFieldUpdateOperationsInput | string
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  clinicalSummary?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacistRecommendations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ClinicalReferralUncheckedUpdateManyWithoutPharmacyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  screeningId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  patientName?: Prisma.StringFieldUpdateOperationsInput | string
+  patientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientDob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientGender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinationType?: Prisma.StringFieldUpdateOperationsInput | string
+  facilityName?: Prisma.StringFieldUpdateOperationsInput | string
+  facilityContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialistType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  urgency?: Prisma.StringFieldUpdateOperationsInput | string
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  clinicalSummary?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacistRecommendations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ClinicalReferralCreateManyReferredByInput = {
   id?: string
+  pharmacyId: string
   screeningId?: string | null
   customerId?: string | null
   referenceCode: string
@@ -1117,10 +1367,12 @@ export type ClinicalReferralUpdateWithoutReferredByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   screening?: Prisma.HealthScreeningRecordUpdateOneWithoutReferralsNestedInput
   customer?: Prisma.CustomerProfileUpdateOneWithoutClinicalReferralsNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutReferralsNestedInput
 }
 
 export type ClinicalReferralUncheckedUpdateWithoutReferredByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   screeningId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1145,6 +1397,7 @@ export type ClinicalReferralUncheckedUpdateWithoutReferredByInput = {
 
 export type ClinicalReferralUncheckedUpdateManyWithoutReferredByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   screeningId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1169,6 +1422,7 @@ export type ClinicalReferralUncheckedUpdateManyWithoutReferredByInput = {
 
 export type ClinicalReferralCreateManyCustomerInput = {
   id?: string
+  pharmacyId: string
   screeningId?: string | null
   referredById?: string | null
   referenceCode: string
@@ -1213,10 +1467,12 @@ export type ClinicalReferralUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   screening?: Prisma.HealthScreeningRecordUpdateOneWithoutReferralsNestedInput
   referredBy?: Prisma.UserUpdateOneWithoutReferralsIssuedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutReferralsNestedInput
 }
 
 export type ClinicalReferralUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   screeningId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1241,6 +1497,7 @@ export type ClinicalReferralUncheckedUpdateWithoutCustomerInput = {
 
 export type ClinicalReferralUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   screeningId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1265,6 +1522,7 @@ export type ClinicalReferralUncheckedUpdateManyWithoutCustomerInput = {
 
 export type ClinicalReferralCreateManyScreeningInput = {
   id?: string
+  pharmacyId: string
   customerId?: string | null
   referredById?: string | null
   referenceCode: string
@@ -1309,10 +1567,12 @@ export type ClinicalReferralUpdateWithoutScreeningInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerProfileUpdateOneWithoutClinicalReferralsNestedInput
   referredBy?: Prisma.UserUpdateOneWithoutReferralsIssuedNestedInput
+  pharmacy?: Prisma.PharmacyUpdateOneRequiredWithoutReferralsNestedInput
 }
 
 export type ClinicalReferralUncheckedUpdateWithoutScreeningInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1337,6 +1597,7 @@ export type ClinicalReferralUncheckedUpdateWithoutScreeningInput = {
 
 export type ClinicalReferralUncheckedUpdateManyWithoutScreeningInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  pharmacyId?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceCode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1363,6 +1624,7 @@ export type ClinicalReferralUncheckedUpdateManyWithoutScreeningInput = {
 
 export type ClinicalReferralSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   screeningId?: boolean
   customerId?: boolean
   referredById?: boolean
@@ -1387,10 +1649,12 @@ export type ClinicalReferralSelect<ExtArgs extends runtime.Types.Extensions.Inte
   screening?: boolean | Prisma.ClinicalReferral$screeningArgs<ExtArgs>
   customer?: boolean | Prisma.ClinicalReferral$customerArgs<ExtArgs>
   referredBy?: boolean | Prisma.ClinicalReferral$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["clinicalReferral"]>
 
 export type ClinicalReferralSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   screeningId?: boolean
   customerId?: boolean
   referredById?: boolean
@@ -1415,10 +1679,12 @@ export type ClinicalReferralSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   screening?: boolean | Prisma.ClinicalReferral$screeningArgs<ExtArgs>
   customer?: boolean | Prisma.ClinicalReferral$customerArgs<ExtArgs>
   referredBy?: boolean | Prisma.ClinicalReferral$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["clinicalReferral"]>
 
 export type ClinicalReferralSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  pharmacyId?: boolean
   screeningId?: boolean
   customerId?: boolean
   referredById?: boolean
@@ -1443,10 +1709,12 @@ export type ClinicalReferralSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   screening?: boolean | Prisma.ClinicalReferral$screeningArgs<ExtArgs>
   customer?: boolean | Prisma.ClinicalReferral$customerArgs<ExtArgs>
   referredBy?: boolean | Prisma.ClinicalReferral$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["clinicalReferral"]>
 
 export type ClinicalReferralSelectScalar = {
   id?: boolean
+  pharmacyId?: boolean
   screeningId?: boolean
   customerId?: boolean
   referredById?: boolean
@@ -1470,21 +1738,24 @@ export type ClinicalReferralSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ClinicalReferralOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "screeningId" | "customerId" | "referredById" | "referenceCode" | "patientName" | "patientPhone" | "patientEmail" | "patientDob" | "patientGender" | "destinationType" | "facilityName" | "facilityContact" | "specialistType" | "urgency" | "reason" | "clinicalSummary" | "pharmacistRecommendations" | "status" | "issuedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["clinicalReferral"]>
+export type ClinicalReferralOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pharmacyId" | "screeningId" | "customerId" | "referredById" | "referenceCode" | "patientName" | "patientPhone" | "patientEmail" | "patientDob" | "patientGender" | "destinationType" | "facilityName" | "facilityContact" | "specialistType" | "urgency" | "reason" | "clinicalSummary" | "pharmacistRecommendations" | "status" | "issuedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["clinicalReferral"]>
 export type ClinicalReferralInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   screening?: boolean | Prisma.ClinicalReferral$screeningArgs<ExtArgs>
   customer?: boolean | Prisma.ClinicalReferral$customerArgs<ExtArgs>
   referredBy?: boolean | Prisma.ClinicalReferral$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type ClinicalReferralIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   screening?: boolean | Prisma.ClinicalReferral$screeningArgs<ExtArgs>
   customer?: boolean | Prisma.ClinicalReferral$customerArgs<ExtArgs>
   referredBy?: boolean | Prisma.ClinicalReferral$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 export type ClinicalReferralIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   screening?: boolean | Prisma.ClinicalReferral$screeningArgs<ExtArgs>
   customer?: boolean | Prisma.ClinicalReferral$customerArgs<ExtArgs>
   referredBy?: boolean | Prisma.ClinicalReferral$referredByArgs<ExtArgs>
+  pharmacy?: boolean | Prisma.PharmacyDefaultArgs<ExtArgs>
 }
 
 export type $ClinicalReferralPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1493,9 +1764,11 @@ export type $ClinicalReferralPayload<ExtArgs extends runtime.Types.Extensions.In
     screening: Prisma.$HealthScreeningRecordPayload<ExtArgs> | null
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     referredBy: Prisma.$UserPayload<ExtArgs> | null
+    pharmacy: Prisma.$PharmacyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    pharmacyId: string
     screeningId: string | null
     customerId: string | null
     referredById: string | null
@@ -1914,6 +2187,7 @@ export interface Prisma__ClinicalReferralClient<T, Null = never, ExtArgs extends
   screening<T extends Prisma.ClinicalReferral$screeningArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClinicalReferral$screeningArgs<ExtArgs>>): Prisma.Prisma__HealthScreeningRecordClient<runtime.Types.Result.GetResult<Prisma.$HealthScreeningRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.ClinicalReferral$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClinicalReferral$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   referredBy<T extends Prisma.ClinicalReferral$referredByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClinicalReferral$referredByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacy<T extends Prisma.PharmacyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PharmacyDefaultArgs<ExtArgs>>): Prisma.Prisma__PharmacyClient<runtime.Types.Result.GetResult<Prisma.$PharmacyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1944,6 +2218,7 @@ export interface Prisma__ClinicalReferralClient<T, Null = never, ExtArgs extends
  */
 export interface ClinicalReferralFieldRefs {
   readonly id: Prisma.FieldRef<"ClinicalReferral", 'String'>
+  readonly pharmacyId: Prisma.FieldRef<"ClinicalReferral", 'String'>
   readonly screeningId: Prisma.FieldRef<"ClinicalReferral", 'String'>
   readonly customerId: Prisma.FieldRef<"ClinicalReferral", 'String'>
   readonly referredById: Prisma.FieldRef<"ClinicalReferral", 'String'>

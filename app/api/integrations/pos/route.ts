@@ -75,13 +75,13 @@ export async function POST(req: Request) {
     // Find by SKU (preferred) or slug — these live on PharmacyInventory now.
     const existing = m.sku
       ? await prisma.pharmacyInventory
-          .findUnique({
+          .findFirst({
             where: { sku: m.sku },
             include: { medicationMaster: { select: { id: true, name: true } } },
           })
           .catch(() => null)
       : await prisma.pharmacyInventory
-          .findUnique({
+          .findFirst({
             where: { slug },
             include: { medicationMaster: { select: { id: true, name: true } } },
           })

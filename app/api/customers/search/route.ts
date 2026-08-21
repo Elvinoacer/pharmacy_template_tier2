@@ -318,7 +318,7 @@ export async function GET(req: Request) {
         fullName: true,
         phone: true,
         user: { select: { email: true } },
-        loyaltyAccount: { select: { points: true } },
+        loyaltyAccounts: { take: 1, select: { points: true } },
       },
     });
     if (!profile) return NextResponse.json({ customer: null });
@@ -331,7 +331,7 @@ export async function GET(req: Request) {
         fullName: profile.fullName,
         email: profile.user.email,
         phone: profile.phone,
-        points: profile.loyaltyAccount?.points ?? undefined,
+        points: profile.loyaltyAccounts?.[0]?.points ?? undefined,
       },
     });
   }
@@ -368,7 +368,7 @@ export async function GET(req: Request) {
           id: true,
           fullName: true,
           phone: true,
-          loyaltyAccount: { select: { points: true } },
+          loyaltyAccounts: { take: 1, select: { points: true } },
         },
       },
     },
@@ -394,7 +394,7 @@ export async function GET(req: Request) {
         fullName: r.profile!.fullName,
         email: r.email,
         phone: r.profile!.phone,
-        points: r.profile!.loyaltyAccount?.points ?? undefined,
+        points: r.profile!.loyaltyAccounts?.[0]?.points ?? undefined,
       })),
   });
 }
