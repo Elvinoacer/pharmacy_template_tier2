@@ -85,6 +85,8 @@ export const ModelName = {
   MedicationSchedule: 'MedicationSchedule',
   DoseLog: 'DoseLog',
   AdherenceEscalation: 'AdherenceEscalation',
+  RefillSyncEnrollment: 'RefillSyncEnrollment',
+  AdherenceFollowUp: 'AdherenceFollowUp',
   MedicationCategory: 'MedicationCategory',
   MedicationMaster: 'MedicationMaster',
   PharmacyInventory: 'PharmacyInventory',
@@ -282,6 +284,10 @@ export const PrescriptionScalarFieldEnum = {
   prescriber: 'prescriber',
   unitPrice: 'unitPrice',
   status: 'status',
+  isChronic: 'isChronic',
+  chronicCondition: 'chronicCondition',
+  isSynced: 'isSynced',
+  syncAnchorDay: 'syncAnchorDay',
   intakeChannel: 'intakeChannel',
   lifecycleStatus: 'lifecycleStatus',
   patientVerified: 'patientVerified',
@@ -727,6 +733,41 @@ export const AdherenceEscalationScalarFieldEnum = {
 } as const
 
 export type AdherenceEscalationScalarFieldEnum = (typeof AdherenceEscalationScalarFieldEnum)[keyof typeof AdherenceEscalationScalarFieldEnum]
+
+
+export const RefillSyncEnrollmentScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  anchorDay: 'anchorDay',
+  status: 'status',
+  preferredPickup: 'preferredPickup',
+  notes: 'notes',
+  enrolledAt: 'enrolledAt',
+  nextSyncDate: 'nextSyncDate',
+  lastSyncDate: 'lastSyncDate',
+  syncedPrescriptionIds: 'syncedPrescriptionIds',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RefillSyncEnrollmentScalarFieldEnum = (typeof RefillSyncEnrollmentScalarFieldEnum)[keyof typeof RefillSyncEnrollmentScalarFieldEnum]
+
+
+export const AdherenceFollowUpScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  prescriptionId: 'prescriptionId',
+  reason: 'reason',
+  callOutcome: 'callOutcome',
+  barrierIdentified: 'barrierIdentified',
+  clinicalAction: 'clinicalAction',
+  notes: 'notes',
+  nextFollowUpDate: 'nextFollowUpDate',
+  staffId: 'staffId',
+  createdAt: 'createdAt'
+} as const
+
+export type AdherenceFollowUpScalarFieldEnum = (typeof AdherenceFollowUpScalarFieldEnum)[keyof typeof AdherenceFollowUpScalarFieldEnum]
 
 
 export const MedicationCategoryScalarFieldEnum = {

@@ -28,6 +28,8 @@ import {
   FolderKanban,
   ClipboardList,
   CreditCard,
+  Calendar,
+  RefreshCw,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -46,6 +48,8 @@ export const PORTAL_LINKS = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
   { href: "/portal/refills", label: "Refills", icon: Pill, group: "medications" },
   { href: "/portal/prescriptions", label: "Prescriptions", icon: FileText, group: "medications" },
+  { href: "/portal/calendar", label: "Medication Calendar", icon: Calendar, group: "medications" },
+  { href: "/portal/sync", label: "Refill Synchronization", icon: RefreshCw, group: "medications" },
   { href: "/portal/counselling", label: "Medication Counselling", icon: HeartPulse, group: "medications" },
   { href: "/portal/orders", label: "Orders", icon: ShoppingCart, group: "orders" },
   { href: "/portal/feel", label: "How do you feel?", icon: HeartPulse, group: "health" },

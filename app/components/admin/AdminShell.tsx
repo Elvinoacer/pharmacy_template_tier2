@@ -139,6 +139,13 @@ export const ADMIN_LINKS = [
 
   // ── Patient Care & Outreach ──
   {
+    href: "/admin/adherence",
+    label: "Adherence & Chronic Care",
+    icon: Activity,
+    group: "care",
+    description: "Outreach, sync & adherence",
+  },
+  {
     href: "/admin/inbox",
     label: "Messages & Enquiries",
     icon: Inbox,

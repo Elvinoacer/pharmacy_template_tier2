@@ -431,6 +431,8 @@ export const ModelName = {
   MedicationSchedule: 'MedicationSchedule',
   DoseLog: 'DoseLog',
   AdherenceEscalation: 'AdherenceEscalation',
+  RefillSyncEnrollment: 'RefillSyncEnrollment',
+  AdherenceFollowUp: 'AdherenceFollowUp',
   MedicationCategory: 'MedicationCategory',
   MedicationMaster: 'MedicationMaster',
   PharmacyInventory: 'PharmacyInventory',
@@ -477,7 +479,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "pushDevice" | "session" | "passwordReset" | "emailVerification" | "customerProfile" | "caregiver" | "customerPreference" | "prescription" | "refillRequest" | "timelineEvent" | "segment" | "customerSegment" | "conversation" | "message" | "messageTemplate" | "notification" | "reminder" | "campaign" | "loyaltyAccount" | "loyaltyTransaction" | "coupon" | "enquiry" | "feedback" | "knowledgeArticle" | "aiConversation" | "aiMessage" | "auditLog" | "customerNote" | "prescriptionAdherence" | "prescriptionClarificationLog" | "medicationSchedule" | "doseLog" | "adherenceEscalation" | "medicationCategory" | "medicationMaster" | "pharmacyInventory" | "inventoryLot" | "stockMovement" | "activeIngredient" | "medicationActiveIngredient" | "manufacturer" | "medicationInteraction" | "clinicalTag" | "medicationClinicalTag" | "medicationLookup" | "order" | "orderItem" | "payment" | "loyaltyRule" | "caregiverInvite" | "pharmacyService" | "serviceBooking" | "adminNotification" | "pharmacySettings" | "symptomSession" | "symptomMessage" | "symptomCheckIn" | "prescriptionFill" | "inventoryReservation" | "refund" | "inventoryAllocation" | "commerceEvent" | "medicationPriceHistory" | "cashierSession"
+    modelProps: "user" | "pushDevice" | "session" | "passwordReset" | "emailVerification" | "customerProfile" | "caregiver" | "customerPreference" | "prescription" | "refillRequest" | "timelineEvent" | "segment" | "customerSegment" | "conversation" | "message" | "messageTemplate" | "notification" | "reminder" | "campaign" | "loyaltyAccount" | "loyaltyTransaction" | "coupon" | "enquiry" | "feedback" | "knowledgeArticle" | "aiConversation" | "aiMessage" | "auditLog" | "customerNote" | "prescriptionAdherence" | "prescriptionClarificationLog" | "medicationSchedule" | "doseLog" | "adherenceEscalation" | "refillSyncEnrollment" | "adherenceFollowUp" | "medicationCategory" | "medicationMaster" | "pharmacyInventory" | "inventoryLot" | "stockMovement" | "activeIngredient" | "medicationActiveIngredient" | "manufacturer" | "medicationInteraction" | "clinicalTag" | "medicationClinicalTag" | "medicationLookup" | "order" | "orderItem" | "payment" | "loyaltyRule" | "caregiverInvite" | "pharmacyService" | "serviceBooking" | "adminNotification" | "pharmacySettings" | "symptomSession" | "symptomMessage" | "symptomCheckIn" | "prescriptionFill" | "inventoryReservation" | "refund" | "inventoryAllocation" | "commerceEvent" | "medicationPriceHistory" | "cashierSession"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2997,6 +2999,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RefillSyncEnrollment: {
+      payload: Prisma.$RefillSyncEnrollmentPayload<ExtArgs>
+      fields: Prisma.RefillSyncEnrollmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RefillSyncEnrollmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RefillSyncEnrollmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>
+        }
+        findFirst: {
+          args: Prisma.RefillSyncEnrollmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RefillSyncEnrollmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>
+        }
+        findMany: {
+          args: Prisma.RefillSyncEnrollmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>[]
+        }
+        create: {
+          args: Prisma.RefillSyncEnrollmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>
+        }
+        createMany: {
+          args: Prisma.RefillSyncEnrollmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RefillSyncEnrollmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>[]
+        }
+        delete: {
+          args: Prisma.RefillSyncEnrollmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>
+        }
+        update: {
+          args: Prisma.RefillSyncEnrollmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.RefillSyncEnrollmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RefillSyncEnrollmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RefillSyncEnrollmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.RefillSyncEnrollmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RefillSyncEnrollmentPayload>
+        }
+        aggregate: {
+          args: Prisma.RefillSyncEnrollmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRefillSyncEnrollment>
+        }
+        groupBy: {
+          args: Prisma.RefillSyncEnrollmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RefillSyncEnrollmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RefillSyncEnrollmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RefillSyncEnrollmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    AdherenceFollowUp: {
+      payload: Prisma.$AdherenceFollowUpPayload<ExtArgs>
+      fields: Prisma.AdherenceFollowUpFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdherenceFollowUpFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdherenceFollowUpFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>
+        }
+        findFirst: {
+          args: Prisma.AdherenceFollowUpFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdherenceFollowUpFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>
+        }
+        findMany: {
+          args: Prisma.AdherenceFollowUpFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>[]
+        }
+        create: {
+          args: Prisma.AdherenceFollowUpCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>
+        }
+        createMany: {
+          args: Prisma.AdherenceFollowUpCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdherenceFollowUpCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>[]
+        }
+        delete: {
+          args: Prisma.AdherenceFollowUpDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>
+        }
+        update: {
+          args: Prisma.AdherenceFollowUpUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdherenceFollowUpDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdherenceFollowUpUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdherenceFollowUpUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdherenceFollowUpUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdherenceFollowUpPayload>
+        }
+        aggregate: {
+          args: Prisma.AdherenceFollowUpAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdherenceFollowUp>
+        }
+        groupBy: {
+          args: Prisma.AdherenceFollowUpGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdherenceFollowUpGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdherenceFollowUpCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdherenceFollowUpCountAggregateOutputType> | number
+        }
+      }
+    }
     MedicationCategory: {
       payload: Prisma.$MedicationCategoryPayload<ExtArgs>
       fields: Prisma.MedicationCategoryFieldRefs
@@ -5478,6 +5628,10 @@ export const PrescriptionScalarFieldEnum = {
   prescriber: 'prescriber',
   unitPrice: 'unitPrice',
   status: 'status',
+  isChronic: 'isChronic',
+  chronicCondition: 'chronicCondition',
+  isSynced: 'isSynced',
+  syncAnchorDay: 'syncAnchorDay',
   intakeChannel: 'intakeChannel',
   lifecycleStatus: 'lifecycleStatus',
   patientVerified: 'patientVerified',
@@ -5923,6 +6077,41 @@ export const AdherenceEscalationScalarFieldEnum = {
 } as const
 
 export type AdherenceEscalationScalarFieldEnum = (typeof AdherenceEscalationScalarFieldEnum)[keyof typeof AdherenceEscalationScalarFieldEnum]
+
+
+export const RefillSyncEnrollmentScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  anchorDay: 'anchorDay',
+  status: 'status',
+  preferredPickup: 'preferredPickup',
+  notes: 'notes',
+  enrolledAt: 'enrolledAt',
+  nextSyncDate: 'nextSyncDate',
+  lastSyncDate: 'lastSyncDate',
+  syncedPrescriptionIds: 'syncedPrescriptionIds',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RefillSyncEnrollmentScalarFieldEnum = (typeof RefillSyncEnrollmentScalarFieldEnum)[keyof typeof RefillSyncEnrollmentScalarFieldEnum]
+
+
+export const AdherenceFollowUpScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  prescriptionId: 'prescriptionId',
+  reason: 'reason',
+  callOutcome: 'callOutcome',
+  barrierIdentified: 'barrierIdentified',
+  clinicalAction: 'clinicalAction',
+  notes: 'notes',
+  nextFollowUpDate: 'nextFollowUpDate',
+  staffId: 'staffId',
+  createdAt: 'createdAt'
+} as const
+
+export type AdherenceFollowUpScalarFieldEnum = (typeof AdherenceFollowUpScalarFieldEnum)[keyof typeof AdherenceFollowUpScalarFieldEnum]
 
 
 export const MedicationCategoryScalarFieldEnum = {
@@ -7500,6 +7689,8 @@ export type GlobalOmitConfig = {
   medicationSchedule?: Prisma.MedicationScheduleOmit
   doseLog?: Prisma.DoseLogOmit
   adherenceEscalation?: Prisma.AdherenceEscalationOmit
+  refillSyncEnrollment?: Prisma.RefillSyncEnrollmentOmit
+  adherenceFollowUp?: Prisma.AdherenceFollowUpOmit
   medicationCategory?: Prisma.MedicationCategoryOmit
   medicationMaster?: Prisma.MedicationMasterOmit
   pharmacyInventory?: Prisma.PharmacyInventoryOmit

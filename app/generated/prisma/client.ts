@@ -223,6 +223,18 @@ export type DoseLog = Prisma.DoseLogModel
  */
 export type AdherenceEscalation = Prisma.AdherenceEscalationModel
 /**
+ * Model RefillSyncEnrollment
+ * Patient enrollment in the recurring refill synchronization program.
+ * Aligns multiple chronic maintenance prescriptions to a unified monthly anchor day.
+ */
+export type RefillSyncEnrollment = Prisma.RefillSyncEnrollmentModel
+/**
+ * Model AdherenceFollowUp
+ * Records structured clinical follow-up calls and interventions conducted by pharmacy staff.
+ * Covers low adherence, missed refills, missed doses, side effects, and sync consultations.
+ */
+export type AdherenceFollowUp = Prisma.AdherenceFollowUpModel
+/**
  * Model MedicationCategory
  * Canonical list of catalogue categories. Medication.category stores the slug
  * as free-text for POS/import flexibility; this table powers admin CRUD,
