@@ -355,6 +355,7 @@ export type ServiceBookingWhereInput = {
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
   recordedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  immunizationAppointment?: Prisma.XOR<Prisma.ImmunizationAppointmentNullableScalarRelationFilter, Prisma.ImmunizationAppointmentWhereInput> | null
 }
 
 export type ServiceBookingOrderByWithRelationInput = {
@@ -383,6 +384,7 @@ export type ServiceBookingOrderByWithRelationInput = {
   customer?: Prisma.CustomerProfileOrderByWithRelationInput
   order?: Prisma.OrderOrderByWithRelationInput
   recordedBy?: Prisma.UserOrderByWithRelationInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentOrderByWithRelationInput
 }
 
 export type ServiceBookingWhereUniqueInput = Prisma.AtLeast<{
@@ -414,6 +416,7 @@ export type ServiceBookingWhereUniqueInput = Prisma.AtLeast<{
   customer?: Prisma.XOR<Prisma.CustomerProfileNullableScalarRelationFilter, Prisma.CustomerProfileWhereInput> | null
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
   recordedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  immunizationAppointment?: Prisma.XOR<Prisma.ImmunizationAppointmentNullableScalarRelationFilter, Prisma.ImmunizationAppointmentWhereInput> | null
 }, "id" | "orderId">
 
 export type ServiceBookingOrderByWithAggregationInput = {
@@ -494,6 +497,7 @@ export type ServiceBookingCreateInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutServiceBookingsInput
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingUncheckedCreateInput = {
@@ -518,6 +522,7 @@ export type ServiceBookingUncheckedCreateInput = {
   pushToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingUpdateInput = {
@@ -542,6 +547,7 @@ export type ServiceBookingUpdateInput = {
   customer?: Prisma.CustomerProfileUpdateOneWithoutServiceBookingsNestedInput
   order?: Prisma.OrderUpdateOneWithoutServiceBookingNestedInput
   recordedBy?: Prisma.UserUpdateOneWithoutServiceBookingsRecordedNestedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingUncheckedUpdateInput = {
@@ -566,6 +572,7 @@ export type ServiceBookingUncheckedUpdateInput = {
   pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingCreateManyInput = {
@@ -889,6 +896,22 @@ export type ServiceBookingUncheckedUpdateManyWithoutServiceNestedInput = {
   deleteMany?: Prisma.ServiceBookingScalarWhereInput | Prisma.ServiceBookingScalarWhereInput[]
 }
 
+export type ServiceBookingCreateNestedOneWithoutImmunizationAppointmentInput = {
+  create?: Prisma.XOR<Prisma.ServiceBookingCreateWithoutImmunizationAppointmentInput, Prisma.ServiceBookingUncheckedCreateWithoutImmunizationAppointmentInput>
+  connectOrCreate?: Prisma.ServiceBookingCreateOrConnectWithoutImmunizationAppointmentInput
+  connect?: Prisma.ServiceBookingWhereUniqueInput
+}
+
+export type ServiceBookingUpdateOneWithoutImmunizationAppointmentNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceBookingCreateWithoutImmunizationAppointmentInput, Prisma.ServiceBookingUncheckedCreateWithoutImmunizationAppointmentInput>
+  connectOrCreate?: Prisma.ServiceBookingCreateOrConnectWithoutImmunizationAppointmentInput
+  upsert?: Prisma.ServiceBookingUpsertWithoutImmunizationAppointmentInput
+  disconnect?: Prisma.ServiceBookingWhereInput | boolean
+  delete?: Prisma.ServiceBookingWhereInput | boolean
+  connect?: Prisma.ServiceBookingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceBookingUpdateToOneWithWhereWithoutImmunizationAppointmentInput, Prisma.ServiceBookingUpdateWithoutImmunizationAppointmentInput>, Prisma.ServiceBookingUncheckedUpdateWithoutImmunizationAppointmentInput>
+}
+
 export type ServiceBookingCreateWithoutRecordedByInput = {
   id?: string
   fullName: string
@@ -910,6 +933,7 @@ export type ServiceBookingCreateWithoutRecordedByInput = {
   service: Prisma.PharmacyServiceCreateNestedOneWithoutBookingsInput
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutServiceBookingsInput
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutRecordedByInput = {
@@ -933,6 +957,7 @@ export type ServiceBookingUncheckedCreateWithoutRecordedByInput = {
   pushToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingCreateOrConnectWithoutRecordedByInput = {
@@ -1009,6 +1034,7 @@ export type ServiceBookingCreateWithoutCustomerInput = {
   service: Prisma.PharmacyServiceCreateNestedOneWithoutBookingsInput
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutCustomerInput = {
@@ -1032,6 +1058,7 @@ export type ServiceBookingUncheckedCreateWithoutCustomerInput = {
   pushToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingCreateOrConnectWithoutCustomerInput = {
@@ -1081,6 +1108,7 @@ export type ServiceBookingCreateWithoutOrderInput = {
   service: Prisma.PharmacyServiceCreateNestedOneWithoutBookingsInput
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutServiceBookingsInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutOrderInput = {
@@ -1104,6 +1132,7 @@ export type ServiceBookingUncheckedCreateWithoutOrderInput = {
   pushToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingCreateOrConnectWithoutOrderInput = {
@@ -1143,6 +1172,7 @@ export type ServiceBookingUpdateWithoutOrderInput = {
   service?: Prisma.PharmacyServiceUpdateOneRequiredWithoutBookingsNestedInput
   customer?: Prisma.CustomerProfileUpdateOneWithoutServiceBookingsNestedInput
   recordedBy?: Prisma.UserUpdateOneWithoutServiceBookingsRecordedNestedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingUncheckedUpdateWithoutOrderInput = {
@@ -1166,6 +1196,7 @@ export type ServiceBookingUncheckedUpdateWithoutOrderInput = {
   pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingCreateWithoutServiceInput = {
@@ -1189,6 +1220,7 @@ export type ServiceBookingCreateWithoutServiceInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutServiceBookingsInput
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutServiceInput = {
@@ -1212,6 +1244,7 @@ export type ServiceBookingUncheckedCreateWithoutServiceInput = {
   pushToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type ServiceBookingCreateOrConnectWithoutServiceInput = {
@@ -1238,6 +1271,118 @@ export type ServiceBookingUpdateWithWhereUniqueWithoutServiceInput = {
 export type ServiceBookingUpdateManyWithWhereWithoutServiceInput = {
   where: Prisma.ServiceBookingScalarWhereInput
   data: Prisma.XOR<Prisma.ServiceBookingUpdateManyMutationInput, Prisma.ServiceBookingUncheckedUpdateManyWithoutServiceInput>
+}
+
+export type ServiceBookingCreateWithoutImmunizationAppointmentInput = {
+  id?: string
+  fullName: string
+  phone: string
+  email?: string | null
+  notes?: string | null
+  preferredDate?: string | null
+  preferredTime?: string | null
+  status?: string
+  paymentStatus?: string
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paidAt?: Date | string | null
+  paidVia?: string | null
+  paymentRef?: string | null
+  staffNotes?: string | null
+  pushToken?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  service: Prisma.PharmacyServiceCreateNestedOneWithoutBookingsInput
+  customer?: Prisma.CustomerProfileCreateNestedOneWithoutServiceBookingsInput
+  order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
+  recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
+}
+
+export type ServiceBookingUncheckedCreateWithoutImmunizationAppointmentInput = {
+  id?: string
+  serviceId: string
+  customerId?: string | null
+  fullName: string
+  phone: string
+  email?: string | null
+  notes?: string | null
+  preferredDate?: string | null
+  preferredTime?: string | null
+  status?: string
+  paymentStatus?: string
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  orderId?: string | null
+  paidAt?: Date | string | null
+  paidVia?: string | null
+  paymentRef?: string | null
+  recordedById?: string | null
+  staffNotes?: string | null
+  pushToken?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ServiceBookingCreateOrConnectWithoutImmunizationAppointmentInput = {
+  where: Prisma.ServiceBookingWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceBookingCreateWithoutImmunizationAppointmentInput, Prisma.ServiceBookingUncheckedCreateWithoutImmunizationAppointmentInput>
+}
+
+export type ServiceBookingUpsertWithoutImmunizationAppointmentInput = {
+  update: Prisma.XOR<Prisma.ServiceBookingUpdateWithoutImmunizationAppointmentInput, Prisma.ServiceBookingUncheckedUpdateWithoutImmunizationAppointmentInput>
+  create: Prisma.XOR<Prisma.ServiceBookingCreateWithoutImmunizationAppointmentInput, Prisma.ServiceBookingUncheckedCreateWithoutImmunizationAppointmentInput>
+  where?: Prisma.ServiceBookingWhereInput
+}
+
+export type ServiceBookingUpdateToOneWithWhereWithoutImmunizationAppointmentInput = {
+  where?: Prisma.ServiceBookingWhereInput
+  data: Prisma.XOR<Prisma.ServiceBookingUpdateWithoutImmunizationAppointmentInput, Prisma.ServiceBookingUncheckedUpdateWithoutImmunizationAppointmentInput>
+}
+
+export type ServiceBookingUpdateWithoutImmunizationAppointmentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  paymentStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidVia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service?: Prisma.PharmacyServiceUpdateOneRequiredWithoutBookingsNestedInput
+  customer?: Prisma.CustomerProfileUpdateOneWithoutServiceBookingsNestedInput
+  order?: Prisma.OrderUpdateOneWithoutServiceBookingNestedInput
+  recordedBy?: Prisma.UserUpdateOneWithoutServiceBookingsRecordedNestedInput
+}
+
+export type ServiceBookingUncheckedUpdateWithoutImmunizationAppointmentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  paymentStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidVia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ServiceBookingCreateManyRecordedByInput = {
@@ -1284,6 +1429,7 @@ export type ServiceBookingUpdateWithoutRecordedByInput = {
   service?: Prisma.PharmacyServiceUpdateOneRequiredWithoutBookingsNestedInput
   customer?: Prisma.CustomerProfileUpdateOneWithoutServiceBookingsNestedInput
   order?: Prisma.OrderUpdateOneWithoutServiceBookingNestedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingUncheckedUpdateWithoutRecordedByInput = {
@@ -1307,6 +1453,7 @@ export type ServiceBookingUncheckedUpdateWithoutRecordedByInput = {
   pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingUncheckedUpdateManyWithoutRecordedByInput = {
@@ -1376,6 +1523,7 @@ export type ServiceBookingUpdateWithoutCustomerInput = {
   service?: Prisma.PharmacyServiceUpdateOneRequiredWithoutBookingsNestedInput
   order?: Prisma.OrderUpdateOneWithoutServiceBookingNestedInput
   recordedBy?: Prisma.UserUpdateOneWithoutServiceBookingsRecordedNestedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingUncheckedUpdateWithoutCustomerInput = {
@@ -1399,6 +1547,7 @@ export type ServiceBookingUncheckedUpdateWithoutCustomerInput = {
   pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingUncheckedUpdateManyWithoutCustomerInput = {
@@ -1468,6 +1617,7 @@ export type ServiceBookingUpdateWithoutServiceInput = {
   customer?: Prisma.CustomerProfileUpdateOneWithoutServiceBookingsNestedInput
   order?: Prisma.OrderUpdateOneWithoutServiceBookingNestedInput
   recordedBy?: Prisma.UserUpdateOneWithoutServiceBookingsRecordedNestedInput
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingUncheckedUpdateWithoutServiceInput = {
@@ -1491,6 +1641,7 @@ export type ServiceBookingUncheckedUpdateWithoutServiceInput = {
   pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  immunizationAppointment?: Prisma.ImmunizationAppointmentUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type ServiceBookingUncheckedUpdateManyWithoutServiceInput = {
@@ -1544,6 +1695,7 @@ export type ServiceBookingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   customer?: boolean | Prisma.ServiceBooking$customerArgs<ExtArgs>
   order?: boolean | Prisma.ServiceBooking$orderArgs<ExtArgs>
   recordedBy?: boolean | Prisma.ServiceBooking$recordedByArgs<ExtArgs>
+  immunizationAppointment?: boolean | Prisma.ServiceBooking$immunizationAppointmentArgs<ExtArgs>
 }, ExtArgs["result"]["serviceBooking"]>
 
 export type ServiceBookingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1632,6 +1784,7 @@ export type ServiceBookingInclude<ExtArgs extends runtime.Types.Extensions.Inter
   customer?: boolean | Prisma.ServiceBooking$customerArgs<ExtArgs>
   order?: boolean | Prisma.ServiceBooking$orderArgs<ExtArgs>
   recordedBy?: boolean | Prisma.ServiceBooking$recordedByArgs<ExtArgs>
+  immunizationAppointment?: boolean | Prisma.ServiceBooking$immunizationAppointmentArgs<ExtArgs>
 }
 export type ServiceBookingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   service?: boolean | Prisma.PharmacyServiceDefaultArgs<ExtArgs>
@@ -1653,6 +1806,7 @@ export type $ServiceBookingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     customer: Prisma.$CustomerProfilePayload<ExtArgs> | null
     order: Prisma.$OrderPayload<ExtArgs> | null
     recordedBy: Prisma.$UserPayload<ExtArgs> | null
+    immunizationAppointment: Prisma.$ImmunizationAppointmentPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2095,6 +2249,7 @@ export interface Prisma__ServiceBookingClient<T, Null = never, ExtArgs extends r
   customer<T extends Prisma.ServiceBooking$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceBooking$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerProfileClient<runtime.Types.Result.GetResult<Prisma.$CustomerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   order<T extends Prisma.ServiceBooking$orderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceBooking$orderArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   recordedBy<T extends Prisma.ServiceBooking$recordedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceBooking$recordedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  immunizationAppointment<T extends Prisma.ServiceBooking$immunizationAppointmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceBooking$immunizationAppointmentArgs<ExtArgs>>): Prisma.Prisma__ImmunizationAppointmentClient<runtime.Types.Result.GetResult<Prisma.$ImmunizationAppointmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2600,6 +2755,25 @@ export type ServiceBooking$recordedByArgs<ExtArgs extends runtime.Types.Extensio
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * ServiceBooking.immunizationAppointment
+ */
+export type ServiceBooking$immunizationAppointmentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmunizationAppointment
+   */
+  select?: Prisma.ImmunizationAppointmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmunizationAppointment
+   */
+  omit?: Prisma.ImmunizationAppointmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmunizationAppointmentInclude<ExtArgs> | null
+  where?: Prisma.ImmunizationAppointmentWhereInput
 }
 
 /**

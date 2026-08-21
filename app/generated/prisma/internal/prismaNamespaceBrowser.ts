@@ -119,7 +119,17 @@ export const ModelName = {
   MedicationPriceHistory: 'MedicationPriceHistory',
   CashierSession: 'CashierSession',
   HealthScreeningRecord: 'HealthScreeningRecord',
-  ClinicalReferral: 'ClinicalReferral'
+  ClinicalReferral: 'ClinicalReferral',
+  PharmacyImmunizationPolicy: 'PharmacyImmunizationPolicy',
+  VaccineProduct: 'VaccineProduct',
+  ImmunizerCredential: 'ImmunizerCredential',
+  ImmunizationAppointment: 'ImmunizationAppointment',
+  PreVaccinationScreening: 'PreVaccinationScreening',
+  VaccinationConsent: 'VaccinationConsent',
+  ImmunizationRecord: 'ImmunizationRecord',
+  AdverseEventFollowingImmunization: 'AdverseEventFollowingImmunization',
+  PreventiveCounsellingSession: 'PreventiveCounsellingSession',
+  PublicHealthCampaign: 'PublicHealthCampaign'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1441,6 +1451,268 @@ export const ClinicalReferralScalarFieldEnum = {
 } as const
 
 export type ClinicalReferralScalarFieldEnum = (typeof ClinicalReferralScalarFieldEnum)[keyof typeof ClinicalReferralScalarFieldEnum]
+
+
+export const PharmacyImmunizationPolicyScalarFieldEnum = {
+  id: 'id',
+  enabled: 'enabled',
+  jurisdiction: 'jurisdiction',
+  authorizingBody: 'authorizingBody',
+  authorizingRegulation: 'authorizingRegulation',
+  supervisingPharmacistRequired: 'supervisingPharmacistRequired',
+  observationMinutesDefault: 'observationMinutesDefault',
+  visRequired: 'visRequired',
+  aefiReportingContact: 'aefiReportingContact',
+  aefiReportingAuthority: 'aefiReportingAuthority',
+  coldChainNotes: 'coldChainNotes',
+  publicDisclaimer: 'publicDisclaimer',
+  walkInAccepted: 'walkInAccepted',
+  paediatricOnSite: 'paediatricOnSite',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PharmacyImmunizationPolicyScalarFieldEnum = (typeof PharmacyImmunizationPolicyScalarFieldEnum)[keyof typeof PharmacyImmunizationPolicyScalarFieldEnum]
+
+
+export const VaccineProductScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  name: 'name',
+  antigen: 'antigen',
+  brandName: 'brandName',
+  manufacturer: 'manufacturer',
+  category: 'category',
+  diseasesPrevented: 'diseasesPrevented',
+  description: 'description',
+  indications: 'indications',
+  whoShouldGet: 'whoShouldGet',
+  whoShouldWait: 'whoShouldWait',
+  contraindications: 'contraindications',
+  precautions: 'precautions',
+  commonSideEffects: 'commonSideEffects',
+  rareRisks: 'rareRisks',
+  route: 'route',
+  siteOptions: 'siteOptions',
+  doseMl: 'doseMl',
+  seriesDoses: 'seriesDoses',
+  seriesIntervalDays: 'seriesIntervalDays',
+  boosterIntervalMonths: 'boosterIntervalMonths',
+  minAgeMonths: 'minAgeMonths',
+  maxAgeMonths: 'maxAgeMonths',
+  visTitle: 'visTitle',
+  visVersion: 'visVersion',
+  visSummary: 'visSummary',
+  storageRequirements: 'storageRequirements',
+  priceKes: 'priceKes',
+  active: 'active',
+  bookable: 'bookable',
+  pharmacyAdministered: 'pharmacyAdministered',
+  travelRelated: 'travelRelated',
+  seasonLabel: 'seasonLabel',
+  regulatoryNotes: 'regulatoryNotes',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VaccineProductScalarFieldEnum = (typeof VaccineProductScalarFieldEnum)[keyof typeof VaccineProductScalarFieldEnum]
+
+
+export const ImmunizerCredentialScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  credentialType: 'credentialType',
+  title: 'title',
+  licenseNumber: 'licenseNumber',
+  issuedBy: 'issuedBy',
+  issuedAt: 'issuedAt',
+  expiresAt: 'expiresAt',
+  verified: 'verified',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ImmunizerCredentialScalarFieldEnum = (typeof ImmunizerCredentialScalarFieldEnum)[keyof typeof ImmunizerCredentialScalarFieldEnum]
+
+
+export const ImmunizationAppointmentScalarFieldEnum = {
+  id: 'id',
+  vaccineProductId: 'vaccineProductId',
+  customerId: 'customerId',
+  serviceBookingId: 'serviceBookingId',
+  campaignId: 'campaignId',
+  patientName: 'patientName',
+  patientPhone: 'patientPhone',
+  patientEmail: 'patientEmail',
+  patientDob: 'patientDob',
+  patientGender: 'patientGender',
+  preferredDate: 'preferredDate',
+  preferredTime: 'preferredTime',
+  status: 'status',
+  source: 'source',
+  notes: 'notes',
+  staffNotes: 'staffNotes',
+  assignedToId: 'assignedToId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ImmunizationAppointmentScalarFieldEnum = (typeof ImmunizationAppointmentScalarFieldEnum)[keyof typeof ImmunizationAppointmentScalarFieldEnum]
+
+
+export const PreVaccinationScreeningScalarFieldEnum = {
+  id: 'id',
+  appointmentId: 'appointmentId',
+  customerId: 'customerId',
+  screenedById: 'screenedById',
+  answers: 'answers',
+  allergyFlag: 'allergyFlag',
+  pregnancyFlag: 'pregnancyFlag',
+  immunocompromisedFlag: 'immunocompromisedFlag',
+  recentIllnessFlag: 'recentIllnessFlag',
+  previousReactionFlag: 'previousReactionFlag',
+  anticoagulantFlag: 'anticoagulantFlag',
+  outcome: 'outcome',
+  outcomeReason: 'outcomeReason',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type PreVaccinationScreeningScalarFieldEnum = (typeof PreVaccinationScreeningScalarFieldEnum)[keyof typeof PreVaccinationScreeningScalarFieldEnum]
+
+
+export const VaccinationConsentScalarFieldEnum = {
+  id: 'id',
+  appointmentId: 'appointmentId',
+  vaccineProductId: 'vaccineProductId',
+  customerId: 'customerId',
+  visProvided: 'visProvided',
+  visVersion: 'visVersion',
+  visProvidedAt: 'visProvidedAt',
+  consentType: 'consentType',
+  consenterName: 'consenterName',
+  consenterRelationship: 'consenterRelationship',
+  signatureName: 'signatureName',
+  consentTextSnapshot: 'consentTextSnapshot',
+  signedAt: 'signedAt',
+  withdrawnAt: 'withdrawnAt',
+  createdAt: 'createdAt'
+} as const
+
+export type VaccinationConsentScalarFieldEnum = (typeof VaccinationConsentScalarFieldEnum)[keyof typeof VaccinationConsentScalarFieldEnum]
+
+
+export const ImmunizationRecordScalarFieldEnum = {
+  id: 'id',
+  appointmentId: 'appointmentId',
+  vaccineProductId: 'vaccineProductId',
+  customerId: 'customerId',
+  consentId: 'consentId',
+  administeredById: 'administeredById',
+  supervisingPharmacistId: 'supervisingPharmacistId',
+  patientName: 'patientName',
+  patientDob: 'patientDob',
+  patientGender: 'patientGender',
+  patientPhone: 'patientPhone',
+  doseNumber: 'doseNumber',
+  seriesComplete: 'seriesComplete',
+  administeredAt: 'administeredAt',
+  route: 'route',
+  site: 'site',
+  doseMl: 'doseMl',
+  lotNumber: 'lotNumber',
+  expiryDate: 'expiryDate',
+  manufacturer: 'manufacturer',
+  visGivenAt: 'visGivenAt',
+  visVersion: 'visVersion',
+  observationMinutes: 'observationMinutes',
+  observationUntil: 'observationUntil',
+  observationOutcome: 'observationOutcome',
+  nextDueDate: 'nextDueDate',
+  certificateCode: 'certificateCode',
+  campaignId: 'campaignId',
+  notes: 'notes',
+  status: 'status',
+  voidReason: 'voidReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ImmunizationRecordScalarFieldEnum = (typeof ImmunizationRecordScalarFieldEnum)[keyof typeof ImmunizationRecordScalarFieldEnum]
+
+
+export const AdverseEventFollowingImmunizationScalarFieldEnum = {
+  id: 'id',
+  immunizationId: 'immunizationId',
+  onsetAt: 'onsetAt',
+  severity: 'severity',
+  symptoms: 'symptoms',
+  actionTaken: 'actionTaken',
+  outcome: 'outcome',
+  reportedToAuthority: 'reportedToAuthority',
+  reportedAt: 'reportedAt',
+  reportedById: 'reportedById',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdverseEventFollowingImmunizationScalarFieldEnum = (typeof AdverseEventFollowingImmunizationScalarFieldEnum)[keyof typeof AdverseEventFollowingImmunizationScalarFieldEnum]
+
+
+export const PreventiveCounsellingSessionScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  counsellorId: 'counsellorId',
+  campaignId: 'campaignId',
+  topic: 'topic',
+  format: 'format',
+  durationMinutes: 'durationMinutes',
+  patientName: 'patientName',
+  patientPhone: 'patientPhone',
+  summary: 'summary',
+  goals: 'goals',
+  resourcesGiven: 'resourcesGiven',
+  followUpDate: 'followUpDate',
+  preferredDate: 'preferredDate',
+  preferredTime: 'preferredTime',
+  status: 'status',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PreventiveCounsellingSessionScalarFieldEnum = (typeof PreventiveCounsellingSessionScalarFieldEnum)[keyof typeof PreventiveCounsellingSessionScalarFieldEnum]
+
+
+export const PublicHealthCampaignScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  slug: 'slug',
+  title: 'title',
+  theme: 'theme',
+  description: 'description',
+  short: 'short',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  targetPopulation: 'targetPopulation',
+  vaccinesOffered: 'vaccinesOffered',
+  walkInDays: 'walkInDays',
+  targetDoses: 'targetDoses',
+  dosesAdministered: 'dosesAdministered',
+  educationTopics: 'educationTopics',
+  locationNotes: 'locationNotes',
+  regulatoryNotes: 'regulatoryNotes',
+  heroImage: 'heroImage',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PublicHealthCampaignScalarFieldEnum = (typeof PublicHealthCampaignScalarFieldEnum)[keyof typeof PublicHealthCampaignScalarFieldEnum]
 
 
 export const SortOrder = {

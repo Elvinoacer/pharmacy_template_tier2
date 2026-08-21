@@ -1,3 +1,5 @@
+import { searchVaccines } from "./vaccination-catalog";
+
 /**
  * Dummy pharmacy content for Tier 1 Digital Presence.
  * Replace with CMS-driven content in production.
@@ -182,7 +184,7 @@ export const services = [
     ],
     eligibility: "Age and medical criteria vary by vaccine; pharmacist will screen.",
     duration: "10–20 minutes including observation.",
-    image: "/images/articles/nutrition-basics-for-heart-health.webp",
+    image: "/images/services/vaccinations.webp",
     icon: "shield",
   },
   {
@@ -601,6 +603,42 @@ export const articles = [
       "Walk in for your flu shot at Aether during open hours; no appointment needed most days.",
     ],
   },
+  {
+    slug: "pharmacy-vaccines-what-to-expect",
+    title: "Getting vaccinated at the pharmacy: what to expect",
+    excerpt:
+      "Screening questions, vaccine information, consent, a 15-minute wait, and a digital certificate — how community pharmacy immunisation works.",
+    category: "Immunisation",
+    readTime: "5 min",
+    date: "2026-08-12",
+    author: "Marcus Chen, RPh",
+    image: "/images/services/vaccinations.webp",
+    content: [
+      "Pharmacy vaccination is only offered where the pharmacy and the immuniser are locally authorised. In Kenya that sits with the Pharmacy and Poisons Board and Ministry of Health circulars in force.",
+      "Before any dose we complete a contraindication questionnaire, give you a vaccine information sheet, and capture written consent (self, parent/guardian, or caregiver).",
+      "The immuniser records antigen, lot, expiry, route, site, dose number, and their credentials. You stay for 15 minutes of observation — 30 minutes if you have a significant allergy history.",
+      "Mild arm soreness and tiredness are common. Breathing difficulty, collapse, or rapidly spreading rash is an emergency — call 999/112.",
+      "Childhood KEPI vaccines remain at public immunisation clinics. We help you read the mother-child booklet and plan catch-up; we do not replace the national programme.",
+      "Your digital certificate appears in the patient portal with lot number and next-due date.",
+    ],
+  },
+  {
+    slug: "travel-vaccines-from-nairobi",
+    title: "Travel vaccines from Nairobi: yellow fever, typhoid, and more",
+    excerpt: "When to start, which certificates you need, and how malaria prevention sits beside vaccination.",
+    category: "Travel",
+    readTime: "6 min",
+    date: "2026-07-28",
+    author: "Dr. Priya Nair, PharmD",
+    image: "/images/articles/flu-season-preparation.webp",
+    content: [
+      "Start a travel consult 4–6 weeks before you fly so series vaccines (hepatitis A, some typhoid schedules) can be completed.",
+      "Yellow fever ICVP ('yellow card') cards are issued only by designated centres and become valid 10 days after the dose. If we are not currently designated, we still counsel and refer.",
+      "Hajj and Umrah typically require documented meningococcal ACWY vaccination.",
+      "Typhoid and hepatitis A vaccines lower risk; they do not replace safe water and food.",
+      "Malaria is prevented with nets, repellents, and sometimes tablets — not a routine vaccine. Ask during counselling.",
+    ],
+  },
 ];
 
 export const faqs = [
@@ -668,7 +706,19 @@ export const faqs = [
     category: "Services",
     question: "Do you offer vaccinations?",
     answer:
-      "Yes. We administer flu, COVID-19, shingles, pneumonia, Tdap, and select travel vaccines. Walk-ins are welcome; appointments can be booked by phone.",
+      "Yes, where locally authorised. We administer adult, seasonal, and selected travel vaccines (flu, COVID-19, hepatitis B, Tdap, pneumococcal, typhoid, hepatitis A, meningococcal, oral cholera) after a screening questionnaire, vaccine information, and signed consent. Childhood KEPI vaccines remain at public immunisation clinics — we provide schedules, catch-up counselling, and referral. Book at /vaccinations or walk in. Digital lot-traced certificates appear in your patient portal.",
+  },
+  {
+    category: "Services",
+    question: "How do I prepare for a pharmacy vaccine?",
+    answer:
+      "Bring photo ID and any previous immunisation records. Wear a short sleeve. Tell us about allergies, pregnancy, immune conditions, and recent illness. You will stay for 15 minutes of observation (30 minutes if you have a significant allergy history).",
+  },
+  {
+    category: "Services",
+    question: "Do you provide preventive-health counselling and campaigns?",
+    answer:
+      "Yes. Pharmacists offer preventive counselling (travel health, smoking cessation, heart-risk, diabetes prevention, malaria, immunisation education) and run public-health campaigns such as flu season and outbreak response. Book via the Preventive health page.",
   },
   {
     category: "Services",
@@ -857,7 +907,7 @@ export const trustIndicators = [
 /** Simple in-memory search across site content */
 export function searchContent(query: string) {
   const q = query.trim().toLowerCase();
-  if (!q) return { services: [], articles: [], faqs: [], categories: [] };
+  if (!q) return { services: [], articles: [], faqs: [], categories: [], vaccines: [] };
 
   return {
     services: services.filter(
@@ -879,6 +929,7 @@ export function searchContent(query: string) {
         f.category.toLowerCase().includes(q),
     ),
     categories: categories.filter((c) => c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)),
+    vaccines: searchVaccines(q),
   };
 }
 

@@ -288,6 +288,14 @@ export type UserWhereInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpListRelationFilter
   screeningsConducted?: Prisma.HealthScreeningRecordListRelationFilter
   referralsIssued?: Prisma.ClinicalReferralListRelationFilter
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyListRelationFilter
+  immunizerCredentials?: Prisma.ImmunizerCredentialListRelationFilter
+  immunizationAssigned?: Prisma.ImmunizationAppointmentListRelationFilter
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningListRelationFilter
+  immunizationsAdministered?: Prisma.ImmunizationRecordListRelationFilter
+  immunizationsSupervised?: Prisma.ImmunizationRecordListRelationFilter
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationListRelationFilter
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -346,6 +354,14 @@ export type UserOrderByWithRelationInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpOrderByRelationAggregateInput
   screeningsConducted?: Prisma.HealthScreeningRecordOrderByRelationAggregateInput
   referralsIssued?: Prisma.ClinicalReferralOrderByRelationAggregateInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyOrderByRelationAggregateInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialOrderByRelationAggregateInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentOrderByRelationAggregateInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningOrderByRelationAggregateInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordOrderByRelationAggregateInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordOrderByRelationAggregateInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationOrderByRelationAggregateInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -407,6 +423,14 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpListRelationFilter
   screeningsConducted?: Prisma.HealthScreeningRecordListRelationFilter
   referralsIssued?: Prisma.ClinicalReferralListRelationFilter
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyListRelationFilter
+  immunizerCredentials?: Prisma.ImmunizerCredentialListRelationFilter
+  immunizationAssigned?: Prisma.ImmunizationAppointmentListRelationFilter
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningListRelationFilter
+  immunizationsAdministered?: Prisma.ImmunizationRecordListRelationFilter
+  immunizationsSupervised?: Prisma.ImmunizationRecordListRelationFilter
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationListRelationFilter
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionListRelationFilter
 }, "id" | "email" | "googleId">
 
 export type UserOrderByWithAggregationInput = {
@@ -503,6 +527,14 @@ export type UserCreateInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -561,6 +593,14 @@ export type UserUncheckedCreateInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUpdateInput = {
@@ -619,6 +659,14 @@ export type UserUpdateInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -677,6 +725,14 @@ export type UserUncheckedUpdateInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1473,6 +1529,132 @@ export type UserUpdateOneWithoutReferralsIssuedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReferralsIssuedInput, Prisma.UserUpdateWithoutReferralsIssuedInput>, Prisma.UserUncheckedUpdateWithoutReferralsIssuedInput>
 }
 
+export type UserCreateNestedOneWithoutImmunizationPolicyUpdatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizationPolicyUpdatedInput, Prisma.UserUncheckedCreateWithoutImmunizationPolicyUpdatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizationPolicyUpdatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutImmunizationPolicyUpdatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizationPolicyUpdatedInput, Prisma.UserUncheckedCreateWithoutImmunizationPolicyUpdatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizationPolicyUpdatedInput
+  upsert?: Prisma.UserUpsertWithoutImmunizationPolicyUpdatedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImmunizationPolicyUpdatedInput, Prisma.UserUpdateWithoutImmunizationPolicyUpdatedInput>, Prisma.UserUncheckedUpdateWithoutImmunizationPolicyUpdatedInput>
+}
+
+export type UserCreateNestedOneWithoutImmunizerCredentialsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizerCredentialsInput, Prisma.UserUncheckedCreateWithoutImmunizerCredentialsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizerCredentialsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutImmunizerCredentialsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizerCredentialsInput, Prisma.UserUncheckedCreateWithoutImmunizerCredentialsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizerCredentialsInput
+  upsert?: Prisma.UserUpsertWithoutImmunizerCredentialsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImmunizerCredentialsInput, Prisma.UserUpdateWithoutImmunizerCredentialsInput>, Prisma.UserUncheckedUpdateWithoutImmunizerCredentialsInput>
+}
+
+export type UserCreateNestedOneWithoutImmunizationAssignedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizationAssignedInput, Prisma.UserUncheckedCreateWithoutImmunizationAssignedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizationAssignedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutImmunizationAssignedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizationAssignedInput, Prisma.UserUncheckedCreateWithoutImmunizationAssignedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizationAssignedInput
+  upsert?: Prisma.UserUpsertWithoutImmunizationAssignedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImmunizationAssignedInput, Prisma.UserUpdateWithoutImmunizationAssignedInput>, Prisma.UserUncheckedUpdateWithoutImmunizationAssignedInput>
+}
+
+export type UserCreateNestedOneWithoutVaccinationScreeningsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutVaccinationScreeningsInput, Prisma.UserUncheckedCreateWithoutVaccinationScreeningsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutVaccinationScreeningsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutVaccinationScreeningsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutVaccinationScreeningsInput, Prisma.UserUncheckedCreateWithoutVaccinationScreeningsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutVaccinationScreeningsInput
+  upsert?: Prisma.UserUpsertWithoutVaccinationScreeningsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutVaccinationScreeningsInput, Prisma.UserUpdateWithoutVaccinationScreeningsInput>, Prisma.UserUncheckedUpdateWithoutVaccinationScreeningsInput>
+}
+
+export type UserCreateNestedOneWithoutImmunizationsAdministeredInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizationsAdministeredInput, Prisma.UserUncheckedCreateWithoutImmunizationsAdministeredInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizationsAdministeredInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutImmunizationsSupervisedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizationsSupervisedInput, Prisma.UserUncheckedCreateWithoutImmunizationsSupervisedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizationsSupervisedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutImmunizationsAdministeredNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizationsAdministeredInput, Prisma.UserUncheckedCreateWithoutImmunizationsAdministeredInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizationsAdministeredInput
+  upsert?: Prisma.UserUpsertWithoutImmunizationsAdministeredInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImmunizationsAdministeredInput, Prisma.UserUpdateWithoutImmunizationsAdministeredInput>, Prisma.UserUncheckedUpdateWithoutImmunizationsAdministeredInput>
+}
+
+export type UserUpdateOneWithoutImmunizationsSupervisedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImmunizationsSupervisedInput, Prisma.UserUncheckedCreateWithoutImmunizationsSupervisedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImmunizationsSupervisedInput
+  upsert?: Prisma.UserUpsertWithoutImmunizationsSupervisedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImmunizationsSupervisedInput, Prisma.UserUpdateWithoutImmunizationsSupervisedInput>, Prisma.UserUncheckedUpdateWithoutImmunizationsSupervisedInput>
+}
+
+export type UserCreateNestedOneWithoutAefiReportsFiledInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAefiReportsFiledInput, Prisma.UserUncheckedCreateWithoutAefiReportsFiledInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAefiReportsFiledInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutAefiReportsFiledNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAefiReportsFiledInput, Prisma.UserUncheckedCreateWithoutAefiReportsFiledInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAefiReportsFiledInput
+  upsert?: Prisma.UserUpsertWithoutAefiReportsFiledInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAefiReportsFiledInput, Prisma.UserUpdateWithoutAefiReportsFiledInput>, Prisma.UserUncheckedUpdateWithoutAefiReportsFiledInput>
+}
+
+export type UserCreateNestedOneWithoutCounsellingSessionsGivenInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCounsellingSessionsGivenInput, Prisma.UserUncheckedCreateWithoutCounsellingSessionsGivenInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCounsellingSessionsGivenInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCounsellingSessionsGivenNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCounsellingSessionsGivenInput, Prisma.UserUncheckedCreateWithoutCounsellingSessionsGivenInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCounsellingSessionsGivenInput
+  upsert?: Prisma.UserUpsertWithoutCounsellingSessionsGivenInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCounsellingSessionsGivenInput, Prisma.UserUpdateWithoutCounsellingSessionsGivenInput>, Prisma.UserUncheckedUpdateWithoutCounsellingSessionsGivenInput>
+}
+
 export type UserCreateWithoutPushDevicesInput = {
   id?: string
   email: string
@@ -1528,6 +1710,14 @@ export type UserCreateWithoutPushDevicesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutPushDevicesInput = {
@@ -1585,6 +1775,14 @@ export type UserUncheckedCreateWithoutPushDevicesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutPushDevicesInput = {
@@ -1658,6 +1856,14 @@ export type UserUpdateWithoutPushDevicesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPushDevicesInput = {
@@ -1715,6 +1921,14 @@ export type UserUncheckedUpdateWithoutPushDevicesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1772,6 +1986,14 @@ export type UserCreateWithoutSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1829,6 +2051,14 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1902,6 +2132,14 @@ export type UserUpdateWithoutSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1959,6 +2197,14 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutPasswordResetsInput = {
@@ -2016,6 +2262,14 @@ export type UserCreateWithoutPasswordResetsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutPasswordResetsInput = {
@@ -2073,6 +2327,14 @@ export type UserUncheckedCreateWithoutPasswordResetsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutPasswordResetsInput = {
@@ -2146,6 +2408,14 @@ export type UserUpdateWithoutPasswordResetsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasswordResetsInput = {
@@ -2203,6 +2473,14 @@ export type UserUncheckedUpdateWithoutPasswordResetsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutEmailVerificationsInput = {
@@ -2260,6 +2538,14 @@ export type UserCreateWithoutEmailVerificationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutEmailVerificationsInput = {
@@ -2317,6 +2603,14 @@ export type UserUncheckedCreateWithoutEmailVerificationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutEmailVerificationsInput = {
@@ -2390,6 +2684,14 @@ export type UserUpdateWithoutEmailVerificationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailVerificationsInput = {
@@ -2447,6 +2749,14 @@ export type UserUncheckedUpdateWithoutEmailVerificationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -2504,6 +2814,14 @@ export type UserCreateWithoutProfileInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -2561,6 +2879,14 @@ export type UserUncheckedCreateWithoutProfileInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -2634,6 +2960,14 @@ export type UserUpdateWithoutProfileInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -2691,6 +3025,14 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutCaregiverLinksInput = {
@@ -2748,6 +3090,14 @@ export type UserCreateWithoutCaregiverLinksInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutCaregiverLinksInput = {
@@ -2805,6 +3155,14 @@ export type UserUncheckedCreateWithoutCaregiverLinksInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutCaregiverLinksInput = {
@@ -2878,6 +3236,14 @@ export type UserUpdateWithoutCaregiverLinksInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCaregiverLinksInput = {
@@ -2935,6 +3301,14 @@ export type UserUncheckedUpdateWithoutCaregiverLinksInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutDispatchedPrescriptionsInput = {
@@ -2992,6 +3366,14 @@ export type UserCreateWithoutDispatchedPrescriptionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutDispatchedPrescriptionsInput = {
@@ -3049,6 +3431,14 @@ export type UserUncheckedCreateWithoutDispatchedPrescriptionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutDispatchedPrescriptionsInput = {
@@ -3111,6 +3501,14 @@ export type UserCreateWithoutPrescriptionsReviewedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutPrescriptionsReviewedInput = {
@@ -3168,6 +3566,14 @@ export type UserUncheckedCreateWithoutPrescriptionsReviewedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutPrescriptionsReviewedInput = {
@@ -3241,6 +3647,14 @@ export type UserUpdateWithoutDispatchedPrescriptionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDispatchedPrescriptionsInput = {
@@ -3298,6 +3712,14 @@ export type UserUncheckedUpdateWithoutDispatchedPrescriptionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUpsertWithoutPrescriptionsReviewedInput = {
@@ -3366,6 +3788,14 @@ export type UserUpdateWithoutPrescriptionsReviewedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrescriptionsReviewedInput = {
@@ -3423,6 +3853,14 @@ export type UserUncheckedUpdateWithoutPrescriptionsReviewedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutAssignedRefillsInput = {
@@ -3480,6 +3918,14 @@ export type UserCreateWithoutAssignedRefillsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutAssignedRefillsInput = {
@@ -3537,6 +3983,14 @@ export type UserUncheckedCreateWithoutAssignedRefillsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutAssignedRefillsInput = {
@@ -3610,6 +4064,14 @@ export type UserUpdateWithoutAssignedRefillsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedRefillsInput = {
@@ -3667,6 +4129,14 @@ export type UserUncheckedUpdateWithoutAssignedRefillsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutTimelineAsUserInput = {
@@ -3724,6 +4194,14 @@ export type UserCreateWithoutTimelineAsUserInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutTimelineAsUserInput = {
@@ -3781,6 +4259,14 @@ export type UserUncheckedCreateWithoutTimelineAsUserInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutTimelineAsUserInput = {
@@ -3843,6 +4329,14 @@ export type UserCreateWithoutTimelineCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutTimelineCreatedInput = {
@@ -3900,6 +4394,14 @@ export type UserUncheckedCreateWithoutTimelineCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutTimelineCreatedInput = {
@@ -3973,6 +4475,14 @@ export type UserUpdateWithoutTimelineAsUserInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTimelineAsUserInput = {
@@ -4030,6 +4540,14 @@ export type UserUncheckedUpdateWithoutTimelineAsUserInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUpsertWithoutTimelineCreatedInput = {
@@ -4098,6 +4616,14 @@ export type UserUpdateWithoutTimelineCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTimelineCreatedInput = {
@@ -4155,6 +4681,14 @@ export type UserUncheckedUpdateWithoutTimelineCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutSegmentsCreatedInput = {
@@ -4212,6 +4746,14 @@ export type UserCreateWithoutSegmentsCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutSegmentsCreatedInput = {
@@ -4269,6 +4811,14 @@ export type UserUncheckedCreateWithoutSegmentsCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutSegmentsCreatedInput = {
@@ -4342,6 +4892,14 @@ export type UserUpdateWithoutSegmentsCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSegmentsCreatedInput = {
@@ -4399,6 +4957,14 @@ export type UserUncheckedUpdateWithoutSegmentsCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutAssignedConversationsInput = {
@@ -4456,6 +5022,14 @@ export type UserCreateWithoutAssignedConversationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutAssignedConversationsInput = {
@@ -4513,6 +5087,14 @@ export type UserUncheckedCreateWithoutAssignedConversationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutAssignedConversationsInput = {
@@ -4586,6 +5168,14 @@ export type UserUpdateWithoutAssignedConversationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedConversationsInput = {
@@ -4643,6 +5233,14 @@ export type UserUncheckedUpdateWithoutAssignedConversationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutMessagesSentInput = {
@@ -4700,6 +5298,14 @@ export type UserCreateWithoutMessagesSentInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutMessagesSentInput = {
@@ -4757,6 +5363,14 @@ export type UserUncheckedCreateWithoutMessagesSentInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutMessagesSentInput = {
@@ -4830,6 +5444,14 @@ export type UserUpdateWithoutMessagesSentInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesSentInput = {
@@ -4887,6 +5509,14 @@ export type UserUncheckedUpdateWithoutMessagesSentInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutTemplatesCreatedInput = {
@@ -4944,6 +5574,14 @@ export type UserCreateWithoutTemplatesCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutTemplatesCreatedInput = {
@@ -5001,6 +5639,14 @@ export type UserUncheckedCreateWithoutTemplatesCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutTemplatesCreatedInput = {
@@ -5063,6 +5709,14 @@ export type UserCreateWithoutTemplatesUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutTemplatesUpdatedInput = {
@@ -5120,6 +5774,14 @@ export type UserUncheckedCreateWithoutTemplatesUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutTemplatesUpdatedInput = {
@@ -5193,6 +5855,14 @@ export type UserUpdateWithoutTemplatesCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTemplatesCreatedInput = {
@@ -5250,6 +5920,14 @@ export type UserUncheckedUpdateWithoutTemplatesCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUpsertWithoutTemplatesUpdatedInput = {
@@ -5318,6 +5996,14 @@ export type UserUpdateWithoutTemplatesUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTemplatesUpdatedInput = {
@@ -5375,6 +6061,14 @@ export type UserUncheckedUpdateWithoutTemplatesUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -5432,6 +6126,14 @@ export type UserCreateWithoutNotificationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -5489,6 +6191,14 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -5562,6 +6272,14 @@ export type UserUpdateWithoutNotificationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -5619,6 +6337,14 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutRemindersCreatedInput = {
@@ -5676,6 +6402,14 @@ export type UserCreateWithoutRemindersCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutRemindersCreatedInput = {
@@ -5733,6 +6467,14 @@ export type UserUncheckedCreateWithoutRemindersCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutRemindersCreatedInput = {
@@ -5806,6 +6548,14 @@ export type UserUpdateWithoutRemindersCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRemindersCreatedInput = {
@@ -5863,6 +6613,14 @@ export type UserUncheckedUpdateWithoutRemindersCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutCampaignsCreatedInput = {
@@ -5920,6 +6678,14 @@ export type UserCreateWithoutCampaignsCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutCampaignsCreatedInput = {
@@ -5977,6 +6743,14 @@ export type UserUncheckedCreateWithoutCampaignsCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutCampaignsCreatedInput = {
@@ -6050,6 +6824,14 @@ export type UserUpdateWithoutCampaignsCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCampaignsCreatedInput = {
@@ -6107,6 +6889,14 @@ export type UserUncheckedUpdateWithoutCampaignsCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutLoyaltyTxCreatedInput = {
@@ -6164,6 +6954,14 @@ export type UserCreateWithoutLoyaltyTxCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutLoyaltyTxCreatedInput = {
@@ -6221,6 +7019,14 @@ export type UserUncheckedCreateWithoutLoyaltyTxCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutLoyaltyTxCreatedInput = {
@@ -6294,6 +7100,14 @@ export type UserUpdateWithoutLoyaltyTxCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLoyaltyTxCreatedInput = {
@@ -6351,6 +7165,14 @@ export type UserUncheckedUpdateWithoutLoyaltyTxCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutEnquiriesAssignedInput = {
@@ -6408,6 +7230,14 @@ export type UserCreateWithoutEnquiriesAssignedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutEnquiriesAssignedInput = {
@@ -6465,6 +7295,14 @@ export type UserUncheckedCreateWithoutEnquiriesAssignedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutEnquiriesAssignedInput = {
@@ -6538,6 +7376,14 @@ export type UserUpdateWithoutEnquiriesAssignedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnquiriesAssignedInput = {
@@ -6595,6 +7441,14 @@ export type UserUncheckedUpdateWithoutEnquiriesAssignedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutFeedbackRespondedInput = {
@@ -6652,6 +7506,14 @@ export type UserCreateWithoutFeedbackRespondedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutFeedbackRespondedInput = {
@@ -6709,6 +7571,14 @@ export type UserUncheckedCreateWithoutFeedbackRespondedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutFeedbackRespondedInput = {
@@ -6782,6 +7652,14 @@ export type UserUpdateWithoutFeedbackRespondedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFeedbackRespondedInput = {
@@ -6839,6 +7717,14 @@ export type UserUncheckedUpdateWithoutFeedbackRespondedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutKnowledgeCreatedInput = {
@@ -6896,6 +7782,14 @@ export type UserCreateWithoutKnowledgeCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutKnowledgeCreatedInput = {
@@ -6953,6 +7847,14 @@ export type UserUncheckedCreateWithoutKnowledgeCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutKnowledgeCreatedInput = {
@@ -7015,6 +7917,14 @@ export type UserCreateWithoutKnowledgeUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutKnowledgeUpdatedInput = {
@@ -7072,6 +7982,14 @@ export type UserUncheckedCreateWithoutKnowledgeUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutKnowledgeUpdatedInput = {
@@ -7145,6 +8063,14 @@ export type UserUpdateWithoutKnowledgeCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutKnowledgeCreatedInput = {
@@ -7202,6 +8128,14 @@ export type UserUncheckedUpdateWithoutKnowledgeCreatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUpsertWithoutKnowledgeUpdatedInput = {
@@ -7270,6 +8204,14 @@ export type UserUpdateWithoutKnowledgeUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutKnowledgeUpdatedInput = {
@@ -7327,6 +8269,14 @@ export type UserUncheckedUpdateWithoutKnowledgeUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutAiConversationsInput = {
@@ -7384,6 +8334,14 @@ export type UserCreateWithoutAiConversationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutAiConversationsInput = {
@@ -7441,6 +8399,14 @@ export type UserUncheckedCreateWithoutAiConversationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutAiConversationsInput = {
@@ -7514,6 +8480,14 @@ export type UserUpdateWithoutAiConversationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAiConversationsInput = {
@@ -7571,6 +8545,14 @@ export type UserUncheckedUpdateWithoutAiConversationsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -7628,6 +8610,14 @@ export type UserCreateWithoutAuditLogsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -7685,6 +8675,14 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -7758,6 +8756,14 @@ export type UserUpdateWithoutAuditLogsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -7815,6 +8821,14 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutCustomerNotesInput = {
@@ -7872,6 +8886,14 @@ export type UserCreateWithoutCustomerNotesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutCustomerNotesInput = {
@@ -7929,6 +8951,14 @@ export type UserUncheckedCreateWithoutCustomerNotesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutCustomerNotesInput = {
@@ -8002,6 +9032,14 @@ export type UserUpdateWithoutCustomerNotesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCustomerNotesInput = {
@@ -8059,6 +9097,14 @@ export type UserUncheckedUpdateWithoutCustomerNotesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutClarificationLogsInput = {
@@ -8116,6 +9162,14 @@ export type UserCreateWithoutClarificationLogsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutClarificationLogsInput = {
@@ -8173,6 +9227,14 @@ export type UserUncheckedCreateWithoutClarificationLogsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutClarificationLogsInput = {
@@ -8246,6 +9308,14 @@ export type UserUpdateWithoutClarificationLogsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClarificationLogsInput = {
@@ -8303,6 +9373,14 @@ export type UserUncheckedUpdateWithoutClarificationLogsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutAdherenceFollowUpsRecordedInput = {
@@ -8360,6 +9438,14 @@ export type UserCreateWithoutAdherenceFollowUpsRecordedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutAdherenceFollowUpsRecordedInput = {
@@ -8417,6 +9503,14 @@ export type UserUncheckedCreateWithoutAdherenceFollowUpsRecordedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutAdherenceFollowUpsRecordedInput = {
@@ -8490,6 +9584,14 @@ export type UserUpdateWithoutAdherenceFollowUpsRecordedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAdherenceFollowUpsRecordedInput = {
@@ -8547,6 +9649,14 @@ export type UserUncheckedUpdateWithoutAdherenceFollowUpsRecordedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutOrderDispenserNotesInput = {
@@ -8604,6 +9714,14 @@ export type UserCreateWithoutOrderDispenserNotesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutOrderDispenserNotesInput = {
@@ -8661,6 +9779,14 @@ export type UserUncheckedCreateWithoutOrderDispenserNotesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutOrderDispenserNotesInput = {
@@ -8734,6 +9860,14 @@ export type UserUpdateWithoutOrderDispenserNotesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrderDispenserNotesInput = {
@@ -8791,6 +9925,14 @@ export type UserUncheckedUpdateWithoutOrderDispenserNotesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutServiceBookingsRecordedInput = {
@@ -8848,6 +9990,14 @@ export type UserCreateWithoutServiceBookingsRecordedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutServiceBookingsRecordedInput = {
@@ -8905,6 +10055,14 @@ export type UserUncheckedCreateWithoutServiceBookingsRecordedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutServiceBookingsRecordedInput = {
@@ -8978,6 +10136,14 @@ export type UserUpdateWithoutServiceBookingsRecordedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServiceBookingsRecordedInput = {
@@ -9035,6 +10201,14 @@ export type UserUncheckedUpdateWithoutServiceBookingsRecordedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutPharmacySettingsUpdatedInput = {
@@ -9092,6 +10266,14 @@ export type UserCreateWithoutPharmacySettingsUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutPharmacySettingsUpdatedInput = {
@@ -9149,6 +10331,14 @@ export type UserUncheckedCreateWithoutPharmacySettingsUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutPharmacySettingsUpdatedInput = {
@@ -9222,6 +10412,14 @@ export type UserUpdateWithoutPharmacySettingsUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPharmacySettingsUpdatedInput = {
@@ -9279,6 +10477,14 @@ export type UserUncheckedUpdateWithoutPharmacySettingsUpdatedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutSymptomSessionsInput = {
@@ -9336,6 +10542,14 @@ export type UserCreateWithoutSymptomSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutSymptomSessionsInput = {
@@ -9393,6 +10607,14 @@ export type UserUncheckedCreateWithoutSymptomSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutSymptomSessionsInput = {
@@ -9466,6 +10688,14 @@ export type UserUpdateWithoutSymptomSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSymptomSessionsInput = {
@@ -9523,6 +10753,14 @@ export type UserUncheckedUpdateWithoutSymptomSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutSymptomStaffRepliesInput = {
@@ -9580,6 +10818,14 @@ export type UserCreateWithoutSymptomStaffRepliesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutSymptomStaffRepliesInput = {
@@ -9637,6 +10883,14 @@ export type UserUncheckedCreateWithoutSymptomStaffRepliesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutSymptomStaffRepliesInput = {
@@ -9710,6 +10964,14 @@ export type UserUpdateWithoutSymptomStaffRepliesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSymptomStaffRepliesInput = {
@@ -9767,6 +11029,14 @@ export type UserUncheckedUpdateWithoutSymptomStaffRepliesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutPrescriptionFillsDispensedInput = {
@@ -9824,6 +11094,14 @@ export type UserCreateWithoutPrescriptionFillsDispensedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutPrescriptionFillsDispensedInput = {
@@ -9881,6 +11159,14 @@ export type UserUncheckedCreateWithoutPrescriptionFillsDispensedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutPrescriptionFillsDispensedInput = {
@@ -9954,6 +11240,14 @@ export type UserUpdateWithoutPrescriptionFillsDispensedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrescriptionFillsDispensedInput = {
@@ -10011,6 +11305,14 @@ export type UserUncheckedUpdateWithoutPrescriptionFillsDispensedInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutReservationCreatorInput = {
@@ -10068,6 +11370,14 @@ export type UserCreateWithoutReservationCreatorInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutReservationCreatorInput = {
@@ -10125,6 +11435,14 @@ export type UserUncheckedCreateWithoutReservationCreatorInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutReservationCreatorInput = {
@@ -10198,6 +11516,14 @@ export type UserUpdateWithoutReservationCreatorInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReservationCreatorInput = {
@@ -10255,6 +11581,14 @@ export type UserUncheckedUpdateWithoutReservationCreatorInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutRefundCreatorInput = {
@@ -10312,6 +11646,14 @@ export type UserCreateWithoutRefundCreatorInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutRefundCreatorInput = {
@@ -10369,6 +11711,14 @@ export type UserUncheckedCreateWithoutRefundCreatorInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutRefundCreatorInput = {
@@ -10431,6 +11781,14 @@ export type UserCreateWithoutRefundApproverInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutRefundApproverInput = {
@@ -10488,6 +11846,14 @@ export type UserUncheckedCreateWithoutRefundApproverInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutRefundApproverInput = {
@@ -10561,6 +11927,14 @@ export type UserUpdateWithoutRefundCreatorInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefundCreatorInput = {
@@ -10618,6 +11992,14 @@ export type UserUncheckedUpdateWithoutRefundCreatorInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUpsertWithoutRefundApproverInput = {
@@ -10686,6 +12068,14 @@ export type UserUpdateWithoutRefundApproverInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefundApproverInput = {
@@ -10743,6 +12133,14 @@ export type UserUncheckedUpdateWithoutRefundApproverInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutPriceHistoryChangesInput = {
@@ -10800,6 +12198,14 @@ export type UserCreateWithoutPriceHistoryChangesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutPriceHistoryChangesInput = {
@@ -10857,6 +12263,14 @@ export type UserUncheckedCreateWithoutPriceHistoryChangesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutPriceHistoryChangesInput = {
@@ -10930,6 +12344,14 @@ export type UserUpdateWithoutPriceHistoryChangesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPriceHistoryChangesInput = {
@@ -10987,6 +12409,14 @@ export type UserUncheckedUpdateWithoutPriceHistoryChangesInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutCashierSessionsInput = {
@@ -11044,6 +12474,14 @@ export type UserCreateWithoutCashierSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutCashierSessionsInput = {
@@ -11101,6 +12539,14 @@ export type UserUncheckedCreateWithoutCashierSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutCashierSessionsInput = {
@@ -11174,6 +12620,14 @@ export type UserUpdateWithoutCashierSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCashierSessionsInput = {
@@ -11231,6 +12685,14 @@ export type UserUncheckedUpdateWithoutCashierSessionsInput = {
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutScreeningsConductedInput = {
@@ -11288,6 +12750,14 @@ export type UserCreateWithoutScreeningsConductedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutScreeningsConductedInput = {
@@ -11345,6 +12815,14 @@ export type UserUncheckedCreateWithoutScreeningsConductedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutScreeningsConductedInput = {
@@ -11418,6 +12896,14 @@ export type UserUpdateWithoutScreeningsConductedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutScreeningsConductedInput = {
@@ -11475,6 +12961,14 @@ export type UserUncheckedUpdateWithoutScreeningsConductedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserCreateWithoutReferralsIssuedInput = {
@@ -11532,6 +13026,14 @@ export type UserCreateWithoutReferralsIssuedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserUncheckedCreateWithoutReferralsIssuedInput = {
@@ -11589,6 +13091,14 @@ export type UserUncheckedCreateWithoutReferralsIssuedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
 }
 
 export type UserCreateOrConnectWithoutReferralsIssuedInput = {
@@ -11662,6 +13172,14 @@ export type UserUpdateWithoutReferralsIssuedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralsIssuedInput = {
@@ -11719,6 +13237,2222 @@ export type UserUncheckedUpdateWithoutReferralsIssuedInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
   screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserCreateWithoutImmunizationPolicyUpdatedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserUncheckedCreateWithoutImmunizationPolicyUpdatedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserCreateOrConnectWithoutImmunizationPolicyUpdatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizationPolicyUpdatedInput, Prisma.UserUncheckedCreateWithoutImmunizationPolicyUpdatedInput>
+}
+
+export type UserUpsertWithoutImmunizationPolicyUpdatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImmunizationPolicyUpdatedInput, Prisma.UserUncheckedUpdateWithoutImmunizationPolicyUpdatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizationPolicyUpdatedInput, Prisma.UserUncheckedCreateWithoutImmunizationPolicyUpdatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutImmunizationPolicyUpdatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImmunizationPolicyUpdatedInput, Prisma.UserUncheckedUpdateWithoutImmunizationPolicyUpdatedInput>
+}
+
+export type UserUpdateWithoutImmunizationPolicyUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutImmunizationPolicyUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserCreateWithoutImmunizerCredentialsInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserUncheckedCreateWithoutImmunizerCredentialsInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserCreateOrConnectWithoutImmunizerCredentialsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizerCredentialsInput, Prisma.UserUncheckedCreateWithoutImmunizerCredentialsInput>
+}
+
+export type UserUpsertWithoutImmunizerCredentialsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImmunizerCredentialsInput, Prisma.UserUncheckedUpdateWithoutImmunizerCredentialsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizerCredentialsInput, Prisma.UserUncheckedCreateWithoutImmunizerCredentialsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutImmunizerCredentialsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImmunizerCredentialsInput, Prisma.UserUncheckedUpdateWithoutImmunizerCredentialsInput>
+}
+
+export type UserUpdateWithoutImmunizerCredentialsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutImmunizerCredentialsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserCreateWithoutImmunizationAssignedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserUncheckedCreateWithoutImmunizationAssignedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserCreateOrConnectWithoutImmunizationAssignedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizationAssignedInput, Prisma.UserUncheckedCreateWithoutImmunizationAssignedInput>
+}
+
+export type UserUpsertWithoutImmunizationAssignedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImmunizationAssignedInput, Prisma.UserUncheckedUpdateWithoutImmunizationAssignedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizationAssignedInput, Prisma.UserUncheckedCreateWithoutImmunizationAssignedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutImmunizationAssignedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImmunizationAssignedInput, Prisma.UserUncheckedUpdateWithoutImmunizationAssignedInput>
+}
+
+export type UserUpdateWithoutImmunizationAssignedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutImmunizationAssignedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserCreateWithoutVaccinationScreeningsInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserUncheckedCreateWithoutVaccinationScreeningsInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserCreateOrConnectWithoutVaccinationScreeningsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutVaccinationScreeningsInput, Prisma.UserUncheckedCreateWithoutVaccinationScreeningsInput>
+}
+
+export type UserUpsertWithoutVaccinationScreeningsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutVaccinationScreeningsInput, Prisma.UserUncheckedUpdateWithoutVaccinationScreeningsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutVaccinationScreeningsInput, Prisma.UserUncheckedCreateWithoutVaccinationScreeningsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutVaccinationScreeningsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutVaccinationScreeningsInput, Prisma.UserUncheckedUpdateWithoutVaccinationScreeningsInput>
+}
+
+export type UserUpdateWithoutVaccinationScreeningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutVaccinationScreeningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserCreateWithoutImmunizationsAdministeredInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserUncheckedCreateWithoutImmunizationsAdministeredInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserCreateOrConnectWithoutImmunizationsAdministeredInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizationsAdministeredInput, Prisma.UserUncheckedCreateWithoutImmunizationsAdministeredInput>
+}
+
+export type UserCreateWithoutImmunizationsSupervisedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserUncheckedCreateWithoutImmunizationsSupervisedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserCreateOrConnectWithoutImmunizationsSupervisedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizationsSupervisedInput, Prisma.UserUncheckedCreateWithoutImmunizationsSupervisedInput>
+}
+
+export type UserUpsertWithoutImmunizationsAdministeredInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImmunizationsAdministeredInput, Prisma.UserUncheckedUpdateWithoutImmunizationsAdministeredInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizationsAdministeredInput, Prisma.UserUncheckedCreateWithoutImmunizationsAdministeredInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutImmunizationsAdministeredInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImmunizationsAdministeredInput, Prisma.UserUncheckedUpdateWithoutImmunizationsAdministeredInput>
+}
+
+export type UserUpdateWithoutImmunizationsAdministeredInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutImmunizationsAdministeredInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserUpsertWithoutImmunizationsSupervisedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImmunizationsSupervisedInput, Prisma.UserUncheckedUpdateWithoutImmunizationsSupervisedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImmunizationsSupervisedInput, Prisma.UserUncheckedCreateWithoutImmunizationsSupervisedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutImmunizationsSupervisedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImmunizationsSupervisedInput, Prisma.UserUncheckedUpdateWithoutImmunizationsSupervisedInput>
+}
+
+export type UserUpdateWithoutImmunizationsSupervisedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutImmunizationsSupervisedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserCreateWithoutAefiReportsFiledInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserUncheckedCreateWithoutAefiReportsFiledInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCounsellorInput
+}
+
+export type UserCreateOrConnectWithoutAefiReportsFiledInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAefiReportsFiledInput, Prisma.UserUncheckedCreateWithoutAefiReportsFiledInput>
+}
+
+export type UserUpsertWithoutAefiReportsFiledInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAefiReportsFiledInput, Prisma.UserUncheckedUpdateWithoutAefiReportsFiledInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAefiReportsFiledInput, Prisma.UserUncheckedCreateWithoutAefiReportsFiledInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAefiReportsFiledInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAefiReportsFiledInput, Prisma.UserUncheckedUpdateWithoutAefiReportsFiledInput>
+}
+
+export type UserUpdateWithoutAefiReportsFiledInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAefiReportsFiledInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  counsellingSessionsGiven?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorNestedInput
+}
+
+export type UserCreateWithoutCounsellingSessionsGivenInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationCreateNestedManyWithoutReportedByInput
+}
+
+export type UserUncheckedCreateWithoutCounsellingSessionsGivenInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedCreateNestedManyWithoutUpdatedByInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedCreateNestedManyWithoutUserInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutAssignedToInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutScreenedByInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutAdministeredByInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutSupervisingPharmacistInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedCreateNestedManyWithoutReportedByInput
+}
+
+export type UserCreateOrConnectWithoutCounsellingSessionsGivenInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCounsellingSessionsGivenInput, Prisma.UserUncheckedCreateWithoutCounsellingSessionsGivenInput>
+}
+
+export type UserUpsertWithoutCounsellingSessionsGivenInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCounsellingSessionsGivenInput, Prisma.UserUncheckedUpdateWithoutCounsellingSessionsGivenInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCounsellingSessionsGivenInput, Prisma.UserUncheckedCreateWithoutCounsellingSessionsGivenInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCounsellingSessionsGivenInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCounsellingSessionsGivenInput, Prisma.UserUncheckedUpdateWithoutCounsellingSessionsGivenInput>
+}
+
+export type UserUpdateWithoutCounsellingSessionsGivenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUpdateManyWithoutReportedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCounsellingSessionsGivenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+  immunizationPolicyUpdated?: Prisma.PharmacyImmunizationPolicyUncheckedUpdateManyWithoutUpdatedByNestedInput
+  immunizerCredentials?: Prisma.ImmunizerCredentialUncheckedUpdateManyWithoutUserNestedInput
+  immunizationAssigned?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToNestedInput
+  vaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutScreenedByNestedInput
+  immunizationsAdministered?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutAdministeredByNestedInput
+  immunizationsSupervised?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutSupervisingPharmacistNestedInput
+  aefiReportsFiled?: Prisma.AdverseEventFollowingImmunizationUncheckedUpdateManyWithoutReportedByNestedInput
 }
 
 
@@ -11768,6 +15502,14 @@ export type UserCountOutputType = {
   adherenceFollowUpsRecorded: number
   screeningsConducted: number
   referralsIssued: number
+  immunizationPolicyUpdated: number
+  immunizerCredentials: number
+  immunizationAssigned: number
+  vaccinationScreenings: number
+  immunizationsAdministered: number
+  immunizationsSupervised: number
+  aefiReportsFiled: number
+  counsellingSessionsGiven: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -11812,6 +15554,14 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   adherenceFollowUpsRecorded?: boolean | UserCountOutputTypeCountAdherenceFollowUpsRecordedArgs
   screeningsConducted?: boolean | UserCountOutputTypeCountScreeningsConductedArgs
   referralsIssued?: boolean | UserCountOutputTypeCountReferralsIssuedArgs
+  immunizationPolicyUpdated?: boolean | UserCountOutputTypeCountImmunizationPolicyUpdatedArgs
+  immunizerCredentials?: boolean | UserCountOutputTypeCountImmunizerCredentialsArgs
+  immunizationAssigned?: boolean | UserCountOutputTypeCountImmunizationAssignedArgs
+  vaccinationScreenings?: boolean | UserCountOutputTypeCountVaccinationScreeningsArgs
+  immunizationsAdministered?: boolean | UserCountOutputTypeCountImmunizationsAdministeredArgs
+  immunizationsSupervised?: boolean | UserCountOutputTypeCountImmunizationsSupervisedArgs
+  aefiReportsFiled?: boolean | UserCountOutputTypeCountAefiReportsFiledArgs
+  counsellingSessionsGiven?: boolean | UserCountOutputTypeCountCounsellingSessionsGivenArgs
 }
 
 /**
@@ -12111,6 +15861,62 @@ export type UserCountOutputTypeCountReferralsIssuedArgs<ExtArgs extends runtime.
   where?: Prisma.ClinicalReferralWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountImmunizationPolicyUpdatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PharmacyImmunizationPolicyWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountImmunizerCredentialsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmunizerCredentialWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountImmunizationAssignedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmunizationAppointmentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountVaccinationScreeningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PreVaccinationScreeningWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountImmunizationsAdministeredArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmunizationRecordWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountImmunizationsSupervisedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmunizationRecordWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAefiReportsFiledArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AdverseEventFollowingImmunizationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCounsellingSessionsGivenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PreventiveCounsellingSessionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -12168,6 +15974,14 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   adherenceFollowUpsRecorded?: boolean | Prisma.User$adherenceFollowUpsRecordedArgs<ExtArgs>
   screeningsConducted?: boolean | Prisma.User$screeningsConductedArgs<ExtArgs>
   referralsIssued?: boolean | Prisma.User$referralsIssuedArgs<ExtArgs>
+  immunizationPolicyUpdated?: boolean | Prisma.User$immunizationPolicyUpdatedArgs<ExtArgs>
+  immunizerCredentials?: boolean | Prisma.User$immunizerCredentialsArgs<ExtArgs>
+  immunizationAssigned?: boolean | Prisma.User$immunizationAssignedArgs<ExtArgs>
+  vaccinationScreenings?: boolean | Prisma.User$vaccinationScreeningsArgs<ExtArgs>
+  immunizationsAdministered?: boolean | Prisma.User$immunizationsAdministeredArgs<ExtArgs>
+  immunizationsSupervised?: boolean | Prisma.User$immunizationsSupervisedArgs<ExtArgs>
+  aefiReportsFiled?: boolean | Prisma.User$aefiReportsFiledArgs<ExtArgs>
+  counsellingSessionsGiven?: boolean | Prisma.User$counsellingSessionsGivenArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -12263,6 +16077,14 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   adherenceFollowUpsRecorded?: boolean | Prisma.User$adherenceFollowUpsRecordedArgs<ExtArgs>
   screeningsConducted?: boolean | Prisma.User$screeningsConductedArgs<ExtArgs>
   referralsIssued?: boolean | Prisma.User$referralsIssuedArgs<ExtArgs>
+  immunizationPolicyUpdated?: boolean | Prisma.User$immunizationPolicyUpdatedArgs<ExtArgs>
+  immunizerCredentials?: boolean | Prisma.User$immunizerCredentialsArgs<ExtArgs>
+  immunizationAssigned?: boolean | Prisma.User$immunizationAssignedArgs<ExtArgs>
+  vaccinationScreenings?: boolean | Prisma.User$vaccinationScreeningsArgs<ExtArgs>
+  immunizationsAdministered?: boolean | Prisma.User$immunizationsAdministeredArgs<ExtArgs>
+  immunizationsSupervised?: boolean | Prisma.User$immunizationsSupervisedArgs<ExtArgs>
+  aefiReportsFiled?: boolean | Prisma.User$aefiReportsFiledArgs<ExtArgs>
+  counsellingSessionsGiven?: boolean | Prisma.User$counsellingSessionsGivenArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -12313,6 +16135,14 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     adherenceFollowUpsRecorded: Prisma.$AdherenceFollowUpPayload<ExtArgs>[]
     screeningsConducted: Prisma.$HealthScreeningRecordPayload<ExtArgs>[]
     referralsIssued: Prisma.$ClinicalReferralPayload<ExtArgs>[]
+    immunizationPolicyUpdated: Prisma.$PharmacyImmunizationPolicyPayload<ExtArgs>[]
+    immunizerCredentials: Prisma.$ImmunizerCredentialPayload<ExtArgs>[]
+    immunizationAssigned: Prisma.$ImmunizationAppointmentPayload<ExtArgs>[]
+    vaccinationScreenings: Prisma.$PreVaccinationScreeningPayload<ExtArgs>[]
+    immunizationsAdministered: Prisma.$ImmunizationRecordPayload<ExtArgs>[]
+    immunizationsSupervised: Prisma.$ImmunizationRecordPayload<ExtArgs>[]
+    aefiReportsFiled: Prisma.$AdverseEventFollowingImmunizationPayload<ExtArgs>[]
+    counsellingSessionsGiven: Prisma.$PreventiveCounsellingSessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -12770,6 +16600,14 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   adherenceFollowUpsRecorded<T extends Prisma.User$adherenceFollowUpsRecordedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adherenceFollowUpsRecordedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdherenceFollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   screeningsConducted<T extends Prisma.User$screeningsConductedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$screeningsConductedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HealthScreeningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   referralsIssued<T extends Prisma.User$referralsIssuedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$referralsIssuedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicalReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immunizationPolicyUpdated<T extends Prisma.User$immunizationPolicyUpdatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$immunizationPolicyUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PharmacyImmunizationPolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immunizerCredentials<T extends Prisma.User$immunizerCredentialsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$immunizerCredentialsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizerCredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immunizationAssigned<T extends Prisma.User$immunizationAssignedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$immunizationAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationAppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  vaccinationScreenings<T extends Prisma.User$vaccinationScreeningsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$vaccinationScreeningsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PreVaccinationScreeningPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immunizationsAdministered<T extends Prisma.User$immunizationsAdministeredArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$immunizationsAdministeredArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immunizationsSupervised<T extends Prisma.User$immunizationsSupervisedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$immunizationsSupervisedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  aefiReportsFiled<T extends Prisma.User$aefiReportsFiledArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aefiReportsFiledArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdverseEventFollowingImmunizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  counsellingSessionsGiven<T extends Prisma.User$counsellingSessionsGivenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$counsellingSessionsGivenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PreventiveCounsellingSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14205,6 +18043,198 @@ export type User$referralsIssuedArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ClinicalReferralScalarFieldEnum | Prisma.ClinicalReferralScalarFieldEnum[]
+}
+
+/**
+ * User.immunizationPolicyUpdated
+ */
+export type User$immunizationPolicyUpdatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PharmacyImmunizationPolicy
+   */
+  select?: Prisma.PharmacyImmunizationPolicySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PharmacyImmunizationPolicy
+   */
+  omit?: Prisma.PharmacyImmunizationPolicyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PharmacyImmunizationPolicyInclude<ExtArgs> | null
+  where?: Prisma.PharmacyImmunizationPolicyWhereInput
+  orderBy?: Prisma.PharmacyImmunizationPolicyOrderByWithRelationInput | Prisma.PharmacyImmunizationPolicyOrderByWithRelationInput[]
+  cursor?: Prisma.PharmacyImmunizationPolicyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PharmacyImmunizationPolicyScalarFieldEnum | Prisma.PharmacyImmunizationPolicyScalarFieldEnum[]
+}
+
+/**
+ * User.immunizerCredentials
+ */
+export type User$immunizerCredentialsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmunizerCredential
+   */
+  select?: Prisma.ImmunizerCredentialSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmunizerCredential
+   */
+  omit?: Prisma.ImmunizerCredentialOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmunizerCredentialInclude<ExtArgs> | null
+  where?: Prisma.ImmunizerCredentialWhereInput
+  orderBy?: Prisma.ImmunizerCredentialOrderByWithRelationInput | Prisma.ImmunizerCredentialOrderByWithRelationInput[]
+  cursor?: Prisma.ImmunizerCredentialWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmunizerCredentialScalarFieldEnum | Prisma.ImmunizerCredentialScalarFieldEnum[]
+}
+
+/**
+ * User.immunizationAssigned
+ */
+export type User$immunizationAssignedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmunizationAppointment
+   */
+  select?: Prisma.ImmunizationAppointmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmunizationAppointment
+   */
+  omit?: Prisma.ImmunizationAppointmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmunizationAppointmentInclude<ExtArgs> | null
+  where?: Prisma.ImmunizationAppointmentWhereInput
+  orderBy?: Prisma.ImmunizationAppointmentOrderByWithRelationInput | Prisma.ImmunizationAppointmentOrderByWithRelationInput[]
+  cursor?: Prisma.ImmunizationAppointmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmunizationAppointmentScalarFieldEnum | Prisma.ImmunizationAppointmentScalarFieldEnum[]
+}
+
+/**
+ * User.vaccinationScreenings
+ */
+export type User$vaccinationScreeningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PreVaccinationScreening
+   */
+  select?: Prisma.PreVaccinationScreeningSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PreVaccinationScreening
+   */
+  omit?: Prisma.PreVaccinationScreeningOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PreVaccinationScreeningInclude<ExtArgs> | null
+  where?: Prisma.PreVaccinationScreeningWhereInput
+  orderBy?: Prisma.PreVaccinationScreeningOrderByWithRelationInput | Prisma.PreVaccinationScreeningOrderByWithRelationInput[]
+  cursor?: Prisma.PreVaccinationScreeningWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PreVaccinationScreeningScalarFieldEnum | Prisma.PreVaccinationScreeningScalarFieldEnum[]
+}
+
+/**
+ * User.immunizationsAdministered
+ */
+export type User$immunizationsAdministeredArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmunizationRecord
+   */
+  select?: Prisma.ImmunizationRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmunizationRecord
+   */
+  omit?: Prisma.ImmunizationRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmunizationRecordInclude<ExtArgs> | null
+  where?: Prisma.ImmunizationRecordWhereInput
+  orderBy?: Prisma.ImmunizationRecordOrderByWithRelationInput | Prisma.ImmunizationRecordOrderByWithRelationInput[]
+  cursor?: Prisma.ImmunizationRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmunizationRecordScalarFieldEnum | Prisma.ImmunizationRecordScalarFieldEnum[]
+}
+
+/**
+ * User.immunizationsSupervised
+ */
+export type User$immunizationsSupervisedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmunizationRecord
+   */
+  select?: Prisma.ImmunizationRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmunizationRecord
+   */
+  omit?: Prisma.ImmunizationRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmunizationRecordInclude<ExtArgs> | null
+  where?: Prisma.ImmunizationRecordWhereInput
+  orderBy?: Prisma.ImmunizationRecordOrderByWithRelationInput | Prisma.ImmunizationRecordOrderByWithRelationInput[]
+  cursor?: Prisma.ImmunizationRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmunizationRecordScalarFieldEnum | Prisma.ImmunizationRecordScalarFieldEnum[]
+}
+
+/**
+ * User.aefiReportsFiled
+ */
+export type User$aefiReportsFiledArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdverseEventFollowingImmunization
+   */
+  select?: Prisma.AdverseEventFollowingImmunizationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdverseEventFollowingImmunization
+   */
+  omit?: Prisma.AdverseEventFollowingImmunizationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdverseEventFollowingImmunizationInclude<ExtArgs> | null
+  where?: Prisma.AdverseEventFollowingImmunizationWhereInput
+  orderBy?: Prisma.AdverseEventFollowingImmunizationOrderByWithRelationInput | Prisma.AdverseEventFollowingImmunizationOrderByWithRelationInput[]
+  cursor?: Prisma.AdverseEventFollowingImmunizationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AdverseEventFollowingImmunizationScalarFieldEnum | Prisma.AdverseEventFollowingImmunizationScalarFieldEnum[]
+}
+
+/**
+ * User.counsellingSessionsGiven
+ */
+export type User$counsellingSessionsGivenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PreventiveCounsellingSession
+   */
+  select?: Prisma.PreventiveCounsellingSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PreventiveCounsellingSession
+   */
+  omit?: Prisma.PreventiveCounsellingSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PreventiveCounsellingSessionInclude<ExtArgs> | null
+  where?: Prisma.PreventiveCounsellingSessionWhereInput
+  orderBy?: Prisma.PreventiveCounsellingSessionOrderByWithRelationInput | Prisma.PreventiveCounsellingSessionOrderByWithRelationInput[]
+  cursor?: Prisma.PreventiveCounsellingSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PreventiveCounsellingSessionScalarFieldEnum | Prisma.PreventiveCounsellingSessionScalarFieldEnum[]
 }
 
 /**

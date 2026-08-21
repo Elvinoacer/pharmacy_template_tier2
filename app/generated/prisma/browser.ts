@@ -404,3 +404,53 @@ export type HealthScreeningRecord = Prisma.HealthScreeningRecordModel
  * 
  */
 export type ClinicalReferral = Prisma.ClinicalReferralModel
+/**
+ * Model PharmacyImmunizationPolicy
+ * 
+ */
+export type PharmacyImmunizationPolicy = Prisma.PharmacyImmunizationPolicyModel
+/**
+ * Model VaccineProduct
+ * 
+ */
+export type VaccineProduct = Prisma.VaccineProductModel
+/**
+ * Model ImmunizerCredential
+ * 
+ */
+export type ImmunizerCredential = Prisma.ImmunizerCredentialModel
+/**
+ * Model ImmunizationAppointment
+ * 
+ */
+export type ImmunizationAppointment = Prisma.ImmunizationAppointmentModel
+/**
+ * Model PreVaccinationScreening
+ * 
+ */
+export type PreVaccinationScreening = Prisma.PreVaccinationScreeningModel
+/**
+ * Model VaccinationConsent
+ * 
+ */
+export type VaccinationConsent = Prisma.VaccinationConsentModel
+/**
+ * Model ImmunizationRecord
+ * 
+ */
+export type ImmunizationRecord = Prisma.ImmunizationRecordModel
+/**
+ * Model AdverseEventFollowingImmunization
+ * 
+ */
+export type AdverseEventFollowingImmunization = Prisma.AdverseEventFollowingImmunizationModel
+/**
+ * Model PreventiveCounsellingSession
+ * 
+ */
+export type PreventiveCounsellingSession = Prisma.PreventiveCounsellingSessionModel
+/**
+ * Model PublicHealthCampaign
+ * 
+ */
+export type PublicHealthCampaign = Prisma.PublicHealthCampaignModel

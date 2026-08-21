@@ -51,6 +51,7 @@ import {
   Zap,
   Activity,
   Boxes,
+  Syringe,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -119,6 +120,13 @@ export const ADMIN_LINKS = [
     icon: Activity,
     group: "clinical",
     description: "Vitals, POCT & clinical referrals",
+  },
+  {
+    href: "/admin/vaccinations",
+    label: "Vaccination Clinic",
+    icon: Syringe,
+    group: "clinical",
+    description: "Immunisation, AEFI & campaigns",
   },
 
   // ── Commerce & Inventory ──

@@ -252,6 +252,7 @@ export type CampaignWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   segment?: Prisma.XOR<Prisma.SegmentNullableScalarRelationFilter, Prisma.SegmentWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  publicHealthCampaign?: Prisma.XOR<Prisma.PublicHealthCampaignNullableScalarRelationFilter, Prisma.PublicHealthCampaignWhereInput> | null
 }
 
 export type CampaignOrderByWithRelationInput = {
@@ -271,6 +272,7 @@ export type CampaignOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   segment?: Prisma.SegmentOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignOrderByWithRelationInput
 }
 
 export type CampaignWhereUniqueInput = Prisma.AtLeast<{
@@ -293,6 +295,7 @@ export type CampaignWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   segment?: Prisma.XOR<Prisma.SegmentNullableScalarRelationFilter, Prisma.SegmentWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  publicHealthCampaign?: Prisma.XOR<Prisma.PublicHealthCampaignNullableScalarRelationFilter, Prisma.PublicHealthCampaignWhereInput> | null
 }, "id">
 
 export type CampaignOrderByWithAggregationInput = {
@@ -350,6 +353,7 @@ export type CampaignCreateInput = {
   updatedAt?: Date | string
   segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
 }
 
 export type CampaignUncheckedCreateInput = {
@@ -367,6 +371,7 @@ export type CampaignUncheckedCreateInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUncheckedCreateNestedOneWithoutCrmCampaignInput
 }
 
 export type CampaignUpdateInput = {
@@ -384,6 +389,7 @@ export type CampaignUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   segment?: Prisma.SegmentUpdateOneWithoutCampaignsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCampaignsCreatedNestedInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUpdateOneWithoutCrmCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateInput = {
@@ -401,6 +407,7 @@ export type CampaignUncheckedUpdateInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUncheckedUpdateOneWithoutCrmCampaignNestedInput
 }
 
 export type CampaignCreateManyInput = {
@@ -511,6 +518,11 @@ export type CampaignMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type CampaignNullableScalarRelationFilter = {
+  is?: Prisma.CampaignWhereInput | null
+  isNot?: Prisma.CampaignWhereInput | null
+}
+
 export type CampaignCreateNestedManyWithoutCreatedByInput = {
   create?: Prisma.XOR<Prisma.CampaignCreateWithoutCreatedByInput, Prisma.CampaignUncheckedCreateWithoutCreatedByInput> | Prisma.CampaignCreateWithoutCreatedByInput[] | Prisma.CampaignUncheckedCreateWithoutCreatedByInput[]
   connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutCreatedByInput | Prisma.CampaignCreateOrConnectWithoutCreatedByInput[]
@@ -603,6 +615,22 @@ export type EnumCampaignStatusFieldUpdateOperationsInput = {
   set?: $Enums.CampaignStatus
 }
 
+export type CampaignCreateNestedOneWithoutPublicHealthCampaignInput = {
+  create?: Prisma.XOR<Prisma.CampaignCreateWithoutPublicHealthCampaignInput, Prisma.CampaignUncheckedCreateWithoutPublicHealthCampaignInput>
+  connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutPublicHealthCampaignInput
+  connect?: Prisma.CampaignWhereUniqueInput
+}
+
+export type CampaignUpdateOneWithoutPublicHealthCampaignNestedInput = {
+  create?: Prisma.XOR<Prisma.CampaignCreateWithoutPublicHealthCampaignInput, Prisma.CampaignUncheckedCreateWithoutPublicHealthCampaignInput>
+  connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutPublicHealthCampaignInput
+  upsert?: Prisma.CampaignUpsertWithoutPublicHealthCampaignInput
+  disconnect?: Prisma.CampaignWhereInput | boolean
+  delete?: Prisma.CampaignWhereInput | boolean
+  connect?: Prisma.CampaignWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CampaignUpdateToOneWithWhereWithoutPublicHealthCampaignInput, Prisma.CampaignUpdateWithoutPublicHealthCampaignInput>, Prisma.CampaignUncheckedUpdateWithoutPublicHealthCampaignInput>
+}
+
 export type CampaignCreateWithoutCreatedByInput = {
   id?: string
   name: string
@@ -617,6 +645,7 @@ export type CampaignCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
 }
 
 export type CampaignUncheckedCreateWithoutCreatedByInput = {
@@ -633,6 +662,7 @@ export type CampaignUncheckedCreateWithoutCreatedByInput = {
   stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUncheckedCreateNestedOneWithoutCrmCampaignInput
 }
 
 export type CampaignCreateOrConnectWithoutCreatedByInput = {
@@ -695,6 +725,7 @@ export type CampaignCreateWithoutSegmentInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
 }
 
 export type CampaignUncheckedCreateWithoutSegmentInput = {
@@ -711,6 +742,7 @@ export type CampaignUncheckedCreateWithoutSegmentInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUncheckedCreateNestedOneWithoutCrmCampaignInput
 }
 
 export type CampaignCreateOrConnectWithoutSegmentInput = {
@@ -737,6 +769,90 @@ export type CampaignUpdateWithWhereUniqueWithoutSegmentInput = {
 export type CampaignUpdateManyWithWhereWithoutSegmentInput = {
   where: Prisma.CampaignScalarWhereInput
   data: Prisma.XOR<Prisma.CampaignUpdateManyMutationInput, Prisma.CampaignUncheckedUpdateManyWithoutSegmentInput>
+}
+
+export type CampaignCreateWithoutPublicHealthCampaignInput = {
+  id?: string
+  name: string
+  description?: string | null
+  channel: $Enums.CampaignChannel
+  subject?: string | null
+  body: string
+  status?: $Enums.CampaignStatus
+  scheduledFor?: Date | string | null
+  sentAt?: Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
+}
+
+export type CampaignUncheckedCreateWithoutPublicHealthCampaignInput = {
+  id?: string
+  name: string
+  description?: string | null
+  channel: $Enums.CampaignChannel
+  segmentId?: string | null
+  subject?: string | null
+  body: string
+  status?: $Enums.CampaignStatus
+  scheduledFor?: Date | string | null
+  sentAt?: Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CampaignCreateOrConnectWithoutPublicHealthCampaignInput = {
+  where: Prisma.CampaignWhereUniqueInput
+  create: Prisma.XOR<Prisma.CampaignCreateWithoutPublicHealthCampaignInput, Prisma.CampaignUncheckedCreateWithoutPublicHealthCampaignInput>
+}
+
+export type CampaignUpsertWithoutPublicHealthCampaignInput = {
+  update: Prisma.XOR<Prisma.CampaignUpdateWithoutPublicHealthCampaignInput, Prisma.CampaignUncheckedUpdateWithoutPublicHealthCampaignInput>
+  create: Prisma.XOR<Prisma.CampaignCreateWithoutPublicHealthCampaignInput, Prisma.CampaignUncheckedCreateWithoutPublicHealthCampaignInput>
+  where?: Prisma.CampaignWhereInput
+}
+
+export type CampaignUpdateToOneWithWhereWithoutPublicHealthCampaignInput = {
+  where?: Prisma.CampaignWhereInput
+  data: Prisma.XOR<Prisma.CampaignUpdateWithoutPublicHealthCampaignInput, Prisma.CampaignUncheckedUpdateWithoutPublicHealthCampaignInput>
+}
+
+export type CampaignUpdateWithoutPublicHealthCampaignInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  scheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  segment?: Prisma.SegmentUpdateOneWithoutCampaignsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCampaignsCreatedNestedInput
+}
+
+export type CampaignUncheckedUpdateWithoutPublicHealthCampaignInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channel?: Prisma.EnumCampaignChannelFieldUpdateOperationsInput | $Enums.CampaignChannel
+  segmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  scheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CampaignCreateManyCreatedByInput = {
@@ -769,6 +885,7 @@ export type CampaignUpdateWithoutCreatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   segment?: Prisma.SegmentUpdateOneWithoutCampaignsNestedInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUpdateOneWithoutCrmCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateWithoutCreatedByInput = {
@@ -785,6 +902,7 @@ export type CampaignUncheckedUpdateWithoutCreatedByInput = {
   stats?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUncheckedUpdateOneWithoutCrmCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateManyWithoutCreatedByInput = {
@@ -833,6 +951,7 @@ export type CampaignUpdateWithoutSegmentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneWithoutCampaignsCreatedNestedInput
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUpdateOneWithoutCrmCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateWithoutSegmentInput = {
@@ -849,6 +968,7 @@ export type CampaignUncheckedUpdateWithoutSegmentInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicHealthCampaign?: Prisma.PublicHealthCampaignUncheckedUpdateOneWithoutCrmCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateManyWithoutSegmentInput = {
@@ -886,6 +1006,7 @@ export type CampaignSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   updatedAt?: boolean
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Campaign$createdByArgs<ExtArgs>
+  publicHealthCampaign?: boolean | Prisma.Campaign$publicHealthCampaignArgs<ExtArgs>
 }, ExtArgs["result"]["campaign"]>
 
 export type CampaignSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -947,6 +1068,7 @@ export type CampaignOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type CampaignInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Campaign$createdByArgs<ExtArgs>
+  publicHealthCampaign?: boolean | Prisma.Campaign$publicHealthCampaignArgs<ExtArgs>
 }
 export type CampaignIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   segment?: boolean | Prisma.Campaign$segmentArgs<ExtArgs>
@@ -962,6 +1084,7 @@ export type $CampaignPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     segment: Prisma.$SegmentPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs> | null
+    publicHealthCampaign: Prisma.$PublicHealthCampaignPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1374,6 +1497,7 @@ export interface Prisma__CampaignClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   segment<T extends Prisma.Campaign$segmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Campaign$segmentArgs<ExtArgs>>): Prisma.Prisma__SegmentClient<runtime.Types.Result.GetResult<Prisma.$SegmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.Campaign$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Campaign$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  publicHealthCampaign<T extends Prisma.Campaign$publicHealthCampaignArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Campaign$publicHealthCampaignArgs<ExtArgs>>): Prisma.Prisma__PublicHealthCampaignClient<runtime.Types.Result.GetResult<Prisma.$PublicHealthCampaignPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1853,6 +1977,25 @@ export type Campaign$createdByArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Campaign.publicHealthCampaign
+ */
+export type Campaign$publicHealthCampaignArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PublicHealthCampaign
+   */
+  select?: Prisma.PublicHealthCampaignSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PublicHealthCampaign
+   */
+  omit?: Prisma.PublicHealthCampaignOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PublicHealthCampaignInclude<ExtArgs> | null
+  where?: Prisma.PublicHealthCampaignWhereInput
 }
 
 /**

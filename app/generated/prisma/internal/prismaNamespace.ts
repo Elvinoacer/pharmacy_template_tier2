@@ -465,7 +465,17 @@ export const ModelName = {
   MedicationPriceHistory: 'MedicationPriceHistory',
   CashierSession: 'CashierSession',
   HealthScreeningRecord: 'HealthScreeningRecord',
-  ClinicalReferral: 'ClinicalReferral'
+  ClinicalReferral: 'ClinicalReferral',
+  PharmacyImmunizationPolicy: 'PharmacyImmunizationPolicy',
+  VaccineProduct: 'VaccineProduct',
+  ImmunizerCredential: 'ImmunizerCredential',
+  ImmunizationAppointment: 'ImmunizationAppointment',
+  PreVaccinationScreening: 'PreVaccinationScreening',
+  VaccinationConsent: 'VaccinationConsent',
+  ImmunizationRecord: 'ImmunizationRecord',
+  AdverseEventFollowingImmunization: 'AdverseEventFollowingImmunization',
+  PreventiveCounsellingSession: 'PreventiveCounsellingSession',
+  PublicHealthCampaign: 'PublicHealthCampaign'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -481,7 +491,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "pushDevice" | "session" | "passwordReset" | "emailVerification" | "customerProfile" | "caregiver" | "customerPreference" | "prescription" | "refillRequest" | "timelineEvent" | "segment" | "customerSegment" | "conversation" | "message" | "messageTemplate" | "notification" | "reminder" | "campaign" | "loyaltyAccount" | "loyaltyTransaction" | "coupon" | "enquiry" | "feedback" | "knowledgeArticle" | "aiConversation" | "aiMessage" | "auditLog" | "customerNote" | "prescriptionAdherence" | "prescriptionClarificationLog" | "medicationSchedule" | "doseLog" | "adherenceEscalation" | "refillSyncEnrollment" | "adherenceFollowUp" | "medicationCategory" | "medicationMaster" | "pharmacyInventory" | "inventoryLot" | "stockMovement" | "activeIngredient" | "medicationActiveIngredient" | "manufacturer" | "medicationInteraction" | "clinicalTag" | "medicationClinicalTag" | "medicationLookup" | "order" | "orderItem" | "payment" | "loyaltyRule" | "caregiverInvite" | "pharmacyService" | "serviceBooking" | "adminNotification" | "pharmacySettings" | "symptomSession" | "symptomMessage" | "symptomCheckIn" | "prescriptionFill" | "inventoryReservation" | "refund" | "inventoryAllocation" | "commerceEvent" | "medicationPriceHistory" | "cashierSession" | "healthScreeningRecord" | "clinicalReferral"
+    modelProps: "user" | "pushDevice" | "session" | "passwordReset" | "emailVerification" | "customerProfile" | "caregiver" | "customerPreference" | "prescription" | "refillRequest" | "timelineEvent" | "segment" | "customerSegment" | "conversation" | "message" | "messageTemplate" | "notification" | "reminder" | "campaign" | "loyaltyAccount" | "loyaltyTransaction" | "coupon" | "enquiry" | "feedback" | "knowledgeArticle" | "aiConversation" | "aiMessage" | "auditLog" | "customerNote" | "prescriptionAdherence" | "prescriptionClarificationLog" | "medicationSchedule" | "doseLog" | "adherenceEscalation" | "refillSyncEnrollment" | "adherenceFollowUp" | "medicationCategory" | "medicationMaster" | "pharmacyInventory" | "inventoryLot" | "stockMovement" | "activeIngredient" | "medicationActiveIngredient" | "manufacturer" | "medicationInteraction" | "clinicalTag" | "medicationClinicalTag" | "medicationLookup" | "order" | "orderItem" | "payment" | "loyaltyRule" | "caregiverInvite" | "pharmacyService" | "serviceBooking" | "adminNotification" | "pharmacySettings" | "symptomSession" | "symptomMessage" | "symptomCheckIn" | "prescriptionFill" | "inventoryReservation" | "refund" | "inventoryAllocation" | "commerceEvent" | "medicationPriceHistory" | "cashierSession" | "healthScreeningRecord" | "clinicalReferral" | "pharmacyImmunizationPolicy" | "vaccineProduct" | "immunizerCredential" | "immunizationAppointment" | "preVaccinationScreening" | "vaccinationConsent" | "immunizationRecord" | "adverseEventFollowingImmunization" | "preventiveCounsellingSession" | "publicHealthCampaign"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -5591,6 +5601,746 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PharmacyImmunizationPolicy: {
+      payload: Prisma.$PharmacyImmunizationPolicyPayload<ExtArgs>
+      fields: Prisma.PharmacyImmunizationPolicyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PharmacyImmunizationPolicyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PharmacyImmunizationPolicyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>
+        }
+        findFirst: {
+          args: Prisma.PharmacyImmunizationPolicyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PharmacyImmunizationPolicyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>
+        }
+        findMany: {
+          args: Prisma.PharmacyImmunizationPolicyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>[]
+        }
+        create: {
+          args: Prisma.PharmacyImmunizationPolicyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>
+        }
+        createMany: {
+          args: Prisma.PharmacyImmunizationPolicyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PharmacyImmunizationPolicyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>[]
+        }
+        delete: {
+          args: Prisma.PharmacyImmunizationPolicyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>
+        }
+        update: {
+          args: Prisma.PharmacyImmunizationPolicyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>
+        }
+        deleteMany: {
+          args: Prisma.PharmacyImmunizationPolicyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PharmacyImmunizationPolicyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PharmacyImmunizationPolicyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>[]
+        }
+        upsert: {
+          args: Prisma.PharmacyImmunizationPolicyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PharmacyImmunizationPolicyPayload>
+        }
+        aggregate: {
+          args: Prisma.PharmacyImmunizationPolicyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePharmacyImmunizationPolicy>
+        }
+        groupBy: {
+          args: Prisma.PharmacyImmunizationPolicyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PharmacyImmunizationPolicyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PharmacyImmunizationPolicyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PharmacyImmunizationPolicyCountAggregateOutputType> | number
+        }
+      }
+    }
+    VaccineProduct: {
+      payload: Prisma.$VaccineProductPayload<ExtArgs>
+      fields: Prisma.VaccineProductFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VaccineProductFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VaccineProductFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>
+        }
+        findFirst: {
+          args: Prisma.VaccineProductFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VaccineProductFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>
+        }
+        findMany: {
+          args: Prisma.VaccineProductFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>[]
+        }
+        create: {
+          args: Prisma.VaccineProductCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>
+        }
+        createMany: {
+          args: Prisma.VaccineProductCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VaccineProductCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>[]
+        }
+        delete: {
+          args: Prisma.VaccineProductDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>
+        }
+        update: {
+          args: Prisma.VaccineProductUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>
+        }
+        deleteMany: {
+          args: Prisma.VaccineProductDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VaccineProductUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VaccineProductUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>[]
+        }
+        upsert: {
+          args: Prisma.VaccineProductUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccineProductPayload>
+        }
+        aggregate: {
+          args: Prisma.VaccineProductAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVaccineProduct>
+        }
+        groupBy: {
+          args: Prisma.VaccineProductGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VaccineProductGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VaccineProductCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VaccineProductCountAggregateOutputType> | number
+        }
+      }
+    }
+    ImmunizerCredential: {
+      payload: Prisma.$ImmunizerCredentialPayload<ExtArgs>
+      fields: Prisma.ImmunizerCredentialFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ImmunizerCredentialFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ImmunizerCredentialFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>
+        }
+        findFirst: {
+          args: Prisma.ImmunizerCredentialFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ImmunizerCredentialFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>
+        }
+        findMany: {
+          args: Prisma.ImmunizerCredentialFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>[]
+        }
+        create: {
+          args: Prisma.ImmunizerCredentialCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>
+        }
+        createMany: {
+          args: Prisma.ImmunizerCredentialCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ImmunizerCredentialCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>[]
+        }
+        delete: {
+          args: Prisma.ImmunizerCredentialDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>
+        }
+        update: {
+          args: Prisma.ImmunizerCredentialUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>
+        }
+        deleteMany: {
+          args: Prisma.ImmunizerCredentialDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ImmunizerCredentialUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ImmunizerCredentialUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>[]
+        }
+        upsert: {
+          args: Prisma.ImmunizerCredentialUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizerCredentialPayload>
+        }
+        aggregate: {
+          args: Prisma.ImmunizerCredentialAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateImmunizerCredential>
+        }
+        groupBy: {
+          args: Prisma.ImmunizerCredentialGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmunizerCredentialGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ImmunizerCredentialCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmunizerCredentialCountAggregateOutputType> | number
+        }
+      }
+    }
+    ImmunizationAppointment: {
+      payload: Prisma.$ImmunizationAppointmentPayload<ExtArgs>
+      fields: Prisma.ImmunizationAppointmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ImmunizationAppointmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ImmunizationAppointmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>
+        }
+        findFirst: {
+          args: Prisma.ImmunizationAppointmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ImmunizationAppointmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>
+        }
+        findMany: {
+          args: Prisma.ImmunizationAppointmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>[]
+        }
+        create: {
+          args: Prisma.ImmunizationAppointmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>
+        }
+        createMany: {
+          args: Prisma.ImmunizationAppointmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ImmunizationAppointmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>[]
+        }
+        delete: {
+          args: Prisma.ImmunizationAppointmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>
+        }
+        update: {
+          args: Prisma.ImmunizationAppointmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ImmunizationAppointmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ImmunizationAppointmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ImmunizationAppointmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.ImmunizationAppointmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationAppointmentPayload>
+        }
+        aggregate: {
+          args: Prisma.ImmunizationAppointmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateImmunizationAppointment>
+        }
+        groupBy: {
+          args: Prisma.ImmunizationAppointmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmunizationAppointmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ImmunizationAppointmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmunizationAppointmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    PreVaccinationScreening: {
+      payload: Prisma.$PreVaccinationScreeningPayload<ExtArgs>
+      fields: Prisma.PreVaccinationScreeningFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PreVaccinationScreeningFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PreVaccinationScreeningFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>
+        }
+        findFirst: {
+          args: Prisma.PreVaccinationScreeningFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PreVaccinationScreeningFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>
+        }
+        findMany: {
+          args: Prisma.PreVaccinationScreeningFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>[]
+        }
+        create: {
+          args: Prisma.PreVaccinationScreeningCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>
+        }
+        createMany: {
+          args: Prisma.PreVaccinationScreeningCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PreVaccinationScreeningCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>[]
+        }
+        delete: {
+          args: Prisma.PreVaccinationScreeningDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>
+        }
+        update: {
+          args: Prisma.PreVaccinationScreeningUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>
+        }
+        deleteMany: {
+          args: Prisma.PreVaccinationScreeningDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PreVaccinationScreeningUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PreVaccinationScreeningUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>[]
+        }
+        upsert: {
+          args: Prisma.PreVaccinationScreeningUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreVaccinationScreeningPayload>
+        }
+        aggregate: {
+          args: Prisma.PreVaccinationScreeningAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePreVaccinationScreening>
+        }
+        groupBy: {
+          args: Prisma.PreVaccinationScreeningGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PreVaccinationScreeningGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PreVaccinationScreeningCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PreVaccinationScreeningCountAggregateOutputType> | number
+        }
+      }
+    }
+    VaccinationConsent: {
+      payload: Prisma.$VaccinationConsentPayload<ExtArgs>
+      fields: Prisma.VaccinationConsentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VaccinationConsentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VaccinationConsentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>
+        }
+        findFirst: {
+          args: Prisma.VaccinationConsentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VaccinationConsentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>
+        }
+        findMany: {
+          args: Prisma.VaccinationConsentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>[]
+        }
+        create: {
+          args: Prisma.VaccinationConsentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>
+        }
+        createMany: {
+          args: Prisma.VaccinationConsentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VaccinationConsentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>[]
+        }
+        delete: {
+          args: Prisma.VaccinationConsentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>
+        }
+        update: {
+          args: Prisma.VaccinationConsentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>
+        }
+        deleteMany: {
+          args: Prisma.VaccinationConsentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VaccinationConsentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VaccinationConsentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>[]
+        }
+        upsert: {
+          args: Prisma.VaccinationConsentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaccinationConsentPayload>
+        }
+        aggregate: {
+          args: Prisma.VaccinationConsentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVaccinationConsent>
+        }
+        groupBy: {
+          args: Prisma.VaccinationConsentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VaccinationConsentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VaccinationConsentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VaccinationConsentCountAggregateOutputType> | number
+        }
+      }
+    }
+    ImmunizationRecord: {
+      payload: Prisma.$ImmunizationRecordPayload<ExtArgs>
+      fields: Prisma.ImmunizationRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ImmunizationRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ImmunizationRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.ImmunizationRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ImmunizationRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>
+        }
+        findMany: {
+          args: Prisma.ImmunizationRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>[]
+        }
+        create: {
+          args: Prisma.ImmunizationRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>
+        }
+        createMany: {
+          args: Prisma.ImmunizationRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ImmunizationRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.ImmunizationRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>
+        }
+        update: {
+          args: Prisma.ImmunizationRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.ImmunizationRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ImmunizationRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ImmunizationRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.ImmunizationRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.ImmunizationRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateImmunizationRecord>
+        }
+        groupBy: {
+          args: Prisma.ImmunizationRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmunizationRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ImmunizationRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmunizationRecordCountAggregateOutputType> | number
+        }
+      }
+    }
+    AdverseEventFollowingImmunization: {
+      payload: Prisma.$AdverseEventFollowingImmunizationPayload<ExtArgs>
+      fields: Prisma.AdverseEventFollowingImmunizationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdverseEventFollowingImmunizationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdverseEventFollowingImmunizationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>
+        }
+        findFirst: {
+          args: Prisma.AdverseEventFollowingImmunizationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdverseEventFollowingImmunizationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>
+        }
+        findMany: {
+          args: Prisma.AdverseEventFollowingImmunizationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>[]
+        }
+        create: {
+          args: Prisma.AdverseEventFollowingImmunizationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>
+        }
+        createMany: {
+          args: Prisma.AdverseEventFollowingImmunizationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdverseEventFollowingImmunizationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>[]
+        }
+        delete: {
+          args: Prisma.AdverseEventFollowingImmunizationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>
+        }
+        update: {
+          args: Prisma.AdverseEventFollowingImmunizationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdverseEventFollowingImmunizationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdverseEventFollowingImmunizationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdverseEventFollowingImmunizationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdverseEventFollowingImmunizationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdverseEventFollowingImmunizationPayload>
+        }
+        aggregate: {
+          args: Prisma.AdverseEventFollowingImmunizationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdverseEventFollowingImmunization>
+        }
+        groupBy: {
+          args: Prisma.AdverseEventFollowingImmunizationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdverseEventFollowingImmunizationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdverseEventFollowingImmunizationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdverseEventFollowingImmunizationCountAggregateOutputType> | number
+        }
+      }
+    }
+    PreventiveCounsellingSession: {
+      payload: Prisma.$PreventiveCounsellingSessionPayload<ExtArgs>
+      fields: Prisma.PreventiveCounsellingSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PreventiveCounsellingSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PreventiveCounsellingSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.PreventiveCounsellingSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PreventiveCounsellingSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>
+        }
+        findMany: {
+          args: Prisma.PreventiveCounsellingSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>[]
+        }
+        create: {
+          args: Prisma.PreventiveCounsellingSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>
+        }
+        createMany: {
+          args: Prisma.PreventiveCounsellingSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PreventiveCounsellingSessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>[]
+        }
+        delete: {
+          args: Prisma.PreventiveCounsellingSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>
+        }
+        update: {
+          args: Prisma.PreventiveCounsellingSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.PreventiveCounsellingSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PreventiveCounsellingSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PreventiveCounsellingSessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.PreventiveCounsellingSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PreventiveCounsellingSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.PreventiveCounsellingSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePreventiveCounsellingSession>
+        }
+        groupBy: {
+          args: Prisma.PreventiveCounsellingSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PreventiveCounsellingSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PreventiveCounsellingSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PreventiveCounsellingSessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    PublicHealthCampaign: {
+      payload: Prisma.$PublicHealthCampaignPayload<ExtArgs>
+      fields: Prisma.PublicHealthCampaignFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PublicHealthCampaignFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PublicHealthCampaignFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>
+        }
+        findFirst: {
+          args: Prisma.PublicHealthCampaignFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PublicHealthCampaignFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>
+        }
+        findMany: {
+          args: Prisma.PublicHealthCampaignFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>[]
+        }
+        create: {
+          args: Prisma.PublicHealthCampaignCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>
+        }
+        createMany: {
+          args: Prisma.PublicHealthCampaignCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PublicHealthCampaignCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>[]
+        }
+        delete: {
+          args: Prisma.PublicHealthCampaignDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>
+        }
+        update: {
+          args: Prisma.PublicHealthCampaignUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>
+        }
+        deleteMany: {
+          args: Prisma.PublicHealthCampaignDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PublicHealthCampaignUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PublicHealthCampaignUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>[]
+        }
+        upsert: {
+          args: Prisma.PublicHealthCampaignUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicHealthCampaignPayload>
+        }
+        aggregate: {
+          args: Prisma.PublicHealthCampaignAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePublicHealthCampaign>
+        }
+        groupBy: {
+          args: Prisma.PublicHealthCampaignGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PublicHealthCampaignGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PublicHealthCampaignCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PublicHealthCampaignCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -6935,6 +7685,268 @@ export const ClinicalReferralScalarFieldEnum = {
 export type ClinicalReferralScalarFieldEnum = (typeof ClinicalReferralScalarFieldEnum)[keyof typeof ClinicalReferralScalarFieldEnum]
 
 
+export const PharmacyImmunizationPolicyScalarFieldEnum = {
+  id: 'id',
+  enabled: 'enabled',
+  jurisdiction: 'jurisdiction',
+  authorizingBody: 'authorizingBody',
+  authorizingRegulation: 'authorizingRegulation',
+  supervisingPharmacistRequired: 'supervisingPharmacistRequired',
+  observationMinutesDefault: 'observationMinutesDefault',
+  visRequired: 'visRequired',
+  aefiReportingContact: 'aefiReportingContact',
+  aefiReportingAuthority: 'aefiReportingAuthority',
+  coldChainNotes: 'coldChainNotes',
+  publicDisclaimer: 'publicDisclaimer',
+  walkInAccepted: 'walkInAccepted',
+  paediatricOnSite: 'paediatricOnSite',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PharmacyImmunizationPolicyScalarFieldEnum = (typeof PharmacyImmunizationPolicyScalarFieldEnum)[keyof typeof PharmacyImmunizationPolicyScalarFieldEnum]
+
+
+export const VaccineProductScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  name: 'name',
+  antigen: 'antigen',
+  brandName: 'brandName',
+  manufacturer: 'manufacturer',
+  category: 'category',
+  diseasesPrevented: 'diseasesPrevented',
+  description: 'description',
+  indications: 'indications',
+  whoShouldGet: 'whoShouldGet',
+  whoShouldWait: 'whoShouldWait',
+  contraindications: 'contraindications',
+  precautions: 'precautions',
+  commonSideEffects: 'commonSideEffects',
+  rareRisks: 'rareRisks',
+  route: 'route',
+  siteOptions: 'siteOptions',
+  doseMl: 'doseMl',
+  seriesDoses: 'seriesDoses',
+  seriesIntervalDays: 'seriesIntervalDays',
+  boosterIntervalMonths: 'boosterIntervalMonths',
+  minAgeMonths: 'minAgeMonths',
+  maxAgeMonths: 'maxAgeMonths',
+  visTitle: 'visTitle',
+  visVersion: 'visVersion',
+  visSummary: 'visSummary',
+  storageRequirements: 'storageRequirements',
+  priceKes: 'priceKes',
+  active: 'active',
+  bookable: 'bookable',
+  pharmacyAdministered: 'pharmacyAdministered',
+  travelRelated: 'travelRelated',
+  seasonLabel: 'seasonLabel',
+  regulatoryNotes: 'regulatoryNotes',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VaccineProductScalarFieldEnum = (typeof VaccineProductScalarFieldEnum)[keyof typeof VaccineProductScalarFieldEnum]
+
+
+export const ImmunizerCredentialScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  credentialType: 'credentialType',
+  title: 'title',
+  licenseNumber: 'licenseNumber',
+  issuedBy: 'issuedBy',
+  issuedAt: 'issuedAt',
+  expiresAt: 'expiresAt',
+  verified: 'verified',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ImmunizerCredentialScalarFieldEnum = (typeof ImmunizerCredentialScalarFieldEnum)[keyof typeof ImmunizerCredentialScalarFieldEnum]
+
+
+export const ImmunizationAppointmentScalarFieldEnum = {
+  id: 'id',
+  vaccineProductId: 'vaccineProductId',
+  customerId: 'customerId',
+  serviceBookingId: 'serviceBookingId',
+  campaignId: 'campaignId',
+  patientName: 'patientName',
+  patientPhone: 'patientPhone',
+  patientEmail: 'patientEmail',
+  patientDob: 'patientDob',
+  patientGender: 'patientGender',
+  preferredDate: 'preferredDate',
+  preferredTime: 'preferredTime',
+  status: 'status',
+  source: 'source',
+  notes: 'notes',
+  staffNotes: 'staffNotes',
+  assignedToId: 'assignedToId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ImmunizationAppointmentScalarFieldEnum = (typeof ImmunizationAppointmentScalarFieldEnum)[keyof typeof ImmunizationAppointmentScalarFieldEnum]
+
+
+export const PreVaccinationScreeningScalarFieldEnum = {
+  id: 'id',
+  appointmentId: 'appointmentId',
+  customerId: 'customerId',
+  screenedById: 'screenedById',
+  answers: 'answers',
+  allergyFlag: 'allergyFlag',
+  pregnancyFlag: 'pregnancyFlag',
+  immunocompromisedFlag: 'immunocompromisedFlag',
+  recentIllnessFlag: 'recentIllnessFlag',
+  previousReactionFlag: 'previousReactionFlag',
+  anticoagulantFlag: 'anticoagulantFlag',
+  outcome: 'outcome',
+  outcomeReason: 'outcomeReason',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type PreVaccinationScreeningScalarFieldEnum = (typeof PreVaccinationScreeningScalarFieldEnum)[keyof typeof PreVaccinationScreeningScalarFieldEnum]
+
+
+export const VaccinationConsentScalarFieldEnum = {
+  id: 'id',
+  appointmentId: 'appointmentId',
+  vaccineProductId: 'vaccineProductId',
+  customerId: 'customerId',
+  visProvided: 'visProvided',
+  visVersion: 'visVersion',
+  visProvidedAt: 'visProvidedAt',
+  consentType: 'consentType',
+  consenterName: 'consenterName',
+  consenterRelationship: 'consenterRelationship',
+  signatureName: 'signatureName',
+  consentTextSnapshot: 'consentTextSnapshot',
+  signedAt: 'signedAt',
+  withdrawnAt: 'withdrawnAt',
+  createdAt: 'createdAt'
+} as const
+
+export type VaccinationConsentScalarFieldEnum = (typeof VaccinationConsentScalarFieldEnum)[keyof typeof VaccinationConsentScalarFieldEnum]
+
+
+export const ImmunizationRecordScalarFieldEnum = {
+  id: 'id',
+  appointmentId: 'appointmentId',
+  vaccineProductId: 'vaccineProductId',
+  customerId: 'customerId',
+  consentId: 'consentId',
+  administeredById: 'administeredById',
+  supervisingPharmacistId: 'supervisingPharmacistId',
+  patientName: 'patientName',
+  patientDob: 'patientDob',
+  patientGender: 'patientGender',
+  patientPhone: 'patientPhone',
+  doseNumber: 'doseNumber',
+  seriesComplete: 'seriesComplete',
+  administeredAt: 'administeredAt',
+  route: 'route',
+  site: 'site',
+  doseMl: 'doseMl',
+  lotNumber: 'lotNumber',
+  expiryDate: 'expiryDate',
+  manufacturer: 'manufacturer',
+  visGivenAt: 'visGivenAt',
+  visVersion: 'visVersion',
+  observationMinutes: 'observationMinutes',
+  observationUntil: 'observationUntil',
+  observationOutcome: 'observationOutcome',
+  nextDueDate: 'nextDueDate',
+  certificateCode: 'certificateCode',
+  campaignId: 'campaignId',
+  notes: 'notes',
+  status: 'status',
+  voidReason: 'voidReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ImmunizationRecordScalarFieldEnum = (typeof ImmunizationRecordScalarFieldEnum)[keyof typeof ImmunizationRecordScalarFieldEnum]
+
+
+export const AdverseEventFollowingImmunizationScalarFieldEnum = {
+  id: 'id',
+  immunizationId: 'immunizationId',
+  onsetAt: 'onsetAt',
+  severity: 'severity',
+  symptoms: 'symptoms',
+  actionTaken: 'actionTaken',
+  outcome: 'outcome',
+  reportedToAuthority: 'reportedToAuthority',
+  reportedAt: 'reportedAt',
+  reportedById: 'reportedById',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdverseEventFollowingImmunizationScalarFieldEnum = (typeof AdverseEventFollowingImmunizationScalarFieldEnum)[keyof typeof AdverseEventFollowingImmunizationScalarFieldEnum]
+
+
+export const PreventiveCounsellingSessionScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  counsellorId: 'counsellorId',
+  campaignId: 'campaignId',
+  topic: 'topic',
+  format: 'format',
+  durationMinutes: 'durationMinutes',
+  patientName: 'patientName',
+  patientPhone: 'patientPhone',
+  summary: 'summary',
+  goals: 'goals',
+  resourcesGiven: 'resourcesGiven',
+  followUpDate: 'followUpDate',
+  preferredDate: 'preferredDate',
+  preferredTime: 'preferredTime',
+  status: 'status',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PreventiveCounsellingSessionScalarFieldEnum = (typeof PreventiveCounsellingSessionScalarFieldEnum)[keyof typeof PreventiveCounsellingSessionScalarFieldEnum]
+
+
+export const PublicHealthCampaignScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  slug: 'slug',
+  title: 'title',
+  theme: 'theme',
+  description: 'description',
+  short: 'short',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  targetPopulation: 'targetPopulation',
+  vaccinesOffered: 'vaccinesOffered',
+  walkInDays: 'walkInDays',
+  targetDoses: 'targetDoses',
+  dosesAdministered: 'dosesAdministered',
+  educationTopics: 'educationTopics',
+  locationNotes: 'locationNotes',
+  regulatoryNotes: 'regulatoryNotes',
+  heroImage: 'heroImage',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PublicHealthCampaignScalarFieldEnum = (typeof PublicHealthCampaignScalarFieldEnum)[keyof typeof PublicHealthCampaignScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -7943,6 +8955,16 @@ export type GlobalOmitConfig = {
   cashierSession?: Prisma.CashierSessionOmit
   healthScreeningRecord?: Prisma.HealthScreeningRecordOmit
   clinicalReferral?: Prisma.ClinicalReferralOmit
+  pharmacyImmunizationPolicy?: Prisma.PharmacyImmunizationPolicyOmit
+  vaccineProduct?: Prisma.VaccineProductOmit
+  immunizerCredential?: Prisma.ImmunizerCredentialOmit
+  immunizationAppointment?: Prisma.ImmunizationAppointmentOmit
+  preVaccinationScreening?: Prisma.PreVaccinationScreeningOmit
+  vaccinationConsent?: Prisma.VaccinationConsentOmit
+  immunizationRecord?: Prisma.ImmunizationRecordOmit
+  adverseEventFollowingImmunization?: Prisma.AdverseEventFollowingImmunizationOmit
+  preventiveCounsellingSession?: Prisma.PreventiveCounsellingSessionOmit
+  publicHealthCampaign?: Prisma.PublicHealthCampaignOmit
 }
 
 /* Types for Logging */

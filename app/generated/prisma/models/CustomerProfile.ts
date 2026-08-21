@@ -336,6 +336,11 @@ export type CustomerProfileWhereInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpListRelationFilter
   screeningRecords?: Prisma.HealthScreeningRecordListRelationFilter
   clinicalReferrals?: Prisma.ClinicalReferralListRelationFilter
+  immunizationAppointments?: Prisma.ImmunizationAppointmentListRelationFilter
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningListRelationFilter
+  vaccinationConsents?: Prisma.VaccinationConsentListRelationFilter
+  immunizationRecords?: Prisma.ImmunizationRecordListRelationFilter
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionListRelationFilter
 }
 
 export type CustomerProfileOrderByWithRelationInput = {
@@ -388,6 +393,11 @@ export type CustomerProfileOrderByWithRelationInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpOrderByRelationAggregateInput
   screeningRecords?: Prisma.HealthScreeningRecordOrderByRelationAggregateInput
   clinicalReferrals?: Prisma.ClinicalReferralOrderByRelationAggregateInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentOrderByRelationAggregateInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningOrderByRelationAggregateInput
+  vaccinationConsents?: Prisma.VaccinationConsentOrderByRelationAggregateInput
+  immunizationRecords?: Prisma.ImmunizationRecordOrderByRelationAggregateInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionOrderByRelationAggregateInput
 }
 
 export type CustomerProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -443,6 +453,11 @@ export type CustomerProfileWhereUniqueInput = Prisma.AtLeast<{
   adherenceFollowUps?: Prisma.AdherenceFollowUpListRelationFilter
   screeningRecords?: Prisma.HealthScreeningRecordListRelationFilter
   clinicalReferrals?: Prisma.ClinicalReferralListRelationFilter
+  immunizationAppointments?: Prisma.ImmunizationAppointmentListRelationFilter
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningListRelationFilter
+  vaccinationConsents?: Prisma.VaccinationConsentListRelationFilter
+  immunizationRecords?: Prisma.ImmunizationRecordListRelationFilter
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionListRelationFilter
 }, "id" | "userId">
 
 export type CustomerProfileOrderByWithAggregationInput = {
@@ -548,6 +563,11 @@ export type CustomerProfileCreateInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateInput = {
@@ -599,6 +619,11 @@ export type CustomerProfileUncheckedCreateInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUpdateInput = {
@@ -650,6 +675,11 @@ export type CustomerProfileUpdateInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateInput = {
@@ -701,6 +731,11 @@ export type CustomerProfileUncheckedUpdateInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateManyInput = {
@@ -1317,6 +1352,86 @@ export type CustomerProfileUpdateOneWithoutClinicalReferralsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutClinicalReferralsInput, Prisma.CustomerProfileUpdateWithoutClinicalReferralsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput>
 }
 
+export type CustomerProfileCreateNestedOneWithoutImmunizationAppointmentsInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutImmunizationAppointmentsInput, Prisma.CustomerProfileUncheckedCreateWithoutImmunizationAppointmentsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutImmunizationAppointmentsInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+}
+
+export type CustomerProfileUpdateOneWithoutImmunizationAppointmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutImmunizationAppointmentsInput, Prisma.CustomerProfileUncheckedCreateWithoutImmunizationAppointmentsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutImmunizationAppointmentsInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutImmunizationAppointmentsInput
+  disconnect?: Prisma.CustomerProfileWhereInput | boolean
+  delete?: Prisma.CustomerProfileWhereInput | boolean
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutImmunizationAppointmentsInput, Prisma.CustomerProfileUpdateWithoutImmunizationAppointmentsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutImmunizationAppointmentsInput>
+}
+
+export type CustomerProfileCreateNestedOneWithoutPreVaccinationScreeningsInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutPreVaccinationScreeningsInput, Prisma.CustomerProfileUncheckedCreateWithoutPreVaccinationScreeningsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutPreVaccinationScreeningsInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+}
+
+export type CustomerProfileUpdateOneWithoutPreVaccinationScreeningsNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutPreVaccinationScreeningsInput, Prisma.CustomerProfileUncheckedCreateWithoutPreVaccinationScreeningsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutPreVaccinationScreeningsInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutPreVaccinationScreeningsInput
+  disconnect?: Prisma.CustomerProfileWhereInput | boolean
+  delete?: Prisma.CustomerProfileWhereInput | boolean
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutPreVaccinationScreeningsInput, Prisma.CustomerProfileUpdateWithoutPreVaccinationScreeningsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutPreVaccinationScreeningsInput>
+}
+
+export type CustomerProfileCreateNestedOneWithoutVaccinationConsentsInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutVaccinationConsentsInput, Prisma.CustomerProfileUncheckedCreateWithoutVaccinationConsentsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutVaccinationConsentsInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+}
+
+export type CustomerProfileUpdateOneWithoutVaccinationConsentsNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutVaccinationConsentsInput, Prisma.CustomerProfileUncheckedCreateWithoutVaccinationConsentsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutVaccinationConsentsInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutVaccinationConsentsInput
+  disconnect?: Prisma.CustomerProfileWhereInput | boolean
+  delete?: Prisma.CustomerProfileWhereInput | boolean
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutVaccinationConsentsInput, Prisma.CustomerProfileUpdateWithoutVaccinationConsentsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutVaccinationConsentsInput>
+}
+
+export type CustomerProfileCreateNestedOneWithoutImmunizationRecordsInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutImmunizationRecordsInput, Prisma.CustomerProfileUncheckedCreateWithoutImmunizationRecordsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutImmunizationRecordsInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+}
+
+export type CustomerProfileUpdateOneWithoutImmunizationRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutImmunizationRecordsInput, Prisma.CustomerProfileUncheckedCreateWithoutImmunizationRecordsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutImmunizationRecordsInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutImmunizationRecordsInput
+  disconnect?: Prisma.CustomerProfileWhereInput | boolean
+  delete?: Prisma.CustomerProfileWhereInput | boolean
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutImmunizationRecordsInput, Prisma.CustomerProfileUpdateWithoutImmunizationRecordsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutImmunizationRecordsInput>
+}
+
+export type CustomerProfileCreateNestedOneWithoutCounsellingSessionsInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutCounsellingSessionsInput, Prisma.CustomerProfileUncheckedCreateWithoutCounsellingSessionsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutCounsellingSessionsInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+}
+
+export type CustomerProfileUpdateOneWithoutCounsellingSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutCounsellingSessionsInput, Prisma.CustomerProfileUncheckedCreateWithoutCounsellingSessionsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutCounsellingSessionsInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutCounsellingSessionsInput
+  disconnect?: Prisma.CustomerProfileWhereInput | boolean
+  delete?: Prisma.CustomerProfileWhereInput | boolean
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutCounsellingSessionsInput, Prisma.CustomerProfileUpdateWithoutCounsellingSessionsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutCounsellingSessionsInput>
+}
+
 export type CustomerProfileCreateWithoutUserInput = {
   id?: string
   fullName: string
@@ -1365,6 +1480,11 @@ export type CustomerProfileCreateWithoutUserInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutUserInput = {
@@ -1415,6 +1535,11 @@ export type CustomerProfileUncheckedCreateWithoutUserInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutUserInput = {
@@ -1481,6 +1606,11 @@ export type CustomerProfileUpdateWithoutUserInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutUserInput = {
@@ -1531,6 +1661,11 @@ export type CustomerProfileUncheckedUpdateWithoutUserInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutCaregiversInput = {
@@ -1581,6 +1716,11 @@ export type CustomerProfileCreateWithoutCaregiversInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutCaregiversInput = {
@@ -1631,6 +1771,11 @@ export type CustomerProfileUncheckedCreateWithoutCaregiversInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutCaregiversInput = {
@@ -1697,6 +1842,11 @@ export type CustomerProfileUpdateWithoutCaregiversInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutCaregiversInput = {
@@ -1747,6 +1897,11 @@ export type CustomerProfileUncheckedUpdateWithoutCaregiversInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPreferencesInput = {
@@ -1797,6 +1952,11 @@ export type CustomerProfileCreateWithoutPreferencesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPreferencesInput = {
@@ -1847,6 +2007,11 @@ export type CustomerProfileUncheckedCreateWithoutPreferencesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPreferencesInput = {
@@ -1913,6 +2078,11 @@ export type CustomerProfileUpdateWithoutPreferencesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPreferencesInput = {
@@ -1963,6 +2133,11 @@ export type CustomerProfileUncheckedUpdateWithoutPreferencesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPrescriptionsInput = {
@@ -2013,6 +2188,11 @@ export type CustomerProfileCreateWithoutPrescriptionsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPrescriptionsInput = {
@@ -2063,6 +2243,11 @@ export type CustomerProfileUncheckedCreateWithoutPrescriptionsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPrescriptionsInput = {
@@ -2129,6 +2314,11 @@ export type CustomerProfileUpdateWithoutPrescriptionsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPrescriptionsInput = {
@@ -2179,6 +2369,11 @@ export type CustomerProfileUncheckedUpdateWithoutPrescriptionsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutRefillRequestsInput = {
@@ -2229,6 +2424,11 @@ export type CustomerProfileCreateWithoutRefillRequestsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutRefillRequestsInput = {
@@ -2279,6 +2479,11 @@ export type CustomerProfileUncheckedCreateWithoutRefillRequestsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutRefillRequestsInput = {
@@ -2345,6 +2550,11 @@ export type CustomerProfileUpdateWithoutRefillRequestsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutRefillRequestsInput = {
@@ -2395,6 +2605,11 @@ export type CustomerProfileUncheckedUpdateWithoutRefillRequestsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutTimelineEventsInput = {
@@ -2445,6 +2660,11 @@ export type CustomerProfileCreateWithoutTimelineEventsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutTimelineEventsInput = {
@@ -2495,6 +2715,11 @@ export type CustomerProfileUncheckedCreateWithoutTimelineEventsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutTimelineEventsInput = {
@@ -2561,6 +2786,11 @@ export type CustomerProfileUpdateWithoutTimelineEventsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutTimelineEventsInput = {
@@ -2611,6 +2841,11 @@ export type CustomerProfileUncheckedUpdateWithoutTimelineEventsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSegmentsInput = {
@@ -2661,6 +2896,11 @@ export type CustomerProfileCreateWithoutSegmentsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSegmentsInput = {
@@ -2711,6 +2951,11 @@ export type CustomerProfileUncheckedCreateWithoutSegmentsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSegmentsInput = {
@@ -2777,6 +3022,11 @@ export type CustomerProfileUpdateWithoutSegmentsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSegmentsInput = {
@@ -2827,6 +3077,11 @@ export type CustomerProfileUncheckedUpdateWithoutSegmentsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutConversationsInput = {
@@ -2877,6 +3132,11 @@ export type CustomerProfileCreateWithoutConversationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutConversationsInput = {
@@ -2927,6 +3187,11 @@ export type CustomerProfileUncheckedCreateWithoutConversationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutConversationsInput = {
@@ -2993,6 +3258,11 @@ export type CustomerProfileUpdateWithoutConversationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutConversationsInput = {
@@ -3043,6 +3313,11 @@ export type CustomerProfileUncheckedUpdateWithoutConversationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutNotificationsInput = {
@@ -3093,6 +3368,11 @@ export type CustomerProfileCreateWithoutNotificationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutNotificationsInput = {
@@ -3143,6 +3423,11 @@ export type CustomerProfileUncheckedCreateWithoutNotificationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutNotificationsInput = {
@@ -3209,6 +3494,11 @@ export type CustomerProfileUpdateWithoutNotificationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutNotificationsInput = {
@@ -3259,6 +3549,11 @@ export type CustomerProfileUncheckedUpdateWithoutNotificationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutRemindersInput = {
@@ -3309,6 +3604,11 @@ export type CustomerProfileCreateWithoutRemindersInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutRemindersInput = {
@@ -3359,6 +3659,11 @@ export type CustomerProfileUncheckedCreateWithoutRemindersInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutRemindersInput = {
@@ -3425,6 +3730,11 @@ export type CustomerProfileUpdateWithoutRemindersInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutRemindersInput = {
@@ -3475,6 +3785,11 @@ export type CustomerProfileUncheckedUpdateWithoutRemindersInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutLoyaltyAccountInput = {
@@ -3525,6 +3840,11 @@ export type CustomerProfileCreateWithoutLoyaltyAccountInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput = {
@@ -3575,6 +3895,11 @@ export type CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutLoyaltyAccountInput = {
@@ -3630,6 +3955,11 @@ export type CustomerProfileCreateWithoutReferredLoyaltyInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutReferredLoyaltyInput = {
@@ -3680,6 +4010,11 @@ export type CustomerProfileUncheckedCreateWithoutReferredLoyaltyInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutReferredLoyaltyInput = {
@@ -3746,6 +4081,11 @@ export type CustomerProfileUpdateWithoutLoyaltyAccountInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput = {
@@ -3796,6 +4136,11 @@ export type CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUpsertWithoutReferredLoyaltyInput = {
@@ -3857,6 +4202,11 @@ export type CustomerProfileUpdateWithoutReferredLoyaltyInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutReferredLoyaltyInput = {
@@ -3907,6 +4257,11 @@ export type CustomerProfileUncheckedUpdateWithoutReferredLoyaltyInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutEnquiriesInput = {
@@ -3957,6 +4312,11 @@ export type CustomerProfileCreateWithoutEnquiriesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutEnquiriesInput = {
@@ -4007,6 +4367,11 @@ export type CustomerProfileUncheckedCreateWithoutEnquiriesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutEnquiriesInput = {
@@ -4073,6 +4438,11 @@ export type CustomerProfileUpdateWithoutEnquiriesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutEnquiriesInput = {
@@ -4123,6 +4493,11 @@ export type CustomerProfileUncheckedUpdateWithoutEnquiriesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutFeedbackInput = {
@@ -4173,6 +4548,11 @@ export type CustomerProfileCreateWithoutFeedbackInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutFeedbackInput = {
@@ -4223,6 +4603,11 @@ export type CustomerProfileUncheckedCreateWithoutFeedbackInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutFeedbackInput = {
@@ -4289,6 +4674,11 @@ export type CustomerProfileUpdateWithoutFeedbackInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutFeedbackInput = {
@@ -4339,6 +4729,11 @@ export type CustomerProfileUncheckedUpdateWithoutFeedbackInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAiConversationsInput = {
@@ -4389,6 +4784,11 @@ export type CustomerProfileCreateWithoutAiConversationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAiConversationsInput = {
@@ -4439,6 +4839,11 @@ export type CustomerProfileUncheckedCreateWithoutAiConversationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAiConversationsInput = {
@@ -4505,6 +4910,11 @@ export type CustomerProfileUpdateWithoutAiConversationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAiConversationsInput = {
@@ -4555,6 +4965,11 @@ export type CustomerProfileUncheckedUpdateWithoutAiConversationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutStaffNotesInput = {
@@ -4605,6 +5020,11 @@ export type CustomerProfileCreateWithoutStaffNotesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutStaffNotesInput = {
@@ -4655,6 +5075,11 @@ export type CustomerProfileUncheckedCreateWithoutStaffNotesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutStaffNotesInput = {
@@ -4721,6 +5146,11 @@ export type CustomerProfileUpdateWithoutStaffNotesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutStaffNotesInput = {
@@ -4771,6 +5201,11 @@ export type CustomerProfileUncheckedUpdateWithoutStaffNotesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceLogsInput = {
@@ -4821,6 +5256,11 @@ export type CustomerProfileCreateWithoutAdherenceLogsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceLogsInput = {
@@ -4871,6 +5311,11 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceLogsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceLogsInput = {
@@ -4937,6 +5382,11 @@ export type CustomerProfileUpdateWithoutAdherenceLogsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceLogsInput = {
@@ -4987,6 +5437,11 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceLogsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutMedicationSchedulesInput = {
@@ -5037,6 +5492,11 @@ export type CustomerProfileCreateWithoutMedicationSchedulesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutMedicationSchedulesInput = {
@@ -5087,6 +5547,11 @@ export type CustomerProfileUncheckedCreateWithoutMedicationSchedulesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutMedicationSchedulesInput = {
@@ -5153,6 +5618,11 @@ export type CustomerProfileUpdateWithoutMedicationSchedulesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutMedicationSchedulesInput = {
@@ -5203,6 +5673,11 @@ export type CustomerProfileUncheckedUpdateWithoutMedicationSchedulesInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutDoseLogsInput = {
@@ -5253,6 +5728,11 @@ export type CustomerProfileCreateWithoutDoseLogsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutDoseLogsInput = {
@@ -5303,6 +5783,11 @@ export type CustomerProfileUncheckedCreateWithoutDoseLogsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutDoseLogsInput = {
@@ -5369,6 +5854,11 @@ export type CustomerProfileUpdateWithoutDoseLogsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutDoseLogsInput = {
@@ -5419,6 +5909,11 @@ export type CustomerProfileUncheckedUpdateWithoutDoseLogsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceEscalationsInput = {
@@ -5469,6 +5964,11 @@ export type CustomerProfileCreateWithoutAdherenceEscalationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceEscalationsInput = {
@@ -5519,6 +6019,11 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceEscalationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceEscalationsInput = {
@@ -5585,6 +6090,11 @@ export type CustomerProfileUpdateWithoutAdherenceEscalationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceEscalationsInput = {
@@ -5635,6 +6145,11 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceEscalationsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSyncEnrollmentInput = {
@@ -5685,6 +6200,11 @@ export type CustomerProfileCreateWithoutSyncEnrollmentInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSyncEnrollmentInput = {
@@ -5735,6 +6255,11 @@ export type CustomerProfileUncheckedCreateWithoutSyncEnrollmentInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSyncEnrollmentInput = {
@@ -5801,6 +6326,11 @@ export type CustomerProfileUpdateWithoutSyncEnrollmentInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSyncEnrollmentInput = {
@@ -5851,6 +6381,11 @@ export type CustomerProfileUncheckedUpdateWithoutSyncEnrollmentInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceFollowUpsInput = {
@@ -5901,6 +6436,11 @@ export type CustomerProfileCreateWithoutAdherenceFollowUpsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceFollowUpsInput = {
@@ -5951,6 +6491,11 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceFollowUpsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceFollowUpsInput = {
@@ -6017,6 +6562,11 @@ export type CustomerProfileUpdateWithoutAdherenceFollowUpsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceFollowUpsInput = {
@@ -6067,6 +6617,11 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceFollowUpsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutOrdersInput = {
@@ -6117,6 +6672,11 @@ export type CustomerProfileCreateWithoutOrdersInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutOrdersInput = {
@@ -6167,6 +6727,11 @@ export type CustomerProfileUncheckedCreateWithoutOrdersInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutOrdersInput = {
@@ -6233,6 +6798,11 @@ export type CustomerProfileUpdateWithoutOrdersInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutOrdersInput = {
@@ -6283,6 +6853,11 @@ export type CustomerProfileUncheckedUpdateWithoutOrdersInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPaymentsInput = {
@@ -6333,6 +6908,11 @@ export type CustomerProfileCreateWithoutPaymentsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPaymentsInput = {
@@ -6383,6 +6963,11 @@ export type CustomerProfileUncheckedCreateWithoutPaymentsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPaymentsInput = {
@@ -6449,6 +7034,11 @@ export type CustomerProfileUpdateWithoutPaymentsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPaymentsInput = {
@@ -6499,6 +7089,11 @@ export type CustomerProfileUncheckedUpdateWithoutPaymentsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutServiceBookingsInput = {
@@ -6549,6 +7144,11 @@ export type CustomerProfileCreateWithoutServiceBookingsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutServiceBookingsInput = {
@@ -6599,6 +7199,11 @@ export type CustomerProfileUncheckedCreateWithoutServiceBookingsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutServiceBookingsInput = {
@@ -6665,6 +7270,11 @@ export type CustomerProfileUpdateWithoutServiceBookingsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutServiceBookingsInput = {
@@ -6715,6 +7325,11 @@ export type CustomerProfileUncheckedUpdateWithoutServiceBookingsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSymptomSessionsInput = {
@@ -6765,6 +7380,11 @@ export type CustomerProfileCreateWithoutSymptomSessionsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSymptomSessionsInput = {
@@ -6815,6 +7435,11 @@ export type CustomerProfileUncheckedCreateWithoutSymptomSessionsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSymptomSessionsInput = {
@@ -6881,6 +7506,11 @@ export type CustomerProfileUpdateWithoutSymptomSessionsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSymptomSessionsInput = {
@@ -6931,6 +7561,11 @@ export type CustomerProfileUncheckedUpdateWithoutSymptomSessionsInput = {
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutScreeningRecordsInput = {
@@ -6981,6 +7616,11 @@ export type CustomerProfileCreateWithoutScreeningRecordsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutScreeningRecordsInput = {
@@ -7031,6 +7671,11 @@ export type CustomerProfileUncheckedCreateWithoutScreeningRecordsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutScreeningRecordsInput = {
@@ -7097,6 +7742,11 @@ export type CustomerProfileUpdateWithoutScreeningRecordsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput = {
@@ -7147,6 +7797,11 @@ export type CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutClinicalReferralsInput = {
@@ -7197,6 +7852,11 @@ export type CustomerProfileCreateWithoutClinicalReferralsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutClinicalReferralsInput = {
@@ -7247,6 +7907,11 @@ export type CustomerProfileUncheckedCreateWithoutClinicalReferralsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutClinicalReferralsInput = {
@@ -7313,6 +7978,11 @@ export type CustomerProfileUpdateWithoutClinicalReferralsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput = {
@@ -7363,6 +8033,1191 @@ export type CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput = {
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
   screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileCreateWithoutImmunizationAppointmentsInput = {
+  id?: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProfileInput
+  preferences?: Prisma.CustomerPreferenceCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileUncheckedCreateWithoutImmunizationAppointmentsInput = {
+  id?: string
+  userId: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileCreateOrConnectWithoutImmunizationAppointmentsInput = {
+  where: Prisma.CustomerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutImmunizationAppointmentsInput, Prisma.CustomerProfileUncheckedCreateWithoutImmunizationAppointmentsInput>
+}
+
+export type CustomerProfileUpsertWithoutImmunizationAppointmentsInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutImmunizationAppointmentsInput, Prisma.CustomerProfileUncheckedUpdateWithoutImmunizationAppointmentsInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutImmunizationAppointmentsInput, Prisma.CustomerProfileUncheckedCreateWithoutImmunizationAppointmentsInput>
+  where?: Prisma.CustomerProfileWhereInput
+}
+
+export type CustomerProfileUpdateToOneWithWhereWithoutImmunizationAppointmentsInput = {
+  where?: Prisma.CustomerProfileWhereInput
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutImmunizationAppointmentsInput, Prisma.CustomerProfileUncheckedUpdateWithoutImmunizationAppointmentsInput>
+}
+
+export type CustomerProfileUpdateWithoutImmunizationAppointmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
+  preferences?: Prisma.CustomerPreferenceUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileUncheckedUpdateWithoutImmunizationAppointmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUncheckedUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileCreateWithoutPreVaccinationScreeningsInput = {
+  id?: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProfileInput
+  preferences?: Prisma.CustomerPreferenceCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileUncheckedCreateWithoutPreVaccinationScreeningsInput = {
+  id?: string
+  userId: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileCreateOrConnectWithoutPreVaccinationScreeningsInput = {
+  where: Prisma.CustomerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutPreVaccinationScreeningsInput, Prisma.CustomerProfileUncheckedCreateWithoutPreVaccinationScreeningsInput>
+}
+
+export type CustomerProfileUpsertWithoutPreVaccinationScreeningsInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutPreVaccinationScreeningsInput, Prisma.CustomerProfileUncheckedUpdateWithoutPreVaccinationScreeningsInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutPreVaccinationScreeningsInput, Prisma.CustomerProfileUncheckedCreateWithoutPreVaccinationScreeningsInput>
+  where?: Prisma.CustomerProfileWhereInput
+}
+
+export type CustomerProfileUpdateToOneWithWhereWithoutPreVaccinationScreeningsInput = {
+  where?: Prisma.CustomerProfileWhereInput
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutPreVaccinationScreeningsInput, Prisma.CustomerProfileUncheckedUpdateWithoutPreVaccinationScreeningsInput>
+}
+
+export type CustomerProfileUpdateWithoutPreVaccinationScreeningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
+  preferences?: Prisma.CustomerPreferenceUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileUncheckedUpdateWithoutPreVaccinationScreeningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUncheckedUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileCreateWithoutVaccinationConsentsInput = {
+  id?: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProfileInput
+  preferences?: Prisma.CustomerPreferenceCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileUncheckedCreateWithoutVaccinationConsentsInput = {
+  id?: string
+  userId: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileCreateOrConnectWithoutVaccinationConsentsInput = {
+  where: Prisma.CustomerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutVaccinationConsentsInput, Prisma.CustomerProfileUncheckedCreateWithoutVaccinationConsentsInput>
+}
+
+export type CustomerProfileUpsertWithoutVaccinationConsentsInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutVaccinationConsentsInput, Prisma.CustomerProfileUncheckedUpdateWithoutVaccinationConsentsInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutVaccinationConsentsInput, Prisma.CustomerProfileUncheckedCreateWithoutVaccinationConsentsInput>
+  where?: Prisma.CustomerProfileWhereInput
+}
+
+export type CustomerProfileUpdateToOneWithWhereWithoutVaccinationConsentsInput = {
+  where?: Prisma.CustomerProfileWhereInput
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutVaccinationConsentsInput, Prisma.CustomerProfileUncheckedUpdateWithoutVaccinationConsentsInput>
+}
+
+export type CustomerProfileUpdateWithoutVaccinationConsentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
+  preferences?: Prisma.CustomerPreferenceUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileUncheckedUpdateWithoutVaccinationConsentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUncheckedUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileCreateWithoutImmunizationRecordsInput = {
+  id?: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProfileInput
+  preferences?: Prisma.CustomerPreferenceCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileUncheckedCreateWithoutImmunizationRecordsInput = {
+  id?: string
+  userId: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileCreateOrConnectWithoutImmunizationRecordsInput = {
+  where: Prisma.CustomerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutImmunizationRecordsInput, Prisma.CustomerProfileUncheckedCreateWithoutImmunizationRecordsInput>
+}
+
+export type CustomerProfileUpsertWithoutImmunizationRecordsInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutImmunizationRecordsInput, Prisma.CustomerProfileUncheckedUpdateWithoutImmunizationRecordsInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutImmunizationRecordsInput, Prisma.CustomerProfileUncheckedCreateWithoutImmunizationRecordsInput>
+  where?: Prisma.CustomerProfileWhereInput
+}
+
+export type CustomerProfileUpdateToOneWithWhereWithoutImmunizationRecordsInput = {
+  where?: Prisma.CustomerProfileWhereInput
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutImmunizationRecordsInput, Prisma.CustomerProfileUncheckedUpdateWithoutImmunizationRecordsInput>
+}
+
+export type CustomerProfileUpdateWithoutImmunizationRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
+  preferences?: Prisma.CustomerPreferenceUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileUncheckedUpdateWithoutImmunizationRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUncheckedUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  counsellingSessions?: Prisma.PreventiveCounsellingSessionUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileCreateWithoutCounsellingSessionsInput = {
+  id?: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProfileInput
+  preferences?: Prisma.CustomerPreferenceCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileUncheckedCreateWithoutCounsellingSessionsInput = {
+  id?: string
+  userId: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedCreateNestedManyWithoutCustomerInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedCreateNestedManyWithoutCustomerInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileCreateOrConnectWithoutCounsellingSessionsInput = {
+  where: Prisma.CustomerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutCounsellingSessionsInput, Prisma.CustomerProfileUncheckedCreateWithoutCounsellingSessionsInput>
+}
+
+export type CustomerProfileUpsertWithoutCounsellingSessionsInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutCounsellingSessionsInput, Prisma.CustomerProfileUncheckedUpdateWithoutCounsellingSessionsInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutCounsellingSessionsInput, Prisma.CustomerProfileUncheckedCreateWithoutCounsellingSessionsInput>
+  where?: Prisma.CustomerProfileWhereInput
+}
+
+export type CustomerProfileUpdateToOneWithWhereWithoutCounsellingSessionsInput = {
+  where?: Prisma.CustomerProfileWhereInput
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutCounsellingSessionsInput, Prisma.CustomerProfileUncheckedUpdateWithoutCounsellingSessionsInput>
+}
+
+export type CustomerProfileUpdateWithoutCounsellingSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
+  preferences?: Prisma.CustomerPreferenceUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileUncheckedUpdateWithoutCounsellingSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUncheckedUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationAppointments?: Prisma.ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  preVaccinationScreenings?: Prisma.PreVaccinationScreeningUncheckedUpdateManyWithoutCustomerNestedInput
+  vaccinationConsents?: Prisma.VaccinationConsentUncheckedUpdateManyWithoutCustomerNestedInput
+  immunizationRecords?: Prisma.ImmunizationRecordUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 
@@ -7395,6 +9250,11 @@ export type CustomerProfileCountOutputType = {
   adherenceFollowUps: number
   screeningRecords: number
   clinicalReferrals: number
+  immunizationAppointments: number
+  preVaccinationScreenings: number
+  vaccinationConsents: number
+  immunizationRecords: number
+  counsellingSessions: number
 }
 
 export type CustomerProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -7422,6 +9282,11 @@ export type CustomerProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.E
   adherenceFollowUps?: boolean | CustomerProfileCountOutputTypeCountAdherenceFollowUpsArgs
   screeningRecords?: boolean | CustomerProfileCountOutputTypeCountScreeningRecordsArgs
   clinicalReferrals?: boolean | CustomerProfileCountOutputTypeCountClinicalReferralsArgs
+  immunizationAppointments?: boolean | CustomerProfileCountOutputTypeCountImmunizationAppointmentsArgs
+  preVaccinationScreenings?: boolean | CustomerProfileCountOutputTypeCountPreVaccinationScreeningsArgs
+  vaccinationConsents?: boolean | CustomerProfileCountOutputTypeCountVaccinationConsentsArgs
+  immunizationRecords?: boolean | CustomerProfileCountOutputTypeCountImmunizationRecordsArgs
+  counsellingSessions?: boolean | CustomerProfileCountOutputTypeCountCounsellingSessionsArgs
 }
 
 /**
@@ -7602,6 +9467,41 @@ export type CustomerProfileCountOutputTypeCountClinicalReferralsArgs<ExtArgs ext
   where?: Prisma.ClinicalReferralWhereInput
 }
 
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountImmunizationAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmunizationAppointmentWhereInput
+}
+
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountPreVaccinationScreeningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PreVaccinationScreeningWhereInput
+}
+
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountVaccinationConsentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VaccinationConsentWhereInput
+}
+
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountImmunizationRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmunizationRecordWhereInput
+}
+
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountCounsellingSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PreventiveCounsellingSessionWhereInput
+}
+
 
 export type CustomerProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -7653,6 +9553,11 @@ export type CustomerProfileSelect<ExtArgs extends runtime.Types.Extensions.Inter
   adherenceFollowUps?: boolean | Prisma.CustomerProfile$adherenceFollowUpsArgs<ExtArgs>
   screeningRecords?: boolean | Prisma.CustomerProfile$screeningRecordsArgs<ExtArgs>
   clinicalReferrals?: boolean | Prisma.CustomerProfile$clinicalReferralsArgs<ExtArgs>
+  immunizationAppointments?: boolean | Prisma.CustomerProfile$immunizationAppointmentsArgs<ExtArgs>
+  preVaccinationScreenings?: boolean | Prisma.CustomerProfile$preVaccinationScreeningsArgs<ExtArgs>
+  vaccinationConsents?: boolean | Prisma.CustomerProfile$vaccinationConsentsArgs<ExtArgs>
+  immunizationRecords?: boolean | Prisma.CustomerProfile$immunizationRecordsArgs<ExtArgs>
+  counsellingSessions?: boolean | Prisma.CustomerProfile$counsellingSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customerProfile"]>
 
@@ -7760,6 +9665,11 @@ export type CustomerProfileInclude<ExtArgs extends runtime.Types.Extensions.Inte
   adherenceFollowUps?: boolean | Prisma.CustomerProfile$adherenceFollowUpsArgs<ExtArgs>
   screeningRecords?: boolean | Prisma.CustomerProfile$screeningRecordsArgs<ExtArgs>
   clinicalReferrals?: boolean | Prisma.CustomerProfile$clinicalReferralsArgs<ExtArgs>
+  immunizationAppointments?: boolean | Prisma.CustomerProfile$immunizationAppointmentsArgs<ExtArgs>
+  preVaccinationScreenings?: boolean | Prisma.CustomerProfile$preVaccinationScreeningsArgs<ExtArgs>
+  vaccinationConsents?: boolean | Prisma.CustomerProfile$vaccinationConsentsArgs<ExtArgs>
+  immunizationRecords?: boolean | Prisma.CustomerProfile$immunizationRecordsArgs<ExtArgs>
+  counsellingSessions?: boolean | Prisma.CustomerProfile$counsellingSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CustomerProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -7800,6 +9710,11 @@ export type $CustomerProfilePayload<ExtArgs extends runtime.Types.Extensions.Int
     adherenceFollowUps: Prisma.$AdherenceFollowUpPayload<ExtArgs>[]
     screeningRecords: Prisma.$HealthScreeningRecordPayload<ExtArgs>[]
     clinicalReferrals: Prisma.$ClinicalReferralPayload<ExtArgs>[]
+    immunizationAppointments: Prisma.$ImmunizationAppointmentPayload<ExtArgs>[]
+    preVaccinationScreenings: Prisma.$PreVaccinationScreeningPayload<ExtArgs>[]
+    vaccinationConsents: Prisma.$VaccinationConsentPayload<ExtArgs>[]
+    immunizationRecords: Prisma.$ImmunizationRecordPayload<ExtArgs>[]
+    counsellingSessions: Prisma.$PreventiveCounsellingSessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -8251,6 +10166,11 @@ export interface Prisma__CustomerProfileClient<T, Null = never, ExtArgs extends 
   adherenceFollowUps<T extends Prisma.CustomerProfile$adherenceFollowUpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$adherenceFollowUpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdherenceFollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   screeningRecords<T extends Prisma.CustomerProfile$screeningRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$screeningRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HealthScreeningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   clinicalReferrals<T extends Prisma.CustomerProfile$clinicalReferralsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$clinicalReferralsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicalReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immunizationAppointments<T extends Prisma.CustomerProfile$immunizationAppointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$immunizationAppointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationAppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  preVaccinationScreenings<T extends Prisma.CustomerProfile$preVaccinationScreeningsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$preVaccinationScreeningsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PreVaccinationScreeningPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  vaccinationConsents<T extends Prisma.CustomerProfile$vaccinationConsentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$vaccinationConsentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaccinationConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immunizationRecords<T extends Prisma.CustomerProfile$immunizationRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$immunizationRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  counsellingSessions<T extends Prisma.CustomerProfile$counsellingSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$counsellingSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PreventiveCounsellingSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9332,6 +11252,126 @@ export type CustomerProfile$clinicalReferralsArgs<ExtArgs extends runtime.Types.
   take?: number
   skip?: number
   distinct?: Prisma.ClinicalReferralScalarFieldEnum | Prisma.ClinicalReferralScalarFieldEnum[]
+}
+
+/**
+ * CustomerProfile.immunizationAppointments
+ */
+export type CustomerProfile$immunizationAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmunizationAppointment
+   */
+  select?: Prisma.ImmunizationAppointmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmunizationAppointment
+   */
+  omit?: Prisma.ImmunizationAppointmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmunizationAppointmentInclude<ExtArgs> | null
+  where?: Prisma.ImmunizationAppointmentWhereInput
+  orderBy?: Prisma.ImmunizationAppointmentOrderByWithRelationInput | Prisma.ImmunizationAppointmentOrderByWithRelationInput[]
+  cursor?: Prisma.ImmunizationAppointmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmunizationAppointmentScalarFieldEnum | Prisma.ImmunizationAppointmentScalarFieldEnum[]
+}
+
+/**
+ * CustomerProfile.preVaccinationScreenings
+ */
+export type CustomerProfile$preVaccinationScreeningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PreVaccinationScreening
+   */
+  select?: Prisma.PreVaccinationScreeningSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PreVaccinationScreening
+   */
+  omit?: Prisma.PreVaccinationScreeningOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PreVaccinationScreeningInclude<ExtArgs> | null
+  where?: Prisma.PreVaccinationScreeningWhereInput
+  orderBy?: Prisma.PreVaccinationScreeningOrderByWithRelationInput | Prisma.PreVaccinationScreeningOrderByWithRelationInput[]
+  cursor?: Prisma.PreVaccinationScreeningWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PreVaccinationScreeningScalarFieldEnum | Prisma.PreVaccinationScreeningScalarFieldEnum[]
+}
+
+/**
+ * CustomerProfile.vaccinationConsents
+ */
+export type CustomerProfile$vaccinationConsentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VaccinationConsent
+   */
+  select?: Prisma.VaccinationConsentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VaccinationConsent
+   */
+  omit?: Prisma.VaccinationConsentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VaccinationConsentInclude<ExtArgs> | null
+  where?: Prisma.VaccinationConsentWhereInput
+  orderBy?: Prisma.VaccinationConsentOrderByWithRelationInput | Prisma.VaccinationConsentOrderByWithRelationInput[]
+  cursor?: Prisma.VaccinationConsentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.VaccinationConsentScalarFieldEnum | Prisma.VaccinationConsentScalarFieldEnum[]
+}
+
+/**
+ * CustomerProfile.immunizationRecords
+ */
+export type CustomerProfile$immunizationRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmunizationRecord
+   */
+  select?: Prisma.ImmunizationRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmunizationRecord
+   */
+  omit?: Prisma.ImmunizationRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmunizationRecordInclude<ExtArgs> | null
+  where?: Prisma.ImmunizationRecordWhereInput
+  orderBy?: Prisma.ImmunizationRecordOrderByWithRelationInput | Prisma.ImmunizationRecordOrderByWithRelationInput[]
+  cursor?: Prisma.ImmunizationRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmunizationRecordScalarFieldEnum | Prisma.ImmunizationRecordScalarFieldEnum[]
+}
+
+/**
+ * CustomerProfile.counsellingSessions
+ */
+export type CustomerProfile$counsellingSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PreventiveCounsellingSession
+   */
+  select?: Prisma.PreventiveCounsellingSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PreventiveCounsellingSession
+   */
+  omit?: Prisma.PreventiveCounsellingSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PreventiveCounsellingSessionInclude<ExtArgs> | null
+  where?: Prisma.PreventiveCounsellingSessionWhereInput
+  orderBy?: Prisma.PreventiveCounsellingSessionOrderByWithRelationInput | Prisma.PreventiveCounsellingSessionOrderByWithRelationInput[]
+  cursor?: Prisma.PreventiveCounsellingSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PreventiveCounsellingSessionScalarFieldEnum | Prisma.PreventiveCounsellingSessionScalarFieldEnum[]
 }
 
 /**

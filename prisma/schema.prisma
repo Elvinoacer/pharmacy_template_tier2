@@ -340,6 +340,14 @@ model User {
   adherenceFollowUpsRecorded  AdherenceFollowUp[]   @relation("FollowUpStaff")
   screeningsConducted         HealthScreeningRecord[] @relation("ScreeningConductedBy")
   referralsIssued             ClinicalReferral[]      @relation("ReferralPharmacist")
+  immunizationPolicyUpdated   PharmacyImmunizationPolicy[] @relation("ImmunizationPolicyUpdater")
+  immunizerCredentials        ImmunizerCredential[]        @relation("ImmunizerCredentials")
+  immunizationAssigned        ImmunizationAppointment[]    @relation("ImmunizationAssignee")
+  vaccinationScreenings       PreVaccinationScreening[]    @relation("VaccinationScreener")
+  immunizationsAdministered   ImmunizationRecord[]         @relation("ImmunizationAdministeredBy")
+  immunizationsSupervised     ImmunizationRecord[]         @relation("ImmunizationSupervisor")
+  aefiReportsFiled            AdverseEventFollowingImmunization[] @relation("AefiReporter")
+  counsellingSessionsGiven    PreventiveCounsellingSession[] @relation("PreventiveCounsellor")
 
   @@map("users")
 }
@@ -462,6 +470,11 @@ model CustomerProfile {
   adherenceFollowUps AdherenceFollowUp[]
   screeningRecords HealthScreeningRecord[]
   clinicalReferrals ClinicalReferral[]
+  immunizationAppointments ImmunizationAppointment[]
+  preVaccinationScreenings PreVaccinationScreening[]
+  vaccinationConsents      VaccinationConsent[]
+  immunizationRecords      ImmunizationRecord[]
+  counsellingSessions      PreventiveCounsellingSession[]
 
   @@index([ageSegment])
   @@map("customer_profiles")
@@ -826,6 +839,7 @@ model Campaign {
 
   segment   Segment? @relation(fields: [segmentId], references: [id], onDelete: SetNull)
   createdBy User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  publicHealthCampaign PublicHealthCampaign?
 
   @@map("campaigns")
 }
@@ -1864,6 +1878,7 @@ model ServiceBooking {
   customer   CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   order      Order?           @relation(fields: [orderId], references: [id], onDelete: SetNull)
   recordedBy User?            @relation("ServiceBookingRecorder", fields: [recordedById], references: [id], onDelete: SetNull)
+  immunizationAppointment ImmunizationAppointment?
 
   @@index([serviceId])
   @@index([status])
@@ -2423,5 +2438,336 @@ model ClinicalReferral {
   @@index([status])
   @@index([issuedAt(sort: Desc)])
   @@map("clinical_referrals")
+}
+
+// ── Vaccination & Preventive Services (8) ─────────────────────
+// Pharmacy-based immunisation is jurisdiction-dependent (PPB / MoH in Kenya).
+// These models capture administration, screening, consent, AEFI, counselling,
+// public-health campaigns, and education — never a substitute for national IIS.
+
+model PharmacyImmunizationPolicy {
+  id                            String   @id @default("default")
+  enabled                       Boolean  @default(true)
+  jurisdiction                  String   @default("Kenya")
+  authorizingBody               String   @default("Pharmacy and Poisons Board (PPB) / Ministry of Health")
+  authorizingRegulation         String?  @map("authorizing_regulation")
+  supervisingPharmacistRequired Boolean  @default(true) @map("supervising_pharmacist_required")
+  observationMinutesDefault     Int      @default(15) @map("observation_minutes_default")
+  visRequired                   Boolean  @default(true) @map("vis_required")
+  aefiReportingContact          String?  @map("aefi_reporting_contact")
+  aefiReportingAuthority        String   @default("PPB / Division of Disease Surveillance and Response") @map("aefi_reporting_authority")
+  coldChainNotes                String?  @map("cold_chain_notes")
+  publicDisclaimer              String?  @map("public_disclaimer")
+  walkInAccepted                Boolean  @default(true) @map("walk_in_accepted")
+  paediatricOnSite              Boolean  @default(false) @map("paediatric_on_site")
+  updatedById                   String?  @map("updated_by") @db.Uuid
+  createdAt                     DateTime @default(now()) @map("created_at")
+  updatedAt                     DateTime @updatedAt @map("updated_at")
+
+  updatedBy User? @relation("ImmunizationPolicyUpdater", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@map("pharmacy_immunization_policy")
+}
+
+model VaccineProduct {
+  id                    String   @id @default(uuid()) @db.Uuid
+  slug                  String   @unique
+  name                  String
+  antigen               String
+  brandName             String?  @map("brand_name")
+  manufacturer          String?
+  /// routine_adult | routine_child | seasonal | travel | occupational | outbreak | catch_up
+  category              String
+  diseasesPrevented     String[] @default([]) @map("diseases_prevented")
+  description           String
+  indications           String
+  whoShouldGet          String[] @default([]) @map("who_should_get")
+  whoShouldWait         String[] @default([]) @map("who_should_wait")
+  contraindications     String[] @default([])
+  precautions           String[] @default([])
+  commonSideEffects     String[] @default([]) @map("common_side_effects")
+  rareRisks             String[] @default([]) @map("rare_risks")
+  /// IM | SC | oral | nasal | ID
+  route                 String   @default("IM")
+  siteOptions           String[] @default(["Left deltoid", "Right deltoid"]) @map("site_options")
+  doseMl                Decimal? @map("dose_ml") @db.Decimal(4, 2)
+  seriesDoses           Int      @default(1) @map("series_doses")
+  seriesIntervalDays    Int?     @map("series_interval_days")
+  boosterIntervalMonths Int?     @map("booster_interval_months")
+  minAgeMonths          Int      @default(0) @map("min_age_months")
+  maxAgeMonths          Int?     @map("max_age_months")
+  visTitle              String?  @map("vis_title")
+  visVersion            String?  @map("vis_version")
+  visSummary            String   @map("vis_summary")
+  storageRequirements   String   @default("2–8°C cold chain. Do not freeze unless labelled.") @map("storage_requirements")
+  priceKes              Decimal? @map("price_kes") @db.Decimal(10, 2)
+  active                Boolean  @default(true)
+  bookable              Boolean  @default(true)
+  /// When false, this entry is education-only (e.g. KEPI childhood schedule).
+  pharmacyAdministered  Boolean  @default(true) @map("pharmacy_administered")
+  travelRelated         Boolean  @default(false) @map("travel_related")
+  seasonLabel           String?  @map("season_label")
+  regulatoryNotes       String?  @map("regulatory_notes")
+  sortOrder             Int      @default(0) @map("sort_order")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  appointments ImmunizationAppointment[]
+  consents     VaccinationConsent[]
+  records      ImmunizationRecord[]
+
+  @@index([active, sortOrder])
+  @@index([category])
+  @@map("vaccine_products")
+}
+
+model ImmunizerCredential {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  /// immunization_certificate | cpr_bls | anaphylaxis | acls | ppb_licence
+  credentialType String    @map("credential_type")
+  title          String
+  licenseNumber  String?   @map("license_number")
+  issuedBy       String    @map("issued_by")
+  issuedAt       DateTime? @map("issued_at") @db.Date
+  expiresAt      DateTime? @map("expires_at") @db.Date
+  verified       Boolean   @default(true)
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user User @relation("ImmunizerCredentials", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("immunizer_credentials")
+}
+
+model ImmunizationAppointment {
+  id               String    @id @default(uuid()) @db.Uuid
+  vaccineProductId String    @map("vaccine_product_id") @db.Uuid
+  customerId       String?   @map("customer_id") @db.Uuid
+  serviceBookingId String?   @unique @map("service_booking_id") @db.Uuid
+  campaignId       String?   @map("campaign_id") @db.Uuid
+  patientName      String    @map("patient_name")
+  patientPhone     String    @map("patient_phone")
+  patientEmail     String?   @map("patient_email")
+  patientDob       DateTime? @map("patient_dob") @db.Date
+  patientGender    String?   @map("patient_gender")
+  preferredDate    String?   @map("preferred_date")
+  preferredTime    String?   @map("preferred_time")
+  /// requested | screened | scheduled | checked_in | administered | observed | completed | cancelled | deferred | referred
+  status           String    @default("requested")
+  /// online | walk_in | campaign | staff | portal
+  source           String    @default("online")
+  notes            String?
+  staffNotes       String?   @map("staff_notes")
+  assignedToId     String?   @map("assigned_to") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  vaccine     VaccineProduct           @relation(fields: [vaccineProductId], references: [id], onDelete: Restrict)
+  customer    CustomerProfile?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  booking     ServiceBooking?          @relation(fields: [serviceBookingId], references: [id], onDelete: SetNull)
+  assignedTo  User?                    @relation("ImmunizationAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  screening   PreVaccinationScreening?
+  consent     VaccinationConsent?
+  record      ImmunizationRecord?
+
+  @@index([status])
+  @@index([vaccineProductId])
+  @@index([customerId])
+  @@index([createdAt(sort: Desc)])
+  @@map("immunization_appointments")
+}
+
+model PreVaccinationScreening {
+  id                    String   @id @default(uuid()) @db.Uuid
+  appointmentId         String   @unique @map("appointment_id") @db.Uuid
+  customerId            String?  @map("customer_id") @db.Uuid
+  screenedById          String?  @map("screened_by") @db.Uuid
+  answers               Json     @default("{}")
+  allergyFlag           Boolean  @default(false) @map("allergy_flag")
+  pregnancyFlag         Boolean  @default(false) @map("pregnancy_flag")
+  immunocompromisedFlag Boolean  @default(false) @map("immunocompromised_flag")
+  recentIllnessFlag     Boolean  @default(false) @map("recent_illness_flag")
+  previousReactionFlag  Boolean  @default(false) @map("previous_reaction_flag")
+  anticoagulantFlag     Boolean  @default(false) @map("anticoagulant_flag")
+  /// eligible | defer | refer | contraindicated
+  outcome               String   @default("eligible")
+  outcomeReason         String?  @map("outcome_reason")
+  notes                 String?
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  appointment ImmunizationAppointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  customer    CustomerProfile?        @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  screenedBy  User?                   @relation("VaccinationScreener", fields: [screenedById], references: [id], onDelete: SetNull)
+
+  @@map("pre_vaccination_screenings")
+}
+
+model VaccinationConsent {
+  id                    String    @id @default(uuid()) @db.Uuid
+  appointmentId         String    @unique @map("appointment_id") @db.Uuid
+  vaccineProductId      String    @map("vaccine_product_id") @db.Uuid
+  customerId            String?   @map("customer_id") @db.Uuid
+  visProvided           Boolean   @default(true) @map("vis_provided")
+  visVersion            String?   @map("vis_version")
+  visProvidedAt         DateTime? @map("vis_provided_at")
+  /// self | parent_guardian | caregiver
+  consentType           String    @default("self") @map("consent_type")
+  consenterName         String    @map("consenter_name")
+  consenterRelationship String?   @map("consenter_relationship")
+  signatureName         String    @map("signature_name")
+  consentTextSnapshot   String    @map("consent_text_snapshot")
+  signedAt              DateTime  @default(now()) @map("signed_at")
+  withdrawnAt           DateTime? @map("withdrawn_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+
+  appointment ImmunizationAppointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  vaccine     VaccineProduct          @relation(fields: [vaccineProductId], references: [id], onDelete: Restrict)
+  customer    CustomerProfile?        @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@map("vaccination_consents")
+}
+
+model ImmunizationRecord {
+  id                      String    @id @default(uuid()) @db.Uuid
+  appointmentId           String?   @unique @map("appointment_id") @db.Uuid
+  vaccineProductId        String    @map("vaccine_product_id") @db.Uuid
+  customerId              String?   @map("customer_id") @db.Uuid
+  consentId               String?   @map("consent_id") @db.Uuid
+  administeredById        String?   @map("administered_by") @db.Uuid
+  supervisingPharmacistId String?   @map("supervising_pharmacist_id") @db.Uuid
+  patientName             String    @map("patient_name")
+  patientDob              DateTime? @map("patient_dob") @db.Date
+  patientGender           String?   @map("patient_gender")
+  patientPhone            String?   @map("patient_phone")
+  doseNumber              Int       @default(1) @map("dose_number")
+  seriesComplete          Boolean   @default(true) @map("series_complete")
+  administeredAt          DateTime  @default(now()) @map("administered_at")
+  route                   String    @default("IM")
+  site                    String?
+  doseMl                  Decimal?  @map("dose_ml") @db.Decimal(4, 2)
+  lotNumber               String    @map("lot_number")
+  expiryDate              DateTime? @map("expiry_date") @db.Date
+  manufacturer            String?
+  visGivenAt              DateTime? @map("vis_given_at")
+  visVersion              String?   @map("vis_version")
+  observationMinutes      Int       @default(15) @map("observation_minutes")
+  observationUntil        DateTime? @map("observation_until")
+  /// uneventful | delayed | aefi
+  observationOutcome      String    @default("uneventful") @map("observation_outcome")
+  nextDueDate             DateTime? @map("next_due_date") @db.Date
+  certificateCode         String    @unique @map("certificate_code")
+  campaignId              String?   @map("campaign_id") @db.Uuid
+  notes                   String?
+  /// administered | voided
+  status                  String    @default("administered")
+  voidReason              String?   @map("void_reason")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  appointment           ImmunizationAppointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  vaccine               VaccineProduct           @relation(fields: [vaccineProductId], references: [id], onDelete: Restrict)
+  customer              CustomerProfile?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  administeredBy        User?                    @relation("ImmunizationAdministeredBy", fields: [administeredById], references: [id], onDelete: SetNull)
+  supervisingPharmacist User?                    @relation("ImmunizationSupervisor", fields: [supervisingPharmacistId], references: [id], onDelete: SetNull)
+  aefiReports           AdverseEventFollowingImmunization[]
+
+  @@index([customerId])
+  @@index([vaccineProductId])
+  @@index([administeredAt(sort: Desc)])
+  @@map("immunization_records")
+}
+
+model AdverseEventFollowingImmunization {
+  id                  String    @id @default(uuid()) @db.Uuid
+  immunizationId      String    @map("immunization_id") @db.Uuid
+  onsetAt             DateTime  @map("onset_at")
+  /// mild | moderate | severe | life_threatening
+  severity            String
+  symptoms            String
+  actionTaken         String    @map("action_taken")
+  /// recovering | recovered | sequela | unknown | fatal
+  outcome             String    @default("recovering")
+  reportedToAuthority Boolean   @default(false) @map("reported_to_authority")
+  reportedAt          DateTime? @map("reported_at")
+  reportedById        String?   @map("reported_by") @db.Uuid
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  immunization ImmunizationRecord @relation(fields: [immunizationId], references: [id], onDelete: Cascade)
+  reportedBy   User?              @relation("AefiReporter", fields: [reportedById], references: [id], onDelete: SetNull)
+
+  @@index([immunizationId])
+  @@index([severity])
+  @@map("aefi_reports")
+}
+
+model PreventiveCounsellingSession {
+  id              String    @id @default(uuid()) @db.Uuid
+  customerId      String?   @map("customer_id") @db.Uuid
+  counsellorId    String?   @map("counsellor_id") @db.Uuid
+  campaignId      String?   @map("campaign_id") @db.Uuid
+  /// smoking_cessation | weight_management | cardiovascular_risk | diabetes_prevention | travel_health | family_planning | alcohol | nutrition | immunization_education | general_wellness | malaria_prevention | hiv_prevention
+  topic           String
+  /// in_person | phone | portal
+  format          String    @default("in_person")
+  durationMinutes Int       @default(20) @map("duration_minutes")
+  patientName     String    @map("patient_name")
+  patientPhone    String?   @map("patient_phone")
+  summary         String?
+  goals           String[]  @default([])
+  resourcesGiven  String[]  @default([]) @map("resources_given")
+  followUpDate    DateTime? @map("follow_up_date") @db.Date
+  preferredDate   String?   @map("preferred_date")
+  preferredTime   String?   @map("preferred_time")
+  /// requested | scheduled | completed | no_show | cancelled
+  status          String    @default("scheduled")
+  source          String    @default("online")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  customer   CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  counsellor User?            @relation("PreventiveCounsellor", fields: [counsellorId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([topic])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("preventive_counselling_sessions")
+}
+
+model PublicHealthCampaign {
+  id                String    @id @default(uuid()) @db.Uuid
+  campaignId        String?   @unique @map("crm_campaign_id") @db.Uuid
+  slug              String    @unique
+  title             String
+  /// vaccination | screening | counselling | education | outbreak
+  theme             String
+  description       String
+  short             String
+  startDate         DateTime  @map("start_date") @db.Date
+  endDate           DateTime? @map("end_date") @db.Date
+  targetPopulation  String    @map("target_population")
+  vaccinesOffered   String[]  @default([]) @map("vaccines_offered")
+  walkInDays        String?   @map("walk_in_days")
+  targetDoses       Int?      @map("target_doses")
+  dosesAdministered Int       @default(0) @map("doses_administered")
+  educationTopics   String[]  @default([]) @map("education_topics")
+  locationNotes     String?   @map("location_notes")
+  regulatoryNotes   String?   @map("regulatory_notes")
+  heroImage         String?   @map("hero_image")
+  active            Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  crmCampaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  @@index([theme])
+  @@index([active])
+  @@map("public_health_campaigns")
 }
 

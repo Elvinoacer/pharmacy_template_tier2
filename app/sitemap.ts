@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { articles, pharmacy } from "./lib/data";
 import { listPublicServices } from "./lib/services/pharmacy-services";
 import { listPublicCategories } from "./lib/medication-categories";
+import { listPublicVaccines } from "./lib/services/vaccination-service";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = pharmacy.siteUrl;
@@ -22,6 +23,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/privacy",
     "/terms",
     "/search",
+    "/vaccinations",
+    "/vaccinations/book",
+    "/vaccinations/schedule",
+    "/preventive",
+    "/screenings",
   ].map((path) => ({
     url: `${base}${path || "/"}`,
     lastModified: now,
@@ -34,9 +40,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           : 0.7,
   }));
 
-  const [services, categories] = await Promise.all([
+  const [services, categories, vaccines] = await Promise.all([
     listPublicServices().catch(() => []),
     listPublicCategories().catch(() => []),
+    listPublicVaccines().catch(() => []),
   ]);
 
   const serviceRoutes = services.map((s) => ({
@@ -60,5 +67,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...serviceRoutes, ...categoryRoutes, ...articleRoutes];
+  const vaccineRoutes = vaccines.map((v) => ({
+    url: `${base}/vaccinations/${v.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...serviceRoutes, ...categoryRoutes, ...articleRoutes, ...vaccineRoutes];
 }
