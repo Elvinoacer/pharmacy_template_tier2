@@ -286,6 +286,8 @@ export type UserWhereInput = {
   prescriptionsReviewed?: Prisma.PrescriptionListRelationFilter
   clarificationLogs?: Prisma.PrescriptionClarificationLogListRelationFilter
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpListRelationFilter
+  screeningsConducted?: Prisma.HealthScreeningRecordListRelationFilter
+  referralsIssued?: Prisma.ClinicalReferralListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -342,6 +344,8 @@ export type UserOrderByWithRelationInput = {
   prescriptionsReviewed?: Prisma.PrescriptionOrderByRelationAggregateInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogOrderByRelationAggregateInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpOrderByRelationAggregateInput
+  screeningsConducted?: Prisma.HealthScreeningRecordOrderByRelationAggregateInput
+  referralsIssued?: Prisma.ClinicalReferralOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -401,6 +405,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   prescriptionsReviewed?: Prisma.PrescriptionListRelationFilter
   clarificationLogs?: Prisma.PrescriptionClarificationLogListRelationFilter
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpListRelationFilter
+  screeningsConducted?: Prisma.HealthScreeningRecordListRelationFilter
+  referralsIssued?: Prisma.ClinicalReferralListRelationFilter
 }, "id" | "email" | "googleId">
 
 export type UserOrderByWithAggregationInput = {
@@ -495,6 +501,8 @@ export type UserCreateInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -551,6 +559,8 @@ export type UserUncheckedCreateInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUpdateInput = {
@@ -607,6 +617,8 @@ export type UserUpdateInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -663,6 +675,8 @@ export type UserUncheckedUpdateInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1427,6 +1441,38 @@ export type UserUpdateOneRequiredWithoutCashierSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCashierSessionsInput, Prisma.UserUpdateWithoutCashierSessionsInput>, Prisma.UserUncheckedUpdateWithoutCashierSessionsInput>
 }
 
+export type UserCreateNestedOneWithoutScreeningsConductedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutScreeningsConductedInput, Prisma.UserUncheckedCreateWithoutScreeningsConductedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutScreeningsConductedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutScreeningsConductedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutScreeningsConductedInput, Prisma.UserUncheckedCreateWithoutScreeningsConductedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutScreeningsConductedInput
+  upsert?: Prisma.UserUpsertWithoutScreeningsConductedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutScreeningsConductedInput, Prisma.UserUpdateWithoutScreeningsConductedInput>, Prisma.UserUncheckedUpdateWithoutScreeningsConductedInput>
+}
+
+export type UserCreateNestedOneWithoutReferralsIssuedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReferralsIssuedInput, Prisma.UserUncheckedCreateWithoutReferralsIssuedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReferralsIssuedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutReferralsIssuedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReferralsIssuedInput, Prisma.UserUncheckedCreateWithoutReferralsIssuedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReferralsIssuedInput
+  upsert?: Prisma.UserUpsertWithoutReferralsIssuedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReferralsIssuedInput, Prisma.UserUpdateWithoutReferralsIssuedInput>, Prisma.UserUncheckedUpdateWithoutReferralsIssuedInput>
+}
+
 export type UserCreateWithoutPushDevicesInput = {
   id?: string
   email: string
@@ -1480,6 +1526,8 @@ export type UserCreateWithoutPushDevicesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutPushDevicesInput = {
@@ -1535,6 +1583,8 @@ export type UserUncheckedCreateWithoutPushDevicesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutPushDevicesInput = {
@@ -1606,6 +1656,8 @@ export type UserUpdateWithoutPushDevicesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPushDevicesInput = {
@@ -1661,6 +1713,8 @@ export type UserUncheckedUpdateWithoutPushDevicesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1716,6 +1770,8 @@ export type UserCreateWithoutSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1771,6 +1827,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1842,6 +1900,8 @@ export type UserUpdateWithoutSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1897,6 +1957,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutPasswordResetsInput = {
@@ -1952,6 +2014,8 @@ export type UserCreateWithoutPasswordResetsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutPasswordResetsInput = {
@@ -2007,6 +2071,8 @@ export type UserUncheckedCreateWithoutPasswordResetsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutPasswordResetsInput = {
@@ -2078,6 +2144,8 @@ export type UserUpdateWithoutPasswordResetsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasswordResetsInput = {
@@ -2133,6 +2201,8 @@ export type UserUncheckedUpdateWithoutPasswordResetsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutEmailVerificationsInput = {
@@ -2188,6 +2258,8 @@ export type UserCreateWithoutEmailVerificationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutEmailVerificationsInput = {
@@ -2243,6 +2315,8 @@ export type UserUncheckedCreateWithoutEmailVerificationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutEmailVerificationsInput = {
@@ -2314,6 +2388,8 @@ export type UserUpdateWithoutEmailVerificationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailVerificationsInput = {
@@ -2369,6 +2445,8 @@ export type UserUncheckedUpdateWithoutEmailVerificationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -2424,6 +2502,8 @@ export type UserCreateWithoutProfileInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -2479,6 +2559,8 @@ export type UserUncheckedCreateWithoutProfileInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -2550,6 +2632,8 @@ export type UserUpdateWithoutProfileInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -2605,6 +2689,8 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutCaregiverLinksInput = {
@@ -2660,6 +2746,8 @@ export type UserCreateWithoutCaregiverLinksInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutCaregiverLinksInput = {
@@ -2715,6 +2803,8 @@ export type UserUncheckedCreateWithoutCaregiverLinksInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutCaregiverLinksInput = {
@@ -2786,6 +2876,8 @@ export type UserUpdateWithoutCaregiverLinksInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCaregiverLinksInput = {
@@ -2841,6 +2933,8 @@ export type UserUncheckedUpdateWithoutCaregiverLinksInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutDispatchedPrescriptionsInput = {
@@ -2896,6 +2990,8 @@ export type UserCreateWithoutDispatchedPrescriptionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutDispatchedPrescriptionsInput = {
@@ -2951,6 +3047,8 @@ export type UserUncheckedCreateWithoutDispatchedPrescriptionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutDispatchedPrescriptionsInput = {
@@ -3011,6 +3109,8 @@ export type UserCreateWithoutPrescriptionsReviewedInput = {
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutPrescriptionsReviewedInput = {
@@ -3066,6 +3166,8 @@ export type UserUncheckedCreateWithoutPrescriptionsReviewedInput = {
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutPrescriptionsReviewedInput = {
@@ -3137,6 +3239,8 @@ export type UserUpdateWithoutDispatchedPrescriptionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDispatchedPrescriptionsInput = {
@@ -3192,6 +3296,8 @@ export type UserUncheckedUpdateWithoutDispatchedPrescriptionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUpsertWithoutPrescriptionsReviewedInput = {
@@ -3258,6 +3364,8 @@ export type UserUpdateWithoutPrescriptionsReviewedInput = {
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrescriptionsReviewedInput = {
@@ -3313,6 +3421,8 @@ export type UserUncheckedUpdateWithoutPrescriptionsReviewedInput = {
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutAssignedRefillsInput = {
@@ -3368,6 +3478,8 @@ export type UserCreateWithoutAssignedRefillsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutAssignedRefillsInput = {
@@ -3423,6 +3535,8 @@ export type UserUncheckedCreateWithoutAssignedRefillsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutAssignedRefillsInput = {
@@ -3494,6 +3608,8 @@ export type UserUpdateWithoutAssignedRefillsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedRefillsInput = {
@@ -3549,6 +3665,8 @@ export type UserUncheckedUpdateWithoutAssignedRefillsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutTimelineAsUserInput = {
@@ -3604,6 +3722,8 @@ export type UserCreateWithoutTimelineAsUserInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutTimelineAsUserInput = {
@@ -3659,6 +3779,8 @@ export type UserUncheckedCreateWithoutTimelineAsUserInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutTimelineAsUserInput = {
@@ -3719,6 +3841,8 @@ export type UserCreateWithoutTimelineCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutTimelineCreatedInput = {
@@ -3774,6 +3898,8 @@ export type UserUncheckedCreateWithoutTimelineCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutTimelineCreatedInput = {
@@ -3845,6 +3971,8 @@ export type UserUpdateWithoutTimelineAsUserInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTimelineAsUserInput = {
@@ -3900,6 +4028,8 @@ export type UserUncheckedUpdateWithoutTimelineAsUserInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUpsertWithoutTimelineCreatedInput = {
@@ -3966,6 +4096,8 @@ export type UserUpdateWithoutTimelineCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTimelineCreatedInput = {
@@ -4021,6 +4153,8 @@ export type UserUncheckedUpdateWithoutTimelineCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutSegmentsCreatedInput = {
@@ -4076,6 +4210,8 @@ export type UserCreateWithoutSegmentsCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutSegmentsCreatedInput = {
@@ -4131,6 +4267,8 @@ export type UserUncheckedCreateWithoutSegmentsCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutSegmentsCreatedInput = {
@@ -4202,6 +4340,8 @@ export type UserUpdateWithoutSegmentsCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSegmentsCreatedInput = {
@@ -4257,6 +4397,8 @@ export type UserUncheckedUpdateWithoutSegmentsCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutAssignedConversationsInput = {
@@ -4312,6 +4454,8 @@ export type UserCreateWithoutAssignedConversationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutAssignedConversationsInput = {
@@ -4367,6 +4511,8 @@ export type UserUncheckedCreateWithoutAssignedConversationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutAssignedConversationsInput = {
@@ -4438,6 +4584,8 @@ export type UserUpdateWithoutAssignedConversationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedConversationsInput = {
@@ -4493,6 +4641,8 @@ export type UserUncheckedUpdateWithoutAssignedConversationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutMessagesSentInput = {
@@ -4548,6 +4698,8 @@ export type UserCreateWithoutMessagesSentInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutMessagesSentInput = {
@@ -4603,6 +4755,8 @@ export type UserUncheckedCreateWithoutMessagesSentInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutMessagesSentInput = {
@@ -4674,6 +4828,8 @@ export type UserUpdateWithoutMessagesSentInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesSentInput = {
@@ -4729,6 +4885,8 @@ export type UserUncheckedUpdateWithoutMessagesSentInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutTemplatesCreatedInput = {
@@ -4784,6 +4942,8 @@ export type UserCreateWithoutTemplatesCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutTemplatesCreatedInput = {
@@ -4839,6 +4999,8 @@ export type UserUncheckedCreateWithoutTemplatesCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutTemplatesCreatedInput = {
@@ -4899,6 +5061,8 @@ export type UserCreateWithoutTemplatesUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutTemplatesUpdatedInput = {
@@ -4954,6 +5118,8 @@ export type UserUncheckedCreateWithoutTemplatesUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutTemplatesUpdatedInput = {
@@ -5025,6 +5191,8 @@ export type UserUpdateWithoutTemplatesCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTemplatesCreatedInput = {
@@ -5080,6 +5248,8 @@ export type UserUncheckedUpdateWithoutTemplatesCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUpsertWithoutTemplatesUpdatedInput = {
@@ -5146,6 +5316,8 @@ export type UserUpdateWithoutTemplatesUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTemplatesUpdatedInput = {
@@ -5201,6 +5373,8 @@ export type UserUncheckedUpdateWithoutTemplatesUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -5256,6 +5430,8 @@ export type UserCreateWithoutNotificationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -5311,6 +5487,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -5382,6 +5560,8 @@ export type UserUpdateWithoutNotificationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -5437,6 +5617,8 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutRemindersCreatedInput = {
@@ -5492,6 +5674,8 @@ export type UserCreateWithoutRemindersCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutRemindersCreatedInput = {
@@ -5547,6 +5731,8 @@ export type UserUncheckedCreateWithoutRemindersCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutRemindersCreatedInput = {
@@ -5618,6 +5804,8 @@ export type UserUpdateWithoutRemindersCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRemindersCreatedInput = {
@@ -5673,6 +5861,8 @@ export type UserUncheckedUpdateWithoutRemindersCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutCampaignsCreatedInput = {
@@ -5728,6 +5918,8 @@ export type UserCreateWithoutCampaignsCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutCampaignsCreatedInput = {
@@ -5783,6 +5975,8 @@ export type UserUncheckedCreateWithoutCampaignsCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutCampaignsCreatedInput = {
@@ -5854,6 +6048,8 @@ export type UserUpdateWithoutCampaignsCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCampaignsCreatedInput = {
@@ -5909,6 +6105,8 @@ export type UserUncheckedUpdateWithoutCampaignsCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutLoyaltyTxCreatedInput = {
@@ -5964,6 +6162,8 @@ export type UserCreateWithoutLoyaltyTxCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutLoyaltyTxCreatedInput = {
@@ -6019,6 +6219,8 @@ export type UserUncheckedCreateWithoutLoyaltyTxCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutLoyaltyTxCreatedInput = {
@@ -6090,6 +6292,8 @@ export type UserUpdateWithoutLoyaltyTxCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLoyaltyTxCreatedInput = {
@@ -6145,6 +6349,8 @@ export type UserUncheckedUpdateWithoutLoyaltyTxCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutEnquiriesAssignedInput = {
@@ -6200,6 +6406,8 @@ export type UserCreateWithoutEnquiriesAssignedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutEnquiriesAssignedInput = {
@@ -6255,6 +6463,8 @@ export type UserUncheckedCreateWithoutEnquiriesAssignedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutEnquiriesAssignedInput = {
@@ -6326,6 +6536,8 @@ export type UserUpdateWithoutEnquiriesAssignedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnquiriesAssignedInput = {
@@ -6381,6 +6593,8 @@ export type UserUncheckedUpdateWithoutEnquiriesAssignedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutFeedbackRespondedInput = {
@@ -6436,6 +6650,8 @@ export type UserCreateWithoutFeedbackRespondedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutFeedbackRespondedInput = {
@@ -6491,6 +6707,8 @@ export type UserUncheckedCreateWithoutFeedbackRespondedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutFeedbackRespondedInput = {
@@ -6562,6 +6780,8 @@ export type UserUpdateWithoutFeedbackRespondedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFeedbackRespondedInput = {
@@ -6617,6 +6837,8 @@ export type UserUncheckedUpdateWithoutFeedbackRespondedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutKnowledgeCreatedInput = {
@@ -6672,6 +6894,8 @@ export type UserCreateWithoutKnowledgeCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutKnowledgeCreatedInput = {
@@ -6727,6 +6951,8 @@ export type UserUncheckedCreateWithoutKnowledgeCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutKnowledgeCreatedInput = {
@@ -6787,6 +7013,8 @@ export type UserCreateWithoutKnowledgeUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutKnowledgeUpdatedInput = {
@@ -6842,6 +7070,8 @@ export type UserUncheckedCreateWithoutKnowledgeUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutKnowledgeUpdatedInput = {
@@ -6913,6 +7143,8 @@ export type UserUpdateWithoutKnowledgeCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutKnowledgeCreatedInput = {
@@ -6968,6 +7200,8 @@ export type UserUncheckedUpdateWithoutKnowledgeCreatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUpsertWithoutKnowledgeUpdatedInput = {
@@ -7034,6 +7268,8 @@ export type UserUpdateWithoutKnowledgeUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutKnowledgeUpdatedInput = {
@@ -7089,6 +7325,8 @@ export type UserUncheckedUpdateWithoutKnowledgeUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutAiConversationsInput = {
@@ -7144,6 +7382,8 @@ export type UserCreateWithoutAiConversationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutAiConversationsInput = {
@@ -7199,6 +7439,8 @@ export type UserUncheckedCreateWithoutAiConversationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutAiConversationsInput = {
@@ -7270,6 +7512,8 @@ export type UserUpdateWithoutAiConversationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAiConversationsInput = {
@@ -7325,6 +7569,8 @@ export type UserUncheckedUpdateWithoutAiConversationsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -7380,6 +7626,8 @@ export type UserCreateWithoutAuditLogsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -7435,6 +7683,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -7506,6 +7756,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -7561,6 +7813,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutCustomerNotesInput = {
@@ -7616,6 +7870,8 @@ export type UserCreateWithoutCustomerNotesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutCustomerNotesInput = {
@@ -7671,6 +7927,8 @@ export type UserUncheckedCreateWithoutCustomerNotesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutCustomerNotesInput = {
@@ -7742,6 +8000,8 @@ export type UserUpdateWithoutCustomerNotesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCustomerNotesInput = {
@@ -7797,6 +8057,8 @@ export type UserUncheckedUpdateWithoutCustomerNotesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutClarificationLogsInput = {
@@ -7852,6 +8114,8 @@ export type UserCreateWithoutClarificationLogsInput = {
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutClarificationLogsInput = {
@@ -7907,6 +8171,8 @@ export type UserUncheckedCreateWithoutClarificationLogsInput = {
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutClarificationLogsInput = {
@@ -7978,6 +8244,8 @@ export type UserUpdateWithoutClarificationLogsInput = {
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClarificationLogsInput = {
@@ -8033,6 +8301,8 @@ export type UserUncheckedUpdateWithoutClarificationLogsInput = {
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutAdherenceFollowUpsRecordedInput = {
@@ -8088,6 +8358,8 @@ export type UserCreateWithoutAdherenceFollowUpsRecordedInput = {
   cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutAdherenceFollowUpsRecordedInput = {
@@ -8143,6 +8415,8 @@ export type UserUncheckedCreateWithoutAdherenceFollowUpsRecordedInput = {
   cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutAdherenceFollowUpsRecordedInput = {
@@ -8214,6 +8488,8 @@ export type UserUpdateWithoutAdherenceFollowUpsRecordedInput = {
   cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAdherenceFollowUpsRecordedInput = {
@@ -8269,6 +8545,8 @@ export type UserUncheckedUpdateWithoutAdherenceFollowUpsRecordedInput = {
   cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutOrderDispenserNotesInput = {
@@ -8324,6 +8602,8 @@ export type UserCreateWithoutOrderDispenserNotesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutOrderDispenserNotesInput = {
@@ -8379,6 +8659,8 @@ export type UserUncheckedCreateWithoutOrderDispenserNotesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutOrderDispenserNotesInput = {
@@ -8450,6 +8732,8 @@ export type UserUpdateWithoutOrderDispenserNotesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrderDispenserNotesInput = {
@@ -8505,6 +8789,8 @@ export type UserUncheckedUpdateWithoutOrderDispenserNotesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutServiceBookingsRecordedInput = {
@@ -8560,6 +8846,8 @@ export type UserCreateWithoutServiceBookingsRecordedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutServiceBookingsRecordedInput = {
@@ -8615,6 +8903,8 @@ export type UserUncheckedCreateWithoutServiceBookingsRecordedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutServiceBookingsRecordedInput = {
@@ -8686,6 +8976,8 @@ export type UserUpdateWithoutServiceBookingsRecordedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServiceBookingsRecordedInput = {
@@ -8741,6 +9033,8 @@ export type UserUncheckedUpdateWithoutServiceBookingsRecordedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutPharmacySettingsUpdatedInput = {
@@ -8796,6 +9090,8 @@ export type UserCreateWithoutPharmacySettingsUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutPharmacySettingsUpdatedInput = {
@@ -8851,6 +9147,8 @@ export type UserUncheckedCreateWithoutPharmacySettingsUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutPharmacySettingsUpdatedInput = {
@@ -8922,6 +9220,8 @@ export type UserUpdateWithoutPharmacySettingsUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPharmacySettingsUpdatedInput = {
@@ -8977,6 +9277,8 @@ export type UserUncheckedUpdateWithoutPharmacySettingsUpdatedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutSymptomSessionsInput = {
@@ -9032,6 +9334,8 @@ export type UserCreateWithoutSymptomSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutSymptomSessionsInput = {
@@ -9087,6 +9391,8 @@ export type UserUncheckedCreateWithoutSymptomSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutSymptomSessionsInput = {
@@ -9158,6 +9464,8 @@ export type UserUpdateWithoutSymptomSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSymptomSessionsInput = {
@@ -9213,6 +9521,8 @@ export type UserUncheckedUpdateWithoutSymptomSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutSymptomStaffRepliesInput = {
@@ -9268,6 +9578,8 @@ export type UserCreateWithoutSymptomStaffRepliesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutSymptomStaffRepliesInput = {
@@ -9323,6 +9635,8 @@ export type UserUncheckedCreateWithoutSymptomStaffRepliesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutSymptomStaffRepliesInput = {
@@ -9394,6 +9708,8 @@ export type UserUpdateWithoutSymptomStaffRepliesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSymptomStaffRepliesInput = {
@@ -9449,6 +9765,8 @@ export type UserUncheckedUpdateWithoutSymptomStaffRepliesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutPrescriptionFillsDispensedInput = {
@@ -9504,6 +9822,8 @@ export type UserCreateWithoutPrescriptionFillsDispensedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutPrescriptionFillsDispensedInput = {
@@ -9559,6 +9879,8 @@ export type UserUncheckedCreateWithoutPrescriptionFillsDispensedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutPrescriptionFillsDispensedInput = {
@@ -9630,6 +9952,8 @@ export type UserUpdateWithoutPrescriptionFillsDispensedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrescriptionFillsDispensedInput = {
@@ -9685,6 +10009,8 @@ export type UserUncheckedUpdateWithoutPrescriptionFillsDispensedInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutReservationCreatorInput = {
@@ -9740,6 +10066,8 @@ export type UserCreateWithoutReservationCreatorInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutReservationCreatorInput = {
@@ -9795,6 +10123,8 @@ export type UserUncheckedCreateWithoutReservationCreatorInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutReservationCreatorInput = {
@@ -9866,6 +10196,8 @@ export type UserUpdateWithoutReservationCreatorInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReservationCreatorInput = {
@@ -9921,6 +10253,8 @@ export type UserUncheckedUpdateWithoutReservationCreatorInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutRefundCreatorInput = {
@@ -9976,6 +10310,8 @@ export type UserCreateWithoutRefundCreatorInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutRefundCreatorInput = {
@@ -10031,6 +10367,8 @@ export type UserUncheckedCreateWithoutRefundCreatorInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutRefundCreatorInput = {
@@ -10091,6 +10429,8 @@ export type UserCreateWithoutRefundApproverInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutRefundApproverInput = {
@@ -10146,6 +10486,8 @@ export type UserUncheckedCreateWithoutRefundApproverInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutRefundApproverInput = {
@@ -10217,6 +10559,8 @@ export type UserUpdateWithoutRefundCreatorInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefundCreatorInput = {
@@ -10272,6 +10616,8 @@ export type UserUncheckedUpdateWithoutRefundCreatorInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUpsertWithoutRefundApproverInput = {
@@ -10338,6 +10684,8 @@ export type UserUpdateWithoutRefundApproverInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefundApproverInput = {
@@ -10393,6 +10741,8 @@ export type UserUncheckedUpdateWithoutRefundApproverInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutPriceHistoryChangesInput = {
@@ -10448,6 +10798,8 @@ export type UserCreateWithoutPriceHistoryChangesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutPriceHistoryChangesInput = {
@@ -10503,6 +10855,8 @@ export type UserUncheckedCreateWithoutPriceHistoryChangesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutPriceHistoryChangesInput = {
@@ -10574,6 +10928,8 @@ export type UserUpdateWithoutPriceHistoryChangesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPriceHistoryChangesInput = {
@@ -10629,6 +10985,8 @@ export type UserUncheckedUpdateWithoutPriceHistoryChangesInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserCreateWithoutCashierSessionsInput = {
@@ -10684,6 +11042,8 @@ export type UserCreateWithoutCashierSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
 }
 
 export type UserUncheckedCreateWithoutCashierSessionsInput = {
@@ -10739,6 +11099,8 @@ export type UserUncheckedCreateWithoutCashierSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
 }
 
 export type UserCreateOrConnectWithoutCashierSessionsInput = {
@@ -10810,6 +11172,8 @@ export type UserUpdateWithoutCashierSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCashierSessionsInput = {
@@ -10865,6 +11229,496 @@ export type UserUncheckedUpdateWithoutCashierSessionsInput = {
   prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
   adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+}
+
+export type UserCreateWithoutScreeningsConductedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  referralsIssued?: Prisma.ClinicalReferralCreateNestedManyWithoutReferredByInput
+}
+
+export type UserUncheckedCreateWithoutScreeningsConductedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutReferredByInput
+}
+
+export type UserCreateOrConnectWithoutScreeningsConductedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutScreeningsConductedInput, Prisma.UserUncheckedCreateWithoutScreeningsConductedInput>
+}
+
+export type UserUpsertWithoutScreeningsConductedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutScreeningsConductedInput, Prisma.UserUncheckedUpdateWithoutScreeningsConductedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutScreeningsConductedInput, Prisma.UserUncheckedCreateWithoutScreeningsConductedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutScreeningsConductedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutScreeningsConductedInput, Prisma.UserUncheckedUpdateWithoutScreeningsConductedInput>
+}
+
+export type UserUpdateWithoutScreeningsConductedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUpdateManyWithoutReferredByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutScreeningsConductedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  referralsIssued?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutReferredByNestedInput
+}
+
+export type UserCreateWithoutReferralsIssuedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordCreateNestedManyWithoutConductedByInput
+}
+
+export type UserUncheckedCreateWithoutReferralsIssuedInput = {
+  id?: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string | null
+  status?: $Enums.UserStatus
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  passwordResets?: Prisma.PasswordResetUncheckedCreateNestedManyWithoutUserInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  profile?: Prisma.CustomerProfileUncheckedCreateNestedOneWithoutUserInput
+  caregiverLinks?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCaregiverUserInput
+  assignedRefills?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutAssignedToInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutUserInput
+  timelineCreated?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAssignedToInput
+  messagesSent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+  campaignsCreated?: Prisma.CampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedCreateNestedManyWithoutAssignedToInput
+  feedbackResponded?: Prisma.FeedbackUncheckedCreateNestedManyWithoutRespondedByInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedCreateNestedManyWithoutUpdatedByInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  customerNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutAuthorInput
+  segmentsCreated?: Prisma.SegmentUncheckedCreateNestedManyWithoutCreatedByInput
+  pushDevices?: Prisma.PushDeviceUncheckedCreateNestedManyWithoutUserInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDispatchedByInput
+  orderDispenserNotes?: Prisma.OrderUncheckedCreateNestedManyWithoutDispenserNoteByInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutUserInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedCreateNestedManyWithoutSenderInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutRecordedByInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedCreateNestedManyWithoutDispensedByInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedCreateNestedManyWithoutCreatedByInput
+  refundCreator?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  refundApprover?: Prisma.RefundUncheckedCreateNestedManyWithoutApprovedByInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  cashierSessions?: Prisma.CashierSessionUncheckedCreateNestedManyWithoutUserInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutReviewedByInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedCreateNestedManyWithoutStaffInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutStaffInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutConductedByInput
+}
+
+export type UserCreateOrConnectWithoutReferralsIssuedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReferralsIssuedInput, Prisma.UserUncheckedCreateWithoutReferralsIssuedInput>
+}
+
+export type UserUpsertWithoutReferralsIssuedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReferralsIssuedInput, Prisma.UserUncheckedUpdateWithoutReferralsIssuedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReferralsIssuedInput, Prisma.UserUncheckedCreateWithoutReferralsIssuedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReferralsIssuedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReferralsIssuedInput, Prisma.UserUncheckedUpdateWithoutReferralsIssuedInput>
+}
+
+export type UserUpdateWithoutReferralsIssuedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUpdateManyWithoutConductedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReferralsIssuedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  twoFactorSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  passwordResets?: Prisma.PasswordResetUncheckedUpdateManyWithoutUserNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  profile?: Prisma.CustomerProfileUncheckedUpdateOneWithoutUserNestedInput
+  caregiverLinks?: Prisma.CaregiverUncheckedUpdateManyWithoutCaregiverUserNestedInput
+  assignedRefills?: Prisma.RefillRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+  timelineAsUser?: Prisma.TimelineEventUncheckedUpdateManyWithoutUserNestedInput
+  timelineCreated?: Prisma.TimelineEventUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAssignedToNestedInput
+  messagesSent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  templatesCreated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templatesUpdated?: Prisma.MessageTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+  campaignsCreated?: Prisma.CampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  loyaltyTxCreated?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  enquiriesAssigned?: Prisma.EnquiryUncheckedUpdateManyWithoutAssignedToNestedInput
+  feedbackResponded?: Prisma.FeedbackUncheckedUpdateManyWithoutRespondedByNestedInput
+  knowledgeCreated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  knowledgeUpdated?: Prisma.KnowledgeArticleUncheckedUpdateManyWithoutUpdatedByNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  customerNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  segmentsCreated?: Prisma.SegmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushDevices?: Prisma.PushDeviceUncheckedUpdateManyWithoutUserNestedInput
+  dispatchedPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDispatchedByNestedInput
+  orderDispenserNotes?: Prisma.OrderUncheckedUpdateManyWithoutDispenserNoteByNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutUserNestedInput
+  symptomStaffReplies?: Prisma.SymptomMessageUncheckedUpdateManyWithoutSenderNestedInput
+  pharmacySettingsUpdated?: Prisma.PharmacySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  serviceBookingsRecorded?: Prisma.ServiceBookingUncheckedUpdateManyWithoutRecordedByNestedInput
+  prescriptionFillsDispensed?: Prisma.PrescriptionFillUncheckedUpdateManyWithoutDispensedByNestedInput
+  reservationCreator?: Prisma.InventoryReservationUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundCreator?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  refundApprover?: Prisma.RefundUncheckedUpdateManyWithoutApprovedByNestedInput
+  priceHistoryChanges?: Prisma.MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  cashierSessions?: Prisma.CashierSessionUncheckedUpdateManyWithoutUserNestedInput
+  prescriptionsReviewed?: Prisma.PrescriptionUncheckedUpdateManyWithoutReviewedByNestedInput
+  clarificationLogs?: Prisma.PrescriptionClarificationLogUncheckedUpdateManyWithoutStaffNestedInput
+  adherenceFollowUpsRecorded?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutStaffNestedInput
+  screeningsConducted?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutConductedByNestedInput
 }
 
 
@@ -10912,6 +11766,8 @@ export type UserCountOutputType = {
   prescriptionsReviewed: number
   clarificationLogs: number
   adherenceFollowUpsRecorded: number
+  screeningsConducted: number
+  referralsIssued: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -10954,6 +11810,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   prescriptionsReviewed?: boolean | UserCountOutputTypeCountPrescriptionsReviewedArgs
   clarificationLogs?: boolean | UserCountOutputTypeCountClarificationLogsArgs
   adherenceFollowUpsRecorded?: boolean | UserCountOutputTypeCountAdherenceFollowUpsRecordedArgs
+  screeningsConducted?: boolean | UserCountOutputTypeCountScreeningsConductedArgs
+  referralsIssued?: boolean | UserCountOutputTypeCountReferralsIssuedArgs
 }
 
 /**
@@ -11239,6 +12097,20 @@ export type UserCountOutputTypeCountAdherenceFollowUpsRecordedArgs<ExtArgs exten
   where?: Prisma.AdherenceFollowUpWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountScreeningsConductedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HealthScreeningRecordWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReferralsIssuedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClinicalReferralWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -11294,6 +12166,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   prescriptionsReviewed?: boolean | Prisma.User$prescriptionsReviewedArgs<ExtArgs>
   clarificationLogs?: boolean | Prisma.User$clarificationLogsArgs<ExtArgs>
   adherenceFollowUpsRecorded?: boolean | Prisma.User$adherenceFollowUpsRecordedArgs<ExtArgs>
+  screeningsConducted?: boolean | Prisma.User$screeningsConductedArgs<ExtArgs>
+  referralsIssued?: boolean | Prisma.User$referralsIssuedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -11387,6 +12261,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   prescriptionsReviewed?: boolean | Prisma.User$prescriptionsReviewedArgs<ExtArgs>
   clarificationLogs?: boolean | Prisma.User$clarificationLogsArgs<ExtArgs>
   adherenceFollowUpsRecorded?: boolean | Prisma.User$adherenceFollowUpsRecordedArgs<ExtArgs>
+  screeningsConducted?: boolean | Prisma.User$screeningsConductedArgs<ExtArgs>
+  referralsIssued?: boolean | Prisma.User$referralsIssuedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -11435,6 +12311,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     prescriptionsReviewed: Prisma.$PrescriptionPayload<ExtArgs>[]
     clarificationLogs: Prisma.$PrescriptionClarificationLogPayload<ExtArgs>[]
     adherenceFollowUpsRecorded: Prisma.$AdherenceFollowUpPayload<ExtArgs>[]
+    screeningsConducted: Prisma.$HealthScreeningRecordPayload<ExtArgs>[]
+    referralsIssued: Prisma.$ClinicalReferralPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -11890,6 +12768,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   prescriptionsReviewed<T extends Prisma.User$prescriptionsReviewedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$prescriptionsReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   clarificationLogs<T extends Prisma.User$clarificationLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$clarificationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionClarificationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   adherenceFollowUpsRecorded<T extends Prisma.User$adherenceFollowUpsRecordedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adherenceFollowUpsRecordedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdherenceFollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  screeningsConducted<T extends Prisma.User$screeningsConductedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$screeningsConductedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HealthScreeningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  referralsIssued<T extends Prisma.User$referralsIssuedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$referralsIssuedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicalReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13277,6 +14157,54 @@ export type User$adherenceFollowUpsRecordedArgs<ExtArgs extends runtime.Types.Ex
   take?: number
   skip?: number
   distinct?: Prisma.AdherenceFollowUpScalarFieldEnum | Prisma.AdherenceFollowUpScalarFieldEnum[]
+}
+
+/**
+ * User.screeningsConducted
+ */
+export type User$screeningsConductedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HealthScreeningRecord
+   */
+  select?: Prisma.HealthScreeningRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HealthScreeningRecord
+   */
+  omit?: Prisma.HealthScreeningRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HealthScreeningRecordInclude<ExtArgs> | null
+  where?: Prisma.HealthScreeningRecordWhereInput
+  orderBy?: Prisma.HealthScreeningRecordOrderByWithRelationInput | Prisma.HealthScreeningRecordOrderByWithRelationInput[]
+  cursor?: Prisma.HealthScreeningRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HealthScreeningRecordScalarFieldEnum | Prisma.HealthScreeningRecordScalarFieldEnum[]
+}
+
+/**
+ * User.referralsIssued
+ */
+export type User$referralsIssuedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClinicalReferral
+   */
+  select?: Prisma.ClinicalReferralSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ClinicalReferral
+   */
+  omit?: Prisma.ClinicalReferralOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClinicalReferralInclude<ExtArgs> | null
+  where?: Prisma.ClinicalReferralWhereInput
+  orderBy?: Prisma.ClinicalReferralOrderByWithRelationInput | Prisma.ClinicalReferralOrderByWithRelationInput[]
+  cursor?: Prisma.ClinicalReferralWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClinicalReferralScalarFieldEnum | Prisma.ClinicalReferralScalarFieldEnum[]
 }
 
 /**

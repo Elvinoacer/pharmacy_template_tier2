@@ -463,7 +463,9 @@ export const ModelName = {
   InventoryAllocation: 'InventoryAllocation',
   CommerceEvent: 'CommerceEvent',
   MedicationPriceHistory: 'MedicationPriceHistory',
-  CashierSession: 'CashierSession'
+  CashierSession: 'CashierSession',
+  HealthScreeningRecord: 'HealthScreeningRecord',
+  ClinicalReferral: 'ClinicalReferral'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -479,7 +481,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "pushDevice" | "session" | "passwordReset" | "emailVerification" | "customerProfile" | "caregiver" | "customerPreference" | "prescription" | "refillRequest" | "timelineEvent" | "segment" | "customerSegment" | "conversation" | "message" | "messageTemplate" | "notification" | "reminder" | "campaign" | "loyaltyAccount" | "loyaltyTransaction" | "coupon" | "enquiry" | "feedback" | "knowledgeArticle" | "aiConversation" | "aiMessage" | "auditLog" | "customerNote" | "prescriptionAdherence" | "prescriptionClarificationLog" | "medicationSchedule" | "doseLog" | "adherenceEscalation" | "refillSyncEnrollment" | "adherenceFollowUp" | "medicationCategory" | "medicationMaster" | "pharmacyInventory" | "inventoryLot" | "stockMovement" | "activeIngredient" | "medicationActiveIngredient" | "manufacturer" | "medicationInteraction" | "clinicalTag" | "medicationClinicalTag" | "medicationLookup" | "order" | "orderItem" | "payment" | "loyaltyRule" | "caregiverInvite" | "pharmacyService" | "serviceBooking" | "adminNotification" | "pharmacySettings" | "symptomSession" | "symptomMessage" | "symptomCheckIn" | "prescriptionFill" | "inventoryReservation" | "refund" | "inventoryAllocation" | "commerceEvent" | "medicationPriceHistory" | "cashierSession"
+    modelProps: "user" | "pushDevice" | "session" | "passwordReset" | "emailVerification" | "customerProfile" | "caregiver" | "customerPreference" | "prescription" | "refillRequest" | "timelineEvent" | "segment" | "customerSegment" | "conversation" | "message" | "messageTemplate" | "notification" | "reminder" | "campaign" | "loyaltyAccount" | "loyaltyTransaction" | "coupon" | "enquiry" | "feedback" | "knowledgeArticle" | "aiConversation" | "aiMessage" | "auditLog" | "customerNote" | "prescriptionAdherence" | "prescriptionClarificationLog" | "medicationSchedule" | "doseLog" | "adherenceEscalation" | "refillSyncEnrollment" | "adherenceFollowUp" | "medicationCategory" | "medicationMaster" | "pharmacyInventory" | "inventoryLot" | "stockMovement" | "activeIngredient" | "medicationActiveIngredient" | "manufacturer" | "medicationInteraction" | "clinicalTag" | "medicationClinicalTag" | "medicationLookup" | "order" | "orderItem" | "payment" | "loyaltyRule" | "caregiverInvite" | "pharmacyService" | "serviceBooking" | "adminNotification" | "pharmacySettings" | "symptomSession" | "symptomMessage" | "symptomCheckIn" | "prescriptionFill" | "inventoryReservation" | "refund" | "inventoryAllocation" | "commerceEvent" | "medicationPriceHistory" | "cashierSession" | "healthScreeningRecord" | "clinicalReferral"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -5441,6 +5443,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    HealthScreeningRecord: {
+      payload: Prisma.$HealthScreeningRecordPayload<ExtArgs>
+      fields: Prisma.HealthScreeningRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HealthScreeningRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HealthScreeningRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.HealthScreeningRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HealthScreeningRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>
+        }
+        findMany: {
+          args: Prisma.HealthScreeningRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>[]
+        }
+        create: {
+          args: Prisma.HealthScreeningRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>
+        }
+        createMany: {
+          args: Prisma.HealthScreeningRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HealthScreeningRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.HealthScreeningRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>
+        }
+        update: {
+          args: Prisma.HealthScreeningRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.HealthScreeningRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HealthScreeningRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HealthScreeningRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.HealthScreeningRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthScreeningRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.HealthScreeningRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHealthScreeningRecord>
+        }
+        groupBy: {
+          args: Prisma.HealthScreeningRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HealthScreeningRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HealthScreeningRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HealthScreeningRecordCountAggregateOutputType> | number
+        }
+      }
+    }
+    ClinicalReferral: {
+      payload: Prisma.$ClinicalReferralPayload<ExtArgs>
+      fields: Prisma.ClinicalReferralFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ClinicalReferralFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ClinicalReferralFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>
+        }
+        findFirst: {
+          args: Prisma.ClinicalReferralFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ClinicalReferralFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>
+        }
+        findMany: {
+          args: Prisma.ClinicalReferralFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>[]
+        }
+        create: {
+          args: Prisma.ClinicalReferralCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>
+        }
+        createMany: {
+          args: Prisma.ClinicalReferralCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ClinicalReferralCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>[]
+        }
+        delete: {
+          args: Prisma.ClinicalReferralDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>
+        }
+        update: {
+          args: Prisma.ClinicalReferralUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>
+        }
+        deleteMany: {
+          args: Prisma.ClinicalReferralDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ClinicalReferralUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ClinicalReferralUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>[]
+        }
+        upsert: {
+          args: Prisma.ClinicalReferralUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicalReferralPayload>
+        }
+        aggregate: {
+          args: Prisma.ClinicalReferralAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateClinicalReferral>
+        }
+        groupBy: {
+          args: Prisma.ClinicalReferralGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicalReferralGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ClinicalReferralCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicalReferralCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -6716,6 +6866,75 @@ export const CashierSessionScalarFieldEnum = {
 export type CashierSessionScalarFieldEnum = (typeof CashierSessionScalarFieldEnum)[keyof typeof CashierSessionScalarFieldEnum]
 
 
+export const HealthScreeningRecordScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  conductedById: 'conductedById',
+  screeningType: 'screeningType',
+  patientName: 'patientName',
+  patientPhone: 'patientPhone',
+  patientEmail: 'patientEmail',
+  patientAge: 'patientAge',
+  patientGender: 'patientGender',
+  systolicBp: 'systolicBp',
+  diastolicBp: 'diastolicBp',
+  pulseRate: 'pulseRate',
+  bpCategory: 'bpCategory',
+  bloodGlucose: 'bloodGlucose',
+  glucoseUnit: 'glucoseUnit',
+  fastingStatus: 'fastingStatus',
+  glucoseCategory: 'glucoseCategory',
+  weightKg: 'weightKg',
+  heightCm: 'heightCm',
+  bmi: 'bmi',
+  bmiCategory: 'bmiCategory',
+  waistCircumferenceCm: 'waistCircumferenceCm',
+  temperatureC: 'temperatureC',
+  tempCategory: 'tempCategory',
+  spO2Percent: 'spO2Percent',
+  poctType: 'poctType',
+  poctResult: 'poctResult',
+  poctValues: 'poctValues',
+  notes: 'notes',
+  nonDiagnosticDisclaimer: 'nonDiagnosticDisclaimer',
+  equipmentUsed: 'equipmentUsed',
+  requiresReferral: 'requiresReferral',
+  referralUrgency: 'referralUrgency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HealthScreeningRecordScalarFieldEnum = (typeof HealthScreeningRecordScalarFieldEnum)[keyof typeof HealthScreeningRecordScalarFieldEnum]
+
+
+export const ClinicalReferralScalarFieldEnum = {
+  id: 'id',
+  screeningId: 'screeningId',
+  customerId: 'customerId',
+  referredById: 'referredById',
+  referenceCode: 'referenceCode',
+  patientName: 'patientName',
+  patientPhone: 'patientPhone',
+  patientEmail: 'patientEmail',
+  patientDob: 'patientDob',
+  patientGender: 'patientGender',
+  destinationType: 'destinationType',
+  facilityName: 'facilityName',
+  facilityContact: 'facilityContact',
+  specialistType: 'specialistType',
+  urgency: 'urgency',
+  reason: 'reason',
+  clinicalSummary: 'clinicalSummary',
+  pharmacistRecommendations: 'pharmacistRecommendations',
+  status: 'status',
+  issuedAt: 'issuedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClinicalReferralScalarFieldEnum = (typeof ClinicalReferralScalarFieldEnum)[keyof typeof ClinicalReferralScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -7722,6 +7941,8 @@ export type GlobalOmitConfig = {
   commerceEvent?: Prisma.CommerceEventOmit
   medicationPriceHistory?: Prisma.MedicationPriceHistoryOmit
   cashierSession?: Prisma.CashierSessionOmit
+  healthScreeningRecord?: Prisma.HealthScreeningRecordOmit
+  clinicalReferral?: Prisma.ClinicalReferralOmit
 }
 
 /* Types for Logging */

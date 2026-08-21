@@ -334,6 +334,8 @@ export type CustomerProfileWhereInput = {
   serviceBookings?: Prisma.ServiceBookingListRelationFilter
   syncEnrollment?: Prisma.XOR<Prisma.RefillSyncEnrollmentNullableScalarRelationFilter, Prisma.RefillSyncEnrollmentWhereInput> | null
   adherenceFollowUps?: Prisma.AdherenceFollowUpListRelationFilter
+  screeningRecords?: Prisma.HealthScreeningRecordListRelationFilter
+  clinicalReferrals?: Prisma.ClinicalReferralListRelationFilter
 }
 
 export type CustomerProfileOrderByWithRelationInput = {
@@ -384,6 +386,8 @@ export type CustomerProfileOrderByWithRelationInput = {
   serviceBookings?: Prisma.ServiceBookingOrderByRelationAggregateInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentOrderByWithRelationInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpOrderByRelationAggregateInput
+  screeningRecords?: Prisma.HealthScreeningRecordOrderByRelationAggregateInput
+  clinicalReferrals?: Prisma.ClinicalReferralOrderByRelationAggregateInput
 }
 
 export type CustomerProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -437,6 +441,8 @@ export type CustomerProfileWhereUniqueInput = Prisma.AtLeast<{
   serviceBookings?: Prisma.ServiceBookingListRelationFilter
   syncEnrollment?: Prisma.XOR<Prisma.RefillSyncEnrollmentNullableScalarRelationFilter, Prisma.RefillSyncEnrollmentWhereInput> | null
   adherenceFollowUps?: Prisma.AdherenceFollowUpListRelationFilter
+  screeningRecords?: Prisma.HealthScreeningRecordListRelationFilter
+  clinicalReferrals?: Prisma.ClinicalReferralListRelationFilter
 }, "id" | "userId">
 
 export type CustomerProfileOrderByWithAggregationInput = {
@@ -540,6 +546,8 @@ export type CustomerProfileCreateInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateInput = {
@@ -589,6 +597,8 @@ export type CustomerProfileUncheckedCreateInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUpdateInput = {
@@ -638,6 +648,8 @@ export type CustomerProfileUpdateInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateInput = {
@@ -687,6 +699,8 @@ export type CustomerProfileUncheckedUpdateInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateManyInput = {
@@ -1271,6 +1285,38 @@ export type CustomerProfileUpdateOneWithoutSymptomSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutSymptomSessionsInput, Prisma.CustomerProfileUpdateWithoutSymptomSessionsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutSymptomSessionsInput>
 }
 
+export type CustomerProfileCreateNestedOneWithoutScreeningRecordsInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutScreeningRecordsInput, Prisma.CustomerProfileUncheckedCreateWithoutScreeningRecordsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutScreeningRecordsInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+}
+
+export type CustomerProfileUpdateOneWithoutScreeningRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutScreeningRecordsInput, Prisma.CustomerProfileUncheckedCreateWithoutScreeningRecordsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutScreeningRecordsInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutScreeningRecordsInput
+  disconnect?: Prisma.CustomerProfileWhereInput | boolean
+  delete?: Prisma.CustomerProfileWhereInput | boolean
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutScreeningRecordsInput, Prisma.CustomerProfileUpdateWithoutScreeningRecordsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput>
+}
+
+export type CustomerProfileCreateNestedOneWithoutClinicalReferralsInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutClinicalReferralsInput, Prisma.CustomerProfileUncheckedCreateWithoutClinicalReferralsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutClinicalReferralsInput
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+}
+
+export type CustomerProfileUpdateOneWithoutClinicalReferralsNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerProfileCreateWithoutClinicalReferralsInput, Prisma.CustomerProfileUncheckedCreateWithoutClinicalReferralsInput>
+  connectOrCreate?: Prisma.CustomerProfileCreateOrConnectWithoutClinicalReferralsInput
+  upsert?: Prisma.CustomerProfileUpsertWithoutClinicalReferralsInput
+  disconnect?: Prisma.CustomerProfileWhereInput | boolean
+  delete?: Prisma.CustomerProfileWhereInput | boolean
+  connect?: Prisma.CustomerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerProfileUpdateToOneWithWhereWithoutClinicalReferralsInput, Prisma.CustomerProfileUpdateWithoutClinicalReferralsInput>, Prisma.CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput>
+}
+
 export type CustomerProfileCreateWithoutUserInput = {
   id?: string
   fullName: string
@@ -1317,6 +1363,8 @@ export type CustomerProfileCreateWithoutUserInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutUserInput = {
@@ -1365,6 +1413,8 @@ export type CustomerProfileUncheckedCreateWithoutUserInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutUserInput = {
@@ -1429,6 +1479,8 @@ export type CustomerProfileUpdateWithoutUserInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutUserInput = {
@@ -1477,6 +1529,8 @@ export type CustomerProfileUncheckedUpdateWithoutUserInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutCaregiversInput = {
@@ -1525,6 +1579,8 @@ export type CustomerProfileCreateWithoutCaregiversInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutCaregiversInput = {
@@ -1573,6 +1629,8 @@ export type CustomerProfileUncheckedCreateWithoutCaregiversInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutCaregiversInput = {
@@ -1637,6 +1695,8 @@ export type CustomerProfileUpdateWithoutCaregiversInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutCaregiversInput = {
@@ -1685,6 +1745,8 @@ export type CustomerProfileUncheckedUpdateWithoutCaregiversInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPreferencesInput = {
@@ -1733,6 +1795,8 @@ export type CustomerProfileCreateWithoutPreferencesInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPreferencesInput = {
@@ -1781,6 +1845,8 @@ export type CustomerProfileUncheckedCreateWithoutPreferencesInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPreferencesInput = {
@@ -1845,6 +1911,8 @@ export type CustomerProfileUpdateWithoutPreferencesInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPreferencesInput = {
@@ -1893,6 +1961,8 @@ export type CustomerProfileUncheckedUpdateWithoutPreferencesInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPrescriptionsInput = {
@@ -1941,6 +2011,8 @@ export type CustomerProfileCreateWithoutPrescriptionsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPrescriptionsInput = {
@@ -1989,6 +2061,8 @@ export type CustomerProfileUncheckedCreateWithoutPrescriptionsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPrescriptionsInput = {
@@ -2053,6 +2127,8 @@ export type CustomerProfileUpdateWithoutPrescriptionsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPrescriptionsInput = {
@@ -2101,6 +2177,8 @@ export type CustomerProfileUncheckedUpdateWithoutPrescriptionsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutRefillRequestsInput = {
@@ -2149,6 +2227,8 @@ export type CustomerProfileCreateWithoutRefillRequestsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutRefillRequestsInput = {
@@ -2197,6 +2277,8 @@ export type CustomerProfileUncheckedCreateWithoutRefillRequestsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutRefillRequestsInput = {
@@ -2261,6 +2343,8 @@ export type CustomerProfileUpdateWithoutRefillRequestsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutRefillRequestsInput = {
@@ -2309,6 +2393,8 @@ export type CustomerProfileUncheckedUpdateWithoutRefillRequestsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutTimelineEventsInput = {
@@ -2357,6 +2443,8 @@ export type CustomerProfileCreateWithoutTimelineEventsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutTimelineEventsInput = {
@@ -2405,6 +2493,8 @@ export type CustomerProfileUncheckedCreateWithoutTimelineEventsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutTimelineEventsInput = {
@@ -2469,6 +2559,8 @@ export type CustomerProfileUpdateWithoutTimelineEventsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutTimelineEventsInput = {
@@ -2517,6 +2609,8 @@ export type CustomerProfileUncheckedUpdateWithoutTimelineEventsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSegmentsInput = {
@@ -2565,6 +2659,8 @@ export type CustomerProfileCreateWithoutSegmentsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSegmentsInput = {
@@ -2613,6 +2709,8 @@ export type CustomerProfileUncheckedCreateWithoutSegmentsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSegmentsInput = {
@@ -2677,6 +2775,8 @@ export type CustomerProfileUpdateWithoutSegmentsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSegmentsInput = {
@@ -2725,6 +2825,8 @@ export type CustomerProfileUncheckedUpdateWithoutSegmentsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutConversationsInput = {
@@ -2773,6 +2875,8 @@ export type CustomerProfileCreateWithoutConversationsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutConversationsInput = {
@@ -2821,6 +2925,8 @@ export type CustomerProfileUncheckedCreateWithoutConversationsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutConversationsInput = {
@@ -2885,6 +2991,8 @@ export type CustomerProfileUpdateWithoutConversationsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutConversationsInput = {
@@ -2933,6 +3041,8 @@ export type CustomerProfileUncheckedUpdateWithoutConversationsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutNotificationsInput = {
@@ -2981,6 +3091,8 @@ export type CustomerProfileCreateWithoutNotificationsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutNotificationsInput = {
@@ -3029,6 +3141,8 @@ export type CustomerProfileUncheckedCreateWithoutNotificationsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutNotificationsInput = {
@@ -3093,6 +3207,8 @@ export type CustomerProfileUpdateWithoutNotificationsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutNotificationsInput = {
@@ -3141,6 +3257,8 @@ export type CustomerProfileUncheckedUpdateWithoutNotificationsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutRemindersInput = {
@@ -3189,6 +3307,8 @@ export type CustomerProfileCreateWithoutRemindersInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutRemindersInput = {
@@ -3237,6 +3357,8 @@ export type CustomerProfileUncheckedCreateWithoutRemindersInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutRemindersInput = {
@@ -3301,6 +3423,8 @@ export type CustomerProfileUpdateWithoutRemindersInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutRemindersInput = {
@@ -3349,6 +3473,8 @@ export type CustomerProfileUncheckedUpdateWithoutRemindersInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutLoyaltyAccountInput = {
@@ -3397,6 +3523,8 @@ export type CustomerProfileCreateWithoutLoyaltyAccountInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput = {
@@ -3445,6 +3573,8 @@ export type CustomerProfileUncheckedCreateWithoutLoyaltyAccountInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutLoyaltyAccountInput = {
@@ -3498,6 +3628,8 @@ export type CustomerProfileCreateWithoutReferredLoyaltyInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutReferredLoyaltyInput = {
@@ -3546,6 +3678,8 @@ export type CustomerProfileUncheckedCreateWithoutReferredLoyaltyInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutReferredLoyaltyInput = {
@@ -3610,6 +3744,8 @@ export type CustomerProfileUpdateWithoutLoyaltyAccountInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput = {
@@ -3658,6 +3794,8 @@ export type CustomerProfileUncheckedUpdateWithoutLoyaltyAccountInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUpsertWithoutReferredLoyaltyInput = {
@@ -3717,6 +3855,8 @@ export type CustomerProfileUpdateWithoutReferredLoyaltyInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutReferredLoyaltyInput = {
@@ -3765,6 +3905,8 @@ export type CustomerProfileUncheckedUpdateWithoutReferredLoyaltyInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutEnquiriesInput = {
@@ -3813,6 +3955,8 @@ export type CustomerProfileCreateWithoutEnquiriesInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutEnquiriesInput = {
@@ -3861,6 +4005,8 @@ export type CustomerProfileUncheckedCreateWithoutEnquiriesInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutEnquiriesInput = {
@@ -3925,6 +4071,8 @@ export type CustomerProfileUpdateWithoutEnquiriesInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutEnquiriesInput = {
@@ -3973,6 +4121,8 @@ export type CustomerProfileUncheckedUpdateWithoutEnquiriesInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutFeedbackInput = {
@@ -4021,6 +4171,8 @@ export type CustomerProfileCreateWithoutFeedbackInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutFeedbackInput = {
@@ -4069,6 +4221,8 @@ export type CustomerProfileUncheckedCreateWithoutFeedbackInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutFeedbackInput = {
@@ -4133,6 +4287,8 @@ export type CustomerProfileUpdateWithoutFeedbackInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutFeedbackInput = {
@@ -4181,6 +4337,8 @@ export type CustomerProfileUncheckedUpdateWithoutFeedbackInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAiConversationsInput = {
@@ -4229,6 +4387,8 @@ export type CustomerProfileCreateWithoutAiConversationsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAiConversationsInput = {
@@ -4277,6 +4437,8 @@ export type CustomerProfileUncheckedCreateWithoutAiConversationsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAiConversationsInput = {
@@ -4341,6 +4503,8 @@ export type CustomerProfileUpdateWithoutAiConversationsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAiConversationsInput = {
@@ -4389,6 +4553,8 @@ export type CustomerProfileUncheckedUpdateWithoutAiConversationsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutStaffNotesInput = {
@@ -4437,6 +4603,8 @@ export type CustomerProfileCreateWithoutStaffNotesInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutStaffNotesInput = {
@@ -4485,6 +4653,8 @@ export type CustomerProfileUncheckedCreateWithoutStaffNotesInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutStaffNotesInput = {
@@ -4549,6 +4719,8 @@ export type CustomerProfileUpdateWithoutStaffNotesInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutStaffNotesInput = {
@@ -4597,6 +4769,8 @@ export type CustomerProfileUncheckedUpdateWithoutStaffNotesInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceLogsInput = {
@@ -4645,6 +4819,8 @@ export type CustomerProfileCreateWithoutAdherenceLogsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceLogsInput = {
@@ -4693,6 +4869,8 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceLogsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceLogsInput = {
@@ -4757,6 +4935,8 @@ export type CustomerProfileUpdateWithoutAdherenceLogsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceLogsInput = {
@@ -4805,6 +4985,8 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceLogsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutMedicationSchedulesInput = {
@@ -4853,6 +5035,8 @@ export type CustomerProfileCreateWithoutMedicationSchedulesInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutMedicationSchedulesInput = {
@@ -4901,6 +5085,8 @@ export type CustomerProfileUncheckedCreateWithoutMedicationSchedulesInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutMedicationSchedulesInput = {
@@ -4965,6 +5151,8 @@ export type CustomerProfileUpdateWithoutMedicationSchedulesInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutMedicationSchedulesInput = {
@@ -5013,6 +5201,8 @@ export type CustomerProfileUncheckedUpdateWithoutMedicationSchedulesInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutDoseLogsInput = {
@@ -5061,6 +5251,8 @@ export type CustomerProfileCreateWithoutDoseLogsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutDoseLogsInput = {
@@ -5109,6 +5301,8 @@ export type CustomerProfileUncheckedCreateWithoutDoseLogsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutDoseLogsInput = {
@@ -5173,6 +5367,8 @@ export type CustomerProfileUpdateWithoutDoseLogsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutDoseLogsInput = {
@@ -5221,6 +5417,8 @@ export type CustomerProfileUncheckedUpdateWithoutDoseLogsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceEscalationsInput = {
@@ -5269,6 +5467,8 @@ export type CustomerProfileCreateWithoutAdherenceEscalationsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceEscalationsInput = {
@@ -5317,6 +5517,8 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceEscalationsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceEscalationsInput = {
@@ -5381,6 +5583,8 @@ export type CustomerProfileUpdateWithoutAdherenceEscalationsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceEscalationsInput = {
@@ -5429,6 +5633,8 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceEscalationsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSyncEnrollmentInput = {
@@ -5477,6 +5683,8 @@ export type CustomerProfileCreateWithoutSyncEnrollmentInput = {
   symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSyncEnrollmentInput = {
@@ -5525,6 +5733,8 @@ export type CustomerProfileUncheckedCreateWithoutSyncEnrollmentInput = {
   symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSyncEnrollmentInput = {
@@ -5589,6 +5799,8 @@ export type CustomerProfileUpdateWithoutSyncEnrollmentInput = {
   symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSyncEnrollmentInput = {
@@ -5637,6 +5849,8 @@ export type CustomerProfileUncheckedUpdateWithoutSyncEnrollmentInput = {
   symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutAdherenceFollowUpsInput = {
@@ -5685,6 +5899,8 @@ export type CustomerProfileCreateWithoutAdherenceFollowUpsInput = {
   symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutAdherenceFollowUpsInput = {
@@ -5733,6 +5949,8 @@ export type CustomerProfileUncheckedCreateWithoutAdherenceFollowUpsInput = {
   symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutAdherenceFollowUpsInput = {
@@ -5797,6 +6015,8 @@ export type CustomerProfileUpdateWithoutAdherenceFollowUpsInput = {
   symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutAdherenceFollowUpsInput = {
@@ -5845,6 +6065,8 @@ export type CustomerProfileUncheckedUpdateWithoutAdherenceFollowUpsInput = {
   symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutOrdersInput = {
@@ -5893,6 +6115,8 @@ export type CustomerProfileCreateWithoutOrdersInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutOrdersInput = {
@@ -5941,6 +6165,8 @@ export type CustomerProfileUncheckedCreateWithoutOrdersInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutOrdersInput = {
@@ -6005,6 +6231,8 @@ export type CustomerProfileUpdateWithoutOrdersInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutOrdersInput = {
@@ -6053,6 +6281,8 @@ export type CustomerProfileUncheckedUpdateWithoutOrdersInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutPaymentsInput = {
@@ -6101,6 +6331,8 @@ export type CustomerProfileCreateWithoutPaymentsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutPaymentsInput = {
@@ -6149,6 +6381,8 @@ export type CustomerProfileUncheckedCreateWithoutPaymentsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutPaymentsInput = {
@@ -6213,6 +6447,8 @@ export type CustomerProfileUpdateWithoutPaymentsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutPaymentsInput = {
@@ -6261,6 +6497,8 @@ export type CustomerProfileUncheckedUpdateWithoutPaymentsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutServiceBookingsInput = {
@@ -6309,6 +6547,8 @@ export type CustomerProfileCreateWithoutServiceBookingsInput = {
   symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutServiceBookingsInput = {
@@ -6357,6 +6597,8 @@ export type CustomerProfileUncheckedCreateWithoutServiceBookingsInput = {
   symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutServiceBookingsInput = {
@@ -6421,6 +6663,8 @@ export type CustomerProfileUpdateWithoutServiceBookingsInput = {
   symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutServiceBookingsInput = {
@@ -6469,6 +6713,8 @@ export type CustomerProfileUncheckedUpdateWithoutServiceBookingsInput = {
   symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileCreateWithoutSymptomSessionsInput = {
@@ -6517,6 +6763,8 @@ export type CustomerProfileCreateWithoutSymptomSessionsInput = {
   serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileUncheckedCreateWithoutSymptomSessionsInput = {
@@ -6565,6 +6813,8 @@ export type CustomerProfileUncheckedCreateWithoutSymptomSessionsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerProfileCreateOrConnectWithoutSymptomSessionsInput = {
@@ -6629,6 +6879,8 @@ export type CustomerProfileUpdateWithoutSymptomSessionsInput = {
   serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerProfileUncheckedUpdateWithoutSymptomSessionsInput = {
@@ -6677,6 +6929,440 @@ export type CustomerProfileUncheckedUpdateWithoutSymptomSessionsInput = {
   serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
   syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileCreateWithoutScreeningRecordsInput = {
+  id?: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProfileInput
+  preferences?: Prisma.CustomerPreferenceCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileUncheckedCreateWithoutScreeningRecordsInput = {
+  id?: string
+  userId: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileCreateOrConnectWithoutScreeningRecordsInput = {
+  where: Prisma.CustomerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutScreeningRecordsInput, Prisma.CustomerProfileUncheckedCreateWithoutScreeningRecordsInput>
+}
+
+export type CustomerProfileUpsertWithoutScreeningRecordsInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutScreeningRecordsInput, Prisma.CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutScreeningRecordsInput, Prisma.CustomerProfileUncheckedCreateWithoutScreeningRecordsInput>
+  where?: Prisma.CustomerProfileWhereInput
+}
+
+export type CustomerProfileUpdateToOneWithWhereWithoutScreeningRecordsInput = {
+  where?: Prisma.CustomerProfileWhereInput
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutScreeningRecordsInput, Prisma.CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput>
+}
+
+export type CustomerProfileUpdateWithoutScreeningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
+  preferences?: Prisma.CustomerPreferenceUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileUncheckedUpdateWithoutScreeningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUncheckedUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  clinicalReferrals?: Prisma.ClinicalReferralUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileCreateWithoutClinicalReferralsInput = {
+  id?: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProfileInput
+  preferences?: Prisma.CustomerPreferenceCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileUncheckedCreateWithoutClinicalReferralsInput = {
+  id?: string
+  userId: string
+  fullName: string
+  phone?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  preferredCommunication?: $Enums.CommChannel
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  preferredBranch?: string | null
+  notes?: string | null
+  tags?: Prisma.CustomerProfileCreatetagsInput | string[]
+  ageSegment?: string | null
+  onboardingCompletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedCreateNestedOneWithoutCustomerInput
+  caregivers?: Prisma.CaregiverUncheckedCreateNestedManyWithoutCustomerInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
+  refillRequests?: Prisma.RefillRequestUncheckedCreateNestedManyWithoutCustomerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutCustomerInput
+  segments?: Prisma.CustomerSegmentUncheckedCreateNestedManyWithoutCustomerInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutCustomerInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedCreateNestedOneWithoutCustomerInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedCreateNestedManyWithoutReferredByInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutCustomerInput
+  feedback?: Prisma.FeedbackUncheckedCreateNestedManyWithoutCustomerInput
+  aiConversations?: Prisma.AiConversationUncheckedCreateNestedManyWithoutCustomerInput
+  staffNotes?: Prisma.CustomerNoteUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedCreateNestedManyWithoutCustomerInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedCreateNestedManyWithoutCustomerInput
+  doseLogs?: Prisma.DoseLogUncheckedCreateNestedManyWithoutCustomerInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedCreateNestedManyWithoutCustomerInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedCreateNestedManyWithoutCustomerInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedCreateNestedManyWithoutCustomerInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedCreateNestedOneWithoutCustomerInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedCreateNestedManyWithoutCustomerInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerProfileCreateOrConnectWithoutClinicalReferralsInput = {
+  where: Prisma.CustomerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutClinicalReferralsInput, Prisma.CustomerProfileUncheckedCreateWithoutClinicalReferralsInput>
+}
+
+export type CustomerProfileUpsertWithoutClinicalReferralsInput = {
+  update: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutClinicalReferralsInput, Prisma.CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput>
+  create: Prisma.XOR<Prisma.CustomerProfileCreateWithoutClinicalReferralsInput, Prisma.CustomerProfileUncheckedCreateWithoutClinicalReferralsInput>
+  where?: Prisma.CustomerProfileWhereInput
+}
+
+export type CustomerProfileUpdateToOneWithWhereWithoutClinicalReferralsInput = {
+  where?: Prisma.CustomerProfileWhereInput
+  data: Prisma.XOR<Prisma.CustomerProfileUpdateWithoutClinicalReferralsInput, Prisma.CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput>
+}
+
+export type CustomerProfileUpdateWithoutClinicalReferralsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
+  preferences?: Prisma.CustomerPreferenceUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerProfileUncheckedUpdateWithoutClinicalReferralsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredCommunication?: Prisma.EnumCommChannelFieldUpdateOperationsInput | $Enums.CommChannel
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.CustomerProfileUpdatetagsInput | string[]
+  ageSegment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferences?: Prisma.CustomerPreferenceUncheckedUpdateOneWithoutCustomerNestedInput
+  caregivers?: Prisma.CaregiverUncheckedUpdateManyWithoutCustomerNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  refillRequests?: Prisma.RefillRequestUncheckedUpdateManyWithoutCustomerNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutCustomerNestedInput
+  segments?: Prisma.CustomerSegmentUncheckedUpdateManyWithoutCustomerNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutCustomerNestedInput
+  loyaltyAccount?: Prisma.LoyaltyAccountUncheckedUpdateOneWithoutCustomerNestedInput
+  referredLoyalty?: Prisma.LoyaltyAccountUncheckedUpdateManyWithoutReferredByNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutCustomerNestedInput
+  feedback?: Prisma.FeedbackUncheckedUpdateManyWithoutCustomerNestedInput
+  aiConversations?: Prisma.AiConversationUncheckedUpdateManyWithoutCustomerNestedInput
+  staffNotes?: Prisma.CustomerNoteUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceLogs?: Prisma.PrescriptionAdherenceUncheckedUpdateManyWithoutCustomerNestedInput
+  medicationSchedules?: Prisma.MedicationScheduleUncheckedUpdateManyWithoutCustomerNestedInput
+  doseLogs?: Prisma.DoseLogUncheckedUpdateManyWithoutCustomerNestedInput
+  adherenceEscalations?: Prisma.AdherenceEscalationUncheckedUpdateManyWithoutCustomerNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  symptomSessions?: Prisma.SymptomSessionUncheckedUpdateManyWithoutCustomerNestedInput
+  serviceBookings?: Prisma.ServiceBookingUncheckedUpdateManyWithoutCustomerNestedInput
+  syncEnrollment?: Prisma.RefillSyncEnrollmentUncheckedUpdateOneWithoutCustomerNestedInput
+  adherenceFollowUps?: Prisma.AdherenceFollowUpUncheckedUpdateManyWithoutCustomerNestedInput
+  screeningRecords?: Prisma.HealthScreeningRecordUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 
@@ -6707,6 +7393,8 @@ export type CustomerProfileCountOutputType = {
   symptomSessions: number
   serviceBookings: number
   adherenceFollowUps: number
+  screeningRecords: number
+  clinicalReferrals: number
 }
 
 export type CustomerProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6732,6 +7420,8 @@ export type CustomerProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.E
   symptomSessions?: boolean | CustomerProfileCountOutputTypeCountSymptomSessionsArgs
   serviceBookings?: boolean | CustomerProfileCountOutputTypeCountServiceBookingsArgs
   adherenceFollowUps?: boolean | CustomerProfileCountOutputTypeCountAdherenceFollowUpsArgs
+  screeningRecords?: boolean | CustomerProfileCountOutputTypeCountScreeningRecordsArgs
+  clinicalReferrals?: boolean | CustomerProfileCountOutputTypeCountClinicalReferralsArgs
 }
 
 /**
@@ -6898,6 +7588,20 @@ export type CustomerProfileCountOutputTypeCountAdherenceFollowUpsArgs<ExtArgs ex
   where?: Prisma.AdherenceFollowUpWhereInput
 }
 
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountScreeningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HealthScreeningRecordWhereInput
+}
+
+/**
+ * CustomerProfileCountOutputType without action
+ */
+export type CustomerProfileCountOutputTypeCountClinicalReferralsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClinicalReferralWhereInput
+}
+
 
 export type CustomerProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -6947,6 +7651,8 @@ export type CustomerProfileSelect<ExtArgs extends runtime.Types.Extensions.Inter
   serviceBookings?: boolean | Prisma.CustomerProfile$serviceBookingsArgs<ExtArgs>
   syncEnrollment?: boolean | Prisma.CustomerProfile$syncEnrollmentArgs<ExtArgs>
   adherenceFollowUps?: boolean | Prisma.CustomerProfile$adherenceFollowUpsArgs<ExtArgs>
+  screeningRecords?: boolean | Prisma.CustomerProfile$screeningRecordsArgs<ExtArgs>
+  clinicalReferrals?: boolean | Prisma.CustomerProfile$clinicalReferralsArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customerProfile"]>
 
@@ -7052,6 +7758,8 @@ export type CustomerProfileInclude<ExtArgs extends runtime.Types.Extensions.Inte
   serviceBookings?: boolean | Prisma.CustomerProfile$serviceBookingsArgs<ExtArgs>
   syncEnrollment?: boolean | Prisma.CustomerProfile$syncEnrollmentArgs<ExtArgs>
   adherenceFollowUps?: boolean | Prisma.CustomerProfile$adherenceFollowUpsArgs<ExtArgs>
+  screeningRecords?: boolean | Prisma.CustomerProfile$screeningRecordsArgs<ExtArgs>
+  clinicalReferrals?: boolean | Prisma.CustomerProfile$clinicalReferralsArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CustomerProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -7090,6 +7798,8 @@ export type $CustomerProfilePayload<ExtArgs extends runtime.Types.Extensions.Int
     serviceBookings: Prisma.$ServiceBookingPayload<ExtArgs>[]
     syncEnrollment: Prisma.$RefillSyncEnrollmentPayload<ExtArgs> | null
     adherenceFollowUps: Prisma.$AdherenceFollowUpPayload<ExtArgs>[]
+    screeningRecords: Prisma.$HealthScreeningRecordPayload<ExtArgs>[]
+    clinicalReferrals: Prisma.$ClinicalReferralPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -7539,6 +8249,8 @@ export interface Prisma__CustomerProfileClient<T, Null = never, ExtArgs extends 
   serviceBookings<T extends Prisma.CustomerProfile$serviceBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$serviceBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   syncEnrollment<T extends Prisma.CustomerProfile$syncEnrollmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$syncEnrollmentArgs<ExtArgs>>): Prisma.Prisma__RefillSyncEnrollmentClient<runtime.Types.Result.GetResult<Prisma.$RefillSyncEnrollmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   adherenceFollowUps<T extends Prisma.CustomerProfile$adherenceFollowUpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$adherenceFollowUpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdherenceFollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  screeningRecords<T extends Prisma.CustomerProfile$screeningRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$screeningRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HealthScreeningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clinicalReferrals<T extends Prisma.CustomerProfile$clinicalReferralsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerProfile$clinicalReferralsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicalReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8572,6 +9284,54 @@ export type CustomerProfile$adherenceFollowUpsArgs<ExtArgs extends runtime.Types
   take?: number
   skip?: number
   distinct?: Prisma.AdherenceFollowUpScalarFieldEnum | Prisma.AdherenceFollowUpScalarFieldEnum[]
+}
+
+/**
+ * CustomerProfile.screeningRecords
+ */
+export type CustomerProfile$screeningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HealthScreeningRecord
+   */
+  select?: Prisma.HealthScreeningRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HealthScreeningRecord
+   */
+  omit?: Prisma.HealthScreeningRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HealthScreeningRecordInclude<ExtArgs> | null
+  where?: Prisma.HealthScreeningRecordWhereInput
+  orderBy?: Prisma.HealthScreeningRecordOrderByWithRelationInput | Prisma.HealthScreeningRecordOrderByWithRelationInput[]
+  cursor?: Prisma.HealthScreeningRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HealthScreeningRecordScalarFieldEnum | Prisma.HealthScreeningRecordScalarFieldEnum[]
+}
+
+/**
+ * CustomerProfile.clinicalReferrals
+ */
+export type CustomerProfile$clinicalReferralsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClinicalReferral
+   */
+  select?: Prisma.ClinicalReferralSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ClinicalReferral
+   */
+  omit?: Prisma.ClinicalReferralOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClinicalReferralInclude<ExtArgs> | null
+  where?: Prisma.ClinicalReferralWhereInput
+  orderBy?: Prisma.ClinicalReferralOrderByWithRelationInput | Prisma.ClinicalReferralOrderByWithRelationInput[]
+  cursor?: Prisma.ClinicalReferralWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClinicalReferralScalarFieldEnum | Prisma.ClinicalReferralScalarFieldEnum[]
 }
 
 /**

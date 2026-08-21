@@ -692,6 +692,26 @@ async function main() {
         isApproved: true,
         createdById: manager.id,
       },
+      {
+        title: "Health Screening & Point-of-Care Testing (POCT)",
+        category: "services",
+        content:
+          "Aether Pharmacy provides walk-in and booked health screening services including blood pressure checks, capillary blood glucose testing, weight & BMI calculations, temperature measurement, and authorized Kenyan point-of-care rapid tests (Malaria RDT, lipid panel, HbA1c, urinalysis). Screenings are conducted with calibrated clinical devices by licensed pharmacy professionals.",
+        tags: ["screening", "vitals", "blood pressure", "glucose", "bmi", "poct", "wellness"],
+        priority: 95,
+        isApproved: true,
+        createdById: manager.id,
+      },
+      {
+        title: "Screening vs Diagnosis & Medical Referral Pathways",
+        category: "policy",
+        content:
+          "Health screening is a preliminary evaluation to detect early risk factors and out-of-range vitals; screening is NOT the same thing as diagnosing a medical condition. When a screening test or vital parameter reveals abnormal findings, our pharmacists issue structured clinical referrals to Clinics, Hospitals (e.g. KNH, Aga Khan, Nairobi Hospital), Laboratories (e.g. Lancet Kenya), Specialists (Cardiologists, Endocrinologists), or Emergency EMS (Kenya Red Cross 1199, National 999/112, St John Ambulance).",
+        tags: ["screening", "diagnosis", "referral", "hospitals", "clinics", "specialists", "emergency"],
+        priority: 95,
+        isApproved: true,
+        createdById: manager.id,
+      },
     ],
   });
 
@@ -842,18 +862,22 @@ async function main() {
     },
     {
       slug: "health-screenings",
-      title: "Health Screenings",
-      short: "Cholesterol, blood glucose, BMI, and wellness checks close to home.",
+      title: "Health Screenings & Vitals",
+      short: "Blood pressure, glucose, BMI, temperature, and authorized point-of-care rapid tests.",
       description:
-        "Quick screenings help catch concerns early. Ask about our monthly wellness clinic days for expanded checks and health education.",
+        "Preventive health screenings conducted by licensed pharmacists using calibrated clinical equipment. We screen for blood pressure, blood glucose, weight, BMI, body temperature, and authorized point-of-care tests (Malaria RDT, Lipid panel, HbA1c, Urinalysis). While screening is not a medical diagnosis, our pharmacists provide immediate results and structured clinical referrals to Clinics, Hospitals, Laboratories, Specialists, or Emergency EMS whenever further assessment is indicated.",
       benefits: [
-        "Cholesterol and glucose checks",
-        "BMI and waist measurements",
-        "Results explained clearly",
-        "Physician referral when indicated",
+        "Blood pressure & pulse rate checks",
+        "Capillary blood glucose & HbA1c testing",
+        "Weight, height & BMI calculation",
+        "Temperature & pulse oximetry (SpO2)",
+        "Authorized POCT rapid tests (Malaria RDT, Lipids, Urinalysis)",
+        "Screening vs Diagnosis clinical counselling",
+        "Structured referrals to Clinics, Hospitals, Labs & Specialists",
+        "Immediate emergency EMS escalation protocol",
       ],
-      eligibility: "Adults; some screenings may have a modest fee.",
-      duration: "15–25 minutes.",
+      eligibility: "Open to all adults and teens; walk-in or advance booking available.",
+      duration: "10–20 minutes depending on test panel.",
       imageUrl: "/images/gallery/modern_care_tools.webp",
       icon: "clipboard",
       price: 1000,
@@ -1180,14 +1204,122 @@ async function main() {
       .catch(() => {});
   }
 
-  console.log(`Upserted ${categorySeeds.length} medication categories.`);
+  // ── Health Screenings & Clinical Referrals (7. Health Screening) ──
+  await prisma.clinicalReferral.deleteMany().catch(() => {});
+  await prisma.healthScreeningRecord.deleteMany().catch(() => {});
+
+  const screeningJane1 = await prisma.healthScreeningRecord.create({
+    data: {
+      customerId: jane.id,
+      conductedById: pharmacist.id,
+      screeningType: "wellness_check",
+      patientName: "Jane Doe",
+      patientPhone: "+254712345678",
+      patientEmail: "jane@example.com",
+      patientAge: 42,
+      patientGender: "female",
+      systolicBp: 124,
+      diastolicBp: 78,
+      pulseRate: 72,
+      bpCategory: "elevated",
+      bloodGlucose: 5.4,
+      glucoseUnit: "mmol/L",
+      fastingStatus: "fasting",
+      glucoseCategory: "normal",
+      weightKg: 68.5,
+      heightCm: 165,
+      bmi: 25.2,
+      bmiCategory: "overweight",
+      temperatureC: 36.6,
+      tempCategory: "normal",
+      spO2Percent: 98,
+      notes: "Routine quarterly wellness check. Fasting glucose well-controlled on metformin. Advised on low-sodium dietary habits and 30 minutes daily moderate walking.",
+      equipmentUsed: "Omron HEM-7120 Blood Pressure Monitor & Accu-Chek Instant",
+      requiresReferral: false,
+    },
+  });
+
+  const screeningJane2 = await prisma.healthScreeningRecord.create({
+    data: {
+      customerId: jane.id,
+      conductedById: pharmacist.id,
+      screeningType: "blood_pressure",
+      patientName: "Jane Doe",
+      patientPhone: "+254712345678",
+      patientEmail: "jane@example.com",
+      patientAge: 42,
+      patientGender: "female",
+      systolicBp: 146,
+      diastolicBp: 92,
+      pulseRate: 84,
+      bpCategory: "stage_2_hypertension",
+      bloodGlucose: 6.8,
+      glucoseUnit: "mmol/L",
+      fastingStatus: "random",
+      glucoseCategory: "normal",
+      temperatureC: 36.8,
+      tempCategory: "normal",
+      spO2Percent: 97,
+      notes: "Elevated BP noted on 2 consecutive readings (148/94 and 146/92). Patient reported mild occipital headache and work stress. Structured clinical referral provided for physician review.",
+      equipmentUsed: "Omron HEM-7120 Calibrated Monitor",
+      requiresReferral: true,
+      referralUrgency: "urgent",
+    },
+  });
+
+  await prisma.clinicalReferral.create({
+    data: {
+      screeningId: screeningJane2.id,
+      customerId: jane.id,
+      referredById: pharmacist.id,
+      referenceCode: "REF-202608-4102",
+      patientName: "Jane Doe",
+      patientPhone: "+254712345678",
+      patientEmail: "jane@example.com",
+      destinationType: "clinic",
+      facilityName: "Avenue Healthcare Outpatient Clinic",
+      facilityContact: "+254 711 060000",
+      specialistType: "Internal Medicine / Hypertension Review",
+      urgency: "urgent",
+      reason: "Stage 2 Hypertension (146/92 mmHg) with mild occipital tension in a known diabetic patient.",
+      clinicalSummary: "Patient Jane Doe presented for routine pharmacy screening. BP measured 146/92 mmHg (confirmed on repeat at 15-min rest). Random capillary blood glucose 6.8 mmol/L. No acute chest pain, visual changes, or focal neurological deficits. Currently on Metformin 500mg BD. Referred for formal diagnostic workup, ambulatory BP monitoring, and potential antihypertensive initiation.",
+      pharmacistRecommendations: "Suggest 24-hr Ambulatory BP Monitoring (ABPM), baseline Serum Creatinine & eGFR, Serum Electrolytes, and Fasting Lipid Panel.",
+      status: "issued",
+      issuedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.healthScreeningRecord.create({
+    data: {
+      conductedById: pharmacist.id,
+      screeningType: "point_of_care_test",
+      patientName: "David Ochieng",
+      patientPhone: "+254722998877",
+      patientAge: 29,
+      patientGender: "male",
+      systolicBp: 118,
+      diastolicBp: 76,
+      pulseRate: 98,
+      bpCategory: "normal",
+      temperatureC: 38.6,
+      tempCategory: "high_fever",
+      spO2Percent: 96,
+      poctType: "malaria_rdt",
+      poctResult: "Positive (P. falciparum reactive)",
+      notes: "Patient presented with 2-day history of chills, fever, and headache. Rapid Malaria Test positive for P. falciparum. Patient counselled on Artemether-Lumefantrine course and warning signs of severe malaria.",
+      equipmentUsed: "WHO-prequalified Malaria HRP2 RDT Cassette & Digital Clinical Thermometer",
+      requiresReferral: false,
+    },
+  });
+
+  console.log("Upserted demo health screenings and clinical referrals.");
 
   await prisma.auditLog.create({
     data: {
       actorId: manager.id,
       action: "seed_completed",
       entityType: "system",
-      details: { note: "Initial demo seed + services + categories" },
+      details: { note: "Initial demo seed + services + categories + screenings" },
     },
   });
 

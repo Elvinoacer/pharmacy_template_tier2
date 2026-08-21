@@ -117,7 +117,9 @@ export const ModelName = {
   InventoryAllocation: 'InventoryAllocation',
   CommerceEvent: 'CommerceEvent',
   MedicationPriceHistory: 'MedicationPriceHistory',
-  CashierSession: 'CashierSession'
+  CashierSession: 'CashierSession',
+  HealthScreeningRecord: 'HealthScreeningRecord',
+  ClinicalReferral: 'ClinicalReferral'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1370,6 +1372,75 @@ export const CashierSessionScalarFieldEnum = {
 } as const
 
 export type CashierSessionScalarFieldEnum = (typeof CashierSessionScalarFieldEnum)[keyof typeof CashierSessionScalarFieldEnum]
+
+
+export const HealthScreeningRecordScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  conductedById: 'conductedById',
+  screeningType: 'screeningType',
+  patientName: 'patientName',
+  patientPhone: 'patientPhone',
+  patientEmail: 'patientEmail',
+  patientAge: 'patientAge',
+  patientGender: 'patientGender',
+  systolicBp: 'systolicBp',
+  diastolicBp: 'diastolicBp',
+  pulseRate: 'pulseRate',
+  bpCategory: 'bpCategory',
+  bloodGlucose: 'bloodGlucose',
+  glucoseUnit: 'glucoseUnit',
+  fastingStatus: 'fastingStatus',
+  glucoseCategory: 'glucoseCategory',
+  weightKg: 'weightKg',
+  heightCm: 'heightCm',
+  bmi: 'bmi',
+  bmiCategory: 'bmiCategory',
+  waistCircumferenceCm: 'waistCircumferenceCm',
+  temperatureC: 'temperatureC',
+  tempCategory: 'tempCategory',
+  spO2Percent: 'spO2Percent',
+  poctType: 'poctType',
+  poctResult: 'poctResult',
+  poctValues: 'poctValues',
+  notes: 'notes',
+  nonDiagnosticDisclaimer: 'nonDiagnosticDisclaimer',
+  equipmentUsed: 'equipmentUsed',
+  requiresReferral: 'requiresReferral',
+  referralUrgency: 'referralUrgency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HealthScreeningRecordScalarFieldEnum = (typeof HealthScreeningRecordScalarFieldEnum)[keyof typeof HealthScreeningRecordScalarFieldEnum]
+
+
+export const ClinicalReferralScalarFieldEnum = {
+  id: 'id',
+  screeningId: 'screeningId',
+  customerId: 'customerId',
+  referredById: 'referredById',
+  referenceCode: 'referenceCode',
+  patientName: 'patientName',
+  patientPhone: 'patientPhone',
+  patientEmail: 'patientEmail',
+  patientDob: 'patientDob',
+  patientGender: 'patientGender',
+  destinationType: 'destinationType',
+  facilityName: 'facilityName',
+  facilityContact: 'facilityContact',
+  specialistType: 'specialistType',
+  urgency: 'urgency',
+  reason: 'reason',
+  clinicalSummary: 'clinicalSummary',
+  pharmacistRecommendations: 'pharmacistRecommendations',
+  status: 'status',
+  issuedAt: 'issuedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClinicalReferralScalarFieldEnum = (typeof ClinicalReferralScalarFieldEnum)[keyof typeof ClinicalReferralScalarFieldEnum]
 
 
 export const SortOrder = {

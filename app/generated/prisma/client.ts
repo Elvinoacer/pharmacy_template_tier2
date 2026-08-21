@@ -418,3 +418,13 @@ export type MedicationPriceHistory = Prisma.MedicationPriceHistoryModel
  * 
  */
 export type CashierSession = Prisma.CashierSessionModel
+/**
+ * Model HealthScreeningRecord
+ * 
+ */
+export type HealthScreeningRecord = Prisma.HealthScreeningRecordModel
+/**
+ * Model ClinicalReferral
+ * 
+ */
+export type ClinicalReferral = Prisma.ClinicalReferralModel
