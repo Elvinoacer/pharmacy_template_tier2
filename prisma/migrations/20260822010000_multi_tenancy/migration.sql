@@ -1,9 +1,23 @@
 -- Multi-tenancy: pharmacies, memberships, pharmacyId on tenant tables
-CREATE TYPE "PharmacyStatus" AS ENUM ('draft', 'submitted', 'under_review', 'needs_info', 'approved', 'active', 'suspended', 'rejected');
-CREATE TYPE "PharmacyMemberRole" AS ENUM ('owner', 'manager', 'pharmacist', 'staff');
-CREATE TYPE "PharmacyMemberStatus" AS ENUM ('invited', 'active', 'suspended');
+DO $$ BEGIN
+  CREATE TYPE "PharmacyStatus" AS ENUM ('draft', 'submitted', 'under_review', 'needs_info', 'approved', 'active', 'suspended', 'rejected');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TABLE "pharmacies" (
+DO $$ BEGIN
+  CREATE TYPE "PharmacyMemberRole" AS ENUM ('owner', 'manager', 'pharmacist', 'staff');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE "PharmacyMemberStatus" AS ENUM ('invited', 'active', 'suspended');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
+
+CREATE TABLE IF NOT EXISTS "pharmacies" (
     "id" UUID NOT NULL,
     "slug" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -39,11 +53,11 @@ CREATE TABLE "pharmacies" (
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "pharmacies_pkey" PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX "pharmacies_slug_key" ON "pharmacies"("slug");
-CREATE INDEX "pharmacies_status_idx" ON "pharmacies"("status");
-CREATE INDEX "pharmacies_listed_featured_idx" ON "pharmacies"("listed", "featured");
-CREATE INDEX "pharmacies_city_idx" ON "pharmacies"("city");
-CREATE INDEX "pharmacies_county_idx" ON "pharmacies"("county");
+CREATE UNIQUE INDEX IF NOT EXISTS "pharmacies_slug_key" ON "pharmacies"("slug");
+CREATE INDEX IF NOT EXISTS "pharmacies_status_idx" ON "pharmacies"("status");
+CREATE INDEX IF NOT EXISTS "pharmacies_listed_featured_idx" ON "pharmacies"("listed", "featured");
+CREATE INDEX IF NOT EXISTS "pharmacies_city_idx" ON "pharmacies"("city");
+CREATE INDEX IF NOT EXISTS "pharmacies_county_idx" ON "pharmacies"("county");
 
 INSERT INTO "pharmacies" (
   "id", "slug", "name", "legal_name", "tagline", "description",
@@ -71,9 +85,9 @@ INSERT INTO "pharmacies" (
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
-);
+) ON CONFLICT ("id") DO NOTHING;
 
-CREATE TABLE "pharmacy_memberships" (
+CREATE TABLE IF NOT EXISTS "pharmacy_memberships" (
     "id" UUID NOT NULL,
     "pharmacy_id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
@@ -86,19 +100,19 @@ CREATE TABLE "pharmacy_memberships" (
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "pharmacy_memberships_pkey" PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX "pharmacy_memberships_pharmacy_id_user_id_key" ON "pharmacy_memberships"("pharmacy_id", "user_id");
-CREATE INDEX "pharmacy_memberships_user_id_idx" ON "pharmacy_memberships"("user_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "pharmacy_memberships_pharmacy_id_user_id_key" ON "pharmacy_memberships"("pharmacy_id", "user_id");
+CREATE INDEX IF NOT EXISTS "pharmacy_memberships_user_id_idx" ON "pharmacy_memberships"("user_id");
 
-CREATE TABLE "customer_pharmacies" (
+CREATE TABLE IF NOT EXISTS "customer_pharmacies" (
     "customer_id" UUID NOT NULL,
     "pharmacy_id" UUID NOT NULL,
     "preferred" BOOLEAN NOT NULL DEFAULT false,
     "first_seen_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "customer_pharmacies_pkey" PRIMARY KEY ("customer_id", "pharmacy_id")
 );
-CREATE INDEX "customer_pharmacies_pharmacy_id_idx" ON "customer_pharmacies"("pharmacy_id");
+CREATE INDEX IF NOT EXISTS "customer_pharmacies_pharmacy_id_idx" ON "customer_pharmacies"("pharmacy_id");
 
-CREATE TABLE "pharmacy_integrations" (
+CREATE TABLE IF NOT EXISTS "pharmacy_integrations" (
     "id" UUID NOT NULL,
     "pharmacy_id" UUID NOT NULL,
     "timezone" TEXT NOT NULL DEFAULT 'Africa/Nairobi',
@@ -123,9 +137,9 @@ CREATE TABLE "pharmacy_integrations" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "pharmacy_integrations_pkey" PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX "pharmacy_integrations_pharmacy_id_key" ON "pharmacy_integrations"("pharmacy_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "pharmacy_integrations_pharmacy_id_key" ON "pharmacy_integrations"("pharmacy_id");
 
-CREATE TABLE "pharmacy_onboarding_events" (
+CREATE TABLE IF NOT EXISTS "pharmacy_onboarding_events" (
     "id" UUID NOT NULL,
     "pharmacy_id" UUID NOT NULL,
     "actor_id" UUID,
@@ -135,9 +149,9 @@ CREATE TABLE "pharmacy_onboarding_events" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "pharmacy_onboarding_events_pkey" PRIMARY KEY ("id")
 );
-CREATE INDEX "pharmacy_onboarding_events_pharmacy_id_created_at_idx" ON "pharmacy_onboarding_events"("pharmacy_id", "created_at" DESC);
+CREATE INDEX IF NOT EXISTS "pharmacy_onboarding_events_pharmacy_id_created_at_idx" ON "pharmacy_onboarding_events"("pharmacy_id", "created_at" DESC);
 
-CREATE TABLE "platform_settings" (
+CREATE TABLE IF NOT EXISTS "platform_settings" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL DEFAULT 'Aether',
     "tagline" TEXT NOT NULL DEFAULT 'The pharmacy network for Kenya',
@@ -159,19 +173,19 @@ ALTER TABLE "pharmacy_inventory" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
 UPDATE "pharmacy_inventory" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "pharmacy_inventory" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "pharmacy_inventory_pharmacy_id_idx" ON "pharmacy_inventory"("pharmacy_id");
-DROP INDEX IF EXISTS "pharmacy_inventory_slug_key";
 ALTER TABLE "pharmacy_inventory" DROP CONSTRAINT IF EXISTS "pharmacy_inventory_slug_key";
+DROP INDEX IF EXISTS "pharmacy_inventory_slug_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "pharmacy_inventory_pharmacy_slug_key" ON "pharmacy_inventory"("pharmacy_id", "slug");
-DROP INDEX IF EXISTS "pharmacy_inventory_sku_key";
 ALTER TABLE "pharmacy_inventory" DROP CONSTRAINT IF EXISTS "pharmacy_inventory_sku_key";
+DROP INDEX IF EXISTS "pharmacy_inventory_sku_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "pharmacy_inventory_pharmacy_sku_key" ON "pharmacy_inventory"("pharmacy_id", "sku") WHERE "sku" IS NOT NULL;
 
 ALTER TABLE "medication_categories" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
 UPDATE "medication_categories" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "medication_categories" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "medication_categories_pharmacy_id_idx" ON "medication_categories"("pharmacy_id");
-DROP INDEX IF EXISTS "medication_categories_slug_key";
 ALTER TABLE "medication_categories" DROP CONSTRAINT IF EXISTS "medication_categories_slug_key";
+DROP INDEX IF EXISTS "medication_categories_slug_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "medication_categories_pharmacy_slug_key" ON "medication_categories"("pharmacy_id", "slug");
 
 ALTER TABLE "pharmacy_settings" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
@@ -198,8 +212,8 @@ ALTER TABLE "segments" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
 UPDATE "segments" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "segments" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "segments_pharmacy_id_idx" ON "segments"("pharmacy_id");
-DROP INDEX IF EXISTS "segments_name_key";
 ALTER TABLE "segments" DROP CONSTRAINT IF EXISTS "segments_name_key";
+DROP INDEX IF EXISTS "segments_name_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "segments_pharmacy_name_key" ON "segments"("pharmacy_id", "name");
 
 ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
@@ -216,16 +230,16 @@ ALTER TABLE "loyalty_accounts" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
 UPDATE "loyalty_accounts" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "loyalty_accounts" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "loyalty_accounts_pharmacy_id_idx" ON "loyalty_accounts"("pharmacy_id");
-DROP INDEX IF EXISTS "loyalty_accounts_customer_id_key";
 ALTER TABLE "loyalty_accounts" DROP CONSTRAINT IF EXISTS "loyalty_accounts_customer_id_key";
+DROP INDEX IF EXISTS "loyalty_accounts_customer_id_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "loyalty_accounts_pharmacy_customer_id_key" ON "loyalty_accounts"("pharmacy_id", "customer_id");
 
 ALTER TABLE "coupons" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
 UPDATE "coupons" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "coupons" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "coupons_pharmacy_id_idx" ON "coupons"("pharmacy_id");
-DROP INDEX IF EXISTS "coupons_code_key";
 ALTER TABLE "coupons" DROP CONSTRAINT IF EXISTS "coupons_code_key";
+DROP INDEX IF EXISTS "coupons_code_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "coupons_pharmacy_code_key" ON "coupons"("pharmacy_id", "code");
 
 ALTER TABLE "enquiries" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
@@ -282,16 +296,16 @@ ALTER TABLE "loyalty_rules" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
 UPDATE "loyalty_rules" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "loyalty_rules" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "loyalty_rules_pharmacy_id_idx" ON "loyalty_rules"("pharmacy_id");
-DROP INDEX IF EXISTS "loyalty_rules_name_key";
 ALTER TABLE "loyalty_rules" DROP CONSTRAINT IF EXISTS "loyalty_rules_name_key";
+DROP INDEX IF EXISTS "loyalty_rules_name_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "loyalty_rules_pharmacy_name_key" ON "loyalty_rules"("pharmacy_id", "name");
 
 ALTER TABLE "pharmacy_services" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
 UPDATE "pharmacy_services" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "pharmacy_services" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "pharmacy_services_pharmacy_id_idx" ON "pharmacy_services"("pharmacy_id");
-DROP INDEX IF EXISTS "pharmacy_services_slug_key";
 ALTER TABLE "pharmacy_services" DROP CONSTRAINT IF EXISTS "pharmacy_services_slug_key";
+DROP INDEX IF EXISTS "pharmacy_services_slug_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "pharmacy_services_pharmacy_slug_key" ON "pharmacy_services"("pharmacy_id", "slug");
 
 ALTER TABLE "service_bookings" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
@@ -343,8 +357,8 @@ ALTER TABLE "vaccine_products" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
 UPDATE "vaccine_products" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "vaccine_products" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "vaccine_products_pharmacy_id_idx" ON "vaccine_products"("pharmacy_id");
-DROP INDEX IF EXISTS "vaccine_products_slug_key";
 ALTER TABLE "vaccine_products" DROP CONSTRAINT IF EXISTS "vaccine_products_slug_key";
+DROP INDEX IF EXISTS "vaccine_products_slug_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "vaccine_products_pharmacy_slug_key" ON "vaccine_products"("pharmacy_id", "slug");
 
 ALTER TABLE "immunizer_credentials" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
@@ -366,8 +380,8 @@ ALTER TABLE "public_health_campaigns" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUI
 UPDATE "public_health_campaigns" SET "pharmacy_id" = '00000000-0000-4000-a000-000000000001' WHERE "pharmacy_id" IS NULL;
 ALTER TABLE "public_health_campaigns" ALTER COLUMN "pharmacy_id" SET NOT NULL;
 CREATE INDEX IF NOT EXISTS "public_health_campaigns_pharmacy_id_idx" ON "public_health_campaigns"("pharmacy_id");
-DROP INDEX IF EXISTS "public_health_campaigns_slug_key";
 ALTER TABLE "public_health_campaigns" DROP CONSTRAINT IF EXISTS "public_health_campaigns_slug_key";
+DROP INDEX IF EXISTS "public_health_campaigns_slug_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "public_health_campaigns_pharmacy_slug_key" ON "public_health_campaigns"("pharmacy_id", "slug");
 
 ALTER TABLE "medication_schedules" ADD COLUMN IF NOT EXISTS "pharmacy_id" UUID;
@@ -417,56 +431,157 @@ ALTER TABLE "pharmacy_settings" ADD COLUMN IF NOT EXISTS "delivery_fee_kes" DECI
 ALTER TABLE "pharmacy_settings" ADD COLUMN IF NOT EXISTS "delivery_radius_km" DOUBLE PRECISION;
 ALTER TABLE "pharmacy_settings" ADD COLUMN IF NOT EXISTS "careers_email" TEXT;
 
+ALTER TABLE "pharmacies" DROP CONSTRAINT IF EXISTS "pharmacies_owner_user_id_fkey";
 ALTER TABLE "pharmacies" ADD CONSTRAINT "pharmacies_owner_user_id_fkey" FOREIGN KEY ("owner_user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacies" DROP CONSTRAINT IF EXISTS "pharmacies_verified_by_fkey";
 ALTER TABLE "pharmacies" ADD CONSTRAINT "pharmacies_verified_by_fkey" FOREIGN KEY ("verified_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacy_memberships" DROP CONSTRAINT IF EXISTS "pharmacy_memberships_pharmacy_id_fkey";
 ALTER TABLE "pharmacy_memberships" ADD CONSTRAINT "pharmacy_memberships_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacy_memberships" DROP CONSTRAINT IF EXISTS "pharmacy_memberships_user_id_fkey";
 ALTER TABLE "pharmacy_memberships" ADD CONSTRAINT "pharmacy_memberships_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "customer_pharmacies" DROP CONSTRAINT IF EXISTS "customer_pharmacies_customer_id_fkey";
 ALTER TABLE "customer_pharmacies" ADD CONSTRAINT "customer_pharmacies_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "customer_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "customer_pharmacies" DROP CONSTRAINT IF EXISTS "customer_pharmacies_pharmacy_id_fkey";
 ALTER TABLE "customer_pharmacies" ADD CONSTRAINT "customer_pharmacies_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacy_integrations" DROP CONSTRAINT IF EXISTS "pharmacy_integrations_pharmacy_id_fkey";
 ALTER TABLE "pharmacy_integrations" ADD CONSTRAINT "pharmacy_integrations_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacy_onboarding_events" DROP CONSTRAINT IF EXISTS "pharmacy_onboarding_events_pharmacy_id_fkey";
 ALTER TABLE "pharmacy_onboarding_events" ADD CONSTRAINT "pharmacy_onboarding_events_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacy_inventory" DROP CONSTRAINT IF EXISTS "pharmacy_inventory_pharmacy_id_fkey";
 ALTER TABLE "pharmacy_inventory" ADD CONSTRAINT "pharmacy_inventory_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "medication_categories" DROP CONSTRAINT IF EXISTS "medication_categories_pharmacy_id_fkey";
 ALTER TABLE "medication_categories" ADD CONSTRAINT "medication_categories_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacy_settings" DROP CONSTRAINT IF EXISTS "pharmacy_settings_pharmacy_id_fkey";
 ALTER TABLE "pharmacy_settings" ADD CONSTRAINT "pharmacy_settings_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "orders" DROP CONSTRAINT IF EXISTS "orders_pharmacy_id_fkey";
 ALTER TABLE "orders" ADD CONSTRAINT "orders_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "prescriptions" DROP CONSTRAINT IF EXISTS "prescriptions_pharmacy_id_fkey";
 ALTER TABLE "prescriptions" ADD CONSTRAINT "prescriptions_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "refill_requests" DROP CONSTRAINT IF EXISTS "refill_requests_pharmacy_id_fkey";
 ALTER TABLE "refill_requests" ADD CONSTRAINT "refill_requests_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "segments" DROP CONSTRAINT IF EXISTS "segments_pharmacy_id_fkey";
 ALTER TABLE "segments" ADD CONSTRAINT "segments_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "conversations" DROP CONSTRAINT IF EXISTS "conversations_pharmacy_id_fkey";
 ALTER TABLE "conversations" ADD CONSTRAINT "conversations_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "campaigns" DROP CONSTRAINT IF EXISTS "campaigns_pharmacy_id_fkey";
 ALTER TABLE "campaigns" ADD CONSTRAINT "campaigns_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "loyalty_accounts" DROP CONSTRAINT IF EXISTS "loyalty_accounts_pharmacy_id_fkey";
 ALTER TABLE "loyalty_accounts" ADD CONSTRAINT "loyalty_accounts_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "coupons" DROP CONSTRAINT IF EXISTS "coupons_pharmacy_id_fkey";
 ALTER TABLE "coupons" ADD CONSTRAINT "coupons_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "enquiries" DROP CONSTRAINT IF EXISTS "enquiries_pharmacy_id_fkey";
 ALTER TABLE "enquiries" ADD CONSTRAINT "enquiries_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "feedback" DROP CONSTRAINT IF EXISTS "feedback_pharmacy_id_fkey";
 ALTER TABLE "feedback" ADD CONSTRAINT "feedback_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "knowledge_articles" DROP CONSTRAINT IF EXISTS "knowledge_articles_pharmacy_id_fkey";
 ALTER TABLE "knowledge_articles" ADD CONSTRAINT "knowledge_articles_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "ai_conversations" DROP CONSTRAINT IF EXISTS "ai_conversations_pharmacy_id_fkey";
 ALTER TABLE "ai_conversations" ADD CONSTRAINT "ai_conversations_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "audit_logs" DROP CONSTRAINT IF EXISTS "audit_logs_pharmacy_id_fkey";
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "customer_notes" DROP CONSTRAINT IF EXISTS "customer_notes_pharmacy_id_fkey";
 ALTER TABLE "customer_notes" ADD CONSTRAINT "customer_notes_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "timeline_events" DROP CONSTRAINT IF EXISTS "timeline_events_pharmacy_id_fkey";
 ALTER TABLE "timeline_events" ADD CONSTRAINT "timeline_events_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "message_templates" DROP CONSTRAINT IF EXISTS "message_templates_pharmacy_id_fkey";
 ALTER TABLE "message_templates" ADD CONSTRAINT "message_templates_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "notifications" DROP CONSTRAINT IF EXISTS "notifications_pharmacy_id_fkey";
 ALTER TABLE "notifications" ADD CONSTRAINT "notifications_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "reminders" DROP CONSTRAINT IF EXISTS "reminders_pharmacy_id_fkey";
 ALTER TABLE "reminders" ADD CONSTRAINT "reminders_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "loyalty_rules" DROP CONSTRAINT IF EXISTS "loyalty_rules_pharmacy_id_fkey";
 ALTER TABLE "loyalty_rules" ADD CONSTRAINT "loyalty_rules_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacy_services" DROP CONSTRAINT IF EXISTS "pharmacy_services_pharmacy_id_fkey";
 ALTER TABLE "pharmacy_services" ADD CONSTRAINT "pharmacy_services_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "service_bookings" DROP CONSTRAINT IF EXISTS "service_bookings_pharmacy_id_fkey";
 ALTER TABLE "service_bookings" ADD CONSTRAINT "service_bookings_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "admin_notifications" DROP CONSTRAINT IF EXISTS "admin_notifications_pharmacy_id_fkey";
 ALTER TABLE "admin_notifications" ADD CONSTRAINT "admin_notifications_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "symptom_sessions" DROP CONSTRAINT IF EXISTS "symptom_sessions_pharmacy_id_fkey";
 ALTER TABLE "symptom_sessions" ADD CONSTRAINT "symptom_sessions_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "payments" DROP CONSTRAINT IF EXISTS "payments_pharmacy_id_fkey";
 ALTER TABLE "payments" ADD CONSTRAINT "payments_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "stock_movements" DROP CONSTRAINT IF EXISTS "stock_movements_pharmacy_id_fkey";
 ALTER TABLE "stock_movements" ADD CONSTRAINT "stock_movements_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "cashier_sessions" DROP CONSTRAINT IF EXISTS "cashier_sessions_pharmacy_id_fkey";
 ALTER TABLE "cashier_sessions" ADD CONSTRAINT "cashier_sessions_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "health_screening_records" DROP CONSTRAINT IF EXISTS "health_screening_records_pharmacy_id_fkey";
 ALTER TABLE "health_screening_records" ADD CONSTRAINT "health_screening_records_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "clinical_referrals" DROP CONSTRAINT IF EXISTS "clinical_referrals_pharmacy_id_fkey";
 ALTER TABLE "clinical_referrals" ADD CONSTRAINT "clinical_referrals_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "pharmacy_immunization_policy" DROP CONSTRAINT IF EXISTS "pharmacy_immunization_policy_pharmacy_id_fkey";
 ALTER TABLE "pharmacy_immunization_policy" ADD CONSTRAINT "pharmacy_immunization_policy_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "vaccine_products" DROP CONSTRAINT IF EXISTS "vaccine_products_pharmacy_id_fkey";
 ALTER TABLE "vaccine_products" ADD CONSTRAINT "vaccine_products_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "immunizer_credentials" DROP CONSTRAINT IF EXISTS "immunizer_credentials_pharmacy_id_fkey";
 ALTER TABLE "immunizer_credentials" ADD CONSTRAINT "immunizer_credentials_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "immunization_appointments" DROP CONSTRAINT IF EXISTS "immunization_appointments_pharmacy_id_fkey";
 ALTER TABLE "immunization_appointments" ADD CONSTRAINT "immunization_appointments_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "preventive_counselling_sessions" DROP CONSTRAINT IF EXISTS "preventive_counselling_sessions_pharmacy_id_fkey";
 ALTER TABLE "preventive_counselling_sessions" ADD CONSTRAINT "preventive_counselling_sessions_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "public_health_campaigns" DROP CONSTRAINT IF EXISTS "public_health_campaigns_pharmacy_id_fkey";
 ALTER TABLE "public_health_campaigns" ADD CONSTRAINT "public_health_campaigns_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "medication_schedules" DROP CONSTRAINT IF EXISTS "medication_schedules_pharmacy_id_fkey";
 ALTER TABLE "medication_schedules" ADD CONSTRAINT "medication_schedules_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "prescription_fills" DROP CONSTRAINT IF EXISTS "prescription_fills_pharmacy_id_fkey";
 ALTER TABLE "prescription_fills" ADD CONSTRAINT "prescription_fills_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "inventory_reservations" DROP CONSTRAINT IF EXISTS "inventory_reservations_pharmacy_id_fkey";
 ALTER TABLE "inventory_reservations" ADD CONSTRAINT "inventory_reservations_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "refunds" DROP CONSTRAINT IF EXISTS "refunds_pharmacy_id_fkey";
 ALTER TABLE "refunds" ADD CONSTRAINT "refunds_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "medication_price_history" DROP CONSTRAINT IF EXISTS "medication_price_history_pharmacy_id_fkey";
 ALTER TABLE "medication_price_history" ADD CONSTRAINT "medication_price_history_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "commerce_events" DROP CONSTRAINT IF EXISTS "commerce_events_pharmacy_id_fkey";
 ALTER TABLE "commerce_events" ADD CONSTRAINT "commerce_events_pharmacy_id_fkey" FOREIGN KEY ("pharmacy_id") REFERENCES "pharmacies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 INSERT INTO "pharmacy_memberships" ("id", "pharmacy_id", "user_id", "role", "status", "accepted_at")
@@ -479,9 +594,11 @@ SELECT gen_random_uuid(), '00000000-0000-4000-a000-000000000001', u.id,
 FROM "users" u
 WHERE u.role::text IN ('manager', 'pharmacist', 'staff')
 ON CONFLICT DO NOTHING;
+
 INSERT INTO "customer_pharmacies" ("customer_id", "pharmacy_id", "preferred")
 SELECT c.id, '00000000-0000-4000-a000-000000000001', true FROM "customer_profiles" c
 ON CONFLICT DO NOTHING;
+
 INSERT INTO "pharmacy_integrations" ("id", "pharmacy_id")
 VALUES (gen_random_uuid(), '00000000-0000-4000-a000-000000000001')
 ON CONFLICT DO NOTHING;
@@ -491,7 +608,7 @@ ALTER TABLE "pharmacy_settings" DROP CONSTRAINT IF EXISTS "pharmacy_settings_pke
 ALTER TABLE "pharmacy_settings" ALTER COLUMN "id" DROP DEFAULT;
 UPDATE "pharmacy_settings"
   SET "id" = gen_random_uuid()::text
-  WHERE "id" IS NULL OR "id" = 'default' OR "id" !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
+  WHERE "id"::text IS NULL OR "id"::text = 'default' OR "id"::text !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
 ALTER TABLE "pharmacy_settings" ALTER COLUMN "id" TYPE UUID USING "id"::uuid;
 ALTER TABLE "pharmacy_settings" ALTER COLUMN "id" SET DEFAULT gen_random_uuid();
 ALTER TABLE "pharmacy_settings" ADD PRIMARY KEY ("id");
@@ -500,7 +617,7 @@ ALTER TABLE "pharmacy_immunization_policy" DROP CONSTRAINT IF EXISTS "pharmacy_i
 ALTER TABLE "pharmacy_immunization_policy" ALTER COLUMN "id" DROP DEFAULT;
 UPDATE "pharmacy_immunization_policy"
   SET "id" = gen_random_uuid()::text
-  WHERE "id" IS NULL OR "id" = 'default' OR "id" !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
+  WHERE "id"::text IS NULL OR "id"::text = 'default' OR "id"::text !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
 ALTER TABLE "pharmacy_immunization_policy" ALTER COLUMN "id" TYPE UUID USING "id"::uuid;
 ALTER TABLE "pharmacy_immunization_policy" ALTER COLUMN "id" SET DEFAULT gen_random_uuid();
 ALTER TABLE "pharmacy_immunization_policy" ADD PRIMARY KEY ("id");
@@ -510,4 +627,5 @@ ALTER TABLE "loyalty_accounts" DROP CONSTRAINT IF EXISTS "loyalty_accounts_refer
 DROP INDEX IF EXISTS "loyalty_accounts_referral_code_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "loyalty_accounts_pharmacy_id_referral_code_key"
   ON "loyalty_accounts"("pharmacy_id", "referral_code");
+
 
