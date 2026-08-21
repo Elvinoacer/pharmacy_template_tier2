@@ -46,6 +46,7 @@ export const PORTAL_LINKS = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
   { href: "/portal/refills", label: "Refills", icon: Pill, group: "medications" },
   { href: "/portal/prescriptions", label: "Prescriptions", icon: FileText, group: "medications" },
+  { href: "/portal/counselling", label: "Medication Counselling", icon: HeartPulse, group: "medications" },
   { href: "/portal/orders", label: "Orders", icon: ShoppingCart, group: "orders" },
   { href: "/portal/feel", label: "How do you feel?", icon: HeartPulse, group: "health" },
   { href: "/portal/caregivers", label: "Caregivers", icon: HeartHandshake, group: "health" },

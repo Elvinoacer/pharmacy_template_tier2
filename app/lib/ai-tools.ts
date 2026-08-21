@@ -6,6 +6,8 @@ import {
   searchPublicMedications,
 } from "@/app/lib/services/ai-medication-lookup";
 import { searchKnowledgeArticles } from "@/app/lib/services/ai-knowledge-lookup";
+import { generateDynamicCounsellingProfile } from "@/app/lib/medication-counselling";
+import { getMedicationCounsellingBySlug } from "@/app/lib/services/medication-counselling-db";
 
 /** Max tool invocations per user turn (security + cost). */
 export const MAX_TOOL_ROUNDS = 3;
@@ -13,7 +15,7 @@ export const MAX_TOOL_CALLS_PER_ROUND = 3;
 
 /**
  * Tools exposed to the pharmacy assistant.
- * Every handler is public-safe: no internal inventory, CRM, or clinical advice data.
+ * Every handler is public-safe: no internal inventory, CRM, or confidential data.
  */
 export const AI_CHAT_TOOLS: ChatCompletionTool[] = [
   {
@@ -76,6 +78,24 @@ export const AI_CHAT_TOOLS: ChatCompletionTool[] = [
           },
         },
         required: ["query"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_medication_counselling",
+      description:
+        "Retrieve official 12-pillar patient medication counselling information (administration technique, timing, food rules, storage, special dosage forms, expected side effects, missed-dose instructions, device guides, safe handling, and when to seek medical attention). Use whenever the patient asks how to take a medication, what to do if a dose is missed, food interactions, or side effect management.",
+      parameters: {
+        type: "object",
+        properties: {
+          medication: {
+            type: "string",
+            description: "Medication name or generic active ingredient (e.g. 'amoxicillin', 'metformin', 'salbutamol', 'paracetamol', 'amlodipine').",
+          },
+        },
+        required: ["medication"],
       },
     },
   },
@@ -172,6 +192,41 @@ export async function executeAiTool(
             data.count === 0
               ? "No approved articles matched. Use pharmacy facts if relevant, or escalate to staff — do not invent policies."
               : "Answer only from these approved articles plus pharmacy facts.",
+        });
+      }
+
+      case "get_medication_counselling": {
+        const medName = asString(args.medication).trim();
+        if (!medName) {
+          return JSON.stringify({
+            error: "medication_required",
+            message: "Please specify a medication name.",
+          });
+        }
+
+        const profile =
+          (await getMedicationCounsellingBySlug(medName)) ||
+          generateDynamicCounsellingProfile(medName, medName, "general");
+
+        return JSON.stringify({
+          medication: profile.brandNames[0],
+          genericName: profile.genericName,
+          category: profile.categoryName,
+          standardDosage: profile.standardDosageSummary,
+          howToTake: profile.howToTake,
+          whenToTake: profile.whenToTake,
+          howOftenToTake: profile.howOftenToTake,
+          foodAndDrink: profile.foodAndDrink,
+          storage: profile.storage,
+          specialDosageForm: profile.specialDosageForm,
+          sideEffects: profile.sideEffects,
+          missedDose: profile.missedDose,
+          courseCompletion: profile.courseCompletion,
+          device: profile.device,
+          safeHandling: profile.safeHandling,
+          whenToReturn: profile.whenToReturn,
+          hubUrl: `/health/counselling/${profile.medicineKey}`,
+          note: "Present these official 12-pillar counselling points clearly and conversationally. Always remind patients that in emergencies they must call 911 or their physician.",
         });
       }
 

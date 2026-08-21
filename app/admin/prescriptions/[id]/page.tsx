@@ -40,6 +40,12 @@ import { PrescriptionDetailActions } from "@/app/components/admin/PrescriptionDe
 import { screenClinicalSafety } from "@/app/lib/services/clinical-safety";
 import { ClinicalSafetyAlert } from "@/app/components/admin/ClinicalSafetyAlert";
 import { PrescriptionReviewCockpit } from "@/app/components/admin/PrescriptionReviewCockpit";
+import { AdminDigitalCounsellingPanel } from "@/app/components/admin/AdminDigitalCounsellingPanel";
+import {
+  generateDynamicCounsellingProfile,
+  type MedicationCounsellingProfile,
+} from "@/app/lib/medication-counselling";
+import { getMedicationCounsellingBySlug } from "@/app/lib/services/medication-counselling-db";
 
 export const metadata = { title: "Prescription Analytics & Detail" };
 
@@ -273,6 +279,22 @@ export default async function PrescriptionDetailPage({
     quantity: prescription.quantity,
   });
 
+  let counsellingProfile: MedicationCounsellingProfile | null = null;
+  if (prescription.medication?.slug) {
+    counsellingProfile = await getMedicationCounsellingBySlug(prescription.medication.slug);
+  }
+  if (!counsellingProfile) {
+    counsellingProfile = generateDynamicCounsellingProfile(
+      prescription.medicineName,
+      prescription.medication?.medicationMaster?.name || prescription.medicineName,
+      "general",
+      null,
+      prescription.dosage,
+      null,
+      null
+    );
+  }
+
   return (
     <AdminShell
       user={user}
@@ -345,6 +367,16 @@ export default async function PrescriptionDetailPage({
       {/* Real-time Clinical Safety & Interaction Screen */}
       <div className="mb-5">
         <ClinicalSafetyAlert report={clinicalReport} />
+      </div>
+
+      {/* Pharmacist 12-Pillar Digital Patient Counselling Checklist */}
+      <div className="mb-5">
+        <AdminDigitalCounsellingPanel
+          counselling={counsellingProfile}
+          prescriptionId={prescription.id}
+          customerName={prescription.customer?.fullName}
+          customerPhone={prescription.customer?.phone}
+        />
       </div>
 
       {/* Prescription Lifecycle & Verification Cockpit */}

@@ -27,6 +27,7 @@ import {
   Stethoscope,
   LayoutDashboard,
   Users,
+  BookOpen,
 } from "lucide-react";
 import { pharmacy } from "@/app/lib/data";
 import { resolvePortalCta, type PortalSessionHint } from "@/app/lib/portal-dest";
@@ -113,6 +114,13 @@ const CATEGORIES: NavCategory[] = [
         label: "Health Library",
         desc: "Medication guides & wellness tips",
         icon: HeartPulse,
+      },
+      {
+        href: "/health/counselling",
+        label: "Patient Counselling",
+        desc: "12-pillar digital medication guides & missed-dose helper",
+        icon: BookOpen,
+        badge: "12-Pillar",
       },
       {
         href: "/caregiver",
