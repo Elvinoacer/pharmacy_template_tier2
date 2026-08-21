@@ -1012,13 +1012,13 @@ async function analyzeAdherenceWithAi(
   if (!apiKey || input.logCount === 0) return fallback;
 
   try {
-    const Groq = (await import("groq-sdk")).default;
-    const groq = new Groq({ apiKey });
-    const model = (process.env.GROQ_MODEL || "llama-3.3-70b-versatile").trim();
+    const { groqClient, groqModelName } = await import("@/app/lib/groq");
+    const groq = groqClient(apiKey);
+    const model = groqModelName();
     const completion = await groq.chat.completions.create({
       model,
       temperature: 0.3,
-      max_tokens: 700,
+      max_completion_tokens: 700,
       messages: [
         {
           role: "system",

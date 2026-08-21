@@ -1,8 +1,9 @@
-import Groq from "groq-sdk";
+import type Groq from "groq-sdk";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionMessageToolCall,
 } from "groq-sdk/resources/chat/completions";
+import { groqApiKey, groqClient, groqModelName } from "@/app/lib/groq";
 import { buildPharmacyContext, buildCaregiverPatientContext } from "../../lib/chat-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -164,7 +165,7 @@ async function resolveTools(
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.GROQ_API_KEY?.trim();
+  const apiKey = groqApiKey();
   if (!apiKey) {
     return Response.json(
       {
@@ -301,8 +302,8 @@ export async function POST(request: Request) {
     });
   }
 
-  const modelName = (process.env.GROQ_MODEL || "llama-3.3-70b-versatile").trim();
-  const client = new Groq({ apiKey });
+  const modelName = groqModelName();
+  const client = groqClient(apiKey);
 
   // Build context with only relevant knowledge for this user turn (not the full KB).
   let systemPrompt = await buildPharmacyContext(last.content);
@@ -397,6 +398,13 @@ export async function POST(request: Request) {
 
     if (message.includes("API key") || message.includes("API_KEY")) {
       errorMessage = "Invalid Groq API key. Check GROQ_API_KEY in .env.local.";
+    } else if (
+      message.includes("model_decommissioned") ||
+      message.includes("decommissioned") ||
+      message.includes("does not exist") ||
+      message.includes("model_not_found")
+    ) {
+      errorMessage = `The Groq model "${modelName}" is no longer available. Update GROQ_MODEL in .env.local (see https://console.groq.com/docs/deprecations).`;
     } else if (message.includes("Rate limit") || message.includes("429")) {
       errorMessage = `Rate limit exceeded for ${modelName}.`;
     } else if (message.includes("tool") || message.includes("function")) {

@@ -73,7 +73,8 @@ openssl rand -hex 32     # → CRON_SECRET
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID (Google Cloud Console → Credentials) |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 | `GROQ_API_KEY` | AI assistant |
-| `GROQ_MODEL` | Optional model override |
+| `GROQ_MODEL` | Optional text model override. Default `openai/gpt-oss-20b` (Llama 3.x IDs were shut down 16 Aug 2026). |
+| `GROQ_VISION_MODEL` | Optional vision model override. Default `qwen/qwen3.6-27b`. |
 
 #### Google OAuth setup
 
