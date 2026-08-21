@@ -32,7 +32,7 @@ export default async function PortalLoyaltyPage() {
   await requireOnboarded();
 
   const [account, coupons] = await Promise.all([
-    prisma.loyaltyAccount.findUnique({
+    prisma.loyaltyAccount.findFirst({
       where: { customerId: user.customerId },
       include: { transactions: { orderBy: { createdAt: "desc" }, take: 20 } },
     }),

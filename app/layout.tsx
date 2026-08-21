@@ -4,8 +4,9 @@ import AppChrome from "./components/AppChrome";
 import { Toaster } from "./components/Toaster";
 import JsonLd from "./components/JsonLd";
 import { getSessionUser } from "./lib/auth";
-import { pharmacy } from "./lib/data";
+import { pharmacy, platform } from "./lib/data";
 import { ensureEnvConfigured } from "./lib/ensure-env";
+import { getTenant } from "./lib/tenant";
 import "./globals.css";
 
 // Validate critical env vars (DATABASE_URL, AUTH_SECRET, NEXT_SERVER_ACTIONS_ENCRYPTION_KEY)
@@ -34,10 +35,10 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(pharmacy.siteUrl),
   title: {
-    default: `${pharmacy.name} — ${pharmacy.tagline}`,
-    template: `%s · ${pharmacy.name}`,
+    default: `${platform.name} — ${platform.tagline}`,
+    template: `%s · ${platform.name}`,
   },
-  description: pharmacy.description,
+  description: platform.description,
   keywords: [
     "pharmacy",
     "Austin pharmacy",
@@ -88,11 +89,13 @@ export default async function RootLayout({
   // Best-effort session for public chrome (dynamic Sign in / portal CTA).
   // Failures must not take down the public site.
   const sessionUser = await getSessionUser().catch(() => null);
+  const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
   const sessionHint = sessionUser
     ? {
         role: sessionUser.role,
         customerId: sessionUser.customerId,
         fullName: sessionUser.fullName,
+        platformAdmin: sessionUser.platformAdmin,
       }
     : null;
 
@@ -103,7 +106,9 @@ export default async function RootLayout({
     >
       <body className="flex min-h-full flex-col font-sans">
         <JsonLd />
-        <AppChrome sessionUser={sessionHint}>{children}</AppChrome>
+        <AppChrome sessionUser={sessionHint} pharmacySlug={tenant.slug}>
+          {children}
+        </AppChrome>
         <Toaster />
       </body>
     </html>

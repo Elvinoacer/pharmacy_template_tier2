@@ -11,7 +11,7 @@ export default async function AdminLocationSettingsPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
-  const row = await prisma.pharmacySettings.findUnique({ where: { id: "default" } });
+  const row = await prisma.pharmacySettings.findFirst({});
 
   const hoursArr = Array.isArray(row?.hours)
     ? (row!.hours as { day?: string; time?: string }[])

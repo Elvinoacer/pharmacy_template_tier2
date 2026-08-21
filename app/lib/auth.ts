@@ -13,6 +13,9 @@ import {
   signSessionClaim,
 } from "@/app/lib/session-claim";
 import { parseLocalDateInput } from "@/app/lib/time";
+import { prismaUnscoped } from "@/app/lib/db";
+import { STAFF_PHARMACY_COOKIE, PUBLIC_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
+import { getTenant } from "@/app/lib/tenant";
 
 export { addTimelineEvent, writeAuditLog };
 
@@ -35,6 +38,53 @@ export function generateToken(): string {
   return randomBytes(32).toString("hex");
 }
 
+type UserWithMemberships = {
+  id: string;
+  email: string;
+  role: string;
+  platformAdmin?: boolean;
+  profile?: { id: string; fullName: string | null } | null;
+  memberships?: Array<{
+    role: string;
+    status: string;
+    pharmacy: { id: string; slug: string; name: string };
+  }>;
+};
+
+function membershipsOf(user: UserWithMemberships): SessionUser["memberships"] {
+  return (user.memberships ?? []).map((m) => ({
+    pharmacyId: m.pharmacy.id,
+    slug: m.pharmacy.slug,
+    name: m.pharmacy.name,
+    role: m.role as SessionUser["memberships"][number]["role"],
+    status: m.status,
+  }));
+}
+
+async function toSessionUser(user: UserWithMemberships): Promise<SessionUser> {
+  const memberships = membershipsOf(user);
+  let activePharmacyId: string | null = memberships[0]?.pharmacyId ?? null;
+  try {
+    const jar = await cookies();
+    const cookieId = jar.get(STAFF_PHARMACY_COOKIE)?.value;
+    if (cookieId && memberships.some((m) => m.pharmacyId === cookieId)) {
+      activePharmacyId = cookieId;
+    }
+  } catch {
+    // ignore
+  }
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role as UserRole,
+    fullName: user.profile?.fullName ?? null,
+    customerId: user.profile?.id ?? null,
+    platformAdmin: user.platformAdmin === true,
+    memberships,
+    activePharmacyId,
+  };
+}
+
 export async function createSession(
   userId: string,
   meta?: { ip?: string; userAgent?: string },
@@ -54,7 +104,13 @@ export async function createSession(
     },
     include: {
       user: {
-        include: { profile: true },
+        include: {
+          profile: true,
+          memberships: {
+            where: { status: "active" },
+            include: { pharmacy: { select: { id: true, slug: true, name: true, status: true } } },
+          },
+        },
       },
     },
   });
@@ -62,6 +118,7 @@ export async function createSession(
   const user = session.user;
   const isSecure = process.env.NODE_ENV === "production";
   const cookieStore = await cookies();
+  const mapped = await toSessionUser(user);
 
   // 1) DB-backed opaque session token — the source of truth.
   cookieStore.set(SESSION_COOKIE, token, {
@@ -72,6 +129,16 @@ export async function createSession(
     expires: expiresAt,
   });
 
+  if (mapped.activePharmacyId) {
+    cookieStore.set(STAFF_PHARMACY_COOKIE, mapped.activePharmacyId, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      path: "/",
+      expires: expiresAt,
+    });
+  }
+
   // 2) Signed JWT claim — used by proxy.ts for fast (DB-free) auth checks.
   //    The DB lookup still happens in the layout (getSessionUser) for fresh data.
   try {
@@ -80,6 +147,8 @@ export async function createSession(
         sub: user.id,
         role: user.role as string,
         customerId: user.profile?.id ?? null,
+        platformAdmin: mapped.platformAdmin,
+        pharmacyId: mapped.activePharmacyId,
       },
       expiresAt,
     );
@@ -119,6 +188,7 @@ export async function destroySession(): Promise<void> {
   }
   cookieStore.delete(SESSION_COOKIE);
   cookieStore.delete(SESSION_CLAIM_COOKIE);
+  cookieStore.delete(STAFF_PHARMACY_COOKIE);
 }
 
 export async function getSessionUserByToken(token: string): Promise<SessionUser | null> {
@@ -126,7 +196,13 @@ export async function getSessionUserByToken(token: string): Promise<SessionUser 
     where: { tokenHash: hashToken(token) },
     include: {
       user: {
-        include: { profile: true },
+        include: {
+          profile: true,
+          memberships: {
+            where: { status: "active" },
+            include: { pharmacy: { select: { id: true, slug: true, name: true, status: true } } },
+          },
+        },
       },
     },
   });
@@ -138,13 +214,7 @@ export async function getSessionUserByToken(token: string): Promise<SessionUser 
   }
   if (session.user.status !== "active") return null;
 
-  return {
-    id: session.user.id,
-    email: session.user.email,
-    role: session.user.role as UserRole,
-    fullName: session.user.profile?.fullName ?? null,
-    customerId: session.user.profile?.id ?? null,
-  };
+  return toSessionUser(session.user);
 }
 
 export async function getSessionUser(): Promise<SessionUser | null> {
@@ -167,8 +237,15 @@ export function requireStaff(user: SessionUser | null): SessionUser {
 }
 
 export function requireManager(user: SessionUser | null): SessionUser {
-  if (!user || user.role !== "manager") {
+  if (!user || (user.role !== "manager" && !user.memberships.some((m) => m.role === "owner" || m.role === "manager"))) {
     throw new AuthError("Manager access required", 403);
+  }
+  return user;
+}
+
+export function requirePlatformAdmin(user: SessionUser | null): SessionUser {
+  if (!user || !user.platformAdmin) {
+    throw new AuthError("Platform admin access required", 403);
   }
   return user;
 }
@@ -222,41 +299,14 @@ export async function registerCustomer(input: {
       data: { customerId: profile.id },
     });
 
-    const referral = `AE${profile.id.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
-    const loyalty = await tx.loyaltyAccount.create({
-      data: {
-        customerId: profile.id,
-        points: 50,
-        lifetimePoints: 50,
-        referralCode: referral,
-        tier: "bronze",
-      },
-    });
-
-    await tx.loyaltyTransaction.create({
-      data: {
-        accountId: loyalty.id,
-        points: 50,
-        type: "bonus",
-        description: "Welcome bonus points",
-      },
-    });
-
-    await tx.timelineEvent.create({
-      data: {
-        customerId: profile.id,
+    const tenant = await getTenant().catch(() => ({ pharmacyId: null as string | null }));
+    if (tenant.pharmacyId) {
+      await provisionCustomerAtPharmacy(tx, {
+        profileId: profile.id,
         userId: user.id,
-        eventType: "registered",
+        pharmacyId: tenant.pharmacyId,
         title: "Account registered",
         description: "Customer created an online account",
-        createdById: user.id,
-      },
-    });
-
-    const newSegment = await tx.segment.findUnique({ where: { name: "New customers" } });
-    if (newSegment) {
-      await tx.customerSegment.create({
-        data: { customerId: profile.id, segmentId: newSegment.id },
       });
     }
 
@@ -264,6 +314,74 @@ export async function registerCustomer(input: {
   });
 
   return result;
+}
+
+async function provisionCustomerAtPharmacy(
+  tx: {
+    customerPharmacy: { upsert: Function };
+    loyaltyAccount: { create: Function };
+    loyaltyTransaction: { create: Function };
+    timelineEvent: { create: Function };
+    segment: { findFirst: Function };
+    customerSegment: { create: Function };
+  },
+  opts: {
+    profileId: string;
+    userId: string;
+    pharmacyId: string;
+    title: string;
+    description: string;
+  },
+) {
+  await tx.customerPharmacy.upsert({
+    where: {
+      customerId_pharmacyId: { customerId: opts.profileId, pharmacyId: opts.pharmacyId },
+    },
+    create: { customerId: opts.profileId, pharmacyId: opts.pharmacyId, preferred: true },
+    update: {},
+  });
+
+  const referral = `AE${opts.profileId.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
+  const loyalty = await tx.loyaltyAccount.create({
+    data: {
+      pharmacyId: opts.pharmacyId,
+      customerId: opts.profileId,
+      points: 50,
+      lifetimePoints: 50,
+      referralCode: referral,
+      tier: "bronze",
+    },
+  });
+
+  await tx.loyaltyTransaction.create({
+    data: {
+      accountId: loyalty.id,
+      points: 50,
+      type: "bonus",
+      description: "Welcome bonus points",
+    },
+  });
+
+  await tx.timelineEvent.create({
+    data: {
+      pharmacyId: opts.pharmacyId,
+      customerId: opts.profileId,
+      userId: opts.userId,
+      eventType: "registered",
+      title: opts.title,
+      description: opts.description,
+      createdById: opts.userId,
+    },
+  });
+
+  const newSegment = await tx.segment.findFirst({
+    where: { name: "New customers", pharmacyId: opts.pharmacyId },
+  });
+  if (newSegment) {
+    await tx.customerSegment.create({
+      data: { customerId: opts.profileId, segmentId: newSegment.id },
+    });
+  }
 }
 
 export async function registerGoogleCustomer(input: {
@@ -305,41 +423,14 @@ export async function registerGoogleCustomer(input: {
       data: { customerId: profile.id },
     });
 
-    const referral = `AE${profile.id.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
-    const loyalty = await tx.loyaltyAccount.create({
-      data: {
-        customerId: profile.id,
-        points: 50,
-        lifetimePoints: 50,
-        referralCode: referral,
-        tier: "bronze",
-      },
-    });
-
-    await tx.loyaltyTransaction.create({
-      data: {
-        accountId: loyalty.id,
-        points: 50,
-        type: "bonus",
-        description: "Welcome bonus points",
-      },
-    });
-
-    await tx.timelineEvent.create({
-      data: {
-        customerId: profile.id,
+    const tenant = await getTenant().catch(() => ({ pharmacyId: null as string | null }));
+    if (tenant.pharmacyId) {
+      await provisionCustomerAtPharmacy(tx, {
+        profileId: profile.id,
         userId: user.id,
-        eventType: "registered",
+        pharmacyId: tenant.pharmacyId,
         title: "Account registered",
         description: "Customer created an online account via Google",
-        createdById: user.id,
-      },
-    });
-
-    const newSegment = await tx.segment.findUnique({ where: { name: "New customers" } });
-    if (newSegment) {
-      await tx.customerSegment.create({
-        data: { customerId: profile.id, segmentId: newSegment.id },
       });
     }
 
@@ -368,13 +459,11 @@ export async function loginWithPassword(email: string, password: string): Promis
 
   await createSession(user.id);
 
-  return {
-    id: user.id,
-    email: user.email,
-    role: user.role as UserRole,
-    fullName: user.profile?.fullName ?? null,
-    customerId: user.profile?.id ?? null,
-  };
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) {
+    throw new AuthError("Session could not be established", 500);
+  }
+  return sessionUser;
 }
 
 export async function createPasswordReset(email: string): Promise<string | null> {

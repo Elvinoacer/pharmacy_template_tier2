@@ -3,6 +3,7 @@ import { prisma } from "@/app/lib/db";
 import { writeAuditLog } from "@/app/lib/auth";
 import { sendDelivery } from "@/app/lib/services/delivery";
 import { dispatchPushToUser } from "@/app/lib/services/push";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
 
@@ -37,7 +38,7 @@ async function processBirthdays(): Promise<number> {
     },
     include: {
       user: { select: { id: true, email: true } },
-      loyaltyAccount: true,
+      loyaltyAccounts: { take: 1 },
       preferences: true,
     },
   });
@@ -50,12 +51,13 @@ async function processBirthdays(): Promise<number> {
 
   let count = 0;
   for (const c of birthdayCustomers) {
-    if (!c.loyaltyAccount) continue;
+    const account = c.loyaltyAccounts?.[0];
+    if (!account) continue;
     // Check if we already credited birthday bonus this year.
     const startOfYear = new Date(today.getFullYear(), 0, 1);
     const existing = await prisma.loyaltyTransaction.findFirst({
       where: {
-        accountId: c.loyaltyAccount.id,
+        accountId: account.id,
         type: "bonus",
         description: { contains: "Birthday" },
         createdAt: { gte: startOfYear },
@@ -64,11 +66,11 @@ async function processBirthdays(): Promise<number> {
     if (existing) continue;
 
     const bonus = 25;
-    const newPoints = c.loyaltyAccount.points + bonus;
-    const newLifetime = c.loyaltyAccount.lifetimePoints + bonus;
+    const newPoints = account.points + bonus;
+    const newLifetime = account.lifetimePoints + bonus;
     await prisma.$transaction([
       prisma.loyaltyAccount.update({
-        where: { id: c.loyaltyAccount.id },
+        where: { id: account.id },
         data: {
           points: newPoints,
           lifetimePoints: newLifetime,
@@ -77,7 +79,7 @@ async function processBirthdays(): Promise<number> {
       }),
       prisma.loyaltyTransaction.create({
         data: {
-          accountId: c.loyaltyAccount.id,
+          accountId: account.id,
           points: bonus,
           type: "bonus",
           description: "Birthday bonus",
@@ -113,34 +115,34 @@ async function processRefillCompletions(): Promise<number> {
   since.setHours(since.getHours() - 24);
   const completed = await prisma.refillRequest.findMany({
     where: { status: "collected", statusUpdatedAt: { gte: since } },
-    include: { customer: { include: { loyaltyAccount: true } } },
+    include: { customer: { include: { loyaltyAccounts: { take: 1 } } } },
   });
   let count = 0;
   for (const r of completed) {
-    if (!r.customer?.loyaltyAccount) continue;
+    if (!r.customer?.loyaltyAccounts?.[0]) continue;
     // Check we haven't already credited for this refill.
     const existing = await prisma.loyaltyTransaction.findFirst({
       where: {
-        accountId: r.customer.loyaltyAccount.id,
+        accountId: r.customer.loyaltyAccounts?.[0].id,
         source: "cron:refill_completed",
         description: { contains: r.id },
       },
     });
     if (existing) continue;
     const bonus = 10;
-    const newPoints = r.customer.loyaltyAccount.points + bonus;
+    const newPoints = r.customer.loyaltyAccounts?.[0].points + bonus;
     await prisma.$transaction([
       prisma.loyaltyAccount.update({
-        where: { id: r.customer.loyaltyAccount.id },
+        where: { id: r.customer.loyaltyAccounts?.[0].id },
         data: {
           points: newPoints,
-          lifetimePoints: r.customer.loyaltyAccount.lifetimePoints + bonus,
+          lifetimePoints: r.customer.loyaltyAccounts?.[0].lifetimePoints + bonus,
           tier: newPoints >= 1000 ? "platinum" : newPoints >= 400 ? "gold" : newPoints >= 150 ? "silver" : "bronze",
         },
       }),
       prisma.loyaltyTransaction.create({
         data: {
-          accountId: r.customer.loyaltyAccount.id,
+          accountId: r.customer.loyaltyAccounts?.[0].id,
           points: bonus,
           type: "earn",
           description: `Refill completed (${r.medicineName}, ${r.id.slice(0, 8)})`,
@@ -177,7 +179,7 @@ async function processOrderBonuses(): Promise<number> {
           customerId: true,
           status: true,
           waived: true,
-          customer: { include: { loyaltyAccount: true } },
+          customer: { include: { loyaltyAccounts: { take: 1 } } },
         },
       },
     },
@@ -185,9 +187,9 @@ async function processOrderBonuses(): Promise<number> {
 
   let count = 0;
   for (const p of payments) {
-    if (!p.order?.customer?.loyaltyAccount) continue;
+    if (!p.order?.customer?.loyaltyAccounts?.[0]) continue;
     if (p.order.waived) continue; // waived orders do not earn points
-    const accountId = p.order.customer.loyaltyAccount.id;
+    const accountId = p.order.customer.loyaltyAccounts?.[0].id;
     const existing = await prisma.loyaltyTransaction.findFirst({
       where: {
         accountId,
@@ -198,13 +200,13 @@ async function processOrderBonuses(): Promise<number> {
     if (existing) continue;
     const multiplier = Number(process.env.LOYALTY_SPEND_MULTIPLIER || "0.01");
     const points = Math.max(1, Math.floor(Number(p.amount) * multiplier));
-    const newPoints = p.order.customer.loyaltyAccount.points + points;
+    const newPoints = p.order.customer.loyaltyAccounts?.[0].points + points;
     await prisma.$transaction([
       prisma.loyaltyAccount.update({
         where: { id: accountId },
         data: {
           points: newPoints,
-          lifetimePoints: p.order.customer.loyaltyAccount.lifetimePoints + points,
+          lifetimePoints: p.order.customer.loyaltyAccounts?.[0].lifetimePoints + points,
           tier: newPoints >= 1000 ? "platinum" : newPoints >= 400 ? "gold" : newPoints >= 150 ? "silver" : "bronze",
         },
       }),
@@ -224,6 +226,10 @@ async function processOrderBonuses(): Promise<number> {
 }
 
 export async function GET(request: NextRequest) {
+  return withPlatformBypass(async () => runLoyaltyCron(request));
+}
+
+async function runLoyaltyCron(request: NextRequest) {
   if (!authorized(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }

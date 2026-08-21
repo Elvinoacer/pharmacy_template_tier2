@@ -122,7 +122,7 @@ export async function createService(input: CreateServiceInput) {
   const slug = slugifyService(input.slug || input.title);
   if (!slug) throw new Error("A valid slug is required.");
 
-  const existing = await prisma.pharmacyService.findUnique({ where: { slug } });
+  const existing = await prisma.pharmacyService.findFirst({ where: { slug } });
   if (existing) throw new Error(`Service slug "${slug}" already exists.`);
 
   const maxSort = await prisma.pharmacyService.aggregate({
@@ -163,7 +163,7 @@ export async function updateService(
     nextSlug = slugifyService(input.slug || input.title || current.title);
     if (!nextSlug) throw new Error("A valid slug is required.");
     if (nextSlug !== current.slug) {
-      const clash = await prisma.pharmacyService.findUnique({
+      const clash = await prisma.pharmacyService.findFirst({
         where: { slug: nextSlug },
       });
       if (clash) throw new Error(`Service slug "${nextSlug}" already exists.`);

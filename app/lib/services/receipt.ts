@@ -129,9 +129,7 @@ export async function getReceiptData(orderId: string): Promise<PharmacyReceiptDa
   if (!order) return null;
 
   // Retrieve pharmacy settings singleton
-  const settings = await prisma.pharmacySettings.findUnique({
-    where: { id: "default" },
-  }).catch(() => null);
+  const settings = await prisma.pharmacySettings.findFirst({}).catch(() => null);
 
   const pharmacyName = settings?.displayName || defaultPharmacy.name;
   const pharmacyPhone = settings?.phone || defaultPharmacy.phone;

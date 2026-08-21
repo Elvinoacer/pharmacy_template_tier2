@@ -19,6 +19,7 @@ if (!url) throw new Error("DATABASE_URL is not configured");
 
 const adapter = new PrismaPg(buildPostgresConfig(url));
 const prisma = new PrismaClient({ adapter });
+const AETHER_ID = "00000000-0000-4000-a000-000000000001";
 
 interface OtcCategorySeed {
   slug: string;
@@ -1233,8 +1234,9 @@ async function main() {
   // 1. Upsert categories
   for (const c of CATEGORIES) {
     await prisma.medicationCategory.upsert({
-      where: { slug: c.slug },
+      where: { pharmacyId_slug: { pharmacyId: AETHER_ID, slug: c.slug } },
       create: {
+        pharmacyId: AETHER_ID,
         slug: c.slug,
         name: c.name,
         description: c.description,
@@ -1310,8 +1312,9 @@ async function main() {
 
     // Upsert PharmacyInventory
     const inv = await prisma.pharmacyInventory.upsert({
-      where: { slug: p.slug },
+      where: { pharmacyId_slug: { pharmacyId: AETHER_ID, slug: p.slug } },
       create: {
+        pharmacyId: AETHER_ID,
         medicationMasterId: master.id,
         slug: p.slug,
         sku: p.sku,

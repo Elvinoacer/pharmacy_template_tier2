@@ -2,39 +2,116 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { verifySessionClaim, claimIsStaff, isSafeInternalPath } from '@/app/lib/session-claim'
 
+const STOREFRONT_PAGES = new Set([
+  '',
+  'about',
+  'careers',
+  'contact',
+  'delivery',
+  'faq',
+  'how-do-you-feel',
+  'medicines',
+  'order',
+  'preventive',
+  'refill',
+  'screenings',
+  'search',
+  'services',
+  'vaccinations',
+  'health',
+])
+
 /**
- * Authentication gate for /portal and /admin.
+ * Authentication gate + multi-tenant resolution.
  *
- * Uses the signed JWT session-claim cookie (aether_session_claim) for a
- * fast DB-free check. The full DB-backed session is still verified by
- * the layout's `getSessionUser()` call — this proxy only decides whether
- * to short-circuit to a redirect.
- *
- * Why not just call getSessionUser() here? In Next.js 16, proxy runs on
- * every matching request. Hitting the database for every page navigation
- * adds latency and can fail when the DB is briefly unreachable. The JWT
- * check is sub-millisecond and stateless.
+ * /p/:slug/... is rewritten internally to the existing public pages with
+ * x-pharmacy-slug set so every query is scoped to that pharmacy.
  */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const requestHeaders = new Headers(request.headers);
 
-  if (
-    !pathname.startsWith('/portal') &&
-    !pathname.startsWith('/admin') &&
-    !pathname.startsWith('/caregiver')
-  ) {
-    return NextResponse.next();
+  // ── Tenant resolution ────────────────────────────────────────
+  const storefront = pathname.match(/^\/p\/([a-z0-9][a-z0-9-]{1,60})(\/.*)?$/i);
+  if (storefront) {
+    const slug = storefront[1].toLowerCase();
+    const rest = storefront[2] || '';
+    const restPath = rest === '' || rest === '/' ? '/' : rest;
+    const firstSeg = restPath === '/' ? '' : restPath.split('/').filter(Boolean)[0] || '';
+
+    // Don't rewrite auth/admin/portal/platform under a pharmacy prefix.
+    const reserved = new Set([
+      'login', 'register', 'forgot-password', 'reset-password',
+      'portal', 'admin', 'platform', 'onboard', 'api', '_next',
+    ]);
+    if (!reserved.has(firstSeg)) {
+      const dest = restPath === '/' ? '/storefront' : restPath;
+      const url = request.nextUrl.clone();
+      url.pathname = dest;
+      requestHeaders.set('x-pharmacy-slug', slug);
+      const res = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+      res.cookies.set('aether_pharmacy', slug, {
+        path: '/',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 30,
+      });
+      return res;
+    }
   }
 
-  // Public accept page must stay reachable without a session.
+  if (pathname.startsWith('/platform') || pathname.startsWith('/api/platform')) {
+    requestHeaders.set('x-platform-bypass', '1');
+  }
+
+  const staffPharmacy = request.cookies.get('aether_staff_pharmacy')?.value;
+  if (
+    staffPharmacy &&
+    (pathname.startsWith('/admin') || pathname.startsWith('/api/admin'))
+  ) {
+    requestHeaders.set('x-pharmacy-id', staffPharmacy);
+  }
+
+  const publicSlug = request.cookies.get('aether_pharmacy')?.value;
+  const isPlatformSurface =
+    pathname === '/' ||
+    pathname.startsWith('/for-pharmacies') ||
+    pathname.startsWith('/onboard') ||
+    pathname.startsWith('/platform') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/reset-password') ||
+    pathname.startsWith('/privacy') ||
+    pathname.startsWith('/terms');
+  if (
+    publicSlug &&
+    !requestHeaders.has('x-pharmacy-slug') &&
+    !pathname.startsWith('/admin') &&
+    !pathname.startsWith('/api/admin') &&
+    !pathname.startsWith('/api/platform') &&
+    !isPlatformSurface
+  ) {
+    requestHeaders.set('x-pharmacy-slug', publicSlug);
+  }
+
+  // ── Auth gates ───────────────────────────────────────────────
+  const needsAuth =
+    pathname.startsWith('/portal') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/caregiver') ||
+    pathname.startsWith('/platform');
+
+  if (!needsAuth) {
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
   if (pathname.startsWith('/caregiver/accept')) {
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   const claimCookie = request.cookies.get('aether_session_claim')?.value;
   const sessionCookie = request.cookies.get('aether_session')?.value;
 
-  // No auth cookies at all → bounce to login.
   if (!claimCookie && !sessionCookie) {
     const loginUrl = new URL(`/login?next=${encodeURIComponent(pathname)}`, request.url);
     return NextResponse.redirect(loginUrl);
@@ -42,24 +119,19 @@ export async function proxy(request: NextRequest) {
 
   let role: string | null = null;
   let customerId: string | null = null;
+  let platformAdmin = false;
 
   if (claimCookie) {
     const claim = await verifySessionClaim(claimCookie);
     if (claim) {
       role = claim.role;
       customerId = claim.customerId;
+      platformAdmin = claim.platformAdmin;
     }
   }
 
-  // If the JWT claim is missing/invalid, fall back to the opaque session
-  // cookie's presence. The layout will do the authoritative DB check and
-  // redirect to /login if the session is actually invalid. This keeps
-  // proxy fast while remaining correct.
   if (!role && sessionCookie) {
-    // We don't know the role yet — let the request through and let the
-    // layout decide. This is safe because /portal and /admin layouts
-    // both call getSessionUser() and redirect if needed.
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   if (!role) {
@@ -69,15 +141,15 @@ export async function proxy(request: NextRequest) {
 
   const staff = claimIsStaff(role);
 
-  // Staff-only routes: redirect non-staff to /portal.
-  if (pathname.startsWith('/admin') && !staff) {
+  if (pathname.startsWith('/platform') && !platformAdmin) {
+    return NextResponse.redirect(new URL(staff ? '/admin' : '/portal', request.url));
+  }
+
+  if (pathname.startsWith('/admin') && !staff && !platformAdmin) {
     return NextResponse.redirect(new URL('/portal', request.url));
   }
 
-  // Caregivers use /caregiver (and limited portal refill flows). Staff without a
-  // customer profile go to /admin. Pure caregivers hitting /portal land on /caregiver.
   if (pathname.startsWith('/portal') && role === 'caregiver') {
-    // Allow refill request flow for caregivers acting on behalf of patients.
     const allowedForCaregiver =
       pathname.startsWith('/portal/refills') ||
       pathname.startsWith('/portal/onboarding');
@@ -86,37 +158,26 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Customer portal: staff without a customer profile go to /admin.
   if (pathname.startsWith('/portal') && staff && !customerId) {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
 
-  // Onboarding guard: customers who haven't completed onboarding are
-  // redirected to /portal/onboarding — EXCEPT when they're already there
-  // (avoid infinite loop) or hitting an API route / static asset.
-  // The layout does the authoritative DB check; proxy just short-circuits
-  // common cases so the redirect feels instant.
-  if (pathname.startsWith('/portal') && !staff && customerId) {
-    // Allow the onboarding page itself, plus API routes and static assets.
-    const isOnboardingPage = pathname === '/portal/onboarding';
-    const isApiOrStatic = pathname.includes('/api/') || pathname.startsWith('/portal/_next/');
-    if (!isOnboardingPage && !isApiOrStatic) {
-      // We can't check onboardingCompletedAt in the proxy (no DB), so we let
-      // the layout handle it. Proxy just makes sure /portal/onboarding is
-      // always reachable for authenticated customers.
-    }
-  }
-
-  // Honor safe `?next=` overrides on login redirects (already encoded above).
   const next = request.nextUrl.searchParams.get('next');
   if (isSafeInternalPath(next) && !next.startsWith('/portal') && !next.startsWith('/admin')) {
-    // Allow redirect to other safe internal paths post-auth.
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  return NextResponse.next();
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {
-  matcher: ['/portal/:path*', '/admin/:path*', '/caregiver', '/caregiver/:path*'],
+  matcher: [
+    '/portal/:path*',
+    '/admin/:path*',
+    '/caregiver',
+    '/caregiver/:path*',
+    '/platform',
+    '/platform/:path*',
+    '/p/:path*',
+  ],
 }

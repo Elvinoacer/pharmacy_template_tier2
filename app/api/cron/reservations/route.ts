@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { releaseExpiredReservations } from "@/app/lib/services/commerce/reservations";
 import { writeAuditLog } from "@/app/lib/auth";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   try {
-    const result = await releaseExpiredReservations();
+    const result = await withPlatformBypass(async () => releaseExpiredReservations());
     if (result.ordersAffected.length > 0) {
       await writeAuditLog(null, "cron_reservations_expired", "inventory_reservation", undefined, {
         releasedCount: result.releasedCount,

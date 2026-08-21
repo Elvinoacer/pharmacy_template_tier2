@@ -3,6 +3,7 @@ import "server-only";
 import { prisma } from "@/app/lib/db";
 import { addTimelineEvent, writeAuditLog } from "@/app/lib/auth";
 import { formatMpesaPhone } from "@/app/lib/services/daraja";
+import { getTenant } from "@/app/lib/tenant";
 import {
   CONSENT_TEXT,
   DEFAULT_IMMUNIZATION_POLICY,
@@ -64,14 +65,26 @@ export async function ensureVaccineCatalog() {
 }
 
 export async function getImmunizationPolicy() {
+  const tenant = await getTenant();
+  const pharmacyId = tenant.pharmacyId;
+  if (!pharmacyId) {
+    return {
+      id: "none",
+      pharmacyId: "",
+      ...DEFAULT_IMMUNIZATION_POLICY,
+      updatedById: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
   const row = await prisma.pharmacyImmunizationPolicy
-    .findUnique({ where: { id: "default" } })
+    .findUnique({ where: { pharmacyId } })
     .catch(() => null);
   if (row) return row;
   return prisma.pharmacyImmunizationPolicy.upsert({
-    where: { id: "default" },
+    where: { pharmacyId },
     create: {
-      id: "default",
+      pharmacyId,
       ...DEFAULT_IMMUNIZATION_POLICY,
     },
     update: {},
@@ -661,10 +674,13 @@ export async function updateImmunizationPolicy(
     aefiReportingContact: string | null;
   }> & { updatedById?: string },
 ) {
+  const tenant = await getTenant();
+  const pharmacyId = tenant.pharmacyId;
+  if (!pharmacyId) throw new Error("No active pharmacy");
   return prisma.pharmacyImmunizationPolicy.upsert({
-    where: { id: "default" },
+    where: { pharmacyId },
     create: {
-      id: "default",
+      pharmacyId,
       ...DEFAULT_IMMUNIZATION_POLICY,
       ...data,
       updatedById: data.updatedById,

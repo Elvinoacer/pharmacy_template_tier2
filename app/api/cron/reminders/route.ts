@@ -13,6 +13,7 @@ import {
   processRefillLapseAlerts,
 } from "@/app/lib/services/refills";
 import { formatTime, toLocalDateInputValue } from "@/app/lib/time";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
 
@@ -69,7 +70,7 @@ async function processScheduledMessages(): Promise<number> {
           customer: {
             include: {
               user: { select: { id: true, email: true } },
-              loyaltyAccount: { select: { points: true, tier: true } },
+              loyaltyAccounts: { take: 1, select: { points: true, tier: true } },
             },
           },
         },
@@ -92,8 +93,8 @@ async function processScheduledMessages(): Promise<number> {
       name: customer.fullName,
       fullName: customer.fullName,
       email: customer.user.email,
-      points: customer.loyaltyAccount?.points ?? 0,
-      tier: customer.loyaltyAccount?.tier ?? "bronze",
+      points: customer.loyaltyAccounts?.[0]?.points ?? 0,
+      tier: customer.loyaltyAccounts?.[0]?.tier ?? "bronze",
     };
     const body = interpolateTemplate(m.body, vars);
     const subject = m.subject ? interpolateTemplate(m.subject, vars) : undefined;
@@ -429,6 +430,10 @@ async function processAdherenceEscalations(): Promise<number> {
 }
 
 export async function GET(request: NextRequest) {
+  return withPlatformBypass(async () => runRemindersCron(request));
+}
+
+async function runRemindersCron(request: NextRequest) {
   if (!authorized(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }

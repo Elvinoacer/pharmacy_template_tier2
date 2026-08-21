@@ -32,6 +32,7 @@ import {
   RefreshCw,
   Activity,
   Syringe,
+  Store,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -48,6 +49,7 @@ import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
 
 export const PORTAL_LINKS = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
+  { href: "/portal/pharmacies", label: "My pharmacies", icon: Store, group: "overview" },
   { href: "/portal/refills", label: "Refills", icon: Pill, group: "medications" },
   { href: "/portal/prescriptions", label: "Prescriptions", icon: FileText, group: "medications" },
   { href: "/portal/calendar", label: "Medication Calendar", icon: Calendar, group: "medications" },

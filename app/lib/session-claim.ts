@@ -11,6 +11,8 @@ export type SessionClaim = {
   sub: string;
   role: string;
   customerId: string | null;
+  platformAdmin: boolean;
+  pharmacyId: string | null;
 };
 
 function getAuthSecretKey(): Uint8Array {
@@ -25,6 +27,8 @@ export async function signSessionClaim(claim: SessionClaim, expiresAt: Date): Pr
   return new SignJWT({
     role: claim.role,
     customerId: claim.customerId,
+    platformAdmin: claim.platformAdmin,
+    pharmacyId: claim.pharmacyId,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(claim.sub)
@@ -42,6 +46,8 @@ export async function verifySessionClaim(token: string | undefined | null): Prom
       sub: payload.sub,
       role: payload.role,
       customerId: typeof payload.customerId === "string" ? payload.customerId : null,
+      platformAdmin: payload.platformAdmin === true,
+      pharmacyId: typeof payload.pharmacyId === "string" ? payload.pharmacyId : null,
     };
   } catch {
     return null;
@@ -61,23 +67,35 @@ export function isSafeInternalPath(path: string | null | undefined): path is str
 
 /**
  * Decide where a user lands after sign-in.
- * Customers → /portal, caregivers → /caregiver, staff → /admin, with safe `next` overrides.
+ * Platform admins → /platform, staff → /admin, caregivers → /caregiver, customers → /portal.
  */
 export function resolvePostLoginPath(
-  user: { role: string; customerId?: string | null },
+  user: {
+    role: string;
+    customerId?: string | null;
+    platformAdmin?: boolean;
+  },
   next?: string | null,
 ): string {
   const staff = claimIsStaff(user.role);
   const isCaregiverRole = user.role === "caregiver";
   const safeNext = isSafeInternalPath(next) ? next : null;
+  const platformAdmin = user.platformAdmin === true;
 
   if (safeNext) {
-    if (safeNext.startsWith("/admin") && !staff) return isCaregiverRole ? "/caregiver" : user.customerId ? "/portal" : "/login";
+    if (safeNext.startsWith("/platform") && !platformAdmin) {
+      return staff ? "/admin" : isCaregiverRole ? "/caregiver" : user.customerId ? "/portal" : "/login";
+    }
+    if (safeNext.startsWith("/admin") && !staff && !platformAdmin) {
+      return isCaregiverRole ? "/caregiver" : user.customerId ? "/portal" : "/login";
+    }
     if (safeNext.startsWith("/portal") && isCaregiverRole && !user.customerId) return "/caregiver";
     if (safeNext.startsWith("/portal") && staff && !user.customerId) return "/admin";
     return safeNext;
   }
 
+  if (platformAdmin && !staff) return "/platform";
+  if (platformAdmin && staff) return "/platform";
   if (staff) return "/admin";
   if (isCaregiverRole && !user.customerId) return "/caregiver";
   return "/portal";
