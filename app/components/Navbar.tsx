@@ -29,6 +29,7 @@ import {
   Users,
   BookOpen,
   Activity,
+  Syringe,
 } from "lucide-react";
 import { pharmacy } from "@/app/lib/data";
 import { resolvePortalCta, type PortalSessionHint } from "@/app/lib/portal-dest";
@@ -77,6 +78,13 @@ const CATEGORIES: NavCategory[] = [
         label: "Order OTC Direct",
         desc: "Quick cart for healthcare items",
         icon: ShoppingBag,
+      },
+      {
+        href: "/vaccinations",
+        label: "Vaccinations",
+        desc: "Book flu, travel & adult vaccines",
+        icon: Syringe,
+        badge: "Clinic",
       },
       {
         href: "/services",
@@ -129,6 +137,13 @@ const CATEGORIES: NavCategory[] = [
         desc: "BP, glucose, BMI & clinical referrals",
         icon: Activity,
         badge: "Screening",
+      },
+      {
+        href: "/preventive",
+        label: "Preventive health",
+        desc: "Counselling, campaigns & education",
+        icon: HeartPulse,
+        badge: "Prevention",
       },
       {
         href: "/caregiver",

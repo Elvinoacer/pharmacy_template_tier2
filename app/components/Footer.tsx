@@ -5,6 +5,8 @@ const QUICK = [
   { href: "/about", label: "About us" },
   { href: "/services", label: "Services" },
   { href: "/health/counselling", label: "Medication counselling" },
+  { href: "/vaccinations", label: "Vaccinations" },
+  { href: "/preventive", label: "Preventive health" },
   { href: "/health", label: "Health library" },
   { href: "/health/self-care-guide", label: "Self-care & triage guide" },
   { href: "/faq", label: "FAQ" },
@@ -17,6 +19,7 @@ const ACTIONS = [
   { href: "/delivery", label: "Delivery enquiry" },
   { href: "/contact", label: "Contact us" },
   { href: "/medicines", label: "OTC Medicines" },
+  { href: "/vaccinations", label: "Book a vaccine" },
   { href: "/search", label: "Search" },
 ];
 

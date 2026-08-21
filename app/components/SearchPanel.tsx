@@ -11,7 +11,8 @@ export default function SearchPanel({ initialQuery = "" }: { initialQuery?: stri
     results.services.length +
     results.articles.length +
     results.faqs.length +
-    results.categories.length;
+    results.categories.length +
+    results.vaccines.length;
 
   return (
     <div>
@@ -63,6 +64,19 @@ export default function SearchPanel({ initialQuery = "" }: { initialQuery?: stri
                   href={`/services/${s.slug}`}
                   title={s.title}
                   body={s.short}
+                />
+              ))}
+            </ResultGroup>
+          )}
+          {results.vaccines.length > 0 && (
+            <ResultGroup title="Vaccines">
+              {results.vaccines.map((v) => (
+                <ResultCard
+                  key={v.slug}
+                  href={`/vaccinations/${v.slug}`}
+                  title={v.name}
+                  body={v.description}
+                  meta={v.category.replace(/_/g, " ")}
                 />
               ))}
             </ResultGroup>

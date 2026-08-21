@@ -1,0 +1,322 @@
+"use client";
+
+import { useActionState, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  bookVaccinationAction,
+  type VaccinationActionState,
+} from "@/app/actions/vaccination";
+import { toast } from "@/app/components/Toaster";
+import {
+  PRE_VACCINATION_QUESTIONS,
+  CONSENT_TEXT,
+  evaluatePreVaccinationScreening,
+  type ScreeningAnswers,
+  type VaccineSeed,
+} from "@/app/lib/vaccination-catalog";
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Loader2,
+  ShieldAlert,
+  Syringe,
+} from "lucide-react";
+
+type VaccineOption = {
+  slug: string;
+  name: string;
+  antigen: string;
+  pharmacyAdministered: boolean;
+  bookable: boolean;
+  visSummary: string;
+  visTitle: string | null;
+  visVersion: string | null;
+  contraindications: string[];
+  commonSideEffects: string[];
+  priceKes: number | null;
+};
+
+export function VaccinationBookingForm({
+  vaccines,
+  defaultVaccine,
+  defaultCampaign,
+  defaultName = "",
+  defaultPhone = "",
+  defaultEmail = "",
+}: {
+  vaccines: VaccineOption[];
+  defaultVaccine?: string;
+  defaultCampaign?: string;
+  defaultName?: string;
+  defaultPhone?: string;
+  defaultEmail?: string;
+}) {
+  const bookable = vaccines.filter((v) => v.bookable && v.pharmacyAdministered);
+  const [step, setStep] = useState(0);
+  const [slug, setSlug] = useState(defaultVaccine && bookable.some((v) => v.slug === defaultVaccine) ? defaultVaccine : bookable[0]?.slug || "");
+  const [answers, setAnswers] = useState<ScreeningAnswers>({});
+  const [state, formAction, pending] = useActionState(bookVaccinationAction, {} as VaccinationActionState);
+
+  const selected = bookable.find((v) => v.slug === slug) || bookable[0];
+  const liveEval = useMemo(() => evaluatePreVaccinationScreening(answers), [answers]);
+
+  useEffect(() => {
+    if (state?.success) toast.success(state.success);
+    if (state?.error) toast.error(state.error);
+  }, [state]);
+
+  if (bookable.length === 0) {
+    return (
+      <div className="rounded-3xl border border-[#e3ebe6] bg-white p-8 text-center">
+        <p className="text-sm font-semibold text-[#0c1a14]">Online booking is not open for pharmacy-administered vaccines right now.</p>
+        <p className="mt-2 text-sm text-[#5a6b62]">Call us or request preventive counselling and referral.</p>
+        <Link href="/preventive" className="btn-primary mt-5 inline-flex text-sm">Preventive services</Link>
+      </div>
+    );
+  }
+
+  if (state?.success || state?.appointmentId) {
+    return (
+      <div className="rounded-3xl border border-white/60 bg-white p-8 shadow-sm">
+        <CheckCircle2 className="h-10 w-10 text-teal-700" />
+        <h2 className="mt-3 text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+          Request received
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">
+          {state.success || state.error}
+        </p>
+        {state.outcome && (
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-teal-700">
+            Screening outcome: {state.outcome}
+          </p>
+        )}
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/vaccinations" className="btn-primary inline-flex text-sm">Back to vaccines</Link>
+          <Link href="/portal/vaccinations" className="inline-flex items-center rounded-full border border-teal-900/15 px-5 py-2.5 text-sm font-semibold text-[#084c3f]">
+            View my immunisation record
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const steps = ["Vaccine", "Your details", "Screening", "Consent"];
+
+  return (
+    <form action={formAction} className="rounded-3xl border border-white/60 bg-white p-5 shadow-[0_16px_50px_rgba(8,40,32,0.08)] sm:p-8">
+      <input type="hidden" name="vaccineSlug" value={slug} />
+      <input type="hidden" name="campaignSlug" value={defaultCampaign || ""} />
+
+      <ol className="mb-6 flex flex-wrap gap-2">
+        {steps.map((label, i) => (
+          <li
+            key={label}
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              i === step ? "bg-[#084c3f] text-white" : i < step ? "bg-teal-100 text-teal-900" : "bg-slate-100 text-slate-500"
+            }`}
+          >
+            {i + 1}. {label}
+          </li>
+        ))}
+      </ol>
+
+      <div className={step === 0 ? "" : "hidden"}>
+        <div className="space-y-3">
+          <p className="text-sm font-semibold text-[#0c1a14]">Which vaccine do you need?</p>
+          <div className="grid gap-2">
+            {bookable.map((v) => (
+              <label
+                key={v.slug}
+                className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 ${
+                  slug === v.slug ? "border-teal-700 bg-teal-50/70" : "border-teal-900/10"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="vaccineChoice"
+                  className="mt-1"
+                  checked={slug === v.slug}
+                  onChange={() => setSlug(v.slug)}
+                />
+                <span>
+                  <span className="block text-sm font-semibold text-[#0c1a14]">{v.name}</span>
+                  <span className="mt-0.5 block text-xs text-[#5a6b62]">{v.antigen}</span>
+                  {v.priceKes != null && v.priceKes > 0 && (
+                    <span className="mt-1 inline-block text-xs font-bold text-teal-800">KES {v.priceKes.toLocaleString()}</span>
+                  )}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className={step === 1 ? "grid gap-4 sm:grid-cols-2" : "hidden"}
+      >
+          <Field label="Full name" name="fullName" defaultValue={defaultName} required />
+          <Field label="Phone" name="phone" defaultValue={defaultPhone} required />
+          <Field label="Email (optional)" name="email" type="email" defaultValue={defaultEmail} />
+          <Field label="Date of birth" name="dateOfBirth" type="date" />
+          <label className="block text-sm">
+            <span className="font-medium text-[#0c1a14]">Gender (optional)</span>
+            <select name="gender" className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm">
+              <option value="">Prefer not to say</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <Field label="Preferred date" name="preferredDate" type="date" />
+          <Field label="Preferred time" name="preferredTime" placeholder="e.g. 10:30" />
+          <label className="block text-sm sm:col-span-2">
+            <span className="font-medium text-[#0c1a14]">Notes for the pharmacist</span>
+            <textarea name="notes" rows={3} className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm" placeholder="Travel dates, pregnancy, medicines, previous records…" />
+          </label>
+      </div>
+
+      <div className={step === 2 ? "space-y-4" : "hidden"}>
+          <p className="text-sm text-[#5a6b62]">
+            Answer honestly. This is a safety screen, not a diagnosis. A pharmacist still reviews every questionnaire.
+          </p>
+          {PRE_VACCINATION_QUESTIONS.map((q) => (
+            <fieldset key={q.id} className="rounded-2xl border border-teal-900/10 p-4">
+              <legend className="text-sm font-medium text-[#0c1a14]">{q.prompt}</legend>
+              <p className="mt-1 text-xs text-[#5a6b62]">{q.help}</p>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {(["no", "yes", "unsure"] as const).map((val) => (
+                  <label key={val} className="inline-flex items-center gap-1.5 text-sm">
+                    <input
+                      type="radio"
+                      name={`q_${q.id}`}
+                      value={val}
+                      required
+                      checked={answers[q.id] === val}
+                      onChange={() => setAnswers((a) => ({ ...a, [q.id]: val }))}
+                    />
+                    {val === "no" ? "No" : val === "yes" ? "Yes" : "Not sure"}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+          <div
+            className={`rounded-2xl p-4 text-sm ${
+              liveEval.outcome === "eligible"
+                ? "bg-emerald-50 text-emerald-900"
+                : liveEval.outcome === "defer"
+                  ? "bg-amber-50 text-amber-950"
+                  : "bg-rose-50 text-rose-950"
+            }`}
+          >
+            <p className="font-semibold">Provisional screening: {liveEval.outcome}</p>
+            <p className="mt-1 text-xs leading-relaxed">{liveEval.reason}</p>
+          </div>
+      </div>
+
+      <div className={step === 3 ? "space-y-4" : "hidden"}>
+          <div className="rounded-2xl border border-teal-900/10 bg-[#f4fbf8] p-4">
+            <p className="flex items-center gap-2 text-sm font-semibold text-[#084c3f]">
+              <FileText className="h-4 w-4" /> {selected.visTitle || "Vaccine information"}
+              {selected.visVersion ? ` · ${selected.visVersion}` : ""}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{selected.visSummary}</p>
+            {selected.commonSideEffects.length > 0 && (
+              <p className="mt-2 text-xs text-[#5a6b62]">
+                Common reactions: {selected.commonSideEffects.join(", ")}.
+              </p>
+            )}
+            {selected.contraindications.length > 0 && (
+              <p className="mt-2 text-xs text-rose-800">
+                Do not proceed if: {selected.contraindications.join("; ")}.
+              </p>
+            )}
+          </div>
+          <label className="flex items-start gap-2 text-sm">
+            <input type="checkbox" name="visAcknowledged" value="true" required className="mt-1" />
+            <span>I have read and understood the vaccine information for {selected.name}.</span>
+          </label>
+          <label className="block text-sm">
+            <span className="font-medium text-[#0c1a14]">Who is consenting?</span>
+            <select name="consentType" defaultValue="self" className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm">
+              <option value="self">I am the patient</option>
+              <option value="parent_guardian">Parent / legal guardian</option>
+              <option value="caregiver">Authorised caregiver</option>
+            </select>
+          </label>
+          <Field label="Consenter name" name="consenterName" defaultValue={defaultName} required />
+          <Field label="Relationship (if not self)" name="consenterRelationship" placeholder="e.g. mother, father, caregiver" />
+          <div className="rounded-2xl border border-teal-900/10 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-teal-700">Consent statement</p>
+            <p className="mt-2 whitespace-pre-line text-xs leading-relaxed text-[#5a6b62]">{CONSENT_TEXT}</p>
+          </div>
+          <Field label="Type your full name as a signature" name="signatureName" required />
+          <p className="flex items-start gap-2 text-xs text-[#5a6b62]">
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+            You can withdraw consent before the dose is given. After administration, the clinical record is retained as required by local rules.
+          </p>
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => setStep((s) => Math.max(0, s - 1))}
+          disabled={step === 0 || pending}
+          className="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold text-[#084c3f] disabled:opacity-40"
+        >
+          <ChevronLeft className="h-4 w-4" /> Back
+        </button>
+        {step < 3 ? (
+          <button
+            type="button"
+            onClick={() => setStep((s) => Math.min(3, s + 1))}
+            className="btn-primary inline-flex text-sm"
+          >
+            Continue <ChevronRight className="h-4 w-4" />
+          </button>
+        ) : (
+          <button type="submit" disabled={pending} className="btn-primary inline-flex text-sm">
+            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Syringe className="h-4 w-4" />}
+            {pending ? "Submitting…" : "Submit booking & consent"}
+          </button>
+        )}
+      </div>
+    </form>
+  );
+}
+
+function Field({
+  label,
+  name,
+  type = "text",
+  defaultValue,
+  required,
+  placeholder,
+}: {
+  label: string;
+  name: string;
+  type?: string;
+  defaultValue?: string;
+  required?: boolean;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block text-sm">
+      <span className="font-medium text-[#0c1a14]">
+        {label}
+        {required ? " *" : ""}
+      </span>
+      <input
+        type={type}
+        name={name}
+        defaultValue={defaultValue}
+        required={required}
+        placeholder={placeholder}
+        className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm outline-none focus:border-teal-600/40 focus:ring-2 focus:ring-teal-500/20"
+      />
+    </label>
+  );
+}
+
+export type { VaccineSeed };

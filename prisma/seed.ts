@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { buildPostgresConfig } from "../app/lib/db/config";
+import { VACCINE_CATALOG, DEFAULT_IMMUNIZATION_POLICY } from "../app/lib/vaccination-catalog";
 
 loadEnv({ path: path.resolve(process.cwd(), ".env") });
 loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true });
@@ -45,6 +46,16 @@ async function main() {
   await prisma.enquiry.deleteMany();
   await prisma.knowledgeArticle.deleteMany();
   await prisma.auditLog.deleteMany();
+  await prisma.adverseEventFollowingImmunization.deleteMany().catch(() => {});
+  await prisma.immunizationRecord.deleteMany().catch(() => {});
+  await prisma.vaccinationConsent.deleteMany().catch(() => {});
+  await prisma.preVaccinationScreening.deleteMany().catch(() => {});
+  await prisma.immunizationAppointment.deleteMany().catch(() => {});
+  await prisma.preventiveCounsellingSession.deleteMany().catch(() => {});
+  await prisma.immunizerCredential.deleteMany().catch(() => {});
+  await prisma.publicHealthCampaign.deleteMany().catch(() => {});
+  await prisma.vaccineProduct.deleteMany().catch(() => {});
+  await prisma.pharmacyImmunizationPolicy.deleteMany().catch(() => {});
   await prisma.session.deleteMany();
   await prisma.passwordReset.deleteMany();
   await prisma.emailVerification.deleteMany();
@@ -693,6 +704,26 @@ async function main() {
         createdById: manager.id,
       },
       {
+        title: "Vaccinations at Aether Pharmacy",
+        category: "services",
+        content:
+          "Where locally authorised, Aether Pharmacy administers adult, seasonal, and selected travel vaccines (influenza, COVID-19, hepatitis B, Tdap, pneumococcal, HPV catch-up, typhoid, hepatitis A, meningococcal, oral cholera). Every dose requires a pre-vaccination questionnaire, vaccine information sheet, signed consent, lot/expiry recording, and 15 minutes of observation. Digital certificates appear in the patient portal. Childhood KEPI vaccines are given at public immunisation clinics; we provide schedules and referral. Yellow fever ICVP cards are issued only at designated centres.",
+        tags: ["vaccine", "vaccination", "flu", "immunisation", "travel", "consent", "aefi"],
+        priority: 96,
+        isApproved: true,
+        createdById: manager.id,
+      },
+      {
+        title: "Preventive-health counselling",
+        category: "services",
+        content:
+          "Pharmacists offer preventive counselling: immunisation education, travel health, tobacco cessation, diabetes prevention, cardiovascular risk, weight and nutrition, malaria prevention, and HIV prevention information. Sessions are education and support, not a diagnosis. Book via the Preventive health page or the patient portal.",
+        tags: ["prevention", "counselling", "travel", "campaign"],
+        priority: 94,
+        isApproved: true,
+        createdById: manager.id,
+      },
+      {
         title: "Health Screening & Point-of-Care Testing (POCT)",
         category: "services",
         content:
@@ -855,7 +886,7 @@ async function main() {
       ],
       eligibility: "Age and medical criteria vary by vaccine; pharmacist will screen.",
       duration: "10–20 minutes including observation.",
-      imageUrl: "/images/articles/nutrition-basics-for-heart-health.webp",
+      imageUrl: "/images/services/vaccinations.webp",
       icon: "shield",
       price: 1500,
       sortOrder: 60,
@@ -1313,6 +1344,233 @@ async function main() {
   });
 
   console.log("Upserted demo health screenings and clinical referrals.");
+
+  // ── Vaccination & preventive services (8) ──
+  await prisma.pharmacyImmunizationPolicy.upsert({
+    where: { id: "default" },
+    create: { id: "default", ...DEFAULT_IMMUNIZATION_POLICY, updatedById: manager.id },
+    update: { ...DEFAULT_IMMUNIZATION_POLICY, updatedById: manager.id },
+  });
+
+  const vaccineRows: Record<string, { id: string }> = {};
+  for (const v of VACCINE_CATALOG) {
+    const row = await prisma.vaccineProduct.create({
+      data: {
+        slug: v.slug,
+        name: v.name,
+        antigen: v.antigen,
+        brandName: v.brandName,
+        manufacturer: v.manufacturer,
+        category: v.category,
+        diseasesPrevented: v.diseasesPrevented,
+        description: v.description,
+        indications: v.indications,
+        whoShouldGet: v.whoShouldGet,
+        whoShouldWait: v.whoShouldWait,
+        contraindications: v.contraindications,
+        precautions: v.precautions,
+        commonSideEffects: v.commonSideEffects,
+        rareRisks: v.rareRisks,
+        route: v.route,
+        siteOptions: v.siteOptions,
+        doseMl: v.doseMl,
+        seriesDoses: v.seriesDoses,
+        seriesIntervalDays: v.seriesIntervalDays,
+        boosterIntervalMonths: v.boosterIntervalMonths,
+        minAgeMonths: v.minAgeMonths,
+        maxAgeMonths: v.maxAgeMonths,
+        visTitle: v.visTitle,
+        visVersion: v.visVersion,
+        visSummary: v.visSummary,
+        storageRequirements: v.storageRequirements,
+        priceKes: v.priceKes,
+        pharmacyAdministered: v.pharmacyAdministered,
+        bookable: v.pharmacyAdministered,
+        travelRelated: v.travelRelated,
+        seasonLabel: v.seasonLabel,
+        regulatoryNotes: v.regulatoryNotes,
+        sortOrder: v.sortOrder,
+        active: true,
+      },
+      select: { id: true, slug: true },
+    });
+    vaccineRows[row.slug] = { id: row.id };
+  }
+
+  await prisma.immunizerCredential.createMany({
+    data: [
+      {
+        userId: pharmacist.id,
+        credentialType: "immunization_certificate",
+        title: "Pharmacist Immunisation Certificate",
+        licenseNumber: "PPB-IMM-2041",
+        issuedBy: "Pharmacy and Poisons Board",
+        issuedAt: new Date("2025-01-15"),
+        expiresAt: new Date("2028-01-15"),
+        verified: true,
+      },
+      {
+        userId: pharmacist.id,
+        credentialType: "anaphylaxis",
+        title: "Anaphylaxis & adrenaline autoinjector",
+        issuedBy: "Kenya Red Cross / CPD",
+        issuedAt: new Date("2025-06-01"),
+        expiresAt: new Date("2027-06-01"),
+        verified: true,
+      },
+      {
+        userId: pharmacist.id,
+        credentialType: "cpr_bls",
+        title: "BLS / CPR",
+        issuedBy: "Kenya Red Cross",
+        issuedAt: new Date("2025-03-01"),
+        expiresAt: new Date("2027-03-01"),
+        verified: true,
+      },
+    ],
+  });
+
+  const fluCampaign = await prisma.publicHealthCampaign.create({
+    data: {
+      slug: "flu-season-2026",
+      title: "Flu season 2026 — protect your household",
+      theme: "vaccination",
+      short: "Walk-in inactivated influenza vaccine Mon–Sat. 15-minute observation on site.",
+      description:
+        "Seasonal influenza campaign for adults, caregivers, and people with chronic illness. Screening, vaccine information, and consent are completed before every dose.",
+      startDate: new Date("2026-03-01"),
+      endDate: new Date("2026-08-31"),
+      targetPopulation: "Adults 18+, especially 65+ and chronic disease",
+      vaccinesOffered: ["influenza"],
+      walkInDays: "Monday–Saturday 9:00–16:00",
+      targetDoses: 400,
+      dosesAdministered: 1,
+      educationTopics: ["flu-myths", "after-your-vaccine"],
+      locationNotes: "Main Branch, Kenyatta Avenue. Private counselling room for observation.",
+      regulatoryNotes: "Inactivated influenza only. Pregnancy: pharmacist confirms current MoH position.",
+      heroImage: "/images/services/vaccinations.webp",
+      active: true,
+    },
+  });
+
+  await prisma.publicHealthCampaign.create({
+    data: {
+      slug: "travel-health-week",
+      title: "Travel health week",
+      theme: "counselling",
+      short: "Destination vaccines, yellow-fever certificate advice, and malaria prevention counselling.",
+      description:
+        "Book a 30-minute travel consult before you fly. We review itinerary, vaccines, ICVP rules, and bite prevention.",
+      startDate: new Date("2026-07-01"),
+      endDate: new Date("2026-12-31"),
+      targetPopulation: "Outbound travellers from Nairobi",
+      vaccinesOffered: ["typhoid", "hepatitis-a", "meningococcal"],
+      walkInDays: "By appointment preferred; walk-ins as capacity allows",
+      educationTopics: ["travel-health-kenya"],
+      locationNotes: "Bring passport and travel dates.",
+      heroImage: "/images/articles/flu-season-preparation.webp",
+      active: true,
+    },
+  });
+
+  const fluId = vaccineRows["influenza"]?.id;
+  if (fluId) {
+    const appt = await prisma.immunizationAppointment.create({
+      data: {
+        vaccineProductId: fluId,
+        customerId: jane.id,
+        campaignId: fluCampaign.id,
+        patientName: jane.fullName,
+        patientPhone: jane.phone || "+254712345678",
+        patientEmail: "jane@example.com",
+        patientDob: jane.dateOfBirth,
+        patientGender: "female",
+        preferredDate: "2026-08-10",
+        preferredTime: "10:00",
+        status: "completed",
+        source: "campaign",
+        screening: {
+          create: {
+            customerId: jane.id,
+            screenedById: pharmacist.id,
+            answers: { feeling_well: "yes", allergy_vaccine: "no", pregnant: "no" },
+            outcome: "eligible",
+            outcomeReason: "No contraindications flagged.",
+          },
+        },
+        consent: {
+          create: {
+            vaccineProductId: fluId,
+            customerId: jane.id,
+            visProvided: true,
+            visVersion: "2026-season",
+            visProvidedAt: new Date("2026-08-10T07:00:00Z"),
+            consentType: "self",
+            consenterName: jane.fullName,
+            signatureName: jane.fullName,
+            consentTextSnapshot: "Demo consent captured at seed.",
+          },
+        },
+      },
+    });
+
+    await prisma.immunizationRecord.create({
+      data: {
+        appointmentId: appt.id,
+        vaccineProductId: fluId,
+        customerId: jane.id,
+        administeredById: pharmacist.id,
+        supervisingPharmacistId: pharmacist.id,
+        patientName: jane.fullName,
+        patientDob: jane.dateOfBirth,
+        patientGender: "female",
+        patientPhone: jane.phone,
+        doseNumber: 1,
+        seriesComplete: true,
+        administeredAt: new Date("2026-08-10T07:15:00Z"),
+        route: "IM",
+        site: "Left deltoid",
+        doseMl: 0.5,
+        lotNumber: "FLU26-A441",
+        expiryDate: new Date("2026-12-31"),
+        manufacturer: "Seasonal supply",
+        visGivenAt: new Date("2026-08-10T07:00:00Z"),
+        visVersion: "2026-season",
+        observationMinutes: 15,
+        observationOutcome: "uneventful",
+        nextDueDate: new Date("2027-03-01"),
+        certificateCode: "IMU-202608-100001",
+        campaignId: fluCampaign.id,
+        notes: "Uneventful observation. Counselled on expected arm soreness.",
+        status: "administered",
+      },
+    });
+
+    await prisma.immunizationAppointment.update({
+      where: { id: appt.id },
+      data: { status: "completed" },
+    });
+  }
+
+  await prisma.preventiveCounsellingSession.create({
+    data: {
+      customerId: jane.id,
+      counsellorId: pharmacist.id,
+      topic: "diabetes_prevention",
+      format: "in_person",
+      durationMinutes: 25,
+      patientName: jane.fullName,
+      patientPhone: jane.phone,
+      summary:
+        "Discussed plate method, 30-minute daily walks, and pairing next flu dose with a fasting glucose check. Patient already on metformin — this session reinforced lifestyle, not a new diagnosis.",
+      goals: ["Walk 30 minutes most days", "Reduce added salt", "Book quarterly screening"],
+      resourcesGiven: ["Plate-method card", "Portal screening history"],
+      status: "completed",
+      source: "staff",
+    },
+  });
+
+  console.log(`Seeded ${VACCINE_CATALOG.length} vaccine products, campaigns, credentials, and demo immunisation records.`);
 
   await prisma.auditLog.create({
     data: {
