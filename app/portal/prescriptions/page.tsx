@@ -30,6 +30,7 @@ import {
   Clock,
   ShieldAlert,
   ShoppingBag,
+  RefreshCw,
 } from "lucide-react";
 
 import { PrescriptionUploadModal } from "@/app/components/portal/PrescriptionUploadModal";
@@ -138,6 +139,20 @@ export default async function PortalPrescriptionsPage() {
       subtitle="Dose schedule, adherence, and refill supply."
       actions={
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <Link
+            href="/portal/calendar"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-xs font-semibold text-[#0d6e5a] hover:bg-[#f2f7f4] shadow-2xs transition"
+          >
+            <CalendarClock className="h-4 w-4" />
+            <span>Med Calendar</span>
+          </Link>
+          <Link
+            href="/portal/sync"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-xs font-semibold text-[#0d6e5a] hover:bg-[#f2f7f4] shadow-2xs transition"
+          >
+            <RefreshCw className="h-4 w-4" />
+            <span>Med Sync</span>
+          </Link>
           <PrescriptionUploadModal />
           <Link
             href="/portal/refills/new"

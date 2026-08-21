@@ -337,6 +337,7 @@ model User {
   cashierSessions             CashierSession[]      @relation("CashierSessionUser")
   prescriptionsReviewed       Prescription[]        @relation("PrescriptionReviewer")
   clarificationLogs           PrescriptionClarificationLog[] @relation("ClarificationStaff")
+  adherenceFollowUpsRecorded  AdherenceFollowUp[]   @relation("FollowUpStaff")
 
   @@map("users")
 }
@@ -455,6 +456,8 @@ model CustomerProfile {
   payments        Payment[]
   symptomSessions SymptomSession[]
   serviceBookings ServiceBooking[]
+  syncEnrollment  RefillSyncEnrollment?
+  adherenceFollowUps AdherenceFollowUp[]
 
   @@index([ageSegment])
   @@map("customer_profiles")
@@ -528,6 +531,14 @@ model Prescription {
   /// Admin-set price the customer pays per refill (used by payment system).
   unitPrice        Decimal?           @db.Decimal(10, 2) @map("unit_price")
   status           PrescriptionStatus @default(active)
+  /// Flag indicating if this is a chronic maintenance therapy.
+  isChronic        Boolean            @default(false) @map("is_chronic")
+  /// Chronic disease category (e.g. Hypertension, Diabetes, Asthma, Dyslipidemia, Thyroid, etc.).
+  chronicCondition String?            @map("chronic_condition")
+  /// Refill Synchronization (Med Sync) status.
+  isSynced         Boolean            @default(false) @map("is_synced")
+  /// Synchronized monthly anchor day (1-28).
+  syncAnchorDay    Int?               @map("sync_anchor_day")
   /// Structured intake arrival channel (paper, whatsapp, email, patient upload, referral, hospital, e-rx, phone, in-person).
   intakeChannel    PrescriptionIntakeChannel? @default(in_person_consultation) @map("intake_channel")
   /// Granular prescription lifecycle progression.
@@ -584,11 +595,13 @@ model Prescription {
   doseLogs         DoseLog[]
   escalations      AdherenceEscalation[]
   clarificationLogs PrescriptionClarificationLog[]
+  adherenceFollowUps AdherenceFollowUp[]
   /// Commerce ledger: one row per fill (audit §4 / §41.A).
   fills            PrescriptionFill[]
 
   @@index([customerId])
   @@index([status])
+  @@index([isChronic])
   @@index([lifecycleStatus])
   @@index([intakeChannel])
   @@index([medicationId])
@@ -1136,6 +1149,60 @@ model AdherenceEscalation {
 
   @@index([prescriptionId, scheduledDate])
   @@map("adherence_escalations")
+}
+
+// ── Medication synchronization (Med Sync) ─────────────────────
+/// Patient enrollment in the recurring refill synchronization program.
+/// Aligns multiple chronic maintenance prescriptions to a unified monthly anchor day.
+model RefillSyncEnrollment {
+  id                    String           @id @default(uuid()) @db.Uuid
+  customerId            String           @unique @map("customer_id") @db.Uuid
+  /// Day of the month (1-28) when all synced medications are renewed/dispensed together.
+  anchorDay             Int              @default(1) @map("anchor_day")
+  /// active | pending_review | paused | cancelled
+  status                String           @default("active")
+  preferredPickup       PickupPreference @default(pickup) @map("preferred_pickup")
+  notes                 String?
+  enrolledAt            DateTime         @default(now()) @map("enrolled_at")
+  nextSyncDate          DateTime?        @map("next_sync_date") @db.Date
+  lastSyncDate          DateTime?        @map("last_sync_date") @db.Date
+  syncedPrescriptionIds String[]         @default([]) @map("synced_prescription_ids")
+  createdAt             DateTime         @default(now()) @map("created_at")
+  updatedAt             DateTime         @updatedAt @map("updated_at")
+
+  customer CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("refill_sync_enrollments")
+}
+
+// ── Pharmacist Clinical Follow-up Calls & Adherence Outreach ───
+/// Records structured clinical follow-up calls and interventions conducted by pharmacy staff.
+/// Covers low adherence, missed refills, missed doses, side effects, and sync consultations.
+model AdherenceFollowUp {
+  id                 String           @id @default(uuid()) @db.Uuid
+  customerId         String           @map("customer_id") @db.Uuid
+  prescriptionId     String?          @map("prescription_id") @db.Uuid
+  /// missed_dose | refill_lapse | low_adherence | med_sync | side_effects | routine_checkin
+  reason             String
+  /// reached_patient | reached_caregiver | voicemail | busy_no_answer | wrong_number | refused
+  callOutcome        String           @map("call_outcome")
+  /// side_effects | cost | regimen_complexity | forgetfulness | feeling_better | transport | none | other
+  barrierIdentified  String?          @map("barrier_identified")
+  /// education | adjusted_schedule | enrolled_sync | prescriber_consult | generic_substitution | scheduled_followup | none
+  clinicalAction     String           @map("clinical_action")
+  notes              String?
+  nextFollowUpDate   DateTime?        @map("next_follow_up_date") @db.Date
+  staffId            String?          @map("staff_id") @db.Uuid
+  createdAt          DateTime         @default(now()) @map("created_at")
+
+  customer     CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  prescription Prescription?    @relation(fields: [prescriptionId], references: [id], onDelete: SetNull)
+  staff        User?            @relation("FollowUpStaff", fields: [staffId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([prescriptionId])
+  @@index([createdAt(sort: Desc)])
+  @@map("adherence_follow_ups")
 }
 
 // ── Medication categories (taxonomy registry) ─────────────────
