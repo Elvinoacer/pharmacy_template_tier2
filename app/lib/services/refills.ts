@@ -107,27 +107,43 @@ export function computeRefillScheduleMetrics(rx: {
   statusLabel: string;
 } {
   const formula = parseDosageFormula(rx.dosage, rx.schedule);
-  const totalQuantity = rx.quantity && rx.quantity > 0 ? rx.quantity : 30;
-  const calculatedDays = Math.max(1, Math.floor(totalQuantity / Math.max(1, formula.dailyTotalUnits)));
-  const effectiveDaysSupply = rx.daysSupply && rx.daysSupply > 0 ? rx.daysSupply : calculatedDays;
+  const unitsPerDose = Number.isFinite(formula.unitsPerDose) && formula.unitsPerDose > 0 ? formula.unitsPerDose : 1;
+  const dosesPerDay = Number.isFinite(formula.dosesPerDay) && formula.dosesPerDay > 0 ? formula.dosesPerDay : 1;
+  const dailyUnits = Math.max(1, unitsPerDose * dosesPerDay);
+
+  const totalQuantity = rx.quantity && Number.isFinite(rx.quantity) && rx.quantity > 0 ? rx.quantity : 30;
+  const calculatedDays = Math.max(1, Math.floor(totalQuantity / dailyUnits));
+  const effectiveDaysSupply =
+    rx.daysSupply && Number.isFinite(rx.daysSupply) && rx.daysSupply > 0
+      ? rx.daysSupply
+      : calculatedDays;
 
   const now = new Date();
   const todayMs = new Date(toLocalDateInputValue(now) + "T00:00:00Z").getTime();
 
-  // If nextRefillDue is explicitly stored, use that; otherwise calculate from lastFilledAt or createdAt + daysSupply
-  const baseFillDate = rx.lastFilledAt || rx.startDate || rx.createdAt;
+  // Safely determine base date
+  const rawBase = rx.lastFilledAt || rx.startDate || rx.createdAt;
+  const baseTime = rawBase ? new Date(rawBase).getTime() : Date.now();
+  const validBaseMs = Number.isFinite(baseTime) ? baseTime : Date.now();
+
   let projectedDueDate: Date;
-  if (rx.nextRefillDue) {
+  if (rx.nextRefillDue && !isNaN(new Date(rx.nextRefillDue).getTime())) {
     projectedDueDate = new Date(rx.nextRefillDue);
   } else {
-    projectedDueDate = new Date(new Date(baseFillDate).getTime() + effectiveDaysSupply * 86400000);
+    projectedDueDate = new Date(validBaseMs + effectiveDaysSupply * 86400000);
   }
 
-  const dueMs = new Date(toLocalDateInputValue(projectedDueDate) + "T00:00:00Z").getTime();
-  const daysRemaining = Math.round((dueMs - todayMs) / 86400000);
-  const projectedRunOutDate = projectedDueDate;
+  const dueTime = projectedDueDate.getTime();
+  const validDueMs = Number.isFinite(dueTime) ? dueTime : Date.now();
+  const projectedDueClean = new Date(validDueMs);
 
-  const refillsLeft = rx.refillsRemaining ?? 0;
+  const dueLocalDateStr = toLocalDateInputValue(projectedDueClean) || toLocalDateInputValue(now);
+  const dueMs = new Date(dueLocalDateStr + "T00:00:00Z").getTime();
+  const diffDays = Math.round((dueMs - todayMs) / 86400000);
+  const daysRemaining = Number.isFinite(diffDays) ? diffDays : 0;
+  const projectedRunOutDate = projectedDueClean;
+
+  const refillsLeft = Number.isFinite(rx.refillsRemaining) ? (rx.refillsRemaining ?? 0) : 0;
 
   let scheduleStatus: RefillScheduleStatus = "healthy";
   let statusLabel = "On Track";
@@ -158,7 +174,7 @@ export function computeRefillScheduleMetrics(rx: {
   return {
     effectiveDaysSupply,
     daysRemaining,
-    projectedDueDate,
+    projectedDueDate: projectedDueClean,
     projectedRunOutDate,
     scheduleStatus,
     statusLabel,
@@ -376,23 +392,25 @@ export async function getRefillSchedules(opts?: {
       prescriberFacility: rx.prescriberFacility,
       prescriberLicense: rx.prescriberLicense,
       prescriberVerified: rx.prescriberVerified,
-      quantity: rx.quantity ?? 1,
-      daysSupply: metrics.effectiveDaysSupply,
-      refillsRemaining: rx.refillsRemaining ?? 0,
-      unitPrice: Number(rx.unitPrice ?? rx.medication?.price ?? 0),
+      quantity: rx.quantity && Number.isFinite(rx.quantity) && rx.quantity > 0 ? rx.quantity : 1,
+      daysSupply: Number.isFinite(metrics.effectiveDaysSupply) ? metrics.effectiveDaysSupply : 30,
+      refillsRemaining: Number.isFinite(rx.refillsRemaining) ? (rx.refillsRemaining ?? 0) : 0,
+      unitPrice: Number.isFinite(Number(rx.unitPrice ?? rx.medication?.price ?? 0))
+        ? Number(rx.unitPrice ?? rx.medication?.price ?? 0)
+        : 0,
       lastFilledAt: rx.lastFilledAt,
       nextRefillDue: rx.nextRefillDue || metrics.projectedDueDate,
-      effectiveDaysSupply: metrics.effectiveDaysSupply,
-      daysRemaining: metrics.daysRemaining,
+      effectiveDaysSupply: Number.isFinite(metrics.effectiveDaysSupply) ? metrics.effectiveDaysSupply : 30,
+      daysRemaining: Number.isFinite(metrics.daysRemaining) ? metrics.daysRemaining : 0,
       projectedRunOutDate: metrics.projectedRunOutDate,
       scheduleStatus: metrics.scheduleStatus,
       statusLabel: metrics.statusLabel,
-      adherenceRate: adherenceCalc.adherenceRate,
+      adherenceRate: Number.isFinite(adherenceCalc.adherenceRate) ? adherenceCalc.adherenceRate : 100,
       hasOpenRefillRequest: Boolean(openRequest),
       openRefillRequestId: openRequest?.id ?? null,
       openRefillStatus: openRequest?.status ?? null,
       medicationId: rx.medicationId,
-      currentStock: stock,
+      currentStock: stock !== null && Number.isFinite(stock) ? stock : null,
       isOutOfStock,
       caregiversCount: rx.customer?.caregivers?.length ?? 0,
     };
@@ -507,16 +525,19 @@ export async function getMissingRefillsPatients(opts?: {
       where: {
         customerId: rx.customerId,
         type: { in: ["refill", "medication_dose"] },
-        status: { in: ["sent", "delivered" as any] },
+        status: { in: ["sent", "answered", "escalated"] },
       },
       orderBy: { sentAt: "desc" },
       select: { sentAt: true },
     });
 
+    const safeGap = Number.isFinite(gapDays) ? gapDays : 0;
+    const safeAdherence = Number.isFinite(adherenceCalc.adherenceRate) ? adherenceCalc.adherenceRate : 100;
+
     let riskLevel: "severe" | "moderate" | "mild" = "mild";
-    if (gapDays >= 14 || adherenceCalc.adherenceRate < 50) {
+    if (safeGap >= 14 || safeAdherence < 50) {
       riskLevel = "severe";
-    } else if (gapDays >= 7 || adherenceCalc.adherenceRate < 75) {
+    } else if (safeGap >= 7 || safeAdherence < 75) {
       riskLevel = "moderate";
     }
 
@@ -535,14 +556,14 @@ export async function getMissingRefillsPatients(opts?: {
       refillsRemaining: rx.refillsRemaining ?? 0,
       lastFilledAt: rx.lastFilledAt,
       nextRefillDue: rx.nextRefillDue || metrics.projectedDueDate,
-      gapDays,
+      gapDays: safeGap,
       riskLevel,
-      adherenceRate: adherenceCalc.adherenceRate,
+      adherenceRate: safeAdherence,
       caregivers: (rx.customer?.caregivers || []).map((cg) => ({
         id: cg.id,
         name: cg.caregiverName,
         phone: cg.caregiverPhone,
-        email: cg.caregiverEmail,
+      email: cg.caregiverEmail,
       })),
       lastReminderSentAt: lastReminder?.sentAt ?? null,
       hasOpenRefill: rx.refillRequests.length > 0,
