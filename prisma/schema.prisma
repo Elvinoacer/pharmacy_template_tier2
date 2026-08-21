@@ -338,6 +338,8 @@ model User {
   prescriptionsReviewed       Prescription[]        @relation("PrescriptionReviewer")
   clarificationLogs           PrescriptionClarificationLog[] @relation("ClarificationStaff")
   adherenceFollowUpsRecorded  AdherenceFollowUp[]   @relation("FollowUpStaff")
+  screeningsConducted         HealthScreeningRecord[] @relation("ScreeningConductedBy")
+  referralsIssued             ClinicalReferral[]      @relation("ReferralPharmacist")
 
   @@map("users")
 }
@@ -458,6 +460,8 @@ model CustomerProfile {
   serviceBookings ServiceBooking[]
   syncEnrollment  RefillSyncEnrollment?
   adherenceFollowUps AdherenceFollowUp[]
+  screeningRecords HealthScreeningRecord[]
+  clinicalReferrals ClinicalReferral[]
 
   @@index([ageSegment])
   @@map("customer_profiles")
@@ -2319,3 +2323,105 @@ model CashierSession {
   @@index([openedAt(sort: Desc)])
   @@map("cashier_sessions")
 }
+
+// ── Health Screenings & Clinical Referrals (7. Health Screening) ──
+
+model HealthScreeningRecord {
+  id                      String            @id @default(uuid()) @db.Uuid
+  customerId              String?           @map("customer_id") @db.Uuid
+  conductedById           String?           @map("conducted_by_id") @db.Uuid
+  screeningType           String            @default("general") @map("screening_type") // blood_pressure | blood_glucose | bmi_weight | temperature | wellness_check | point_of_care_test | multi_panel
+  patientName             String            @map("patient_name")
+  patientPhone            String?           @map("patient_phone")
+  patientEmail            String?           @map("patient_email")
+  patientAge              Int?              @map("patient_age")
+  patientGender           String?           @map("patient_gender")
+
+  // Blood pressure
+  systolicBp              Int?              @map("systolic_bp")
+  diastolicBp             Int?              @map("diastolic_bp")
+  pulseRate               Int?              @map("pulse_rate")
+  bpCategory              String?           @map("bp_category") // normal | elevated | stage_1_hypertension | stage_2_hypertension | hypertensive_crisis
+
+  // Blood glucose
+  bloodGlucose            Decimal?          @map("blood_glucose") @db.Decimal(5, 2)
+  glucoseUnit             String?           @default("mmol/L") @map("glucose_unit")
+  fastingStatus           String?           @default("random") @map("fasting_status") // fasting | random | post_prandial
+  glucoseCategory         String?           @map("glucose_category") // hypoglycemia | normal | impaired_pre_diabetes | diabetes_range
+
+  // Anthropometrics & BMI
+  weightKg                Decimal?          @map("weight_kg") @db.Decimal(5, 2)
+  heightCm                Decimal?          @map("height_cm") @db.Decimal(5, 2)
+  bmi                     Decimal?          @db.Decimal(4, 1)
+  bmiCategory             String?           @map("bmi_category") // underweight | normal | overweight | obese_class_1 | obese_class_2 | obese_class_3
+  waistCircumferenceCm    Decimal?          @map("waist_circumference_cm") @db.Decimal(5, 2)
+
+  // Temperature & SpO2
+  temperatureC            Decimal?          @map("temperature_c") @db.Decimal(4, 1)
+  tempCategory            String?           @map("temp_category") // hypothermia | normal | low_grade_fever | high_fever
+  spO2Percent             Int?              @map("spo2_percent")
+
+  // Point of care tests (POCT)
+  poctType                String?           @map("poct_type") // malaria_rdt | lipid_panel | hba1c | urinalysis | hiv_screening | hepatitis_b | hepatitis_c | covid_antigen
+  poctResult              String?           @map("poct_result") // negative | positive | reactive | non_reactive | abnormal | normal | custom
+  poctValues              Json              @default("{}") @map("poct_values")
+
+  // Clinical context & screening principles
+  notes                   String?
+  nonDiagnosticDisclaimer Boolean           @default(true) @map("non_diagnostic_disclaimer")
+  equipmentUsed           String?           @map("equipment_used")
+  requiresReferral        Boolean           @default(false) @map("requires_referral")
+  referralUrgency         String?           @map("referral_urgency") // routine | urgent | emergency
+
+  createdAt               DateTime          @default(now()) @map("created_at")
+  updatedAt               DateTime          @updatedAt @map("updated_at")
+
+  customer                CustomerProfile?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  conductedBy             User?             @relation("ScreeningConductedBy", fields: [conductedById], references: [id], onDelete: SetNull)
+  referrals               ClinicalReferral[]
+
+  @@index([customerId])
+  @@index([screeningType])
+  @@index([requiresReferral])
+  @@index([createdAt(sort: Desc)])
+  @@map("health_screening_records")
+}
+
+model ClinicalReferral {
+  id                      String                 @id @default(uuid()) @db.Uuid
+  screeningId             String?                @map("screening_id") @db.Uuid
+  customerId              String?                @map("customer_id") @db.Uuid
+  referredById            String?                @map("referred_by_id") @db.Uuid
+  referenceCode           String                 @unique @map("reference_code") // e.g. REF-2026-08-0001
+  patientName             String                 @map("patient_name")
+  patientPhone            String?                @map("patient_phone")
+  patientEmail            String?                @map("patient_email")
+  patientDob              DateTime?              @map("patient_dob") @db.Date
+  patientGender           String?                @map("patient_gender")
+
+  destinationType         String                 @map("destination_type") // clinic | hospital | laboratory | specialist | emergency_services
+  facilityName            String                 @map("facility_name")
+  facilityContact         String?                @map("facility_contact")
+  specialistType          String?                @map("specialist_type") // Cardiology | Endocrinology | Nephrology | Pulmonology | Internal Medicine | Pathology | Emergency
+  urgency                 String                 @default("routine") // routine | urgent | emergency
+  reason                  String
+  clinicalSummary         String                 @map("clinical_summary")
+  pharmacistRecommendations String?              @map("pharmacist_recommendations")
+  status                  String                 @default("issued") // issued | shared_with_patient | completed | cancelled
+  issuedAt                DateTime               @default(now()) @map("issued_at")
+  createdAt               DateTime               @default(now()) @map("created_at")
+  updatedAt               DateTime               @updatedAt @map("updated_at")
+
+  screening               HealthScreeningRecord? @relation(fields: [screeningId], references: [id], onDelete: SetNull)
+  customer                CustomerProfile?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  referredBy              User?                  @relation("ReferralPharmacist", fields: [referredById], references: [id], onDelete: SetNull)
+
+  @@index([screeningId])
+  @@index([customerId])
+  @@index([destinationType])
+  @@index([urgency])
+  @@index([status])
+  @@index([issuedAt(sort: Desc)])
+  @@map("clinical_referrals")
+}
+

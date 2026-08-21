@@ -28,6 +28,7 @@ import {
   LayoutDashboard,
   Users,
   BookOpen,
+  Activity,
 } from "lucide-react";
 import { pharmacy } from "@/app/lib/data";
 import { resolvePortalCta, type PortalSessionHint } from "@/app/lib/portal-dest";
@@ -121,6 +122,13 @@ const CATEGORIES: NavCategory[] = [
         desc: "12-pillar digital medication guides & missed-dose helper",
         icon: BookOpen,
         badge: "12-Pillar",
+      },
+      {
+        href: "/screenings",
+        label: "Health Screenings & Vitals",
+        desc: "BP, glucose, BMI & clinical referrals",
+        icon: Activity,
+        badge: "Screening",
       },
       {
         href: "/caregiver",

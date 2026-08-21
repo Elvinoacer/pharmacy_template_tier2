@@ -113,6 +113,13 @@ export const ADMIN_LINKS = [
     group: "clinical",
     description: "Consults & vaccinations",
   },
+  {
+    href: "/admin/screenings",
+    label: "Health Screenings & Referrals",
+    icon: Activity,
+    group: "clinical",
+    description: "Vitals, POCT & clinical referrals",
+  },
 
   // ── Commerce & Inventory ──
   {

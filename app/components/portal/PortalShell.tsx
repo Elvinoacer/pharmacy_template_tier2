@@ -30,6 +30,7 @@ import {
   CreditCard,
   Calendar,
   RefreshCw,
+  Activity,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -52,6 +53,7 @@ export const PORTAL_LINKS = [
   { href: "/portal/sync", label: "Refill Synchronization", icon: RefreshCw, group: "medications" },
   { href: "/portal/counselling", label: "Medication Counselling", icon: HeartPulse, group: "medications" },
   { href: "/portal/orders", label: "Orders", icon: ShoppingCart, group: "orders" },
+  { href: "/portal/screenings", label: "Health Screenings", icon: Activity, group: "health" },
   { href: "/portal/feel", label: "How do you feel?", icon: HeartPulse, group: "health" },
   { href: "/portal/caregivers", label: "Caregivers", icon: HeartHandshake, group: "health" },
   { href: "/portal/messages", label: "Messages", icon: MessageSquare, group: "communication" },
