@@ -1,6 +1,7 @@
 import "server-only";
 
 import Groq from "groq-sdk";
+import { groqClient, groqVisionModelName, GROQ_NO_REASONING } from "@/app/lib/groq";
 import type { ChatCompletionContentPart } from "groq-sdk/resources/chat/completions";
 import { prisma } from "@/app/lib/db";
 import type { MedicineCatalogItem } from "@/app/components/MedicineCatalogCard";
@@ -34,17 +35,11 @@ export type ImageSearchError = {
 };
 
 function client(): Groq {
-  const apiKey = process.env.GROQ_API_KEY?.trim();
-  if (!apiKey) throw new Error("GROQ_API_KEY is not configured");
-  return new Groq({ apiKey });
+  return groqClient();
 }
 
 function visionModelName(): string {
-  return (
-    process.env.GROQ_VISION_MODEL ||
-    process.env.GROQ_MODEL ||
-    "meta-llama/llama-4-scout-17b-16e-instruct"
-  ).trim();
+  return groqVisionModelName();
 }
 
 function normalizeMime(type: string): string {
@@ -173,6 +168,7 @@ Rules:
     model: visionModelName(),
     temperature: 0.1,
     max_completion_tokens: 400,
+    ...GROQ_NO_REASONING,
     messages: [
       {
         role: "user",

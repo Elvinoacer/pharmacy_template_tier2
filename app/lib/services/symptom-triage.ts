@@ -1,6 +1,7 @@
 import "server-only";
 
 import Groq from "groq-sdk";
+import { groqClient, groqModelName, groqVisionModelName, GROQ_NO_REASONING } from "@/app/lib/groq";
 import type {
   ChatCompletionContentPart,
   ChatCompletionMessageParam,
@@ -111,22 +112,15 @@ const ESCALATED_HANDOFF =
   "A pharmacist has been notified and will review this conversation. AI clinical guidance is paused until staff reply. You can still add details or photos for the team.";
 
 function client(): Groq {
-  const apiKey = process.env.GROQ_API_KEY?.trim();
-  if (!apiKey) throw new Error("GROQ_API_KEY is not configured");
-  return new Groq({ apiKey });
+  return groqClient();
 }
 
 function modelName(): string {
-  return (process.env.GROQ_MODEL || "llama-3.3-70b-versatile").trim();
+  return groqModelName();
 }
 
-/** Vision-capable model for image turns (falls back to text model). */
 function visionModelName(): string {
-  return (
-    process.env.GROQ_VISION_MODEL ||
-    process.env.GROQ_MODEL ||
-    "meta-llama/llama-4-scout-17b-16e-instruct"
-  ).trim();
+  return groqVisionModelName();
 }
 
 export function detectRedFlags(text: string): boolean {
@@ -484,6 +478,7 @@ export async function sendSymptomMessage(input: {
       messages,
       temperature: 0.4,
       max_completion_tokens: 900,
+      ...(hasImages ? GROQ_NO_REASONING : {}),
     });
     assistantText =
       completion.choices[0]?.message?.content?.trim() ||
