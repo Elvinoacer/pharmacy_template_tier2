@@ -10,6 +10,8 @@ import LandingFaqSection from "./components/landing/LandingFaqSection";
 import LandingCtaBanner from "./components/landing/LandingCtaBanner";
 import LandingMobileActionBar from "./components/landing/LandingMobileActionBar";
 import { PublicTestimonials } from "./components/PublicTestimonials";
+import LandingFeaturesShowcase from "./components/landing/LandingFeaturesShowcase";
+import LandingStatsSection from "./components/landing/LandingStatsSection";
 
 export const dynamic = "force-dynamic";
 
@@ -32,8 +34,8 @@ export default async function MarketplacePage({
   });
 
   return (
-    <div className="landing-root min-h-screen bg-[#f8fafc] text-[#0f172a] pb-16 lg:pb-0">
-      {/* ───────── 1. MINIMALIST VISUAL HERO ───────── */}
+    <div className="landing-root min-h-screen bg-white text-[#0f172a]">
+      {/* ───────── 1. STUNNING VISUAL HERO ───────── */}
       <LandingHeroInteractive
         platformPromise={platform.promise}
         platformDescription={platform.description}
@@ -41,35 +43,41 @@ export default async function MarketplacePage({
         pharmacyCount={pharmacies.length || 12}
       />
 
-      {/* ───────── 2. 60-SECOND CARE PATHWAYS ───────── */}
+      {/* ───────── 2. TRUST BADGES STRIP ───────── */}
+      <LandingStatsSection />
+
+      {/* ───────── 3. QUICK CARE SERVICES ───────── */}
       <LandingQuickCareDeck />
 
-      {/* ───────── 3. PHARMACY DIRECTORY & LOCATIONS ───────── */}
+      {/* ───────── 4. FEATURES SHOWCASE ───────── */}
+      <LandingFeaturesShowcase />
+
+      {/* ───────── 5. PHARMACY DIRECTORY ───────── */}
       <LandingDirectorySection
         pharmacies={pharmacies}
         initialCity={city}
         initialQuery={q}
       />
 
-      {/* ───────── 4. WHY AETHER — VISUAL BENTO GRID ───────── */}
+      {/* ───────── 6. WHY AETHER — BENTO GRID ───────── */}
       <LandingBentoGrid />
 
-      {/* ───────── 5. OTC ESSENTIALS CAROUSEL ───────── */}
+      {/* ───────── 7. OTC ESSENTIALS ───────── */}
       <LandingOtcSpotlight />
 
-      {/* ───────── 6. TRUST METRICS & COMMUNITY QUOTES ───────── */}
+      {/* ───────── 8. TRUST METRICS & TESTIMONIALS ───────── */}
       <LandingTrustMetrics />
 
-      {/* ───────── 7. DATABASE TESTIMONIALS (IF ANY) ───────── */}
+      {/* ───────── 9. DATABASE TESTIMONIALS ───────── */}
       <PublicTestimonials limit={3} />
 
-      {/* ───────── 8. ACCORDION FAQ ───────── */}
+      {/* ───────── 10. FAQ SECTION ───────── */}
       <LandingFaqSection />
 
-      {/* ───────── 9. MINIMALIST CLOSING BANNER ───────── */}
+      {/* ───────── 11. CLOSING CTA BANNER ───────── */}
       <LandingCtaBanner />
 
-      {/* ───────── 10. MOBILE FLOATING ACTION DOCK ───────── */}
+      {/* ───────── 12. MOBILE ACTION BAR ───────── */}
       <LandingMobileActionBar />
     </div>
   );
