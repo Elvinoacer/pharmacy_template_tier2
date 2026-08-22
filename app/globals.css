@@ -2021,6 +2021,44 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   }
 }
 
+/* Wave Retrigger on Hover */
+@keyframes splitTextWaveHover {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+  35% {
+    transform: translateY(-7px) scale(1.05);
+    filter: brightness(1.25) drop-shadow(0 2px 10px rgba(251, 191, 36, 0.4));
+  }
+  70% {
+    transform: translateY(2px) scale(0.98);
+    filter: brightness(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes splitTextWaveWordHover {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+  35% {
+    transform: translateY(-5px) scale(1.03);
+    filter: brightness(1.2) drop-shadow(0 2px 8px rgba(251, 191, 36, 0.35));
+  }
+  70% {
+    transform: translateY(1.5px) scale(0.99);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
 .split-text-wave-char {
   display: inline-block;
   opacity: 0;
@@ -2030,6 +2068,11 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   backface-visibility: hidden;
 }
 
+.split-text-wave-char.is-hovering {
+  opacity: 1;
+  animation: splitTextWaveHover 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
 .split-text-wave-word {
   display: inline-block;
   opacity: 0;
@@ -2037,12 +2080,39 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   will-change: transform, opacity, filter;
 }
 
+.split-text-wave-word.is-hovering {
+  opacity: 1;
+  animation: splitTextWaveWordHover 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* ============================================================
+   Custom Fluid Aether Cursor Animations
+   ============================================================ */
+@keyframes cursorRipple {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3.5);
+  }
+}
+
+.animate-cursor-ripple {
+  animation: cursorRipple 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .split-text-wave-char,
-  .split-text-wave-word {
+  .split-text-wave-word,
+  .split-text-wave-char.is-hovering,
+  .split-text-wave-word.is-hovering,
+  .animate-cursor-ripple {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
   }
 }
+
