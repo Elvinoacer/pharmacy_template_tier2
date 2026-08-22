@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ArrowRight, Search } from "lucide-react";
+import CleanTextWave from "./CleanTextWave";
 import TextDecoderWave from "./TextDecoderWave";
-import SplitTextWaveScramble from "./SplitTextWaveScramble";
 
 interface TravelLabHeroProps {
   pharmacyCount?: number;
@@ -39,7 +39,7 @@ export default function TravelLabHero({
 
       {/* Main Hero Content */}
       <div className="relative z-10 mx-auto max-w-6xl px-4 pt-32 pb-16 sm:px-6 sm:pt-40 lg:px-8 text-center my-auto">
-        {/* ──────── 1. DECODING KICKER PILL: "The Aether Healthcare Group" ──────── */}
+        {/* ──────── 1. DECODING KICKER PILL ──────── */}
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/35 bg-black/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 backdrop-blur-md shadow-[0_0_25px_rgba(201,162,39,0.2)]">
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-radar-ring absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
@@ -47,28 +47,28 @@ export default function TravelLabHero({
           </span>
           <TextDecoderWave
             text="The Aether Healthcare Group"
-            delay={100}
-            speed={25}
+            delay={80}
+            speed={20}
             className="tracking-widest font-mono text-amber-300 font-bold"
           />
         </div>
 
-        {/* ──────── 2. SPLIT-TEXT WAVE SCRAMBLE HEADLINE ──────── */}
+        {/* ──────── 2. ZERO-LAYOUT-SHIFT HEADLINE WAVE ──────── */}
         <div className="mt-8 max-w-4xl mx-auto">
-          <SplitTextWaveScramble
+          <CleanTextWave
             as="h1"
-            delay={250}
-            speed={24}
-            className="text-4xl font-medium tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.12]"
+            delay={200}
+            speed={22}
+            className="text-4xl font-medium tracking-tight sm:text-6xl lg:text-7xl"
             style={{ fontFamily: "var(--font-display), serif" }}
-            segments={[
+            lines={[
               {
-                text: "Rewriting the story of ",
+                text: "Rewriting the story of",
                 className: "text-white drop-shadow",
               },
               {
                 text: "pharmacy care in Africa.",
-                className: "italic font-medium text-[#fef08a] sm:text-[#fde047] drop-shadow-[0_2px_15px_rgba(253,224,71,0.25)]",
+                className: "mt-1.5 sm:mt-2.5 italic font-medium text-[#fef08a] sm:text-[#fde047] drop-shadow-[0_2px_20px_rgba(253,224,71,0.28)]",
               },
             ]}
           />
@@ -79,8 +79,8 @@ export default function TravelLabHero({
           <TextDecoderWave
             as="p"
             text="Connecting independent accredited chemists, licensed clinicians, and families through one unified digital healthcare infrastructure."
-            delay={600}
-            speed={14}
+            delay={550}
+            speed={12}
             className="leading-relaxed text-slate-200 font-normal"
           />
         </div>
