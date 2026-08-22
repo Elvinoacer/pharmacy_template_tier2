@@ -369,12 +369,12 @@ export type EnquiryCreateInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutEnquiriesInput
   assignedTo?: Prisma.UserCreateNestedOneWithoutEnquiriesAssignedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
 }
 
 export type EnquiryUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   name: string
   email?: string | null
@@ -428,7 +428,7 @@ export type EnquiryUncheckedUpdateInput = {
 
 export type EnquiryCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   name: string
   email?: string | null
@@ -770,12 +770,12 @@ export type EnquiryCreateWithoutAssignedToInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutEnquiriesInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
 }
 
 export type EnquiryUncheckedCreateWithoutAssignedToInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   name: string
   email?: string | null
@@ -830,12 +830,12 @@ export type EnquiryCreateWithoutCustomerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   assignedTo?: Prisma.UserCreateNestedOneWithoutEnquiriesAssignedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutEnquiriesInput
 }
 
 export type EnquiryUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   email?: string | null
   phone?: string | null
@@ -946,7 +946,7 @@ export type EnquiryUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type EnquiryCreateManyAssignedToInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   name: string
   email?: string | null
@@ -1014,7 +1014,7 @@ export type EnquiryUncheckedUpdateManyWithoutAssignedToInput = {
 
 export type EnquiryCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   email?: string | null
   phone?: string | null

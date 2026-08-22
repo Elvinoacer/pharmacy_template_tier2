@@ -405,12 +405,12 @@ export type FeedbackCreateInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutFeedbackInput
   respondedBy?: Prisma.UserCreateNestedOneWithoutFeedbackRespondedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
 }
 
 export type FeedbackUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   name?: string | null
   email?: string | null
@@ -464,7 +464,7 @@ export type FeedbackUncheckedUpdateInput = {
 
 export type FeedbackCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   name?: string | null
   email?: string | null
@@ -814,12 +814,12 @@ export type FeedbackCreateWithoutRespondedByInput = {
   isPublic?: boolean
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutFeedbackInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
 }
 
 export type FeedbackUncheckedCreateWithoutRespondedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   name?: string | null
   email?: string | null
@@ -874,12 +874,12 @@ export type FeedbackCreateWithoutCustomerInput = {
   isPublic?: boolean
   createdAt?: Date | string
   respondedBy?: Prisma.UserCreateNestedOneWithoutFeedbackRespondedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutFeedbackInput
 }
 
 export type FeedbackUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name?: string | null
   email?: string | null
   rating?: number | null
@@ -990,7 +990,7 @@ export type FeedbackUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type FeedbackCreateManyRespondedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   name?: string | null
   email?: string | null
@@ -1058,7 +1058,7 @@ export type FeedbackUncheckedUpdateManyWithoutRespondedByInput = {
 
 export type FeedbackCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name?: string | null
   email?: string | null
   rating?: number | null

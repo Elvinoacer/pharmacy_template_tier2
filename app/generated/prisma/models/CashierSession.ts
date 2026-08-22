@@ -375,12 +375,12 @@ export type CashierSessionCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCashierSessionsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCashierSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCashierSessionsInput
 }
 
 export type CashierSessionUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -425,7 +425,7 @@ export type CashierSessionUncheckedUpdateInput = {
 
 export type CashierSessionCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -702,12 +702,12 @@ export type CashierSessionCreateWithoutUserInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCashierSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCashierSessionsInput
 }
 
 export type CashierSessionUncheckedCreateWithoutUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closedAt?: Date | string | null
@@ -803,7 +803,7 @@ export type CashierSessionUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type CashierSessionCreateManyUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   openedAt?: Date | string
   openingFloat?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closedAt?: Date | string | null

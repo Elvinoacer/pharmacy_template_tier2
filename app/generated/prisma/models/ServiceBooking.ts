@@ -513,12 +513,12 @@ export type ServiceBookingCreateInput = {
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
   immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
 }
 
 export type ServiceBookingUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   serviceId: string
   customerId?: string | null
   fullName: string
@@ -596,7 +596,7 @@ export type ServiceBookingUncheckedUpdateInput = {
 
 export type ServiceBookingCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   serviceId: string
   customerId?: string | null
   fullName: string
@@ -1104,12 +1104,12 @@ export type ServiceBookingCreateWithoutRecordedByInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutServiceBookingsInput
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
   immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutRecordedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   serviceId: string
   customerId?: string | null
   fullName: string
@@ -1180,12 +1180,12 @@ export type ServiceBookingCreateWithoutCustomerInput = {
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
   immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   serviceId: string
   fullName: string
   phone: string
@@ -1256,12 +1256,12 @@ export type ServiceBookingCreateWithoutOrderInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutServiceBookingsInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
   immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   serviceId: string
   customerId?: string | null
   fullName: string
@@ -1372,12 +1372,12 @@ export type ServiceBookingCreateWithoutServiceInput = {
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
   immunizationAppointment?: Prisma.ImmunizationAppointmentCreateNestedOneWithoutBookingInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutServiceInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   fullName: string
   phone: string
@@ -1448,12 +1448,12 @@ export type ServiceBookingCreateWithoutImmunizationAppointmentInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutServiceBookingsInput
   order?: Prisma.OrderCreateNestedOneWithoutServiceBookingInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutServiceBookingsRecordedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutServiceBookingsInput
 }
 
 export type ServiceBookingUncheckedCreateWithoutImmunizationAppointmentInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   serviceId: string
   customerId?: string | null
   fullName: string
@@ -1642,7 +1642,7 @@ export type ServiceBookingUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type ServiceBookingCreateManyRecordedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   serviceId: string
   customerId?: string | null
   fullName: string
@@ -1740,7 +1740,7 @@ export type ServiceBookingUncheckedUpdateManyWithoutRecordedByInput = {
 
 export type ServiceBookingCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   serviceId: string
   fullName: string
   phone: string
@@ -1838,7 +1838,7 @@ export type ServiceBookingUncheckedUpdateManyWithoutCustomerInput = {
 
 export type ServiceBookingCreateManyServiceInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   fullName: string
   phone: string

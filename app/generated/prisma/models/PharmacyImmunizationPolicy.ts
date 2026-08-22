@@ -441,12 +441,12 @@ export type PharmacyImmunizationPolicyCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutImmunizationPolicyUpdatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationPolicyInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationPolicyInput
 }
 
 export type PharmacyImmunizationPolicyUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   enabled?: boolean
   jurisdiction?: string
   authorizingBody?: string
@@ -509,7 +509,7 @@ export type PharmacyImmunizationPolicyUncheckedUpdateInput = {
 
 export type PharmacyImmunizationPolicyCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   enabled?: boolean
   jurisdiction?: string
   authorizingBody?: string
@@ -841,12 +841,12 @@ export type PharmacyImmunizationPolicyCreateWithoutUpdatedByInput = {
   paediatricOnSite?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationPolicyInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationPolicyInput
 }
 
 export type PharmacyImmunizationPolicyUncheckedCreateWithoutUpdatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   enabled?: boolean
   jurisdiction?: string
   authorizingBody?: string
@@ -916,7 +916,7 @@ export type PharmacyImmunizationPolicyScalarWhereInput = {
 
 export type PharmacyImmunizationPolicyCreateManyUpdatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   enabled?: boolean
   jurisdiction?: string
   authorizingBody?: string

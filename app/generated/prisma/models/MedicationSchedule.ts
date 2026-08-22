@@ -349,12 +349,12 @@ export type MedicationScheduleCreateInput = {
   prescription: Prisma.PrescriptionCreateNestedOneWithoutDoseScheduleInput
   customer: Prisma.CustomerProfileCreateNestedOneWithoutMedicationSchedulesInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutScheduleInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
 }
 
 export type MedicationScheduleUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   customerId: string
   timeOfDay: string
@@ -396,7 +396,7 @@ export type MedicationScheduleUncheckedUpdateInput = {
 
 export type MedicationScheduleCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   customerId: string
   timeOfDay: string
@@ -717,12 +717,12 @@ export type MedicationScheduleCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   prescription: Prisma.PrescriptionCreateNestedOneWithoutDoseScheduleInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutScheduleInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
 }
 
 export type MedicationScheduleUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   timeOfDay: string
   doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -769,12 +769,12 @@ export type MedicationScheduleCreateWithoutPrescriptionInput = {
   updatedAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutMedicationSchedulesInput
   doseLogs?: Prisma.DoseLogCreateNestedManyWithoutScheduleInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
 }
 
 export type MedicationScheduleUncheckedCreateWithoutPrescriptionInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   timeOfDay: string
   doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -821,12 +821,12 @@ export type MedicationScheduleCreateWithoutDoseLogsInput = {
   updatedAt?: Date | string
   prescription: Prisma.PrescriptionCreateNestedOneWithoutDoseScheduleInput
   customer: Prisma.CustomerProfileCreateNestedOneWithoutMedicationSchedulesInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutMedicationSchedulesInput
 }
 
 export type MedicationScheduleUncheckedCreateWithoutDoseLogsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   customerId: string
   timeOfDay: string
@@ -931,7 +931,7 @@ export type MedicationScheduleUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type MedicationScheduleCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   timeOfDay: string
   doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -981,7 +981,7 @@ export type MedicationScheduleUncheckedUpdateManyWithoutCustomerInput = {
 
 export type MedicationScheduleCreateManyPrescriptionInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   timeOfDay: string
   doseQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string

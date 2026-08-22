@@ -340,12 +340,12 @@ export type ImmunizerCredentialCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutImmunizerCredentialsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizerCredentialsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizerCredentialsInput
 }
 
 export type ImmunizerCredentialUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId: string
   credentialType: string
   title: string
@@ -393,7 +393,7 @@ export type ImmunizerCredentialUncheckedUpdateInput = {
 
 export type ImmunizerCredentialCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId: string
   credentialType: string
   title: string
@@ -666,12 +666,12 @@ export type ImmunizerCredentialCreateWithoutUserInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizerCredentialsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizerCredentialsInput
 }
 
 export type ImmunizerCredentialUncheckedCreateWithoutUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   credentialType: string
   title: string
   licenseNumber?: string | null
@@ -772,7 +772,7 @@ export type ImmunizerCredentialUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type ImmunizerCredentialCreateManyUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   credentialType: string
   title: string
   licenseNumber?: string | null

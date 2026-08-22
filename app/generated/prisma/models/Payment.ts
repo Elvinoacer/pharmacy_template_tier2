@@ -452,12 +452,12 @@ export type PaymentCreateInput = {
   order: Prisma.OrderCreateNestedOneWithoutPaymentsInput
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutPaymentsInput
   refunds?: Prisma.RefundCreateNestedManyWithoutPaymentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPaymentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   customerId?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -523,7 +523,7 @@ export type PaymentUncheckedUpdateInput = {
 
 export type PaymentCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   customerId?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -927,12 +927,12 @@ export type PaymentCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   order: Prisma.OrderCreateNestedOneWithoutPaymentsInput
   refunds?: Prisma.RefundCreateNestedManyWithoutPaymentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPaymentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   provider?: $Enums.PaymentProvider
@@ -995,12 +995,12 @@ export type PaymentCreateWithoutOrderInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutPaymentsInput
   refunds?: Prisma.RefundCreateNestedManyWithoutPaymentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPaymentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   provider?: $Enums.PaymentProvider
@@ -1063,12 +1063,12 @@ export type PaymentCreateWithoutRefundsInput = {
   updatedAt?: Date | string
   order: Prisma.OrderCreateNestedOneWithoutPaymentsInput
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutPaymentsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPaymentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutRefundsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   customerId?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1229,7 +1229,7 @@ export type PaymentUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type PaymentCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   provider?: $Enums.PaymentProvider
@@ -1311,7 +1311,7 @@ export type PaymentUncheckedUpdateManyWithoutCustomerInput = {
 
 export type PaymentCreateManyOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   provider?: $Enums.PaymentProvider

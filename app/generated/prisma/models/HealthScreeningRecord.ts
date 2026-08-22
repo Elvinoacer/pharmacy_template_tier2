@@ -718,12 +718,12 @@ export type HealthScreeningRecordCreateInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutScreeningRecordsInput
   conductedBy?: Prisma.UserCreateNestedOneWithoutScreeningsConductedInput
   referrals?: Prisma.ClinicalReferralCreateNestedManyWithoutScreeningInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
 }
 
 export type HealthScreeningRecordUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   conductedById?: string | null
   screeningType?: string
@@ -843,7 +843,7 @@ export type HealthScreeningRecordUncheckedUpdateInput = {
 
 export type HealthScreeningRecordCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   conductedById?: string | null
   screeningType?: string
@@ -1437,12 +1437,12 @@ export type HealthScreeningRecordCreateWithoutConductedByInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutScreeningRecordsInput
   referrals?: Prisma.ClinicalReferralCreateNestedManyWithoutScreeningInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
 }
 
 export type HealthScreeningRecordUncheckedCreateWithoutConductedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   screeningType?: string
   patientName: string
@@ -1541,12 +1541,12 @@ export type HealthScreeningRecordCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   conductedBy?: Prisma.UserCreateNestedOneWithoutScreeningsConductedInput
   referrals?: Prisma.ClinicalReferralCreateNestedManyWithoutScreeningInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
 }
 
 export type HealthScreeningRecordUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   conductedById?: string | null
   screeningType?: string
   patientName: string
@@ -1645,12 +1645,12 @@ export type HealthScreeningRecordCreateWithoutReferralsInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutScreeningRecordsInput
   conductedBy?: Prisma.UserCreateNestedOneWithoutScreeningsConductedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutScreeningsInput
 }
 
 export type HealthScreeningRecordUncheckedCreateWithoutReferralsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   conductedById?: string | null
   screeningType?: string
@@ -1937,7 +1937,7 @@ export type HealthScreeningRecordUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type HealthScreeningRecordCreateManyConductedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   screeningType?: string
   patientName: string
@@ -2091,7 +2091,7 @@ export type HealthScreeningRecordUncheckedUpdateManyWithoutConductedByInput = {
 
 export type HealthScreeningRecordCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   conductedById?: string | null
   screeningType?: string
   patientName: string

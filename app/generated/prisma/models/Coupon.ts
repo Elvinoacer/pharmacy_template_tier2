@@ -420,12 +420,12 @@ export type CouponCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCouponInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCouponsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCouponsInput
 }
 
 export type CouponUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   code: string
   description?: string | null
   discountType: $Enums.DiscountType
@@ -482,7 +482,7 @@ export type CouponUncheckedUpdateInput = {
 
 export type CouponCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   code: string
   description?: string | null
   discountType: $Enums.DiscountType
@@ -783,12 +783,12 @@ export type CouponCreateWithoutOrderItemsInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCouponsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCouponsInput
 }
 
 export type CouponUncheckedCreateWithoutOrderItemsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   code: string
   description?: string | null
   discountType: $Enums.DiscountType

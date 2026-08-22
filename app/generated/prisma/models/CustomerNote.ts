@@ -314,12 +314,12 @@ export type CustomerNoteCreateInput = {
   createdAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutStaffNotesInput
   author?: Prisma.UserCreateNestedOneWithoutCustomerNotesInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
 }
 
 export type CustomerNoteUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   authorId?: string | null
   body: string
@@ -352,7 +352,7 @@ export type CustomerNoteUncheckedUpdateInput = {
 
 export type CustomerNoteCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   authorId?: string | null
   body: string
@@ -624,12 +624,12 @@ export type CustomerNoteCreateWithoutAuthorInput = {
   sortOrder?: number
   createdAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutStaffNotesInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
 }
 
 export type CustomerNoteUncheckedCreateWithoutAuthorInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   body: string
   isPinned?: boolean
@@ -670,12 +670,12 @@ export type CustomerNoteCreateWithoutCustomerInput = {
   sortOrder?: number
   createdAt?: Date | string
   author?: Prisma.UserCreateNestedOneWithoutCustomerNotesInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCustomerNotesInput
 }
 
 export type CustomerNoteUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   authorId?: string | null
   body: string
   isPinned?: boolean
@@ -751,7 +751,7 @@ export type CustomerNoteUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type CustomerNoteCreateManyAuthorInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   body: string
   isPinned?: boolean
@@ -791,7 +791,7 @@ export type CustomerNoteUncheckedUpdateManyWithoutAuthorInput = {
 
 export type CustomerNoteCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   authorId?: string | null
   body: string
   isPinned?: boolean

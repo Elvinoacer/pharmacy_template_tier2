@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSessionUser, isStaff } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
+import { getTenant } from "@/app/lib/tenant";
 import { sendDirectRefillReminder } from "@/app/lib/services/refills";
 
 export const runtime = "nodejs";
@@ -22,6 +23,12 @@ export async function POST(req: Request) {
 
     if (!customerId || !prescriptionId || !message) {
       return NextResponse.json({ error: "missing_fields" }, { status: 400 });
+    }
+
+    const tenant = await getTenant().catch(() => ({ pharmacyId: null as string | null }));
+    const pharmacyId = user.activePharmacyId || tenant.pharmacyId;
+    if (!pharmacyId) {
+      return NextResponse.json({ error: "no_active_pharmacy" }, { status: 400 });
     }
 
     const res = await sendDirectRefillReminder({
@@ -57,6 +64,7 @@ export async function POST(req: Request) {
 
     await prisma.customerNote.create({
       data: {
+        pharmacyId,
         customerId,
         authorId: user.id,
         body: `[Non-Adherence Intervention] Sent ${channel.toUpperCase()} follow-up regarding missed refill. Message: "${message}"`,

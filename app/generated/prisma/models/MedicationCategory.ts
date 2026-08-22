@@ -369,12 +369,12 @@ export type MedicationCategoryCreateInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMedicationCategoriesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutMedicationCategoriesInput
 }
 
 export type MedicationCategoryUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   slug: string
   description?: string | null
@@ -422,7 +422,7 @@ export type MedicationCategoryUncheckedUpdateInput = {
 
 export type MedicationCategoryCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   slug: string
   description?: string | null

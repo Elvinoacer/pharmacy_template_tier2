@@ -328,12 +328,12 @@ export type LoyaltyRuleCreateInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyRulesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutLoyaltyRulesInput
 }
 
 export type LoyaltyRuleUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   trigger: string
   points?: number
@@ -369,7 +369,7 @@ export type LoyaltyRuleUncheckedUpdateInput = {
 
 export type LoyaltyRuleCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   trigger: string
   points?: number

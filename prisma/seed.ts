@@ -1753,7 +1753,6 @@ async function main() {
 
     await prisma.immunizationRecord.create({
       data: {
-      pharmacyId: AETHER_ID,
         appointmentId: appt.id,
         vaccineProductId: fluId,
         customerId: jane.id,

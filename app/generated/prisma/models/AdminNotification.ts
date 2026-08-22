@@ -335,12 +335,12 @@ export type AdminNotificationCreateInput = {
   retryAction?: string | null
   retryPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAdminNotificationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutAdminNotificationsInput
 }
 
 export type AdminNotificationUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   type: string
   title: string
   body: string
@@ -388,7 +388,7 @@ export type AdminNotificationUncheckedUpdateInput = {
 
 export type AdminNotificationCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   type: string
   title: string
   body: string

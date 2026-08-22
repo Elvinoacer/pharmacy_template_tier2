@@ -317,12 +317,12 @@ export type MessageTemplateCreateInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutTemplatesCreatedInput
   updatedBy?: Prisma.UserCreateNestedOneWithoutTemplatesUpdatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
 }
 
 export type MessageTemplateUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -364,7 +364,7 @@ export type MessageTemplateUncheckedUpdateInput = {
 
 export type MessageTemplateCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -658,12 +658,12 @@ export type MessageTemplateCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutTemplatesUpdatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
 }
 
 export type MessageTemplateUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -694,12 +694,12 @@ export type MessageTemplateCreateWithoutUpdatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutTemplatesCreatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutMessageTemplatesInput
 }
 
 export type MessageTemplateUncheckedCreateWithoutUpdatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -806,7 +806,7 @@ export type MessageTemplateUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type MessageTemplateCreateManyCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -819,7 +819,7 @@ export type MessageTemplateCreateManyCreatedByInput = {
 
 export type MessageTemplateCreateManyUpdatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   channel: $Enums.ConversationChannel
   subject?: string | null

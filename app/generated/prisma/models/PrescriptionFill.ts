@@ -535,12 +535,12 @@ export type PrescriptionFillCreateInput = {
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -618,7 +618,7 @@ export type PrescriptionFillUncheckedUpdateInput = {
 
 export type PrescriptionFillCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -1165,12 +1165,12 @@ export type PrescriptionFillCreateWithoutDispensedByInput = {
   order?: Prisma.OrderCreateNestedOneWithoutPrescriptionFillInput
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutDispensedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -1241,12 +1241,12 @@ export type PrescriptionFillCreateWithoutPrescriptionInput = {
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutPrescriptionInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId?: string | null
   refillRequestId?: string | null
   fillNumber: number
@@ -1317,12 +1317,12 @@ export type PrescriptionFillCreateWithoutRefillRequestInput = {
   order?: Prisma.OrderCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutRefillRequestInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   orderId?: string | null
   fillNumber: number
@@ -1433,12 +1433,12 @@ export type PrescriptionFillCreateWithoutMedicationInput = {
   order?: Prisma.OrderCreateNestedOneWithoutPrescriptionFillInput
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutMedicationInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -1509,12 +1509,12 @@ export type PrescriptionFillCreateWithoutOrderInput = {
   refillRequest?: Prisma.RefillRequestCreateNestedOneWithoutPrescriptionFillInput
   dispensedBy?: Prisma.UserCreateNestedOneWithoutPrescriptionFillsDispensedInput
   medication?: Prisma.PharmacyInventoryCreateNestedOneWithoutPrescriptionFillsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionFillsInput
 }
 
 export type PrescriptionFillUncheckedCreateWithoutOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   refillRequestId?: string | null
   fillNumber: number
@@ -1705,7 +1705,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type PrescriptionFillCreateManyDispensedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null
@@ -1805,7 +1805,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutDispensedByInput = {
 
 export type PrescriptionFillCreateManyPrescriptionInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId?: string | null
   refillRequestId?: string | null
   fillNumber: number
@@ -1905,7 +1905,7 @@ export type PrescriptionFillUncheckedUpdateManyWithoutPrescriptionInput = {
 
 export type PrescriptionFillCreateManyMedicationInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId: string
   orderId?: string | null
   refillRequestId?: string | null

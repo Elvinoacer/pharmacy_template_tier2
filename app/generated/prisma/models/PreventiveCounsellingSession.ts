@@ -462,12 +462,12 @@ export type PreventiveCounsellingSessionCreateInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutCounsellingSessionsInput
   counsellor?: Prisma.UserCreateNestedOneWithoutCounsellingSessionsGivenInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
 }
 
 export type PreventiveCounsellingSessionUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   counsellorId?: string | null
   campaignId?: string | null
@@ -536,7 +536,7 @@ export type PreventiveCounsellingSessionUncheckedUpdateInput = {
 
 export type PreventiveCounsellingSessionCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   counsellorId?: string | null
   campaignId?: string | null
@@ -942,12 +942,12 @@ export type PreventiveCounsellingSessionCreateWithoutCounsellorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutCounsellingSessionsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
 }
 
 export type PreventiveCounsellingSessionUncheckedCreateWithoutCounsellorInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   campaignId?: string | null
   topic: string
@@ -1012,12 +1012,12 @@ export type PreventiveCounsellingSessionCreateWithoutCustomerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   counsellor?: Prisma.UserCreateNestedOneWithoutCounsellingSessionsGivenInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCounsellingSessionsInput
 }
 
 export type PreventiveCounsellingSessionUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   counsellorId?: string | null
   campaignId?: string | null
   topic: string
@@ -1153,7 +1153,7 @@ export type PreventiveCounsellingSessionUncheckedUpdateManyWithoutPharmacyInput 
 
 export type PreventiveCounsellingSessionCreateManyCounsellorInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   campaignId?: string | null
   topic: string
@@ -1241,7 +1241,7 @@ export type PreventiveCounsellingSessionUncheckedUpdateManyWithoutCounsellorInpu
 
 export type PreventiveCounsellingSessionCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   counsellorId?: string | null
   campaignId?: string | null
   topic: string

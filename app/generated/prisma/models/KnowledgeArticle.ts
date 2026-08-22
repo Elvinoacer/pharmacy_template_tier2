@@ -362,12 +362,12 @@ export type KnowledgeArticleCreateInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutKnowledgeCreatedInput
   updatedBy?: Prisma.UserCreateNestedOneWithoutKnowledgeUpdatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
 }
 
 export type KnowledgeArticleUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   title: string
   category?: string
   content: string
@@ -412,7 +412,7 @@ export type KnowledgeArticleUncheckedUpdateInput = {
 
 export type KnowledgeArticleCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   title: string
   category?: string
   content: string
@@ -731,12 +731,12 @@ export type KnowledgeArticleCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutKnowledgeUpdatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
 }
 
 export type KnowledgeArticleUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   title: string
   category?: string
   content: string
@@ -769,12 +769,12 @@ export type KnowledgeArticleCreateWithoutUpdatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutKnowledgeCreatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutKnowledgeArticlesInput
 }
 
 export type KnowledgeArticleUncheckedCreateWithoutUpdatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   title: string
   category?: string
   content: string
@@ -886,7 +886,7 @@ export type KnowledgeArticleUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type KnowledgeArticleCreateManyCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   title: string
   category?: string
   content: string
@@ -900,7 +900,7 @@ export type KnowledgeArticleCreateManyCreatedByInput = {
 
 export type KnowledgeArticleCreateManyUpdatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   title: string
   category?: string
   content: string

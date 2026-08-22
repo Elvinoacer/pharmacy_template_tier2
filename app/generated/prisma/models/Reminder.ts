@@ -356,12 +356,12 @@ export type ReminderCreateInput = {
   createdAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutRemindersInput
   createdBy?: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
 }
 
 export type ReminderUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -412,7 +412,7 @@ export type ReminderUncheckedUpdateInput = {
 
 export type ReminderCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -744,12 +744,12 @@ export type ReminderCreateWithoutCreatedByInput = {
   sentAt?: Date | string | null
   createdAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutRemindersInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
 }
 
 export type ReminderUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -802,12 +802,12 @@ export type ReminderCreateWithoutCustomerInput = {
   sentAt?: Date | string | null
   createdAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRemindersInput
 }
 
 export type ReminderUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   type: $Enums.ReminderType
   title: string
   body?: string | null
@@ -913,7 +913,7 @@ export type ReminderUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type ReminderCreateManyCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   type: $Enums.ReminderType
   title: string
@@ -977,7 +977,7 @@ export type ReminderUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type ReminderCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   type: $Enums.ReminderType
   title: string
   body?: string | null

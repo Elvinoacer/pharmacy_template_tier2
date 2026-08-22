@@ -372,12 +372,12 @@ export type CommerceEventCreateInput = {
   occurredAt?: Date | string
   createdAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutCommerceEventsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCommerceEventsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCommerceEventsInput
 }
 
 export type CommerceEventUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string
@@ -425,7 +425,7 @@ export type CommerceEventUncheckedUpdateInput = {
 
 export type CommerceEventCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string
@@ -708,12 +708,12 @@ export type CommerceEventCreateWithoutOrderInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Date | string
   createdAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCommerceEventsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCommerceEventsInput
 }
 
 export type CommerceEventUncheckedCreateWithoutOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string
@@ -814,7 +814,7 @@ export type CommerceEventUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type CommerceEventCreateManyOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   eventType: $Enums.CommerceEventType
   entityType: string
   entityId: string

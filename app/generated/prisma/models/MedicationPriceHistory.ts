@@ -344,12 +344,12 @@ export type MedicationPriceHistoryCreateInput = {
   createdAt?: Date | string
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutPriceHistoryInput
   changedBy?: Prisma.UserCreateNestedOneWithoutPriceHistoryChangesInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
 }
 
 export type MedicationPriceHistoryUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   inventoryId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -388,7 +388,7 @@ export type MedicationPriceHistoryUncheckedUpdateInput = {
 
 export type MedicationPriceHistoryCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   inventoryId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -682,12 +682,12 @@ export type MedicationPriceHistoryCreateWithoutChangedByInput = {
   effectiveTo?: Date | string | null
   createdAt?: Date | string
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutPriceHistoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
 }
 
 export type MedicationPriceHistoryUncheckedCreateWithoutChangedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   inventoryId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -732,12 +732,12 @@ export type MedicationPriceHistoryCreateWithoutInventoryInput = {
   effectiveTo?: Date | string | null
   createdAt?: Date | string
   changedBy?: Prisma.UserCreateNestedOneWithoutPriceHistoryChangesInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPriceHistoryInput
 }
 
 export type MedicationPriceHistoryUncheckedCreateWithoutInventoryInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   reason?: string
@@ -823,7 +823,7 @@ export type MedicationPriceHistoryUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type MedicationPriceHistoryCreateManyChangedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   inventoryId: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -871,7 +871,7 @@ export type MedicationPriceHistoryUncheckedUpdateManyWithoutChangedByInput = {
 
 export type MedicationPriceHistoryCreateManyInventoryInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   reason?: string

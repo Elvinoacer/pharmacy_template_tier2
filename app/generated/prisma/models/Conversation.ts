@@ -295,12 +295,12 @@ export type ConversationCreateInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutConversationsInput
   assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedConversationsInput
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutConversationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutConversationsInput
 }
 
 export type ConversationUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -339,7 +339,7 @@ export type ConversationUncheckedUpdateInput = {
 
 export type ConversationCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -643,12 +643,12 @@ export type ConversationCreateWithoutAssignedToInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutConversationsInput
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutConversationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutConversationsInput
 }
 
 export type ConversationUncheckedCreateWithoutAssignedToInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -693,12 +693,12 @@ export type ConversationCreateWithoutCustomerInput = {
   createdAt?: Date | string
   assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedConversationsInput
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutConversationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutConversationsInput
 }
 
 export type ConversationUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   channel: $Enums.ConversationChannel
   subject?: string | null
   status?: $Enums.ConversationStatus
@@ -743,12 +743,12 @@ export type ConversationCreateWithoutMessagesInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutConversationsInput
   assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedConversationsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutConversationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutConversationsInput
 }
 
 export type ConversationUncheckedCreateWithoutMessagesInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -846,7 +846,7 @@ export type ConversationUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type ConversationCreateManyAssignedToInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   channel: $Enums.ConversationChannel
   subject?: string | null
@@ -892,7 +892,7 @@ export type ConversationUncheckedUpdateManyWithoutAssignedToInput = {
 
 export type ConversationCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   channel: $Enums.ConversationChannel
   subject?: string | null
   status?: $Enums.ConversationStatus

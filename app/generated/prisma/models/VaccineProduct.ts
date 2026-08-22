@@ -720,12 +720,12 @@ export type VaccineProductCreateInput = {
   appointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutVaccineInput
   consents?: Prisma.VaccinationConsentCreateNestedManyWithoutVaccineInput
   records?: Prisma.ImmunizationRecordCreateNestedManyWithoutVaccineInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
 }
 
 export type VaccineProductUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   name: string
   antigen: string
@@ -860,7 +860,7 @@ export type VaccineProductUncheckedUpdateInput = {
 
 export type VaccineProductCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   name: string
   antigen: string
@@ -1491,12 +1491,12 @@ export type VaccineProductCreateWithoutAppointmentsInput = {
   updatedAt?: Date | string
   consents?: Prisma.VaccinationConsentCreateNestedManyWithoutVaccineInput
   records?: Prisma.ImmunizationRecordCreateNestedManyWithoutVaccineInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
 }
 
 export type VaccineProductUncheckedCreateWithoutAppointmentsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   name: string
   antigen: string
@@ -1683,12 +1683,12 @@ export type VaccineProductCreateWithoutConsentsInput = {
   updatedAt?: Date | string
   appointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutVaccineInput
   records?: Prisma.ImmunizationRecordCreateNestedManyWithoutVaccineInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
 }
 
 export type VaccineProductUncheckedCreateWithoutConsentsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   name: string
   antigen: string
@@ -1875,12 +1875,12 @@ export type VaccineProductCreateWithoutRecordsInput = {
   updatedAt?: Date | string
   appointments?: Prisma.ImmunizationAppointmentCreateNestedManyWithoutVaccineInput
   consents?: Prisma.VaccinationConsentCreateNestedManyWithoutVaccineInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutVaccineProductsInput
 }
 
 export type VaccineProductUncheckedCreateWithoutRecordsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   name: string
   antigen: string

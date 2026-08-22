@@ -398,12 +398,12 @@ export type RefundCreateInput = {
   order: Prisma.OrderCreateNestedOneWithoutRefundsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutRefundCreatorInput
   approvedBy?: Prisma.UserCreateNestedOneWithoutRefundApproverInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
 }
 
 export type RefundUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   paymentId: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -454,7 +454,7 @@ export type RefundUncheckedUpdateInput = {
 
 export type RefundCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   paymentId: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -872,12 +872,12 @@ export type RefundCreateWithoutCreatedByInput = {
   payment: Prisma.PaymentCreateNestedOneWithoutRefundsInput
   order: Prisma.OrderCreateNestedOneWithoutRefundsInput
   approvedBy?: Prisma.UserCreateNestedOneWithoutRefundApproverInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
 }
 
 export type RefundUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   paymentId: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -914,12 +914,12 @@ export type RefundCreateWithoutApprovedByInput = {
   payment: Prisma.PaymentCreateNestedOneWithoutRefundsInput
   order: Prisma.OrderCreateNestedOneWithoutRefundsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutRefundCreatorInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
 }
 
 export type RefundUncheckedCreateWithoutApprovedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   paymentId: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -988,12 +988,12 @@ export type RefundCreateWithoutOrderInput = {
   payment: Prisma.PaymentCreateNestedOneWithoutRefundsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutRefundCreatorInput
   approvedBy?: Prisma.UserCreateNestedOneWithoutRefundApproverInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
 }
 
 export type RefundUncheckedCreateWithoutOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   paymentId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   provider?: string
@@ -1046,12 +1046,12 @@ export type RefundCreateWithoutPaymentInput = {
   order: Prisma.OrderCreateNestedOneWithoutRefundsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutRefundCreatorInput
   approvedBy?: Prisma.UserCreateNestedOneWithoutRefundApproverInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefundsInput
 }
 
 export type RefundUncheckedCreateWithoutPaymentInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   provider?: string
@@ -1157,7 +1157,7 @@ export type RefundUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type RefundCreateManyCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   paymentId: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1173,7 +1173,7 @@ export type RefundCreateManyCreatedByInput = {
 
 export type RefundCreateManyApprovedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   paymentId: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1285,7 +1285,7 @@ export type RefundUncheckedUpdateManyWithoutApprovedByInput = {
 
 export type RefundCreateManyOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   paymentId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   provider?: string
@@ -1349,7 +1349,7 @@ export type RefundUncheckedUpdateManyWithoutOrderInput = {
 
 export type RefundCreateManyPaymentInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   provider?: string

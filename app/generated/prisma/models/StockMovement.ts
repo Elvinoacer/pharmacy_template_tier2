@@ -371,12 +371,12 @@ export type StockMovementCreateInput = {
   createdAt?: Date | string
   pharmacyInventory: Prisma.PharmacyInventoryCreateNestedOneWithoutMovementsInput
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutMovementsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
 }
 
 export type StockMovementUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   pharmacyInventoryId: string
   inventoryLotId?: string | null
   reason: string
@@ -421,7 +421,7 @@ export type StockMovementUncheckedUpdateInput = {
 
 export type StockMovementCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   pharmacyInventoryId: string
   inventoryLotId?: string | null
   reason: string
@@ -735,12 +735,12 @@ export type StockMovementCreateWithoutPharmacyInventoryInput = {
   actorId?: string | null
   createdAt?: Date | string
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutMovementsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
 }
 
 export type StockMovementUncheckedCreateWithoutPharmacyInventoryInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   inventoryLotId?: string | null
   reason: string
   quantityDelta: number
@@ -789,12 +789,12 @@ export type StockMovementCreateWithoutInventoryLotInput = {
   actorId?: string | null
   createdAt?: Date | string
   pharmacyInventory: Prisma.PharmacyInventoryCreateNestedOneWithoutMovementsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutStockMovementsInput
 }
 
 export type StockMovementUncheckedCreateWithoutInventoryLotInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   pharmacyInventoryId: string
   reason: string
   quantityDelta: number
@@ -890,7 +890,7 @@ export type StockMovementUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type StockMovementCreateManyPharmacyInventoryInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   inventoryLotId?: string | null
   reason: string
   quantityDelta: number
@@ -946,7 +946,7 @@ export type StockMovementUncheckedUpdateManyWithoutPharmacyInventoryInput = {
 
 export type StockMovementCreateManyInventoryLotInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   pharmacyInventoryId: string
   reason: string
   quantityDelta: number

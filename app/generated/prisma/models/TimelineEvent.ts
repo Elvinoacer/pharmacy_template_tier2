@@ -303,12 +303,12 @@ export type TimelineEventCreateInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutTimelineEventsInput
   user?: Prisma.UserCreateNestedOneWithoutTimelineAsUserInput
   createdBy?: Prisma.UserCreateNestedOneWithoutTimelineCreatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
 }
 
 export type TimelineEventUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   eventType: string
@@ -347,7 +347,7 @@ export type TimelineEventUncheckedUpdateInput = {
 
 export type TimelineEventCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   eventType: string
@@ -670,12 +670,12 @@ export type TimelineEventCreateWithoutUserInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutTimelineEventsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutTimelineCreatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
 }
 
 export type TimelineEventUncheckedCreateWithoutUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   eventType: string
   title: string
@@ -704,12 +704,12 @@ export type TimelineEventCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutTimelineEventsInput
   user?: Prisma.UserCreateNestedOneWithoutTimelineAsUserInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
 }
 
 export type TimelineEventUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   eventType: string
@@ -770,12 +770,12 @@ export type TimelineEventCreateWithoutCustomerInput = {
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutTimelineAsUserInput
   createdBy?: Prisma.UserCreateNestedOneWithoutTimelineCreatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutTimelineEventsInput
 }
 
 export type TimelineEventUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId?: string | null
   eventType: string
   title: string
@@ -861,7 +861,7 @@ export type TimelineEventUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type TimelineEventCreateManyUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   eventType: string
   title: string
@@ -873,7 +873,7 @@ export type TimelineEventCreateManyUserInput = {
 
 export type TimelineEventCreateManyCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   eventType: string
@@ -957,7 +957,7 @@ export type TimelineEventUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type TimelineEventCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId?: string | null
   eventType: string
   title: string

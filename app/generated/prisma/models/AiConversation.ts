@@ -370,12 +370,12 @@ export type AiConversationCreateInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutAiConversationsInput
   user?: Prisma.UserCreateNestedOneWithoutAiConversationsInput
   messages?: Prisma.AiMessageCreateNestedManyWithoutConversationInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
 }
 
 export type AiConversationUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   sessionKey?: string | null
@@ -423,7 +423,7 @@ export type AiConversationUncheckedUpdateInput = {
 
 export type AiConversationCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   sessionKey?: string | null
@@ -761,12 +761,12 @@ export type AiConversationCreateWithoutUserInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutAiConversationsInput
   messages?: Prisma.AiMessageCreateNestedManyWithoutConversationInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
 }
 
 export type AiConversationUncheckedCreateWithoutUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   sessionKey?: string | null
   channel?: $Enums.AiChannel
@@ -817,12 +817,12 @@ export type AiConversationCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutAiConversationsInput
   messages?: Prisma.AiMessageCreateNestedManyWithoutConversationInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
 }
 
 export type AiConversationUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId?: string | null
   sessionKey?: string | null
   channel?: $Enums.AiChannel
@@ -873,12 +873,12 @@ export type AiConversationCreateWithoutMessagesInput = {
   updatedAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutAiConversationsInput
   user?: Prisma.UserCreateNestedOneWithoutAiConversationsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutAiConversationsInput
 }
 
 export type AiConversationUncheckedCreateWithoutMessagesInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   sessionKey?: string | null
@@ -997,7 +997,7 @@ export type AiConversationUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type AiConversationCreateManyUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   sessionKey?: string | null
   channel?: $Enums.AiChannel
@@ -1055,7 +1055,7 @@ export type AiConversationUncheckedUpdateManyWithoutUserInput = {
 
 export type AiConversationCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId?: string | null
   sessionKey?: string | null
   channel?: $Enums.AiChannel

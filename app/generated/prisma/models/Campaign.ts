@@ -369,12 +369,12 @@ export type CampaignCreateInput = {
   segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
 }
 
 export type CampaignUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -431,7 +431,7 @@ export type CampaignUncheckedUpdateInput = {
 
 export type CampaignCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -795,12 +795,12 @@ export type CampaignCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
 }
 
 export type CampaignUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -857,12 +857,12 @@ export type CampaignCreateWithoutSegmentInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
   publicHealthCampaign?: Prisma.PublicHealthCampaignCreateNestedOneWithoutCrmCampaignInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
 }
 
 export type CampaignUncheckedCreateWithoutSegmentInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -919,12 +919,12 @@ export type CampaignCreateWithoutPublicHealthCampaignInput = {
   updatedAt?: Date | string
   segment?: Prisma.SegmentCreateNestedOneWithoutCampaignsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCampaignsCreatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutCampaignsInput
 }
 
 export type CampaignUncheckedCreateWithoutPublicHealthCampaignInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -1064,7 +1064,7 @@ export type CampaignUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type CampaignCreateManyCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel
@@ -1134,7 +1134,7 @@ export type CampaignUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type CampaignCreateManySegmentInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   channel: $Enums.CampaignChannel

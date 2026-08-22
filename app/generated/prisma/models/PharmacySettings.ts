@@ -660,12 +660,12 @@ export type PharmacySettingsCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutPharmacySettingsUpdatedInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSettingsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSettingsInput
 }
 
 export type PharmacySettingsUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   displayName?: string | null
   phone?: string | null
   email?: string | null
@@ -782,7 +782,7 @@ export type PharmacySettingsUncheckedUpdateInput = {
 
 export type PharmacySettingsCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   displayName?: string | null
   phone?: string | null
   email?: string | null
@@ -1304,12 +1304,12 @@ export type PharmacySettingsCreateWithoutUpdatedByInput = {
   careersEmail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSettingsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSettingsInput
 }
 
 export type PharmacySettingsUncheckedCreateWithoutUpdatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   displayName?: string | null
   phone?: string | null
   email?: string | null
@@ -1415,7 +1415,7 @@ export type PharmacySettingsScalarWhereInput = {
 
 export type PharmacySettingsCreateManyUpdatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   displayName?: string | null
   phone?: string | null
   email?: string | null

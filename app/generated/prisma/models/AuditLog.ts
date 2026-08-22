@@ -284,12 +284,12 @@ export type AuditLogCreateInput = {
   ipAddress?: string | null
   createdAt?: Date | string
   actor?: Prisma.UserCreateNestedOneWithoutAuditLogsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAuditLogsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutAuditLogsInput
 }
 
 export type AuditLogUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   actorId?: string | null
   action: string
   entityType?: string | null
@@ -325,7 +325,7 @@ export type AuditLogUncheckedUpdateInput = {
 
 export type AuditLogCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   actorId?: string | null
   action: string
   entityType?: string | null
@@ -556,12 +556,12 @@ export type AuditLogCreateWithoutActorInput = {
   details?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   ipAddress?: string | null
   createdAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutAuditLogsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutAuditLogsInput
 }
 
 export type AuditLogUncheckedCreateWithoutActorInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   action: string
   entityType?: string | null
   entityId?: string | null
@@ -642,7 +642,7 @@ export type AuditLogUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type AuditLogCreateManyActorInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   action: string
   entityType?: string | null
   entityId?: string | null

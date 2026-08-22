@@ -432,12 +432,12 @@ export type PharmacyServiceCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.ServiceBookingCreateNestedManyWithoutServiceInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServicesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutServicesInput
 }
 
 export type PharmacyServiceUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   title: string
   short: string
@@ -500,7 +500,7 @@ export type PharmacyServiceUncheckedUpdateInput = {
 
 export type PharmacyServiceCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   title: string
   short: string
@@ -816,12 +816,12 @@ export type PharmacyServiceCreateWithoutBookingsInput = {
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutServicesInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutServicesInput
 }
 
 export type PharmacyServiceUncheckedCreateWithoutBookingsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   title: string
   short: string

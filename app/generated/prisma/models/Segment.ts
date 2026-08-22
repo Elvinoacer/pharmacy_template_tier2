@@ -293,12 +293,12 @@ export type SegmentCreateInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutSegmentsCreatedInput
   members?: Prisma.CustomerSegmentCreateNestedManyWithoutSegmentInput
   campaigns?: Prisma.CampaignCreateNestedManyWithoutSegmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
 }
 
 export type SegmentUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -340,7 +340,7 @@ export type SegmentUncheckedUpdateInput = {
 
 export type SegmentCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -622,12 +622,12 @@ export type SegmentCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   members?: Prisma.CustomerSegmentCreateNestedManyWithoutSegmentInput
   campaigns?: Prisma.CampaignCreateNestedManyWithoutSegmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
 }
 
 export type SegmentUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -674,12 +674,12 @@ export type SegmentCreateWithoutMembersInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutSegmentsCreatedInput
   campaigns?: Prisma.CampaignCreateNestedManyWithoutSegmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
 }
 
 export type SegmentUncheckedCreateWithoutMembersInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -742,12 +742,12 @@ export type SegmentCreateWithoutCampaignsInput = {
   updatedAt?: Date | string
   createdBy?: Prisma.UserCreateNestedOneWithoutSegmentsCreatedInput
   members?: Prisma.CustomerSegmentCreateNestedManyWithoutSegmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSegmentsInput
 }
 
 export type SegmentUncheckedCreateWithoutCampaignsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -850,7 +850,7 @@ export type SegmentUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type SegmentCreateManyCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   name: string
   description?: string | null
   rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue

@@ -490,12 +490,12 @@ export type PublicHealthCampaignCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   crmCampaign?: Prisma.CampaignCreateNestedOneWithoutPublicHealthCampaignInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPublicHealthCampaignsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPublicHealthCampaignsInput
 }
 
 export type PublicHealthCampaignUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   campaignId?: string | null
   slug: string
   title: string
@@ -570,7 +570,7 @@ export type PublicHealthCampaignUncheckedUpdateInput = {
 
 export type PublicHealthCampaignCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   campaignId?: string | null
   slug: string
   title: string
@@ -957,12 +957,12 @@ export type PublicHealthCampaignCreateWithoutCrmCampaignInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPublicHealthCampaignsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPublicHealthCampaignsInput
 }
 
 export type PublicHealthCampaignUncheckedCreateWithoutCrmCampaignInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   title: string
   theme: string

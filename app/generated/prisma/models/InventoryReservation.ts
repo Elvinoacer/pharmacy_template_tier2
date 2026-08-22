@@ -414,12 +414,12 @@ export type InventoryReservationCreateInput = {
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutReservationsInput
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutReservationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutReservationCreatorInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
 }
 
 export type InventoryReservationUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   orderItemId?: string | null
   inventoryId: string
@@ -473,7 +473,7 @@ export type InventoryReservationUncheckedUpdateInput = {
 
 export type InventoryReservationCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   orderItemId?: string | null
   inventoryId: string
@@ -942,12 +942,12 @@ export type InventoryReservationCreateWithoutCreatedByInput = {
   orderItem?: Prisma.OrderItemCreateNestedOneWithoutReservationsInput
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutReservationsInput
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutReservationsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
 }
 
 export type InventoryReservationUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   orderItemId?: string | null
   inventoryId: string
@@ -1002,12 +1002,12 @@ export type InventoryReservationCreateWithoutInventoryInput = {
   orderItem?: Prisma.OrderItemCreateNestedOneWithoutReservationsInput
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutReservationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutReservationCreatorInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
 }
 
 export type InventoryReservationUncheckedCreateWithoutInventoryInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   orderItemId?: string | null
   inventoryLotId?: string | null
@@ -1062,12 +1062,12 @@ export type InventoryReservationCreateWithoutInventoryLotInput = {
   orderItem?: Prisma.OrderItemCreateNestedOneWithoutReservationsInput
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutReservationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutReservationCreatorInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
 }
 
 export type InventoryReservationUncheckedCreateWithoutInventoryLotInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   orderItemId?: string | null
   inventoryId: string
@@ -1122,12 +1122,12 @@ export type InventoryReservationCreateWithoutOrderInput = {
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutReservationsInput
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutReservationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutReservationCreatorInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
 }
 
 export type InventoryReservationUncheckedCreateWithoutOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderItemId?: string | null
   inventoryId: string
   inventoryLotId?: string | null
@@ -1182,12 +1182,12 @@ export type InventoryReservationCreateWithoutOrderItemInput = {
   inventory: Prisma.PharmacyInventoryCreateNestedOneWithoutReservationsInput
   inventoryLot?: Prisma.InventoryLotCreateNestedOneWithoutReservationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutReservationCreatorInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryReservationsInput
 }
 
 export type InventoryReservationUncheckedCreateWithoutOrderItemInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   inventoryId: string
   inventoryLotId?: string | null
@@ -1298,7 +1298,7 @@ export type InventoryReservationUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type InventoryReservationCreateManyCreatedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   orderItemId?: string | null
   inventoryId: string
@@ -1366,7 +1366,7 @@ export type InventoryReservationUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type InventoryReservationCreateManyInventoryInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   orderItemId?: string | null
   inventoryLotId?: string | null
@@ -1434,7 +1434,7 @@ export type InventoryReservationUncheckedUpdateManyWithoutInventoryInput = {
 
 export type InventoryReservationCreateManyInventoryLotInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   orderItemId?: string | null
   inventoryId: string
@@ -1502,7 +1502,7 @@ export type InventoryReservationUncheckedUpdateManyWithoutInventoryLotInput = {
 
 export type InventoryReservationCreateManyOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderItemId?: string | null
   inventoryId: string
   inventoryLotId?: string | null
@@ -1570,7 +1570,7 @@ export type InventoryReservationUncheckedUpdateManyWithoutOrderInput = {
 
 export type InventoryReservationCreateManyOrderItemInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   orderId: string
   inventoryId: string
   inventoryLotId?: string | null

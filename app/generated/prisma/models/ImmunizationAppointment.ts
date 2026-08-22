@@ -452,12 +452,12 @@ export type ImmunizationAppointmentCreateInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -535,7 +535,7 @@ export type ImmunizationAppointmentUncheckedUpdateInput = {
 
 export type ImmunizationAppointmentCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1054,12 +1054,12 @@ export type ImmunizationAppointmentCreateWithoutAssignedToInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutAssignedToInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1130,12 +1130,12 @@ export type ImmunizationAppointmentCreateWithoutCustomerInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   serviceBookingId?: string | null
   campaignId?: string | null
@@ -1206,12 +1206,12 @@ export type ImmunizationAppointmentCreateWithoutBookingInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutBookingInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   customerId?: string | null
   campaignId?: string | null
@@ -1322,12 +1322,12 @@ export type ImmunizationAppointmentCreateWithoutVaccineInput = {
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutVaccineInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   serviceBookingId?: string | null
   campaignId?: string | null
@@ -1398,12 +1398,12 @@ export type ImmunizationAppointmentCreateWithoutScreeningInput = {
   assignedTo?: Prisma.UserCreateNestedOneWithoutImmunizationAssignedInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutScreeningInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1514,12 +1514,12 @@ export type ImmunizationAppointmentCreateWithoutConsentInput = {
   assignedTo?: Prisma.UserCreateNestedOneWithoutImmunizationAssignedInput
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   record?: Prisma.ImmunizationRecordCreateNestedOneWithoutAppointmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutConsentInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1630,12 +1630,12 @@ export type ImmunizationAppointmentCreateWithoutRecordInput = {
   assignedTo?: Prisma.UserCreateNestedOneWithoutImmunizationAssignedInput
   screening?: Prisma.PreVaccinationScreeningCreateNestedOneWithoutAppointmentInput
   consent?: Prisma.VaccinationConsentCreateNestedOneWithoutAppointmentInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutImmunizationAppointmentsInput
 }
 
 export type ImmunizationAppointmentUncheckedCreateWithoutRecordInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1820,7 +1820,7 @@ export type ImmunizationAppointmentUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type ImmunizationAppointmentCreateManyAssignedToInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   customerId?: string | null
   serviceBookingId?: string | null
@@ -1914,7 +1914,7 @@ export type ImmunizationAppointmentUncheckedUpdateManyWithoutAssignedToInput = {
 
 export type ImmunizationAppointmentCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   vaccineProductId: string
   serviceBookingId?: string | null
   campaignId?: string | null
@@ -2008,7 +2008,7 @@ export type ImmunizationAppointmentUncheckedUpdateManyWithoutCustomerInput = {
 
 export type ImmunizationAppointmentCreateManyVaccineInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   serviceBookingId?: string | null
   campaignId?: string | null

@@ -498,12 +498,12 @@ export type PharmacyInventoryCreateInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -590,7 +590,7 @@ export type PharmacyInventoryUncheckedUpdateInput = {
 
 export type PharmacyInventoryCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1082,12 +1082,12 @@ export type PharmacyInventoryCreateWithoutPrescriptionsInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutPrescriptionsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1210,12 +1210,12 @@ export type PharmacyInventoryCreateWithoutMedicationMasterInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutMedicationMasterInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   sku?: string | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1292,12 +1292,12 @@ export type PharmacyInventoryCreateWithoutLotsInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutLotsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1420,12 +1420,12 @@ export type PharmacyInventoryCreateWithoutMovementsInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutMovementsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1548,12 +1548,12 @@ export type PharmacyInventoryCreateWithoutOrderItemsInput = {
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutOrderItemsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1676,12 +1676,12 @@ export type PharmacyInventoryCreateWithoutPrescriptionFillsInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutMedicationInput
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutPrescriptionFillsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1804,12 +1804,12 @@ export type PharmacyInventoryCreateWithoutReservationsInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutMedicationInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
   priceHistory?: Prisma.MedicationPriceHistoryCreateNestedManyWithoutInventoryInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutReservationsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -1932,12 +1932,12 @@ export type PharmacyInventoryCreateWithoutPriceHistoryInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutMedicationInput
   reservations?: Prisma.InventoryReservationCreateNestedManyWithoutInventoryInput
   prescriptionFills?: Prisma.PrescriptionFillCreateNestedManyWithoutMedicationInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutInventoryInput
 }
 
 export type PharmacyInventoryUncheckedCreateWithoutPriceHistoryInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicationMasterId: string
   slug: string
   sku?: string | null
@@ -2135,7 +2135,7 @@ export type PharmacyInventoryUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type PharmacyInventoryCreateManyMedicationMasterInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   slug: string
   sku?: string | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string

@@ -350,12 +350,12 @@ export type LoyaltyAccountCreateInput = {
   customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountsInput
   referredBy?: Prisma.CustomerProfileCreateNestedOneWithoutReferredLoyaltyInput
   transactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutAccountInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
 }
 
 export type LoyaltyAccountUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -397,7 +397,7 @@ export type LoyaltyAccountUncheckedUpdateInput = {
 
 export type LoyaltyAccountCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -727,12 +727,12 @@ export type LoyaltyAccountCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   referredBy?: Prisma.CustomerProfileCreateNestedOneWithoutReferredLoyaltyInput
   transactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutAccountInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
 }
 
 export type LoyaltyAccountUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   points?: number
   tier?: $Enums.LoyaltyTier
   lifetimePoints?: number
@@ -763,12 +763,12 @@ export type LoyaltyAccountCreateWithoutReferredByInput = {
   updatedAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountsInput
   transactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutAccountInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
 }
 
 export type LoyaltyAccountUncheckedCreateWithoutReferredByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -831,12 +831,12 @@ export type LoyaltyAccountCreateWithoutTransactionsInput = {
   updatedAt?: Date | string
   customer: Prisma.CustomerProfileCreateNestedOneWithoutLoyaltyAccountsInput
   referredBy?: Prisma.CustomerProfileCreateNestedOneWithoutReferredLoyaltyInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutLoyaltyAccountsInput
 }
 
 export type LoyaltyAccountUncheckedCreateWithoutTransactionsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier
@@ -941,7 +941,7 @@ export type LoyaltyAccountUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type LoyaltyAccountCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   points?: number
   tier?: $Enums.LoyaltyTier
   lifetimePoints?: number
@@ -953,7 +953,7 @@ export type LoyaltyAccountCreateManyCustomerInput = {
 
 export type LoyaltyAccountCreateManyReferredByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   points?: number
   tier?: $Enums.LoyaltyTier

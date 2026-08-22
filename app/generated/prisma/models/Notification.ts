@@ -382,12 +382,12 @@ export type NotificationCreateInput = {
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutNotificationsInput
   user?: Prisma.UserCreateNestedOneWithoutNotificationsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
 }
 
 export type NotificationUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   channel: $Enums.NotificationChannel
@@ -444,7 +444,7 @@ export type NotificationUncheckedUpdateInput = {
 
 export type NotificationCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   userId?: string | null
   channel: $Enums.NotificationChannel
@@ -796,12 +796,12 @@ export type NotificationCreateWithoutUserInput = {
   openedAt?: Date | string | null
   createdAt?: Date | string
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutNotificationsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
 }
 
 export type NotificationUncheckedCreateWithoutUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   channel: $Enums.NotificationChannel
   type: string
@@ -858,12 +858,12 @@ export type NotificationCreateWithoutCustomerInput = {
   openedAt?: Date | string | null
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutNotificationsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutNotificationsInput
 }
 
 export type NotificationUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId?: string | null
   channel: $Enums.NotificationChannel
   type: string
@@ -979,7 +979,7 @@ export type NotificationUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type NotificationCreateManyUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   channel: $Enums.NotificationChannel
   type: string
@@ -1051,7 +1051,7 @@ export type NotificationUncheckedUpdateManyWithoutUserInput = {
 
 export type NotificationCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   userId?: string | null
   channel: $Enums.NotificationChannel
   type: string

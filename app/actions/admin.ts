@@ -12,6 +12,7 @@ import {
 } from "@/app/lib/auth";
 import { validateCsrfToken } from "@/app/lib/csrf";
 import { prisma } from "@/app/lib/db";
+import { getTenant } from "@/app/lib/tenant";
 import {
   updateRefillStatus,
   updateEnquiryStatus,
@@ -50,6 +51,12 @@ export type ActionState = {
 async function staff() {
   const user = await getSessionUser();
   return requireStaff(user);
+}
+
+async function activePharmacyId(user: { activePharmacyId: string | null }): Promise<string | null> {
+  if (user.activePharmacyId) return user.activePharmacyId;
+  const tenant = await getTenant().catch(() => ({ pharmacyId: null as string | null }));
+  return tenant.pharmacyId;
 }
 
 export async function adminUpdateRefillAction(formData: FormData) {
@@ -154,6 +161,9 @@ export async function adminAddNoteAction(
   const body = String(formData.get("body") || "").trim();
   if (!customerId || !body) return { error: "Note required." };
 
+  const pharmacyId = await activePharmacyId(user);
+  if (!pharmacyId) return { error: "No active pharmacy." };
+
   // Place the new note at the end of the current list (max sortOrder + 1).
   const maxOrder = await prisma.customerNote.aggregate({
     where: { customerId },
@@ -163,6 +173,7 @@ export async function adminAddNoteAction(
 
   const note = await prisma.customerNote.create({
     data: {
+      pharmacyId,
       customerId,
       authorId: user.id,
       body,
@@ -2831,6 +2842,9 @@ export async function adminInterveneMissedRefillAction(
       return { error: "Customer, prescription, and intervention message are required." };
     }
 
+    const pharmacyId = await activePharmacyId(user);
+    if (!pharmacyId) return { error: "No active pharmacy." };
+
     const { sendDirectRefillReminder } = await import("@/app/lib/services/refills");
     await sendDirectRefillReminder({
       customerId,
@@ -2867,6 +2881,7 @@ export async function adminInterveneMissedRefillAction(
     // Add note to patient record
     await prisma.customerNote.create({
       data: {
+        pharmacyId,
         customerId,
         authorId: user.id,
         body: `[Non-Adherence Intervention] Sent ${channel.toUpperCase()} follow-up regarding missed refill. Message: "${message}"`,

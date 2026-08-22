@@ -965,12 +965,12 @@ export type PrescriptionCreateInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -1165,7 +1165,7 @@ export type PrescriptionUncheckedUpdateInput = {
 
 export type PrescriptionCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -2221,12 +2221,12 @@ export type PrescriptionCreateWithoutDispatchedByInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutDispatchedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -2359,12 +2359,12 @@ export type PrescriptionCreateWithoutReviewedByInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutReviewedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -2529,12 +2529,12 @@ export type PrescriptionCreateWithoutCustomerInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicineName: string
   rxReference?: string | null
   dosage?: string | null
@@ -2683,12 +2683,12 @@ export type PrescriptionCreateWithoutRefillRequestsInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutRefillRequestsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -2955,12 +2955,12 @@ export type PrescriptionCreateWithoutAdherenceInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutAdherenceInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -3227,12 +3227,12 @@ export type PrescriptionCreateWithoutClarificationLogsInput = {
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutClarificationLogsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -3499,12 +3499,12 @@ export type PrescriptionCreateWithoutDoseScheduleInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutDoseScheduleInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -3771,12 +3771,12 @@ export type PrescriptionCreateWithoutDoseLogsInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutDoseLogsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -4043,12 +4043,12 @@ export type PrescriptionCreateWithoutEscalationsInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutEscalationsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -4315,12 +4315,12 @@ export type PrescriptionCreateWithoutAdherenceFollowUpsInput = {
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutAdherenceFollowUpsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -4587,12 +4587,12 @@ export type PrescriptionCreateWithoutMedicationInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutMedicationInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -4741,12 +4741,12 @@ export type PrescriptionCreateWithoutDispensingOrderInput = {
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
   fills?: Prisma.PrescriptionFillCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutDispensingOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -4895,12 +4895,12 @@ export type PrescriptionCreateWithoutFillsInput = {
   escalations?: Prisma.AdherenceEscalationCreateNestedManyWithoutPrescriptionInput
   clarificationLogs?: Prisma.PrescriptionClarificationLogCreateNestedManyWithoutPrescriptionInput
   adherenceFollowUps?: Prisma.AdherenceFollowUpCreateNestedManyWithoutPrescriptionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutPrescriptionsInput
 }
 
 export type PrescriptionUncheckedCreateWithoutFillsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -5348,7 +5348,7 @@ export type PrescriptionUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type PrescriptionCreateManyDispatchedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -5404,7 +5404,7 @@ export type PrescriptionCreateManyDispatchedByInput = {
 
 export type PrescriptionCreateManyReviewedByInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -5828,7 +5828,7 @@ export type PrescriptionUncheckedUpdateManyWithoutReviewedByInput = {
 
 export type PrescriptionCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   medicineName: string
   rxReference?: string | null
   dosage?: string | null
@@ -6068,7 +6068,7 @@ export type PrescriptionUncheckedUpdateManyWithoutCustomerInput = {
 
 export type PrescriptionCreateManyMedicationInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null
@@ -6308,7 +6308,7 @@ export type PrescriptionUncheckedUpdateManyWithoutMedicationInput = {
 
 export type PrescriptionCreateManyDispensingOrderInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId: string
   medicineName: string
   rxReference?: string | null

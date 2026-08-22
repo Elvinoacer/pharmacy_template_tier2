@@ -428,12 +428,12 @@ export type RefillRequestCreateInput = {
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutRefillRequestsInput
   assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedRefillsInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutRefillRequestInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
 }
 
 export type RefillRequestUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   prescriptionId?: string | null
   medicineName: string
@@ -502,7 +502,7 @@ export type RefillRequestUncheckedUpdateInput = {
 
 export type RefillRequestCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   prescriptionId?: string | null
   medicineName: string
@@ -953,12 +953,12 @@ export type RefillRequestCreateWithoutAssignedToInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutRefillRequestsInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutRefillRequestsInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutRefillRequestInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
 }
 
 export type RefillRequestUncheckedCreateWithoutAssignedToInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   prescriptionId?: string | null
   medicineName: string
@@ -1023,12 +1023,12 @@ export type RefillRequestCreateWithoutCustomerInput = {
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutRefillRequestsInput
   assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedRefillsInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutRefillRequestInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
 }
 
 export type RefillRequestUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId?: string | null
   medicineName: string
   rxReference?: string | null
@@ -1093,12 +1093,12 @@ export type RefillRequestCreateWithoutPrescriptionInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutRefillRequestsInput
   assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedRefillsInput
   prescriptionFill?: Prisma.PrescriptionFillCreateNestedOneWithoutRefillRequestInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
 }
 
 export type RefillRequestUncheckedCreateWithoutPrescriptionInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   medicineName: string
   rxReference?: string | null
@@ -1163,12 +1163,12 @@ export type RefillRequestCreateWithoutPrescriptionFillInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutRefillRequestsInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutRefillRequestsInput
   assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedRefillsInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutRefillRequestsInput
 }
 
 export type RefillRequestUncheckedCreateWithoutPrescriptionFillInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   prescriptionId?: string | null
   medicineName: string
@@ -1336,7 +1336,7 @@ export type RefillRequestUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type RefillRequestCreateManyAssignedToInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   prescriptionId?: string | null
   medicineName: string
@@ -1422,7 +1422,7 @@ export type RefillRequestUncheckedUpdateManyWithoutAssignedToInput = {
 
 export type RefillRequestCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   prescriptionId?: string | null
   medicineName: string
   rxReference?: string | null
@@ -1508,7 +1508,7 @@ export type RefillRequestUncheckedUpdateManyWithoutCustomerInput = {
 
 export type RefillRequestCreateManyPrescriptionInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   customerId?: string | null
   medicineName: string
   rxReference?: string | null

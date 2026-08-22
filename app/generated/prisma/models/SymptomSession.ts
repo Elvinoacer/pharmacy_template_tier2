@@ -527,12 +527,12 @@ export type SymptomSessionCreateInput = {
   user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
   messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
   checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   guestKey?: string | null
   customerId?: string | null
   userId?: string | null
@@ -619,7 +619,7 @@ export type SymptomSessionUncheckedUpdateInput = {
 
 export type SymptomSessionCreateManyInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   guestKey?: string | null
   customerId?: string | null
   userId?: string | null
@@ -1100,12 +1100,12 @@ export type SymptomSessionCreateWithoutUserInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutSymptomSessionsInput
   messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
   checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateWithoutUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   guestKey?: string | null
   customerId?: string | null
   status?: $Enums.SymptomSessionStatus
@@ -1182,12 +1182,12 @@ export type SymptomSessionCreateWithoutCustomerInput = {
   user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
   messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
   checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateWithoutCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   guestKey?: string | null
   userId?: string | null
   status?: $Enums.SymptomSessionStatus
@@ -1264,12 +1264,12 @@ export type SymptomSessionCreateWithoutMessagesInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutSymptomSessionsInput
   user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
   checkIns?: Prisma.SymptomCheckInCreateNestedManyWithoutSessionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateWithoutMessagesInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   guestKey?: string | null
   customerId?: string | null
   userId?: string | null
@@ -1392,12 +1392,12 @@ export type SymptomSessionCreateWithoutCheckInsInput = {
   customer?: Prisma.CustomerProfileCreateNestedOneWithoutSymptomSessionsInput
   user?: Prisma.UserCreateNestedOneWithoutSymptomSessionsInput
   messages?: Prisma.SymptomMessageCreateNestedManyWithoutSessionInput
-  pharmacy: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
+  pharmacy?: Prisma.PharmacyCreateNestedOneWithoutSymptomSessionsInput
 }
 
 export type SymptomSessionUncheckedCreateWithoutCheckInsInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   guestKey?: string | null
   customerId?: string | null
   userId?: string | null
@@ -1605,7 +1605,7 @@ export type SymptomSessionUncheckedUpdateManyWithoutPharmacyInput = {
 
 export type SymptomSessionCreateManyUserInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   guestKey?: string | null
   customerId?: string | null
   status?: $Enums.SymptomSessionStatus
@@ -1713,7 +1713,7 @@ export type SymptomSessionUncheckedUpdateManyWithoutUserInput = {
 
 export type SymptomSessionCreateManyCustomerInput = {
   id?: string
-  pharmacyId: string
+  pharmacyId?: string
   guestKey?: string | null
   userId?: string | null
   status?: $Enums.SymptomSessionStatus
