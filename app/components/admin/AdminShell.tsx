@@ -856,6 +856,7 @@ export function AdminShell({
       <PushNotificationCenter audience="admin" />
       <LiveAlertCenter audience="admin" />
     </div>
+    </TenantBrandProvider>
   );
 }
 
@@ -976,6 +977,5 @@ function AdminUserMenu({ user }: { user: SessionUser }) {
         </>
       )}
     </div>
-    </TenantBrandProvider>
   );
 }
