@@ -3,15 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ArrowRight, Search } from "lucide-react";
+import TextDecoderWave from "./TextDecoderWave";
+import SplitTextWaveScramble from "./SplitTextWaveScramble";
 
 interface TravelLabHeroProps {
   pharmacyCount?: number;
   initialQuery?: string;
 }
-
-// Words for staggered headline animation
-const HEADLINE_WORDS_LINE1 = ["Rewriting", "the", "story", "of"];
-const HEADLINE_WORDS_LINE2 = ["pharmacy", "care", "in", "Africa."];
 
 export default function TravelLabHero({
   pharmacyCount = 12,
@@ -37,66 +35,62 @@ export default function TravelLabHero({
 
       {/* Floating Ambient Lighting */}
       <div className="pointer-events-none absolute -left-40 top-1/4 h-[35rem] w-[35rem] rounded-full bg-[#0c2e28]/40 blur-[140px]" />
-      <div className="pointer-events-none absolute -right-32 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[#c9a227]/12 blur-[140px]" />
+      <div className="pointer-events-none absolute -right-32 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[#c9a227]/15 blur-[140px]" />
 
-      {/* Main Hero Body */}
+      {/* Main Hero Content */}
       <div className="relative z-10 mx-auto max-w-6xl px-4 pt-32 pb-16 sm:px-6 sm:pt-40 lg:px-8 text-center my-auto">
-        {/* ──────── 1. ANIMATED KICKER PILL: "The Aether Healthcare Group" ──────── */}
-        <div className="animate-hero-kicker inline-flex items-center gap-2 rounded-full border border-amber-400/25 bg-black/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 backdrop-blur-md shadow-[0_0_25px_rgba(201,162,39,0.15)]">
-          <span className="relative flex h-2 w-2">
+        {/* ──────── 1. DECODING KICKER PILL: "The Aether Healthcare Group" ──────── */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/35 bg-black/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 backdrop-blur-md shadow-[0_0_25px_rgba(201,162,39,0.2)]">
+          <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-radar-ring absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
           </span>
-          <span className="tracking-widest">The Aether Healthcare Group</span>
+          <TextDecoderWave
+            text="The Aether Healthcare Group"
+            delay={100}
+            speed={25}
+            className="tracking-widest font-mono text-amber-300 font-bold"
+          />
         </div>
 
-        {/* ──────── 2. ANIMATED HEADLINE: "Rewriting the story of pharmacy care in Africa." ──────── */}
-        <h1
-          className="mt-8 text-4xl font-medium tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.12] max-w-4xl mx-auto"
-          style={{ fontFamily: "var(--font-display), serif" }}
-        >
-          {/* Line 1 Words */}
-          <span className="inline-block overflow-hidden pb-1">
-            {HEADLINE_WORDS_LINE1.map((word, index) => (
-              <span
-                key={word}
-                className="animate-hero-word mr-2.5 sm:mr-3.5"
-                style={{ animationDelay: `${150 + index * 80}ms` }}
-              >
-                {word}
-              </span>
-            ))}
-          </span>{" "}
+        {/* ──────── 2. SPLIT-TEXT WAVE SCRAMBLE HEADLINE ──────── */}
+        <div className="mt-8 max-w-4xl mx-auto">
+          <SplitTextWaveScramble
+            as="h1"
+            delay={250}
+            speed={24}
+            className="text-4xl font-medium tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.12]"
+            style={{ fontFamily: "var(--font-display), serif" }}
+            segments={[
+              {
+                text: "Rewriting the story of ",
+                className: "text-white drop-shadow",
+              },
+              {
+                text: "pharmacy care in Africa.",
+                className: "italic font-medium text-[#fef08a] sm:text-[#fde047] drop-shadow-[0_2px_15px_rgba(253,224,71,0.25)]",
+              },
+            ]}
+          />
+        </div>
 
-          {/* Line 2 Words with Shimmer Gradient */}
-          <span className="inline-block overflow-hidden pb-1">
-            <span className="animate-shimmer-text italic font-medium">
-              {HEADLINE_WORDS_LINE2.map((word, index) => (
-                <span
-                  key={word}
-                  className="animate-hero-word mr-2.5 sm:mr-3.5"
-                  style={{
-                    animationDelay: `${150 + (HEADLINE_WORDS_LINE1.length + index) * 80}ms`,
-                  }}
-                >
-                  {word}
-                </span>
-              ))}
-            </span>
-          </span>
-        </h1>
+        {/* ──────── 3. DECODING WAVE SUBHEAD ──────── */}
+        <div className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg">
+          <TextDecoderWave
+            as="p"
+            text="Connecting independent accredited chemists, licensed clinicians, and families through one unified digital healthcare infrastructure."
+            delay={600}
+            speed={14}
+            className="leading-relaxed text-slate-200 font-normal"
+          />
+        </div>
 
-        {/* ──────── 3. ANIMATED SUBHEAD: "Connecting independent accredited chemists..." ──────── */}
-        <p className="animate-hero-subhead mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-          Connecting independent accredited chemists, licensed clinicians, and families through one unified digital healthcare infrastructure.
-        </p>
-
-        {/* ──────── 4. ANIMATED SEARCH & ACTION DOCK ──────── */}
+        {/* ──────── 4. SEARCH & ACTION DOCK ──────── */}
         <div className="animate-hero-search mx-auto mt-10 max-w-xl">
           <form
             action="#network"
             method="GET"
-            className="flex flex-col sm:flex-row items-center gap-2 rounded-2xl sm:rounded-full border border-white/20 bg-black/60 p-2 shadow-2xl backdrop-blur-xl focus-within:border-amber-400/50 transition duration-300"
+            className="flex flex-col sm:flex-row items-center gap-2 rounded-2xl sm:rounded-full border border-white/20 bg-black/70 p-2 shadow-2xl backdrop-blur-xl focus-within:border-amber-400/50 transition duration-300"
           >
             <div className="relative flex flex-1 items-center w-full">
               <Search className="pointer-events-none absolute left-4 h-4 w-4 text-amber-300/80" />
