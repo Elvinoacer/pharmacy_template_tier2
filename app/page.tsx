@@ -1,17 +1,14 @@
 import { listMarketplacePharmacies } from "@/app/lib/tenant";
 import { platform } from "@/app/lib/data";
-import LandingHeroInteractive from "./components/landing/LandingHeroInteractive";
-import LandingQuickCareDeck from "./components/landing/LandingQuickCareDeck";
-import LandingDirectorySection from "./components/landing/LandingDirectorySection";
-import LandingBentoGrid from "./components/landing/LandingBentoGrid";
-import LandingOtcSpotlight from "./components/landing/LandingOtcSpotlight";
-import LandingTrustMetrics from "./components/landing/LandingTrustMetrics";
-import LandingFaqSection from "./components/landing/LandingFaqSection";
-import LandingCtaBanner from "./components/landing/LandingCtaBanner";
+import TravelLabHero from "./components/landing/TravelLabHero";
+import TravelLabStory from "./components/landing/TravelLabStory";
+import TravelLabMetrics from "./components/landing/TravelLabMetrics";
+import TravelLabTimeline from "./components/landing/TravelLabTimeline";
+import TravelLabNetwork from "./components/landing/TravelLabNetwork";
+import TravelLabPartners from "./components/landing/TravelLabPartners";
+import TravelLabTeam from "./components/landing/TravelLabTeam";
+import TravelLabContact from "./components/landing/TravelLabContact";
 import LandingMobileActionBar from "./components/landing/LandingMobileActionBar";
-import { PublicTestimonials } from "./components/PublicTestimonials";
-import LandingFeaturesShowcase from "./components/landing/LandingFeaturesShowcase";
-import LandingStatsSection from "./components/landing/LandingStatsSection";
 
 export const dynamic = "force-dynamic";
 
@@ -34,50 +31,39 @@ export default async function MarketplacePage({
   });
 
   return (
-    <div className="landing-root min-h-screen bg-white text-[#0f172a]">
-      {/* ───────── 1. STUNNING VISUAL HERO ───────── */}
-      <LandingHeroInteractive
-        platformPromise={platform.promise}
-        platformDescription={platform.description}
-        initialQuery={q}
+    <div className="landing-root min-h-screen bg-[#070b10] text-[#0f172a] pb-16 lg:pb-0">
+      {/* 1. CINEMATIC HERO */}
+      <TravelLabHero
         pharmacyCount={pharmacies.length || 12}
+        initialQuery={q}
       />
 
-      {/* ───────── 2. TRUST BADGES STRIP ───────── */}
-      <LandingStatsSection />
+      {/* 2. "THIS IS OUR STORY" STATEMENT & 3-CARD VISUAL STORY */}
+      <TravelLabStory />
 
-      {/* ───────── 3. QUICK CARE SERVICES ───────── */}
-      <LandingQuickCareDeck />
+      {/* 3. IMPACT & SCALE - 5-COLUMN METRIC COUNTERS */}
+      <TravelLabMetrics />
 
-      {/* ───────── 4. FEATURES SHOWCASE ───────── */}
-      <LandingFeaturesShowcase />
+      {/* 4. HORIZONTAL INTERACTIVE MILESTONES & TIMELINE */}
+      <TravelLabTimeline />
 
-      {/* ───────── 5. PHARMACY DIRECTORY ───────── */}
-      <LandingDirectorySection
+      {/* 5. "OUR NETWORK & SERVICES" - DIRECTORY + 4 CARE TOOLS */}
+      <TravelLabNetwork
         pharmacies={pharmacies}
         initialCity={city}
         initialQuery={q}
       />
 
-      {/* ───────── 6. WHY AETHER — BENTO GRID ───────── */}
-      <LandingBentoGrid />
+      {/* 6. STATUTORY & INSTITUTIONAL PARTNERS */}
+      <TravelLabPartners />
 
-      {/* ───────── 7. OTC ESSENTIALS ───────── */}
-      <LandingOtcSpotlight />
+      {/* 7. CLINICAL & EXECUTIVE LEADERSHIP TEAM */}
+      <TravelLabTeam />
 
-      {/* ───────── 8. TRUST METRICS & TESTIMONIALS ───────── */}
-      <LandingTrustMetrics />
+      {/* 8. PARALLAX CLOSING SECTION & OPERATIONAL HUBS */}
+      <TravelLabContact />
 
-      {/* ───────── 9. DATABASE TESTIMONIALS ───────── */}
-      <PublicTestimonials limit={3} />
-
-      {/* ───────── 10. FAQ SECTION ───────── */}
-      <LandingFaqSection />
-
-      {/* ───────── 11. CLOSING CTA BANNER ───────── */}
-      <LandingCtaBanner />
-
-      {/* ───────── 12. MOBILE ACTION BAR ───────── */}
+      {/* 9. MOBILE FLOATING ACTION DOCK */}
       <LandingMobileActionBar />
     </div>
   );
