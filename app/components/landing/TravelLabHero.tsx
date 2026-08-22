@@ -1,22 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import {
-  ArrowRight,
-  Search,
-  Sparkles,
-  ShieldCheck,
-  MapPin,
-  Building2,
-  HeartPulse,
-} from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 
 interface TravelLabHeroProps {
   pharmacyCount?: number;
   initialQuery?: string;
 }
+
+// Words for staggered headline animation
+const HEADLINE_WORDS_LINE1 = ["Rewriting", "the", "story", "of"];
+const HEADLINE_WORDS_LINE2 = ["pharmacy", "care", "in", "Africa."];
 
 export default function TravelLabHero({
   pharmacyCount = 12,
@@ -46,37 +41,62 @@ export default function TravelLabHero({
 
       {/* Main Hero Body */}
       <div className="relative z-10 mx-auto max-w-6xl px-4 pt-32 pb-16 sm:px-6 sm:pt-40 lg:px-8 text-center my-auto">
-        {/* Subtle Top Kicker */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 backdrop-blur-md">
+        {/* ──────── 1. ANIMATED KICKER PILL: "The Aether Healthcare Group" ──────── */}
+        <div className="animate-hero-kicker inline-flex items-center gap-2 rounded-full border border-amber-400/25 bg-black/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 backdrop-blur-md shadow-[0_0_25px_rgba(201,162,39,0.15)]">
           <span className="relative flex h-2 w-2">
             <span className="animate-radar-ring absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
           </span>
-          <span>The Aether Healthcare Group</span>
+          <span className="tracking-widest">The Aether Healthcare Group</span>
         </div>
 
-        {/* Large Clean Headline */}
+        {/* ──────── 2. ANIMATED HEADLINE: "Rewriting the story of pharmacy care in Africa." ──────── */}
         <h1
-          className="mt-8 text-4xl font-medium tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.08] max-w-4xl mx-auto"
+          className="mt-8 text-4xl font-medium tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.12] max-w-4xl mx-auto"
           style={{ fontFamily: "var(--font-display), serif" }}
         >
-          Rewriting the story of{" "}
-          <span className="italic animate-shimmer-text font-medium block sm:inline">
-            pharmacy care in Africa.
+          {/* Line 1 Words */}
+          <span className="inline-block overflow-hidden pb-1">
+            {HEADLINE_WORDS_LINE1.map((word, index) => (
+              <span
+                key={word}
+                className="animate-hero-word mr-2.5 sm:mr-3.5"
+                style={{ animationDelay: `${150 + index * 80}ms` }}
+              >
+                {word}
+              </span>
+            ))}
+          </span>{" "}
+
+          {/* Line 2 Words with Shimmer Gradient */}
+          <span className="inline-block overflow-hidden pb-1">
+            <span className="animate-shimmer-text italic font-medium">
+              {HEADLINE_WORDS_LINE2.map((word, index) => (
+                <span
+                  key={word}
+                  className="animate-hero-word mr-2.5 sm:mr-3.5"
+                  style={{
+                    animationDelay: `${150 + (HEADLINE_WORDS_LINE1.length + index) * 80}ms`,
+                  }}
+                >
+                  {word}
+                </span>
+              ))}
+            </span>
           </span>
         </h1>
 
-        {/* Crisp Sub-line */}
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+        {/* ──────── 3. ANIMATED SUBHEAD: "Connecting independent accredited chemists..." ──────── */}
+        <p className="animate-hero-subhead mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
           Connecting independent accredited chemists, licensed clinicians, and families through one unified digital healthcare infrastructure.
         </p>
 
-        {/* Direct Search Bar */}
-        <div className="mx-auto mt-10 max-w-xl">
+        {/* ──────── 4. ANIMATED SEARCH & ACTION DOCK ──────── */}
+        <div className="animate-hero-search mx-auto mt-10 max-w-xl">
           <form
             action="#network"
             method="GET"
-            className="flex flex-col sm:flex-row items-center gap-2 rounded-2xl sm:rounded-full border border-white/20 bg-black/60 p-2 shadow-2xl backdrop-blur-xl focus-within:border-amber-400/50"
+            className="flex flex-col sm:flex-row items-center gap-2 rounded-2xl sm:rounded-full border border-white/20 bg-black/60 p-2 shadow-2xl backdrop-blur-xl focus-within:border-amber-400/50 transition duration-300"
           >
             <div className="relative flex flex-1 items-center w-full">
               <Search className="pointer-events-none absolute left-4 h-4 w-4 text-amber-300/80" />
@@ -96,40 +116,40 @@ export default function TravelLabHero({
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </form>
-        </div>
 
-        {/* Quick Nav Anchors */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="#story"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition"
-          >
-            Our Story ↓
-          </a>
-          <a
-            href="#network"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition"
-          >
-            Network & Directory ↓
-          </a>
-          <a
-            href="#timeline"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition"
-          >
-            Milestones ↓
-          </a>
-          <a
-            href="#partners"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition"
-          >
-            Partners ↓
-          </a>
-          <a
-            href="#team"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition"
-          >
-            Our Team ↓
-          </a>
+          {/* Quick Nav Anchors */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
+            <a
+              href="#story"
+              className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition duration-200"
+            >
+              Our Story ↓
+            </a>
+            <a
+              href="#network"
+              className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition duration-200"
+            >
+              Network & Directory ↓
+            </a>
+            <a
+              href="#timeline"
+              className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition duration-200"
+            >
+              Milestones ↓
+            </a>
+            <a
+              href="#partners"
+              className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition duration-200"
+            >
+              Partners ↓
+            </a>
+            <a
+              href="#team"
+              className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition duration-200"
+            >
+              Our Team ↓
+            </a>
+          </div>
         </div>
       </div>
 
