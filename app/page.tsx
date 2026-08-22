@@ -34,7 +34,7 @@ export default async function MarketplacePage({
   });
 
   return (
-    <div className="landing-root min-h-screen bg-[#f4f7f4] text-[#0c1a14] pb-16 lg:pb-0">
+    <div className="landing-root min-h-screen bg-[#f8fafc] text-[#0f172a] pb-16 lg:pb-0">
       {/* ───────── 1. HERO WITH INTERACTIVE SIMULATOR ───────── */}
       <LandingHeroInteractive
         platformPromise={platform.promise}
