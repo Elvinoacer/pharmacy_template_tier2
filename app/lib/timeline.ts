@@ -22,13 +22,13 @@ export async function addTimelineEvent(
 ) {
   await prisma.timelineEvent.create({
     data: {
-      customerId: customerId ?? undefined,
-      userId: userId ?? undefined,
+      customerId: customerId ?? null,
+      userId: userId ?? null,
       eventType,
       title,
       description: description ?? null,
       metadata: (metadata ?? {}) as Prisma.InputJsonValue,
-      createdById: createdBy ?? userId ?? undefined,
+      createdById: createdBy ?? userId ?? null,
     },
   });
 }
@@ -57,10 +57,10 @@ export async function writeAuditLog(
 
   await prisma.auditLog.create({
     data: {
-      actorId: asUuidOrUndefined(actorId) ?? undefined,
+      actorId: asUuidOrUndefined(actorId) ?? null,
       action,
       entityType: entityType ?? null,
-      entityId: safeEntityId,
+      entityId: safeEntityId ?? null,
       details: safeDetails as Prisma.InputJsonValue,
     },
   });

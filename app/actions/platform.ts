@@ -7,24 +7,19 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { getSessionUser, requirePlatformAdmin, writeAuditLog } from "@/app/lib/auth";
 import { STAFF_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 
-export type PlatformActionState = { error?: string; success?: string };
-
 async function actor() {
   const user = await getSessionUser();
   return requirePlatformAdmin(user);
 }
 
-export async function reviewPharmacyAction(
-  _prev: PlatformActionState,
-  formData: FormData,
-): Promise<PlatformActionState> {
+export async function reviewPharmacyAction(formData: FormData): Promise<void> {
   try {
     const user = await actor();
     const pharmacyId = String(formData.get("pharmacyId") || "");
     const decision = String(formData.get("decision") || "");
     const notes = String(formData.get("notes") || "").trim();
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
-    if (!pharmacy) return { error: "Pharmacy not found." };
+    if (!pharmacy) throw new Error("Pharmacy not found.");
 
     if (decision === "approve") {
       await prismaUnscoped.pharmacy.update({
@@ -46,7 +41,7 @@ export async function reviewPharmacyAction(
         },
       });
     } else if (decision === "reject") {
-      if (!notes) return { error: "A reason is required to reject." };
+      if (!notes) throw new Error("A reason is required to reject.");
       await prismaUnscoped.pharmacy.update({
         where: { id: pharmacyId },
         data: { status: "rejected", rejectionReason: notes, listed: false },
@@ -60,7 +55,7 @@ export async function reviewPharmacyAction(
         },
       });
     } else if (decision === "needs_info") {
-      if (!notes) return { error: "Tell the owner what is missing." };
+      if (!notes) throw new Error("Tell the owner what is missing.");
       await prismaUnscoped.pharmacy.update({
         where: { id: pharmacyId },
         data: { status: "needs_info", verificationNotes: notes },
@@ -79,7 +74,7 @@ export async function reviewPharmacyAction(
         data: { status: "under_review" },
       });
     } else {
-      return { error: "Unknown decision." };
+      throw new Error("Unknown decision.");
     }
 
     await writeAuditLog(
@@ -92,16 +87,12 @@ export async function reviewPharmacyAction(
 
     revalidatePath("/platform");
     revalidatePath(`/platform/pharmacies/${pharmacyId}`);
-    return { success: `Marked ${decision.replace("_", " ")}.` };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Review failed." };
+    throw err instanceof Error ? err : new Error("Review failed.");
   }
 }
 
-export async function setPharmacyLiveAction(
-  _prev: PlatformActionState,
-  formData: FormData,
-): Promise<PlatformActionState> {
+export async function setPharmacyLiveAction(formData: FormData): Promise<void> {
   try {
     const user = await actor();
     const pharmacyId = String(formData.get("pharmacyId") || "");
@@ -111,7 +102,7 @@ export async function setPharmacyLiveAction(
     const restore = String(formData.get("restore") || "") === "true";
 
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
-    if (!pharmacy) return { error: "Pharmacy not found." };
+    if (!pharmacy) throw new Error("Pharmacy not found.");
 
     if (suspend) {
       await prismaUnscoped.pharmacy.update({
@@ -146,9 +137,8 @@ export async function setPharmacyLiveAction(
 
     revalidatePath("/");
     revalidatePath("/platform");
-    return { success: "Updated." };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Update failed." };
+    throw err instanceof Error ? err : new Error("Update failed.");
   }
 }
 

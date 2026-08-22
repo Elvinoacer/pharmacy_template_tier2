@@ -977,7 +977,7 @@ async function buildCustomerVars(customer: {
   id: string;
   fullName: string;
   user: { email: string };
-  loyaltyAccount?: { points: number; tier: string } | null;
+  loyaltyAccounts?: { points: number; tier: string }[];
 }): Promise<Record<string, string | number>> {
   return {
     name: customer.fullName,
