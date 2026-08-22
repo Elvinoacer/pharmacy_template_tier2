@@ -21,17 +21,17 @@ export default function LandingJourneyTabs() {
   const [activeAudience, setActiveAudience] = useState<"patient" | "owner">("patient");
 
   return (
-    <section className="relative px-4 py-20 sm:px-6 sm:py-28 bg-[#061510] text-[#e7f4ef] overflow-hidden">
+    <section className="relative px-4 py-20 sm:px-6 sm:py-28 bg-[#080c12] text-[#f8fafc] overflow-hidden">
       {/* Background glow meshes */}
       <div className="landing-grain" aria-hidden />
-      <div className="landing-ambient-glow pointer-events-none absolute -left-20 top-1/3 h-96 w-96 rounded-full bg-[#0d6e5a]/30 blur-[130px]" />
-      <div className="landing-ambient-glow pointer-events-none absolute -right-20 bottom-10 h-96 w-96 rounded-full bg-[#c9a227]/18 blur-[130px]" />
+      <div className="landing-ambient-glow pointer-events-none absolute -left-20 top-1/3 h-96 w-96 rounded-full bg-[#0c2e28]/35 blur-[130px]" />
+      <div className="landing-ambient-glow pointer-events-none absolute -right-20 bottom-10 h-96 w-96 rounded-full bg-[#c9a227]/15 blur-[130px]" />
 
       <div className="relative mx-auto max-w-7xl">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-teal-500/20 pb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
           <div>
-            <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.22em] text-teal-300">
+            <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.22em] text-amber-300">
               <Sparkles className="h-3.5 w-3.5" />
               How The Network Works
             </p>
@@ -41,23 +41,23 @@ export default function LandingJourneyTabs() {
             >
               Choose Your Pathway
             </h2>
-            <p className="mt-2 text-sm text-teal-100/70">
+            <p className="mt-2 text-sm text-slate-300">
               Tailored experience whether you are seeking patient care or listing an accredited chemist.
             </p>
           </div>
 
           {/* Interactive Audience Switcher */}
-          <div className="flex items-center gap-1.5 rounded-2xl border border-white/15 bg-black/50 p-1.5 backdrop-blur-xl shadow-lg">
+          <div className="flex items-center gap-1.5 rounded-2xl border border-white/15 bg-black/60 p-1.5 backdrop-blur-xl shadow-lg">
             <button
               type="button"
               onClick={() => setActiveAudience("patient")}
               className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold transition ${
                 activeAudience === "patient"
-                  ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-[#041510] shadow-md"
-                  : "text-teal-200/75 hover:text-white hover:bg-white/5"
+                  ? "bg-white text-[#0f172a] shadow-md"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
               }`}
             >
-              <HeartPulse className="h-4 w-4" />
+              <HeartPulse className="h-4 w-4 text-[#c9a227]" />
               <span>For Patients & Families</span>
             </button>
             <button
@@ -65,8 +65,8 @@ export default function LandingJourneyTabs() {
               onClick={() => setActiveAudience("owner")}
               className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold transition ${
                 activeAudience === "owner"
-                  ? "bg-gradient-to-r from-amber-400 to-yellow-300 text-[#041510] shadow-md"
-                  : "text-teal-200/75 hover:text-white hover:bg-white/5"
+                  ? "bg-gradient-to-r from-[#d4af37] to-[#c9a227] text-[#0a120e] shadow-md"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
               }`}
             >
               <Building2 className="h-4 w-4" />
@@ -80,8 +80,8 @@ export default function LandingJourneyTabs() {
           <div className="mt-12">
             <div className="grid gap-6 md:grid-cols-3">
               {/* Step 1 */}
-              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-teal-500/20 bg-gradient-to-b from-white/10 to-white/5 shadow-lg backdrop-blur-md transition hover:border-teal-400/40">
-                <div className="relative h-44 w-full overflow-hidden bg-black/30">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
+                <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
                     src="/images/services/prescription-dispensing.webp"
                     alt="Find care and scan medicine"
@@ -89,8 +89,8 @@ export default function LandingJourneyTabs() {
                     className="object-cover transition duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 380px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#061e16] via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-teal-400 text-[#041510] font-bold text-sm shadow">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[#0f172a] font-bold text-sm shadow">
                     01
                   </span>
                 </div>
@@ -102,19 +102,19 @@ export default function LandingJourneyTabs() {
                   >
                     Find or Scan
                   </h3>
-                  <p className="mt-2.5 text-xs leading-relaxed text-teal-100/75">
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
                     Search for an accredited chemist in your neighbourhood, or upload your prescription slip / medicine pack using Vision AI.
                   </p>
-                  <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-emerald-300 font-semibold flex items-center gap-1.5">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-amber-200 font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-amber-300" />
                     <span>Instant local stock & price verification</span>
                   </div>
                 </div>
               </div>
 
               {/* Step 2 */}
-              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-teal-500/20 bg-gradient-to-b from-white/10 to-white/5 shadow-lg backdrop-blur-md transition hover:border-teal-400/40">
-                <div className="relative h-44 w-full overflow-hidden bg-black/30">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
+                <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
                     src="/images/services/medication-counselling.webp"
                     alt="Pharmacist dosage review"
@@ -122,8 +122,8 @@ export default function LandingJourneyTabs() {
                     className="object-cover transition duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 380px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#061e16] via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-teal-400 text-[#041510] font-bold text-sm shadow">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[#0f172a] font-bold text-sm shadow">
                     02
                   </span>
                 </div>
@@ -133,21 +133,21 @@ export default function LandingJourneyTabs() {
                     className="text-xl font-medium text-white"
                     style={{ fontFamily: "var(--font-display), serif" }}
                   >
-                    Pharmacist Sign-Off & M-Pesa
+                    Pharmacist Review & M-Pesa
                   </h3>
-                  <p className="mt-2.5 text-xs leading-relaxed text-teal-100/75">
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
                     A licensed pharmacist audits your dosage and drug interactions, confirms the order, and triggers a seamless M-Pesa STK push.
                   </p>
-                  <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-emerald-300 font-semibold flex items-center gap-1.5">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-amber-200 font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-amber-300" />
                     <span>SHA / NHIF & private insurance friendly</span>
                   </div>
                 </div>
               </div>
 
               {/* Step 3 */}
-              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-teal-500/20 bg-gradient-to-b from-white/10 to-white/5 shadow-lg backdrop-blur-md transition hover:border-teal-400/40">
-                <div className="relative h-44 w-full overflow-hidden bg-black/30">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
+                <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
                     src="/images/services/delivery-services.webp"
                     alt="Fast doorstep courier delivery"
@@ -155,8 +155,8 @@ export default function LandingJourneyTabs() {
                     className="object-cover transition duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 380px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#061e16] via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-teal-400 text-[#041510] font-bold text-sm shadow">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[#0f172a] font-bold text-sm shadow">
                     03
                   </span>
                 </div>
@@ -168,11 +168,11 @@ export default function LandingJourneyTabs() {
                   >
                     Doorstep Delivery in 35m
                   </h3>
-                  <p className="mt-2.5 text-xs leading-relaxed text-teal-100/75">
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
                     Your medication is sealed in a tamper-evident pack and delivered in 35–45 minutes, or ready at the counter with zero waiting.
                   </p>
-                  <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-emerald-300 font-semibold flex items-center gap-1.5">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-amber-200 font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-amber-300" />
                     <span>Real-time SMS & WhatsApp tracking</span>
                   </div>
                 </div>
@@ -182,14 +182,14 @@ export default function LandingJourneyTabs() {
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 px-7 py-3.5 text-sm font-bold text-[#041510] shadow-[0_4px_20px_rgba(45,212,191,0.3)] transition hover:brightness-110 active:scale-98"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#d4af37] via-[#e5c558] to-[#c9a227] px-8 py-3.5 text-sm font-bold text-[#0a120e] shadow-[0_4px_25px_rgba(201,162,39,0.3)] transition hover:brightness-110 active:scale-98"
               >
                 <span>Create free patient account</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/how-do-you-feel"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10 active:scale-98"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10 active:scale-98"
               >
                 <span>Try symptom triage first</span>
               </Link>
@@ -202,8 +202,8 @@ export default function LandingJourneyTabs() {
           <div className="mt-12">
             <div className="grid gap-6 md:grid-cols-3">
               {/* Step 1 */}
-              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-amber-500/20 bg-gradient-to-b from-white/10 to-white/5 shadow-lg backdrop-blur-md transition hover:border-amber-400/40">
-                <div className="relative h-44 w-full overflow-hidden bg-black/30">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
+                <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
                     src="/images/gallery/welcoming_retail_floor.webp"
                     alt="Submit pharmacy premises"
@@ -211,8 +211,8 @@ export default function LandingJourneyTabs() {
                     className="object-cover transition duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 380px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1b1404] via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-400 text-[#041510] font-bold text-sm shadow">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-400 text-[#0a120e] font-bold text-sm shadow">
                     01
                   </span>
                 </div>
@@ -224,7 +224,7 @@ export default function LandingJourneyTabs() {
                   >
                     Submit Premises Details
                   </h3>
-                  <p className="mt-2.5 text-xs leading-relaxed text-teal-100/75">
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
                     Enter your pharmacy legal name, Pharmacy and Poisons Board (PPB) premise number, location, and operating hours in under 3 minutes.
                   </p>
                   <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-amber-200 font-semibold flex items-center gap-1.5">
@@ -235,8 +235,8 @@ export default function LandingJourneyTabs() {
               </div>
 
               {/* Step 2 */}
-              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-amber-500/20 bg-gradient-to-b from-white/10 to-white/5 shadow-lg backdrop-blur-md transition hover:border-amber-400/40">
-                <div className="relative h-44 w-full overflow-hidden bg-black/30">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
+                <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
                     src="/images/gallery/modern_care_tools.webp"
                     alt="Network verification & compliance"
@@ -244,8 +244,8 @@ export default function LandingJourneyTabs() {
                     className="object-cover transition duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 380px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1b1404] via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-400 text-[#041510] font-bold text-sm shadow">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-400 text-[#0a120e] font-bold text-sm shadow">
                     02
                   </span>
                 </div>
@@ -257,7 +257,7 @@ export default function LandingJourneyTabs() {
                   >
                     Superadmin Licence Review
                   </h3>
-                  <p className="mt-2.5 text-xs leading-relaxed text-teal-100/75">
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
                     Platform superadmins verify your licence, pharmacist credentials, and cold-chain equipment. Typical turnaround is 1 business day.
                   </p>
                   <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-amber-200 font-semibold flex items-center gap-1.5">
@@ -268,8 +268,8 @@ export default function LandingJourneyTabs() {
               </div>
 
               {/* Step 3 */}
-              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-amber-500/20 bg-gradient-to-b from-white/10 to-white/5 shadow-lg backdrop-blur-md transition hover:border-amber-400/40">
-                <div className="relative h-44 w-full overflow-hidden bg-black/30">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
+                <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
                     src="/images/gallery/curated_wellness_aisle.webp"
                     alt="Go live with your own brand"
@@ -277,8 +277,8 @@ export default function LandingJourneyTabs() {
                     className="object-cover transition duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 380px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1b1404] via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-400 text-[#041510] font-bold text-sm shadow">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-400 text-[#0a120e] font-bold text-sm shadow">
                     03
                   </span>
                 </div>
@@ -290,7 +290,7 @@ export default function LandingJourneyTabs() {
                   >
                     Go Live on Your Own Rails
                   </h3>
-                  <p className="mt-2.5 text-xs leading-relaxed text-teal-100/75">
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
                     Keep your own Till/Paybill, staff, and pricing. Receive refill requests from verified patients on the network with 0% white-label takeover.
                   </p>
                   <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-amber-200 font-semibold flex items-center gap-1.5">
@@ -304,14 +304,14 @@ export default function LandingJourneyTabs() {
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/onboard"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 px-7 py-3.5 text-sm font-bold text-[#041510] shadow-[0_4px_20px_rgba(201,162,39,0.3)] transition hover:brightness-110 active:scale-98"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#d4af37] via-[#e5c558] to-[#c9a227] px-8 py-3.5 text-sm font-bold text-[#0a120e] shadow-[0_4px_25px_rgba(201,162,39,0.3)] transition hover:brightness-110 active:scale-98"
               >
                 <span>Start pharmacy onboarding</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/for-pharmacies"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10 active:scale-98"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10 active:scale-98"
               >
                 <span>Read network terms & benefits</span>
               </Link>

@@ -57,21 +57,21 @@ export default function LandingFaqSection() {
   );
 
   return (
-    <section className="relative px-4 py-20 sm:px-6 sm:py-28 bg-[#f8faf9] border-t border-teal-900/5">
+    <section className="relative px-4 py-20 sm:px-6 sm:py-28 bg-[#f8fafc] border-t border-slate-200/80">
       <div className="mx-auto max-w-5xl">
         {/* Section Heading */}
         <div className="text-center max-w-2xl mx-auto">
-          <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.22em] text-[#0d6e5a]">
-            <HelpCircle className="h-3.5 w-3.5" />
+          <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.22em] text-[#0f2e29]">
+            <HelpCircle className="h-3.5 w-3.5 text-[#c9a227]" />
             Frequently Asked Questions
           </p>
           <h2
-            className="mt-3 text-3xl font-semibold tracking-tight text-[#0c1a14] sm:text-4xl"
+            className="mt-3 text-3xl font-semibold tracking-tight text-[#0f172a] sm:text-4xl"
             style={{ fontFamily: "var(--font-display), serif" }}
           >
             Everything you need to know
           </h2>
-          <p className="mt-2 text-sm text-[#5a6b62]">
+          <p className="mt-2 text-sm text-[#475569]">
             Clear answers about patient care, refills, insurance, and pharmacy onboarding.
           </p>
         </div>
@@ -93,8 +93,8 @@ export default function LandingFaqSection() {
               }}
               className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
                 selectedCat === tab.id
-                  ? "bg-[#0d6e5a] text-white shadow-sm"
-                  : "bg-white text-[#5a6b62] border border-teal-900/10 hover:bg-teal-50"
+                  ? "bg-[#0f172a] text-white shadow-sm"
+                  : "bg-white text-[#475569] border border-slate-200 hover:bg-slate-50"
               }`}
             >
               {tab.label}
@@ -109,23 +109,23 @@ export default function LandingFaqSection() {
             return (
               <div
                 key={faq.q}
-                className="overflow-hidden rounded-2xl border border-teal-900/8 bg-white transition shadow-sm"
+                className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition shadow-sm"
               >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-[#0c1a14] hover:text-[#0d6e5a] transition"
+                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-[#0f172a] hover:text-[#0c352f] transition"
                 >
                   <span className="pr-4">{faq.q}</span>
                   <ChevronDown
-                    className={`h-4 w-4 shrink-0 text-[#8a9a92] transition-transform duration-200 ${
-                      isOpen ? "rotate-180 text-[#0d6e5a]" : ""
+                    className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${
+                      isOpen ? "rotate-180 text-[#0f172a]" : ""
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-slate-100 bg-[#fafcfb] p-5 pt-4 text-sm leading-relaxed text-[#5a6b62]">
+                  <div className="border-t border-slate-100 bg-[#f8fafc] p-5 pt-4 text-sm leading-relaxed text-[#475569]">
                     {faq.a}
                   </div>
                 )}
@@ -135,9 +135,9 @@ export default function LandingFaqSection() {
         </div>
 
         {/* Support Callout */}
-        <div className="mt-12 text-center text-xs text-[#5a6b62]">
+        <div className="mt-12 text-center text-xs text-[#64748b]">
           Have a specific question not listed here?{" "}
-          <Link href="/contact" className="font-bold text-[#0d6e5a] hover:underline">
+          <Link href="/contact" className="font-bold text-[#0f172a] hover:underline">
             Speak with our platform care team
           </Link>{" "}
           or message our WhatsApp helpline.
