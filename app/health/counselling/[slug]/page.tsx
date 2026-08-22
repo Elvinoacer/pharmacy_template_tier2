@@ -7,7 +7,7 @@ import DigitalCounsellingCard from "@/app/components/health/DigitalCounsellingCa
 import MissedDoseCalculator from "@/app/components/health/MissedDoseCalculator";
 import DeviceDosageViewer from "@/app/components/health/DeviceDosageViewer";
 import { getMedicationCounsellingBySlug } from "@/app/lib/services/medication-counselling-db";
-import { pharmacy } from "@/app/lib/data";
+import { platform } from "@/app/lib/data";
 import { ArrowLeft, PhoneCall, ShieldCheck, Pill } from "lucide-react";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${profile.brandNames[0]} (${profile.genericName}) — Digital Patient Counselling Guide`,
-    description: `Official 12-pillar patient medication counselling guide for ${profile.brandNames[0]} (${profile.genericName}) at ${pharmacy.name}. How to take, food rules, storage, side effects, missed doses, and clinical safety.`,
+    description: `Official 12-pillar patient medication counselling guide for ${profile.brandNames[0]} (${profile.genericName}) on the ${platform.name} network. How to take, food rules, storage, side effects, missed doses, and clinical safety.`,
     alternates: { canonical: `/health/counselling/${slug}` },
   };
 }

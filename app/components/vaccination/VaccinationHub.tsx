@@ -28,7 +28,7 @@ import {
   DEFAULT_IMMUNIZATION_POLICY,
   type VaccineCategory,
 } from "@/app/lib/vaccination-catalog";
-import { pharmacy } from "@/app/lib/data";
+import { useTenantBrand } from "@/app/components/TenantBrand";
 
 export type PublicVaccineCard = {
   id: string;
@@ -72,6 +72,7 @@ export function VaccinationHub({
 }) {
   const [filter, setFilter] = useState<"all" | "bookable" | "travel" | "info">("all");
   const [tab, setTab] = useState<"vaccines" | "schedules" | "safety" | "campaigns">("vaccines");
+  const brand = useTenantBrand();
 
   const filtered = useMemo(() => {
     return vaccines.filter((v) => {
@@ -117,7 +118,7 @@ export function VaccinationHub({
             <p className="text-sm font-semibold text-amber-950">Depends on local authorisation</p>
             <p className="mt-1 text-sm leading-relaxed text-amber-900/80">
               {policyDisclaimer || DEFAULT_IMMUNIZATION_POLICY.publicDisclaimer}{" "}
-              {pharmacy.name} records lot numbers, consent, and immuniser credentials for every dose given on site.
+              {brand.name} records lot numbers, consent, and immuniser credentials for every dose given on site.
             </p>
           </div>
         </div>

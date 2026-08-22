@@ -3,19 +3,24 @@ import Image from "next/image";
 import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
 import { listPublicServices } from "../lib/services/pharmacy-services";
 import { formatPrice } from "../lib/format";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: `Explore pharmacy services at ${pharmacy.name}: dispensing, refills, vaccinations, screenings, delivery, and more.`,
+  description: `Explore pharmacy services at ${platform.name}: dispensing, refills, vaccinations, screenings, delivery, and more.`,
   alternates: { canonical: "/services" },
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function ServicesPage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/services" />;
+
   const services = await listPublicServices().catch(() => []);
 
   return (

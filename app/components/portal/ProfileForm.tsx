@@ -142,7 +142,7 @@ export default function ProfileForm({
         <Field label="Address line 1" name="addressLine1" defaultValue={profile.addressLine1} placeholder="123 Main Street" />
         <Field label="Address line 2" name="addressLine2" defaultValue={profile.addressLine2} placeholder="Apt, suite, etc." />
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="City" name="city" defaultValue={profile.city} placeholder="Austin" />
+          <Field label="City" name="city" defaultValue={profile.city} placeholder="Nairobi" />
           <Field label="State / County" name="state" defaultValue={profile.state} placeholder="TX" />
           <Field label="ZIP / Postal" name="zip" defaultValue={profile.zip} placeholder="78701" />
         </div>

@@ -2,17 +2,22 @@ import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 import CtaBanner from "../components/CtaBanner";
 import { HealthScreeningHub } from "../components/screening/HealthScreeningHub";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
-  title: "Health Screenings & Vitals | Aether Pharmacy",
-  description: `Walk-in and booked health screening services at ${pharmacy.name}: Blood pressure, blood glucose, BMI, temperature, and authorized point-of-care tests with structured Kenyan clinic/hospital referral pathways.`,
+  title: "Health Screenings & Vitals",
+  description: `Walk-in and booked health screening services at ${platform.name}: Blood pressure, blood glucose, BMI, temperature, and authorized point-of-care tests with structured Kenyan clinic/hospital referral pathways.`,
   alternates: { canonical: "/screenings" },
 };
 
 export const dynamic = "force-dynamic";
 
-export default function HealthScreeningsPage() {
+export default async function HealthScreeningsPage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/screenings" />;
+
   return (
     <div>
       <PageHero

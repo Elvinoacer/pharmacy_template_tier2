@@ -4,6 +4,7 @@ import CtaBanner from "../components/CtaBanner";
 import { PublicTestimonials } from "../components/PublicTestimonials";
 import Reveal from "../components/Reveal";
 import SectionHeading from "../components/SectionHeading";
+import ChoosePharmacy from "../components/ChoosePharmacy";
 import {
   articles,
   gallery,
@@ -11,7 +12,7 @@ import {
   trustIndicators,
 } from "../lib/data";
 import { listPublicServices } from "../lib/services/pharmacy-services";
-import { getResolvedPharmacy } from "../lib/services/pharmacy-settings";
+import { getResolvedPharmacyOrNull } from "../lib/services/pharmacy-settings";
 
 const QUICK_ACTION_BASE = [
   {
@@ -35,13 +36,13 @@ const QUICK_ACTION_BASE = [
 ];
 
 export default async function StorefrontPage() {
-  const resolved = await getResolvedPharmacy().catch(() => null);
-  const pharmacy = resolved
-    ? {
+  const resolved = await getResolvedPharmacyOrNull().catch(() => null);
+  if (!resolved) return <ChoosePharmacy next="/" />;
+  const pharmacy = {
         ...fallbackPharmacy,
         name: resolved.name,
-        tagline: resolved.tagline,
-        description: resolved.description,
+        tagline: resolved.tagline || fallbackPharmacy.tagline,
+        description: resolved.description || fallbackPharmacy.description,
         phone: resolved.phone,
         phoneHref: resolved.phoneHref,
         email: resolved.email,
@@ -50,8 +51,7 @@ export default async function StorefrontPage() {
         address: { ...fallbackPharmacy.address, ...resolved.address },
         hours: resolved.hours.length ? resolved.hours : fallbackPharmacy.hours,
         mapsDirections: resolved.mapsDirections,
-      }
-    : fallbackPharmacy;
+      };
   const dbServices = await listPublicServices().catch(() => []);
   const featuredServices = dbServices.slice(0, 6);
   const featuredArticles = articles.slice(0, 3);
@@ -224,7 +224,7 @@ export default async function StorefrontPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#084c3f]/70 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4">
                     <p className="text-xs font-medium uppercase tracking-wider text-teal-100/80">
-                      Austin · TX
+                      Kenya
                     </p>
                     <p
                       className="text-lg font-semibold text-white"
@@ -403,7 +403,7 @@ export default async function StorefrontPage() {
                     "Licensed pharmacists on every shift",
                     "Most major insurance plans accepted",
                     "Private counselling space",
-                    "Local delivery across greater Austin",
+                    "Local delivery in this pharmacy’s service area",
                     "Vaccinations and health screenings on site",
                     pharmacy.certifications[1],
                   ].map((item) => (

@@ -4,13 +4,14 @@ import AppChrome from "./components/AppChrome";
 import { Toaster } from "./components/Toaster";
 import JsonLd from "./components/JsonLd";
 import { getSessionUser } from "./lib/auth";
-import { pharmacy, platform } from "./lib/data";
+import { platform } from "./lib/data";
 import { ensureEnvConfigured } from "./lib/ensure-env";
 import { getTenant } from "./lib/tenant";
+import { getResolvedPharmacyOrNull } from "./lib/services/pharmacy-settings";
+import { platformBrand, type PublicBrand } from "./lib/brand";
+import { headers } from "next/headers";
 import "./globals.css";
 
-// Validate critical env vars (DATABASE_URL, AUTH_SECRET, NEXT_SERVER_ACTIONS_ENCRYPTION_KEY)
-// eagerly at startup. Throws in dev, warns in production.
 ensureEnvConfigured();
 
 const dmSans = DM_Sans({
@@ -33,43 +34,42 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(pharmacy.siteUrl),
+  metadataBase: new URL(platform.siteUrl),
   title: {
     default: `${platform.name} — ${platform.tagline}`,
     template: `%s · ${platform.name}`,
   },
   description: platform.description,
   keywords: [
-    "pharmacy",
-    "Austin pharmacy",
+    "pharmacy Kenya",
+    "Aether pharmacy network",
     "prescription refill",
     "vaccinations",
-    "immunization",
-    "preventive health",
-    "travel vaccines",
+    "neighbourhood pharmacy",
+    "PPB licensed",
     "medication counselling",
-    "pharmacy delivery",
+    "pharmacy delivery Kenya",
   ],
   openGraph: {
     type: "website",
-    locale: "en_US",
-    siteName: pharmacy.name,
-    title: pharmacy.name,
-    description: pharmacy.description,
+    locale: "en_KE",
+    siteName: platform.legalName,
+    title: `${platform.name} — ${platform.tagline}`,
+    description: platform.description,
     images: [
       {
         url: "/images/og-preview.jpg",
         width: 1200,
         height: 675,
         type: "image/jpeg",
-        alt: `${pharmacy.name} — ${pharmacy.tagline}`,
+        alt: `${platform.name} — ${platform.tagline}`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: pharmacy.name,
-    description: pharmacy.description,
+    title: `${platform.name} — ${platform.tagline}`,
+    description: platform.description,
     images: ["/images/og-preview.jpg"],
   },
   robots: {
@@ -86,10 +86,30 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Best-effort session for public chrome (dynamic Sign in / portal CTA).
-  // Failures must not take down the public site.
   const sessionUser = await getSessionUser().catch(() => null);
   const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
+  const hdrs = await headers().catch(() => null);
+  const onStorefrontRewrite = Boolean(hdrs?.get("x-pharmacy-slug"));
+  const resolved = tenant.slug
+    ? await getResolvedPharmacyOrNull({ slug: tenant.slug }).catch(() => null)
+    : null;
+
+  const storefrontBrand: PublicBrand | null = resolved
+    ? {
+        name: resolved.name,
+        tagline: resolved.tagline,
+        phone: resolved.phone,
+        phoneHref: resolved.phoneHref,
+        email: resolved.email,
+        addressShort: [resolved.address.street, resolved.address.city].filter(Boolean).join(", ") || "Kenya",
+        addressFull: resolved.address.full || "Kenya",
+        hours: resolved.hours,
+        whatsappHref: resolved.whatsappHref,
+        slug: resolved.slug,
+        logoUrl: resolved.logoUrl,
+      }
+    : null;
+
   const sessionHint = sessionUser
     ? {
         role: sessionUser.role,
@@ -105,8 +125,13 @@ export default async function RootLayout({
       className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
-        <JsonLd />
-        <AppChrome sessionUser={sessionHint} pharmacySlug={tenant.slug}>
+        <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
+        <AppChrome
+          sessionUser={sessionHint}
+          pharmacySlug={tenant.slug}
+          storefrontBrand={storefrontBrand}
+          platformBrand={platformBrand()}
+        >
           {children}
         </AppChrome>
         <Toaster />

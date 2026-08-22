@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 import CtaBanner from "../components/CtaBanner";
 import { VaccinationHub } from "../components/vaccination/VaccinationHub";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 import {
   getImmunizationPolicy,
   listPublicVaccines,
@@ -11,13 +13,16 @@ import {
 
 export const metadata: Metadata = {
   title: "Vaccinations & Immunisation",
-  description: `Pharmacy vaccinations at ${pharmacy.name}: influenza, COVID-19, hepatitis B, Tdap, pneumococcal, travel vaccines, digital records, and immunisation information — where locally authorised.`,
+  description: `Pharmacy vaccinations at ${platform.name}: influenza, COVID-19, hepatitis B, Tdap, pneumococcal, travel vaccines, digital records, and immunisation information — where locally authorised.`,
   alternates: { canonical: "/vaccinations" },
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function VaccinationsPage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/vaccinations" />;
+
   const [vaccines, campaigns, policy] = await Promise.all([
     listPublicVaccines().catch(() => []),
     listPublicHealthCampaigns({ activeOnly: true }).catch(() => []),

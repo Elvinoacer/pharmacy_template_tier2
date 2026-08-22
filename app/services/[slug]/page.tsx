@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import CtaBanner from "../../components/CtaBanner";
 import PageHero from "../../components/PageHero";
 import { ServiceBookingForm } from "../../components/ServiceBookingForm";
-import { pharmacy } from "../../lib/data";
+import { platform } from "../../lib/data";
 import {
   getPublicServiceBySlug,
   listPublicServices,
@@ -13,6 +13,8 @@ import {
 import { formatPrice } from "../../lib/format";
 import { getSessionUser } from "../../lib/auth";
 import { prisma } from "../../lib/db";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -30,6 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/services" />;
+
   const { slug } = await params;
   const service = await getPublicServiceBySlug(slug).catch(() => null);
   if (!service) notFound();

@@ -66,6 +66,7 @@ import {
 } from "@/app/components/shell/useShell";
 import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
+import { TenantBrandProvider } from "@/app/components/TenantBrand";
 
 export const ADMIN_GROUPS = {
   main: { label: "Main", icon: LayoutDashboard },
@@ -366,7 +367,16 @@ export function AdminShell({
   const groupOrder = Object.keys(ADMIN_GROUPS);
   const orderedGroups = groupOrder.filter((g) => groupedLinks[g] && groupedLinks[g].length > 0);
 
+  const activeMembership =
+    user.memberships.find((m) => m.pharmacyId === user.activePharmacyId) || user.memberships[0];
+  const brandValue = {
+    name: activeMembership?.name || "Pharmacy",
+    network: "Aether Pharmacy Network",
+    slug: activeMembership?.slug || null,
+  };
+
   return (
+    <TenantBrandProvider value={brandValue}>
     <div
       className="shell-grid-admin"
       data-collapsed={hydrated && collapsed ? "true" : "false"}
@@ -966,5 +976,6 @@ function AdminUserMenu({ user }: { user: SessionUser }) {
         </>
       )}
     </div>
+    </TenantBrandProvider>
   );
 }

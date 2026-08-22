@@ -1,61 +1,71 @@
-import { pharmacy } from "../lib/data";
+import { platform } from "@/app/lib/data";
+import type { ResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
 
-/** LocalBusiness / Pharmacy structured data for SEO */
-export default function JsonLd() {
-  const data = {
+/** Network Organization on platform pages; Pharmacy LocalBusiness on a storefront. */
+export default function JsonLd({ pharmacy = null }: { pharmacy?: ResolvedPharmacy | null }) {
+  const org = {
     "@context": "https://schema.org",
-    "@type": "Pharmacy",
-    name: pharmacy.name,
-    description: pharmacy.description,
-    url: pharmacy.siteUrl,
-    telephone: pharmacy.phone,
-    email: pharmacy.email,
-    image: "/images/og-preview.jpg",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: pharmacy.address.street,
-      addressLocality: pharmacy.address.city,
-      addressRegion: pharmacy.address.state,
-      postalCode: pharmacy.address.zip,
-      addressCountry: "US",
-    },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: 30.2672,
-      longitude: -97.7431,
-    },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "08:00",
-        closes: "20:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Saturday",
-        opens: "09:00",
-        closes: "18:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Sunday",
-        opens: "10:00",
-        closes: "16:00",
-      },
-    ],
-    sameAs: [
-      pharmacy.social.facebook,
-      pharmacy.social.instagram,
-      pharmacy.social.linkedin,
-    ],
-    priceRange: "$$",
+    "@type": "Organization",
+    name: platform.legalName,
+    alternateName: platform.name,
+    description: platform.description,
+    url: platform.siteUrl,
+    telephone: platform.phone,
+    email: platform.email,
+    areaServed: { "@type": "Country", name: "Kenya" },
+    sameAs: [platform.social.facebook, platform.social.instagram, platform.social.linkedin],
   };
+
+  const website = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: platform.name,
+    url: platform.siteUrl,
+    description: platform.description,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${platform.siteUrl}/?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  const shop =
+    pharmacy && !pharmacy.unresolved
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Pharmacy",
+          name: pharmacy.name,
+          description: pharmacy.description || pharmacy.tagline,
+          url: `${platform.siteUrl}/p/${pharmacy.slug}`,
+          telephone: pharmacy.phone,
+          email: pharmacy.email,
+          image: pharmacy.coverImageUrl || pharmacy.logoUrl || undefined,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: pharmacy.address.street,
+            addressLocality: pharmacy.address.city,
+            addressRegion: pharmacy.address.state,
+            postalCode: pharmacy.address.zip,
+            addressCountry: pharmacy.address.country || "KE",
+          },
+          ...(pharmacy.latitude != null && pharmacy.longitude != null
+            ? {
+                geo: {
+                  "@type": "GeoCoordinates",
+                  latitude: pharmacy.latitude,
+                  longitude: pharmacy.longitude,
+                },
+              }
+            : {}),
+        }
+      : null;
+
+  const payload = shop ? [org, website, shop] : [org, website];
 
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(payload) }}
     />
   );
 }

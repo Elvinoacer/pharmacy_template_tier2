@@ -16,6 +16,7 @@ import {
   FileText,
 } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import { useTenantBrand } from "@/app/components/TenantBrand";
 
 export type PatientContactTarget = {
   customerId: string;
@@ -51,6 +52,7 @@ export function PatientContactModal({
 }) {
   const [channel, setChannel] = useState<"whatsapp" | "sms" | "email">("whatsapp");
   const [pending, startTransition] = useTransition();
+  const brand = useTenantBrand();
 
   const med = target.medicineName || "your prescription medication";
   const due = target.dueDateStr ? ` (due: ${target.dueDateStr})` : "";
@@ -60,12 +62,12 @@ export function PatientContactModal({
     {
       id: "due_soon",
       label: "Refill Due Soon",
-      text: `Hello ${firstName}, this is a gentle reminder from Aether Pharmacy that your refill for ${med}${due} is due soon. To confirm pickup or home delivery, please tap here: https://aetherpharmacy.com/portal/refills or reply to this message.`,
+      text: `Hello ${firstName}, this is a gentle reminder from ${brand.name} that your refill for ${med}${due} is due soon. To confirm pickup or home delivery, please tap here: /portal/refills or reply to this message.`,
     },
     {
       id: "ready_pickup",
       label: "Ready for Pickup",
-      text: `Hello ${firstName}, good news! Your refill for ${med} is packaged and ready for collection at Aether Pharmacy branch. Please bring your prescription slip or show this message at the pickup counter.`,
+      text: `Hello ${firstName}, good news! Your refill for ${med} is packaged and ready for collection at ${brand.name}. Please bring your prescription slip or show this message at the pickup counter.`,
     },
     {
       id: "out_delivery",
@@ -80,7 +82,7 @@ export function PatientContactModal({
     {
       id: "adherence_check",
       label: "Wellness / Adherence Check",
-      text: `Hello ${firstName}, the clinical pharmacy team at Aether Pharmacy is checking in on your ${med} therapy. How are you feeling, and do you need any guidance or a refill? We're here to help!`,
+      text: `Hello ${firstName}, the clinical pharmacy team at ${brand.name} is checking in on your ${med} therapy. How are you feeling, and do you need any guidance or a refill? We're here to help!`,
     },
   ];
 

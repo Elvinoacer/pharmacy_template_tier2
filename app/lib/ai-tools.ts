@@ -226,7 +226,7 @@ export async function executeAiTool(
           safeHandling: profile.safeHandling,
           whenToReturn: profile.whenToReturn,
           hubUrl: `/health/counselling/${profile.medicineKey}`,
-          note: "Present these official 12-pillar counselling points clearly and conversationally. Always remind patients that in emergencies they must call 911 or their physician.",
+          note: "Present these official 12-pillar counselling points clearly and conversationally. Always remind patients that in emergencies in Kenya they must call 999 / 112 or their physician.",
         });
       }
 

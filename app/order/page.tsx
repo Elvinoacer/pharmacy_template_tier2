@@ -3,14 +3,16 @@ import Link from "next/link";
 import PageHero from "@/app/components/PageHero";
 import { GuestOrderForm } from "@/app/components/GuestOrderForm";
 import { prisma } from "@/app/lib/db";
-import { pharmacy } from "@/app/lib/data";
+import { platform } from "@/app/lib/data";
 import { formatPrice } from "@/app/lib/format";
 import { getSessionUser } from "@/app/lib/auth";
 import { ShoppingBag, ShieldCheck, Clock } from "lucide-react";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Order OTC medication",
-  description: `Reserve over-the-counter products from ${pharmacy.name} online — no account required. We'll confirm by phone.`,
+  description: `Reserve over-the-counter products from ${platform.name} online — no account required. We'll confirm by phone.`,
   alternates: { canonical: "/order" },
 };
 
@@ -21,6 +23,9 @@ export default async function GuestOrderPage({
 }: {
   searchParams: Promise<{ medicationId?: string; slug?: string }>;
 }) {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/order" />;
+
   const sp = await searchParams;
   const session = await getSessionUser().catch(() => null);
 

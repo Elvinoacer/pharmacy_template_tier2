@@ -35,9 +35,10 @@ import {
   SCREENING_VS_DIAGNOSIS_PRINCIPLES,
   KENYAN_REFERRAL_DESTINATIONS,
 } from "@/app/lib/screening-utils";
-import { pharmacy } from "@/app/lib/data";
+import { useTenantBrand } from "@/app/components/TenantBrand";
 
 export function HealthScreeningHub() {
+  const brand = useTenantBrand();
   // Interactive Calculator State
   const [systolic, setSystolic] = useState<string>("120");
   const [diastolic, setDiastolic] = useState<string>("80");
@@ -162,12 +163,12 @@ export function HealthScreeningHub() {
             >
               <CalendarCheck className="h-4 w-4" /> Book a Screening
             </Link>
-            <a
-              href={pharmacy.phoneHref}
+            <Link
+              href="/contact"
               className="inline-flex items-center gap-2 rounded-xl border border-teal-900/15 bg-white px-5 py-3 text-xs md:text-sm font-semibold text-[#0c1a14] hover:bg-teal-50 shadow-2xs transition"
             >
-              <PhoneCall className="h-4 w-4 text-teal-800" /> Call Pharmacy ({pharmacy.phone})
-            </a>
+              <PhoneCall className="h-4 w-4 text-teal-800" /> Call {brand.name}
+            </Link>
           </div>
         </div>
 
@@ -368,7 +369,7 @@ export function HealthScreeningHub() {
                 </div>
                 <h3 className="text-lg font-bold">Standard Operating Procedures &amp; Equipment Maintenance</h3>
                 <p className="text-xs leading-relaxed text-teal-100/90">
-                  All screening equipment at {pharmacy.name} is routine-calibrated in compliance with Kenya Bureau of Standards (KEBS) and Pharmacy and Poisons Board (PPB) Good Pharmacy Practice (GPP). Tests are performed exclusively by registered Pharmacists and certified Pharmaceutical Technologists.
+                  All screening equipment at {brand.name} is routine-calibrated in compliance with Kenya Bureau of Standards (KEBS) and Pharmacy and Poisons Board (PPB) Good Pharmacy Practice (GPP). Tests are performed exclusively by registered Pharmacists and certified Pharmaceutical Technologists.
                 </p>
               </div>
               <div className="shrink-0">

@@ -4,6 +4,8 @@ import { VaccinationBookingForm } from "../../components/vaccination/Vaccination
 import { getSessionUser } from "../../lib/auth";
 import { prisma } from "../../lib/db";
 import { listPublicVaccines } from "../../lib/services/vaccination-service";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Book a vaccination",
@@ -16,6 +18,9 @@ export const dynamic = "force-dynamic";
 type Props = { searchParams: Promise<{ vaccine?: string; campaign?: string }> };
 
 export default async function BookVaccinationPage({ searchParams }: Props) {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/vaccinations/book" />;
+
   const { vaccine, campaign } = await searchParams;
   const [vaccines, session] = await Promise.all([
     listPublicVaccines().catch(() => []),

@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
 import CareerForm from "../components/CareerForm";
 import PageHero from "../components/PageHero";
-import { jobs, pharmacy } from "../lib/data";
+import { jobs, platform } from "../lib/data";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Careers",
-  description: `Join the ${pharmacy.name} team — open roles, internships, and graduate opportunities in Austin.`,
+  description: `Join a ${platform.name} pharmacy team — open roles across Kenya.`,
   alternates: { canonical: "/careers" },
 };
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/careers" />;
+
   return (
     <div>
       <PageHero

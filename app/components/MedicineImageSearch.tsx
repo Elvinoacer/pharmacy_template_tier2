@@ -23,7 +23,7 @@ import {
   MedicineCatalogGrid,
   type MedicineCatalogItem,
 } from "@/app/components/MedicineCatalogCard";
-import { pharmacy } from "@/app/lib/data";
+import { platform } from "@/app/lib/data";
 
 type MatchItem = MedicineCatalogItem & {
   matchScore: number;
@@ -434,7 +434,7 @@ export default function MedicineImageSearch({
                         Contact us
                       </Link>
                       <a
-                        href={pharmacy.whatsappHref}
+                        href={platform.whatsappHref}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 rounded-full border border-[#0d6e5a]/30 bg-white px-4 py-2 text-xs font-semibold text-[#0d6e5a] transition hover:bg-[#e6f4ef]"

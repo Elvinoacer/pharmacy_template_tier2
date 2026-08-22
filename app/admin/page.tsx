@@ -46,7 +46,7 @@ export default async function AdminDashboardPage() {
     <AdminShell
       user={user}
       title="Engagement analytics"
-      subtitle="Live snapshot of customers, refills, inventory, and engagement across Aether Pharmacy."
+      subtitle="Live snapshot of customers, refills, inventory, and engagement for this pharmacy."
       actions={
         <div className="flex flex-wrap gap-2">
           <Link href="/admin/inventory" className="btn-admin">

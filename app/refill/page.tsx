@@ -2,15 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "../components/PageHero";
 import RefillForm from "../components/RefillForm";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Request a Refill",
-  description: `Request a prescription refill from ${pharmacy.name}. Online request form with live tracking and pharmacist review.`,
+  description: `Request a prescription refill from ${platform.name}. Online request form with live tracking and pharmacist review.`,
   alternates: { canonical: "/refill" },
 };
 
-export default function RefillPage() {
+export default async function RefillPage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/refill" />;
+
   return (
     <div>
       <PageHero

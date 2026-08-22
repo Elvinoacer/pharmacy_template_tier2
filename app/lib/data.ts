@@ -1,18 +1,34 @@
 import { searchVaccines } from "./vaccination-catalog";
 
 /**
- * Dummy pharmacy content for Tier 1 Digital Presence.
- * Replace with CMS-driven content in production.
+ * Platform identity (the Aether network) vs demo-tenant seed copy.
+ * Public chrome on `/` uses `platform`. Per-pharmacy storefronts use
+ * `getResolvedPharmacy()` — never this static shop as a silent fallback
+ * when no tenant is selected.
  */
 
 export const platform = {
   name: "Aether",
+  legalName: "Aether Pharmacy Network",
   tagline: "The pharmacy network for Kenya",
+  promise: "We promise life, and we promise caring.",
   description:
-    "One account. Every neighbourhood pharmacy. Prescriptions, refills, vaccinations, and care — from a licensed pharmacy close to home.",
+    "One patient account. Every neighbourhood pharmacy. Prescriptions, refills, vaccinations, and a pharmacist who still knows your name — from a licensed shop close to home.",
   email: "support@gtss.software",
   phone: "+254790670542",
+  phoneHref: "tel:+254790670542",
+  whatsapp: "+254790670542",
+  whatsappHref: "https://wa.me/254790670542",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://pharmacy-template-tier2.vercel.app",
+  country: "Kenya",
+  regulator: "Pharmacy and Poisons Board",
+  emergency: "999",
+  emergencyAlt: "112",
+  social: {
+    facebook: "https://facebook.com",
+    instagram: "https://instagram.com",
+    linkedin: "https://linkedin.com",
+  },
 };
 
 export const pharmacy = {
@@ -33,7 +49,7 @@ export const pharmacy = {
     full: "Kenyatta Avenue, Nairobi 00100",
   },
   mapsEmbed:
-    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3445.0!2d-97.7431!3d30.2672!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDE2JzAyLjAiTiA5N8KwNDQnMzUuMiJX!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus",
+    "https://www.google.com/maps?q=-1.286389,36.817223&z=16&output=embed",
   mapsDirections: "https://www.google.com/maps/dir/?api=1&destination=Kenyatta+Avenue,+Nairobi",
   social: {
     facebook: "https://facebook.com",
@@ -46,26 +62,30 @@ export const pharmacy = {
     { day: "Sunday", time: "10:00 AM – 4:00 PM" },
   ],
   insurance: [
-    "Blue Cross Blue Shield",
-    "Aetna",
-    "UnitedHealthcare",
-    "Cigna",
-    "Medicare",
-    "Medicaid",
-    "Humana",
-    "Most major plans",
+    "SHA / NHIF",
+    "AAR Insurance",
+    "Jubilee Health",
+    "Britam",
+    "CIC Insurance",
+    "Madison Health",
+    "Resolution Health",
+    "Most major Kenyan medical covers",
   ],
-  certifications: ["Licensed Texas Pharmacy", "NABP Accredited", "HIPAA Compliant", "Immunization Certified"],
+  certifications: [
+    "PPB licensed premises",
+    "Immunisation certified",
+    "Data Protection Act 2019",
+    "Good Pharmacy Practice",
+  ],
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://pharmacy-template-tier2.vercel.app",
 };
-
 export const team = [
   {
     id: "priya-nair",
     name: "Dr. Priya Nair, PharmD",
     role: "Lead Pharmacist & Owner",
     bio: "Priya founded Aether with a simple belief: every patient deserves clear answers and careful attention. She specialises in chronic disease management and medication therapy review.",
-    qualifications: "PharmD, University of Texas · 18 years experience",
+    qualifications: "PharmD, University of Nairobi · 18 years experience",
     photo: "/images/team/marcus-chen.webp",
   },
   {
@@ -751,13 +771,13 @@ export const faqs = [
     category: "General",
     question: "How can I contact you quickly?",
     answer:
-      "Call +254790670542, message us on WhatsApp, email support@gtss.software, or use the contact form on this website. For urgent medical emergencies, call 911.",
+      "Call +254790670542, message us on WhatsApp, email support@gtss.software, or use the contact form. For medical emergencies in Kenya, call 999 or 112.",
   },
   {
     category: "General",
     question: "Is my personal health information kept private?",
     answer:
-      "Yes. We follow HIPAA requirements and only share information as needed for care, payment, or as required by law. See our Privacy Policy for full details.",
+      "Yes. We follow the Kenya Data Protection Act (2019) and only share information as needed for care, payment, or as required by law. See our Privacy Policy for full details.",
   },
 ];
 
@@ -837,7 +857,7 @@ export const jobs = [
     posted: "2026-03-01",
     summary: "Dispense prescriptions, counsel patients, and support clinical services including immunisations and MTM.",
     requirements: [
-      "Active Texas pharmacist license in good standing",
+      "Active PPB pharmacist licence in good standing",
       "PharmD or BS Pharmacy",
       "Immunization certification preferred",
       "Strong communication and accuracy under pressure",
@@ -866,8 +886,8 @@ export const jobs = [
     summary:
       "Hands-on internship for pharmacy students seeking community practice experience under pharmacist supervision.",
     requirements: [
-      "Enrolled in an ACPE-accredited pharmacy programme",
-      "Eligible for Texas intern registration",
+      "Enrolled in a recognised pharmacy programme",
+      "Eligible for PPB intern registration",
       "Curious, professional, patient-first attitude",
       "Availability June–August",
     ],
@@ -883,7 +903,7 @@ export const jobs = [
       "Recent PharmD graduate or pending licensure",
       "Passion for community pharmacy",
       "Leadership potential and learning mindset",
-      "Authorisation to work in the US",
+      "Authorisation to work in Kenya",
     ],
   },
 ];

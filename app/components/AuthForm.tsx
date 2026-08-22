@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
 import type { AuthActionState } from "@/app/actions/auth";
-import { pharmacy } from "@/app/lib/data";
+import { platform } from "@/app/lib/data";
 
 type Props = {
   action: (prev: AuthActionState, formData: FormData) => Promise<AuthActionState>;
@@ -33,7 +33,7 @@ export default function AuthForm({
   highlights = [
     "Secure session with role-aware portal access",
     "Track refills, orders, and pharmacist messages",
-    "HIPAA-conscious handling of your health data",
+    "Kenya Data Protection Act–conscious handling of your health data",
   ],
 }: Props) {
   const [state, formAction, pending] = useActionState(action, {} as AuthActionState);
@@ -95,10 +95,10 @@ export default function AuthForm({
             </span>
             <span>
               <span className="block text-lg font-semibold leading-none" style={{ fontFamily: "var(--font-display), serif" }}>
-                {pharmacy.name.replace(" Pharmacy", "")}
+                {platform.name}
               </span>
               <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.2em] text-teal-100/80">
-                Pharmacy
+                Network
               </span>
             </span>
           </Link>
@@ -136,12 +136,12 @@ export default function AuthForm({
 
         <p className="relative mt-8 text-xs text-teal-100/70">
           Need help?{" "}
-          <a href={pharmacy.phoneHref} className="font-semibold text-white hover:underline">
-            {pharmacy.phone}
+          <a href={platform.phoneHref} className="font-semibold text-white hover:underline">
+            {platform.phone}
           </a>
           {" · "}
-          <a href={`mailto:${pharmacy.email}`} className="font-semibold text-white hover:underline">
-            {pharmacy.email}
+          <a href={`mailto:${platform.email}`} className="font-semibold text-white hover:underline">
+            {platform.email}
           </a>
         </p>
       </aside>

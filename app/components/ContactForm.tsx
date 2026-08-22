@@ -31,7 +31,7 @@ export default function ContactForm() {
     return (
       <FormSuccess
         title="Message received"
-        message="Thank you for contacting Aether Pharmacy. A team member will respond within one business day. For urgent medication needs, please call us directly."
+        message="Thank you for contacting the pharmacy. A team member will respond within one business day. For urgent medication needs, please call us directly."
         actions={
           <>
             <Link href="/" className="btn-primary !py-2.5 text-sm">

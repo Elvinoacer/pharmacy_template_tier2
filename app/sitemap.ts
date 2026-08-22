@@ -1,16 +1,18 @@
 import type { MetadataRoute } from "next";
-import { articles, pharmacy } from "./lib/data";
+import { articles, platform } from "./lib/data";
 import { listPublicServices } from "./lib/services/pharmacy-services";
 import { listPublicCategories } from "./lib/medication-categories";
 import { listPublicVaccines } from "./lib/services/vaccination-service";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = pharmacy.siteUrl;
+  const base = platform.siteUrl;
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     "",
     "/about",
+    "/for-pharmacies",
+    "/onboard",
     "/services",
     "/medicines",
     "/health",

@@ -3,15 +3,20 @@ import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import FaqAccordion from "../components/FaqAccordion";
 import PageHero from "../components/PageHero";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
-  description: `Answers about hours, refills, delivery, insurance, and services at ${pharmacy.name}.`,
+  description: `Answers about hours, refills, delivery, insurance, and services at ${platform.name}.`,
   alternates: { canonical: "/faq" },
 };
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/faq" />;
+
   return (
     <div>
       <PageHero

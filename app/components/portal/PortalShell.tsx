@@ -46,6 +46,7 @@ import {
 } from "@/app/components/shell/useShell";
 import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
+import { useTenantBrand } from "@/app/components/TenantBrand";
 
 export const PORTAL_LINKS = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
@@ -99,6 +100,7 @@ export function PortalShell({
   const unread = attention.count;
   const feelBadge = attention.feel;
   const pathname = useActivePath();
+  const brand = useTenantBrand();
 
   // Separate pinned and unpinned links
   const pinnedLinks = PORTAL_LINKS.filter((l) => pinned.includes(l.href));
@@ -140,7 +142,7 @@ export function PortalShell({
             {!collapsed && (
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold leading-tight text-[#0c1a14]">Customer Portal</p>
-                <p className="truncate text-[11px] text-[#5a6b62]">Aether Pharmacy</p>
+                <p className="truncate text-[11px] text-[#5a6b62]">{brand.name}</p>
               </div>
             )}
           </Link>
@@ -312,7 +314,7 @@ export function PortalShell({
                 </span>
                 <div>
                   <p className="text-sm font-semibold leading-tight text-[#0c1a14]">Customer Portal</p>
-                  <p className="text-[11px] text-[#5a6b62]">Aether Pharmacy</p>
+                  <p className="text-[11px] text-[#5a6b62]">{brand.name}</p>
                 </div>
               </Link>
               <button
