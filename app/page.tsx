@@ -4,6 +4,7 @@ import LandingHeroInteractive from "./components/landing/LandingHeroInteractive"
 import LandingQuickCareDeck from "./components/landing/LandingQuickCareDeck";
 import LandingDirectorySection from "./components/landing/LandingDirectorySection";
 import LandingBentoGrid from "./components/landing/LandingBentoGrid";
+import LandingOtcSpotlight from "./components/landing/LandingOtcSpotlight";
 import LandingJourneyTabs from "./components/landing/LandingJourneyTabs";
 import LandingHealthPillars from "./components/landing/LandingHealthPillars";
 import LandingTrustMetrics from "./components/landing/LandingTrustMetrics";
@@ -55,25 +56,28 @@ export default async function MarketplacePage({
       {/* ───────── 4. WHY AETHER — HEALTHCARE BENTO GRID ───────── */}
       <LandingBentoGrid />
 
-      {/* ───────── 5. INTERACTIVE JOURNEY — TWO DOORS, ONE NETWORK ───────── */}
+      {/* ───────── 5. OTC HEALTHCARE ESSENTIALS SPOTLIGHT ───────── */}
+      <LandingOtcSpotlight />
+
+      {/* ───────── 6. INTERACTIVE JOURNEY — TWO DOORS, ONE NETWORK ───────── */}
       <LandingJourneyTabs />
 
-      {/* ───────── 6. CLINICAL PILLARS & EVIDENCE-BASED GUIDANCE ───────── */}
+      {/* ───────── 7. CLINICAL PILLARS & EVIDENCE-BASED GUIDANCE ───────── */}
       <LandingHealthPillars />
 
-      {/* ───────── 7. TRUST METRICS & COMMUNITY VOICES ───────── */}
+      {/* ───────── 8. TRUST METRICS, CLINICAL TEAM & COMMUNITY VOICES ───────── */}
       <LandingTrustMetrics />
 
-      {/* ───────── 8. LIVE DATABASE TESTIMONIALS (IF ANY) ───────── */}
+      {/* ───────── 9. LIVE DATABASE TESTIMONIALS (IF ANY) ───────── */}
       <PublicTestimonials limit={6} />
 
-      {/* ───────── 9. INTERACTIVE CATEGORIZED FAQ ACCORDION ───────── */}
+      {/* ───────── 10. INTERACTIVE CATEGORIZED FAQ ACCORDION ───────── */}
       <LandingFaqSection />
 
-      {/* ───────── 10. CLOSING DUAL-AUDIENCE IMMERSIVE CTA BANNER ───────── */}
+      {/* ───────── 11. CLOSING DUAL-AUDIENCE IMMERSIVE CTA BANNER ───────── */}
       <LandingCtaBanner />
 
-      {/* ───────── 11. MOBILE BOTTOM QUICK ACTION BAR ───────── */}
+      {/* ───────── 12. MOBILE BOTTOM QUICK ACTION BAR ───────── */}
       <LandingMobileActionBar />
     </div>
   );
