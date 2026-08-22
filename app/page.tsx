@@ -5,8 +5,6 @@ import LandingQuickCareDeck from "./components/landing/LandingQuickCareDeck";
 import LandingDirectorySection from "./components/landing/LandingDirectorySection";
 import LandingBentoGrid from "./components/landing/LandingBentoGrid";
 import LandingOtcSpotlight from "./components/landing/LandingOtcSpotlight";
-import LandingJourneyTabs from "./components/landing/LandingJourneyTabs";
-import LandingHealthPillars from "./components/landing/LandingHealthPillars";
 import LandingTrustMetrics from "./components/landing/LandingTrustMetrics";
 import LandingFaqSection from "./components/landing/LandingFaqSection";
 import LandingCtaBanner from "./components/landing/LandingCtaBanner";
@@ -35,7 +33,7 @@ export default async function MarketplacePage({
 
   return (
     <div className="landing-root min-h-screen bg-[#f8fafc] text-[#0f172a] pb-16 lg:pb-0">
-      {/* ───────── 1. HERO WITH INTERACTIVE SIMULATOR ───────── */}
+      {/* ───────── 1. MINIMALIST VISUAL HERO ───────── */}
       <LandingHeroInteractive
         platformPromise={platform.promise}
         platformDescription={platform.description}
@@ -43,41 +41,35 @@ export default async function MarketplacePage({
         pharmacyCount={pharmacies.length || 12}
       />
 
-      {/* ───────── 2. 60-SECOND QUICK CARE COMMAND DECK ───────── */}
+      {/* ───────── 2. 60-SECOND CARE PATHWAYS ───────── */}
       <LandingQuickCareDeck />
 
-      {/* ───────── 3. INTERACTIVE NETWORK EXPLORER & DIRECTORY ───────── */}
+      {/* ───────── 3. PHARMACY DIRECTORY & LOCATIONS ───────── */}
       <LandingDirectorySection
         pharmacies={pharmacies}
         initialCity={city}
         initialQuery={q}
       />
 
-      {/* ───────── 4. WHY AETHER — HEALTHCARE BENTO GRID ───────── */}
+      {/* ───────── 4. WHY AETHER — VISUAL BENTO GRID ───────── */}
       <LandingBentoGrid />
 
-      {/* ───────── 5. OTC HEALTHCARE ESSENTIALS SPOTLIGHT ───────── */}
+      {/* ───────── 5. OTC ESSENTIALS CAROUSEL ───────── */}
       <LandingOtcSpotlight />
 
-      {/* ───────── 6. INTERACTIVE JOURNEY — TWO DOORS, ONE NETWORK ───────── */}
-      <LandingJourneyTabs />
-
-      {/* ───────── 7. CLINICAL PILLARS & EVIDENCE-BASED GUIDANCE ───────── */}
-      <LandingHealthPillars />
-
-      {/* ───────── 8. TRUST METRICS, CLINICAL TEAM & COMMUNITY VOICES ───────── */}
+      {/* ───────── 6. TRUST METRICS & COMMUNITY QUOTES ───────── */}
       <LandingTrustMetrics />
 
-      {/* ───────── 9. LIVE DATABASE TESTIMONIALS (IF ANY) ───────── */}
-      <PublicTestimonials limit={6} />
+      {/* ───────── 7. DATABASE TESTIMONIALS (IF ANY) ───────── */}
+      <PublicTestimonials limit={3} />
 
-      {/* ───────── 10. INTERACTIVE CATEGORIZED FAQ ACCORDION ───────── */}
+      {/* ───────── 8. ACCORDION FAQ ───────── */}
       <LandingFaqSection />
 
-      {/* ───────── 11. CLOSING DUAL-AUDIENCE IMMERSIVE CTA BANNER ───────── */}
+      {/* ───────── 9. MINIMALIST CLOSING BANNER ───────── */}
       <LandingCtaBanner />
 
-      {/* ───────── 12. MOBILE BOTTOM QUICK ACTION BAR ───────── */}
+      {/* ───────── 10. MOBILE FLOATING ACTION DOCK ───────── */}
       <LandingMobileActionBar />
     </div>
   );
