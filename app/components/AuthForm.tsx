@@ -153,7 +153,7 @@ export default function AuthForm({
           className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-[#5a6b62] transition hover:text-[#084c3f] lg:hidden"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          Back to {pharmacy.name}
+          Back to {platform.name}
         </Link>
 
         <div className="mb-6 lg:mb-8">
