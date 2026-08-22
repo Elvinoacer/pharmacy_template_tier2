@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ArrowRight, Search } from "lucide-react";
-import CleanTextWave from "./CleanTextWave";
-import TextDecoderWave from "./TextDecoderWave";
+import SplitTextWave from "./SplitTextWave";
 
 interface TravelLabHeroProps {
   pharmacyCount?: number;
@@ -39,26 +38,27 @@ export default function TravelLabHero({
 
       {/* Main Hero Content */}
       <div className="relative z-10 mx-auto max-w-6xl px-4 pt-32 pb-16 sm:px-6 sm:pt-40 lg:px-8 text-center my-auto">
-        {/* ──────── 1. DECODING KICKER PILL ──────── */}
+        {/* ──────── 1. SPLIT-TEXT KICKER PILL ──────── */}
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/35 bg-black/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 backdrop-blur-md shadow-[0_0_25px_rgba(201,162,39,0.2)]">
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-radar-ring absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
           </span>
-          <TextDecoderWave
+          <SplitTextWave
+            as="span"
             text="The Aether Healthcare Group"
             delay={80}
-            speed={20}
+            stagger={20}
             className="tracking-widest font-mono text-amber-300 font-bold"
           />
         </div>
 
-        {/* ──────── 2. ZERO-LAYOUT-SHIFT HEADLINE WAVE ──────── */}
+        {/* ──────── 2. SPLIT-TEXT HEADLINE WAVE ──────── */}
         <div className="mt-8 max-w-4xl mx-auto">
-          <CleanTextWave
+          <SplitTextWave
             as="h1"
             delay={200}
-            speed={22}
+            stagger={18}
             className="text-4xl font-medium tracking-tight sm:text-6xl lg:text-7xl"
             style={{ fontFamily: "var(--font-display), serif" }}
             lines={[
@@ -74,13 +74,14 @@ export default function TravelLabHero({
           />
         </div>
 
-        {/* ──────── 3. DECODING WAVE SUBHEAD ──────── */}
+        {/* ──────── 3. SPLIT-TEXT SUBHEAD WAVE ──────── */}
         <div className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg">
-          <TextDecoderWave
+          <SplitTextWave
             as="p"
+            splitBy="word"
             text="Connecting independent accredited chemists, licensed clinicians, and families through one unified digital healthcare infrastructure."
             delay={550}
-            speed={12}
+            stagger={28}
             className="leading-relaxed text-slate-200 font-normal"
           />
         </div>
