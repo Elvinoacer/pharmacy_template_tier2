@@ -1,6 +1,7 @@
 "use client";
 
 import { ShieldCheck, Clock, Award, Users, Compass } from "lucide-react";
+import SplitTextWave from "./SplitTextWave";
 
 const STATS = [
   {
@@ -43,15 +44,26 @@ export default function TravelLabMetrics() {
 
       <div className="relative mx-auto max-w-6xl">
         <div className="text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-300">
-            Impact & Scale
-          </p>
-          <h2
-            className="mt-3 text-2xl font-medium tracking-tight sm:text-4xl text-white"
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            Powering Kenya’s community healthcare rails
-          </h2>
+          <SplitTextWave
+            as="p"
+            text="Impact & Scale"
+            delay={100}
+            stagger={20}
+            hoverStagger={15}
+            className="text-xs font-bold uppercase tracking-[0.25em] text-amber-300 cursor-pointer"
+          />
+          <div className="mt-3">
+            <SplitTextWave
+              as="h2"
+              splitBy="word"
+              text="Powering Kenya’s community healthcare rails"
+              delay={200}
+              stagger={25}
+              hoverStagger={18}
+              className="text-2xl font-medium tracking-tight sm:text-4xl text-white cursor-pointer"
+              style={{ fontFamily: "var(--font-display), serif" }}
+            />
+          </div>
         </div>
 
         {/* 5-Column Clean Metric Grid */}

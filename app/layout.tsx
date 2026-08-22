@@ -3,6 +3,7 @@ import { DM_Sans, Fraunces, JetBrains_Mono } from "next/font/google";
 import AppChrome from "./components/AppChrome";
 import { Toaster } from "./components/Toaster";
 import JsonLd from "./components/JsonLd";
+import AetherCursor from "./components/AetherCursor";
 import { getSessionUser } from "./lib/auth";
 import { platform } from "./lib/data";
 import { ensureEnvConfigured } from "./lib/ensure-env";
@@ -125,6 +126,7 @@ export default async function RootLayout({
       className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
+        <AetherCursor />
         <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
         <AppChrome
           sessionUser={sessionHint}

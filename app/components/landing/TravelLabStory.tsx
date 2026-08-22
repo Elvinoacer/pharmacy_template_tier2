@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Sparkles, ShieldCheck, HeartPulse } from "lucide-react";
+import SplitTextWave from "./SplitTextWave";
 
 export default function TravelLabStory() {
   return (
@@ -10,17 +11,28 @@ export default function TravelLabStory() {
       <div className="mx-auto max-w-6xl">
         {/* Uppercase Kicker */}
         <div className="text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#0f172a]">
-            This Is Our Story
-          </p>
+          <SplitTextWave
+            as="p"
+            text="This Is Our Story"
+            delay={100}
+            stagger={20}
+            hoverStagger={15}
+            className="text-xs font-bold uppercase tracking-[0.25em] text-[#0f172a] cursor-pointer"
+          />
           
           {/* Main Statement */}
-          <h2
-            className="mt-6 text-3xl font-medium tracking-tight text-[#0f172a] sm:text-4xl lg:text-5xl max-w-4xl mx-auto leading-[1.2]"
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            We brought modern healthcare rails to Kenya to empower independent pharmacists and make essential medicine effortless.
-          </h2>
+          <div className="mt-6 max-w-4xl mx-auto">
+            <SplitTextWave
+              as="h2"
+              splitBy="word"
+              text="We brought modern healthcare rails to Kenya to empower independent pharmacists and make essential medicine effortless."
+              delay={200}
+              stagger={25}
+              hoverStagger={18}
+              className="text-3xl font-medium tracking-tight text-[#0f172a] sm:text-4xl lg:text-5xl leading-[1.2] cursor-pointer"
+              style={{ fontFamily: "var(--font-display), serif" }}
+            />
+          </div>
 
           <p className="mt-6 max-w-2xl mx-auto text-base text-[#475569] leading-relaxed">
             With strict Pharmacy and Poisons Board accreditation, cold-chain assurance, and native M-Pesa rails, we bridge the gap between world-class technology and neighbourhood compassion.
