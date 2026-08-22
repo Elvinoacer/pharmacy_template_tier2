@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 import SearchPanel from "../components/SearchPanel";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Search",
@@ -12,6 +14,9 @@ export const metadata: Metadata = {
 type Props = { searchParams: Promise<{ q?: string }> };
 
 export default async function SearchPage({ searchParams }: Props) {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/search" />;
+
   const { q } = await searchParams;
 
   return (

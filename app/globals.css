@@ -1740,3 +1740,32 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
     display: none !important;
   }
 }
+
+/* ============================================================
+   Marketplace landing — editorial, tenant-agnostic
+   ============================================================ */
+.landing-hero {
+  background: #061510;
+}
+.landing-hero-wash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 12% 20%, rgba(13, 110, 90, 0.28), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 88% 80%, rgba(201, 162, 39, 0.08), transparent 50%);
+  pointer-events: none;
+}
+.landing-grain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero .animate-ping {
+    animation: none;
+  }
+}
+

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: `Privacy policy for ${pharmacy.name} website and enquiry forms.`,
+  description: `Privacy policy for ${platform.legalName}.`,
   alternates: { canonical: "/privacy" },
 };
 
@@ -27,8 +27,8 @@ export default function PrivacyPage() {
               1. Who we are
             </h2>
             <p className="mt-2">
-              {pharmacy.name} (“we”, “us”) operates this website to provide information about our pharmacy services
-              and to receive enquiries. Contact: {pharmacy.email}, {pharmacy.phone}, {pharmacy.address.full}.
+              {platform.legalName} (“we”, “us”) operates this website as a multi-tenant pharmacy network.
+              Independent pharmacies on Aether keep their own patient records. Platform contact: {platform.email}, {platform.phone}.
             </p>
           </section>
 
@@ -62,9 +62,9 @@ export default function PrivacyPage() {
               4. Health information
             </h2>
             <p className="mt-2">
-              When you share prescription-related details, we treat them carefully in line with applicable privacy
-              and pharmacy regulations (including HIPAA where it applies to our pharmacy operations). Do not use
-              website forms for emergencies.
+              When you share prescription-related details with a listed pharmacy, that pharmacy treats them in line
+              with the Kenya Data Protection Act (2019) and applicable pharmacy regulations. Do not use website
+              forms for emergencies — in Kenya call {platform.emergency} or {platform.emergencyAlt}.
             </p>
           </section>
 
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
             </h2>
             <p className="mt-2">
               Depending on your jurisdiction, you may request access, correction, or deletion of personal information
-              we hold about you. Contact {pharmacy.email} to make a request.
+              we hold about you. Contact {platform.email} to make a request.
             </p>
           </section>
 
@@ -115,8 +115,8 @@ export default function PrivacyPage() {
             </h2>
             <p className="mt-2">
               Privacy questions:{" "}
-              <a href={`mailto:${pharmacy.email}`} className="font-semibold text-teal-800">
-                {pharmacy.email}
+              <a href={`mailto:${platform.email}`} className="font-semibold text-teal-800">
+                {platform.email}
               </a>
             </p>
           </section>

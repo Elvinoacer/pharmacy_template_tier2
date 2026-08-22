@@ -3,11 +3,11 @@ import Link from "next/link";
 import PageHero from "@/app/components/PageHero";
 import CtaBanner from "@/app/components/CtaBanner";
 import SelfCareTriageClient from "@/app/components/health/SelfCareTriageClient";
-import { pharmacy } from "@/app/lib/data";
+import { platform } from "@/app/lib/data";
 
 export const metadata: Metadata = {
   title: "Self-Care vs Medical Attention Guide | Clinical Triage",
-  description: `Learn when your symptoms are safe for self-care with non-prescription OTC products and when you should consult a pharmacist or seek emergency medical attention. Expert guidance from ${pharmacy.name}.`,
+  description: `Learn when your symptoms are safe for self-care with non-prescription OTC products and when you should consult a pharmacist or seek emergency medical attention. Expert guidance from ${platform.name}.`,
   alternates: { canonical: "/health/self-care-guide" },
 };
 

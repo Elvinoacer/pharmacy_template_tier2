@@ -26,6 +26,7 @@ import {
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
 import { useSidebarEnhanced, useSidebarScroll, useActivePath, isLinkActive } from "@/app/components/shell/useShell";
+import { useTenantBrand } from "@/app/components/TenantBrand";
 
 export const CAREGIVER_LINKS = [
   { href: "/caregiver", label: "Dashboard", icon: HeartHandshake, group: "overview" },
@@ -63,6 +64,7 @@ export function CaregiverShell({
   const { navRef: mobileNavRef, handleScroll: handleMobileScroll } = useSidebarScroll("caregiver_mobile");
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = useActivePath();
+  const brand = useTenantBrand();
 
   // Separate pinned and unpinned links
   const pinnedLinks = CAREGIVER_LINKS.filter((l) => pinned.includes(l.href));
@@ -103,7 +105,7 @@ export function CaregiverShell({
             {!collapsed && (
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold leading-tight text-[#0c1a14]">Caregiver Portal</p>
-                <p className="truncate text-[11px] text-[#5a6b62]">Aether Pharmacy</p>
+                <p className="truncate text-[11px] text-[#5a6b62]">{brand.name}</p>
               </div>
             )}
           </Link>
@@ -260,7 +262,7 @@ export function CaregiverShell({
                 </span>
                 <div>
                   <p className="text-sm font-semibold leading-tight text-[#0c1a14]">Caregiver Portal</p>
-                  <p className="text-[11px] text-[#5a6b62]">Aether Pharmacy</p>
+                  <p className="text-[11px] text-[#5a6b62]">{brand.name}</p>
                 </div>
               </Link>
               <button

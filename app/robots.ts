@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { pharmacy } from "./lib/data";
+import { platform } from "./lib/data";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/"],
     },
-    sitemap: `${pharmacy.siteUrl}/sitemap.xml`,
+    sitemap: `${platform.siteUrl}/sitemap.xml`,
   };
 }

@@ -1,23 +1,29 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
-import { gallery, pharmacy, team, values } from "../lib/data";
+import { gallery, team, values } from "../lib/data";
+import { platform } from "../lib/data";
+import { getResolvedPharmacyOrNull } from "../lib/services/pharmacy-settings";
+import { ArrowRight, HeartPulse, ShieldCheck, Building2 } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "About Us",
-  description: `Learn about ${pharmacy.name} — our story, mission, values, and the pharmacists who care for Austin families.`,
+  title: "About",
+  description: `About ${platform.legalName} — Kenya’s neighbourhood pharmacy network, and the independent shops that belong to it.`,
   alternates: { canonical: "/about" },
 };
 
-export default function AboutPage() {
+function NetworkAbout() {
   return (
     <div>
       <PageHero
-        eyebrow="About us"
-        title="A neighbourhood pharmacy built on trust"
-        description="For more than fifteen years, Aether has combined careful dispensing with personal attention — because health decisions deserve both expertise and kindness."
+        eyebrow="About the network"
+        title="A country of pharmacies. One promise of care."
+        description={platform.promise + " Aether is the rails independent pharmacies share — never a takeover of the counter."}
         crumbs={[{ label: "About" }]}
       />
 
@@ -27,7 +33,7 @@ export default function AboutPage() {
             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
               <Image
                 src="/images/gallery/welcoming_retail_floor.webp"
-                alt="Aether Pharmacy interior"
+                alt="Neighbourhood pharmacy interior"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -42,21 +48,21 @@ export default function AboutPage() {
                 className="mt-2 text-2xl font-semibold text-[#0c1a14] sm:text-3xl"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
-                From a single counter to a trusted community hub
+                Built so Kenya can find a pharmacist — and pharmacies can still be themselves.
               </h2>
               <div className="mt-4 space-y-4 text-sm leading-relaxed text-[#5a6b62] sm:text-base">
                 <p>
-                  Aether Pharmacy opened its doors with a simple promise: every prescription would be
-                  checked carefully, every question answered clearly, and every neighbour treated like family.
+                  Aether started from a simple observation: families already have a neighbourhood pharmacy they
+                  trust, but the internet still pretends there is only one shop in the country.
                 </p>
                 <p>
-                  Today we serve thousands of patients each year with dispensing, vaccinations, health
-                  screenings, delivery, and medication counselling — still independent, still local, still
-                  focused on the person at the counter.
+                  We built a network instead. Every live listing is licence-reviewed. Every tenant keeps their
+                  brand, their M-Pesa, their staff, and their clinical record. Patients keep one account that
+                  works from Nairobi to the coast.
                 </p>
                 <p>
-                  Our lead pharmacist, Dr. Priya Nair, continues to set the clinical standard while a
-                  dedicated team keeps care accessible through phone, WhatsApp, walk-ins, and home delivery.
+                  The first impression we protect is not a campaign line. It is a duty: life, and caring, before
+                  anything else on the page.
                 </p>
               </div>
             </div>
@@ -64,158 +70,163 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission / Vision */}
       <section className="px-4 py-8 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-2">
           <div className="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Mission</p>
-            <p
-              className="mt-3 text-xl font-semibold text-[#0c1a14]"
-              style={{ fontFamily: "var(--font-display), serif" }}
-            >
-              Make safe, understandable pharmacy care easy to access for every neighbour we serve.
+            <p className="mt-3 text-xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+              Make safe, understandable pharmacy care easy to reach — without erasing the shop that provides it.
             </p>
           </div>
           <div className="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Vision</p>
-            <p
-              className="mt-3 text-xl font-semibold text-[#0c1a14]"
-              style={{ fontFamily: "var(--font-display), serif" }}
-            >
-              A healthier community where no one feels lost navigating medications, insurance, or wellness.
+            <p className="mt-3 text-xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+              A Kenya where every neighbourhood pharmacy can be found, trusted, and chosen — on its own terms.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Values */}
       <section className="px-4 py-16 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Core values</p>
-          <h2
-            className="mt-2 text-3xl font-semibold text-[#0c1a14]"
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            What guides our work
-          </h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {values.map((v) => (
-              <div
-                key={v.title}
-                className="rounded-2xl border border-white/70 bg-white/90 p-5 shadow-sm"
+        <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-3">
+          {[
+            { icon: ShieldCheck, title: "Verified first", body: "PPB premises review before a pharmacy appears on the marketplace." },
+            { icon: Building2, title: "Tenant isolation", body: "Inventory, refills, loyalty, and messages never cross shop boundaries." },
+            { icon: HeartPulse, title: "One patient identity", body: "Your login works across the network. Clinical records stay with the pharmacy that earned them." },
+          ].map((c) => (
+            <div key={c.title} className="rounded-3xl border border-teal-900/8 bg-white p-6">
+              <c.icon className="h-6 w-6 text-[#0d6e5a]" />
+              <h3 className="mt-4 text-lg font-semibold text-[#0c1a14]">{c.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{c.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-4 pb-20 sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-3">
+          <Link href="/#pharmacies" className="btn-primary">
+            Find a pharmacy
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link href="/for-pharmacies" className="btn-ghost">
+            Join as a pharmacy
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export default async function AboutPage() {
+  const pharmacy = await getResolvedPharmacyOrNull();
+  if (!pharmacy) return <NetworkAbout />;
+
+  const aboutCopy =
+    pharmacy.about ||
+    `${pharmacy.name} is an independent pharmacy on the Aether network — careful dispensing, personal attention, and a counter that still looks up when you walk in.`;
+
+  return (
+    <div>
+      <PageHero
+        eyebrow="About us"
+        title={pharmacy.name}
+        description={pharmacy.tagline || aboutCopy}
+        crumbs={[{ label: "About" }]}
+      />
+
+      <section className="px-4 pb-16 sm:px-6">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
+          <Reveal>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
+              <Image
+                src={pharmacy.coverImageUrl || "/images/gallery/welcoming_retail_floor.webp"}
+                alt={`${pharmacy.name} interior`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+            </div>
+          </Reveal>
+          <Reveal delay={80}>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Our story</p>
+              <h2
+                className="mt-2 text-2xl font-semibold text-[#0c1a14] sm:text-3xl"
+                style={{ fontFamily: "var(--font-display), serif" }}
               >
-                <h3 className="font-semibold text-[#0c1a14]">{v.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{v.description}</p>
+                A neighbourhood pharmacy on the Aether network
+              </h2>
+              <div className="mt-4 space-y-4 text-sm leading-relaxed text-[#5a6b62] sm:text-base">
+                <p>{aboutCopy}</p>
+                {pharmacy.address.full && <p>Find us at {pharmacy.address.full}.</p>}
+                <p>
+                  We are an independent shop — not a chain white-label. Aether gives patients a way to find us.
+                  The care is ours.
+                </p>
               </div>
-            ))}
-          </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Team */}
-      <section className="px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mx-auto max-w-6xl">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Our team</p>
-          <h2
-            className="mt-2 text-3xl font-semibold text-[#0c1a14]"
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            Meet the people behind the counter
-          </h2>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {team.map((member) => (
-              <article
-                key={member.id}
-                className="overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm"
-              >
-                <div className="relative h-56">
-                  <Image
-                    src={member.photo}
-                    alt={member.name}
-                    fill
-                    className="object-cover object-top"
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                  />
-                </div>
-                <div className="p-5">
-                  <h3
-                    className="text-lg font-semibold text-[#0c1a14]"
-                    style={{ fontFamily: "var(--font-display), serif" }}
-                  >
-                    {member.name}
-                  </h3>
-                  <p className="mt-0.5 text-sm font-medium text-teal-800">{member.role}</p>
-                  <p className="mt-3 text-sm leading-relaxed text-[#5a6b62]">{member.bio}</p>
-                  <p className="mt-3 text-xs text-[#5a6b62]/80">{member.qualifications}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+      <section className="px-4 py-8 sm:px-6">
+        <div className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {values.map((v) => (
+            <div key={v.title} className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm">
+              <h3 className="font-semibold text-[#0c1a14]">{v.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{v.description}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Certifications + community */}
-      <section className="px-4 py-16 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2">
-          <div className="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-sm">
+      {pharmacy.slug === "aether" && (
+        <section className="px-4 py-12 sm:px-6">
+          <div className="mx-auto max-w-6xl">
             <h2
-              className="text-xl font-semibold text-[#0c1a14]"
+              className="text-2xl font-semibold text-[#0c1a14]"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
-              Certifications & standards
+              The people at the counter
             </h2>
-            <ul className="mt-5 space-y-3">
-              {pharmacy.certifications.map((c) => (
-                <li key={c} className="flex items-center gap-3 text-sm text-[#0c1a14]">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-100 text-teal-800">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                      <path d="M5 12l5 5L20 7" />
-                    </svg>
-                  </span>
-                  {c}
-                </li>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {team.map((m) => (
+                <article key={m.id} className="overflow-hidden rounded-3xl border border-teal-900/8 bg-white">
+                  <div className="relative aspect-[4/5]">
+                    <Image src={m.photo} alt={m.name} fill className="object-cover" sizes="240px" />
+                  </div>
+                  <div className="p-4">
+                    <p className="font-semibold text-[#0c1a14]">{m.name}</p>
+                    <p className="text-xs font-medium text-[#0d6e5a]">{m.role}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{m.bio}</p>
+                  </div>
+                </article>
               ))}
-            </ul>
+            </div>
           </div>
-          <div className="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-sm">
-            <h2
-              className="text-xl font-semibold text-[#0c1a14]"
-              style={{ fontFamily: "var(--font-display), serif" }}
-            >
-              Community involvement
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-[#5a6b62]">
-              We host seasonal flu clinics, partner with local schools on medicine-safety talks, support
-              neighbourhood health fairs, and offer free blood pressure checks year-round. If your organisation
-              needs a pharmacist speaker or screening day, we would love to help.
-            </p>
-            <a href="/contact" className="mt-5 inline-block text-sm font-semibold text-teal-800 hover:underline">
-              Partner with us →
-            </a>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Gallery */}
       <section className="px-4 pb-8 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <h2
-            className="text-2xl font-semibold text-[#0c1a14]"
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            Our space
-          </h2>
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3">
-            {gallery.map((g) => (
-              <div key={g.src} className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-                <Image src={g.src} alt={g.alt} fill className="object-cover" sizes="33vw" />
-              </div>
-            ))}
-          </div>
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 sm:grid-cols-3">
+          {gallery.slice(0, 6).map((g) => (
+            <div key={g.src} className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+              <Image src={g.src} alt={g.alt} fill className="object-cover" sizes="33vw" />
+            </div>
+          ))}
         </div>
       </section>
 
-      <CtaBanner title="Come say hello" description="Walk in anytime during open hours — or reach us by phone and WhatsApp." />
+      <CtaBanner
+        title={`Visit ${pharmacy.name}`}
+        description="Call, WhatsApp, or send a message — we are here to help."
+        primaryHref="/contact"
+        primaryLabel="Contact us"
+        secondaryHref="/refill"
+        secondaryLabel="Request a refill"
+      />
     </div>
   );
 }

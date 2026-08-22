@@ -2,21 +2,29 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import DeliveryForm from "../components/DeliveryForm";
 import PageHero from "../components/PageHero";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Delivery Information",
-  description: `Enquire about medication delivery from ${pharmacy.name} across greater Austin.`,
+  description: `Enquire about medication delivery from a ${platform.name} pharmacy near you.`,
   alternates: { canonical: "/delivery" },
 };
 
-export default function DeliveryPage() {
+export default async function DeliveryPage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/delivery" />;
+
   return (
     <div>
       <PageHero
         eyebrow="Delivery"
         title="Medication delivery to your door"
-        description="We deliver across select zones in greater Austin. Send an enquiry to confirm coverage, fees, and timing for your area."
+        description={
+          pharmacy.deliveryNotes ||
+          "We deliver in this pharmacy’s service area. Send an enquiry to confirm coverage, fees, and timing."
+        }
         crumbs={[{ label: "Delivery" }]}
       />
 

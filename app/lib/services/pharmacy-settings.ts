@@ -1,7 +1,7 @@
 import "server-only";
 
 import { prisma, prismaUnscoped } from "@/app/lib/db";
-import { pharmacy as staticPharmacy } from "@/app/lib/data";
+import { pharmacy as staticPharmacy, platform } from "@/app/lib/data";
 import { findPharmacyById, findPharmacyBySlug, getTenant } from "@/app/lib/tenant";
 
 export type PharmacyHour = { day: string; time: string };
@@ -40,6 +40,8 @@ export type ResolvedPharmacy = {
   deliveryRadiusKm: number | null;
   /** True when values came from admin-configured PharmacySettings row. */
   fromDb: boolean;
+  /** True when no tenant could be resolved — do not treat as a real shop. */
+  unresolved: boolean;
 };
 
 function digitsOnly(phone: string): string {
@@ -120,6 +122,7 @@ function fallbackResolved(): ResolvedPharmacy {
     deliveryFeeKes: null,
     deliveryRadiusKm: null,
     fromDb: false,
+    unresolved: true,
   };
 }
 
@@ -155,14 +158,14 @@ export async function getResolvedPharmacy(opts?: {
     // DB may be unavailable during build; fall back to pharmacy row + static.
   }
 
-  const phone = row?.phone?.trim() || pharmacy.phone || staticPharmacy.phone;
-  const email = row?.email?.trim() || pharmacy.email || staticPharmacy.email;
+  const phone = row?.phone?.trim() || pharmacy.phone || platform.phone;
+  const email = row?.email?.trim() || pharmacy.email || platform.email;
   const whatsapp =
-    row?.whatsapp?.trim() || pharmacy.whatsapp || row?.phone?.trim() || pharmacy.phone || staticPharmacy.whatsapp;
-  const street = row?.addressLine1?.trim() || staticPharmacy.address.street;
-  const city = row?.city?.trim() || pharmacy.city || staticPharmacy.address.city;
-  const state = row?.state?.trim() || pharmacy.county || staticPharmacy.address.state;
-  const zip = row?.zip?.trim() || staticPharmacy.address.zip;
+    row?.whatsapp?.trim() || pharmacy.whatsapp || row?.phone?.trim() || pharmacy.phone || platform.whatsapp;
+  const street = row?.addressLine1?.trim() || "";
+  const city = row?.city?.trim() || pharmacy.city || "";
+  const state = row?.state?.trim() || pharmacy.county || "";
+  const zip = row?.zip?.trim() || "";
   const full =
     buildFullAddress({
       line1: row?.addressLine1,
@@ -171,7 +174,7 @@ export async function getResolvedPharmacy(opts?: {
       state: row?.state || pharmacy.county,
       zip: row?.zip,
       country: row?.country || pharmacy.country,
-    }) || staticPharmacy.address.full;
+    }) || [pharmacy.city, pharmacy.country].filter(Boolean).join(", ");
 
   const lat = row?.latitude ?? pharmacy.latitude;
   const lng = row?.longitude ?? pharmacy.longitude;
@@ -183,7 +186,7 @@ export async function getResolvedPharmacy(opts?: {
 
   const mapsEmbed =
     row?.mapsEmbedUrl?.trim() ||
-    (hasCoords ? buildMapsEmbed(lat!, lng!) : staticPharmacy.mapsEmbed);
+    (hasCoords ? buildMapsEmbed(lat!, lng!) : "");
 
   const mapsDirections = hasCoords
     ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
@@ -193,8 +196,8 @@ export async function getResolvedPharmacy(opts?: {
     id: pharmacy.id,
     slug: pharmacy.slug,
     name: row?.displayName?.trim() || pharmacy.name,
-    tagline: row?.tagline?.trim() || pharmacy.tagline || staticPharmacy.tagline,
-    description: pharmacy.description || staticPharmacy.description,
+    tagline: row?.tagline?.trim() || pharmacy.tagline || "",
+    description: pharmacy.description || "",
     phone,
     phoneHref: `tel:${phone.replace(/\s+/g, "")}`,
     email,
@@ -222,7 +225,18 @@ export async function getResolvedPharmacy(opts?: {
     deliveryFeeKes: row?.deliveryFeeKes != null ? Number(row.deliveryFeeKes) : null,
     deliveryRadiusKm: row?.deliveryRadiusKm ?? null,
     fromDb: Boolean(row),
+    unresolved: false,
   };
+}
+
+/** Resolve the active tenant shop, or `null` when none is in context. */
+export async function getResolvedPharmacyOrNull(opts?: {
+  slug?: string | null;
+  pharmacyId?: string | null;
+}): Promise<ResolvedPharmacy | null> {
+  const resolved = await getResolvedPharmacy(opts);
+  if (resolved.unresolved || !resolved.slug) return null;
+  return resolved;
 }
 
 export type PharmacySettingsInput = {

@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import ContactForm from "../components/ContactForm";
 import PageHero from "../components/PageHero";
-import { pharmacy as staticPharmacy } from "../lib/data";
-import { getResolvedPharmacy } from "../lib/services/pharmacy-settings";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { platform } from "../lib/data";
+import { getResolvedPharmacyOrNull } from "../lib/services/pharmacy-settings";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Contact ${staticPharmacy.name} by phone, WhatsApp, email, or form. Find our address, map, and opening hours.`,
+  description: `Contact a pharmacy on the ${platform.name} network by phone, WhatsApp, email, or form.`,
   alternates: { canonical: "/contact" },
 };
 
 export default async function ContactPage() {
-  const pharmacy = await getResolvedPharmacy();
+  const pharmacy = await getResolvedPharmacyOrNull();
+  if (!pharmacy) return <ChoosePharmacy next="/contact" />;
 
   return (
     <div>

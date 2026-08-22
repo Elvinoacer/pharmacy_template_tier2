@@ -10,13 +10,15 @@ import {
 } from "../components/MedicineCatalogCard";
 import { Pagination } from "../components/Pagination";
 import { parsePageParam } from "../lib/pagination";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
 import { prisma } from "../lib/db";
 import { listPublicCategories } from "../lib/medication-categories";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Medicines & Health Categories",
-  description: `Browse OTC health categories at ${pharmacy.name}. Educational guidance plus live stock for OTC products. Search by name or snap a pack photo.`,
+  description: `Browse OTC health categories at ${platform.name}. Educational guidance plus live stock for OTC products. Search by name or snap a pack photo.`,
   alternates: { canonical: "/medicines" },
 };
 
@@ -63,6 +65,9 @@ export default async function MedicinesPage({
 }: {
   searchParams: Promise<{ q?: string; category?: string; page?: string; photo?: string }>;
 }) {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/medicines" />;
+
   const sp = await searchParams;
   const q = sp.q?.trim() || undefined;
   const category = sp.category || undefined;

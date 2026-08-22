@@ -2,20 +2,25 @@ import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 import CtaBanner from "../components/CtaBanner";
 import { PreventiveHealthHub } from "../components/vaccination/PreventiveHealthHub";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
 import { listPublicHealthCampaigns } from "../lib/services/vaccination-service";
 import { getSessionUser } from "../lib/auth";
 import { prisma } from "../lib/db";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Preventive health",
-  description: `Preventive-health counselling, public-health campaigns, and education at ${pharmacy.name}: immunisation, travel health, cessation, heart risk, malaria, and more.`,
+  description: `Preventive-health counselling, public-health campaigns, and education at ${platform.name}: immunisation, travel health, cessation, heart risk, malaria, and more.`,
   alternates: { canonical: "/preventive" },
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function PreventivePage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/preventive" />;
+
   const [campaigns, session] = await Promise.all([
     listPublicHealthCampaigns({ activeOnly: true }).catch(() => []),
     getSessionUser().catch(() => null),

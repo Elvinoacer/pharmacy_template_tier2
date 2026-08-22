@@ -3,11 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
-import { articles, pharmacy } from "../lib/data";
+import { articles, platform } from "../lib/data";
 
 export const metadata: Metadata = {
   title: "Health Library",
-  description: `Educational health articles from ${pharmacy.name} pharmacists — medication safety, wellness, and seasonal advice.`,
+  description: `Educational health articles from ${platform.name} pharmacists — medication safety, wellness, and seasonal advice.`,
   alternates: { canonical: "/health" },
 };
 

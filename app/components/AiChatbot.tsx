@@ -22,7 +22,7 @@ type Message = {
 };
 
 const WELCOME =
-  "Hi — I'm the Aether Care Assistant. Ask me about hours, refills, delivery, whether a medicine is in stock, insurance, or anything else about our pharmacy. I'm not a substitute for a pharmacist for personal medical advice.";
+  "Hi — I'm the Aether Care Assistant. Ask me about hours, refills, delivery, whether a medicine is in stock, or anything else about this pharmacy. I'm not a substitute for a pharmacist for personal medical advice.";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -389,7 +389,7 @@ export default function AiChatbot() {
             )}
           </div>
           <p className="mt-2 px-1 text-[10px] leading-relaxed text-[#5a6b62]/75">
-            AI can make mistakes. For medical advice, talk to a pharmacist. Emergencies: call 911.
+            AI can make mistakes. For medical advice, talk to a pharmacist. Emergencies in Kenya: call 999 or 112.
           </p>
         </form>
       </div>

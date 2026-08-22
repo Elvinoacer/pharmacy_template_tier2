@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: `Terms of service for the ${pharmacy.name} website.`,
+  description: `Terms of service for ${platform.legalName}.`,
   alternates: { canonical: "/terms" },
 };
 
@@ -39,7 +39,7 @@ export default function TermsPage() {
             <p className="mt-2">
               Content on this website is for general information and education. It is not medical advice, diagnosis,
               or treatment. Always consult a licensed pharmacist or physician for decisions about your health. In an
-              emergency, call 911.
+              emergency in Kenya, call {platform.emergency} or {platform.emergencyAlt}.
             </p>
           </section>
 
@@ -68,7 +68,7 @@ export default function TermsPage() {
               5. Intellectual property
             </h2>
             <p className="mt-2">
-              Site design, text, and branding are owned by {pharmacy.name} or its licensors. Stock photographs are
+              Site design, text, and branding are owned by {platform.legalName} or its licensors. Stock photographs are
               used under their respective licences (e.g. Unsplash). You may not copy or redistribute site content for
               commercial purposes without permission.
             </p>
@@ -89,7 +89,7 @@ export default function TermsPage() {
               7. Limitation of liability
             </h2>
             <p className="mt-2">
-              To the fullest extent permitted by law, {pharmacy.name} is not liable for indirect or consequential
+              To the fullest extent permitted by law, {platform.legalName} is not liable for indirect or consequential
               damages arising from use of this website. Nothing in these terms limits liability that cannot be limited
               under applicable law.
             </p>
@@ -111,8 +111,8 @@ export default function TermsPage() {
             </h2>
             <p className="mt-2">
               Questions about these terms:{" "}
-              <a href={`mailto:${pharmacy.email}`} className="font-semibold text-teal-800">
-                {pharmacy.email}
+              <a href={`mailto:${platform.email}`} className="font-semibold text-teal-800">
+                {platform.email}
               </a>
             </p>
           </section>

@@ -6,7 +6,7 @@ import CounsellingSearchClient from "@/app/components/health/CounsellingSearchCl
 import MissedDoseCalculator from "@/app/components/health/MissedDoseCalculator";
 import DeviceDosageViewer from "@/app/components/health/DeviceDosageViewer";
 import { getAllCounsellingMedications } from "@/app/lib/services/medication-counselling-db";
-import { pharmacy } from "@/app/lib/data";
+import { platform } from "@/app/lib/data";
 import {
   Pill,
   Clock,
@@ -32,7 +32,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Digital Patient Medication Counselling Hub | Clinical Guidance",
-  description: `Comprehensive 12-pillar digital medication counselling, administration techniques, missed-dose calculators, food interactions, device guides, and clinical safety from ${pharmacy.name} pharmacists.`,
+  description: `Comprehensive 12-pillar digital medication counselling, administration techniques, missed-dose calculators, food interactions, device guides, and clinical safety from ${platform.name} pharmacists.`,
   alternates: { canonical: "/health/counselling" },
 };
 
@@ -313,11 +313,11 @@ export default async function DigitalCounsellingHubPage() {
                   Book In-Person / Virtual Counselling →
                 </Link>
                 <Link
-                  href={`tel:${pharmacy.phone}`}
+                  href={platform.phoneHref}
                   className="flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-5 py-3 text-xs font-bold text-white hover:bg-white/20 transition backdrop-blur-xs"
                 >
                   <PhoneCall className="h-4 w-4" />
-                  Call Pharmacist ({pharmacy.phone})
+                  Call network support ({platform.phone})
                 </Link>
               </div>
             </div>

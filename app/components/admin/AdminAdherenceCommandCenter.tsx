@@ -33,6 +33,7 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import { useTenantBrand } from "@/app/components/TenantBrand";
 import { formatDate } from "@/app/lib/time";
 import type {
   PendingOutreachItem,
@@ -67,6 +68,7 @@ export function AdminAdherenceCommandCenter({
 }) {
   const [activeTab, setActiveTab] = useState<"outreach" | "sync" | "chronic" | "lapsed">("outreach");
   const [searchQuery, setSearchQuery] = useState("");
+  const brand = useTenantBrand();
 
   // Outreach modal state
   const [callModalItem, setCallModalItem] = useState<PendingOutreachItem | null>(null);
@@ -109,7 +111,7 @@ export function AdminAdherenceCommandCenter({
     setSendSummary(true);
     setSelectedMessageTemplate("default");
 
-    const defaultMsg = `Hello ${item.customerName}, this is Aether Pharmacy following up regarding your ${
+    const defaultMsg = `Hello ${item.customerName}, this is ${brand.name} following up regarding your ${
       item.medicineName || "medication regimen"
     }. We want to ensure your treatment is going smoothly and answer any questions you have.`;
     setCustomOutreachText(defaultMsg);
@@ -123,7 +125,7 @@ export function AdminAdherenceCommandCenter({
 
     if (templateKey === "missed_dose") {
       setCustomOutreachText(
-        `Hello ${name}, Aether Pharmacy noticed you may have missed your recent dose of ${med}. Please check your portal at https://aetherpharmacy.com/portal/calendar to confirm your schedule or reply if you need assistance.`
+        `Hello ${name}, ${brand.name} noticed you may have missed your recent dose of ${med}. Please check your portal at /portal/calendar to confirm your schedule or reply if you need assistance.`
       );
     } else if (templateKey === "refill_overdue") {
       setCustomOutreachText(
@@ -131,11 +133,11 @@ export function AdminAdherenceCommandCenter({
       );
     } else if (templateKey === "med_sync_invite") {
       setCustomOutreachText(
-        `Hello ${name}, did you know Aether Pharmacy can align all your recurring medications to a single monthly pickup date? Check out Med Sync at https://aetherpharmacy.com/portal/sync to save time!`
+        `Hello ${name}, did you know ${brand.name} can align all your recurring medications to a single monthly pickup date? Check out Med Sync at /portal/sync to save time!`
       );
     } else {
       setCustomOutreachText(
-        `Hello ${name}, this is Aether Pharmacy following up regarding your ${med}. We are here to support your health journey. Reach out anytime!`
+        `Hello ${name}, this is ${brand.name} following up regarding your ${med}. We are here to support your health journey. Reach out anytime!`
       );
     }
   }

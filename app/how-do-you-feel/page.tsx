@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 import HowDoYouFeelClient from "../components/feel/HowDoYouFeelClient";
-import { pharmacy } from "../lib/data";
+import { platform } from "../lib/data";
+import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "How do you feel?",
-  description: `Guided symptom check-in at ${pharmacy.name}. AI helps structure mild everyday concerns, then pharmacists can take over when needed.`,
+  description: `Guided symptom check-in at ${platform.name}. AI helps structure mild everyday concerns, then pharmacists can take over when needed.`,
   alternates: { canonical: "/how-do-you-feel" },
 };
 
-export default function HowDoYouFeelPage() {
+export default async function HowDoYouFeelPage() {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) return <ChoosePharmacy next="/how-do-you-feel" />;
+
   return (
     <div>
       <PageHero
