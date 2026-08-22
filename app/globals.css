@@ -1821,12 +1821,80 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   scrollbar-width: none;
 }
 
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes radarPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmerGradient {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 6s ease-in-out infinite;
+}
+
+.animate-radar-ring {
+  animation: radarPulse 2.4s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+.animate-shimmer-text {
+  background: linear-gradient(90deg, #99f6e4 0%, #fef08a 25%, #6ee7b7 50%, #99f6e4 75%, #fef08a 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmerGradient 6s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .landing-hero .animate-ping,
   .landing-scanner-line,
-  .landing-ambient-glow {
+  .landing-ambient-glow,
+  .animate-float-slow,
+  .animate-float-reverse,
+  .animate-radar-ring,
+  .animate-shimmer-text {
     animation: none;
   }
 }
+
 
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { Star, ShieldCheck, Clock, Award, Users, CheckCircle2, Quote } from "lucide-react";
+import Image from "next/image";
+import { Star, ShieldCheck, Clock, Award, Users, CheckCircle2, Quote, Sparkles } from "lucide-react";
 
 const STATS = [
   {
@@ -26,6 +27,33 @@ const STATS = [
     value: "4.9 / 5.0",
     label: "Patient Satisfaction",
     desc: "From over 2,400+ verified customer reviews across the platform.",
+  },
+];
+
+const CLINICAL_LEADERS = [
+  {
+    name: "Dr. Priya Nair, PharmD",
+    role: "Lead Pharmacist & Owner",
+    qualification: "PharmD · Chronic Disease Therapy",
+    image: "/images/team/priya-nair.webp",
+  },
+  {
+    name: "Marcus Chen, RPh",
+    role: "Clinical Immunization Lead",
+    qualification: "RPh · Cold-Chain Certified",
+    image: "/images/team/marcus-chen.webp",
+  },
+  {
+    name: "Sofia Alvarez, PharmD",
+    role: "Patient Adherence & Safety",
+    qualification: "PharmD · Drug Interaction Audit",
+    image: "/images/team/sofia-alvarez.webp",
+  },
+  {
+    name: "David Kim",
+    role: "Logistics & Cold-Chain Lead",
+    qualification: "Good Pharmacy Practice (GPP)",
+    image: "/images/team/david-kim.webp",
   },
 ];
 
@@ -70,10 +98,10 @@ export default function LandingTrustMetrics() {
             return (
               <div
                 key={stat.label}
-                className="group relative overflow-hidden rounded-[2rem] border border-teal-900/10 bg-[#f8faf9] p-7 transition hover:-translate-y-1 hover:border-[#0d6e5a]/30 hover:bg-white hover:shadow-[0_16px_40px_rgba(8,40,32,0.08)]"
+                className="group relative overflow-hidden rounded-[2.2rem] border border-teal-900/10 bg-[#f8faf9] p-7 transition hover:-translate-y-1.5 hover:border-[#0d6e5a]/30 hover:bg-white hover:shadow-[0_20px_50px_rgba(8,40,32,0.1)]"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-50 text-[#0d6e5a] shadow-inner group-hover:bg-[#0d6e5a] group-hover:text-white transition">
-                  <Icon className="h-5 w-5" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-50 text-[#0d6e5a] shadow-inner group-hover:bg-[#0d6e5a] group-hover:text-white transition duration-300">
+                  <Icon className="h-6 w-6" />
                 </div>
                 <p
                   className="mt-6 text-3xl font-semibold tracking-tight text-[#0c1a14] sm:text-4xl"
@@ -81,11 +109,51 @@ export default function LandingTrustMetrics() {
                 >
                   {stat.value}
                 </p>
-                <p className="mt-1 font-semibold text-[#0d6e5a] text-sm">{stat.label}</p>
+                <p className="mt-1 font-bold text-[#0d6e5a] text-sm">{stat.label}</p>
                 <p className="mt-2 text-xs leading-relaxed text-[#5a6b62]">{stat.desc}</p>
               </div>
             );
           })}
+        </div>
+
+        {/* Clinical Leadership Team Strip */}
+        <div className="mt-20 rounded-[2.5rem] border border-teal-900/10 bg-[#f0faf6] p-8 sm:p-10">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-teal-900/10 pb-6">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#0d6e5a]">Clinical Leadership</p>
+              <h3
+                className="mt-2 text-2xl font-semibold text-[#0c1a14] sm:text-3xl"
+                style={{ fontFamily: "var(--font-display), serif" }}
+              >
+                Every Prescription Verified by Registered Pharmacists
+              </h3>
+            </div>
+            <span className="text-xs font-semibold text-[#084c3f] bg-white px-3 py-1.5 rounded-full border border-teal-200">
+              🛡️ PPB Good Pharmacy Practice (GPP)
+            </span>
+          </div>
+
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {CLINICAL_LEADERS.map((leader) => (
+              <div
+                key={leader.name}
+                className="group flex flex-col items-center text-center rounded-2xl border border-teal-900/5 bg-white p-5 shadow-sm transition hover:shadow-md"
+              >
+                <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-teal-500/30 shadow-md">
+                  <Image
+                    src={leader.image}
+                    alt={leader.name}
+                    fill
+                    className="object-cover transition duration-500 group-hover:scale-110"
+                    sizes="96px"
+                  />
+                </div>
+                <h4 className="mt-4 font-semibold text-sm text-[#0c1a14]">{leader.name}</h4>
+                <p className="text-xs font-medium text-[#0d6e5a] mt-0.5">{leader.role}</p>
+                <p className="text-[11px] text-[#8a9a92] mt-1">{leader.qualification}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Real Customer Stories Heading */}
@@ -109,7 +177,7 @@ export default function LandingTrustMetrics() {
           {COMMUNITY_STORIES.map((story) => (
             <div
               key={story.name}
-              className="relative flex flex-col justify-between rounded-[2rem] border border-teal-900/8 bg-[#fdfefd] p-8 shadow-[0_10px_35px_rgba(8,40,32,0.04)] transition hover:shadow-md"
+              className="relative flex flex-col justify-between rounded-[2.2rem] border border-teal-900/8 bg-[#fdfefd] p-8 shadow-[0_10px_35px_rgba(8,40,32,0.04)] transition hover:shadow-md"
             >
               <div>
                 <div className="flex items-center justify-between">
