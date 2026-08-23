@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/app/lib/auth";
+import { getTenant } from "@/app/lib/tenant";
 import { createRefillRequest } from "@/app/lib/services/crm";
 
 export async function POST(request: Request) {
@@ -9,6 +10,17 @@ export async function POST(request: Request) {
     // Honeypot
     if (body.website) {
       return NextResponse.json({ ok: true });
+    }
+
+    // A refill is pharmacy-owned data. Do not let a direct API call create an
+    // unscoped/ambiguous request. The Prisma tenant layer also stamps the
+    // resolved pharmacyId on the record, so the client never chooses it.
+    const tenant = await getTenant();
+    if (!tenant.pharmacyId || tenant.bypass) {
+      return NextResponse.json(
+        { error: "Choose a pharmacy before submitting a refill request" },
+        { status: 409 },
+      );
     }
 
     const fullName = String(body.fullName || "").trim();
