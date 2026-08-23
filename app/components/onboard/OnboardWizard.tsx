@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   createPharmacyDraftAction,
@@ -39,8 +39,18 @@ export default function OnboardWizard({
   const [step, setStep] = useState(existing ? 1 : 0);
   const [name, setName] = useState(existing?.name || "");
   const [slug, setSlug] = useState(existing?.slug || "");
+  const [legalName, setLegalName] = useState(existing?.legalName || "");
+  const [licenseNumber, setLicenseNumber] = useState(existing?.licenseNumber || "");
   const [pharmacyId, setPharmacyId] = useState(existing?.id || "");
   const [status, setStatus] = useState(existing?.status || "draft");
+
+  const [city, setCity] = useState(existing?.city || "");
+  const [county, setCounty] = useState(existing?.county || "");
+  const [phone, setPhone] = useState(existing?.phone || "");
+  const [whatsapp, setWhatsapp] = useState(existing?.whatsapp || "");
+  const [publicEmail, setPublicEmail] = useState(existing?.email || "");
+  const [tagline, setTagline] = useState(existing?.tagline || "");
+  const [description, setDescription] = useState(existing?.description || "");
 
   const [createState, createAction, createPending] = useActionState(
     createPharmacyDraftAction,
@@ -55,19 +65,21 @@ export default function OnboardWizard({
     {} as OnboardState,
   );
 
+  // The form that triggered the update decides where to go after a successful save.
+  // A ref avoids re-running navigation when the user simply presses Back.
+  const nextStepAfterUpdate = useRef<number | null>(null);
+
   const state = createState.error
     ? createState
     : updateState.error
       ? updateState
       : submitState.error
         ? submitState
-        : submitState.success
-          ? submitState
-          : updateState.success
-            ? updateState
-            : createState;
+        : {};
 
   const liveSlug = useMemo(() => slug || slugifyPharmacyName(name), [slug, name]);
+  const isIdentityError = state.field === "name" || state.field === "slug" || state.field === "licenseNumber";
+  const isContactError = state.field === "city" || state.field === "phone";
 
   useEffect(() => {
     if (createState.pharmacyId) {
@@ -77,6 +89,16 @@ export default function OnboardWizard({
       setStep(1);
     }
   }, [createState.pharmacyId, createState.slug]);
+
+  useEffect(() => {
+    if (updateState.success && nextStepAfterUpdate.current !== null) {
+      const target = nextStepAfterUpdate.current;
+      nextStepAfterUpdate.current = null;
+      setStep(target);
+    } else if (updateState.error) {
+      nextStepAfterUpdate.current = null;
+    }
+  }, [updateState]);
 
   useEffect(() => {
     if (submitState.success) setStatus("submitted");
@@ -136,18 +158,27 @@ export default function OnboardWizard({
         ))}
       </ol>
 
-      {state.error && (
-        <p className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">{state.error}</p>
-      )}
-      {state.success && (
-        <p className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          {state.success}
+      {state.error && !((step === 0 && isIdentityError) || (step === 1 && isContactError)) && (
+        <p className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+          {state.error}
         </p>
       )}
 
       {step === 0 && (
-        <form action={createAction} className="space-y-4">
-          {!signedIn && (
+        <form
+          action={(fd) => {
+            if (pharmacyId) {
+              fd.set("pharmacyId", pharmacyId);
+              nextStepAfterUpdate.current = 1;
+              updateAction(fd);
+            } else {
+              createAction(fd);
+            }
+          }}
+          className="space-y-4"
+        >
+          <input type="hidden" name="pharmacyId" value={pharmacyId} />
+          {!signedIn && !pharmacyId && (
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-[#0c1a14]">
                 Your name
@@ -163,6 +194,7 @@ export default function OnboardWizard({
               </label>
             </div>
           )}
+
           <label className="block text-sm font-medium text-[#0c1a14]">
             Trading name
             <input
@@ -171,34 +203,61 @@ export default function OnboardWizard({
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
-                if (!existing) setSlug(slugifyPharmacyName(e.target.value));
+                if (!pharmacyId) setSlug(slugifyPharmacyName(e.target.value));
               }}
               className="input-admin mt-1"
               placeholder="e.g. Coast Care Pharmacy"
             />
+            {state.field === "name" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
           </label>
+
           <label className="block text-sm font-medium text-[#0c1a14]">
             Public URL
+            <span className="mt-1 block text-xs font-normal text-[#7a8b84]">
+              This is your pharmacy's public link.
+            </span>
             <div className="mt-1 flex items-center gap-2">
               <span className="text-xs text-[#7a8b84]">/p/</span>
               <input
                 name="slug"
+                required
                 value={slug || liveSlug}
                 onChange={(e) => setSlug(e.target.value.toLowerCase())}
                 className="input-admin"
+                aria-invalid={state.field === "slug"}
               />
             </div>
+            {state.field === "slug" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
           </label>
+
           <label className="block text-sm font-medium text-[#0c1a14]">
             Legal name
-            <input name="legalName" defaultValue={existing?.legalName || ""} className="input-admin mt-1" />
+            <input
+              name="legalName"
+              value={legalName}
+              onChange={(e) => setLegalName(e.target.value)}
+              className="input-admin mt-1"
+            />
           </label>
+
           <label className="block text-sm font-medium text-[#0c1a14]">
             PPB / premises licence number
-            <input name="licenseNumber" defaultValue={existing?.licenseNumber || ""} className="input-admin mt-1" />
+            <span className="mt-1 block text-xs font-normal text-[#7a8b84]">
+              Required for verification. Enter the number exactly as shown on your licence.
+            </span>
+            <input
+              name="licenseNumber"
+              required
+              value={licenseNumber}
+              onChange={(e) => setLicenseNumber(e.target.value)}
+              className="input-admin mt-1"
+              aria-invalid={state.field === "licenseNumber"}
+            />
+            {state.field === "licenseNumber" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
           </label>
-          <button className="btn-primary" type="submit" disabled={createPending}>
-            {createPending ? "Saving…" : "Save and continue"}
+
+          <button className="btn-primary" type="submit" disabled={createPending || updatePending}>
+            {createPending || updatePending ? "Saving…" : "Save and continue"}
           </button>
         </form>
       )}
@@ -207,47 +266,50 @@ export default function OnboardWizard({
         <form
           action={(fd) => {
             fd.set("pharmacyId", pharmacyId);
+            nextStepAfterUpdate.current = 2;
             updateAction(fd);
-            setStep(2);
           }}
           className="space-y-4"
         >
           <input type="hidden" name="pharmacyId" value={pharmacyId} />
           <input type="hidden" name="name" value={name} />
+          <input type="hidden" name="slug" value={slug || liveSlug} />
+          <input type="hidden" name="legalName" value={legalName} />
+          <input type="hidden" name="licenseNumber" value={licenseNumber} />
+
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-medium text-[#0c1a14]">
               City
-              <input name="city" defaultValue={existing?.city || ""} required className="input-admin mt-1" />
+              <input name="city" value={city} onChange={(e) => setCity(e.target.value)} required className="input-admin mt-1" />
+              {state.field === "city" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
             </label>
             <label className="block text-sm font-medium text-[#0c1a14]">
               County
-              <input name="county" defaultValue={existing?.county || ""} className="input-admin mt-1" />
+              <input name="county" value={county} onChange={(e) => setCounty(e.target.value)} className="input-admin mt-1" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14]">
               Public phone
-              <input name="phone" defaultValue={existing?.phone || ""} required className="input-admin mt-1" />
+              <input name="phone" value={phone} onChange={(e) => setPhone(e.target.value)} required className="input-admin mt-1" />
+              {state.field === "phone" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
             </label>
             <label className="block text-sm font-medium text-[#0c1a14]">
               WhatsApp
-              <input name="whatsapp" defaultValue={existing?.whatsapp || ""} className="input-admin mt-1" />
+              <input name="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="input-admin mt-1" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
               Public email
-              <input name="publicEmail" type="email" defaultValue={existing?.email || ""} className="input-admin mt-1" />
+              <input name="publicEmail" type="email" value={publicEmail} onChange={(e) => setPublicEmail(e.target.value)} className="input-admin mt-1" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
               Tagline
-              <input name="tagline" defaultValue={existing?.tagline || ""} className="input-admin mt-1" placeholder="Your neighbourhood pharmacy, built on trust" />
+              <input name="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} className="input-admin mt-1" placeholder="Your neighbourhood pharmacy, built on trust" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
               Short description
-              <textarea name="description" rows={4} defaultValue={existing?.description || ""} className="input-admin mt-1" />
-            </label>
-            <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
-              PPB premises number (if different)
-              <input name="ppbPremisesNumber" defaultValue={existing?.ppbPremisesNumber || ""} className="input-admin mt-1" />
+              <textarea name="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="input-admin mt-1" />
             </label>
           </div>
+
           <div className="flex gap-3">
             <button type="button" className="btn-ghost" onClick={() => setStep(0)}>
               Back
@@ -267,11 +329,21 @@ export default function OnboardWizard({
             <p className="mt-1">
               Public URL <code className="rounded bg-white px-1">/p/{slug || liveSlug}</code>
             </p>
-            <p className="mt-2 text-[#5a6b62]">
+            <dl className="mt-3 grid gap-2 text-xs text-[#5a6b62] sm:grid-cols-2">
+              <div><dt className="font-semibold text-[#084c3f]">PPB / premises licence</dt><dd>{licenseNumber}</dd></div>
+              <div><dt className="font-semibold text-[#084c3f]">Location</dt><dd>{city}{county ? `, ${county}` : ""}</dd></div>
+              <div><dt className="font-semibold text-[#084c3f]">Phone</dt><dd>{phone}</dd></div>
+            </dl>
+            <p className="mt-3 text-[#5a6b62]">
               Submitting sends this application to Aether super-admins. Patients cannot see the
               storefront until you are approved and you choose to go live.
             </p>
           </div>
+          {submitState.error && (
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+              {submitState.error}
+            </div>
+          )}
           <div className="flex gap-3">
             <button type="button" className="btn-ghost" onClick={() => setStep(1)}>
               Back
