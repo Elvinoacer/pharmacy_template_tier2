@@ -72,6 +72,8 @@ export async function createPharmacyDraftAction(
     const taken = await prismaUnscoped.pharmacy.findUnique({ where: { slug } });
     if (taken) return { error: "That public URL is already taken." };
 
+    // Keep the base pharmacy insert independent from nested relation writes.
+    // This avoids Prisma generated-client relation type failures during build.
     const pharmacy = await prismaUnscoped.pharmacy.create({
       data: {
         slug,
@@ -86,31 +88,42 @@ export async function createPharmacyDraftAction(
         status: "draft",
         listed: false,
         ownerUserId: user.id,
-        memberships: {
-          create: {
-            userId: user.id,
-            role: "owner",
-            status: "active",
-            acceptedAt: new Date(),
-          },
-        },
-        settings: {
-          create: {
-            displayName: name,
-            phone: phone || null,
-            email: user.email,
-            city: city || null,
-            state: county || null,
-          },
-        },
-        integrations: { create: {} },
-        onboardingEvents: {
-          create: {
-            actorId: user.id,
-            type: "draft_created",
-            message: "Pharmacy draft created",
-          },
-        },
+      },
+    });
+
+    await prismaUnscoped.pharmacyMembership.create({
+      data: {
+        pharmacyId: pharmacy.id,
+        userId: user.id,
+        role: "owner",
+        status: "active",
+        acceptedAt: new Date(),
+      },
+    });
+
+    await prismaUnscoped.pharmacySettings.create({
+      data: {
+        pharmacyId: pharmacy.id,
+        displayName: name,
+        phone: phone || null,
+        email: user.email,
+        city: city || null,
+        state: county || null,
+      },
+    });
+
+    await prismaUnscoped.pharmacyIntegration.create({
+      data: {
+        pharmacyId: pharmacy.id,
+      },
+    });
+
+    await prismaUnscoped.pharmacyOnboardingEvent.create({
+      data: {
+        pharmacyId: pharmacy.id,
+        actorId: user.id,
+        type: "draft_created",
+        message: "Pharmacy draft created",
       },
     });
 
