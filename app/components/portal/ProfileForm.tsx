@@ -5,6 +5,7 @@ import type { ActionState } from "@/app/actions/portal";
 import { Check, AlertCircle, Save } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
 import { localTodayStr } from "@/app/lib/time";
+import CustomerLocationCapture from "@/app/components/location/CustomerLocationCapture";
 
 type Profile = {
   fullName: string;
@@ -88,17 +89,14 @@ export default function ProfileForm({
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const lastSuccess = useRef<string | null>(null);
 
-  // Show a toast on success — no need for the user to scroll to the top.
   useEffect(() => {
     if (state?.success && lastSuccess.current !== state.success) {
       lastSuccess.current = state.success;
       toast.success(state.success);
-      // Scroll to top so the user sees the success state if it's still showing.
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [state?.success]);
 
-  // Max DOB is today in the project timezone (not UTC).
   const today = localTodayStr();
 
   return (
@@ -123,11 +121,7 @@ export default function ProfileForm({
           <Field label="Date of birth" name="dateOfBirth" type="date" defaultValue={profile.dateOfBirth} max={today} />
           <label className="block">
             <span className="label-premium">Gender</span>
-            <select
-              name="gender"
-              defaultValue={profile.gender}
-              className="input-premium"
-            >
+            <select name="gender" defaultValue={profile.gender} className="input-premium">
               <option value="">Prefer not to say</option>
               <option value="female">Female</option>
               <option value="male">Male</option>
@@ -137,6 +131,8 @@ export default function ProfileForm({
           </label>
         </div>
       </Section>
+
+      <CustomerLocationCapture />
 
       <Section title="Mailing address" description="Used for delivery refills">
         <Field label="Address line 1" name="addressLine1" defaultValue={profile.addressLine1} placeholder="123 Main Street" />
@@ -152,11 +148,7 @@ export default function ProfileForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="label-premium">Preferred channel</span>
-            <select
-              name="preferredCommunication"
-              defaultValue={profile.preferredCommunication}
-              className="input-premium"
-            >
+            <select name="preferredCommunication" defaultValue={profile.preferredCommunication} className="input-premium">
               <option value="email">Email</option>
               <option value="sms">SMS</option>
               <option value="whatsapp">WhatsApp</option>
@@ -175,17 +167,8 @@ export default function ProfileForm({
       </Section>
 
       <div className="flex items-center justify-end gap-3 pt-2">
-        <button
-          type="reset"
-          className="btn-ghost"
-        >
-          Reset
-        </button>
-        <button
-          type="submit"
-          disabled={pending}
-          className="btn-primary disabled:opacity-60"
-        >
+        <button type="reset" className="btn-ghost">Reset</button>
+        <button type="submit" disabled={pending} className="btn-primary disabled:opacity-60">
           {pending ? (
             <>
               <span className="typing-dot" /> Saving…
