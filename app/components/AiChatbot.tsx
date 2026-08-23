@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -27,23 +26,6 @@ const WELCOME =
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-const PATH_RE =
-  /^\/(refill|delivery|contact|services|faq|health|careers|about|medicines|order|portal|search|how-do-you-feel)(\/[\w-]+)?$/i;
-
-/** Enhance markdown HTML with internal path links after render */
-function withPathLinks(html: string): string {
-  // Convert bare path mentions that weren't already linked
-  return html.replace(
-    /(^|[^"'=\w\/])(\/(?:refill|delivery|contact|services|faq|health|careers|about|medicines|order|portal|search|how-do-you-feel)(?:\/[\w-]+)?)/gi,
-    (match, prefix, path) => {
-      if (PATH_RE.test(path)) {
-        return `${prefix}<a href="${path}" class="md-link chat-path-link">${path}</a>`;
-      }
-      return match;
-    },
-  );
 }
 
 function AssistantContent({ content, streaming }: { content: string; streaming?: boolean }) {
@@ -246,7 +228,6 @@ export default function AiChatbot() {
 
   return (
     <div className="chatbot-root pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex justify-end p-4 sm:p-6">
-      {/* Panel */}
       <div
         id={panelId}
         role="dialog"
@@ -260,7 +241,6 @@ export default function AiChatbot() {
         }`}
         style={{ maxHeight: "min(72vh, 560px)", height: "min(72vh, 560px)" }}
       >
-        {/* Header */}
         <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-[#0d6e5a] via-[#0a5c4c] to-[#084c3f] px-4 py-3.5 text-white">
           <div className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-teal-300/20 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-10 left-8 h-24 w-24 rounded-full bg-amber-300/15 blur-2xl" />
@@ -307,7 +287,6 @@ export default function AiChatbot() {
           </div>
         </header>
 
-        {/* Messages */}
         <div
           ref={listRef}
           className="chat-scroll flex-1 space-y-3 overflow-y-auto bg-gradient-to-b from-[#f3faf7] to-white px-3.5 py-4"
@@ -352,14 +331,12 @@ export default function AiChatbot() {
           )}
         </div>
 
-        {/* Error */}
         {error && (
           <div className="shrink-0 border-t border-red-100 bg-red-50 px-3.5 py-2 text-xs text-red-700" role="alert">
             {error}
           </div>
         )}
 
-        {/* Composer */}
         <form
           onSubmit={onSubmit}
           className="shrink-0 border-t border-teal-900/5 bg-white/90 p-3 backdrop-blur"
@@ -405,7 +382,6 @@ export default function AiChatbot() {
         </form>
       </div>
 
-      {/* Floating launcher */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
