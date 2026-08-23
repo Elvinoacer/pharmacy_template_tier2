@@ -1,7 +1,7 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { buildPostgresConfig } from "@/app/lib/db/config";
-import { TENANT_MODELS } from "@/app/lib/tenant-models";
+import { TENANT_MODELS, TENANT_RELATION_MODELS } from "@/app/lib/tenant-models";
 import { failClosedId, peekTenant } from "@/app/lib/tenant-context";
 
 const globalForPrisma = globalThis as unknown as {
@@ -33,15 +33,27 @@ function getPrismaClient(): PrismaClient {
   return globalForPrisma.prisma;
 }
 
-const READS = new Set([
+/**
+ * Where-filtered operations. `pharmacyId` (or the owning relation filter) is
+ * injected into `where` unless the caller already pinned a tenant.
+ */
+const WHERE_OPERATIONS = new Set([
   "findMany",
   "findFirst",
   "findFirstOrThrow",
+  "findUnique",
+  "findUniqueOrThrow",
   "count",
   "aggregate",
   "groupBy",
   "updateMany",
+  "updateManyAndReturn",
   "deleteMany",
+  // Single-record mutations — scoped via extended where unique so a foreign
+  // id simply matches zero rows (P2025) instead of mutating another tenant.
+  "update",
+  "delete",
+  "upsert",
 ]);
 
 function injectPharmacyId(data: Record<string, unknown> | undefined, pharmacyId: string) {
@@ -68,7 +80,9 @@ function extendTenant(client: PrismaClient) {
     query: {
       $allModels: {
         async $allOperations({ model, operation, args, query }) {
-          if (!TENANT_MODELS.has(String(model))) {
+          const modelName = String(model);
+
+          if (!TENANT_MODELS.has(modelName) && !TENANT_RELATION_MODELS.has(modelName)) {
             return query(args);
           }
 
@@ -77,49 +91,86 @@ function extendTenant(client: PrismaClient) {
 
           const scopedId = pharmacyId || failClosedId();
           const nextArgs = { ...(args as Record<string, unknown>) };
+          const relation = TENANT_RELATION_MODELS.get(modelName);
 
           if (operation === "create") {
-            nextArgs.data = injectPharmacyId(
-              nextArgs.data as Record<string, unknown>,
-              scopedId,
-            );
-          } else if (operation === "createMany" || operation === "createManyAndReturn") {
-            const data = nextArgs.data;
-            if (Array.isArray(data)) {
-              nextArgs.data = data.map((row) =>
-                injectPharmacyId(row as Record<string, unknown>, scopedId),
+            if (!relation) {
+              nextArgs.data = injectPharmacyId(
+                nextArgs.data as Record<string, unknown>,
+                scopedId,
               );
-            } else {
-              nextArgs.data = injectPharmacyId(data as Record<string, unknown>, scopedId);
+            }
+          } else if (operation === "createMany" || operation === "createManyAndReturn") {
+            if (!relation) {
+              const data = nextArgs.data;
+              if (Array.isArray(data)) {
+                nextArgs.data = data.map((row) =>
+                  injectPharmacyId(row as Record<string, unknown>, scopedId),
+                );
+              } else {
+                nextArgs.data = injectPharmacyId(data as Record<string, unknown>, scopedId);
+              }
             }
           } else if (operation === "upsert") {
-            nextArgs.create = injectPharmacyId(
-              nextArgs.create as Record<string, unknown>,
-              scopedId,
-            );
-          } else if (READS.has(operation)) {
+            if (!relation) {
+              nextArgs.create = injectPharmacyId(
+                nextArgs.create as Record<string, unknown>,
+                scopedId,
+              );
+            }
+          }
+
+          if (WHERE_OPERATIONS.has(operation)) {
             const where = (nextArgs.where as Record<string, unknown>) || {};
-            if (where.pharmacyId === undefined) {
-              nextArgs.where = { ...where, pharmacyId: scopedId };
+            const alreadyPinned =
+              where.pharmacyId !== undefined ||
+              (relation !== undefined && where[relation] !== undefined);
+            if (!alreadyPinned) {
+              if (relation) {
+                // Relation-owned models: scope through their tenant parent.
+                nextArgs.where = {
+                  ...where,
+                  [relation]: { pharmacyId: scopedId },
+                };
+              } else {
+                nextArgs.where = { ...where, pharmacyId: scopedId };
+              }
             }
           }
 
           const result = await query(nextArgs);
 
+          // Belt-and-braces: never return a row owned by another tenant when
+          // the caller's where could not be rewritten (e.g. compound uniques
+          // that already carried pharmacyId, or a select without pharmacyId).
           if (
-            (operation === "findUnique" || operation === "findUniqueOrThrow") &&
             result &&
             typeof result === "object" &&
-            "pharmacyId" in result &&
-            (result as { pharmacyId?: string }).pharmacyId &&
-            (result as { pharmacyId: string }).pharmacyId !== scopedId
+            !Array.isArray(result) &&
+            !relation &&
+            (operation === "findUnique" ||
+              operation === "findUniqueOrThrow" ||
+              operation === "update" ||
+              operation === "delete" ||
+              operation === "upsert") &&
+            !(nextArgs.select && !(nextArgs.select as Record<string, unknown>).pharmacyId)
           ) {
-            if (operation === "findUniqueOrThrow") {
-              const err = new Error("Record not found in this pharmacy");
-              (err as Error & { code?: string }).code = "P2025";
-              throw err;
+            const owner = (result as { pharmacyId?: string }).pharmacyId;
+            if (owner && owner !== scopedId) {
+              if (operation === "findUniqueOrThrow") {
+                const err = new Error("Record not found in this pharmacy");
+                (err as Error & { code?: string }).code = "P2025";
+                throw err;
+              }
+              if (operation !== "findUnique") {
+                // Mutation matched a foreign row — impossible after where
+                // injection, but fail closed anyway.
+                const err = new Error("Record not found in this pharmacy");
+                (err as Error & { code?: string }).code = "P2025";
+                throw err;
+              }
+              return null;
             }
-            return null;
           }
 
           return result;
@@ -148,8 +199,10 @@ export const prismaUnscoped = new Proxy({} as PrismaClient, {
 
 /**
  * Tenant-scoped Prisma client. Models in TENANT_MODELS automatically receive
- * pharmacyId on reads/creates from the current request tenant. Use
- * prismaUnscoped or withPlatformBypass() when you intentionally need all tenants.
+ * pharmacyId on reads/creates/mutations from the current request tenant.
+ * Models in TENANT_RELATION_MODELS are scoped through their tenant parent
+ * relation. Use prismaUnscoped or withPlatformBypass() when you intentionally
+ * need all tenants.
  */
 export const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop, receiver) {

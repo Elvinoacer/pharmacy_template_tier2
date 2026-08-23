@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import Reveal from "./Reveal";
+import { useTenantHref } from "./TenantLink";
 
 export default function CtaBanner({
   title = "Ready to visit or need a refill?",
@@ -17,6 +20,8 @@ export default function CtaBanner({
   secondaryHref?: string;
   secondaryLabel?: string;
 }) {
+  const primary = useTenantHref(primaryHref);
+  const secondary = useTenantHref(secondaryHref);
   return (
     <section className="px-4 py-16 sm:px-6 sm:py-20">
       <Reveal>
@@ -44,13 +49,13 @@ export default function CtaBanner({
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href={primaryHref}
+                href={primary}
                 className="button-sparkle-overlay inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#084c3f] shadow-lg transition hover:scale-[1.02] hover:shadow-xl"
               >
                 {primaryLabel}
               </Link>
               <Link
-                href={secondaryHref}
+                href={secondary}
                 className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20 hover:scale-[1.02]"
               >
                 {secondaryLabel}

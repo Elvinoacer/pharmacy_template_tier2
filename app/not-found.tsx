@@ -11,17 +11,17 @@ export default function NotFound() {
         Page not found
       </h1>
       <p className="mt-3 max-w-md text-sm text-[#5a6b62]">
-        That link may be outdated or mistyped. Try the homepage or search for what you need.
+        That link may be outdated or mistyped. Find a pharmacy or browse the network homepage.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Link href="/" className="btn-primary !py-2.5 text-sm">
-          Go home
+        <Link href="/" className="btn-primary btn-primary-sm">
+          Network home
         </Link>
-        <Link href="/search" className="btn-ghost !py-2.5 text-sm">
+        <Link href="/pharmacies" className="btn-ghost btn-ghost-sm">
+          Find a pharmacy
+        </Link>
+        <Link href="/search" className="btn-ghost btn-ghost-sm">
           Search
-        </Link>
-        <Link href="/contact" className="btn-ghost !py-2.5 text-sm">
-          Contact
         </Link>
       </div>
     </div>

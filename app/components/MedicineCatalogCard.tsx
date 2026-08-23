@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import TenantLink from "@/app/components/TenantLink";
 import { formatPrice } from "@/app/lib/format";
 
 /** Shape used by the public medicines grid (server catalog + image search). */
@@ -30,7 +31,7 @@ export default function MedicineCatalogCard({
   const inStock = (item.currentStock ?? 0) > 0;
 
   return (
-    <Link
+    <TenantLink
       href={`/medicines/${item.slug}`}
       className="card-lift group flex flex-col justify-between overflow-hidden rounded-3xl border border-[#e3ebe6] bg-white shadow-xs transition duration-300 hover:border-teal-500/40 hover:shadow-lg"
     >
@@ -103,7 +104,7 @@ export default function MedicineCatalogCard({
           </div>
         </div>
       </div>
-    </Link>
+    </TenantLink>
   );
 }
 

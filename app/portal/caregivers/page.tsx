@@ -19,9 +19,13 @@ export default async function PortalCaregiversPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const now = Date.now();
   const caregiverRows = caregivers.map((caregiver) => ({
     ...caregiver,
-    cooldownRemainingSeconds: caregiver.lastInviteSentAt ? 60 : 0,
+    // 60s resend cooldown measured from the actual last invite timestamp.
+    cooldownRemainingSeconds: caregiver.lastInviteSentAt
+      ? Math.max(0, 60 - Math.floor((now - new Date(caregiver.lastInviteSentAt).getTime()) / 1000))
+      : 0,
   }));
   const active = caregivers.filter((c) => c.status === "active");
 

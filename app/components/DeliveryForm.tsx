@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import TenantLink from "./TenantLink";
 import Link from "next/link";
 import { FormSuccess, TextArea, TextInput } from "./FormField";
 
@@ -34,13 +35,11 @@ export default function DeliveryForm() {
         message="Thanks — we will confirm whether your area is within our delivery zones and follow up shortly with options and timing."
         actions={
           <>
-            <Link href="/refill" className="btn-primary !py-2.5 text-sm">
+            <TenantLink href="/refill" className="btn-primary btn-primary-sm">
               Request a refill
-            </Link>
-            <Link href="/contact" className="btn-ghost !py-2.5 text-sm">
+            </TenantLink>      <TenantLink href="/contact" className="btn-ghost btn-ghost-sm">
               Contact us
-            </Link>
-          </>
+            </TenantLink>    </>
         }
       />
     );

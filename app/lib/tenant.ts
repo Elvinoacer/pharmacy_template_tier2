@@ -129,7 +129,16 @@ export async function listMarketplacePharmacies(opts?: {
 /**
  * Per-request tenant. Prefers ALS (cron / explicit withPharmacy), then request
  * headers set by proxy.ts, then staff/public cookies.
+ *
+ * Status-aware fail-closed resolution:
+ *  - staff context (id)  → only `approved` or `active` pharmacies (owner must
+ *                          reach /admin/setup between approval and go-live)
+ *  - public context (slug) → only `active` pharmacies serve a storefront
+ * A suspended, draft, or rejected tenant therefore resolves to nothing.
  */
+const STAFF_RESOLVABLE_STATUS = new Set(["approved", "active"]);
+const PUBLIC_RESOLVABLE_STATUS = new Set(["active"]);
+
 export const getTenant = cache(async (): Promise<TenantStore> => {
   const fromAls = peekTenant();
   if (fromAls) return fromAls;
@@ -142,12 +151,16 @@ export const getTenant = cache(async (): Promise<TenantStore> => {
     const headerId = h.get("x-pharmacy-id")?.trim();
     if (headerId) {
       const row = await findPharmacyById(headerId);
-      if (row) return { pharmacyId: row.id, slug: row.slug, bypass: false };
+      if (row && STAFF_RESOLVABLE_STATUS.has(row.status)) {
+        return { pharmacyId: row.id, slug: row.slug, bypass: false };
+      }
     }
     const headerSlug = h.get("x-pharmacy-slug")?.trim();
     if (headerSlug) {
       const row = await findPharmacyBySlug(headerSlug);
-      if (row) return { pharmacyId: row.id, slug: row.slug, bypass: false };
+      if (row && PUBLIC_RESOLVABLE_STATUS.has(row.status)) {
+        return { pharmacyId: row.id, slug: row.slug, bypass: false };
+      }
     }
   } catch {
     // No request context (build, seed).
@@ -158,12 +171,16 @@ export const getTenant = cache(async (): Promise<TenantStore> => {
     const staffId = jar.get(STAFF_PHARMACY_COOKIE)?.value;
     if (staffId) {
       const row = await findPharmacyById(staffId);
-      if (row) return { pharmacyId: row.id, slug: row.slug, bypass: false };
+      if (row && STAFF_RESOLVABLE_STATUS.has(row.status)) {
+        return { pharmacyId: row.id, slug: row.slug, bypass: false };
+      }
     }
     const publicSlug = jar.get(PUBLIC_PHARMACY_COOKIE)?.value;
     if (publicSlug) {
       const row = await findPharmacyBySlug(publicSlug);
-      if (row) return { pharmacyId: row.id, slug: row.slug, bypass: false };
+      if (row && PUBLIC_RESOLVABLE_STATUS.has(row.status)) {
+        return { pharmacyId: row.id, slug: row.slug, bypass: false };
+      }
     }
   } catch {
     // ignore

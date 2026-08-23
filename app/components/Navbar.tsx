@@ -173,6 +173,18 @@ export default function Navbar({
     setMenuOpen(false);
   }, [pathname]);
 
+  // Close any open mega-menu / drawer with Escape (keyboard users).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveDropdown(null);
+        setMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = "hidden";

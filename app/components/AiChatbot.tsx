@@ -11,6 +11,7 @@ import {
 } from "react";
 import { SUGGESTED_PROMPTS } from "../lib/suggested-prompts";
 import { Markdown } from "./Markdown";
+import { useTenantBrand } from "./TenantBrand";
 
 type Role = "user" | "assistant";
 
@@ -21,8 +22,8 @@ type Message = {
   streaming?: boolean;
 };
 
-const WELCOME =
-  "Hi — I'm the Aether Care Assistant. Ask me about pharmacy hours, prescription refills, home delivery, medicine availability, or anything else about our services.\n\n*Note: I provide general pharmacy information and am not a substitute for a licensed pharmacist's personalized medical consultation.*";
+const WELCOME_TEMPLATE =
+  "Hi — I'm the {name} care assistant. Ask me about pharmacy hours, prescription refills, home delivery, medicine availability, or anything else about our services.\n\n*Note: I provide general pharmacy information and am not a substitute for a licensed pharmacist's personalized medical consultation.*";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -91,6 +92,8 @@ function AssistantContent({ content, streaming }: { content: string; streaming?:
 }
 
 export default function AiChatbot() {
+  const brand = useTenantBrand();
+  const WELCOME = WELCOME_TEMPLATE.replace("{name}", brand.name);
   const panelId = useId();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");

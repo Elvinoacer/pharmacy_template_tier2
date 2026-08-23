@@ -134,7 +134,7 @@ export async function updateProfileAction(
         | "phone"),
       emergencyContactName: String(formData.get("emergencyContactName") || "") || null,
       emergencyContactPhone: String(formData.get("emergencyContactPhone") || "") || null,
-      preferredBranch: String(formData.get("preferredBranch") || "") || "Main Branch",
+      preferredBranch: String(formData.get("preferredBranch") || "").trim() || null,
       // Mark onboarding complete if it wasn't already and the profile now has the minimum fields.
       onboardingCompletedAt: existing?.onboardingCompletedAt ?? new Date(),
     },
@@ -995,3 +995,36 @@ export async function chooseCustomerPharmacyAction(formData: FormData): Promise<
   redirect("/portal");
 }
 
+
+/**
+ * Switch the customer's active pharmacy (portal + storefront context).
+ * Verifies the target is an active, listed pharmacy before setting the
+ * public cookie so a stale link can't pin a suspended tenant.
+ */
+export async function setActivePharmacyAction(slug: string): Promise<ActionState> {
+  const user = await getSessionUser();
+  if (!user?.customerId) return { error: "Please sign in." };
+
+  const normalized = slug.trim().toLowerCase();
+  if (!/^[a-z0-9][a-z0-9-]{1,60}$/.test(normalized)) {
+    return { error: "Invalid pharmacy." };
+  }
+
+  const pharmacy = await prismaUnscoped.pharmacy.findUnique({
+    where: { slug: normalized },
+    select: { id: true, slug: true, status: true, listed: true },
+  });
+  if (!pharmacy || pharmacy.status !== "active" || !pharmacy.listed) {
+    return { error: "That pharmacy is not available right now." };
+  }
+
+  const jar = await cookies();
+  jar.set(PUBLIC_PHARMACY_COOKIE, pharmacy.slug, {
+    path: "/",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  revalidatePath("/portal", "layout");
+  return { success: `Now viewing ${pharmacy.slug}` };
+}

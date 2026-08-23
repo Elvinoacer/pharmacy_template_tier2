@@ -10,6 +10,7 @@ import { platform } from "@/app/lib/data";
 export const PLATFORM_PREFIXES = [
   "/for-pharmacies",
   "/onboard",
+  "/pharmacies",
   "/privacy",
   "/terms",
   "/login",

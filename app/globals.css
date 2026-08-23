@@ -2242,3 +2242,74 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   }
 }
 
+
+/* ============================================================
+   Storefront hero utilities (tenant-aware rewrite)
+   Replaces inline animation styles so prefers-reduced-motion
+   applies uniformly. Progressive reveal with graceful no-JS.
+   ============================================================ */
+.hero-mesh-bg {
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 30%, rgba(45, 212, 191, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(201, 162, 39, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 80%, rgba(13, 110, 90, 0.1) 0%, transparent 60%);
+  background-size: 200% 200%;
+  animation: hero-bg-drift 20s ease-in-out infinite;
+}
+
+.hero-mesh-band {
+  background-size: 200% 200%;
+  animation: hero-bg-drift 25s ease-in-out infinite alternate;
+}
+
+@keyframes hero-badge-wipe {
+  0% { opacity: 0; transform: translateY(6px); clip-path: inset(0 100% 0 0); }
+  100% { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); }
+}
+
+.hero-badge {
+  opacity: 0;
+  animation: hero-badge-wipe 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+
+.hero-line-1,
+.hero-line-2,
+.hero-line-3,
+.hero-line-4,
+.hero-line-5,
+.hero-media {
+  opacity: 0;
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-line-1 { animation-delay: 0.25s; }
+.hero-line-2 { animation-delay: 0.45s; }
+.hero-line-3 { animation-delay: 0.65s; }
+.hero-line-4 { animation-delay: 0.75s; }
+.hero-line-5 { animation-delay: 0.85s; }
+.hero-media { animation-delay: 0.5s; animation-duration: 0.8s; }
+
+/* Compact button variants — ends the !py-2 !px-4 important-hack era */
+.btn-primary-sm {
+  padding: 0.55rem 1.05rem;
+  font-size: 0.85rem;
+  box-shadow: 0 6px 18px rgba(13, 110, 90, 0.25);
+}
+.btn-ghost-sm {
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-mesh-bg,
+  .hero-mesh-band,
+  .hero-badge,
+  .hero-line-1,
+  .hero-line-2,
+  .hero-line-3,
+  .hero-line-4,
+  .hero-line-5,
+  .hero-media {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}

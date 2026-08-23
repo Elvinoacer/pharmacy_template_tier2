@@ -31,7 +31,7 @@ export default async function FaqPage() {
           <FaqAccordion />
           <p className="mt-8 text-center text-sm text-[#5a6b62]">
             Need something else?{" "}
-            <Link href="/contact" className="font-semibold text-teal-800 hover:underline">
+            <Link href={`/p/${pharmacy.slug}/contact`} className="font-semibold text-teal-800 hover:underline">
               Send us a message
             </Link>{" "}
             or call{" "}

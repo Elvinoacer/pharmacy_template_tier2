@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import TenantLink from "./TenantLink";
 import Link from "next/link";
 import { guestCreateOrderAction, type GuestOrderState } from "@/app/actions/guest-order";
 import { toast } from "@/app/components/Toaster";
@@ -98,19 +99,17 @@ export function GuestOrderForm({
               <Link href="/register" className="btn-primary !py-2 text-sm">
                 Create free account
               </Link>
-              <Link href="/medicines" className="btn-ghost !py-2 text-sm">
+              <TenantLink href="/medicines" className="btn-ghost btn-ghost-sm">
                 Browse more
-              </Link>
-            </div>
+              </TenantLink>      </div>
           </div>
         )}
 
         {!state.suggestAccount && (
           <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/medicines" className="btn-primary !py-2 text-sm">
+            <TenantLink href="/medicines" className="btn-primary btn-primary-sm">
               Browse more
-            </Link>
-            <Link href="/portal/orders" className="btn-ghost !py-2 text-sm">
+            </TenantLink>      <Link href="/portal/orders" className="btn-ghost !py-2 text-sm">
               View my orders
             </Link>
           </div>

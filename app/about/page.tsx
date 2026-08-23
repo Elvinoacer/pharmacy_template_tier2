@@ -182,6 +182,8 @@ export default async function AboutPage() {
         </div>
       </section>
 
+      {/* Team roster is demo content for the seed tenant only — real tenants
+          don't inherit another pharmacy's staff photos. */}
       {pharmacy.slug === "aether" && (
         <section className="px-4 py-12 sm:px-6">
           <div className="mx-auto max-w-6xl">

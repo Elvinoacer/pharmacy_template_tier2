@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { useTenantHref } from "./TenantLink";
 
 export default function MedicinesFilterBar({
   q,
@@ -19,6 +20,7 @@ export default function MedicinesFilterBar({
   trailing?: ReactNode;
 }) {
   const router = useRouter();
+  const medicinesHref = useTenantHref("/medicines");
 
   const options =
     categoryOptions && categoryOptions.length > 0
@@ -33,11 +35,11 @@ export default function MedicinesFilterBar({
     if (q) params.set("q", q);
     if (v && v !== "all") params.set("category", v);
     const qs = params.toString();
-    router.push(qs ? `/medicines?${qs}` : "/medicines");
+    router.push(qs ? `${medicinesHref}?${qs}` : medicinesHref);
   }
 
   return (
-    <form className="flex flex-wrap items-center gap-2" action="/medicines" method="GET">
+    <form className="flex flex-wrap items-center gap-2" action={medicinesHref} method="GET">
       <div className="relative min-w-[200px] flex-1">
         <input
           name="q"

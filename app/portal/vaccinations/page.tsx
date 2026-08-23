@@ -6,6 +6,7 @@ import { PortalVaccinationsView } from "@/app/components/portal/PortalVaccinatio
 import { listCustomerVaccinationPortal } from "@/app/lib/services/vaccination-service";
 import Link from "next/link";
 import { Syringe } from "lucide-react";
+import { getTenant } from "@/app/lib/tenant";
 
 export const metadata = { title: "My vaccinations" };
 export const dynamic = "force-dynamic";
@@ -14,6 +15,8 @@ export default async function PortalVaccinationsPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
+  const shopBase = tenant.slug ? `/p/${tenant.slug}` : null;
 
   const data = await listCustomerVaccinationPortal(user.customerId).catch(() => ({
     appointments: [],
@@ -27,7 +30,7 @@ export default async function PortalVaccinationsPage() {
       title="Vaccinations & prevention"
       subtitle="Your digital immunisation card, upcoming bookings, and preventive counselling sessions."
       actions={
-        <Link href="/vaccinations/book" className="btn-primary">
+        <Link href={shopBase ? `${shopBase}/vaccinations/book` : "/vaccinations/book"} className="btn-primary">
           <Syringe className="h-4 w-4" /> Book a vaccine
         </Link>
       }

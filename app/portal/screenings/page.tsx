@@ -9,6 +9,7 @@ import {
 import { PortalScreeningsView } from "@/app/components/portal/PortalScreeningsView";
 import Link from "next/link";
 import { Activity, CalendarCheck } from "lucide-react";
+import { getTenant } from "@/app/lib/tenant";
 
 export const metadata = { title: "Health Screenings & Vitals Tracker" };
 
@@ -18,6 +19,8 @@ export default async function PortalScreeningsPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
+  const shopBase = tenant.slug ? `/p/${tenant.slug}` : null;
 
   const screenings = await listCustomerScreenings(user.customerId).catch(() => []);
   const referrals = await listCustomerReferrals(user.customerId).catch(() => []);
@@ -77,18 +80,18 @@ export default async function PortalScreeningsPage() {
     <PortalShell
       user={user}
       title="Health Screenings & Vitals"
-      subtitle="View your vital measurements, blood pressure, blood glucose, BMI, and clinical referrals issued by Aether Pharmacy."
+      subtitle="View your vital measurements, blood pressure, blood glucose, BMI, and clinical referrals issued by your pharmacy."
       actions={
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            href="/services/health-screenings"
+            href={shopBase ? `${shopBase}/services/health-screenings` : "/services/health-screenings"}
             className="inline-flex items-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-xs font-semibold text-[#0d6e5a] hover:bg-[#f2f7f4] shadow-2xs transition"
           >
             <CalendarCheck className="h-3.5 w-3.5" />
             <span>Book Screening</span>
           </Link>
           <Link
-            href="/screenings"
+            href={shopBase ? `${shopBase}/screenings` : "/screenings"}
             className="inline-flex items-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-xs font-semibold text-[#5a6b62] hover:bg-[#f2f7f4] shadow-2xs transition"
           >
             <Activity className="h-3.5 w-3.5" />

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Pill,
@@ -47,6 +47,7 @@ import {
 import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
 import { useTenantBrand } from "@/app/components/TenantBrand";
+import PharmacySwitcher from "@/app/components/portal/PharmacySwitcher";
 
 export const PORTAL_LINKS = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
@@ -101,6 +102,7 @@ export function PortalShell({
   const feelBadge = attention.feel;
   const pathname = useActivePath();
   const brand = useTenantBrand();
+  const homeHref = brand.slug ? `/p/${brand.slug}` : "/";
 
   // Separate pinned and unpinned links
   const pinnedLinks = PORTAL_LINKS.filter((l) => pinned.includes(l.href));
@@ -183,18 +185,19 @@ export function PortalShell({
                           )}
                         </span>
                         <span className="truncate">{l.label}</span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            togglePin(l.href);
-                          }}
-                          className="pin-toggle-btn is-pinned absolute right-1 top-1/2 -translate-y-1/2"
-                          title="Unpin"
-                        >
-                          <Pin className="h-3 w-3" />
-                        </button>
                       </Link>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          togglePin(l.href);
+                        }}
+                        className="pin-toggle-btn is-pinned absolute right-1 top-1/2 z-10 -translate-y-1/2"
+                        title="Unpin"
+                      >
+                        <Pin className="h-3 w-3" />
+                      </button>
                     </li>
                   );
                 })}
@@ -258,18 +261,19 @@ export function PortalShell({
                                 {badge}
                               </span>
                             )}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                togglePin(l.href);
-                              }}
-                              className={`pin-toggle-btn absolute right-1 top-1/2 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
-                              title={isItemPinned ? "Unpin" : "Pin to top"}
-                            >
-                              {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
-                            </button>
                           </Link>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              togglePin(l.href);
+                            }}
+                            className={`pin-toggle-btn absolute right-1 top-1/2 z-10 -translate-y-1/2 ${isItemPinned ? "is-pinned" : ""}`}
+                            title={isItemPinned ? "Unpin" : "Pin to top"}
+                          >
+                            {isItemPinned ? <Pin className="h-3 w-3" /> : <PinOff className="h-3 w-3" />}
+                          </button>
                         </li>
                       );
                     })}
@@ -397,9 +401,10 @@ export function PortalShell({
         </div>
 
         <div className="ml-auto flex items-center gap-1.5">
+          <PharmacySwitcher />
           <PushEnableChip audience="portal" />
           <BellButton unread={unread} />
-          <Link href="/" className="btn-icon hidden sm:inline-flex" title="View website" aria-label="View website">
+          <Link href={homeHref} className="btn-icon hidden sm:inline-flex" title={brand.slug ? `Open ${brand.name}` : "View website"} aria-label={brand.slug ? `Open ${brand.name} storefront` : "View website"}>
             <Home className="h-[18px] w-[18px]" />
           </Link>
           <UserMenu user={user} />
@@ -465,6 +470,15 @@ function UserMenu({ user }: { user: SessionUser }) {
     .slice(0, 2)
     .map((s) => s[0]?.toUpperCase())
     .join("");
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <div className="relative">

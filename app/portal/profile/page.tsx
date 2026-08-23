@@ -41,7 +41,7 @@ export default async function PortalProfilePage() {
                   .join("")}
               </div>
               <p className="mt-3 text-lg font-semibold text-[#0c1a14]">{profile.fullName}</p>
-              <p className="text-xs text-[#5a6b62]">{profile.preferredBranch}</p>
+              <p className="text-xs text-[#5a6b62]">{profile.preferredBranch || "No preferred branch set"}</p>
               {profile.preferredCommunication && (
                 <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0d6e5a]">
                   Prefers {profile.preferredCommunication}
@@ -129,7 +129,7 @@ export default async function PortalProfilePage() {
                 preferredCommunication: profile.preferredCommunication,
                 emergencyContactName: profile.emergencyContactName || "",
                 emergencyContactPhone: profile.emergencyContactPhone || "",
-                preferredBranch: profile.preferredBranch || "Main Branch",
+                preferredBranch: profile.preferredBranch || "",
               }}
             />
           </Panel>

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { tenantHref, useTenantSlug } from "./TenantLink";
 
 type Crumb = { label: string; href?: string };
 
@@ -13,6 +16,8 @@ export default function PageHero({
   description?: string;
   crumbs?: Crumb[];
 }) {
+  const slug = useTenantSlug();
+  const homeHref = tenantHref(slug, "/");
   return (
     <section className="relative overflow-hidden px-4 pb-10 pt-32 sm:px-6 sm:pt-36 sm:pb-12">
       <div className="hero-glow -left-20 top-10 opacity-60" />
@@ -21,7 +26,7 @@ export default function PageHero({
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex flex-wrap items-center gap-1.5 text-xs text-[#5a6b62]">
               <li>
-                <Link href="/" className="hover:text-teal-800">
+                <Link href={homeHref} className="hover:text-teal-800">
                   Home
                 </Link>
               </li>
@@ -29,7 +34,7 @@ export default function PageHero({
                 <li key={c.label} className="flex items-center gap-1.5">
                   <span aria-hidden>/</span>
                   {c.href && i < crumbs.length - 1 ? (
-                    <Link href={c.href} className="hover:text-teal-800">
+                    <Link href={tenantHref(slug, c.href)} className="hover:text-teal-800">
                       {c.label}
                     </Link>
                   ) : (

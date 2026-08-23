@@ -1,6 +1,7 @@
 import "server-only";
 
 import { prisma } from "@/app/lib/db";
+import { requireTenantId } from "@/app/lib/tenant";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
 import type { Prisma } from "@/app/generated/prisma/client";
 
@@ -475,6 +476,8 @@ export async function getInventoryHealth(opts?: {
   const now = new Date();
   const expiryHorizon = new Date(now.getTime() + expiryDays * MS_DAY);
   const salesSince = new Date(now.getTime() - salesLookbackDays * MS_DAY);
+  // Raw SQL below bypasses the tenant-scoped client — filter pharmacy_id.
+  const pharmacyId = await requireTenantId();
 
   const [activeRows, lowRows, outRows, expiring, expired, salesAgg, totalActive] = await Promise.all([
     prisma.pharmacyInventory.findMany({
@@ -501,7 +504,8 @@ export async function getInventoryHealth(opts?: {
       SELECT pi.id, pi.slug, pi.current_stock, pi.low_stock_threshold, pi.supplier, mm.name
       FROM pharmacy_inventory pi
       JOIN medication_masters mm ON mm.id = pi.medication_master_id
-      WHERE pi.active = true
+      WHERE pi.pharmacy_id = ${pharmacyId}
+        AND pi.active = true
         AND pi.current_stock > 0
         AND pi.current_stock <= pi.low_stock_threshold
       ORDER BY pi.current_stock ASC, mm.name ASC

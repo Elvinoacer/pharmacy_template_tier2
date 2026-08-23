@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import type { Prisma } from "@/app/generated/prisma/client";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
+import { requireTenantId } from "@/app/lib/tenant";
 import { adminDeleteMedicationAction } from "@/app/actions/admin";
 import { AdminCard, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
@@ -214,9 +215,11 @@ export default async function AdminMedicationsPage({
 
   try {
     // Exact low-stock IDs (current_stock vs low_stock_threshold needs raw SQL).
+    const tenantId = await requireTenantId();
     const lowRows = await prisma.$queryRaw<Array<{ id: string }>>`
       SELECT id FROM pharmacy_inventory
-      WHERE current_stock > 0 AND current_stock <= low_stock_threshold
+      WHERE pharmacy_id = ${tenantId}
+        AND current_stock > 0 AND current_stock <= low_stock_threshold
     `;
     const lowStockIds = lowRows.map((r) => r.id);
 

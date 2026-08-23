@@ -16,7 +16,23 @@ export default async function PortalRefillSyncPage() {
 
   const plan = await calculateRefillSyncPlan(user.customerId);
   if (!plan) {
-    redirect("/portal/prescriptions");
+    // No syncable prescriptions in context (e.g. no pharmacy chosen yet).
+    return (
+      <PortalShell user={user} title="Refill Synchronization">
+        <div className="rounded-3xl border border-dashed border-teal-900/20 bg-white/80 p-10 text-center">
+          <Calendar className="mx-auto h-8 w-8 text-[#0d6e5a]" aria-hidden />
+          <h2 className="mt-4 text-lg font-semibold text-[#0c1a14]">No sync plan yet</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-[#5a6b62]">
+            Med sync aligns your recurring prescriptions to one pickup date. Once a pharmacy you use
+            has active recurring prescriptions for you, your plan appears here.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            <Link href="/portal/pharmacies" className="btn-primary btn-primary-sm">My pharmacies</Link>
+            <Link href="/portal/prescriptions" className="btn-ghost btn-ghost-sm">View prescriptions</Link>
+          </div>
+        </div>
+      </PortalShell>
+    );
   }
 
   return (

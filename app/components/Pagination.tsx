@@ -9,6 +9,7 @@
  */
 
 import Link from "next/link";
+import { tenantHref, useTenantSlug } from "./TenantLink";
 
 export type PaginationProps = {
   /** 1-indexed current page. */
@@ -37,6 +38,10 @@ export function Pagination({
   pageParam = "page",
 }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const tenantSlug = useTenantSlug();
+  // On a pharmacy surface, keep pagination inside /p/{slug}; on admin/portal
+  // surfaces there is no tenant brand in context so basePath is untouched.
+  const base = tenantHref(tenantSlug, basePath);
   if (total <= pageSize) return null; // no pager needed for single-page results
 
   const current = Math.min(Math.max(1, page), totalPages);
@@ -48,7 +53,7 @@ export function Pagination({
     }
     params.set(pageParam, String(p));
     const qs = params.toString();
-    return `${basePath}${qs ? `?${qs}` : ""}`;
+    return `${base}${qs ? `?${qs}` : ""}`;
   };
 
   // Show a window of pages around the current one.

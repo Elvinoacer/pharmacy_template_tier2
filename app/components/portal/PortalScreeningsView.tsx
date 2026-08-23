@@ -31,6 +31,7 @@ import {
   classifyTemperature,
 } from "@/app/lib/screening-utils";
 import { pharmacy } from "@/app/lib/data";
+import { useTenantBrand } from "@/app/components/TenantBrand";
 
 interface ScreeningRecordItem {
   id: string;
@@ -93,6 +94,7 @@ export function PortalScreeningsView({
   referrals: ReferralItem[];
   patientName: string;
 }) {
+  const brand = useTenantBrand();
   const [selectedReferral, setSelectedReferral] = useState<ReferralItem | null>(null);
   const [activeTab, setActiveTab] = useState<"history" | "referrals" | "calculator">("history");
   const [copiedCode, setCopiedCode] = useState(false);
@@ -686,7 +688,7 @@ export function PortalScreeningsView({
                 </button>
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(
-                    `Aether Pharmacy Clinical Referral Slip (${selectedReferral.referenceCode})\nPatient: ${selectedReferral.patientName}\nReferred to: ${selectedReferral.facilityName} (${selectedReferral.destinationType})\nUrgency: ${selectedReferral.urgency.toUpperCase()}\nReason: ${selectedReferral.reason}`
+                    `${brand.name} Clinical Referral Slip (${selectedReferral.referenceCode})\nPatient: ${selectedReferral.patientName}\nReferred to: ${selectedReferral.facilityName} (${selectedReferral.destinationType})\nUrgency: ${selectedReferral.urgency.toUpperCase()}\nReason: ${selectedReferral.reason}`
                   )}`}
                   target="_blank"
                   rel="noreferrer"
@@ -796,7 +798,7 @@ export function PortalScreeningsView({
                 <div>
                   <p className="font-semibold text-gray-700">Referring Pharmacist:</p>
                   <p className="text-xs text-gray-500">Licensed Pharmacist on Duty</p>
-                  <p className="text-[10px] text-gray-400">Aether Pharmacy Clinical Services</p>
+                  <p className="text-[10px] text-gray-400">{brand.name} Clinical Services</p>
                 </div>
                 <div className="text-right">
                   <div className="w-36 border-b border-gray-400 mb-1"></div>

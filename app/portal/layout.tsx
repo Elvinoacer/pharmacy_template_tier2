@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSessionUser, isStaff } from "@/app/lib/auth";
+import { prismaUnscoped } from "@/app/lib/db";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
+import { PortalPharmaciesProvider } from "@/app/components/portal/PortalPharmaciesContext";
 import { getResolvedPharmacyOrNull } from "@/app/lib/services/pharmacy-settings";
 import { platform } from "@/app/lib/data";
 
@@ -20,7 +22,31 @@ export default async function PortalLayout({ children }: { children: React.React
     redirect("/login");
   }
 
-  const resolved = await getResolvedPharmacyOrNull().catch(() => null);
+  const [resolved, linked] = await Promise.all([
+    getResolvedPharmacyOrNull().catch(() => null),
+    user.customerId
+      ? prismaUnscoped.customerPharmacy
+          .findMany({
+            where: { customerId: user.customerId },
+            include: {
+              pharmacy: {
+                select: { id: true, slug: true, name: true, city: true, logoUrl: true, status: true, listed: true },
+              },
+            },
+          })
+          .catch(() => [] as never[])
+      : Promise.resolve([] as never[]),
+  ]);
+
+  const pharmacies = (linked as unknown as Array<{
+    pharmacy: {
+      id: string; slug: string; name: string; city: string | null;
+      logoUrl: string | null; status: string; listed: boolean;
+    };
+  }>)
+    .map((row) => row.pharmacy)
+    .filter((p) => p.status === "active" && p.listed)
+    .map(({ id, slug, name, city, logoUrl }) => ({ id, slug, name, city, logoUrl }));
 
   return (
     <TenantBrandProvider
@@ -30,7 +56,9 @@ export default async function PortalLayout({ children }: { children: React.React
         slug: resolved?.slug || null,
       }}
     >
-      {children}
+      <PortalPharmaciesProvider pharmacies={pharmacies}>
+        {children}
+      </PortalPharmaciesProvider>
     </TenantBrandProvider>
   );
 }

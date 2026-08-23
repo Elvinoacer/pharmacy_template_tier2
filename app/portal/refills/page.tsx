@@ -26,7 +26,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-export const metadata = { title: "My Refills | Aether Pharmacy" };
+export const metadata = { title: "My Refills" };
 
 export default async function PortalRefillsPage() {
   const user = await getSessionUser();
@@ -339,7 +339,8 @@ export default async function PortalRefillsPage() {
         {past.length === 0 ? (
           <p className="py-6 text-center text-sm text-[#5a6b62]">No past refill history records found.</p>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="hidden overflow-x-auto md:block">
             <table className="table-premium">
               <thead>
                 <tr>
@@ -365,7 +366,7 @@ export default async function PortalRefillsPage() {
                       <td className="text-[#5a6b62]">{formatDate(r.createdAt)}</td>
                       <td className="text-[#5a6b62]">{formatDate(r.statusUpdatedAt)}</td>
                       <td className="capitalize text-[#5a6b62]">
-                        {r.pickupPreference === "delivery" ? "🚚 Delivery" : "🏢 Pickup"}
+                        {r.pickupPreference === "delivery" ? "Delivery" : "Pickup"}
                       </td>
                       <td>
                         {order ? (
@@ -385,6 +386,48 @@ export default async function PortalRefillsPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Mobile: card layout instead of a 6-column table */}
+          <ul className="grid gap-3 md:hidden" aria-label="Refill history">
+            {past.map((r) => {
+              const meta = refillStatusMeta(r.status);
+              const order = r.prescriptionFill?.order;
+              return (
+                <li key={r.id} className="rounded-2xl border border-[#e3ebe6] bg-white p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-[#0c1a14]">{r.medicineName}</p>
+                      <p className="text-xs text-[#5a6b62]">{r.rxReference || "—"}</p>
+                    </div>
+                    <Badge className={meta.color}>{meta.label}</Badge>
+                  </div>
+                  <dl className="mt-3 grid grid-cols-2 gap-2 text-xs text-[#5a6b62]">
+                    <div>
+                      <dt className="font-semibold text-[#3d4f46]">Submitted</dt>
+                      <dd>{formatDate(r.createdAt)}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-[#3d4f46]">Dispensed</dt>
+                      <dd>{formatDate(r.statusUpdatedAt)}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-[#3d4f46]">Fulfillment</dt>
+                      <dd className="capitalize">
+                        {r.pickupPreference === "delivery" ? "Delivery" : "Pickup"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-[#3d4f46]">Receipt</dt>
+                      <dd>
+                        {order ? `Kes ${Number(order.total).toLocaleString()}` : "—"}
+                      </dd>
+                    </div>
+                  </dl>
+                </li>
+              );
+            })}
+          </ul>
+          </>
         )}
       </Panel>
     </PortalShell>

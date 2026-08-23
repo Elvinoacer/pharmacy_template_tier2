@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import TenantLink from "./TenantLink";
 import { faqs } from "../lib/data";
 
 export default function FaqAccordion({
@@ -92,9 +93,9 @@ export default function FaqAccordion({
         {filtered.length === 0 && (
           <p className="rounded-2xl border border-teal-900/5 bg-white/80 px-5 py-8 text-center text-sm text-[#5a6b62]">
             No questions match your search. Try another term or{" "}
-            <a href="/contact" className="font-semibold text-teal-800 underline">
+            <TenantLink href="/contact" className="font-semibold text-teal-800 underline">
               contact us
-            </a>
+            </TenantLink>
             .
           </p>
         )}

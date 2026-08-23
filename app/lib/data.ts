@@ -86,7 +86,7 @@ export const team = [
     role: "Lead Pharmacist & Owner",
     bio: "Priya founded Aether with a simple belief: every patient deserves clear answers and careful attention. She specialises in chronic disease management and medication therapy review.",
     qualifications: "PharmD, University of Nairobi · 18 years experience",
-    photo: "/images/team/marcus-chen.webp",
+    photo: "/images/team/priya-nair.webp",
   },
   {
     id: "marcus-chen",
@@ -94,7 +94,7 @@ export const team = [
     role: "Clinical Pharmacist",
     bio: "Marcus leads our vaccination and health screening programmes. Patients know him for patient explanations and a calm presence at the counter.",
     qualifications: "RPh · Immunization & MTM certified",
-    photo: "/images/team/priya-nair.webp",
+    photo: "/images/team/marcus-chen.webp",
   },
   {
     id: "sofia-alvarez",
