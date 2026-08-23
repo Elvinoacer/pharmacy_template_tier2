@@ -8,7 +8,7 @@ import { loadStorefront } from "@/app/components/StorefrontGate";
 
 export const metadata: Metadata = {
   title: "Request a Refill",
-  description: `Request a prescription refill from ${platform.name}. Online request form with live tracking and pharmacist review.`,
+  description: `Request a prescription refill from ${platform.name}.`,
   alternates: { canonical: "/refill" },
 };
 
@@ -19,99 +19,57 @@ export default async function RefillPage() {
   return (
     <div>
       <PageHero
-        eyebrow="Prescription Services"
-        title="Request a medication refill"
-        description="Submit your refill request online for rapid pharmacist review, FEFO batch allocation, and convenient branch pickup or refrigerated home delivery."
+        eyebrow="Refills"
+        title="Request a refill"
+        description="Send your request. We’ll review it and update you."
         crumbs={[{ label: "Request a refill" }]}
       />
 
-      <section className="px-4 pb-20 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          {/* Main Form Box */}
-          <div className="space-y-6">
-            {/* Fast-track Portal Banner */}
-            <div className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-1">
-                <h3 className="font-bold text-sm text-emerald-950 dark:text-emerald-100">
-                  Already have a prescription on file?
-                </h3>
-                <p className="text-xs text-emerald-900/80 dark:text-emerald-200/80">
-                  Log in to your patient portal to view remaining refills, track next due dates, and 1-click re-order.
-                </p>
+      <section className="px-4 pb-28 pt-2 sm:px-6 sm:pb-20">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-5 grid grid-cols-3 overflow-hidden rounded-2xl border border-teal-900/10 bg-white/75 shadow-sm sm:mb-7">
+            {[
+              ["1", "Send request"],
+              ["2", "We review"],
+              ["3", "You’re updated"],
+            ].map(([step, label], index) => (
+              <div key={step} className={`flex min-w-0 items-center gap-2 px-3 py-3 sm:px-5 ${index < 2 ? "border-r border-teal-900/10" : ""}`}>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-xs font-bold text-white">{step}</span>
+                <span className="text-xs font-semibold text-[#31423a] sm:text-sm">{label}</span>
               </div>
-              <Link href="/portal/refills" className="btn-primary !py-2 !px-4 text-xs shrink-0">
-                Open Patient Portal →
+            ))}
+          </div>
+
+          <div className="rounded-3xl border border-white/80 bg-white/95 p-5 shadow-sm sm:p-8">
+            <div className="mb-6 flex flex-col gap-4 border-b border-teal-900/5 pb-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+                  Refill details
+                </h2>
+                <p className="mt-1 text-sm text-[#5a6b62]">Tell us what you need.</p>
+              </div>
+              <Link href="/portal/refills" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-teal-900/10 px-4 text-sm font-semibold text-[#0b5f50] transition hover:bg-teal-50 active:scale-[0.98]">
+                Patient portal →
               </Link>
             </div>
 
-            {/* Direct Guest / Quick Refill Form */}
-            <div className="rounded-3xl border border-white/70 bg-white/95 p-8 shadow-sm space-y-6">
-              <div>
-                <h2 className="text-xl font-bold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
-                  Quick Refill Request Form
-                </h2>
-                <p className="mt-1 text-xs text-[#5a6b62]">
-                  Fill in your details and medicine name. Our pharmacy team will verify your prescription and notify you via SMS/WhatsApp.
-                </p>
-              </div>
-
-              <RefillForm />
-            </div>
+            <RefillForm />
           </div>
 
-          {/* Aside Information */}
-          <aside className="space-y-5">
-            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm">
-              <h2
-                className="text-lg font-semibold text-[#0c1a14]"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                How refill dispensing works
-              </h2>
-              <ol className="mt-4 space-y-3 text-sm text-[#5a6b62]">
-                <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-800">
-                    1
-                  </span>
-                  <span><strong>Clinical Review:</strong> A licensed pharmacist verifies dose, interactions, and remaining refills.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-800">
-                    2
-                  </span>
-                  <span><strong>FEFO Preparation:</strong> Fresh stock from inspected batches is safely packaged with clear usage labels.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-800">
-                    3
-                  </span>
-                  <span><strong>Pickup or Delivery:</strong> Receive an instant SMS notification with ready status or live courier tracking.</span>
-                </li>
-              </ol>
+          <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-teal-900/10 bg-white/75 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <div>
+              <p className="text-sm font-semibold text-[#0c1a14]">Need help now?</p>
+              <p className="mt-0.5 text-xs text-[#5a6b62]">Call or message the pharmacy directly.</p>
             </div>
-
-            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
-                Need urgent assistance?
-              </h2>
-              <p className="mt-2 text-sm text-[#5a6b62]">
-                Speak directly with on-duty pharmacists at{" "}
-                <a href={pharmacy.phoneHref} className="font-semibold text-emerald-800 hover:underline">
-                  {pharmacy.phone}
-                </a>{" "}
-                or chat via{" "}
-                <a href={pharmacy.whatsappHref} className="font-semibold text-emerald-800 hover:underline">
-                  WhatsApp
-                </a>
-                .
-              </p>
+            <div className="flex flex-wrap gap-2">
+              <a href={pharmacy.phoneHref} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-teal-900/10 px-4 text-sm font-semibold text-[#0b5f50] hover:bg-teal-50">
+                Call
+              </a>
+              <a href={pharmacy.whatsappHref} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0d6e5a] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#0b5f50]">
+                WhatsApp
+              </a>
             </div>
-
-            <div className="rounded-3xl border border-amber-200/80 bg-amber-50/70 p-5 text-xs text-amber-950 space-y-1">
-              <p className="font-bold">Controlled Substance Notice:</p>
-              <p>Schedule II and III medications require physical prescription presentation and valid identification prior to dispensing.</p>
-            </div>
-          </aside>
+          </div>
         </div>
       </section>
     </div>
