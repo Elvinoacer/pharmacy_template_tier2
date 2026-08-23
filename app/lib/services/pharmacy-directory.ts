@@ -1,0 +1,240 @@
+import "server-only";
+
+import { prismaUnscoped } from "@/app/lib/db/prisma";
+
+export type DirectoryPharmacy = {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string | null;
+  description: string | null;
+  featured: boolean;
+  city: string | null;
+  county: string | null;
+  country: string;
+  latitude: number | null;
+  longitude: number | null;
+  logoUrl: string | null;
+  coverImageUrl: string | null;
+  whatsapp: string | null;
+  phone: string | null;
+  stockCount: number;
+  otcCount: number;
+  topCategories: string[];
+  services: string[];
+  hasDelivery: boolean;
+  hours: unknown;
+  hasSearchedMedicine: boolean;
+  searchedMedicineCount: number;
+};
+
+type DirectoryOptions = {
+  q?: string;
+  city?: string;
+  county?: string;
+  category?: string;
+  delivery?: boolean;
+};
+
+function titleCaseCategory(value: string): string {
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promise<DirectoryPharmacy[]> {
+  const q = opts.q?.trim();
+  const city = opts.city?.trim();
+  const county = opts.county?.trim();
+  const category = opts.category?.trim();
+
+  try {
+    const pharmacies = await prismaUnscoped.pharmacy.findMany({
+      where: {
+        status: "active",
+        listed: true,
+        ...(city ? { city: { equals: city, mode: "insensitive" } } : {}),
+        ...(county ? { county: { equals: county, mode: "insensitive" } } : {}),
+        ...(opts.delivery ? { settings: { is: { deliveryNotes: { not: null } } } } : {}),
+        ...(category || q
+          ? {
+              OR: [
+                ...(q
+                  ? [
+                      { name: { contains: q, mode: "insensitive" } },
+                      { tagline: { contains: q, mode: "insensitive" } },
+                      { city: { contains: q, mode: "insensitive" } },
+                      { county: { contains: q, mode: "insensitive" } },
+                    ]
+                  : []),
+                {
+                  inventory: {
+                    some: {
+                      active: true,
+                      publicListing: true,
+                      currentStock: { gt: 0 },
+                      ...(category
+                        ? { medicationMaster: { category: { equals: category, mode: "insensitive" } } }
+                        : {}),
+                      ...(q
+                        ? {
+                            medicationMaster: {
+                              OR: [
+                                { name: { contains: q, mode: "insensitive" } },
+                                { genericName: { contains: q, mode: "insensitive" } },
+                                { category: { contains: q, mode: "insensitive" } },
+                              ],
+                            },
+                          }
+                        : {}),
+                    },
+                  },
+                },
+              ],
+            }
+          : {}),
+      },
+      orderBy: [{ featured: "desc" }, { name: "asc" }],
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        tagline: true,
+        description: true,
+        featured: true,
+        city: true,
+        county: true,
+        country: true,
+        latitude: true,
+        longitude: true,
+        logoUrl: true,
+        coverImageUrl: true,
+        whatsapp: true,
+        phone: true,
+        settings: {
+          select: {
+            hours: true,
+            deliveryNotes: true,
+            deliveryRadiusKm: true,
+          },
+        },
+        inventory: {
+          where: {
+            active: true,
+            publicListing: true,
+            currentStock: { gt: 0 },
+          },
+          select: {
+            currentStock: true,
+            overTheCounter: true,
+            medicationMaster: {
+              select: {
+                name: true,
+                genericName: true,
+                category: true,
+              },
+            },
+          },
+          take: 250,
+        },
+        services: {
+          where: { active: true },
+          orderBy: { sortOrder: "asc" },
+          select: { title: true },
+          take: 4,
+        },
+      },
+    });
+
+    return pharmacies.map((pharmacy) => {
+      const inventory = pharmacy.inventory;
+      const categories = Array.from(
+        new Set(
+          inventory
+            .map((item) => item.medicationMaster.category)
+            .filter(Boolean)
+            .map(titleCaseCategory),
+        ),
+      ).slice(0, 4);
+
+      const searchedItems = q
+        ? inventory.filter((item) => {
+            const needle = q.toLowerCase();
+            return [
+              item.medicationMaster.name,
+              item.medicationMaster.genericName,
+              item.medicationMaster.category,
+            ].some((value) => value?.toLowerCase().includes(needle));
+          })
+        : [];
+
+      return {
+        id: pharmacy.id,
+        slug: pharmacy.slug,
+        name: pharmacy.name,
+        tagline: pharmacy.tagline,
+        description: pharmacy.description,
+        featured: pharmacy.featured,
+        city: pharmacy.city,
+        county: pharmacy.county,
+        country: pharmacy.country,
+        latitude: pharmacy.latitude,
+        longitude: pharmacy.longitude,
+        logoUrl: pharmacy.logoUrl,
+        coverImageUrl: pharmacy.coverImageUrl,
+        whatsapp: pharmacy.whatsapp,
+        phone: pharmacy.phone,
+        stockCount: inventory.length,
+        otcCount: inventory.filter((item) => item.overTheCounter).length,
+        topCategories: categories,
+        services: pharmacy.services.map((service) => service.title),
+        hasDelivery: Boolean(pharmacy.settings?.deliveryNotes || pharmacy.settings?.deliveryRadiusKm),
+        hours: pharmacy.settings?.hours ?? null,
+        hasSearchedMedicine: searchedItems.length > 0,
+        searchedMedicineCount: searchedItems.length,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+export async function getMarketplaceFeaturedPharmacies(): Promise<DirectoryPharmacy[]> {
+  const all = await listPharmacyDirectory();
+  return all.filter((pharmacy) => pharmacy.featured).slice(0, 6);
+}
+
+export async function getDirectoryFacets() {
+  try {
+    const [cities, counties, categories] = await Promise.all([
+      prismaUnscoped.pharmacy.findMany({
+        where: { status: "active", listed: true, city: { not: null } },
+        select: { city: true },
+        distinct: ["city"],
+        orderBy: { city: "asc" },
+      }),
+      prismaUnscoped.pharmacy.findMany({
+        where: { status: "active", listed: true, county: { not: null } },
+        select: { county: true },
+        distinct: ["county"],
+        orderBy: { county: "asc" },
+      }),
+      prismaUnscoped.medicationCategory.findMany({
+        where: { publicVisible: true, active: true },
+        select: { name: true, slug: true },
+        orderBy: { sortOrder: "asc" },
+        take: 40,
+      }),
+    ]);
+
+    return {
+      cities: cities.map((item) => item.city).filter(Boolean) as string[],
+      counties: counties.map((item) => item.county).filter(Boolean) as string[],
+      categories,
+    };
+  } catch {
+    return { cities: [], counties: [], categories: [] };
+  }
+}
