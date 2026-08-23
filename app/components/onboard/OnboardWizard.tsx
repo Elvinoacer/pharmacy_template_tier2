@@ -118,3 +118,31 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
           <label className="block text-sm font-medium text-[#0c1a14]">County<input name="county" value={county} onChange={(e) => setCounty(e.target.value)} className="input-admin mt-1.5" autoComplete="address-level1" /></label>
         </div>
         <PharmacyLocationCapture pharmacyId={pharmacyId} initialLatitude={latitude} initialLongitude={longitude} onCoordinatesChange={(lat, lng) => { setLatitude(lat); setLongitude(lng); }} />
+        <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+          <label className="block text-sm font-medium text-[#0c1a14]">Public phone<input name="phone" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required className="input-admin mt-1.5" autoComplete="tel" />{state.field === "phone" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
+          <label className="block text-sm font-medium text-[#0c1a14]">WhatsApp<input name="whatsapp" type="tel" inputMode="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="input-admin mt-1.5" autoComplete="tel" /></label>
+          <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Public email<input name="publicEmail" type="email" inputMode="email" value={publicEmail} onChange={(e) => setPublicEmail(e.target.value)} className="input-admin mt-1.5" autoComplete="email" /></label>
+          <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Tagline<input name="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} className="input-admin mt-1.5" placeholder="Your neighbourhood pharmacy, built on trust" /></label>
+          <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Short description<textarea name="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="input-admin mt-1.5" /></label>
+        </div>
+        <div className="flex flex-col-reverse gap-3 sm:flex-row"><button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(0)}>Back</button><button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={updatePending}>{updatePending ? "Saving…" : "Continue to review"}</button></div>
+      </form>}
+
+      {step === 2 && pharmacyId && <form action={submitAction} className="space-y-5 sm:space-y-4">
+        <input type="hidden" name="pharmacyId" value={pharmacyId} />
+        <div className="rounded-2xl bg-teal-50/80 p-4 text-sm leading-6 text-[#084c3f] sm:p-5">
+          <p className="font-semibold">{name}</p><p className="mt-1 break-words">Public URL <code className="rounded bg-white px-1.5 py-0.5">/p/{slug || liveSlug}</code></p>
+          <dl className="mt-4 grid gap-3 text-xs text-[#5a6b62] sm:grid-cols-2">
+            <div><dt className="font-semibold text-[#084c3f]">PPB / premises licence</dt><dd className="mt-0.5 break-words">{licenseNumber}</dd></div>
+            <div><dt className="font-semibold text-[#084c3f]">Location</dt><dd className="mt-0.5 break-words">{city}{county ? `, ${county}` : ""}</dd></div>
+            <div><dt className="font-semibold text-[#084c3f]">Precise pin</dt><dd className="mt-0.5 break-words">{latitude != null && longitude != null ? `${latitude}, ${longitude}` : "Not captured yet"}</dd></div>
+            <div><dt className="font-semibold text-[#084c3f]">Phone</dt><dd className="mt-0.5 break-words">{phone}</dd></div>
+          </dl>
+          <p className="mt-4 text-[#5a6b62]">Submitting sends this application to Aether super-admins. Patients cannot see the storefront until you are approved and you choose to go live.</p>
+        </div>
+        {submitState.error && <div className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-3 text-sm leading-5 text-rose-800" role="alert">{submitState.error}</div>}
+        <div className="flex flex-col-reverse gap-3 sm:flex-row"><button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(1)}>Back</button><button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={submitPending}>{submitPending ? "Submitting…" : "Submit for verification"}</button></div>
+      </form>}
+    </div>
+  );
+}
