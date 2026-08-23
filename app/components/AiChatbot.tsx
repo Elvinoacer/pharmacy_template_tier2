@@ -11,6 +11,7 @@ import {
   type KeyboardEvent,
 } from "react";
 import { SUGGESTED_PROMPTS } from "../lib/suggested-prompts";
+import { Markdown } from "./Markdown";
 
 type Role = "user" | "assistant";
 
@@ -28,23 +29,42 @@ function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-/** Turn simple path mentions into links */
-function renderContent(text: string) {
-  const parts = text.split(/(\/[a-z][\w-]*)/gi);
-  return parts.map((part, i) => {
-    if (/^\/(refill|delivery|contact|services|faq|health|careers|about|medicines|order|portal|search|how-do-you-feel)(\/[\w-]+)?$/i.test(part)) {
-      return (
-        <Link
-          key={i}
-          href={part}
-          className="font-semibold text-teal-700 underline decoration-teal-300 underline-offset-2 hover:text-teal-900"
-        >
-          {part}
-        </Link>
-      );
-    }
-    return <span key={i}>{part}</span>;
-  });
+const PATH_RE =
+  /^\/(refill|delivery|contact|services|faq|health|careers|about|medicines|order|portal|search|how-do-you-feel)(\/[\w-]+)?$/i;
+
+/** Enhance markdown HTML with internal path links after render */
+function withPathLinks(html: string): string {
+  // Convert bare path mentions that weren't already linked
+  return html.replace(
+    /(^|[^"'=\w\/])(\/(?:refill|delivery|contact|services|faq|health|careers|about|medicines|order|portal|search|how-do-you-feel)(?:\/[\w-]+)?)/gi,
+    (match, prefix, path) => {
+      if (PATH_RE.test(path)) {
+        return `${prefix}<a href="${path}" class="md-link chat-path-link">${path}</a>`;
+      }
+      return match;
+    },
+  );
+}
+
+function AssistantContent({ content, streaming }: { content: string; streaming?: boolean }) {
+  if (!content && streaming) {
+    return (
+      <span className="inline-flex items-center gap-1.5 py-0.5" aria-label="Assistant is typing">
+        <span className="typing-dot" />
+        <span className="typing-dot" />
+        <span className="typing-dot" />
+      </span>
+    );
+  }
+
+  return (
+    <div className="chat-md relative">
+      <Markdown className="chat-md-body">{content}</Markdown>
+      {streaming && content ? (
+        <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-teal-500/70 align-middle" />
+      ) : null}
+    </div>
+  );
 }
 
 export default function AiChatbot() {
@@ -301,25 +321,16 @@ export default function AiChatbot() {
               className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
+                className={`max-w-[90%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
                   m.role === "user"
                     ? "rounded-br-md bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white"
                     : "rounded-bl-md border border-teal-900/5 bg-white text-[#0c1a14]"
                 }`}
               >
-                {m.role === "assistant" && !m.content && m.streaming ? (
-                  <span className="inline-flex items-center gap-1.5 py-0.5" aria-label="Assistant is typing">
-                    <span className="typing-dot" />
-                    <span className="typing-dot" />
-                    <span className="typing-dot" />
-                  </span>
+                {m.role === "assistant" ? (
+                  <AssistantContent content={m.content} streaming={m.streaming} />
                 ) : (
-                  <p className="whitespace-pre-wrap">
-                    {m.role === "assistant" ? renderContent(m.content) : m.content}
-                    {m.streaming && m.content ? (
-                      <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-teal-500/70 align-middle" />
-                    ) : null}
-                  </p>
+                  <p className="whitespace-pre-wrap">{m.content}</p>
                 )}
               </div>
             </div>
