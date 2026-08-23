@@ -37,7 +37,11 @@ type DirectoryOptions = {
 };
 
 function titleCaseCategory(value: string): string {
-  return value.split(/[-_\s]+/).filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promise<DirectoryPharmacy[]> {
@@ -52,36 +56,72 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
         status: "active",
         listed: true,
         ...(opts.featured ? { featured: true } : {}),
-        ...(city ? { city: { equals: city, mode: "insensitive" } } : {}),
-        ...(county ? { county: { equals: county, mode: "insensitive" } } : {}),
-        ...(opts.delivery ? { settings: { is: { deliveryNotes: { not: null } } } } : {}),
+        ...(city ? { city: { equals: city, mode: "insensitive" as const } } : {}),
+        ...(county ? { county: { equals: county, mode: "insensitive" as const } } : {}),
+        ...(opts.delivery
+          ? { settings: { is: { deliveryNotes: { not: null } } } }
+          : {}),
         ...(category || q
           ? {
               OR: [
-                ...(q ? [
-                  { name: { contains: q, mode: "insensitive" } },
-                  { tagline: { contains: q, mode: "insensitive" } },
-                  { city: { contains: q, mode: "insensitive" } },
-                  { county: { contains: q, mode: "insensitive" } },
-                ] : []),
+                ...(q
+                  ? [
+                      { name: { contains: q, mode: "insensitive" as const } },
+                      { tagline: { contains: q, mode: "insensitive" as const } },
+                      { city: { contains: q, mode: "insensitive" as const } },
+                      { county: { contains: q, mode: "insensitive" as const } },
+                    ]
+                  : []),
                 {
                   inventory: {
                     some: {
                       active: true,
                       publicListing: true,
                       currentStock: { gt: 0 },
-                      ...(category || q ? {
-                        medicationMaster: {
-                          AND: [
-                            ...(category ? [{ category: { equals: category, mode: "insensitive" as const } }] : []),
-                            ...(q ? [{ OR: [
-                              { name: { contains: q, mode: "insensitive" as const } },
-                              { genericName: { contains: q, mode: "insensitive" as const } },
-                              { category: { contains: q, mode: "insensitive" as const } },
-                            ] }] : []),
-                          ],
-                        },
-                      } : {}),
+                      ...(category || q
+                        ? {
+                            medicationMaster: {
+                              AND: [
+                                ...(category
+                                  ? [
+                                      {
+                                        category: {
+                                          equals: category,
+                                          mode: "insensitive" as const,
+                                        },
+                                      },
+                                    ]
+                                  : []),
+                                ...(q
+                                  ? [
+                                      {
+                                        OR: [
+                                          {
+                                            name: {
+                                              contains: q,
+                                              mode: "insensitive" as const,
+                                            },
+                                          },
+                                          {
+                                            genericName: {
+                                              contains: q,
+                                              mode: "insensitive" as const,
+                                            },
+                                          },
+                                          {
+                                            category: {
+                                              contains: q,
+                                              mode: "insensitive" as const,
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    ]
+                                  : []),
+                              ],
+                            },
+                          }
+                        : {}),
                     },
                   },
                 },
@@ -108,11 +148,17 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
         phone: true,
         settings: { select: { deliveryNotes: true, deliveryRadiusKm: true } },
         inventory: {
-          where: { active: true, publicListing: true, currentStock: { gt: 0 } },
+          where: {
+            active: true,
+            publicListing: true,
+            currentStock: { gt: 0 },
+          },
           select: {
             currentStock: true,
             overTheCounter: true,
-            medicationMaster: { select: { name: true, genericName: true, category: true } },
+            medicationMaster: {
+              select: { name: true, genericName: true, category: true },
+            },
           },
           take: 250,
         },
@@ -127,8 +173,23 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
 
     return pharmacies.map((pharmacy) => {
       const inventory = pharmacy.inventory;
-      const categories = Array.from(new Set(inventory.map((item) => item.medicationMaster.category).filter(Boolean).map(titleCaseCategory))).slice(0, 4);
-      const searchedItems = q ? inventory.filter((item) => [item.medicationMaster.name, item.medicationMaster.genericName, item.medicationMaster.category].some((value) => value?.toLowerCase().includes(q.toLowerCase()))) : [];
+      const categories = Array.from(
+        new Set(
+          inventory
+            .map((item) => item.medicationMaster.category)
+            .filter(Boolean)
+            .map(titleCaseCategory),
+        ),
+      ).slice(0, 4);
+      const searchedItems = q
+        ? inventory.filter((item) =>
+            [
+              item.medicationMaster.name,
+              item.medicationMaster.genericName,
+              item.medicationMaster.category,
+            ].some((value) => value?.toLowerCase().includes(q.toLowerCase())),
+          )
+        : [];
 
       return {
         id: pharmacy.id,
@@ -150,7 +211,9 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
         otcCount: inventory.filter((item) => item.overTheCounter).length,
         topCategories: categories,
         services: pharmacy.services.map((service) => service.title),
-        hasDelivery: Boolean(pharmacy.settings?.deliveryNotes || pharmacy.settings?.deliveryRadiusKm),
+        hasDelivery: Boolean(
+          pharmacy.settings?.deliveryNotes || pharmacy.settings?.deliveryRadiusKm,
+        ),
         hasSearchedMedicine: searchedItems.length > 0,
         searchedMedicineCount: searchedItems.length,
       };
@@ -167,9 +230,24 @@ export async function getMarketplaceFeaturedPharmacies(): Promise<DirectoryPharm
 export async function getDirectoryFacets() {
   try {
     const [cities, counties, categories] = await Promise.all([
-      prismaUnscoped.pharmacy.findMany({ where: { status: "active", listed: true, city: { not: null } }, select: { city: true }, distinct: ["city"], orderBy: { city: "asc" } }),
-      prismaUnscoped.pharmacy.findMany({ where: { status: "active", listed: true, county: { not: null } }, select: { county: true }, distinct: ["county"], orderBy: { county: "asc" } }),
-      prismaUnscoped.medicationCategory.findMany({ where: { publicVisible: true, active: true }, select: { name: true, slug: true }, orderBy: { sortOrder: "asc" }, take: 40 }),
+      prismaUnscoped.pharmacy.findMany({
+        where: { status: "active", listed: true, city: { not: null } },
+        select: { city: true },
+        distinct: ["city"],
+        orderBy: { city: "asc" },
+      }),
+      prismaUnscoped.pharmacy.findMany({
+        where: { status: "active", listed: true, county: { not: null } },
+        select: { county: true },
+        distinct: ["county"],
+        orderBy: { county: "asc" },
+      }),
+      prismaUnscoped.medicationCategory.findMany({
+        where: { publicVisible: true, active: true },
+        select: { name: true, slug: true },
+        orderBy: { sortOrder: "asc" },
+        take: 40,
+      }),
     ]);
     return {
       cities: cities.map((item) => item.city).filter(Boolean) as string[],
