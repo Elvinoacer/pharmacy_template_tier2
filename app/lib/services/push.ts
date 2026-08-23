@@ -1,6 +1,7 @@
 import "server-only";
 
-import { prisma } from "@/app/lib/db";
+import { prisma, prismaUnscoped } from "@/app/lib/db";
+import { getTenant } from "@/app/lib/tenant";
 import { sendMulticastPush, isFirebaseConfigured } from "@/app/lib/firebase/admin";
 
 export type ClientPushPayload = {
@@ -31,13 +32,6 @@ export function brandPushIconUrl(): string {
   return absolutePushAssetUrl("/icon-192.png") || "/icon-192.png";
 }
 
-/**
- * Dispatch a Firebase Cloud Messaging push notification to every device the
- * given user has registered. Soft-fails when FCM is not configured or the
- * user has no devices — callers should not need to handle errors.
- *
- * Returns a summary so callers (e.g. campaign launches) can log delivery stats.
- */
 export async function dispatchPushToUser(
   userId: string,
   payload: ClientPushPayload,
@@ -82,8 +76,8 @@ export async function dispatchPushToUser(
 }
 
 /**
- * Convenience: dispatch a push to every staff user (used when a customer
- * submits a new refill / enquiry that needs staff attention).
+ * Notify staff belonging to the active pharmacy only. PharmacyMembership is
+ * the tenant boundary because User is a global identity shared by the network.
  */
 export async function dispatchPushToStaff(
   payload: ClientPushPayload,
@@ -92,8 +86,28 @@ export async function dispatchPushToStaff(
     return { sent: 0, failed: 0, pruned: 0 };
   }
 
-  const staffUsers = await prisma.user.findMany({
-    where: { role: { in: ["pharmacist", "staff", "manager"] }, status: "active" },
+  const tenant = await getTenant();
+  if (!tenant.pharmacyId || tenant.bypass) {
+    return { sent: 0, failed: 0, pruned: 0 };
+  }
+
+  const memberships = await prismaUnscoped.pharmacyMembership.findMany({
+    where: {
+      pharmacyId: tenant.pharmacyId,
+      status: "active",
+    },
+    select: { userId: true },
+  });
+
+  const userIds = [...new Set(memberships.map((membership) => membership.userId))];
+  if (userIds.length === 0) return { sent: 0, failed: 0, pruned: 0 };
+
+  const staffUsers = await prismaUnscoped.user.findMany({
+    where: {
+      id: { in: userIds },
+      role: { in: ["pharmacist", "staff", "manager"] },
+      status: "active",
+    },
     select: { id: true },
   });
 
