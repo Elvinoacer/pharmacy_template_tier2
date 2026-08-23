@@ -67,8 +67,17 @@ export default async function DeliveryPage() {
             </ul>
             <div className="mt-6 rounded-2xl border border-teal-900/5 bg-white/80 p-5 text-sm text-[#5a6b62]">
               <p>
-                <strong className="text-[#0c1a14]">Typical fee:</strong> Free over $30; modest fee for smaller orders
-                or outer zones.
+                {pharmacy.deliveryFeeKes != null ? (
+                  <>
+                    <strong className="text-[#0c1a14]">Delivery fee:</strong> KES {pharmacy.deliveryFeeKes.toLocaleString("en-KE")}
+                    {pharmacy.deliveryRadiusKm ? ` within ${pharmacy.deliveryRadiusKm} km` : ""}.
+                  </>
+                ) : (
+                  <>
+                    <strong className="text-[#0c1a14]">Delivery fee:</strong> a modest flat fee depending on your zone —
+                    call the pharmacy for an exact quote.
+                  </>
+                )}
               </p>
               <p className="mt-2">
                 <strong className="text-[#0c1a14]">Questions?</strong>{" "}

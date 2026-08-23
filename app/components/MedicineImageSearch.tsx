@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTenantHref } from "./TenantLink";
 import {
   useCallback,
   useEffect,
@@ -80,6 +81,8 @@ export default function MedicineImageSearch({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const contactHref = useTenantHref("/contact");
+  const refillHref = useTenantHref("/refill");
   const inputId = useId();
   const cameraId = useId();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -428,7 +431,7 @@ export default function MedicineImageSearch({
                     </p>
                     <div className="mt-4 flex flex-wrap justify-center gap-2">
                       <Link
-                        href="/contact"
+                        href={contactHref}
                         className="inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
                       >
                         Contact us
@@ -443,7 +446,7 @@ export default function MedicineImageSearch({
                         WhatsApp
                       </a>
                       <Link
-                        href="/refill"
+                        href={refillHref}
                         className="inline-flex items-center gap-1.5 rounded-full border border-[#e3ebe6] bg-white px-4 py-2 text-xs font-semibold text-[#5a6b62] transition hover:bg-[#f4f7f4]"
                       >
                         Request a refill

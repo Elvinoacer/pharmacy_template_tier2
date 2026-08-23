@@ -83,8 +83,10 @@ export function buildMapsDirectionsFromAddress(address: string): string {
 }
 
 function parseHours(raw: unknown): PharmacyHour[] {
-  if (!Array.isArray(raw)) return staticPharmacy.hours;
-  const parsed = raw
+  // No silent fallback to seed-tenant hours — an empty array means the
+  // pharmacy hasn't published hours and pages show an honest placeholder.
+  if (!Array.isArray(raw)) return [];
+  return raw
     .map((h) => {
       if (!h || typeof h !== "object") return null;
       const day = String((h as { day?: unknown }).day || "").trim();
@@ -93,7 +95,6 @@ function parseHours(raw: unknown): PharmacyHour[] {
       return { day, time };
     })
     .filter((h): h is PharmacyHour => Boolean(h));
-  return parsed.length > 0 ? parsed : staticPharmacy.hours;
 }
 
 function fallbackResolved(): ResolvedPharmacy {
@@ -143,7 +144,7 @@ export async function getResolvedPharmacy(opts?: {
     slug = tenant.slug;
   }
 
-  let pharmacy =
+  const pharmacy =
     (pharmacyId ? await findPharmacyById(pharmacyId) : null) ||
     (slug ? await findPharmacyBySlug(slug) : null);
 

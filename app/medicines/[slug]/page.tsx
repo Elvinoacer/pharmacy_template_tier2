@@ -10,6 +10,8 @@ import {
   type MedicineCatalogItem,
 } from "../../components/MedicineCatalogCard";
 import { prisma } from "../../lib/db";
+import ChoosePharmacy from "../../components/ChoosePharmacy";
+import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
 import { formatPrice } from "../../lib/format";
 import { getPublicCategoryBySlug } from "../../lib/medication-categories";
 import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
@@ -29,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: `${cat.name} — OTC Healthcare & Guidance`,
       description:
-        cat.description || `${cat.name} non-prescription products, self-care guidelines, and pharmacist advice at Aether Pharmacy`,
+        cat.description || `${cat.name} non-prescription products, self-care guidelines, and pharmacist advice`,
       alternates: { canonical: `/medicines/${cat.slug}` },
     };
   }
@@ -46,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: med.medicationMaster.name,
       description:
         med.medicationMaster.description ||
-        `${med.medicationMaster.name} — available at Aether Pharmacy`,
+        `${med.medicationMaster.name} — available from your selected pharmacy`,
       alternates: { canonical: `/medicines/${med.slug}` },
     };
   }
@@ -55,6 +57,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryOrMedicinePage({ params }: Props) {
   const { slug } = await params;
+  // Deep links without a pharmacy in context get a chooser, not a 404.
+  const pharmacy = await getResolvedPharmacyOrNull().catch(() => null);
+  if (!pharmacy) {
+    return <ChoosePharmacy next={`/medicines/${slug}`} />;
+  }
+  const base = `/p/${pharmacy.slug}`;
   const cat = await getPublicCategoryBySlug(slug).catch(() => null);
   const otcGuidance = cat ? getOtcCategoryGuidance(cat.slug) : null;
 
@@ -196,13 +204,13 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
 
               <div className="mt-8 flex flex-wrap gap-3 border-t border-[#e3ebe6] pt-6">
                 <Link
-                  href="/health/self-care-guide"
+                  href={`${base}/health/self-care-guide`}
                   className="inline-flex items-center gap-1.5 rounded-2xl bg-teal-800 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-teal-900 transition"
                 >
                   <HelpCircle className="h-3.5 w-3.5" /> Open Self-Care vs Doctor Guide
                 </Link>
                 <Link
-                  href={`/how-do-you-feel?category=${encodeURIComponent(cat.slug)}`}
+                  href={`${base}/how-do-you-feel?category=${encodeURIComponent(cat.slug)}`}
                   className="inline-flex items-center gap-1.5 rounded-2xl border border-purple-300 bg-purple-50 px-4 py-2 text-xs font-semibold text-purple-900 hover:bg-purple-100 transition"
                 >
                   <Sparkles className="h-3.5 w-3.5 text-purple-700" /> AI Symptom Check
@@ -436,7 +444,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
         description={
           med.medicationMaster.description ||
           med.medicationMaster.dosage ||
-          "Available at Aether Pharmacy"
+          `Available at ${pharmacy.name}`
         }
         crumbs={[
           { label: "Medicines", href: "/medicines" },
@@ -545,27 +553,27 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                 {med.prescriptionRequired ? (
                   <Link
                     href="/portal/refills/new"
-                    className="btn-primary !py-2.5 !px-5 text-xs font-semibold"
+                    className="btn-primary btn-primary-sm"
                   >
                     Request Prescription Refill →
                   </Link>
                 ) : (
                   <>
                     <Link
-                      href={`/order?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}
-                      className="btn-primary !py-2.5 !px-5 text-xs font-semibold shadow-sm"
+                      href={`${base}/order?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}
+                      className="btn-primary btn-primary-sm"
                     >
                       Reserve / Pay — No Account Required →
                     </Link>
                     <Link
-                      href={`/portal/orders/new?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}
-                      className="btn-ghost !py-2.5 !px-4 text-xs font-semibold bg-white"
+                      href={`/portal/orders/new?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}&pharmacy=${pharmacy.slug}`}
+                      className="btn-ghost btn-ghost-sm bg-white"
                     >
                       Portal Checkout
                     </Link>
                   </>
                 )}
-                <Link href="/contact" className="btn-ghost !py-2.5 !px-4 text-xs font-semibold bg-white">
+                <Link href={`${base}/contact`} className="btn-ghost btn-ghost-sm bg-white">
                   Ask Pharmacist
                 </Link>
               </div>
@@ -632,20 +640,20 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
             {/* Self-Care Safety Reminder */}
             {med.overTheCounter && (
               <div className="mt-6 rounded-2xl border border-teal-200/80 bg-[#f4f9f6] p-4 text-xs text-[#2c3e35]">
-                <strong className="text-teal-950">💡 Pharmacist Self-Care Tip: </strong>
+                <strong className="text-teal-950"><span aria-hidden>💡 </span>Pharmacist Self-Care Tip: </strong>
                 Over-the-counter medicines are intended for short-term symptom relief. If symptoms do not improve within 3–7 days or worsen, pause self-care and consult our pharmacist or your doctor.
               </div>
             )}
 
             <div className="mt-6 flex items-center justify-between">
               <Link
-                href="/medicines"
+                href={`${base}/medicines`}
                 className="text-xs font-bold text-teal-800 hover:underline"
               >
                 ← Back to all medicines
               </Link>
               <Link
-                href="/health/self-care-guide"
+                href={`${base}/health/self-care-guide`}
                 className="text-xs font-bold text-teal-800 hover:underline"
               >
                 Self-Care vs Doctor Guide →
@@ -670,11 +678,11 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                 Medication Counselling &amp; Administration Guide
               </h2>
               <p className="mt-1 text-xs text-[#5a6b62]">
-                Comprehensive 12-pillar clinical guidance prepared by Aether Pharmacy licensed pharmacists.
+                Comprehensive 12-pillar clinical guidance prepared by licensed pharmacists.
               </p>
             </div>
             <Link
-              href={`/health/counselling/${med.slug}`}
+              href={`${base}/health/counselling/${med.slug}`}
               className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-800 hover:underline"
             >
               Open Full Counselling Hub Guide →

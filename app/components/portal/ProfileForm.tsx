@@ -155,7 +155,7 @@ export default function ProfileForm({
               <option value="phone">Phone</option>
             </select>
           </label>
-          <Field label="Preferred branch" name="preferredBranch" defaultValue={profile.preferredBranch} />
+          <Field label="Preferred branch (optional)" name="preferredBranch" defaultValue={profile.preferredBranch} placeholder="e.g. Westlands counter" />
         </div>
       </Section>
 

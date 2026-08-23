@@ -20,7 +20,7 @@ export default function TermsPage() {
 
       <section className="px-4 pb-20 sm:px-6">
         <div className="mx-auto max-w-3xl space-y-8 text-sm leading-relaxed text-[#5a6b62]">
-          <p className="text-xs text-[#5a6b62]/80">Last updated: March 1, 2026 · Demo content for Tier 1 template</p>
+          <p className="text-xs text-[#5a6b62]/80">Last updated: August 24, 2026</p>
 
           <section>
             <h2 className="text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
@@ -45,11 +45,14 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
-              3. No online pharmacy checkout
+              3. Orders, reservations and payments
             </h2>
             <p className="mt-2">
-              This site does not sell prescription or OTC medicines online. Category pages are educational. Refill and
-              delivery forms are requests only and do not guarantee fulfilment, pricing, or insurance coverage.
+              Participating pharmacies may offer online reservations and M-Pesa payments for non-prescription items
+              through this website. Prescription medicines require a valid prescription and are fulfilled by the
+              pharmacy after pharmacist review. Refill and delivery forms are requests and do not guarantee
+              fulfilment, pricing, or insurance coverage. Payments for reservations may be refunded per the
+              cancelling pharmacy&apos;s policy.
             </p>
           </section>
 

@@ -20,7 +20,7 @@ export default function PrivacyPage() {
 
       <section className="px-4 pb-20 sm:px-6">
         <div className="mx-auto max-w-3xl space-y-8 text-sm leading-relaxed text-[#5a6b62]">
-          <p className="text-xs text-[#5a6b62]/80">Last updated: March 1, 2026 · Demo content for Tier 1 template</p>
+          <p className="text-xs text-[#5a6b62]/80">Last updated: August 24, 2026</p>
 
           <section>
             <h2 className="text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>

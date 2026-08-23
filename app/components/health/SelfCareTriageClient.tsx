@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTenantHref } from "../TenantLink";
 import Link from "next/link";
 import {
   Search,
@@ -47,6 +48,7 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 };
 
 export default function SelfCareTriageClient() {
+  const contactHref = useTenantHref("/contact");
   const [activeTab, setActiveTab] = useState<"matrix" | "quiz">("matrix");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -757,7 +759,7 @@ export default function SelfCareTriageClient() {
                           Shop {activeCondition.categoryName} OTC Products <ArrowRight className="inline ml-1 h-3.5 w-3.5" />
                         </Link>
                         <Link
-                          href="/contact"
+                          href={contactHref}
                           className="btn-ghost !py-2 !px-4 text-xs font-semibold"
                         >
                           Ask a Pharmacist

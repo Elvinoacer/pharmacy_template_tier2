@@ -56,6 +56,7 @@ export default async function LoginPage({
                 Forgot password?
               </Link>
             </p>
+            {process.env.SHOW_DEMO_CREDENTIALS === "1" && (
             <p className="mt-4 rounded-2xl border border-teal-900/8 bg-teal-50/70 px-3 py-2.5 text-xs leading-relaxed text-[#5a6b62]">
               Demo password for all: <code className="rounded bg-white px-1 py-0.5 text-[11px]">Password123!</code>
               <br />
@@ -65,6 +66,7 @@ export default async function LoginPage({
               <br />
               Patient <code className="rounded bg-white px-1 py-0.5 text-[11px]">jane@example.com</code> → /portal
             </p>
+            )}
           </>
         }
       >

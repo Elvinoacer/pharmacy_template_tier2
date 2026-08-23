@@ -155,6 +155,13 @@ export async function impersonatePharmacyAction(formData: FormData): Promise<voi
     path: "/",
     maxAge: 60 * 60 * 8,
   });
+  // Marker so the admin shell can show an impersonation banner with an exit.
+  jar.set("aether_impersonation", pharmacyId, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 8,
+  });
   await writeAuditLog(
     user.id,
     "pharmacy.support_view",
@@ -162,4 +169,125 @@ export async function impersonatePharmacyAction(formData: FormData): Promise<voi
     pharmacyId,
   ).catch(() => {});
   redirect("/admin");
+}
+
+/** Leave support view: drop the impersonated tenant cookies, return to /platform. */
+export async function exitImpersonationAction(): Promise<void> {
+  await actor();
+  const jar = await cookies();
+  jar.delete(STAFF_PHARMACY_COOKIE);
+  jar.delete("aether_impersonation");
+  redirect("/platform");
+}
+
+/**
+ * Super-admin tenant edit: identity + contact + licence fields.
+ * Slug changes are guarded for format and uniqueness.
+ */
+export async function updatePharmacyAction(formData: FormData): Promise<void> {
+  const user = await actor();
+  const pharmacyId = String(formData.get("pharmacyId") || "");
+  const name = String(formData.get("name") || "").trim();
+  const slug = String(formData.get("slug") || "").trim().toLowerCase();
+  const legalName = String(formData.get("legalName") || "").trim() || null;
+  const phone = String(formData.get("phone") || "").trim() || null;
+  const email = String(formData.get("email") || "").trim().toLowerCase() || null;
+  const whatsapp = String(formData.get("whatsapp") || "").trim() || null;
+  const city = String(formData.get("city") || "").trim() || null;
+  const county = String(formData.get("county") || "").trim() || null;
+  const licenseNumber = String(formData.get("licenseNumber") || "").trim() || null;
+
+  if (!pharmacyId) throw new Error("Missing pharmacy.");
+  if (!name) throw new Error("Name is required.");
+  if (!/^[a-z0-9][a-z0-9-]{1,60}$/.test(slug)) {
+    throw new Error("Slug must be 2-61 chars: lowercase letters, digits, dashes.");
+  }
+
+  const existing = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
+  if (!existing) throw new Error("Pharmacy not found.");
+
+  if (slug !== existing.slug) {
+    const clash = await prismaUnscoped.pharmacy.findUnique({ where: { slug } });
+    if (clash) throw new Error(`Slug "/p/${slug}" is already taken.`);
+  }
+
+  await prismaUnscoped.pharmacy.update({
+    where: { id: pharmacyId },
+    data: { name, slug, legalName, phone, email, whatsapp, city, county, licenseNumber },
+  });
+
+  await writeAuditLog(user.id, "pharmacy.update", "pharmacy", pharmacyId, {
+    fields: { name, slug, legalName, phone, email, whatsapp, city, county, licenseNumber },
+  }).catch(() => {});
+
+  revalidatePath("/platform");
+  revalidatePath("/platform/pharmacies");
+  revalidatePath(`/platform/pharmacies/${pharmacyId}`);
+}
+
+/**
+ * Suspend a tenant with a recorded reason (onboarding timeline + audit).
+ */
+export async function suspendPharmacyAction(formData: FormData): Promise<void> {
+  const user = await actor();
+  const pharmacyId = String(formData.get("pharmacyId") || "");
+  const reason = String(formData.get("reason") || "").trim();
+  if (!reason) throw new Error("A suspension reason is required.");
+
+  const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
+  if (!pharmacy) throw new Error("Pharmacy not found.");
+
+  await prismaUnscoped.pharmacy.update({
+    where: { id: pharmacyId },
+    data: { status: "suspended", listed: false },
+  });
+  await prismaUnscoped.pharmacyOnboardingEvent.create({
+    data: {
+      pharmacyId,
+      actorId: user.id,
+      type: "suspended",
+      message: `Suspended: ${reason}`,
+    },
+  });
+  await writeAuditLog(user.id, "pharmacy.suspended", "pharmacy", pharmacyId, { reason }).catch(() => {});
+
+  revalidatePath("/platform");
+  revalidatePath(`/platform/pharmacies/${pharmacyId}`);
+}
+
+/**
+ * User administration: activate / suspend a user and grant/revoke
+ * platform-admin. Self-lockout is blocked.
+ */
+export async function updateUserAction(formData: FormData): Promise<void> {
+  const admin = await actor();
+  const userId = String(formData.get("userId") || "");
+  const status = String(formData.get("status") || "").trim();
+  const platformAdmin = String(formData.get("platformAdmin") || "").trim();
+  const back = String(formData.get("back") || "/platform/users");
+
+  if (!userId) throw new Error("Missing user.");
+  if (userId === admin.id) throw new Error("You cannot modify your own account here.");
+
+  const target = await prismaUnscoped.user.findUnique({ where: { id: userId } });
+  if (!target) throw new Error("User not found.");
+
+  const data: { status?: "active" | "inactive" | "suspended"; platformAdmin?: boolean } = {};
+  if (status === "active" || status === "inactive" || status === "suspended") {
+    data.status = status;
+  }
+  if (platformAdmin === "grant") data.platformAdmin = true;
+  if (platformAdmin === "revoke") data.platformAdmin = false;
+
+  if (Object.keys(data).length === 0) throw new Error("Nothing to change.");
+
+  await prismaUnscoped.user.update({ where: { id: userId }, data });
+  // Force re-authentication of any live sessions for suspended users.
+  if (status === "suspended" || status === "inactive") {
+    await prismaUnscoped.session.deleteMany({ where: { userId } }).catch(() => {});
+  }
+
+  await writeAuditLog(admin.id, "user.update", "user", userId, { ...data }).catch(() => {});
+
+  revalidatePath(back);
 }

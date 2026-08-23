@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTenantHref } from "../TenantLink";
 import {
   useCallback,
   useEffect,
@@ -136,6 +137,7 @@ export default function HowDoYouFeelClient({
 }: {
   mode?: "public" | "portal";
 }) {
+  const contactHref = useTenantHref("/contact");
   const listId = useId();
   const [guestKey, setGuestKey] = useState<string>("");
   const [categories, setCategories] = useState<Category[]>([]);
@@ -880,7 +882,7 @@ export default function HowDoYouFeelClient({
             Call, WhatsApp, or visit — we are happy to help without the guided flow.
           </p>
           <Link
-            href="/contact"
+            href={contactHref}
             className="mt-3 inline-flex rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur hover:bg-white/25"
           >
             Contact pharmacy →

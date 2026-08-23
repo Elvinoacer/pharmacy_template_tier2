@@ -31,6 +31,7 @@ import {
   ListTodo,
 } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
+import { useTenantBrand } from "@/app/components/TenantBrand";
 import { formatDate } from "@/app/lib/time";
 import type {
   MedicationCalendarMonthView,
@@ -43,6 +44,7 @@ export function MedicationCalendarView({
 }: {
   initialData: MedicationCalendarMonthView;
 }) {
+  const brand = useTenantBrand();
   const [data, setData] = useState<MedicationCalendarMonthView>(initialData);
   const [loading, setLoading] = useState(false);
   const [selectedDay, setSelectedDay] = useState<CalendarDayData | null>(() => {
@@ -803,7 +805,7 @@ export function MedicationCalendarView({
       <div className="hidden print:block print:p-6 print:bg-white text-black font-sans">
         <div className="border-b-2 border-black pb-4 mb-4 flex justify-between items-end">
           <div>
-            <h1 className="text-2xl font-bold">Aether Pharmacy — Medication Regimen Card</h1>
+            <h1 className="text-2xl font-bold">{brand.name} — Medication Regimen Card</h1>
             <p className="text-sm text-gray-700">Patient: {data.customerName}</p>
           </div>
           <div className="text-right text-xs">

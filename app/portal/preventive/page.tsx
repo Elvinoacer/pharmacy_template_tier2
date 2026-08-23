@@ -6,6 +6,7 @@ import { PortalShell } from "@/app/components/portal/PortalShell";
 import { listCustomerVaccinationPortal } from "@/app/lib/services/vaccination-service";
 import { COUNSELLING_TOPICS } from "@/app/lib/vaccination-catalog";
 import { HeartPulse } from "lucide-react";
+import { getTenant } from "@/app/lib/tenant";
 
 export const metadata = { title: "Preventive counselling" };
 export const dynamic = "force-dynamic";
@@ -14,6 +15,8 @@ export default async function PortalPreventivePage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
+  const shopBase = tenant.slug ? `/p/${tenant.slug}` : null;
   const data = await listCustomerVaccinationPortal(user.customerId).catch(() => ({
     counselling: [] as Awaited<ReturnType<typeof listCustomerVaccinationPortal>>["counselling"],
     appointments: [],
@@ -26,7 +29,7 @@ export default async function PortalPreventivePage() {
       title="Preventive counselling"
       subtitle="Travel health, cessation, immunisation education, and other pharmacist counselling sessions."
       actions={
-        <Link href="/preventive" className="btn-primary">
+        <Link href={shopBase ? `${shopBase}/preventive` : "/preventive"} className="btn-primary">
           <HeartPulse className="h-4 w-4" /> Book a session
         </Link>
       }
@@ -34,7 +37,7 @@ export default async function PortalPreventivePage() {
       {data.counselling.length === 0 ? (
         <div className="rounded-2xl border border-[#e3ebe6] bg-white p-8 text-sm text-[#5a6b62]">
           No counselling sessions yet.{" "}
-          <Link href="/preventive" className="font-semibold text-teal-800">
+          <Link href={shopBase ? `${shopBase}/preventive` : "/preventive"} className="font-semibold text-teal-800">
             Request one
           </Link>
           .

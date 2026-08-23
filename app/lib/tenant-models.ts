@@ -45,5 +45,33 @@ export const TENANT_MODELS = new Set<string>([
   "CommerceEvent",
 ]);
 
+/**
+ * Models whose tenant ownership is a relation to a TENANT_MODELS parent.
+ * Reads/mutations are scoped via `<relation>: { pharmacyId }` where filters.
+ * Map value = Prisma relation field name on the model.
+ */
+export const TENANT_RELATION_MODELS = new Map<string, string>([
+  ["InventoryLot", "pharmacyInventory"],
+  ["LoyaltyTransaction", "account"],
+  ["Message", "conversation"],
+  ["OrderItem", "order"],
+  ["DoseLog", "prescription"],
+  ["CustomerSegment", "segment"],
+  ["PrescriptionAdherence", "prescription"],
+  ["SymptomCheckIn", "session"],
+  ["SymptomMessage", "session"],
+  ["PrescriptionClarificationLog", "prescription"],
+  ["AdherenceEscalation", "prescription"],
+  ["AdherenceFollowUp", "prescription"],
+  ["AiMessage", "conversation"],
+]);
+
+/**
+ * Intentionally NOT tenant-scoped (network-level relation/config tables that
+ * are always queried with explicit pharmacyId or userId where clauses):
+ * PharmacyMembership, CustomerPharmacy, PharmacyIntegration,
+ * PharmacyOnboardingEvent.
+ */
+
 export const DEFAULT_PHARMACY_ID = "00000000-0000-4000-a000-000000000001";
 export const DEFAULT_PHARMACY_SLUG = "aether";

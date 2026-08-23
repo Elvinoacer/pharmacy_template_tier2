@@ -16,6 +16,7 @@ import {
 import { CopyButton } from "@/app/components/portal/CopyButton";
 import { RedeemCouponForm } from "@/app/components/portal/RedeemCouponForm";
 import { formatDate } from "@/app/lib/time";
+import { getTenant } from "@/app/lib/tenant";
 
 export const metadata = { title: "Loyalty" };
 
@@ -30,6 +31,7 @@ export default async function PortalLoyaltyPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
 
   const [account, coupons] = await Promise.all([
     prisma.loyaltyAccount.findFirst({
@@ -55,7 +57,7 @@ export default async function PortalLoyaltyPage() {
     <PortalShell
       user={user}
       title="Loyalty rewards"
-      subtitle="Earn points on every refill and redeem them for exclusive coupons."
+      subtitle={`Points and coupons are per pharmacy${tenant.slug ? " — viewing your balance with your active pharmacy" : ""}. Earn on every refill and redeem for exclusive coupons.`}
     >
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard

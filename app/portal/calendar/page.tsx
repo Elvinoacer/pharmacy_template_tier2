@@ -16,7 +16,24 @@ export default async function PortalMedicationCalendarPage() {
 
   const calendarData = await getMedicationCalendarData(user.customerId);
   if (!calendarData) {
-    redirect("/portal/prescriptions");
+    // No active medication plan in context (e.g. no pharmacy chosen yet).
+    // Explain instead of silently bouncing the user to another page.
+    return (
+      <PortalShell user={user} title="Medication Calendar">
+        <div className="rounded-3xl border border-dashed border-teal-900/20 bg-white/80 p-10 text-center">
+          <Pill className="mx-auto h-8 w-8 text-[#0d6e5a]" aria-hidden />
+          <h2 className="mt-4 text-lg font-semibold text-[#0c1a14]">Nothing scheduled yet</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-[#5a6b62]">
+            Your medication calendar fills in once a pharmacy you use has an active medication plan
+            for you. Pick a pharmacy or check your prescriptions first.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            <Link href="/portal/pharmacies" className="btn-primary btn-primary-sm">My pharmacies</Link>
+            <Link href="/portal/prescriptions" className="btn-ghost btn-ghost-sm">View prescriptions</Link>
+          </div>
+        </div>
+      </PortalShell>
+    );
   }
 
   return (

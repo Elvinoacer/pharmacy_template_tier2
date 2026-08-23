@@ -236,8 +236,39 @@ export function requireStaff(user: SessionUser | null): SessionUser {
   return user;
 }
 
-export function requireManager(user: SessionUser | null): SessionUser {
-  if (!user || (user.role !== "manager" && !user.memberships.some((m) => m.role === "owner" || m.role === "manager"))) {
+/**
+ * Manager-level guard, pinned to the ACTIVE tenant when one is in context:
+ * the caller must hold an owner/manager membership on that specific pharmacy.
+ * Platform admins pass (impersonation). With no tenant in context (e.g. a
+ * platform-surface action) any active owner/manager membership qualifies.
+ */
+export async function requireManager(user: SessionUser | null): Promise<SessionUser> {
+  if (!user) throw new AuthError("Manager access required", 403);
+  if (user.platformAdmin) return user;
+
+  const qualifies = (role: string) => role === "owner" || role === "manager";
+  let tenantId: string | null = null;
+  try {
+    const tenant = await getTenant();
+    tenantId = tenant.pharmacyId;
+  } catch {
+    tenantId = null;
+  }
+
+  if (tenantId) {
+    const membership = user.memberships.find(
+      (m) => m.pharmacyId === tenantId && m.status === "active",
+    );
+    if (!membership || !qualifies(membership.role)) {
+      throw new AuthError("Manager access required for this pharmacy", 403);
+    }
+    return user;
+  }
+
+  if (
+    user.role !== "manager" &&
+    !user.memberships.some((m) => m.status === "active" && qualifies(m.role))
+  ) {
     throw new AuthError("Manager access required", 403);
   }
   return user;

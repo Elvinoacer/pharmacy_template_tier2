@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import TenantLink from "../TenantLink";
 import Link from "next/link";
 import {
   ShieldCheck,
@@ -259,10 +260,9 @@ export function VaccinationHub({
                 </li>
               ))}
             </ul>
-            <Link href="/vaccinations/schedule" className="mt-4 inline-flex text-sm font-semibold text-teal-800">
+            <TenantLink href="/vaccinations/schedule" className="mt-4 inline-flex text-sm font-semibold text-teal-800">
               Full schedule →
-            </Link>
-          </div>
+            </TenantLink>    </div>
           <div className="rounded-3xl border border-white/60 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-2">
               <Baby className="h-5 w-5 text-teal-700" />
@@ -395,13 +395,11 @@ export function VaccinationHub({
             })
           )}
           <div className="flex flex-wrap gap-3">
-            <Link href="/preventive" className="btn-primary inline-flex text-sm">
+            <TenantLink href="/preventive" className="btn-primary inline-flex text-sm">
               <HeartPulse className="h-4 w-4" /> Preventive health & education
-            </Link>
-            <Link href="/vaccinations/book" className="inline-flex items-center gap-2 rounded-full border border-teal-900/15 px-5 py-2.5 text-sm font-semibold text-[#084c3f]">
+            </TenantLink>      <TenantLink href="/vaccinations/book" className="inline-flex items-center gap-2 rounded-full border border-teal-900/15 px-5 py-2.5 text-sm font-semibold text-[#084c3f]">
               Book any vaccine
-            </Link>
-          </div>
+            </TenantLink>    </div>
         </section>
       )}
     </div>

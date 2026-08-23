@@ -191,7 +191,7 @@ export async function adminCreateCampaignAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    const user = requireManager(await getSessionUser());
+    const user = await requireManager(await getSessionUser());
     const name = String(formData.get("name") || "").trim();
     const body = String(formData.get("body") || "").trim();
     if (!name || !body) return { error: "Name and body required." };
@@ -236,7 +236,7 @@ export async function adminCreateCampaignAction(
 }
 
 export async function adminLaunchCampaignAction(formData: FormData) {
-  const user = requireManager(await getSessionUser());
+  const user = await requireManager(await getSessionUser());
   const id = String(formData.get("id") || "");
   await launchCampaign(id, user.id);
   await writeAuditLog(user.id, "campaign_launched", "campaign", id);
@@ -248,7 +248,7 @@ export async function adminCreateSegmentAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    const user = requireManager(await getSessionUser());
+    const user = await requireManager(await getSessionUser());
     const name = String(formData.get("name") || "").trim();
     if (!name) return { error: "Name required." };
     const segment = await prisma.segment.create({
@@ -488,7 +488,7 @@ export async function adminCreateCouponAction(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const user = requireManager(await getSessionUser());
+  const user = await requireManager(await getSessionUser());
   const code = String(formData.get("code") || "").trim().toUpperCase();
   const discountType = String(formData.get("discountType") || "percent") as "percent" | "fixed" | "points";
   const discountValue = Number(formData.get("discountValue") || 0);

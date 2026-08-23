@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHero from "../../components/PageHero";
 import CtaBanner from "../../components/CtaBanner";
-import { getPublicVaccineBySlug, listPublicVaccines } from "../../lib/services/vaccination-service";
+import { getPublicVaccineBySlug } from "../../lib/services/vaccination-service";
+import ChoosePharmacy from "../../components/ChoosePharmacy";
+import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
 import { VACCINE_CATEGORY_LABELS, type VaccineCategory } from "../../lib/vaccination-catalog";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +25,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function VaccineInfoPage({ params }: Props) {
   const { slug } = await params;
+  // Deep links without a pharmacy in context get a chooser, not a 404.
+  const pharmacy = await getResolvedPharmacyOrNull().catch(() => null);
+  if (!pharmacy) {
+    return <ChoosePharmacy next={`/vaccinations/${slug}`} />;
+  }
+  const base = `/p/${pharmacy.slug}`;
   const v = await getPublicVaccineBySlug(slug);
   if (!v) notFound();
 
@@ -79,11 +87,11 @@ export default async function VaccineInfoPage({ params }: Props) {
                 Book this vaccine
               </Link>
             ) : (
-              <Link href="/preventive" className="btn-primary mt-2 inline-flex w-full justify-center text-sm">
+              <Link href={`${base}/preventive`} className="btn-primary mt-2 inline-flex w-full justify-center text-sm">
                 Request counselling / referral
               </Link>
             )}
-            <Link href="/vaccinations" className="block text-center text-sm font-semibold text-teal-800">
+            <Link href={`${base}/vaccinations`} className="block text-center text-sm font-semibold text-teal-800">
               All vaccines
             </Link>
           </aside>
@@ -124,7 +132,6 @@ function Row({ k, val }: { k: string; val: string }) {
   );
 }
 
-export async function generateStaticParams() {
-  const rows = await listPublicVaccines().catch(() => []);
-  return rows.map((v) => ({ slug: v.slug }));
-}
+// generateStaticParams intentionally removed: the page is force-dynamic and
+// tenant-scoped (vaccine catalogues differ per pharmacy), so prerendering
+// against a build-time tenant would bake the wrong catalogue.

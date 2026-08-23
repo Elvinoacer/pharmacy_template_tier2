@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTenantHref } from "../TenantLink";
 import Link from "next/link";
 import {
   Activity,
@@ -38,6 +39,8 @@ import {
 import { useTenantBrand } from "@/app/components/TenantBrand";
 
 export function HealthScreeningHub() {
+  const screeningHref = useTenantHref("/services/health-screenings");
+  const contactHref = useTenantHref("/contact");
   const brand = useTenantBrand();
   // Interactive Calculator State
   const [systolic, setSystolic] = useState<string>("120");
@@ -158,13 +161,13 @@ export function HealthScreeningHub() {
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
             <Link
-              href="/services/health-screenings"
+              href={screeningHref}
               className="btn-primary inline-flex items-center gap-2 px-5 py-3 text-xs md:text-sm font-bold shadow-md hover:scale-[1.02] transition transform"
             >
               <CalendarCheck className="h-4 w-4" /> Book a Screening
             </Link>
             <Link
-              href="/contact"
+              href={contactHref}
               className="inline-flex items-center gap-2 rounded-xl border border-teal-900/15 bg-white px-5 py-3 text-xs md:text-sm font-semibold text-[#0c1a14] hover:bg-teal-50 shadow-2xs transition"
             >
               <PhoneCall className="h-4 w-4 text-teal-800" /> Call {brand.name}
@@ -349,7 +352,7 @@ export function HealthScreeningHub() {
                 <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
                   <span className="text-[11px] text-gray-600 italic">Equipment: {service.equipment.split(" ")[0]}...</span>
                   <Link
-                    href="/services/health-screenings"
+                    href={screeningHref}
                     className="inline-flex items-center gap-1 text-xs font-bold text-teal-900 hover:text-teal-700"
                   >
                     <span>Book Check</span>
@@ -374,7 +377,7 @@ export function HealthScreeningHub() {
               </div>
               <div className="shrink-0">
                 <Link
-                  href="/services/health-screenings"
+                  href={screeningHref}
                   className="rounded-xl bg-white px-5 py-2.5 text-xs font-bold text-teal-950 hover:bg-teal-50 transition inline-flex items-center gap-2"
                 >
                   <CalendarCheck className="h-4 w-4" /> Book Screening Session

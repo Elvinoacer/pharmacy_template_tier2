@@ -25,7 +25,7 @@ export default async function OnboardingPage() {
   return (
     <PortalShell
       user={user}
-      title="Welcome to Aether Pharmacy"
+      title="Welcome to the network"
       subtitle="Let's set up your profile so you can start using the portal."
     >
       <div className="grid gap-6 lg:grid-cols-3">
@@ -113,7 +113,7 @@ export default async function OnboardingPage() {
                 preferredCommunication: profile.preferredCommunication,
                 emergencyContactName: profile.emergencyContactName || "",
                 emergencyContactPhone: profile.emergencyContactPhone || "",
-                preferredBranch: profile.preferredBranch || "Main Branch",
+                preferredBranch: profile.preferredBranch || "",
               }}
             />
           </Panel>

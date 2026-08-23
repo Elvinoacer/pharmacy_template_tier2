@@ -134,7 +134,7 @@ export default async function ContactPage() {
             <p className="mt-2 text-sm text-[#5a6b62]">
               We typically respond within one business day. Fields marked * are required. For mild
               everyday symptoms you can also try our{" "}
-              <a href="/how-do-you-feel" className="font-semibold text-teal-800 hover:underline">
+              <a href={`/p/${pharmacy.slug}/how-do-you-feel`} className="font-semibold text-teal-800 hover:underline">
                 How do you feel?
               </a>{" "}
               guided check-in.

@@ -13,6 +13,7 @@ import {
   type MedicationCounsellingProfile,
 } from "@/app/lib/medication-counselling";
 import { getMedicationCounsellingBySlug } from "@/app/lib/services/medication-counselling-db";
+import { getTenant } from "@/app/lib/tenant";
 import {
   Pill,
   ShieldCheck,
@@ -34,6 +35,8 @@ export default async function PortalCounsellingPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
+  const shopBase = tenant.slug ? `/p/${tenant.slug}` : null;
 
   // Fetch active customer prescriptions and orders
   const [prescriptions, otcOrders] = await Promise.all([
@@ -104,13 +107,13 @@ export default async function PortalCounsellingPage() {
       actions={
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            href="/services/medication-counselling"
+            href={shopBase ? `${shopBase}/services/medication-counselling` : "/services/medication-counselling"}
             className="btn-primary inline-flex items-center gap-1.5 text-xs"
           >
             <PhoneCall className="h-4 w-4" /> Book Pharmacist Consult
           </Link>
           <Link
-            href="/health/counselling"
+            href={shopBase ? `${shopBase}/health/counselling` : "/health/counselling"}
             className="btn-ghost inline-flex items-center gap-1.5 text-xs bg-white"
           >
             <BookOpen className="h-4 w-4" /> Full Public Hub
@@ -142,7 +145,7 @@ export default async function PortalCounsellingPage() {
             <EmptyState
               icon={FileText}
               title="No active prescriptions found"
-              description="When you have active prescriptions issued by Aether Pharmacy, their complete 12-pillar digital counselling leaflets will appear here."
+              description="When you have active prescriptions issued by your pharmacy, their complete 12-pillar digital counselling leaflets will appear here."
             />
           </Panel>
         ) : (

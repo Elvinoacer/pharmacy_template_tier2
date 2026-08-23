@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import TenantLink from "./TenantLink";
 import Link from "next/link";
 import { CheckCircle2, FileText, Loader2, MapPin, Pill, ShieldCheck, UserRound } from "lucide-react";
 import { FormSuccess, TextArea, TextInput } from "./FormField";
@@ -35,9 +36,7 @@ export default function RefillForm({ pharmacyName }: { pharmacyName: string }) {
         message={`Your request was sent securely to ${pharmacyName}. Their team will review it and contact you about availability.`}
         actions={
           <>
-            <Link href="/" className="btn-primary !py-2.5 text-sm">Back to home</Link>
-            <Link href="/delivery" className="btn-ghost !py-2.5 text-sm">Ask about delivery</Link>
-          </>
+            <TenantLink href="/" className="btn-primary btn-primary-sm">Back to pharmacy home</TenantLink>      <TenantLink href="/delivery" className="btn-ghost btn-ghost-sm">Ask about delivery</TenantLink>    </>
         }
       />
     );

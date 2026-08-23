@@ -1,6 +1,7 @@
 import "server-only";
 
 import { prisma } from "@/app/lib/db";
+import { requireTenantId } from "@/app/lib/tenant";
 import { getInventoryHealth } from "@/app/lib/services/stock";
 import { reservedQuantityFor } from "@/app/lib/services/commerce/reservations";
 
@@ -163,6 +164,8 @@ export async function revenueByDay(range: DateRange): Promise<
   Array<{ date: string; grossSales: number; netSales: number; collected: number; refunds: number; cogs: number; grossProfit: number }>
 > {
   // Use Payment.paidAt (or createdAt fallback) as the canonical "revenue recognized" date.
+  // Raw SQL bypasses the tenant-scoped client — filter pharmacy_id explicitly.
+  const pharmacyId = await requireTenantId();
   const rows = await prisma.$queryRaw<
     Array<{
       day: Date;
@@ -176,7 +179,8 @@ export async function revenueByDay(range: DateRange): Promise<
     WITH paid_orders AS (
       SELECT o.id, o.customer_id, COALESCE(o.paid_at, o.created_at) AS recognized_at
       FROM orders o
-      WHERE o.status NOT IN ('cancelled')
+      WHERE o.pharmacy_id = ${pharmacyId}
+        AND o.status NOT IN ('cancelled')
         AND COALESCE(o.paid_at, o.created_at) BETWEEN ${range.from} AND ${range.to}
     ),
     sales_by_day AS (
@@ -194,7 +198,8 @@ export async function revenueByDay(range: DateRange): Promise<
       SELECT date_trunc('day', COALESCE(p.paid_at, p.created_at)) AS day,
              SUM(p.amount) AS collected
       FROM payments p
-      WHERE p.status = 'completed'
+      WHERE p.pharmacy_id = ${pharmacyId}
+        AND p.status = 'completed'
         AND COALESCE(p.paid_at, p.created_at) BETWEEN ${range.from} AND ${range.to}
       GROUP BY 1
     ),
@@ -202,7 +207,8 @@ export async function revenueByDay(range: DateRange): Promise<
       SELECT date_trunc('day', COALESCE(r.processed_at, r.created_at)) AS day,
              SUM(r.amount) AS refunds
       FROM refunds r
-      WHERE r.status = 'completed'
+      WHERE r.pharmacy_id = ${pharmacyId}
+        AND r.status = 'completed'
         AND COALESCE(r.processed_at, r.created_at) BETWEEN ${range.from} AND ${range.to}
       GROUP BY 1
     )

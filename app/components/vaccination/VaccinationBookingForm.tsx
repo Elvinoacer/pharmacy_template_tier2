@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
+import TenantLink from "../TenantLink";
 import Link from "next/link";
 import {
   bookVaccinationAction,
@@ -72,8 +73,7 @@ export function VaccinationBookingForm({
       <div className="rounded-3xl border border-[#e3ebe6] bg-white p-8 text-center">
         <p className="text-sm font-semibold text-[#0c1a14]">Online booking is not open for pharmacy-administered vaccines right now.</p>
         <p className="mt-2 text-sm text-[#5a6b62]">Call us or request preventive counselling and referral.</p>
-        <Link href="/preventive" className="btn-primary mt-5 inline-flex text-sm">Preventive services</Link>
-      </div>
+        <TenantLink href="/preventive" className="btn-primary mt-5 inline-flex text-sm">Preventive services</TenantLink></div>
     );
   }
 
@@ -93,8 +93,7 @@ export function VaccinationBookingForm({
           </p>
         )}
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/vaccinations" className="btn-primary inline-flex text-sm">Back to vaccines</Link>
-          <Link href="/portal/vaccinations" className="inline-flex items-center rounded-full border border-teal-900/15 px-5 py-2.5 text-sm font-semibold text-[#084c3f]">
+          <TenantLink href="/vaccinations" className="btn-primary inline-flex text-sm">Back to vaccines</TenantLink>    <Link href="/portal/vaccinations" className="inline-flex items-center rounded-full border border-teal-900/15 px-5 py-2.5 text-sm font-semibold text-[#084c3f]">
             View my immunisation record
           </Link>
         </div>
