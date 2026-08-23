@@ -75,16 +75,24 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
                       active: true,
                       publicListing: true,
                       currentStock: { gt: 0 },
-                      ...(category
-                        ? { medicationMaster: { category: { equals: category, mode: "insensitive" } } }
-                        : {}),
-                      ...(q
+                      ...(category || q
                         ? {
                             medicationMaster: {
-                              OR: [
-                                { name: { contains: q, mode: "insensitive" } },
-                                { genericName: { contains: q, mode: "insensitive" } },
-                                { category: { contains: q, mode: "insensitive" } },
+                              AND: [
+                                ...(category
+                                  ? [{ category: { equals: category, mode: "insensitive" as const } }]
+                                  : []),
+                                ...(q
+                                  ? [
+                                      {
+                                        OR: [
+                                          { name: { contains: q, mode: "insensitive" as const } },
+                                          { genericName: { contains: q, mode: "insensitive" as const } },
+                                          { category: { contains: q, mode: "insensitive" as const } },
+                                        ],
+                                      },
+                                    ]
+                                  : []),
                               ],
                             },
                           }
