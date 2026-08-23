@@ -34,8 +34,7 @@ export default async function PharmacyReviewPage({ params }: { params: Promise<{
         </p>
         <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
           {[
-            ["Licence", pharmacy.licenseNumber],
-            ["PPB premises", pharmacy.ppbPremisesNumber],
+            ["PPB / premises licence", pharmacy.licenseNumber],
             ["Phone", pharmacy.phone],
             ["Email", pharmacy.email],
             ["City", pharmacy.city],
