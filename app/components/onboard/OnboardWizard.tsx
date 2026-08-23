@@ -137,10 +137,10 @@ export default function OnboardWizard({
       </ol>
 
       {state.error && (
-        <p className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">{state.error}</p>
+        <p className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800" role="alert">{state.error}</p>
       )}
       {state.success && (
-        <p className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+        <p className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800" role="status">
           {state.success}
         </p>
       )}
@@ -195,7 +195,17 @@ export default function OnboardWizard({
           </label>
           <label className="block text-sm font-medium text-[#0c1a14]">
             PPB / premises licence number
-            <input name="licenseNumber" defaultValue={existing?.licenseNumber || ""} className="input-admin mt-1" />
+            <input
+              name="ppbPremisesNumber"
+              defaultValue={existing?.ppbPremisesNumber || existing?.licenseNumber || ""}
+              required
+              autoComplete="off"
+              className="input-admin mt-1"
+              placeholder="Enter the number on your PPB premises licence"
+            />
+            <span className="mt-1 block text-xs font-normal text-[#7a8b84]">
+              This is required for verification and is kept private while your application is under review.
+            </span>
           </label>
           <button className="btn-primary" type="submit" disabled={createPending}>
             {createPending ? "Saving…" : "Save and continue"}
@@ -244,8 +254,18 @@ export default function OnboardWizard({
               <textarea name="description" rows={4} defaultValue={existing?.description || ""} className="input-admin mt-1" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
-              PPB premises number (if different)
-              <input name="ppbPremisesNumber" defaultValue={existing?.ppbPremisesNumber || ""} className="input-admin mt-1" />
+              PPB / premises licence number
+              <input
+                name="ppbPremisesNumber"
+                defaultValue={existing?.ppbPremisesNumber || existing?.licenseNumber || ""}
+                required
+                autoComplete="off"
+                className="input-admin mt-1"
+                placeholder="Enter the number on your PPB premises licence"
+              />
+              <span className="mt-1 block text-xs font-normal text-[#7a8b84]">
+                We will use this number when the network team verifies your application.
+              </span>
             </label>
           </div>
           <div className="flex gap-3">

@@ -27,7 +27,9 @@ export async function createPharmacyDraftAction(
     const name = String(formData.get("name") || "").trim();
     const legalName = String(formData.get("legalName") || "").trim();
     let slug = String(formData.get("slug") || "").trim().toLowerCase();
-    const licenseNumber = String(formData.get("licenseNumber") || "").trim();
+    const ppbPremisesNumber = String(
+      formData.get("ppbPremisesNumber") || formData.get("licenseNumber") || "",
+    ).trim();
     const phone = String(formData.get("phone") || "").trim();
     const city = String(formData.get("city") || "").trim();
     const county = String(formData.get("county") || "").trim();
@@ -77,7 +79,8 @@ export async function createPharmacyDraftAction(
         slug,
         name,
         legalName: legalName || name,
-        licenseNumber: licenseNumber || null,
+        licenseNumber: ppbPremisesNumber || null,
+        ppbPremisesNumber: ppbPremisesNumber || null,
         tagline: tagline || null,
         phone: phone || null,
         email: user.email,
@@ -138,13 +141,16 @@ export async function updatePharmacyDraftAction(
       return { error: "This application can no longer be edited." };
     }
 
+    const ppbPremisesNumber = String(
+      formData.get("ppbPremisesNumber") || formData.get("licenseNumber") || "",
+    ).trim();
     const data = {
       name: String(formData.get("name") || pharmacy.name).trim() || pharmacy.name,
       legalName: String(formData.get("legalName") || "").trim() || pharmacy.legalName,
       tagline: String(formData.get("tagline") || "").trim() || null,
       description: String(formData.get("description") || "").trim() || null,
-      licenseNumber: String(formData.get("licenseNumber") || "").trim() || null,
-      ppbPremisesNumber: String(formData.get("ppbPremisesNumber") || "").trim() || null,
+      licenseNumber: ppbPremisesNumber || pharmacy.licenseNumber || null,
+      ppbPremisesNumber: ppbPremisesNumber || pharmacy.ppbPremisesNumber || null,
       phone: String(formData.get("phone") || "").trim() || null,
       whatsapp: String(formData.get("whatsapp") || "").trim() || null,
       email: String(formData.get("publicEmail") || "").trim() || pharmacy.email,
@@ -185,8 +191,11 @@ export async function submitPharmacyApplicationAction(
     if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) {
       return { error: "You do not own this application." };
     }
-    if (!pharmacy.licenseNumber) {
-      return { error: "Add a PPB / premises licence number before submitting." };
+
+    // Accept both fields so older drafts are not blocked by the legacy field name.
+    const ppbNumber = pharmacy.ppbPremisesNumber?.trim() || pharmacy.licenseNumber?.trim() || "";
+    if (!ppbNumber) {
+      return { error: "Add your PPB / premises licence number before submitting." };
     }
     if (!pharmacy.city || !pharmacy.phone) {
       return { error: "City and phone are required before review." };
@@ -194,7 +203,12 @@ export async function submitPharmacyApplicationAction(
 
     await prismaUnscoped.pharmacy.update({
       where: { id: pharmacyId },
-      data: { status: "submitted", submittedAt: new Date() },
+      data: {
+        status: "submitted",
+        submittedAt: new Date(),
+        ppbPremisesNumber: pharmacy.ppbPremisesNumber || pharmacy.licenseNumber,
+        licenseNumber: pharmacy.licenseNumber || pharmacy.ppbPremisesNumber,
+      },
     });
     await prismaUnscoped.pharmacyOnboardingEvent.create({
       data: {
@@ -208,6 +222,7 @@ export async function submitPharmacyApplicationAction(
     revalidatePath("/platform");
     return { success: "Submitted for review.", pharmacyId, slug: pharmacy.slug };
   } catch (err) {
+    console.error("[onboard] submit application", err);
     return { error: err instanceof Error ? err.message : "Submit failed." };
   }
 }
