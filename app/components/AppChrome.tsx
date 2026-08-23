@@ -44,6 +44,7 @@ export default function AppChrome({
 
   const surface = publicSurface(pathname, pharmacySlug);
   const brand = surface === "storefront" && storefrontBrand ? storefrontBrand : platformBrand;
+  const hasLandingMobileActionBar = pathname === "/";
 
   return (
     <TenantBrandProvider
@@ -61,7 +62,7 @@ export default function AppChrome({
         brand={brand}
       />
       <main className="flex-1">{children}</main>
-      <Footer surface={surface} brand={brand} />
+      <Footer surface={surface} brand={brand} clearMobileActionBar={hasLandingMobileActionBar} />
       {surface === "storefront" && <AiChatbot />}
       {surface === "storefront" && <LiveAlertCenter audience="public" />}
     </div>
