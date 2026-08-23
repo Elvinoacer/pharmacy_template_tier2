@@ -2857,7 +2857,7 @@ model PharmacyImmunizationPolicy {
   pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @unique @map("pharmacy_id") @db.Uuid
   enabled                       Boolean  @default(true)
   jurisdiction                  String   @default("Kenya")
-  authorizingBody               String   @default("Pharmacy and Poisons Board (PPB) / Ministry of Health")
+  authorizingBody               String   @default("Pharmacy and Poisons Board (PPB) / Ministry of Health") @map("authorizing_body")
   authorizingRegulation         String?  @map("authorizing_regulation")
   supervisingPharmacistRequired Boolean  @default(true) @map("supervising_pharmacist_required")
   observationMinutesDefault     Int      @default(15) @map("observation_minutes_default")
