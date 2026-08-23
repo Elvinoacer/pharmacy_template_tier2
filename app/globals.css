@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Aether Pharmacy — Design System (restored)
+   ============================================================ */
+
+:root {
+  --background: #f4f7f4;
+  --foreground: #0c1a14;
+  --muted: #5a6b62;
+  --muted-2: #8a9a92;
+  --card: #ffffff;
+  --card-elev: #ffffff;
+  --brand: #0d6e5a;
+  --brand-deep: #084c3f;
+  --brand-soft: #e6f4ef;
+  --brand-tint: #f0faf6;
+  --accent: #c9a227;
+  --accent-deep: #a08418;
+  --accent-soft: #fbf4dd;
+  --ai: #2dd4bf;
+  --ai-deep: #0f766e;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  --admin-bg: #f3f6f4;
+  --admin-panel: #ffffff;
+  --admin-card: #ffffff;
+  --admin-card-2: #f8faf9;
+  --admin-border: rgba(12, 26, 20, 0.08);
+  --admin-border-2: rgba(12, 26, 20, 0.14);
+  --admin-text: #0c1a14;
+  --admin-text-muted: #5a6b62;
+  --admin-text-soft: #8a9a92;
+  --admin-accent: #0d6e5a;
+  --admin-accent-2: #0f766e;
+  --admin-accent-soft: rgba(13, 110, 90, 0.1);
+  --admin-accent-text: #084c3f;
+  --admin-gold: #c9a227;
+  --admin-gold-soft: rgba(201, 162, 39, 0.14);
+  --admin-inset: rgba(12, 26, 20, 0.035);
+  --admin-inset-2: rgba(12, 26, 20, 0.06);
+  --admin-hover: rgba(13, 110, 90, 0.08);
+  --admin-shadow: 0 1px 2px rgba(8, 40, 32, 0.04), 0 4px 16px rgba(8, 40, 32, 0.06);
+  --admin-shadow-md: 0 8px 28px rgba(8, 40, 32, 0.1);
+  --admin-input-bg: #ffffff;
+  --admin-nav-active-bg: linear-gradient(135deg, rgba(13, 110, 90, 0.1), rgba(45, 212, 191, 0.08));
+  --admin-nav-active-bar: linear-gradient(180deg, #0d6e5a, #2dd4bf);
+  --admin-stat-bar: linear-gradient(90deg, #0d6e5a, #c9a227);
+  --admin-btn-fg: #ffffff;
+  --admin-scrollbar: rgba(13, 110, 90, 0.22);
+  --admin-mesh-1: rgba(13, 110, 90, 0.08);
+  --admin-mesh-2: rgba(201, 162, 39, 0.06);
+  --admin-danger-soft: rgba(239, 68, 68, 0.1);
+  --admin-success-soft: rgba(16, 185, 129, 0.1);
+  --surface: rgba(255, 255, 255, 0.72);
+  --line: rgba(12, 26, 20, 0.08);
+  --line-2: rgba(12, 26, 20, 0.12);
+  --shadow-sm: 0 1px 2px rgba(8, 40, 32, 0.04), 0 1px 3px rgba(8, 40, 32, 0.06);
+  --shadow: 0 4px 16px rgba(8, 40, 32, 0.08), 0 1px 2px rgba(8, 40, 32, 0.04);
+  --shadow-md: 0 12px 32px rgba(8, 40, 32, 0.1), 0 4px 8px rgba(8, 40, 32, 0.04);
+  --shadow-lg: 0 24px 80px rgba(8, 40, 32, 0.12);
+  --shadow-xl: 0 32px 96px rgba(8, 40, 32, 0.18);
+  --portal-sidebar-w: 264px;
+  --portal-sidebar-collapsed: 76px;
+  --portal-header-h: 64px;
+  --admin-sidebar-w: 264px;
+  --admin-sidebar-collapsed: 76px;
+  --admin-header-h: 64px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-card: var(--card);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-tint: var(--brand-tint);
+  --color-accent: var(--accent);
+  --color-ai: var(--ai);
+  --color-ai-deep: var(--ai-deep);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+.typing-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ai-deep);
+  animation: typing-dot 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+.chat-scroll::-webkit-scrollbar { width: 4px; }
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(13, 110, 90, 0.25);
+  border-radius: 4px;
+}
+
+.chatbot-fab {
+  background: transparent;
+  animation: chatbot-float 4.5s ease-in-out infinite;
+}
+.chatbot-ripple {
+  position: absolute; inset: 0; border-radius: 9999px;
+  border: 2px solid rgba(45, 212, 191, 0.55);
+  pointer-events: none;
+}
+.chatbot-ripple-1 { animation: chatbot-ripple 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+.chatbot-ripple-2 { animation: chatbot-ripple 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite 0.7s; }
+.chatbot-ripple-3 {
+  animation: chatbot-ripple 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite 1.4s;
+  border-color: rgba(201, 162, 39, 0.35);
+}
+@keyframes chatbot-ripple {
+  0% { transform: scale(1); opacity: 0.75; }
+  100% { transform: scale(1.85); opacity: 0; }
+}
+@keyframes chatbot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Markdown rendering */
+.md-body { font-size: 0.95rem; line-height: 1.6; color: inherit; word-break: break-word; }
+.md-body .md-h { font-weight: 700; line-height: 1.25; margin: 1rem 0 0.5rem; }
+.md-body .md-h1 { font-size: 1.5rem; }
+.md-body .md-h2 { font-size: 1.3rem; }
+.md-body .md-h3 { font-size: 1.15rem; }
+.md-body .md-h4 { font-size: 1.05rem; }
+.md-body .md-h5, .md-body .md-h6 { font-size: 1rem; }
+.md-body p { margin: 0 0 0.75rem; }
+.md-body .md-ul { list-style: disc; padding-left: 1.25rem; margin: 0 0 0.75rem; }
+.md-body .md-ol { list-style: decimal; padding-left: 1.25rem; margin: 0 0 0.75rem; }
+.md-body li { margin: 0.25rem 0; }
+.md-body .md-link { color: #0d6e5a; text-decoration: underline; text-underline-offset: 2px; }
+.md-body .md-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: rgba(12, 26, 20, 0.06);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+}
+.md-body .md-quote {
+  border-left: 3px solid rgba(13, 110, 90, 0.4);
+  padding: 0.25rem 0 0.25rem 0.85rem;
+  margin: 0 0 0.75rem;
+  opacity: 0.85;
+  font-style: italic;
+}
+.md-body .md-hr { border: 0; border-top: 1px solid currentColor; opacity: 0.15; margin: 1rem 0; }
+
+/* Chatbot bubble markdown — compact */
+.chat-md-body.md-body {
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+.chat-md-body.md-body p { margin: 0 0 0.5rem; }
+.chat-md-body.md-body p:last-child { margin-bottom: 0; }
+.chat-md-body.md-body .md-ul,
+.chat-md-body.md-body .md-ol {
+  margin: 0.35rem 0 0.55rem;
+  padding-left: 1.15rem;
+}
+.chat-md-body.md-body li { margin: 0.2rem 0; }
+.chat-md-body.md-body strong {
+  font-weight: 650;
+  color: #084c3f;
+}
+.chat-md-body.md-body .md-h {
+  margin: 0.55rem 0 0.3rem;
+  font-size: 0.95rem;
+}
+.chat-md-body.md-body .md-h:first-child { margin-top: 0; }
+.chat-md-body.md-body .md-link {
+  color: #0d6e5a;
+  font-weight: 600;
+  text-decoration-color: rgba(13, 110, 90, 0.35);
+}
+.chat-md-body.md-body .md-code {
+  font-size: 0.8em;
+  background: rgba(13, 110, 90, 0.08);
+  color: #084c3f;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chatbot-fab, .chatbot-ripple-1, .chatbot-ripple-2, .chatbot-ripple-3 {
+    animation: none !important;
+  }
+}
