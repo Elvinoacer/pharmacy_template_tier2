@@ -1,0 +1,67 @@
+/* Mobile-first polish for the pharmacy onboarding wizard. */
+.onboardForm {
+  min-width: 0;
+}
+
+.onboardForm :global(.input-admin) {
+  min-height: 48px;
+  width: 100%;
+  min-width: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  padding: 0.75rem 0.875rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.onboardForm :global(textarea.input-admin) {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.onboardForm :global(.btn-primary),
+.onboardForm :global(.btn-ghost) {
+  min-height: 48px;
+  touch-action: manipulation;
+}
+
+.onboardForm :global(.btn-primary):focus-visible,
+.onboardForm :global(.btn-ghost):focus-visible,
+.onboardForm :global(.input-admin):focus-visible {
+  outline: 3px solid rgba(13, 110, 90, 0.22);
+  outline-offset: 2px;
+}
+
+.onboardForm :global(.input-admin):disabled,
+.onboardForm :global(button:disabled) {
+  cursor: not-allowed;
+}
+
+@media (max-width: 639px) {
+  .onboardForm {
+    overflow: hidden;
+  }
+
+  .onboardForm :global(.input-admin) {
+    /* 16px avoids mobile browser zoom while keeping fields comfortably readable. */
+    font-size: 16px;
+  }
+
+  .onboardForm :global(.btn-primary),
+  .onboardForm :global(.btn-ghost) {
+    width: 100%;
+  }
+}
+
+@media (min-width: 640px) {
+  .onboardForm :global(.input-admin) {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboardForm :global(.input-admin),
+  .onboardForm :global(button) {
+    transition: none;
+  }
+}
