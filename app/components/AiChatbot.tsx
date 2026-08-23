@@ -22,16 +22,57 @@ type Message = {
 };
 
 const WELCOME =
-  "Hi — I'm the Aether Care Assistant. Ask me about hours, refills, delivery, whether a medicine is in stock, or anything else about this pharmacy. I'm not a substitute for a pharmacist for personal medical advice.";
+  "Hi — I'm the Aether Care Assistant. Ask me about pharmacy hours, prescription refills, home delivery, medicine availability, or anything else about our services.\n\n*Note: I provide general pharmacy information and am not a substitute for a licensed pharmacist's personalized medical consultation.*";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-[#5a6b62] transition hover:bg-teal-900/5 hover:text-[#084c3f]"
+      title={copied ? "Copied to clipboard" : "Copy response"}
+      aria-label={copied ? "Copied to clipboard" : "Copy response"}
+    >
+      {copied ? (
+        <>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-600">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span className="text-emerald-600 font-semibold">Copied</span>
+        </>
+      ) : (
+        <>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <span>Copy</span>
+        </>
+      )}
+    </button>
+  );
+}
+
 function AssistantContent({ content, streaming }: { content: string; streaming?: boolean }) {
   if (!content && streaming) {
     return (
-      <span className="inline-flex items-center gap-1.5 py-0.5" aria-label="Assistant is typing">
+      <span className="inline-flex items-center gap-1.5 py-1" aria-label="Assistant is typing">
         <span className="typing-dot" />
         <span className="typing-dot" />
         <span className="typing-dot" />
@@ -43,7 +84,7 @@ function AssistantContent({ content, streaming }: { content: string; streaming?:
     <div className="chat-md relative">
       <Markdown className="chat-md-body">{content}</Markdown>
       {streaming && content ? (
-        <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-teal-500/70 align-middle" />
+        <span className="ml-1 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-teal-500/80 align-middle" />
       ) : null}
     </div>
   );
@@ -96,6 +137,15 @@ export default function AiChatbot() {
   useEffect(() => {
     return () => abortRef.current?.abort();
   }, []);
+
+  // Auto-grow textarea height
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    const newHeight = Math.min(el.scrollHeight, 120);
+    el.style.height = `${Math.max(newHeight, 38)}px`;
+  }, [input]);
 
   async function sendMessage(raw: string) {
     const text = raw.trim();
@@ -228,24 +278,26 @@ export default function AiChatbot() {
 
   return (
     <div className="chatbot-root pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex justify-end p-4 sm:p-6">
+      {/* Panel */}
       <div
         id={panelId}
         role="dialog"
         aria-modal="false"
         aria-label="Aether Care Assistant"
         aria-hidden={!open}
-        className={`pointer-events-auto absolute bottom-[4.75rem] right-4 flex w-[min(100vw-2rem,24.5rem)] origin-bottom-right flex-col overflow-hidden rounded-[1.75rem] border border-white/50 bg-white/95 shadow-[0_28px_80px_rgba(8,40,32,0.28)] backdrop-blur-2xl transition-all duration-300 sm:right-6 sm:bottom-[5.25rem] ${
+        className={`pointer-events-auto absolute bottom-[4.75rem] right-3 flex w-[calc(100vw-1.5rem)] max-w-[25.5rem] origin-bottom-right flex-col overflow-hidden rounded-[1.75rem] border border-teal-900/10 bg-white/95 shadow-[0_24px_70px_rgba(8,40,32,0.22)] backdrop-blur-2xl transition-all duration-300 sm:right-6 sm:bottom-[5.25rem] ${
           open
             ? "translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-4 scale-95 opacity-0"
         }`}
-        style={{ maxHeight: "min(72vh, 560px)", height: "min(72vh, 560px)" }}
+        style={{ maxHeight: "min(76vh, 580px)", height: "min(76vh, 580px)" }}
       >
-        <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-[#0d6e5a] via-[#0a5c4c] to-[#084c3f] px-4 py-3.5 text-white">
+        {/* Header */}
+        <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-[#0d6e5a] via-[#0a5c4c] to-[#084c3f] px-4 py-3.5 text-white shadow-sm">
           <div className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-teal-300/20 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-10 left-8 h-24 w-24 rounded-full bg-amber-300/15 blur-2xl" />
           <div className="relative flex items-center gap-3">
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25">
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25 shadow-inner">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path
                   d="M12 3c-1.5 3.5-4 5.5-7.5 6.5C8 10.5 10.5 12.5 12 16c1.5-3.5 4-5.5 7.5-6.5C16 8.5 13.5 6.5 12 3Z"
@@ -257,8 +309,9 @@ export default function AiChatbot() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold tracking-tight">Aether Care Assistant</p>
-              <p className="text-[11px] text-teal-100/85">
-                {busy ? "Thinking…" : "Online · Pharmacy assistant"}
+              <p className="flex items-center gap-1.5 text-[11px] text-teal-100/90 font-medium">
+                <span className={`inline-block h-1.5 w-1.5 rounded-full ${busy ? "animate-ping bg-amber-300" : "bg-emerald-300"}`} />
+                {busy ? "Thinking…" : "Online · 24/7 Pharmacy Support"}
               </p>
             </div>
             <div className="flex items-center gap-1">
@@ -269,7 +322,7 @@ export default function AiChatbot() {
                 aria-label="Clear conversation"
                 title="Clear chat"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 7h16M9 7V5h6v2M10 11v6M14 11v6M6 7l1 12h10l1-12" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
@@ -278,6 +331,7 @@ export default function AiChatbot() {
                 onClick={() => setOpen(false)}
                 className="rounded-xl p-2 text-white/80 transition hover:bg-white/10 hover:text-white"
                 aria-label="Close chat"
+                title="Close chat"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
@@ -287,6 +341,7 @@ export default function AiChatbot() {
           </div>
         </header>
 
+        {/* Messages */}
         <div
           ref={listRef}
           className="chat-scroll flex-1 space-y-3 overflow-y-auto bg-gradient-to-b from-[#f3faf7] to-white px-3.5 py-4"
@@ -297,13 +352,13 @@ export default function AiChatbot() {
           {messages.map((m) => (
             <div
               key={m.id}
-              className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
             >
               <div
-                className={`max-w-[90%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
+                className={`max-w-[92%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm transition-all ${
                   m.role === "user"
-                    ? "rounded-br-md bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white"
-                    : "rounded-bl-md border border-teal-900/5 bg-white text-[#0c1a14]"
+                    ? "rounded-br-sm bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white font-normal"
+                    : "rounded-tl-sm border border-teal-900/10 bg-white text-[#0c1a14] shadow-[0_1px_4px_rgba(8,40,32,0.04)]"
                 }`}
               >
                 {m.role === "assistant" ? (
@@ -312,52 +367,64 @@ export default function AiChatbot() {
                   <p className="whitespace-pre-wrap">{m.content}</p>
                 )}
               </div>
+
+              {m.role === "assistant" && m.id !== "welcome" && !m.streaming && m.content && (
+                <div className="mt-1 px-1">
+                  <CopyButton text={m.content} />
+                </div>
+              )}
             </div>
           ))}
 
           {messages.length <= 1 && !busy && (
-            <div className="flex flex-wrap gap-2 pt-1">
-              {SUGGESTED_PROMPTS.map((prompt) => (
-                <button
-                  key={prompt}
-                  type="button"
-                  onClick={() => void sendMessage(prompt)}
-                  className="rounded-full border border-teal-800/10 bg-white/90 px-3 py-1.5 text-left text-[11px] font-medium text-[#084c3f] shadow-sm transition hover:border-teal-700/25 hover:bg-teal-50"
-                >
-                  {prompt}
-                </button>
-              ))}
+            <div className="pt-2">
+              <p className="mb-2 px-1 text-[11px] font-medium text-[#5a6b62]">Suggested topics:</p>
+              <div className="flex flex-wrap gap-1.5">
+                {SUGGESTED_PROMPTS.map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => void sendMessage(prompt)}
+                    className="rounded-full border border-teal-800/15 bg-white/90 px-3 py-1.5 text-left text-[11px] font-medium text-[#084c3f] shadow-xs transition hover:border-teal-700/30 hover:bg-teal-50/90 active:scale-98"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
 
+        {/* Error notice */}
         {error && (
-          <div className="shrink-0 border-t border-red-100 bg-red-50 px-3.5 py-2 text-xs text-red-700" role="alert">
+          <div className="shrink-0 border-t border-red-100 bg-red-50/90 px-3.5 py-2 text-xs text-red-700 font-medium" role="alert">
             {error}
           </div>
         )}
 
+        {/* Composer */}
         <form
           onSubmit={onSubmit}
-          className="shrink-0 border-t border-teal-900/5 bg-white/90 p-3 backdrop-blur"
+          className="shrink-0 border-t border-teal-900/5 bg-white/95 p-3 backdrop-blur"
         >
-          <div className="flex items-end gap-2 rounded-2xl border border-teal-900/10 bg-[#f7fbf9] p-1.5 shadow-inner focus-within:border-teal-600/30 focus-within:ring-2 focus-within:ring-teal-500/15">
+          <div className="flex items-end gap-2 rounded-2xl border border-teal-900/15 bg-[#f7fbf9] p-1.5 shadow-inner focus-within:border-teal-600/40 focus-within:ring-2 focus-within:ring-teal-500/15 transition-all">
             <textarea
               ref={inputRef}
               rows={1}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
-              placeholder="Ask about hours, refills…"
-              className="max-h-28 min-h-[40px] flex-1 resize-none bg-transparent px-2.5 py-2 text-sm text-[#0c1a14] outline-none placeholder:text-[#5a6b62]/55"
+              placeholder="Ask about refills, delivery, medicines…"
+              className="max-h-28 min-h-[38px] flex-1 resize-none bg-transparent px-2.5 py-2 text-sm text-[#0c1a14] outline-none placeholder:text-[#5a6b62]/60"
               aria-label="Message the care assistant"
             />
             {busy ? (
               <button
                 type="button"
                 onClick={stopStream}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-900/10 text-[#084c3f] transition hover:bg-teal-900/15"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-900/10 text-[#084c3f] transition hover:bg-teal-900/15 active:scale-95"
                 aria-label="Stop generating"
+                title="Stop generating"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                   <rect x="6" y="6" width="12" height="12" rx="2" />
@@ -367,21 +434,23 @@ export default function AiChatbot() {
               <button
                 type="submit"
                 disabled={!input.trim()}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-md shadow-teal-900/20 transition enabled:hover:scale-105 enabled:hover:shadow-lg disabled:opacity-40"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-sm shadow-teal-900/20 transition enabled:hover:scale-105 enabled:hover:shadow-md enabled:active:scale-95 disabled:opacity-35"
                 aria-label="Send message"
+                title="Send message"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             )}
           </div>
-          <p className="mt-2 px-1 text-[10px] leading-relaxed text-[#5a6b62]/75">
-            AI can make mistakes. For medical advice, talk to a pharmacist. Emergencies in Kenya: call 999 or 112.
+          <p className="mt-2 px-1 text-[10px] leading-relaxed text-[#5a6b62]/80 text-center">
+            AI can make mistakes. For medical advice, consult a pharmacist. Emergencies in Kenya: call <strong className="font-semibold text-[#084c3f]">999</strong> or <strong className="font-semibold text-[#084c3f]">112</strong>.
           </p>
         </form>
       </div>
 
+      {/* Floating launcher button */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -393,7 +462,7 @@ export default function AiChatbot() {
         <span className="chatbot-ripple chatbot-ripple-1" aria-hidden />
         <span className="chatbot-ripple chatbot-ripple-2" aria-hidden />
         <span className="chatbot-ripple chatbot-ripple-3" aria-hidden />
-        <span className="relative z-10 flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-[#14b8a6] via-[#0d6e5a] to-[#084c3f]">
+        <span className="relative z-10 flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-[#14b8a6] via-[#0d6e5a] to-[#084c3f] shadow-inner">
           {open ? (
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
