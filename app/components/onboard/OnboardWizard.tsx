@@ -9,6 +9,7 @@ import {
   type OnboardState,
 } from "@/app/actions/onboard";
 import { slugifyPharmacyName } from "@/app/lib/slug";
+import styles from "./OnboardWizard.module.css";
 
 type Existing = {
   id: string;
@@ -65,8 +66,6 @@ export default function OnboardWizard({
     {} as OnboardState,
   );
 
-  // The form that triggered the update decides where to go after a successful save.
-  // A ref avoids re-running navigation when the user simply presses Back.
   const nextStepAfterUpdate = useRef<number | null>(null);
 
   const state = createState.error
@@ -106,7 +105,7 @@ export default function OnboardWizard({
 
   if (status === "submitted" || status === "under_review") {
     return (
-      <div className="rounded-3xl border border-teal-900/10 bg-white p-8 text-center shadow-sm">
+      <div className="rounded-3xl border border-teal-900/10 bg-white p-6 text-center shadow-sm sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0d6e5a]">In review</p>
         <h2 className="mt-3 text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
           {name || "Your pharmacy"} is with the network team
@@ -122,12 +121,12 @@ export default function OnboardWizard({
 
   if (status === "approved" || status === "active") {
     return (
-      <div className="rounded-3xl border border-teal-900/10 bg-white p-8 text-center">
+      <div className="rounded-3xl border border-teal-900/10 bg-white p-6 text-center sm:p-8">
         <h2 className="text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
           You are approved
         </h2>
         <p className="mt-2 text-sm text-[#5a6b62]">Finish branding and hours, then go live.</p>
-        <Link href="/admin/setup" className="btn-primary mt-6 inline-flex">
+        <Link href="/admin/setup" className="btn-primary mt-6 inline-flex w-full justify-center sm:w-auto">
           Open setup wizard
         </Link>
       </div>
@@ -136,7 +135,7 @@ export default function OnboardWizard({
 
   if (status === "rejected") {
     return (
-      <div className="rounded-3xl border border-rose-200 bg-rose-50 p-8 text-center">
+      <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-center sm:p-8">
         <h2 className="text-xl font-semibold text-rose-950">Application was not approved</h2>
         <p className="mt-2 text-sm text-rose-800">Check the email on the account, or start a new draft.</p>
       </div>
@@ -144,22 +143,24 @@ export default function OnboardWizard({
   }
 
   return (
-    <div className="rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_16px_50px_rgba(8,40,32,0.07)] sm:p-8">
-      <ol className="mb-8 flex gap-2">
+    <div className={`${styles.onboardForm} rounded-2xl border border-teal-900/10 bg-white p-4 shadow-[0_16px_50px_rgba(8,40,32,0.07)] sm:rounded-3xl sm:p-8`}>
+      <ol className="mb-6 flex gap-1.5 sm:mb-8 sm:gap-2" aria-label="Application progress">
         {STEPS.map((label, i) => (
           <li
             key={label}
-            className={`flex-1 rounded-full px-2 py-1.5 text-center text-[11px] font-semibold ${
+            aria-current={i === step ? "step" : undefined}
+            className={`flex min-w-0 flex-1 items-center justify-center rounded-full px-1.5 py-2 text-center text-[10px] font-semibold leading-tight sm:px-2 sm:py-1.5 sm:text-[11px] ${
               i === step ? "bg-[#0d6e5a] text-white" : i < step ? "bg-teal-50 text-[#0d6e5a]" : "bg-slate-100 text-slate-500"
             }`}
           >
-            {label}
+            <span className="sm:hidden">{i + 1}. {label.split(" & ")[0]}</span>
+            <span className="hidden sm:inline">{label}</span>
           </li>
         ))}
       </ol>
 
       {state.error && !((step === 0 && isIdentityError) || (step === 1 && isContactError)) && (
-        <p className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+        <p className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-3 text-sm leading-5 text-rose-800" role="alert">
           {state.error}
         </p>
       )}
@@ -175,22 +176,22 @@ export default function OnboardWizard({
               createAction(fd);
             }
           }}
-          className="space-y-4"
+          className="space-y-5 sm:space-y-4"
         >
           <input type="hidden" name="pharmacyId" value={pharmacyId} />
           {!signedIn && !pharmacyId && (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
               <label className="block text-sm font-medium text-[#0c1a14]">
                 Your name
-                <input name="fullName" required className="input-admin mt-1" />
+                <input name="fullName" autoComplete="name" required className="input-admin mt-1.5" />
               </label>
               <label className="block text-sm font-medium text-[#0c1a14]">
                 Work email
-                <input name="email" type="email" required className="input-admin mt-1" />
+                <input name="email" type="email" inputMode="email" autoComplete="email" required className="input-admin mt-1.5" />
               </label>
               <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
                 Password
-                <input name="password" type="password" required className="input-admin mt-1" />
+                <input name="password" type="password" autoComplete="new-password" required className="input-admin mt-1.5" />
               </label>
             </div>
           )}
@@ -205,29 +206,33 @@ export default function OnboardWizard({
                 setName(e.target.value);
                 if (!pharmacyId) setSlug(slugifyPharmacyName(e.target.value));
               }}
-              className="input-admin mt-1"
+              className="input-admin mt-1.5"
               placeholder="e.g. Coast Care Pharmacy"
+              autoComplete="organization"
+              aria-invalid={state.field === "name"}
             />
-            {state.field === "name" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
+            {state.field === "name" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}
           </label>
 
           <label className="block text-sm font-medium text-[#0c1a14]">
             Public URL
-            <span className="mt-1 block text-xs font-normal text-[#7a8b84]">
+            <span className="mt-1 block text-xs font-normal leading-5 text-[#7a8b84]">
               This is your pharmacy's public link.
             </span>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="text-xs text-[#7a8b84]">/p/</span>
+            <div className="mt-1.5 flex min-w-0 items-center gap-2">
+              <span className="shrink-0 rounded-lg bg-slate-50 px-2.5 py-3 text-sm font-medium text-[#7a8b84]">/p/</span>
               <input
                 name="slug"
                 required
                 value={slug || liveSlug}
                 onChange={(e) => setSlug(e.target.value.toLowerCase())}
-                className="input-admin"
+                className="input-admin min-w-0"
                 aria-invalid={state.field === "slug"}
+                autoComplete="off"
+                spellCheck={false}
               />
             </div>
-            {state.field === "slug" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
+            {state.field === "slug" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}
           </label>
 
           <label className="block text-sm font-medium text-[#0c1a14]">
@@ -236,13 +241,14 @@ export default function OnboardWizard({
               name="legalName"
               value={legalName}
               onChange={(e) => setLegalName(e.target.value)}
-              className="input-admin mt-1"
+              className="input-admin mt-1.5"
+              autoComplete="organization"
             />
           </label>
 
           <label className="block text-sm font-medium text-[#0c1a14]">
             PPB / premises licence number
-            <span className="mt-1 block text-xs font-normal text-[#7a8b84]">
+            <span className="mt-1 block text-xs font-normal leading-5 text-[#7a8b84]">
               Required for verification. Enter the number exactly as shown on your licence.
             </span>
             <input
@@ -250,13 +256,15 @@ export default function OnboardWizard({
               required
               value={licenseNumber}
               onChange={(e) => setLicenseNumber(e.target.value)}
-              className="input-admin mt-1"
+              className="input-admin mt-1.5"
               aria-invalid={state.field === "licenseNumber"}
+              autoComplete="off"
+              spellCheck={false}
             />
-            {state.field === "licenseNumber" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
+            {state.field === "licenseNumber" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}
           </label>
 
-          <button className="btn-primary" type="submit" disabled={createPending || updatePending}>
+          <button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={createPending || updatePending}>
             {createPending || updatePending ? "Saving…" : "Save and continue"}
           </button>
         </form>
@@ -269,7 +277,7 @@ export default function OnboardWizard({
             nextStepAfterUpdate.current = 2;
             updateAction(fd);
           }}
-          className="space-y-4"
+          className="space-y-5 sm:space-y-4"
         >
           <input type="hidden" name="pharmacyId" value={pharmacyId} />
           <input type="hidden" name="name" value={name} />
@@ -277,44 +285,44 @@ export default function OnboardWizard({
           <input type="hidden" name="legalName" value={legalName} />
           <input type="hidden" name="licenseNumber" value={licenseNumber} />
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
             <label className="block text-sm font-medium text-[#0c1a14]">
               City
-              <input name="city" value={city} onChange={(e) => setCity(e.target.value)} required className="input-admin mt-1" />
-              {state.field === "city" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
+              <input name="city" value={city} onChange={(e) => setCity(e.target.value)} required className="input-admin mt-1.5" autoComplete="address-level2" />
+              {state.field === "city" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}
             </label>
             <label className="block text-sm font-medium text-[#0c1a14]">
               County
-              <input name="county" value={county} onChange={(e) => setCounty(e.target.value)} className="input-admin mt-1" />
+              <input name="county" value={county} onChange={(e) => setCounty(e.target.value)} className="input-admin mt-1.5" autoComplete="address-level1" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14]">
               Public phone
-              <input name="phone" value={phone} onChange={(e) => setPhone(e.target.value)} required className="input-admin mt-1" />
-              {state.field === "phone" && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
+              <input name="phone" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required className="input-admin mt-1.5" autoComplete="tel" />
+              {state.field === "phone" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}
             </label>
             <label className="block text-sm font-medium text-[#0c1a14]">
               WhatsApp
-              <input name="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="input-admin mt-1" />
+              <input name="whatsapp" type="tel" inputMode="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="input-admin mt-1.5" autoComplete="tel" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
               Public email
-              <input name="publicEmail" type="email" value={publicEmail} onChange={(e) => setPublicEmail(e.target.value)} className="input-admin mt-1" />
+              <input name="publicEmail" type="email" inputMode="email" value={publicEmail} onChange={(e) => setPublicEmail(e.target.value)} className="input-admin mt-1.5" autoComplete="email" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
               Tagline
-              <input name="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} className="input-admin mt-1" placeholder="Your neighbourhood pharmacy, built on trust" />
+              <input name="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} className="input-admin mt-1.5" placeholder="Your neighbourhood pharmacy, built on trust" />
             </label>
             <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">
               Short description
-              <textarea name="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="input-admin mt-1" />
+              <textarea name="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="input-admin mt-1.5" />
             </label>
           </div>
 
-          <div className="flex gap-3">
-            <button type="button" className="btn-ghost" onClick={() => setStep(0)}>
+          <div className="flex flex-col-reverse gap-3 sm:flex-row">
+            <button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(0)}>
               Back
             </button>
-            <button className="btn-primary" type="submit" disabled={updatePending}>
+            <button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={updatePending}>
               {updatePending ? "Saving…" : "Continue to review"}
             </button>
           </div>
@@ -322,33 +330,33 @@ export default function OnboardWizard({
       )}
 
       {step === 2 && pharmacyId && (
-        <form action={submitAction} className="space-y-4">
+        <form action={submitAction} className="space-y-5 sm:space-y-4">
           <input type="hidden" name="pharmacyId" value={pharmacyId} />
-          <div className="rounded-2xl bg-teal-50/80 p-4 text-sm text-[#084c3f]">
+          <div className="rounded-2xl bg-teal-50/80 p-4 text-sm leading-6 text-[#084c3f] sm:p-5">
             <p className="font-semibold">{name}</p>
-            <p className="mt-1">
-              Public URL <code className="rounded bg-white px-1">/p/{slug || liveSlug}</code>
+            <p className="mt-1 break-words">
+              Public URL <code className="rounded bg-white px-1.5 py-0.5">/p/{slug || liveSlug}</code>
             </p>
-            <dl className="mt-3 grid gap-2 text-xs text-[#5a6b62] sm:grid-cols-2">
-              <div><dt className="font-semibold text-[#084c3f]">PPB / premises licence</dt><dd>{licenseNumber}</dd></div>
-              <div><dt className="font-semibold text-[#084c3f]">Location</dt><dd>{city}{county ? `, ${county}` : ""}</dd></div>
-              <div><dt className="font-semibold text-[#084c3f]">Phone</dt><dd>{phone}</dd></div>
+            <dl className="mt-4 grid gap-3 text-xs text-[#5a6b62] sm:grid-cols-2">
+              <div><dt className="font-semibold text-[#084c3f]">PPB / premises licence</dt><dd className="mt-0.5 break-words">{licenseNumber}</dd></div>
+              <div><dt className="font-semibold text-[#084c3f]">Location</dt><dd className="mt-0.5 break-words">{city}{county ? `, ${county}` : ""}</dd></div>
+              <div><dt className="font-semibold text-[#084c3f]">Phone</dt><dd className="mt-0.5 break-words">{phone}</dd></div>
             </dl>
-            <p className="mt-3 text-[#5a6b62]">
+            <p className="mt-4 text-[#5a6b62]">
               Submitting sends this application to Aether super-admins. Patients cannot see the
               storefront until you are approved and you choose to go live.
             </p>
           </div>
           {submitState.error && (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-3 text-sm leading-5 text-rose-800" role="alert">
               {submitState.error}
             </div>
           )}
-          <div className="flex gap-3">
-            <button type="button" className="btn-ghost" onClick={() => setStep(1)}>
+          <div className="flex flex-col-reverse gap-3 sm:flex-row">
+            <button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(1)}>
               Back
             </button>
-            <button className="btn-primary" type="submit" disabled={submitPending}>
+            <button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={submitPending}>
               {submitPending ? "Submitting…" : "Submit for verification"}
             </button>
           </div>
