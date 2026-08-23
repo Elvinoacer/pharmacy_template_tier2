@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { Crosshair, Loader2, MapPin, CheckCircle2, Save } from "lucide-react";
 import {
   saveOnboardingPharmacyLocationAction,
@@ -42,10 +42,6 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
     data.set("accuracyMeters", accuracy == null ? "" : String(accuracy));
     saveAction(data);
   };
-
-  useEffect(() => {
-    if (state.success) notifyCoordinates(latitude, longitude);
-  }, [state.success]);
 
   const useCurrentLocation = () => {
     setGeoError(null);
