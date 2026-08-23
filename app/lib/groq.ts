@@ -44,7 +44,21 @@ export function groqVisionModelName(): string {
 
 export function groqClient(apiKey = groqApiKey()): Groq {
   if (!apiKey) throw new Error("GROQ_API_KEY is not configured");
-  return new Groq({ apiKey });
+
+  const client = new Groq({ apiKey });
+  const create = client.chat.completions.create.bind(client.chat.completions);
+
+  // Provider/model details must stay in server logs, never in public chat UI.
+  client.chat.completions.create = (async (...args: Parameters<typeof create>) => {
+    try {
+      return await create(...args);
+    } catch (error) {
+      console.error("[groq] provider request failed", error);
+      throw new Error("AI provider unavailable");
+    }
+  }) as typeof client.chat.completions.create;
+
+  return client;
 }
 
 /** Qwen defaults to thinking mode; disable it for chat/JSON responses. */
