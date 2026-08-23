@@ -29,6 +29,8 @@ export default async function OnboardPage() {
         email: owned.email,
         city: owned.city,
         county: owned.county,
+        latitude: owned.latitude,
+        longitude: owned.longitude,
         status: owned.status,
       };
     }
