@@ -7,12 +7,28 @@ import { validatePassword } from "@/app/lib/password";
 import { isValidPharmacySlug, slugifyPharmacyName } from "@/app/lib/slug";
 import { getRequestMeta } from "@/app/lib/request-meta";
 
-export type OnboardState = { error?: string; success?: string; pharmacyId?: string; slug?: string };
+export type OnboardState = {
+  error?: string;
+  success?: string;
+  pharmacyId?: string;
+  slug?: string;
+  field?: "name" | "slug" | "legalName" | "licenseNumber" | "city" | "phone" | "general";
+};
 
 async function requireOwnerSession() {
   const user = await getSessionUser();
   if (!user) throw new AuthError("Sign in first", 401);
   return user;
+}
+
+function validateSlug(slug: string) {
+  if (!isValidPharmacySlug(slug)) {
+    return "Use 2–48 characters: lowercase letters, numbers, and hyphens.";
+  }
+  if (["admin", "portal", "platform", "login", "api", "onboard", "p"].includes(slug)) {
+    return "That public URL is reserved. Pick another.";
+  }
+  return null;
 }
 
 export async function createPharmacyDraftAction(
@@ -28,28 +44,23 @@ export async function createPharmacyDraftAction(
     const legalName = String(formData.get("legalName") || "").trim();
     let slug = String(formData.get("slug") || "").trim().toLowerCase();
     const licenseNumber = String(formData.get("licenseNumber") || "").trim();
-    const phone = String(formData.get("phone") || "").trim();
-    const city = String(formData.get("city") || "").trim();
-    const county = String(formData.get("county") || "").trim();
-    const tagline = String(formData.get("tagline") || "").trim();
 
-    if (!name) return { error: "Pharmacy trading name is required." };
+    if (!name) return { error: "Enter the pharmacy trading name.", field: "name" };
     if (!slug) slug = slugifyPharmacyName(name);
-    if (!isValidPharmacySlug(slug)) {
-      return { error: "Slug must be 2–48 characters: lowercase letters, numbers, hyphens." };
-    }
-    if (["admin", "portal", "platform", "login", "api", "onboard", "p"].includes(slug)) {
-      return { error: "That slug is reserved. Pick another." };
+    const slugError = validateSlug(slug);
+    if (slugError) return { error: slugError, field: "slug" };
+    if (!licenseNumber) {
+      return { error: "Enter the PPB / premises licence number to continue.", field: "licenseNumber" };
     }
 
     if (!user) {
       if (!email || !password || !fullName) {
-        return { error: "Create an owner account (name, email, password) or sign in first." };
+        return { error: "Create an owner account (name, email, password) or sign in first.", field: "general" };
       }
       const passwordError = validatePassword(password);
-      if (passwordError) return { error: passwordError };
+      if (passwordError) return { error: passwordError, field: "general" };
       const existing = await prismaUnscoped.user.findUnique({ where: { email } });
-      if (existing) return { error: "That email already has an account. Sign in, then continue onboarding." };
+      if (existing) return { error: "That email already has an account. Sign in, then continue onboarding.", field: "general" };
 
       const passwordHash = await hashPassword(password);
       const created = await prismaUnscoped.user.create({
@@ -59,7 +70,7 @@ export async function createPharmacyDraftAction(
           role: "manager",
           emailVerified: false,
           profile: {
-            create: { fullName, phone: phone || null },
+            create: { fullName, phone: null },
           },
         },
       });
@@ -67,24 +78,22 @@ export async function createPharmacyDraftAction(
       await createSession(created.id, { ip: meta.ip, userAgent: meta.userAgent });
       user = await getSessionUser();
     }
-    if (!user) return { error: "Could not establish a session." };
+    if (!user) return { error: "Could not establish a session.", field: "general" };
 
     const taken = await prismaUnscoped.pharmacy.findUnique({ where: { slug } });
-    if (taken) return { error: "That public URL is already taken." };
+    if (taken) return { error: "That public URL is already taken. Try a different URL.", field: "slug" };
 
-    // Keep the base pharmacy insert independent from nested relation writes.
-    // This avoids Prisma generated-client relation type failures during build.
     const pharmacy = await prismaUnscoped.pharmacy.create({
       data: {
         slug,
         name,
         legalName: legalName || name,
-        licenseNumber: licenseNumber || null,
-        tagline: tagline || null,
-        phone: phone || null,
+        licenseNumber,
+        tagline: null,
+        phone: null,
         email: user.email,
-        city: city || null,
-        county: county || null,
+        city: null,
+        county: null,
         status: "draft",
         listed: false,
         ownerUserId: user.id,
@@ -105,10 +114,10 @@ export async function createPharmacyDraftAction(
       data: {
         pharmacyId: pharmacy.id,
         displayName: name,
-        phone: phone || null,
+        phone: null,
         email: user.email,
-        city: city || null,
-        state: county || null,
+        city: null,
+        state: null,
       },
     });
 
@@ -131,7 +140,7 @@ export async function createPharmacyDraftAction(
     return { success: "Draft saved.", pharmacyId: pharmacy.id, slug: pharmacy.slug };
   } catch (err) {
     console.error("[onboard] create draft", err);
-    return { error: err instanceof Error ? err.message : "Could not save draft." };
+    return { error: err instanceof Error ? err.message : "Could not save draft.", field: "general" };
   }
 }
 
@@ -143,21 +152,40 @@ export async function updatePharmacyDraftAction(
     const user = await requireOwnerSession();
     const pharmacyId = String(formData.get("pharmacyId") || "");
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
-    if (!pharmacy) return { error: "Pharmacy not found." };
+    if (!pharmacy) return { error: "Pharmacy not found.", field: "general" };
     if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) {
-      return { error: "You do not own this application." };
+      return { error: "You do not own this application.", field: "general" };
     }
     if (!["draft", "needs_info"].includes(pharmacy.status)) {
-      return { error: "This application can no longer be edited." };
+      return { error: "This application can no longer be edited.", field: "general" };
+    }
+
+    const name = String(formData.get("name") || pharmacy.name).trim() || pharmacy.name;
+    const legalName = String(formData.get("legalName") || pharmacy.legalName || "").trim() || name;
+    const slug = String(formData.get("slug") || pharmacy.slug).trim().toLowerCase();
+    const licenseNumber = String(formData.get("licenseNumber") || pharmacy.licenseNumber || "").trim();
+
+    if (!name) return { error: "Enter the pharmacy trading name.", field: "name" };
+    const slugError = validateSlug(slug);
+    if (slugError) return { error: slugError, field: "slug" };
+    if (!licenseNumber) {
+      return { error: "Enter the PPB / premises licence number to continue.", field: "licenseNumber" };
+    }
+
+    if (slug !== pharmacy.slug) {
+      const taken = await prismaUnscoped.pharmacy.findUnique({ where: { slug } });
+      if (taken && taken.id !== pharmacy.id) {
+        return { error: "That public URL is already taken. Try a different URL.", field: "slug" };
+      }
     }
 
     const data = {
-      name: String(formData.get("name") || pharmacy.name).trim() || pharmacy.name,
-      legalName: String(formData.get("legalName") || "").trim() || pharmacy.legalName,
+      slug,
+      name,
+      legalName,
       tagline: String(formData.get("tagline") || "").trim() || null,
       description: String(formData.get("description") || "").trim() || null,
-      licenseNumber: String(formData.get("licenseNumber") || "").trim() || null,
-      ppbPremisesNumber: String(formData.get("ppbPremisesNumber") || "").trim() || null,
+      licenseNumber,
       phone: String(formData.get("phone") || "").trim() || null,
       whatsapp: String(formData.get("whatsapp") || "").trim() || null,
       email: String(formData.get("publicEmail") || "").trim() || pharmacy.email,
@@ -180,9 +208,10 @@ export async function updatePharmacyDraftAction(
       },
     });
     revalidatePath("/onboard");
-    return { success: "Saved.", pharmacyId, slug: pharmacy.slug };
+    return { success: "Saved.", pharmacyId, slug: data.slug };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Save failed." };
+    console.error("[onboard] update draft", err);
+    return { error: err instanceof Error ? err.message : "Save failed.", field: "general" };
   }
 }
 
@@ -194,15 +223,18 @@ export async function submitPharmacyApplicationAction(
     const user = await requireOwnerSession();
     const pharmacyId = String(formData.get("pharmacyId") || "");
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
-    if (!pharmacy) return { error: "Pharmacy not found." };
+    if (!pharmacy) return { error: "Pharmacy not found.", field: "general" };
     if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) {
-      return { error: "You do not own this application." };
+      return { error: "You do not own this application.", field: "general" };
     }
     if (!pharmacy.licenseNumber) {
-      return { error: "Add a PPB / premises licence number before submitting." };
+      return { error: "Enter the PPB / premises licence number before submitting.", field: "licenseNumber" };
     }
-    if (!pharmacy.city || !pharmacy.phone) {
-      return { error: "City and phone are required before review." };
+    if (!pharmacy.city) {
+      return { error: "Enter the pharmacy city before submitting.", field: "city" };
+    }
+    if (!pharmacy.phone) {
+      return { error: "Enter a public phone number before submitting.", field: "phone" };
     }
 
     await prismaUnscoped.pharmacy.update({
@@ -221,6 +253,6 @@ export async function submitPharmacyApplicationAction(
     revalidatePath("/platform");
     return { success: "Submitted for review.", pharmacyId, slug: pharmacy.slug };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Submit failed." };
+    return { error: err instanceof Error ? err.message : "Submit failed.", field: "general" };
   }
 }
