@@ -360,7 +360,7 @@ export default function Navbar({
 
             <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
               <Link
-                href={isPlatform ? "/#pharmacies" : withBase("/search")}
+                href={isPlatform ? "/pharmacies?focus=search" : withBase("/search")}
                 className={`flex h-9 w-9 items-center justify-center gap-2 rounded-full border text-xs font-semibold transition sm:h-auto sm:w-auto sm:px-3 sm:py-2 ${
                   onDarkHero && !scrolled
                     ? "border-white/15 bg-white/10 text-white hover:bg-white/16"
