@@ -6,7 +6,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import { LiveAlertCenter } from "./LiveAlertCenter";
 import type { PortalSessionHint } from "@/app/lib/portal-dest";
-import { publicSurface, type PublicBrand } from "@/app/lib/brand";
+import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/brand";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
 import { platform } from "@/app/lib/data";
 
@@ -43,7 +43,13 @@ export default function AppChrome({
   }
 
   const surface = publicSurface(pathname, pharmacySlug);
-  const brand = surface === "storefront" && storefrontBrand ? storefrontBrand : platformBrand;
+  // A non-platform page with no selected tenant must never inherit Aether's
+  // identity. It remains useful as a generic public template until a tenant
+  // is selected, while the platform landing pages continue to use Aether.
+  const brand =
+    surface === "storefront"
+      ? storefrontBrand ?? unscopedPublicBrand()
+      : platformBrand;
   const hasLandingMobileActionBar = pathname === "/";
 
   return (
@@ -54,18 +60,18 @@ export default function AppChrome({
         slug: brand.slug,
       }}
     >
-    <div className="mesh-bg relative flex min-h-screen flex-col">
-      <Navbar
-        sessionUser={sessionUser}
-        pharmacySlug={surface === "storefront" ? brand.slug : null}
-        surface={surface}
-        brand={brand}
-      />
-      <main className="flex-1">{children}</main>
-      <Footer surface={surface} brand={brand} clearMobileActionBar={hasLandingMobileActionBar} />
-      {surface === "storefront" && <AiChatbot />}
-      {surface === "storefront" && <LiveAlertCenter audience="public" />}
-    </div>
+      <div className="mesh-bg relative flex min-h-screen flex-col">
+        <Navbar
+          sessionUser={sessionUser}
+          pharmacySlug={surface === "storefront" ? brand.slug : null}
+          surface={surface}
+          brand={brand}
+        />
+        <main className="flex-1">{children}</main>
+        <Footer surface={surface} brand={brand} clearMobileActionBar={hasLandingMobileActionBar} />
+        {surface === "storefront" && <AiChatbot />}
+        {surface === "storefront" && <LiveAlertCenter audience="public" />}
+      </div>
     </TenantBrandProvider>
   );
 }
