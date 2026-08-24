@@ -128,13 +128,11 @@ export async function listMarketplacePharmacies(opts?: {
 
 /**
  * Per-request tenant. Prefers ALS (cron / explicit withPharmacy), then request
- * headers set by proxy.ts, then staff/public cookies.
+ * headers set by proxy.ts, then staff cookie.
  *
- * Status-aware fail-closed resolution:
- *  - staff context (id)  → only `approved` or `active` pharmacies (owner must
- *                          reach /admin/setup between approval and go-live)
- *  - public context (slug) → only `active` pharmacies serve a storefront
- * A suspended, draft, or rejected tenant therefore resolves to nothing.
+ * Public tenant context is URL-addressed: only x-pharmacy-slug from an
+ * explicit `/p/:slug/...` rewrite can select a public pharmacy. A remembered
+ * public pharmacy cookie is intentionally ignored for generic public pages.
  */
 const STAFF_RESOLVABLE_STATUS = new Set(["approved", "active"]);
 const PUBLIC_RESOLVABLE_STATUS = new Set(["active"]);
@@ -172,13 +170,6 @@ export const getTenant = cache(async (): Promise<TenantStore> => {
     if (staffId) {
       const row = await findPharmacyById(staffId);
       if (row && STAFF_RESOLVABLE_STATUS.has(row.status)) {
-        return { pharmacyId: row.id, slug: row.slug, bypass: false };
-      }
-    }
-    const publicSlug = jar.get(PUBLIC_PHARMACY_COOKIE)?.value;
-    if (publicSlug) {
-      const row = await findPharmacyBySlug(publicSlug);
-      if (row && PUBLIC_RESOLVABLE_STATUS.has(row.status)) {
         return { pharmacyId: row.id, slug: row.slug, bypass: false };
       }
     }
