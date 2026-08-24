@@ -27,11 +27,11 @@ export default function PlatformNav({ email, mobileOnly = false }: { email: stri
         href={item.href}
         onClick={() => mobile && setOpen(false)}
         aria-current={active ? "page" : undefined}
-        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 ${
-          active ? "bg-teal-300/10 text-white shadow-[inset_3px_0_0_#2dd4bf]" : "text-teal-100/60 hover:bg-white/5 hover:text-white"
+        className={`group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06110f] ${
+          active ? "bg-teal-300/15 text-white shadow-[inset_3px_0_0_#2dd4bf]" : "text-teal-50/80 hover:bg-white/[0.07] hover:text-white"
         }`}
       >
-        <Icon className={`h-4 w-4 shrink-0 ${active ? "text-teal-300" : "text-teal-100/45 group-hover:text-teal-200"}`} aria-hidden />
+        <Icon className={`h-4 w-4 shrink-0 ${active ? "text-teal-200" : "text-teal-50/70 group-hover:text-teal-100"}`} aria-hidden />
         <span>{item.label}</span>
       </Link>
     );
@@ -40,13 +40,13 @@ export default function PlatformNav({ email, mobileOnly = false }: { email: stri
   if (mobileOnly) {
     return (
       <>
-        <button type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-controls="platform-mobile-nav" aria-label={open ? "Close navigation" : "Open navigation"} className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 text-teal-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300">
+        <button type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-controls="platform-mobile-nav" aria-label={open ? "Close navigation" : "Open navigation"} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/20 text-teal-50 transition hover:bg-white/[0.07] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071512]">
           {open ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
         </button>
         {open && (
-          <div className="absolute inset-x-0 top-full border-b border-white/10 bg-[#071512] p-3 shadow-2xl">
+          <div className="absolute inset-x-0 top-full border-b border-white/15 bg-[#071512] p-3 shadow-2xl">
             <nav id="platform-mobile-nav" aria-label="Platform navigation" className="grid gap-1">{links(true)}</nav>
-            <p className="truncate px-3 py-3 text-xs text-teal-100/45">{email}</p>
+            <p className="truncate px-3 py-3 text-xs text-teal-50/70" title={email}>{email}</p>
           </div>
         )}
       </>
