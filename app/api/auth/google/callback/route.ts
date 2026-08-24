@@ -18,6 +18,15 @@ function loginRedirect(origin: string, error: string): NextResponse {
   return NextResponse.redirect(url);
 }
 
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isSessionClaimConfigurationError(error: unknown): boolean {
+  const message = errorMessage(error);
+  return message.includes('AUTH_SECRET is not set') || message.includes('AUTH_SECRET is required');
+}
+
 export async function GET(request: Request) {
   const origin = appBaseUrl(request);
   const url = new URL(request.url);
@@ -43,14 +52,12 @@ export async function GET(request: Request) {
   const client = new OAuth2Client(clientId, clientSecret, redirectUri);
 
   try {
-    // Exchange the authorization code for tokens.
     const { tokens } = await client.getToken(code);
     const idToken = tokens.id_token;
     if (!idToken) {
       return loginRedirect(origin, 'Google did not return an ID token.');
     }
 
-    // Verify the ID token signature against Google's keys + our audience.
     const ticket = await client.verifyIdToken({
       idToken,
       audience: clientId,
@@ -62,8 +69,6 @@ export async function GET(request: Request) {
     if (!payload.email) {
       return loginRedirect(origin, 'Your Google account has no email address.');
     }
-    // Reject unverified Google emails — otherwise anyone could register
-    // a Google account with someone else's email and sign in.
     if (!payload.email_verified) {
       return loginRedirect(origin, 'Please verify your email with Google first.');
     }
@@ -72,19 +77,15 @@ export async function GET(request: Request) {
     const googleId = payload.sub;
     const name = payload.name?.trim() || email.split('@')[0];
 
-    // Look up existing user by email OR googleId (handles email changes on Google side).
     let user = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email },
-          { googleId },
-        ],
+        OR: [{ email }, { googleId }],
       },
       include: { profile: true },
     });
 
+    let auditAction: 'login' | 'register';
     if (user) {
-      // Link Google ID if not yet linked.
       if (!user.googleId) {
         user = await prisma.user.update({
           where: { id: user.id },
@@ -95,9 +96,8 @@ export async function GET(request: Request) {
           include: { profile: true },
         });
       }
-      await writeAuditLog(user.id, 'login', 'user', user.id, { provider: 'google' });
+      auditAction = 'login';
     } else {
-      // Create a new customer account.
       const { userId } = await registerGoogleCustomer({
         email,
         googleId,
@@ -110,17 +110,33 @@ export async function GET(request: Request) {
       if (!user) {
         return loginRedirect(origin, 'Account creation failed. Please try again.');
       }
-      await writeAuditLog(user.id, 'register', 'user', user.id, { provider: 'google' });
+      auditAction = 'register';
     }
 
     if (user.status !== 'active') {
       return loginRedirect(origin, 'Your account is not active. Contact support.');
     }
 
+    // Establish the real DB-backed session before any non-essential logging.
+    // Audit failures must never prevent a user from signing in.
     const meta = await getRequestMeta();
-    await createSession(user.id, { ip: meta.ip, userAgent: meta.userAgent });
+    try {
+      await createSession(user.id, { ip: meta.ip, userAgent: meta.userAgent });
+    } catch (error) {
+      // createSession writes the opaque DB-backed session cookie first. The
+      // signed claim is only a proxy optimization and proxy.ts already falls
+      // back to that opaque session when no valid claim is available. Do not
+      // turn a missing claim-signing secret into a total login outage.
+      if (!isSessionClaimConfigurationError(error)) throw error;
+      console.error('[google oauth callback] session claim unavailable; continuing with DB session', error);
+    }
 
-    // Role-aware landing: staff → /admin, pure caregiver → /caregiver, else → /portal.
+    try {
+      await writeAuditLog(user.id, auditAction, 'user', user.id, { provider: 'google' });
+    } catch (error) {
+      console.error('[google oauth callback] audit log failed', error);
+    }
+
     const target = resolvePostLoginPath({
       role: user.role,
       customerId: user.profile?.id ?? null,
