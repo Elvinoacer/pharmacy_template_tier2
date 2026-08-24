@@ -13,50 +13,44 @@ export default async function PlatformLayout({ children }: { children: React.Rea
   if (!user.platformAdmin) redirect("/admin");
 
   return (
-    <div className="min-h-screen bg-[#071512] text-[#e7f4ef]">
-      <a href="#platform-main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-[#071512]">
+    <div className="min-h-screen bg-[#071512] text-[#f1faf6]">
+      <a href="#platform-main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-[#071512] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300">
         Skip to main content
       </a>
 
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[17rem_minmax(0,1fr)]">
-        <aside className="hidden border-r border-white/10 bg-[#06110f] lg:flex lg:flex-col">
-          <div className="border-b border-white/10 px-6 py-6">
-            <Link href="/platform" className="block" aria-label="Platform control home">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-teal-200/55">Aether network</p>
-              <p className="mt-2 text-xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display), serif" }}>
-                {platform.legalName}
-              </p>
-              <p className="mt-1 text-xs leading-5 text-teal-100/45">Platform control center</p>
+        <aside aria-label="Platform sidebar" className="hidden border-r border-white/15 bg-[#06110f] lg:flex lg:flex-col">
+          <div className="border-b border-white/15 px-6 py-6">
+            <Link href="/platform" className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06110f]" aria-label="Platform control home">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-teal-100/75">Aether network</p>
+              <p className="mt-2 text-xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display), serif" }}>{platform.legalName}</p>
+              <p className="mt-1 text-xs leading-5 text-teal-50/70">Platform control center</p>
             </Link>
           </div>
 
           <PlatformNav email={user.email} />
 
-          <div className="mt-auto border-t border-white/10 p-4">
-            <p className="truncate px-3 pb-3 text-xs text-teal-100/45" title={user.email}>{user.email}</p>
-            <Link href="/" className="mb-2 flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-teal-100/70 transition hover:bg-white/5 hover:text-white">
-              View marketplace
-            </Link>
+          <div className="mt-auto border-t border-white/15 p-4">
+            <p className="truncate px-3 pb-3 text-xs text-teal-50/70" title={user.email}>{user.email}</p>
+            <Link href="/" className="mb-2 flex min-h-11 w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-teal-50/85 transition hover:bg-white/[0.07] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300">View marketplace</Link>
             <form action={logoutAction}>
-              <button type="submit" className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-rose-100/80 transition hover:bg-rose-400/10 hover:text-rose-100">
-                Sign out
-              </button>
+              <button type="submit" className="flex min-h-11 w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-rose-100/90 transition hover:bg-rose-400/10 hover:text-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300">Sign out</button>
             </form>
           </div>
         </aside>
 
         <div className="min-w-0">
-          <header className="sticky top-0 z-40 border-b border-white/10 bg-[#071512]/95 backdrop-blur lg:hidden">
+          <header className="sticky top-0 z-40 border-b border-white/15 bg-[#071512]/95 backdrop-blur lg:hidden">
             <div className="flex min-h-16 items-center justify-between gap-3 px-4">
-              <Link href="/platform" className="min-w-0">
+              <Link href="/platform" className="min-w-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300">
                 <p className="truncate text-sm font-semibold">{platform.legalName}</p>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-teal-100/45">Platform control</p>
+                <p className="text-[10px] uppercase tracking-[0.16em] text-teal-50/70">Platform control</p>
               </Link>
               <PlatformNav email={user.email} mobileOnly />
             </div>
           </header>
 
-          <main id="platform-main" className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+          <main id="platform-main" tabIndex={-1} className="mx-auto w-full max-w-[1440px] px-4 py-6 focus:outline-none sm:px-6 sm:py-8 lg:px-10 lg:py-10">
             {children}
           </main>
         </div>
