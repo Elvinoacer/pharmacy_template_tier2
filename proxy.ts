@@ -8,10 +8,6 @@ import { verifySessionClaim, claimIsStaff, isSafeInternalPath } from '@/app/lib/
  */
 const TENANT_HEADERS = ['x-platform-bypass', 'x-pharmacy-id', 'x-pharmacy-slug'] as const
 
-/**
- * API paths that legitimately receive cross-origin / server-to-server POSTs.
- * Everything else mutating under /api must be same-origin (CSRF defense).
- */
 const EXTERNAL_API_PREFIXES = [
   '/api/cron/',
   '/api/webhooks/',
@@ -24,7 +20,7 @@ function isExternalApiPath(pathname: string): boolean {
 
 function sameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin')
-  if (!origin) return true // non-browser client; auth still applies
+  if (!origin) return true
   try {
     const originUrl = new URL(origin)
     const host =
@@ -40,17 +36,17 @@ function sameOrigin(request: NextRequest): boolean {
 /**
  * Authentication gate + multi-tenant resolution.
  *
- * /p/:slug/... is rewritten internally to the existing public pages with
- * x-pharmacy-slug set so every query is scoped to that pharmacy.
+ * `/p/:slug/...` is rewritten internally to the existing public pages with
+ * x-pharmacy-slug set. A selected public pharmacy cookie is also propagated
+ * to ordinary public routes, so deep links such as `/health/*` retain the
+ * tenant instead of silently falling back to Aether.
  */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const requestHeaders = new Headers(request.headers)
 
-  // ── Anti-spoofing: strip tenant headers from the incoming request ──
   for (const h of TENANT_HEADERS) requestHeaders.delete(h)
 
-  // ── CSRF defense: same-origin check for mutating API calls ─────────
   if (
     pathname.startsWith('/api/') &&
     !isExternalApiPath(pathname) &&
@@ -60,7 +56,6 @@ export async function proxy(request: NextRequest) {
     return new NextResponse('Cross-origin request rejected', { status: 403 })
   }
 
-  // ── Tenant resolution ────────────────────────────────────────
   const storefront = pathname.match(/^\/p\/([a-z0-9][a-z0-9-]{1,60})(\/.*)?$/i)
   if (storefront) {
     const slug = storefront[1].toLowerCase()
@@ -68,7 +63,6 @@ export async function proxy(request: NextRequest) {
     const restPath = rest === '' || rest === '/' ? '/' : rest
     const firstSeg = restPath === '/' ? '' : restPath.split('/').filter(Boolean)[0] || ''
 
-    // Don't rewrite auth/admin/portal/platform under a pharmacy prefix.
     const reserved = new Set([
       'login', 'register', 'forgot-password', 'reset-password',
       'portal', 'admin', 'platform', 'onboard', 'api', '_next',
@@ -117,6 +111,10 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/api/cron') ||
     pathname.startsWith('/api/webhooks') ||
     pathname.startsWith('/api/payments/daraja/callback')
+
+  // Important: all non-platform public pages are tenant-aware. This includes
+  // health guides, counselling, preventive pages, etc. when a pharmacy has
+  // already been selected through /p/:slug or the public pharmacy cookie.
   if (
     publicSlug &&
     !requestHeaders.has('x-pharmacy-slug') &&
@@ -128,7 +126,6 @@ export async function proxy(request: NextRequest) {
     requestHeaders.set('x-pharmacy-slug', publicSlug)
   }
 
-  // ── Auth gates ───────────────────────────────────────────────
   const needsAuth =
     pathname.startsWith('/portal') ||
     pathname.startsWith('/admin') ||
@@ -206,13 +203,8 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/portal/:path*',
-    '/admin/:path*',
-    '/caregiver',
-    '/caregiver/:path*',
-    '/platform',
-    '/platform/:path*',
-    '/p/:path*',
-    '/api/:path*',
+    // Public pages must pass through tenant resolution as well. Exclude
+    // Next internals and static assets to avoid unnecessary middleware work.
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map)$).*)',
   ],
 }
