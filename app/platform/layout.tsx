@@ -13,7 +13,10 @@ export default async function PlatformLayout({ children }: { children: React.Rea
   if (!user.platformAdmin) redirect("/admin");
 
   return (
-    <div className="min-h-screen bg-[#071512] text-[#f1faf6]">
+    <div
+      className="platform-shell isolate min-h-screen min-h-[100dvh] bg-[#071512] text-[#f1faf6]"
+      style={{ backgroundColor: "#071512", color: "#f1faf6" }}
+    >
       <a href="#platform-main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-[#071512] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300">
         Skip to main content
       </a>
@@ -39,8 +42,8 @@ export default async function PlatformLayout({ children }: { children: React.Rea
           </div>
         </aside>
 
-        <div className="min-w-0">
-          <header className="sticky top-0 z-40 border-b border-white/15 bg-[#071512]/95 backdrop-blur lg:hidden">
+        <div className="min-w-0 bg-[#071512]" style={{ backgroundColor: "#071512" }}>
+          <header className="sticky top-0 z-40 border-b border-white/15 bg-[#071512] lg:hidden" style={{ backgroundColor: "#071512" }}>
             <div className="flex min-h-16 items-center justify-between gap-3 px-4">
               <Link href="/platform" className="min-w-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300">
                 <p className="truncate text-sm font-semibold">{platform.legalName}</p>
@@ -50,7 +53,12 @@ export default async function PlatformLayout({ children }: { children: React.Rea
             </div>
           </header>
 
-          <main id="platform-main" tabIndex={-1} className="mx-auto w-full max-w-[1440px] px-4 py-6 focus:outline-none sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+          <main
+            id="platform-main"
+            tabIndex={-1}
+            className="relative z-0 mx-auto min-h-[calc(100dvh-4rem)] w-full max-w-[1440px] bg-[#071512] px-4 py-6 focus:outline-none sm:px-6 sm:py-8 lg:min-h-screen lg:px-10 lg:py-10"
+            style={{ backgroundColor: "#071512", color: "#f1faf6" }}
+          >
             {children}
           </main>
         </div>
