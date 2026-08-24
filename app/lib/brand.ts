@@ -3,8 +3,11 @@ import { platform } from "@/app/lib/data";
 /**
  * Shared public-surface helpers. Safe to import from client components.
  *
- * Platform chrome: marketplace, onboarding, legal, auth.
- * Storefront chrome: a specific pharmacy (`/p/{slug}` or cookie-scoped shop pages).
+ * Platform chrome: marketplace, network health library, onboarding, legal, auth.
+ * Storefront chrome: an explicitly addressed pharmacy (`/p/{slug}/...`).
+ *
+ * IMPORTANT: a pharmacy cookie does not change the public surface. The URL
+ * itself must identify the tenant with `/p/{slug}`.
  */
 
 export const PLATFORM_PREFIXES = [
@@ -19,7 +22,7 @@ export const PLATFORM_PREFIXES = [
   "/reset-password",
 ] as const;
 
-/** Shop actions that only make sense after a pharmacy is chosen. */
+/** Shop actions that only make sense after a pharmacy is explicitly chosen. */
 export const STOREFRONT_ACTION_PREFIXES = [
   "/refill",
   "/order",
@@ -47,18 +50,15 @@ export function isStorefrontUrl(pathname: string): boolean {
 }
 
 /**
- * Public routes are tenant-aware by default unless they are explicitly part
- * of the platform/network surface. A selected pharmacy therefore follows the
- * patient across deep links such as `/health/*`, not only `/p/:slug/*`.
+ * A public page is a pharmacy storefront ONLY when the URL explicitly names
+ * the pharmacy with `/p/{slug}`. Generic public pages remain platform pages,
+ * even when a previous pharmacy selection exists in a cookie.
  */
 export function publicSurface(
   pathname: string,
-  pharmacySlug: string | null | undefined,
+  _pharmacySlug?: string | null,
 ): "platform" | "storefront" {
-  if (isPlatformPath(pathname)) return "platform";
-  if (isStorefrontUrl(pathname)) return "storefront";
-  if (pharmacySlug) return "storefront";
-  return "storefront";
+  return isStorefrontUrl(pathname) ? "storefront" : "platform";
 }
 
 export type PublicBrand = {
@@ -92,8 +92,8 @@ export function platformBrand(): PublicBrand {
 }
 
 /**
- * Neutral fallback for tenant-aware public pages when a patient has not yet
- * selected a pharmacy. This is deliberately NOT the demo Aether tenant.
+ * Neutral tenant fallback retained for components that need a safe value, but
+ * it is not used to turn generic public routes into a storefront.
  */
 export function unscopedPublicBrand(): PublicBrand {
   return {
