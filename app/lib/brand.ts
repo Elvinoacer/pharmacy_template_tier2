@@ -47,17 +47,18 @@ export function isStorefrontUrl(pathname: string): boolean {
 }
 
 /**
- * Chrome surface for the current URL.
- * `/` is always the network marketplace, even if a pharmacy cookie exists.
+ * Public routes are tenant-aware by default unless they are explicitly part
+ * of the platform/network surface. A selected pharmacy therefore follows the
+ * patient across deep links such as `/health/*`, not only `/p/:slug/*`.
  */
 export function publicSurface(
   pathname: string,
   pharmacySlug: string | null | undefined,
 ): "platform" | "storefront" {
-  if (isStorefrontUrl(pathname)) return "storefront";
   if (isPlatformPath(pathname)) return "platform";
+  if (isStorefrontUrl(pathname)) return "storefront";
   if (pharmacySlug) return "storefront";
-  return "platform";
+  return "storefront";
 }
 
 export type PublicBrand = {
@@ -90,6 +91,26 @@ export function platformBrand(): PublicBrand {
   };
 }
 
+/**
+ * Neutral fallback for tenant-aware public pages when a patient has not yet
+ * selected a pharmacy. This is deliberately NOT the demo Aether tenant.
+ */
+export function unscopedPublicBrand(): PublicBrand {
+  return {
+    name: "Pharmacy",
+    tagline: "Local pharmacy care, online",
+    phone: platform.phone,
+    phoneHref: platform.phoneHref,
+    email: platform.email,
+    addressShort: "Kenya",
+    addressFull: "Licensed pharmacies across Kenya",
+    hours: [],
+    whatsappHref: platform.whatsappHref,
+    slug: null,
+    logoUrl: null,
+  };
+}
+
 export type TenantBrandValue = {
   name: string;
   network: string;
@@ -97,7 +118,7 @@ export type TenantBrandValue = {
 };
 
 export const defaultTenantBrand: TenantBrandValue = {
-  name: platform.name,
+  name: "Pharmacy",
   network: platform.legalName,
   slug: null,
 };
