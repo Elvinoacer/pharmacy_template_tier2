@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -60,6 +60,8 @@ export default function PharmacyDirectory({
   initialDelivery,
 }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState(initialQuery);
   const [city, setCity] = useState(initialCity);
   const [county, setCounty] = useState(initialCounty);
@@ -69,6 +71,18 @@ export default function PharmacyDirectory({
   const [sort, setSort] = useState<"near" | "featured" | "name">("near");
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [locationState, setLocationState] = useState<"idle" | "loading" | "denied">("idle");
+
+  // Header search deep-links here and immediately activates the directory search.
+  useEffect(() => {
+    if (searchParams.get("focus") !== "search") return;
+
+    const frame = requestAnimationFrame(() => {
+      searchInputRef.current?.focus({ preventScroll: true });
+      searchInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [searchParams]);
 
   // Keep the URL shareable — filters round-trip through the server page.
   const syncUrl = useCallback(
@@ -171,6 +185,7 @@ export default function PharmacyDirectory({
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a9a92]" aria-hidden />
             <input
+              ref={searchInputRef}
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
