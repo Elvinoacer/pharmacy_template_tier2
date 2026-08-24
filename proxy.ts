@@ -37,9 +37,8 @@ function sameOrigin(request: NextRequest): boolean {
  * Authentication gate + multi-tenant resolution.
  *
  * `/p/:slug/...` is rewritten internally to the existing public pages with
- * x-pharmacy-slug set. A selected public pharmacy cookie is also propagated
- * to ordinary public routes, so deep links such as `/health/*` retain the
- * tenant instead of silently falling back to Aether.
+ * x-pharmacy-slug set. A pharmacy cookie is intentionally NOT propagated to
+ * generic public routes. The URL must explicitly identify the pharmacy.
  */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
@@ -94,37 +93,8 @@ export async function proxy(request: NextRequest) {
     requestHeaders.set('x-pharmacy-id', staffPharmacy)
   }
 
-  const publicSlug = request.cookies.get('aether_pharmacy')?.value
-  const isPlatformSurface =
-    pathname === '/' ||
-    pathname.startsWith('/for-pharmacies') ||
-    pathname.startsWith('/onboard') ||
-    pathname.startsWith('/platform') ||
-    pathname.startsWith('/pharmacies') ||
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
-    pathname.startsWith('/forgot-password') ||
-    pathname.startsWith('/reset-password') ||
-    pathname.startsWith('/privacy') ||
-    pathname.startsWith('/terms') ||
-    pathname.startsWith('/api/platform') ||
-    pathname.startsWith('/api/cron') ||
-    pathname.startsWith('/api/webhooks') ||
-    pathname.startsWith('/api/payments/daraja/callback')
-
-  // Important: all non-platform public pages are tenant-aware. This includes
-  // health guides, counselling, preventive pages, etc. when a pharmacy has
-  // already been selected through /p/:slug or the public pharmacy cookie.
-  if (
-    publicSlug &&
-    !requestHeaders.has('x-pharmacy-slug') &&
-    !pathname.startsWith('/admin') &&
-    !pathname.startsWith('/api/admin') &&
-    !pathname.startsWith('/api/platform') &&
-    !isPlatformSurface
-  ) {
-    requestHeaders.set('x-pharmacy-slug', publicSlug)
-  }
+  // Do not derive public tenant context from a remembered pharmacy cookie.
+  // Generic public URLs such as `/health/self-care-guide` are network pages.
 
   const needsAuth =
     pathname.startsWith('/portal') ||
@@ -203,8 +173,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Public pages must pass through tenant resolution as well. Exclude
-    // Next internals and static assets to avoid unnecessary middleware work.
+    // Public pages pass through to enforce explicit `/p/:slug` tenant routing.
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map)$).*)',
   ],
 }
