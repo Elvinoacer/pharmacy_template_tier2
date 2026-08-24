@@ -1,190 +1,66 @@
 import Link from "next/link";
+import { ArrowRight, Building2, Clock3, ShoppingBag, Users } from "lucide-react";
 import { prismaUnscoped } from "@/app/lib/db";
 
 export const metadata = { title: "Network overview" };
 
-function kes(n: number): string {
-  return `KES ${Math.round(n).toLocaleString("en-KE")}`;
-}
+function kes(n: number): string { return `KES ${Math.round(n).toLocaleString("en-KE")}`; }
 
 export default async function PlatformHomePage() {
   const since = new Date();
   since.setDate(since.getDate() - 30);
-
-  let pharmacies = 0;
-  let pending = 0;
-  let live = 0;
-  let users = 0;
+  let pharmacies = 0, pending = 0, live = 0, users = 0, orders30d = 0, refills30d = 0, gmv30d = 0;
   let recent: Array<{ id: string; name: string; status: string; city: string | null; createdAt: Date }> = [];
-
-  let orders30d = 0;
-  let refills30d = 0;
-  let gmv30d = 0;
-  let topTenants: Array<{
-    id: string;
-    name: string;
-    status: string;
-    orderCount: number;
-    revenue: number;
-  }> = [];
+  let topTenants: Array<{ id: string; name: string; status: string; orderCount: number; revenue: number }> = [];
 
   try {
     [pharmacies, pending, live, users, recent] = await Promise.all([
       prismaUnscoped.pharmacy.count(),
-      prismaUnscoped.pharmacy.count({
-        where: { status: { in: ["submitted", "under_review", "needs_info"] } },
-      }),
+      prismaUnscoped.pharmacy.count({ where: { status: { in: ["submitted", "under_review", "needs_info"] } } }),
       prismaUnscoped.pharmacy.count({ where: { status: "active", listed: true } }),
       prismaUnscoped.user.count(),
-      prismaUnscoped.pharmacy.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 8,
-        select: { id: true, name: true, status: true, city: true, createdAt: true },
-      }),
+      prismaUnscoped.pharmacy.findMany({ orderBy: { createdAt: "desc" }, take: 6, select: { id: true, name: true, status: true, city: true, createdAt: true } }),
     ]);
-
-    // ── Cross-tenant analytics (platform bypass) ────────────────
     const [orderAgg, refillAgg, payAgg, perTenant] = await Promise.all([
-      prismaUnscoped.order.count({
-        where: { createdAt: { gte: since }, status: { not: "cancelled" } },
-      }),
-      prismaUnscoped.refillRequest.count({
-        where: { createdAt: { gte: since }, status: { not: "cancelled" } },
-      }),
-      prismaUnscoped.payment.aggregate({
-        where: { status: "completed", createdAt: { gte: since } },
-        _sum: { amount: true },
-      }),
-      prismaUnscoped.pharmacy.findMany({
-        where: { status: "active" },
-        select: {
-          id: true,
-          name: true,
-          status: true,
-          orders: {
-            where: { createdAt: { gte: since }, status: { not: "cancelled" } },
-            select: { id: true, netTotal: true },
-          },
-        },
-      }),
+      prismaUnscoped.order.count({ where: { createdAt: { gte: since }, status: { not: "cancelled" } } }),
+      prismaUnscoped.refillRequest.count({ where: { createdAt: { gte: since }, status: { not: "cancelled" } } }),
+      prismaUnscoped.payment.aggregate({ where: { status: "completed", createdAt: { gte: since } }, _sum: { amount: true } }),
+      prismaUnscoped.pharmacy.findMany({ where: { status: "active" }, select: { id: true, name: true, status: true, orders: { where: { createdAt: { gte: since }, status: { not: "cancelled" } }, select: { id: true, netTotal: true } } } }),
     ]);
+    orders30d = orderAgg; refills30d = refillAgg; gmv30d = Number(payAgg._sum.amount ?? 0);
+    topTenants = perTenant.map((tenant) => ({ id: tenant.id, name: tenant.name, status: tenant.status, orderCount: tenant.orders.length, revenue: tenant.orders.reduce((sum, order) => sum + Number(order.netTotal ?? 0), 0) })).sort((a, b) => b.revenue - a.revenue).slice(0, 6);
+  } catch {}
 
-    orders30d = orderAgg;
-    refills30d = refillAgg;
-    gmv30d = Number(payAgg._sum.amount ?? 0);
-    topTenants = perTenant
-      .map((t) => ({
-        id: t.id,
-        name: t.name,
-        status: t.status,
-        orderCount: t.orders.length,
-        revenue: t.orders.reduce((sum, o) => sum + Number(o.netTotal ?? 0), 0),
-      }))
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 6);
-  } catch {
-    // DB down
-  }
-
-  const cards = [
-    { label: "Pharmacies", value: pharmacies, href: "/platform/pharmacies" },
-    { label: "Awaiting review", value: pending, href: "/platform/applications" },
-    { label: "Live in marketplace", value: live, href: "/" },
-    { label: "User accounts", value: users, href: "/platform/users" },
-  ];
-
-  const activity = [
-    { label: "Orders (30d)", value: orders30d.toLocaleString("en-KE") },
-    { label: "Refill requests (30d)", value: refills30d.toLocaleString("en-KE") },
-    { label: "Collected online (30d)", value: kes(gmv30d) },
+  const stats = [
+    { label: "Pharmacies", value: pharmacies, detail: "Total tenant accounts", href: "/platform/pharmacies", icon: Building2 },
+    { label: "Needs attention", value: pending, detail: "Applications awaiting review", href: "/platform/applications", icon: Clock3 },
+    { label: "Live storefronts", value: live, detail: "Visible in the marketplace", href: "/platform/pharmacies?status=active", icon: ShoppingBag },
+    { label: "User accounts", value: users, detail: "Across the whole network", href: "/platform/users", icon: Users },
   ];
 
   return (
-    <div>
-      <h1 className="text-3xl font-semibold" style={{ fontFamily: "var(--font-display), serif" }}>
-        Network control
-      </h1>
-      <p className="mt-2 text-sm text-teal-100/70">
-        Verify licences, list storefronts, and suspend a tenant without touching another pharmacy&apos;s
-        data.
-      </p>
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((c) => (
-          <Link
-            key={c.label}
-            href={c.href}
-            className="rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:bg-white/10"
-          >
-            <p className="text-xs uppercase tracking-wide text-teal-200/70">{c.label}</p>
-            <p className="mt-2 text-3xl font-semibold tabular-nums">{c.value}</p>
-          </Link>
-        ))}
-      </div>
+    <div className="space-y-8">
+      <section className="rounded-3xl border border-white/10 bg-[linear-gradient(135deg,rgba(13,110,90,.22),rgba(7,21,18,.2)_55%,rgba(255,255,255,.03))] px-5 py-6 sm:px-8 sm:py-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-200/65">Platform overview</p>
+        <div className="mt-3 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div><h1 className="text-3xl font-semibold tracking-tight sm:text-4xl" style={{ fontFamily: "var(--font-display), serif" }}>Network control</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-teal-100/65">Review pharmacy applications, monitor network activity, and manage platform access from one place.</p></div>
+          <Link href="/platform/applications" className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#071512] transition hover:bg-teal-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300">Review queue <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+        </div>
+      </section>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        {activity.map((a) => (
-          <div key={a.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <p className="text-xs uppercase tracking-wide text-teal-200/60">{a.label}</p>
-            <p className="mt-2 text-xl font-semibold tabular-nums">{a.value}</p>
-          </div>
-        ))}
-      </div>
+      <section aria-label="Network statistics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => { const Icon = stat.icon; return <Link key={stat.label} href={stat.href} className="group rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition hover:-translate-y-0.5 hover:border-teal-300/25 hover:bg-white/[0.07] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300"><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-medium uppercase tracking-wide text-teal-100/50">{stat.label}</p><p className="mt-3 text-3xl font-semibold tabular-nums">{stat.value.toLocaleString("en-KE")}</p></div><span className="rounded-xl bg-teal-300/10 p-2.5 text-teal-200"><Icon className="h-5 w-5" aria-hidden /></span></div><p className="mt-3 text-xs text-teal-100/45">{stat.detail}</p></Link>; })}
+      </section>
 
-      {topTenants.length > 0 && (
-        <>
-          <h2 className="mt-12 text-lg font-semibold">Top tenants by order value (30d)</h2>
-          <div className="mt-4 overflow-x-auto rounded-2xl border border-white/10">
-            <table className="w-full min-w-[560px] text-left text-sm">
-              <thead className="bg-white/5 text-xs uppercase tracking-wide text-teal-100/60">
-                <tr>
-                  <th className="px-4 py-3">Pharmacy</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Orders</th>
-                  <th className="px-4 py-3 text-right">Order value</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/10">
-                {topTenants.map((t) => (
-                  <tr key={t.id} className="hover:bg-white/5">
-                    <td className="px-4 py-3">
-                      <Link href={`/platform/pharmacies/${t.id}`} className="font-medium hover:underline">
-                        {t.name}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-full border border-white/15 px-2 py-0.5 text-[11px] uppercase tracking-wide">
-                        {t.status.replace("_", " ")}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right tabular-nums">{t.orderCount}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">{kes(t.revenue)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+      <section className="grid gap-4 lg:grid-cols-[1.35fr_.65fr]">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6"><div className="flex items-center justify-between gap-4"><div><h2 className="text-lg font-semibold">Network activity</h2><p className="mt-1 text-xs text-teal-100/50">Last 30 days across all pharmacies</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-3">{[{label:"Orders",value:orders30d.toLocaleString("en-KE")},{label:"Refill requests",value:refills30d.toLocaleString("en-KE")},{label:"Collected online",value:kes(gmv30d)}].map((item)=><div key={item.label} className="rounded-xl border border-white/10 bg-black/10 p-4"><p className="text-xs text-teal-100/50">{item.label}</p><p className="mt-2 text-xl font-semibold tabular-nums">{item.value}</p></div>)}</div></div>
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6"><div className="flex items-center justify-between"><div><h2 className="text-lg font-semibold">Quick actions</h2><p className="mt-1 text-xs text-teal-100/50">Most common platform tasks</p></div></div><div className="mt-4 grid gap-2">{[["Review applications","/platform/applications"],["Manage pharmacies","/platform/pharmacies"],["Manage users","/platform/users"],["View audit trail","/platform/audit"]].map(([label,href])=><Link key={href} href={href} className="flex items-center justify-between rounded-xl border border-white/10 px-3 py-3 text-sm text-teal-100/80 transition hover:bg-white/5 hover:text-white">{label}<ArrowRight className="h-4 w-4 text-teal-100/40" aria-hidden /></Link>)}</div></div>
+      </section>
 
-      <h2 className="mt-12 text-lg font-semibold">Recent applications</h2>
-      <div className="mt-4 divide-y divide-white/10 rounded-2xl border border-white/10">
-        {recent.length === 0 && <p className="px-4 py-8 text-sm text-teal-100/60">No pharmacies yet.</p>}
-        {recent.map((p) => (
-          <Link
-            key={p.id}
-            href={`/platform/pharmacies/${p.id}`}
-            className="flex items-center justify-between px-4 py-3 text-sm hover:bg-white/5"
-          >
-            <span>
-              {p.name}
-              <span className="ml-2 text-teal-100/50">{p.city}</span>
-            </span>
-            <span className="rounded-full border border-white/15 px-2 py-0.5 text-[11px] uppercase tracking-wide">
-              {p.status.replace("_", " ")}
-            </span>
-          </Link>
-        ))}
-      </div>
+      <section className="grid gap-4 xl:grid-cols-2">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"><div className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><h2 className="font-semibold">Recent applications</h2><p className="mt-0.5 text-xs text-teal-100/50">Newest pharmacy records</p></div><Link href="/platform/applications" className="text-xs text-teal-200 hover:text-white">View queue</Link></div><div className="divide-y divide-white/10">{recent.length === 0 ? <p className="px-5 py-10 text-center text-sm text-teal-100/50">No pharmacy records yet.</p> : recent.map((item)=><Link key={item.id} href={`/platform/pharmacies/${item.id}`} className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-white/[0.04]"><div className="min-w-0"><p className="truncate text-sm font-medium">{item.name}</p><p className="mt-1 text-xs text-teal-100/45">{item.city || "Location not set"}</p></div><span className="shrink-0 rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-teal-100/65">{item.status.replace("_", " ")}</span></Link>)}</div></div>
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"><div className="border-b border-white/10 px-5 py-4"><h2 className="font-semibold">Top tenants</h2><p className="mt-0.5 text-xs text-teal-100/50">By order value in the last 30 days</p></div>{topTenants.length === 0 ? <p className="px-5 py-10 text-center text-sm text-teal-100/50">No completed activity yet.</p> : <div className="divide-y divide-white/10">{topTenants.map((tenant,index)=><Link key={tenant.id} href={`/platform/pharmacies/${tenant.id}`} className="flex items-center gap-3 px-5 py-3.5 transition hover:bg-white/[0.04]"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/5 text-xs text-teal-100/50">{index+1}</span><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{tenant.name}</p><p className="mt-0.5 text-xs text-teal-100/45">{tenant.orderCount} orders</p></div><p className="text-sm font-medium tabular-nums">{kes(tenant.revenue)}</p></Link>)}</div>}</div>
+      </section>
     </div>
   );
 }
