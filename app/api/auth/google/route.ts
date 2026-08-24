@@ -35,7 +35,12 @@ export async function GET(request: Request) {
   const authorizeUrl = client.generateAuthUrl({
     access_type: 'online', // we don't need refresh tokens for sign-in
     prompt: 'select_account', // let users pick which Google account to use
+    // This callback verifies Google's OpenID Connect ID token. The `openid`
+    // scope is therefore required; without it Google may return an access
+    // token but no `id_token`, causing the callback to fail after account
+    // selection and fall back to the generic authentication error.
     scope: [
+      'openid',
       'https://www.googleapis.com/auth/userinfo.profile',
       'https://www.googleapis.com/auth/userinfo.email',
     ],
