@@ -32,7 +32,7 @@ function NetworkAbout() {
           <Reveal>
             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
               <Image
-                src="/images/gallery/welcoming_retail_floor.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"
                 alt="Neighbourhood pharmacy interior"
                 fill
                 className="object-cover"
@@ -140,7 +140,7 @@ export default async function AboutPage() {
           <Reveal>
             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
               <Image
-                src={pharmacy.coverImageUrl || "/images/gallery/welcoming_retail_floor.webp"}
+                src={pharmacy.coverImageUrl || "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"}
                 alt={`${pharmacy.name} interior`}
                 fill
                 className="object-cover"

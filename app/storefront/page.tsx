@@ -173,7 +173,7 @@ export default async function StorefrontPage() {
               <div className="col-span-7 row-span-2 overflow-hidden rounded-[1.5rem] shadow-2xl shadow-teal-900/20">
                 <div className="relative aspect-[3/4] sm:aspect-[4/5]">
                   <Image
-                    src={resolved.coverImageUrl || "/images/gallery/welcoming_retail_floor.webp"}
+                    src={resolved.coverImageUrl || "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"}
                     alt={`${resolved.name} pharmacy`}
                     fill
                     priority
@@ -197,7 +197,7 @@ export default async function StorefrontPage() {
               <div className="col-span-5 overflow-hidden rounded-[1.25rem] shadow-xl">
                 <div className="relative aspect-square">
                   <Image
-                    src="/images/services/medication-counselling.webp"
+                    src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp"
                     alt="Pharmacist preparing medication"
                     fill
                     className="object-cover"
@@ -348,7 +348,7 @@ export default async function StorefrontPage() {
             <div className="grid overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-[0_24px_70px_rgba(8,40,32,0.1)] lg:grid-cols-2 group/card">
               <div className="relative min-h-[260px] lg:min-h-[400px] overflow-hidden">
                 <Image
-                  src="/images/gallery/modern_care_tools.webp"
+                  src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp"
                   alt="Pharmacist consulting with a patient"
                   fill
                   className="object-cover transition duration-[1.2s] ease-out group-hover/card:scale-[1.03]"

@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     description: platform.description,
     images: [
       {
-        url: "/images/og-preview.jpg",
+        url: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/og-preview.jpg",
         width: 1200,
         height: 675,
         type: "image/jpeg",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${platform.name} — ${platform.tagline}`,
     description: platform.description,
-    images: ["/images/og-preview.jpg"],
+    images: ["https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/og-preview.jpg"],
   },
   robots: {
     index: true,

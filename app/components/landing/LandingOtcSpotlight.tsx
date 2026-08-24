@@ -7,42 +7,42 @@ import { ArrowRight, ShoppingBag } from "lucide-react";
 const OTC_CATEGORIES = [
   {
     title: "Cold & Flu",
-    image: "/images/otc/cold-flu.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/cold-flu.webp",
     href: "/medicines?category=cold-flu",
   },
   {
     title: "Pain Relief",
-    image: "/images/otc/pain-relief.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/pain-relief.webp",
     href: "/medicines?category=pain-relief",
   },
   {
     title: "Vitamins",
-    image: "/images/otc/vitamins-supplements.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
     href: "/medicines?category=vitamins",
   },
   {
     title: "Baby Care",
-    image: "/images/otc/baby-care.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/baby-care.webp",
     href: "/medicines?category=baby-care",
   },
   {
     title: "Diabetes",
-    image: "/images/otc/diabetes-management.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/diabetes-management.webp",
     href: "/medicines?category=diabetes",
   },
   {
     title: "Dermatology",
-    image: "/images/otc/skin-care.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
     href: "/medicines?category=skin-care",
   },
   {
     title: "First Aid",
-    image: "/images/otc/first-aid.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
     href: "/medicines?category=first-aid",
   },
   {
     title: "Women's Health",
-    image: "/images/otc/womens-health.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
     href: "/medicines?category=womens-health",
   },
 ];

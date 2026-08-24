@@ -148,7 +148,7 @@ export default function LandingHeroInteractive({
               {/* Cover Photo with Live Badges */}
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem]">
                 <Image
-                  src="/images/gallery/welcoming_retail_floor.webp"
+                  src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"
                   alt="Aether accredited partner pharmacy"
                   fill
                   priority

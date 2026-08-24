@@ -8,25 +8,25 @@ const TEAM = [
     name: "Dr. Priya Nair, PharmD",
     role: "Lead Pharmacist & Group CEO",
     qual: "PharmD · Chronic Disease Therapy",
-    image: "/images/team/priya-nair.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/priya-nair.webp",
   },
   {
     name: "Marcus Chen, RPh",
     role: "Clinical Immunization Lead",
     qual: "RPh · Cold-Chain Certified",
-    image: "/images/team/marcus-chen.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/marcus-chen.webp",
   },
   {
     name: "Sofia Alvarez, PharmD",
     role: "Patient Adherence & Safety",
     qual: "PharmD · Drug Interaction Audit",
-    image: "/images/team/sofia-alvarez.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/sofia-alvarez.webp",
   },
   {
     name: "David Kim",
     role: "Logistics & Cold-Chain Lead",
     qual: "Good Pharmacy Practice (GPP)",
-    image: "/images/team/david-kim.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/david-kim.webp",
   },
 ];
 

@@ -83,7 +83,7 @@ export default function LandingJourneyTabs() {
               <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
                 <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
-                    src="/images/services/prescription-dispensing.webp"
+                    src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/prescription-dispensing.webp"
                     alt="Find care and scan medicine"
                     fill
                     className="object-cover transition duration-700 group-hover:scale-105"
@@ -116,7 +116,7 @@ export default function LandingJourneyTabs() {
               <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
                 <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
-                    src="/images/services/medication-counselling.webp"
+                    src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp"
                     alt="Pharmacist dosage review"
                     fill
                     className="object-cover transition duration-700 group-hover:scale-105"
@@ -149,7 +149,7 @@ export default function LandingJourneyTabs() {
               <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
                 <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
-                    src="/images/services/delivery-services.webp"
+                    src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/delivery-services.webp"
                     alt="Fast doorstep courier delivery"
                     fill
                     className="object-cover transition duration-700 group-hover:scale-105"
@@ -205,7 +205,7 @@ export default function LandingJourneyTabs() {
               <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
                 <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
-                    src="/images/gallery/welcoming_retail_floor.webp"
+                    src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"
                     alt="Submit pharmacy premises"
                     fill
                     className="object-cover transition duration-700 group-hover:scale-105"
@@ -238,7 +238,7 @@ export default function LandingJourneyTabs() {
               <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
                 <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
-                    src="/images/gallery/modern_care_tools.webp"
+                    src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp"
                     alt="Network verification & compliance"
                     fill
                     className="object-cover transition duration-700 group-hover:scale-105"
@@ -271,7 +271,7 @@ export default function LandingJourneyTabs() {
               <div className="group relative flex flex-col justify-between overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#111827]/70 shadow-lg backdrop-blur-md transition hover:border-white/20">
                 <div className="relative h-44 w-full overflow-hidden bg-black/40">
                   <Image
-                    src="/images/gallery/curated_wellness_aisle.webp"
+                    src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/curated_wellness_aisle.webp"
                     alt="Go live with your own brand"
                     fill
                     className="object-cover transition duration-700 group-hover:scale-105"

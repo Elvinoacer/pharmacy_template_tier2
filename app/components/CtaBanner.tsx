@@ -28,7 +28,7 @@ export default function CtaBanner({
         <div className="group/banner relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-white/40">
           <div className="absolute inset-0 transition-transform duration-[2s] ease-out group-hover/banner:scale-[1.02]">
             <Image
-              src="/images/services/home-care-support.webp"
+              src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/home-care-support.webp"
               alt="Calm modern wellness space"
               fill
               className="object-cover"

@@ -1062,7 +1062,7 @@ async function main() {
       ],
       eligibility: "Valid prescription from a licensed prescriber.",
       duration: "Most prescriptions ready within 30–45 minutes.",
-      imageUrl: "/images/services/prescription-dispensing.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/prescription-dispensing.webp",
       icon: "pill",
       price: null,
       sortOrder: 10,
@@ -1082,7 +1082,7 @@ async function main() {
       ],
       eligibility: "Existing prescription on file with remaining refills, or new transfer.",
       duration: "Typically ready same day when requested before 3 PM.",
-      imageUrl: "/images/gallery/welcoming_retail_floor.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
       icon: "refresh",
       price: null,
       sortOrder: 20,
@@ -1102,7 +1102,7 @@ async function main() {
       ],
       eligibility: "Open to all patients; appointments preferred for longer reviews.",
       duration: "15–30 minutes depending on complexity.",
-      imageUrl: "/images/services/medication-counselling.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
       icon: "chat",
       price: 500,
       sortOrder: 30,
@@ -1121,7 +1121,7 @@ async function main() {
       ],
       eligibility: "Adults and teens; no appointment required.",
       duration: "About 5–10 minutes.",
-      imageUrl: "/images/articles/understanding-blood-pressure.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/understanding-blood-pressure.webp",
       icon: "heart",
       price: null,
       sortOrder: 40,
@@ -1140,7 +1140,7 @@ async function main() {
       ],
       eligibility: "Patients with diabetes or prediabetes.",
       duration: "Counselling sessions 20–40 minutes by appointment.",
-      imageUrl: "/images/articles/diabetes-everyday-tips.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp",
       icon: "activity",
       price: 800,
       sortOrder: 50,
@@ -1160,7 +1160,7 @@ async function main() {
       ],
       eligibility: "Age and medical criteria vary by vaccine; pharmacist will screen.",
       duration: "10–20 minutes including observation.",
-      imageUrl: "/images/services/vaccinations.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/vaccinations.webp",
       icon: "shield",
       price: 1500,
       sortOrder: 60,
@@ -1183,7 +1183,7 @@ async function main() {
       ],
       eligibility: "Open to all adults and teens; walk-in or advance booking available.",
       duration: "10–20 minutes depending on test panel.",
-      imageUrl: "/images/gallery/modern_care_tools.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
       icon: "clipboard",
       price: 1000,
       sortOrder: 70,
@@ -1202,7 +1202,7 @@ async function main() {
       ],
       eligibility: "Addresses within our delivery zones (see Delivery page).",
       duration: "Usually within 2–6 hours of ready status on delivery days.",
-      imageUrl: "/images/services/delivery-services.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/delivery-services.webp",
       icon: "truck",
       price: 300,
       sortOrder: 80,
@@ -1222,7 +1222,7 @@ async function main() {
       ],
       eligibility: "Patients managing multiple medications or with caregiver support.",
       duration: "Setup consultation 30–45 minutes.",
-      imageUrl: "/images/services/home-care-support.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/home-care-support.webp",
       icon: "home",
       price: 2000,
       sortOrder: 90,
@@ -1266,7 +1266,7 @@ async function main() {
       name: "Pain Relief",
       description:
         "Over-the-counter options for headaches, muscle aches, joint pain, and everyday discomfort — with pharmacist guidance on safe use.",
-      imageUrl: "/images/otc/pain-relief.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/pain-relief.webp",
       brands: ["Panadol", "Brufen", "Voltaren", "Deep Heat", "Disprin", "Advil"],
       tips: [
         "Do not combine multiple products containing acetaminophen.",
@@ -1280,7 +1280,7 @@ async function main() {
       name: "Cold & Flu",
       description:
         "Symptom relief for coughs, congestion, sore throats, and seasonal illness — plus guidance on what actually helps.",
-      imageUrl: "/images/otc/cold-flu.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/cold-flu.webp",
       brands: ["Benylin", "Otrivin", "Strepsils", "Vicks", "Actifed", "Mucinex"],
       tips: [
         "Multi-symptom products can duplicate ingredients — check labels.",
@@ -1294,7 +1294,7 @@ async function main() {
       name: "Allergy Treatments",
       description:
         "Non-drowsy antihistamines, corticosteroid nasal sprays, and eye drops for seasonal hay fever, pet dander, and allergic skin reactions.",
-      imageUrl: "/images/articles/seasonal-allergy-guide.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
       brands: ["Zyrtec", "Clarityn", "Telfast", "Flixonase", "Optrex", "Allegra"],
       tips: [
         "Second-generation antihistamines provide 24-hour relief with minimal drowsiness.",
@@ -1308,7 +1308,7 @@ async function main() {
       name: "Digestive Health",
       description:
         "Antacids, acid reducers, oral rehydration salts, anti-diarrheals, laxatives, and daily probiotics for digestive balance.",
-      imageUrl: "/images/services/medication-counselling.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
       brands: ["Gaviscon", "Imodium", "Dioralyte", "Dulcolax", "Bio-Kult", "Prilosec"],
       tips: [
         "Oral rehydration salts are the first priority for acute fluid loss.",
@@ -1322,7 +1322,7 @@ async function main() {
       name: "First Aid",
       description:
         "Bandages, antiseptics, wound care, and emergency basics so you are prepared at home, work, or on the go.",
-      imageUrl: "/images/otc/first-aid.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
       brands: ["Band-Aid", "Burnshield", "3M Nexcare", "Elastoplast", "Curad"],
       tips: [
         "Clean wounds gently; seek care for deep or dirty cuts.",
@@ -1336,7 +1336,7 @@ async function main() {
       name: "Topical Treatments",
       description:
         "Hydrocortisone anti-itch creams, antifungal treatments, calming lotions, and hemorrhoidal soothing care.",
-      imageUrl: "/images/otc/skin-care.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
       brands: ["Canesten", "Neosporin", "Anusol", "Cortizone", "Calamine"],
       tips: [
         "Apply hydrocortisone thinly for a maximum of 7 consecutive days.",
@@ -1350,7 +1350,7 @@ async function main() {
       name: "Skin Care",
       description:
         "Dermatologist-friendly moisturisers, sunscreens, acne care, and treatments for eczema, rashes, and everyday skin concerns.",
-      imageUrl: "/images/otc/skin-care.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
       brands: ["CeraVe", "La Roche-Posay", "Epimax", "Cetaphil", "PanOxyl", "Eucerin"],
       tips: [
         "Fragrance-free often means fewer irritations.",
@@ -1364,7 +1364,7 @@ async function main() {
       name: "Antiseptics",
       description:
         "Povidone-iodine solutions, chlorhexidine washes, hydrogen peroxide, and sterile alcohol skin preparation wipes.",
-      imageUrl: "/images/gallery/careful_dispensing.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
       brands: ["Betadine", "Dettol", "Savlon", "Hibiclens", "Medi-Swab"],
       tips: [
         "Povidone-iodine provides broad antimicrobial protection without skin stinging.",
@@ -1378,7 +1378,7 @@ async function main() {
       name: "Wound Care",
       description:
         "Hydrocolloid dressings, sterile non-stick pads, wound irrigation saline, and medical silicone scar reduction gels.",
-      imageUrl: "/images/otc/first-aid.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
       brands: ["DuoDERM", "Melolin", "Kelo-Cote", "Steri-Strip", "Opsite"],
       tips: [
         "Moist wound healing under hydrocolloid dressings speeds healing and reduces scarring.",
@@ -1392,7 +1392,7 @@ async function main() {
       name: "Oral Care",
       description:
         "Chlorhexidine mouthwashes, mouth ulcer soothing gels, fast-acting toothache analgesics, and dry mouth hydrating rinses.",
-      imageUrl: "/images/gallery/welcoming_retail_floor.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
       brands: ["Corsodyl", "Bonjela", "Orajel", "Biotène", "Sensodyne", "Colgate"],
       tips: [
         "Use chlorhexidine mouthwash 30 minutes after brushing.",
@@ -1406,7 +1406,7 @@ async function main() {
       name: "Feminine Hygiene",
       description:
         "pH-balanced intimate washes, organic sanitary protection, single-dose thrush treatments, and period pain heat patches.",
-      imageUrl: "/images/otc/womens-health.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
       brands: ["Always", "Tampax", "Femfresh", "Canesten", "Cura-Heat", "Clearblue"],
       tips: [
         "Vaginal pessaries should be inserted at bedtime for optimal retention.",
@@ -1420,7 +1420,7 @@ async function main() {
       name: "Baby Care",
       description:
         "Gentle essentials for little ones: fever reducers, diaper care, feeding accessories, and pharmacist advice parents can trust.",
-      imageUrl: "/images/otc/baby-care.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/baby-care.webp",
       brands: ["Calpol", "Infacol", "Sudocrem", "Little Remedies", "Pampers", "Johnson's"],
       tips: [
         "Always use weight-based dosing for children's medicines.",
@@ -1434,7 +1434,7 @@ async function main() {
       name: "Medical Consumables",
       description:
         "Digital clinical thermometers, fingertip pulse oximeters, blood pressure monitors, glucose strips, and sterile gloves.",
-      imageUrl: "/images/gallery/modern_care_tools.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
       brands: ["Omron", "OneTouch", "Accu-Chek", "Contec", "Beurer", "3M"],
       tips: [
         "Rest 5 minutes quietly before taking resting blood pressure readings.",
@@ -1448,7 +1448,7 @@ async function main() {
       name: "Nutritional Products",
       description:
         "Complete daily multivitamins, effervescent vitamin C + zinc, oral electrolyte hydration, gentle iron, and meal shakes.",
-      imageUrl: "/images/otc/vitamins-supplements.webp",
+      imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
       brands: ["Wellman", "Wellwoman", "Berocca", "Hydralyte", "Feroglobin", "Ensure", "Centrum"],
       tips: [
         "Take iron supplements with vitamin C for enhanced absorption; avoid dairy or tea within 2 hours.",
@@ -1459,16 +1459,16 @@ async function main() {
     },
     // Aliases and clinical categories
     { slug: "general", name: "General", description: "Uncategorised or multi-use products.", imageUrl: "", brands: [], tips: [], sortOrder: 0 },
-    { slug: "allergy", name: "Allergy", description: "Allergy and hay fever treatments.", imageUrl: "/images/articles/seasonal-allergy-guide.webp", brands: ["Zyrtec", "Clarityn"], tips: ["Non-drowsy options available."], sortOrder: 35 },
-    { slug: "digestive", name: "Digestive", description: "Digestive therapies.", imageUrl: "/images/services/medication-counselling.webp", brands: ["Gaviscon", "Imodium"], tips: ["Hydration is key."], sortOrder: 45 },
-    { slug: "womens-health", name: "Women's Health", description: "Reproductive health and wellness.", imageUrl: "/images/otc/womens-health.webp", brands: ["Always", "Pregnacare"], tips: ["Discreet counselling available."], sortOrder: 115 },
-    { slug: "diabetes-care", name: "Diabetes Care", description: "Meters, strips, and glucose care.", imageUrl: "/images/articles/diabetes-everyday-tips.webp", brands: ["OneTouch", "Accu-Chek"], tips: ["Store test strips in a cool dry place."], sortOrder: 135 },
-    { slug: "vitamins-supplements", name: "Vitamins & Supplements", description: "Vitamins and nutritional supplements.", imageUrl: "/images/otc/vitamins-supplements.webp", brands: ["Nature Made", "Centrum"], tips: ["Ask about interactions."], sortOrder: 145 },
+    { slug: "allergy", name: "Allergy", description: "Allergy and hay fever treatments.", imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp", brands: ["Zyrtec", "Clarityn"], tips: ["Non-drowsy options available."], sortOrder: 35 },
+    { slug: "digestive", name: "Digestive", description: "Digestive therapies.", imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp", brands: ["Gaviscon", "Imodium"], tips: ["Hydration is key."], sortOrder: 45 },
+    { slug: "womens-health", name: "Women's Health", description: "Reproductive health and wellness.", imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp", brands: ["Always", "Pregnacare"], tips: ["Discreet counselling available."], sortOrder: 115 },
+    { slug: "diabetes-care", name: "Diabetes Care", description: "Meters, strips, and glucose care.", imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp", brands: ["OneTouch", "Accu-Chek"], tips: ["Store test strips in a cool dry place."], sortOrder: 135 },
+    { slug: "vitamins-supplements", name: "Vitamins & Supplements", description: "Vitamins and nutritional supplements.", imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp", brands: ["Nature Made", "Centrum"], tips: ["Ask about interactions."], sortOrder: 145 },
     { slug: "antibiotics", name: "Antibiotics", description: "Prescription antibacterials.", imageUrl: "", brands: [], tips: [], sortOrder: 200 },
     { slug: "cardiovascular", name: "Cardiovascular", description: "Heart and blood pressure therapies.", imageUrl: "", brands: [], tips: [], sortOrder: 210 },
-    { slug: "diabetes", name: "Diabetes", description: "Diabetes prescription therapies.", imageUrl: "/images/articles/diabetes-everyday-tips.webp", brands: [], tips: [], sortOrder: 220 },
+    { slug: "diabetes", name: "Diabetes", description: "Diabetes prescription therapies.", imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp", brands: [], tips: [], sortOrder: 220 },
     { slug: "respiratory", name: "Respiratory", description: "Asthma, COPD, and breathing support.", imageUrl: "", brands: [], tips: [], sortOrder: 230 },
-    { slug: "vitamins", name: "Vitamins", description: "Clinical vitamin catalogue.", imageUrl: "/images/otc/vitamins-supplements.webp", brands: [], tips: [], sortOrder: 240 },
+    { slug: "vitamins", name: "Vitamins", description: "Clinical vitamin catalogue.", imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp", brands: [], tips: [], sortOrder: 240 },
   ];
 
   for (const c of categorySeeds) {
@@ -1734,7 +1734,7 @@ async function main() {
       educationTopics: ["flu-myths", "after-your-vaccine"],
       locationNotes: "Main Branch, Kenyatta Avenue. Private counselling room for observation.",
       regulatoryNotes: "Inactivated influenza only. Pregnancy: pharmacist confirms current MoH position.",
-      heroImage: "/images/services/vaccinations.webp",
+      heroImage: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/vaccinations.webp",
       active: true,
     },
   });
@@ -1755,7 +1755,7 @@ async function main() {
       walkInDays: "By appointment preferred; walk-ins as capacity allows",
       educationTopics: ["travel-health-kenya"],
       locationNotes: "Bring passport and travel dates.",
-      heroImage: "/images/articles/flu-season-preparation.webp",
+      heroImage: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/flu-season-preparation.webp",
       active: true,
     },
   });

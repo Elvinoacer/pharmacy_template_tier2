@@ -16,7 +16,7 @@ export default function TravelLabHero({ pharmacyCount = 12, initialQuery = "" }:
   return (
     <section className="relative flex min-h-[100svh] flex-col justify-between overflow-hidden bg-[#070b10] text-white sm:min-h-[92vh]">
       <div className="absolute inset-0 z-0">
-        <Image src="/images/gallery/welcoming_retail_floor.webp" alt="Aether Healthcare Network Floor" fill priority className="object-cover opacity-25 scale-105 motion-safe:transition-transform motion-safe:duration-[10000ms]" sizes="100vw" />
+        <Image src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp" alt="Aether Healthcare Network Floor" fill priority className="object-cover opacity-25 scale-105 motion-safe:transition-transform motion-safe:duration-[10000ms]" sizes="100vw" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#070b10]/90 via-[#070b10]/72 to-[#070b10]" />
         <div className="landing-grain" aria-hidden />
       </div>

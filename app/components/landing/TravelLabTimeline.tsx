@@ -9,31 +9,31 @@ const MILESTONES = [
     phase: "2024",
     title: "Founded in Nairobi",
     desc: "Aether is established to unite licensed independent pharmacies under one modern digital network.",
-    image: "/images/gallery/welcoming_retail_floor.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
   },
   {
     phase: "2025",
     title: "Fintech & M-Pesa Rails",
     desc: "Integrated instant Lipa na M-Pesa STK push and Universal Patient ID across partner counters.",
-    image: "/images/gallery/careful_dispensing.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
   },
   {
     phase: "2025",
     title: "Cold-Chain & Clinics",
     desc: "Rolled out 2°C–8°C digital temperature logging and pharmacy-based vaccination booking.",
-    image: "/images/gallery/modern_care_tools.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
   },
   {
     phase: "2026",
     title: "AI Clinical Triage",
     desc: "Launched Vision AI medicine pack scanning and evidence-based pharmacist clinical triage.",
-    image: "/images/gallery/private_counselling.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/private_counselling.webp",
   },
   {
     phase: "Future",
     title: "National Scale",
     desc: "Expanding to 47 counties with unified chronic adherence and health plan integrations.",
-    image: "/images/gallery/curated_wellness_aisle.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/curated_wellness_aisle.webp",
   },
 ];
 

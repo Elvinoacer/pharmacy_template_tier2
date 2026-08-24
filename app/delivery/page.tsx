@@ -33,7 +33,7 @@ export default async function DeliveryPage() {
           <div>
             <div className="relative mb-8 aspect-[16/10] overflow-hidden rounded-[2rem] shadow-xl">
               <Image
-                src="/images/services/delivery-services.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/delivery-services.webp"
                 alt="Delivery vehicle ready for pharmacy orders"
                 fill
                 className="object-cover"

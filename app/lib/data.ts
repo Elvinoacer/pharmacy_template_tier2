@@ -86,7 +86,7 @@ export const team = [
     role: "Lead Pharmacist & Owner",
     bio: "Priya founded Aether with a simple belief: every patient deserves clear answers and careful attention. She specialises in chronic disease management and medication therapy review.",
     qualifications: "PharmD, University of Nairobi · 18 years experience",
-    photo: "/images/team/priya-nair.webp",
+    photo: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/priya-nair.webp",
   },
   {
     id: "marcus-chen",
@@ -94,7 +94,7 @@ export const team = [
     role: "Clinical Pharmacist",
     bio: "Marcus leads our vaccination and health screening programmes. Patients know him for patient explanations and a calm presence at the counter.",
     qualifications: "RPh · Immunization & MTM certified",
-    photo: "/images/team/marcus-chen.webp",
+    photo: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/marcus-chen.webp",
   },
   {
     id: "sofia-alvarez",
@@ -102,7 +102,7 @@ export const team = [
     role: "Senior Pharmacy Technician",
     bio: "Sofia keeps refills flowing smoothly and is the friendly first face many customers meet. She coordinates delivery logistics and insurance queries.",
     qualifications: "Certified Pharmacy Technician · 9 years experience",
-    photo: "/images/team/sofia-alvarez.webp",
+    photo: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/sofia-alvarez.webp",
   },
   {
     id: "james-okonkwo",
@@ -110,7 +110,7 @@ export const team = [
     role: "Patient Care Coordinator",
     bio: "James helps patients navigate insurance, schedule consultations, and set up convenient pickup or delivery options.",
     qualifications: "Healthcare administration · Bilingual EN/ES",
-    photo: "/images/team/david-kim.webp",
+    photo: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/team/david-kim.webp",
   },
 ];
 
@@ -129,7 +129,7 @@ export const services = [
     ],
     eligibility: "Valid prescription from a licensed prescriber.",
     duration: "Most prescriptions ready within 30–45 minutes.",
-    image: "/images/services/prescription-dispensing.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/prescription-dispensing.webp",
     icon: "pill",
   },
   {
@@ -146,7 +146,7 @@ export const services = [
     ],
     eligibility: "Existing prescription on file with remaining refills, or new transfer.",
     duration: "Typically ready same day when requested before 3 PM.",
-    image: "/images/gallery/welcoming_retail_floor.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
     icon: "refresh",
   },
   {
@@ -163,7 +163,7 @@ export const services = [
     ],
     eligibility: "Open to all patients; appointments preferred for longer reviews.",
     duration: "15–30 minutes depending on complexity.",
-    image: "/images/services/medication-counselling.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
     icon: "chat",
   },
   {
@@ -180,7 +180,7 @@ export const services = [
     ],
     eligibility: "Adults and teens; no appointment required.",
     duration: "About 5–10 minutes.",
-    image: "/images/articles/understanding-blood-pressure.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/understanding-blood-pressure.webp",
     icon: "heart",
   },
   {
@@ -197,7 +197,7 @@ export const services = [
     ],
     eligibility: "Patients with diabetes or prediabetes.",
     duration: "Counselling sessions 20–40 minutes by appointment.",
-    image: "/images/articles/diabetes-everyday-tips.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp",
     icon: "activity",
   },
   {
@@ -214,7 +214,7 @@ export const services = [
     ],
     eligibility: "Age and medical criteria vary by vaccine; pharmacist will screen.",
     duration: "10–20 minutes including observation.",
-    image: "/images/services/vaccinations.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/vaccinations.webp",
     icon: "shield",
   },
   {
@@ -235,7 +235,7 @@ export const services = [
     ],
     eligibility: "Open to all adults and teens; walk-in or advance booking available.",
     duration: "10–20 minutes depending on test panel.",
-    image: "/images/gallery/modern_care_tools.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
     icon: "clipboard",
   },
   {
@@ -252,7 +252,7 @@ export const services = [
     ],
     eligibility: "Addresses within our delivery zones (see Delivery page).",
     duration: "Usually within 2–6 hours of ready status on delivery days.",
-    image: "/images/services/delivery-services.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/delivery-services.webp",
     icon: "truck",
   },
   {
@@ -269,7 +269,7 @@ export const services = [
     ],
     eligibility: "Patients managing multiple medications or with caregiver support.",
     duration: "Setup consultation 30–45 minutes.",
-    image: "/images/services/home-care-support.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/home-care-support.webp",
     icon: "home",
   },
 ];
@@ -280,7 +280,7 @@ export const categories = [
     title: "Pain Relief",
     description:
       "Over-the-counter options for headaches, muscle aches, joint pain, and everyday discomfort — with pharmacist guidance on safe use.",
-    image: "/images/otc/pain-relief.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/pain-relief.webp",
     brands: ["Advil", "Tylenol", "Aleve", "Aspercreme"],
     tips: [
       "Do not combine multiple products containing acetaminophen.",
@@ -293,7 +293,7 @@ export const categories = [
     title: "Vitamins & Supplements",
     description:
       "Evidence-minded vitamins, minerals, and wellness supplements. We help you choose what is useful — and skip what is not.",
-    image: "/images/otc/vitamins-supplements.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
     brands: ["Nature Made", "Centrum", "Garden of Life", "Nordic Naturals"],
     tips: [
       "More is not always better — megadoses can be harmful.",
@@ -306,7 +306,7 @@ export const categories = [
     title: "Baby Care",
     description:
       "Gentle essentials for little ones: fever reducers, diaper care, feeding accessories, and pharmacist advice parents can trust.",
-    image: "/images/otc/baby-care.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/baby-care.webp",
     brands: ["Pampers", "Johnson's", "Pedialyte", "Aveeno Baby"],
     tips: [
       "Always use weight-based dosing for children's medicines.",
@@ -319,7 +319,7 @@ export const categories = [
     title: "First Aid",
     description:
       "Bandages, antiseptics, wound care, and emergency basics so you are prepared at home, work, or on the go.",
-    image: "/images/otc/first-aid.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
     brands: ["Band-Aid", "Neosporin", "3M Nexcare", "Hydrogen Peroxide"],
     tips: [
       "Clean wounds gently; seek care for deep or dirty cuts.",
@@ -332,7 +332,7 @@ export const categories = [
     title: "Skin Care",
     description:
       "Dermatologist-friendly moisturisers, sunscreens, acne care, and treatments for eczema, rashes, and everyday skin concerns.",
-    image: "/images/otc/skin-care.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
     brands: ["CeraVe", "La Roche-Posay", "Cetaphil", "Neutrogena"],
     tips: [
       "Fragrance-free often means fewer irritations.",
@@ -345,7 +345,7 @@ export const categories = [
     title: "Diabetes Care",
     description:
       "Meters, strips, lancets, glucose tablets, and supportive OTC products for everyday diabetes self-management.",
-    image: "/images/articles/diabetes-everyday-tips.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp",
     brands: ["OneTouch", "Contour", "FreeStyle", "Dex4"],
     tips: [
       "Match strips to your exact meter model.",
@@ -358,7 +358,7 @@ export const categories = [
     title: "Women's Health",
     description:
       "Reproductive health, prenatal vitamins, menopause support, and everyday wellness products selected with care.",
-    image: "/images/otc/womens-health.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
     brands: ["Always", "Summer's Eve", "Pregnacare", "Clearblue"],
     tips: [
       "Prenatal vitamins ideally start before conception when possible.",
@@ -371,7 +371,7 @@ export const categories = [
     title: "Cold & Flu",
     description:
       "Symptom relief for coughs, congestion, sore throats, and seasonal illness — plus guidance on what actually helps.",
-    image: "/images/otc/cold-flu.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/cold-flu.webp",
     brands: ["Mucinex", "DayQuil", "Robitussin", "Halls", "Benylin", "Otrivin"],
     tips: [
       "Multi-symptom products can duplicate ingredients — check labels.",
@@ -384,7 +384,7 @@ export const categories = [
     title: "Allergy Treatments",
     description:
       "Antihistamines, steroid nasal sprays, and eye drops for seasonal hay fever, pet dander, and allergic skin reactions.",
-    image: "/images/articles/seasonal-allergy-guide.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
     brands: ["Zyrtec", "Clarityn", "Telfast", "Flixonase", "Optrex"],
     tips: [
       "Second-generation antihistamines provide 24-hour relief with minimal drowsiness.",
@@ -397,7 +397,7 @@ export const categories = [
     title: "Digestive Health",
     description:
       "Antacids, acid reducers, rehydration salts, anti-diarrheals, laxatives, and daily probiotics for digestive balance.",
-    image: "/images/services/medication-counselling.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
     brands: ["Gaviscon", "Imodium", "Dioralyte", "Dulcolax", "Bio-Kult"],
     tips: [
       "Oral rehydration salts are the first priority for acute fluid loss.",
@@ -410,7 +410,7 @@ export const categories = [
     title: "Topical Treatments",
     description:
       "Hydrocortisone anti-itch creams, antifungal treatments, calming lotions, and hemorrhoidal soothing care.",
-    image: "/images/otc/skin-care.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
     brands: ["Canesten", "Neosporin", "Anusol", "Cortizone", "Calamine"],
     tips: [
       "Apply hydrocortisone thinly for a maximum of 7 consecutive days.",
@@ -423,7 +423,7 @@ export const categories = [
     title: "Antiseptics",
     description:
       "Povidone-iodine solutions, chlorhexidine washes, hydrogen peroxide, and sterile alcohol skin preparation wipes.",
-    image: "/images/gallery/careful_dispensing.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
     brands: ["Betadine", "Dettol", "Savlon", "Hibiclens"],
     tips: [
       "Povidone-iodine provides broad antimicrobial protection without skin stinging.",
@@ -436,7 +436,7 @@ export const categories = [
     title: "Wound Care",
     description:
       "Hydrocolloid dressings, sterile non-stick pads, wound irrigation saline, and medical silicone scar reduction gels.",
-    image: "/images/otc/first-aid.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
     brands: ["DuoDERM", "Melolin", "Kelo-Cote", "Steri-Strip"],
     tips: [
       "Moist wound healing under hydrocolloid dressings speeds healing and reduces scarring.",
@@ -449,7 +449,7 @@ export const categories = [
     title: "Oral Care",
     description:
       "Chlorhexidine mouthwashes, mouth ulcer soothing gels, fast-acting toothache analgesics, and dry mouth hydrating rinses.",
-    image: "/images/gallery/welcoming_retail_floor.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
     brands: ["Corsodyl", "Bonjela", "Orajel", "Biotène", "Sensodyne"],
     tips: [
       "Use chlorhexidine mouthwash 30 minutes after brushing to avoid toothpaste interference.",
@@ -462,7 +462,7 @@ export const categories = [
     title: "Feminine Hygiene",
     description:
       "pH-balanced intimate washes, organic sanitary protection, single-dose thrush treatments, and period pain heat patches.",
-    image: "/images/otc/womens-health.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
     brands: ["Always", "Tampax", "Femfresh", "Canesten", "Cura-Heat"],
     tips: [
       "Vaginal pessaries should be inserted at bedtime for optimal retention.",
@@ -475,7 +475,7 @@ export const categories = [
     title: "Medical Consumables",
     description:
       "Digital clinical thermometers, fingertip pulse oximeters, blood pressure monitors, glucose strips, and sterile gloves.",
-    image: "/images/gallery/modern_care_tools.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
     brands: ["Omron", "OneTouch", "Accu-Chek", "Contec", "3M"],
     tips: [
       "Rest 5 minutes quietly before taking resting blood pressure readings.",
@@ -488,7 +488,7 @@ export const categories = [
     title: "Nutritional Products",
     description:
       "Daily complete multivitamins, effervescent vitamin C + zinc, oral electrolyte hydration, gentle iron, and meal shakes.",
-    image: "/images/otc/vitamins-supplements.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
     brands: ["Wellman", "Wellwoman", "Berocca", "Hydralyte", "Feroglobin", "Ensure"],
     tips: [
       "Take iron supplements with vitamin C for enhanced absorption; avoid dairy or tea within 2 hours.",
@@ -508,7 +508,7 @@ export const articles = [
     readTime: "7 min",
     date: "2026-03-18",
     author: "Dr. Priya Nair, PharmD",
-    image: "/images/articles/seasonal-allergy-guide.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
     content: [
       "Over-the-counter (OTC) medicines empower individuals and families to safely manage everyday health complaints — from headaches and seasonal allergies to minor cuts and heartburn.",
       "However, responsible self-care requires knowing when a symptom is safe for home management and when it demands prompt medical attention.",
@@ -528,7 +528,7 @@ export const articles = [
     readTime: "6 min",
     date: "2026-03-12",
     author: "Dr. Priya Nair, PharmD",
-    image: "/images/articles/seasonal-allergy-guide.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
     content: [
       "Medications only work when they are taken correctly — and stored safely. Small household habits prevent big problems.",
       "Keep medicines in a cool, dry place away from bathrooms and kitchen heat. Humidity and temperature swings degrade many products faster than people realise.",
@@ -549,7 +549,7 @@ export const articles = [
     readTime: "5 min",
     date: "2026-02-28",
     author: "Marcus Chen, RPh",
-    image: "/images/articles/understanding-blood-pressure.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/understanding-blood-pressure.webp",
     content: [
       "Blood pressure measures the force of blood against artery walls. The top number (systolic) is pressure during heartbeats; the bottom (diastolic) is pressure between beats.",
       "A normal reading for most adults is under 120/80 mmHg. Elevated and high ranges warrant lifestyle attention and often medical follow-up.",
@@ -568,7 +568,7 @@ export const articles = [
     readTime: "7 min",
     date: "2026-02-10",
     author: "Dr. Priya Nair, PharmD",
-    image: "/images/articles/diabetes-everyday-tips.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp",
     content: [
       "Consistent routines beat perfect days. Aim for regular meals, medication timing, and glucose checks that fit your real life.",
       "Know your personal targets with your clinician. General ranges are guides — your plan may differ.",
@@ -588,7 +588,7 @@ export const articles = [
     readTime: "5 min",
     date: "2026-01-22",
     author: "Sofia Alvarez, CPhT",
-    image: "/images/otc/cold-flu.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/cold-flu.webp",
     content: [
       "Allergies are an immune overreaction to pollen, dust, or other triggers. Treatment aims to calm symptoms without unnecessary drowsiness or interactions.",
       "Non-drowsy antihistamines work well for many people. First-generation options (like diphenhydramine) can help at night but impair alertness.",
@@ -606,7 +606,7 @@ export const articles = [
     readTime: "6 min",
     date: "2026-01-08",
     author: "Marcus Chen, RPh",
-    image: "/images/articles/flu-season-preparation.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/flu-season-preparation.webp",
     content: [
       "Heart-friendly eating is less about perfection and more about patterns: more plants, fibre, and unsaturated fats; less ultra-processed sodium bombs.",
       "Read labels for serving size first. Sodium and added sugar add up quickly across 'small' portions.",
@@ -624,7 +624,7 @@ export const articles = [
     readTime: "4 min",
     date: "2025-12-15",
     author: "Dr. Priya Nair, PharmD",
-    image: "/images/articles/nutrition-basics-for-heart-health.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/nutrition-basics-for-heart-health.webp",
     content: [
       "The best time to get a flu vaccine is before flu activity peaks in your area — often early autumn, but later is still worthwhile.",
       "Build a simple sick-day kit: thermometer, oral rehydration, tissues, and any clinician-approved fever reducers.",
@@ -642,7 +642,7 @@ export const articles = [
     readTime: "5 min",
     date: "2026-08-12",
     author: "Marcus Chen, RPh",
-    image: "/images/services/vaccinations.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/vaccinations.webp",
     content: [
       "Pharmacy vaccination is only offered where the pharmacy and the immuniser are locally authorised. In Kenya that sits with the Pharmacy and Poisons Board and Ministry of Health circulars in force.",
       "Before any dose we complete a contraindication questionnaire, give you a vaccine information sheet, and capture written consent (self, parent/guardian, or caregiver).",
@@ -660,7 +660,7 @@ export const articles = [
     readTime: "6 min",
     date: "2026-07-28",
     author: "Dr. Priya Nair, PharmD",
-    image: "/images/articles/flu-season-preparation.webp",
+    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/flu-season-preparation.webp",
     content: [
       "Start a travel consult 4–6 weeks before you fly so series vaccines (hepatitis A, some typhoid schedules) can be completed.",
       "Yellow fever ICVP ('yellow card') cards are issued only by designated centres and become valid 10 days after the dose. If we are not currently designated, we still counsel and refer.",
@@ -817,32 +817,32 @@ export const testimonials = [
 
 export const gallery = [
   {
-    src: "/images/gallery/welcoming_retail_floor.webp",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
     alt: "Bright pharmacy interior with organised shelves",
     caption: "Welcoming retail floor",
   },
   {
-    src: "/images/gallery/careful_dispensing.webp",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
     alt: "Pharmacist reviewing medication bottles",
     caption: "Careful dispensing",
   },
   {
-    src: "/images/services/medication-counselling.webp",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
     alt: "Consultation between pharmacist and patient",
     caption: "Private counselling",
   },
   {
-    src: "/images/gallery/modern_care_tools.webp",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
     alt: "Healthcare professional with digital tablet",
     caption: "Modern care tools",
   },
   {
-    src: "/images/gallery/curated_wellness_aisle.webp",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/curated_wellness_aisle.webp",
     alt: "Wellness and vitamin products on display",
     caption: "Curated wellness aisle",
   },
   {
-    src: "/images/services/home-care-support.webp",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/home-care-support.webp",
     alt: "Calm modern clinic waiting area",
     caption: "Comfortable waiting area",
   },

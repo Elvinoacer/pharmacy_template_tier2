@@ -45,7 +45,7 @@ export default function TravelLabStory() {
           <div className="group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition duration-500 hover:-translate-y-1.5 hover:shadow-xl">
             <div className="relative h-60 w-full overflow-hidden bg-slate-900">
               <Image
-                src="/images/gallery/careful_dispensing.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp"
                 alt="Careful dispensing and clinical auditing"
                 fill
                 className="object-cover transition duration-700 group-hover:scale-105"
@@ -75,7 +75,7 @@ export default function TravelLabStory() {
           <div className="group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition duration-500 hover:-translate-y-1.5 hover:shadow-xl">
             <div className="relative h-60 w-full overflow-hidden bg-slate-900">
               <Image
-                src="/images/gallery/modern_care_tools.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp"
                 alt="Modern digital healthcare technology"
                 fill
                 className="object-cover transition duration-700 group-hover:scale-105"
@@ -105,7 +105,7 @@ export default function TravelLabStory() {
           <div className="group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition duration-500 hover:-translate-y-1.5 hover:shadow-xl">
             <div className="relative h-60 w-full overflow-hidden bg-slate-900">
               <Image
-                src="/images/gallery/private_counselling.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/private_counselling.webp"
                 alt="Private counselling consultation"
                 fill
                 className="object-cover transition duration-700 group-hover:scale-105"

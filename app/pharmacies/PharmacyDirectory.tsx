@@ -20,10 +20,10 @@ import {
 import type { DirectoryPharmacy } from "@/app/lib/services/pharmacy-directory";
 
 const FALLBACK_COVERS = [
-  "/images/gallery/welcoming_retail_floor.webp",
-  "/images/gallery/curated_wellness_aisle.webp",
-  "/images/gallery/comfortable_waiting_area.webp",
-  "/images/gallery/careful_dispensing.webp",
+  "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
+  "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/curated_wellness_aisle.webp",
+  "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/comfortable_waiting_area.webp",
+  "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
 ];
 
 const distanceKm = (aLat: number, aLng: number, bLat: number, bLng: number) => {

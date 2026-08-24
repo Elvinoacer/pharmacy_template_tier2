@@ -704,7 +704,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
               folder="categories"
               defaultValue={formImageUrl}
               onChange={(url) => setFormImageUrl(url)}
-              hint="Upload or paste a path like /images/otc/pain-relief.webp"
+              hint="Upload an image or paste a public image URL."
             />
           </div>
           <div>

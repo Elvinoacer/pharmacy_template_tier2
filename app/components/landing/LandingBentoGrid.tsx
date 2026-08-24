@@ -36,7 +36,7 @@ export default function LandingBentoGrid() {
           <div className="group relative md:col-span-7 flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-[#0c131a] p-6 text-white sm:p-8">
             <div className="absolute inset-0 z-0">
               <Image
-                src="/images/gallery/careful_dispensing.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp"
                 alt="Pharmacist checking profile"
                 fill
                 className="object-cover opacity-20"

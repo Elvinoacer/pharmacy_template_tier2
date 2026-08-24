@@ -59,7 +59,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Pain Relief",
     description:
       "Non-prescription analgesics, anti-inflammatories, and topical rubs for mild-to-moderate headaches, muscle aches, joint stiffness, and fever.",
-    imageUrl: "/images/otc/pain-relief.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/pain-relief.webp",
     brands: ["Panadol", "Brufen", "Voltaren", "Deep Heat", "Disprin", "Advil"],
     tips: [
       "Do not combine multiple medicines containing paracetamol (acetaminophen) — max 4,000 mg daily for adults.",
@@ -74,7 +74,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Cold & Flu",
     description:
       "Symptom relief for coughs, congestion, sore throats, and seasonal illness — with clear guidance on what actually helps.",
-    imageUrl: "/images/otc/cold-flu.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/cold-flu.webp",
     brands: ["Benylin", "Otrivin", "Strepsils", "Vicks", "Actifed", "Mucinex"],
     tips: [
       "Limit decongestant nasal sprays to 3–5 consecutive days to avoid rebound congestion.",
@@ -89,7 +89,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Allergy Treatments",
     description:
       "Non-drowsy antihistamines, corticosteroid nasal sprays, and eye drops for seasonal hay fever, pet dander, and allergic skin reactions.",
-    imageUrl: "/images/articles/seasonal-allergy-guide.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
     brands: ["Zyrtec", "Clarityn", "Telfast", "Flixonase", "Optrex", "Allegra"],
     tips: [
       "Second-generation antihistamines (cetirizine, loratadine) relieve allergies with minimal drowsiness.",
@@ -103,7 +103,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     slug: "allergy",
     name: "Allergy",
     description: "Allergy and hay fever treatments catalogue alias.",
-    imageUrl: "/images/articles/seasonal-allergy-guide.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/seasonal-allergy-guide.webp",
     brands: ["Zyrtec", "Clarityn", "Telfast"],
     tips: ["Second-generation antihistamines cause less drowsiness."],
     sortOrder: 35,
@@ -113,7 +113,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Digestive Health",
     description:
       "Antacids, acid reducers, oral rehydration salts, anti-diarrheals, laxatives, and daily probiotics for digestive comfort.",
-    imageUrl: "/images/services/medication-counselling.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
     brands: ["Gaviscon", "Imodium", "Dioralyte", "Dulcolax", "Bio-Kult", "Prilosec"],
     tips: [
       "Oral rehydration salts (ORS) are the first priority during diarrhea to replace lost electrolytes.",
@@ -126,7 +126,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     slug: "digestive",
     name: "Digestive",
     description: "Digestive health catalogue alias.",
-    imageUrl: "/images/services/medication-counselling.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
     brands: ["Gaviscon", "Imodium", "Dioralyte"],
     tips: ["Oral rehydration is critical during acute diarrhea."],
     sortOrder: 45,
@@ -136,7 +136,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "First Aid",
     description:
       "Emergency first aid kits, sterile bandages, tapes, burn dressings, and cold compresses for home, workplace, and travel preparedness.",
-    imageUrl: "/images/otc/first-aid.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
     brands: ["Band-Aid", "Burnshield", "3M Nexcare", "Elastoplast", "Curad"],
     tips: [
       "Clean fresh wounds gently with clean water or sterile saline; avoid harsh alcohol directly on open cuts.",
@@ -150,7 +150,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Topical Treatments",
     description:
       "Targeted hydrocortisone anti-itch creams, antifungal treatments, soothing calamine, and hemorrhoidal comfort ointments.",
-    imageUrl: "/images/otc/skin-care.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
     brands: ["Canesten", "Neosporin", "Anusol", "Cortizone", "Calamine"],
     tips: [
       "Apply hydrocortisone 1% thinly for a maximum of 7 consecutive days; never apply to viral sores.",
@@ -164,7 +164,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Skin Care",
     description:
       "Dermatologist-tested barrier repair creams, medical emollients, broad-spectrum sunscreens, and OTC acne therapies.",
-    imageUrl: "/images/otc/skin-care.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/skin-care.webp",
     brands: ["CeraVe", "La Roche-Posay", "Epimax", "Cetaphil", "PanOxyl", "Eucerin"],
     tips: [
       "Apply thick ceramide creams immediately after bathing while skin is still slightly damp.",
@@ -178,7 +178,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Antiseptics",
     description:
       "Medical-grade antimicrobial skin cleansers, povidone-iodine solutions, hydrogen peroxide, and alcohol swabs for disinfecting skin.",
-    imageUrl: "/images/gallery/careful_dispensing.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/careful_dispensing.webp",
     brands: ["Betadine", "Dettol", "Savlon", "Hibiclens", "Medi-Swab"],
     tips: [
       "Povidone-iodine provides broad antibacterial, antifungal, and antiviral coverage without stinging.",
@@ -192,7 +192,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Wound Care",
     description:
       "Advanced hydrocolloid dressings, non-stick sterile pads, wound irrigation saline, and silicone scar reduction gels.",
-    imageUrl: "/images/otc/first-aid.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/first-aid.webp",
     brands: ["DuoDERM", "Melolin", "Kelo-Cote", "Steri-Strip", "Opsite"],
     tips: [
       "Moist wound healing under hydrocolloid dressings prevents scabs and reduces scarring by up to 40%.",
@@ -206,7 +206,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Oral Care",
     description:
       "Medicated antiseptic mouthwashes, mouth ulcer gels, emergency toothache analgesics, dry mouth hydrating rinses, and desensitizing toothpastes.",
-    imageUrl: "/images/gallery/welcoming_retail_floor.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
     brands: ["Corsodyl", "Bonjela", "Orajel", "Biotène", "Sensodyne", "Colgate"],
     tips: [
       "Use chlorhexidine mouthwash 30 minutes after brushing to avoid toothpaste interference.",
@@ -220,7 +220,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Feminine Hygiene",
     description:
       "pH-balanced intimate washes, organic sanitary protection, single-dose thrush treatments, and period pain heat therapies.",
-    imageUrl: "/images/otc/womens-health.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
     brands: ["Always", "Tampax", "Femfresh", "Canesten", "Cura-Heat", "Clearblue"],
     tips: [
       "Vaginal pessaries should be inserted at bedtime using the applicator for optimal retention.",
@@ -234,7 +234,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Women's Health",
     description:
       "Reproductive health, prenatal vitamins, menopause support, and everyday wellness products.",
-    imageUrl: "/images/otc/womens-health.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/womens-health.webp",
     brands: ["Always", "Summer's Eve", "Pregnacare", "Clearblue"],
     tips: ["Prenatal vitamins ideally start before conception."],
     sortOrder: 115,
@@ -244,7 +244,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Baby Care",
     description:
       "Gentle pediatric fever drops with dosing syringes, zinc barrier diaper creams, simethicone infant colic drops, and sterile saline nasal mists.",
-    imageUrl: "/images/otc/baby-care.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/baby-care.webp",
     brands: ["Calpol", "Infacol", "Sudocrem", "Little Remedies", "Ashton & Parsons", "Aveeno Baby"],
     tips: [
       "Always dose infant liquid medicines by exact weight using the included oral syringe.",
@@ -258,7 +258,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Medical Consumables",
     description:
       "Clinically calibrated blood pressure monitors, pulse oximeters, digital thermometers, blood glucose test strips, sterile gloves, and surgical masks.",
-    imageUrl: "/images/gallery/modern_care_tools.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
     brands: ["Omron", "OneTouch", "Accu-Chek", "Contec", "Beurer", "3M"],
     tips: [
       "Rest 5 minutes quietly before taking resting blood pressure readings.",
@@ -272,7 +272,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Diabetes Care",
     description:
       "Meters, strips, lancets, glucose tablets, and supportive OTC products for everyday diabetes self-management.",
-    imageUrl: "/images/articles/diabetes-everyday-tips.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp",
     brands: ["OneTouch", "Contour", "FreeStyle", "Dex4"],
     tips: ["Match strips to your exact meter model."],
     sortOrder: 135,
@@ -282,7 +282,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     name: "Nutritional Products",
     description:
       "Complete daily multivitamins, effervescent vitamin C + zinc, oral electrolyte hydration, gentle iron tonics, and balanced meal replacement shakes.",
-    imageUrl: "/images/otc/vitamins-supplements.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
     brands: ["Wellman", "Wellwoman", "Berocca", "Hydralyte", "Feroglobin", "Ensure", "Centrum"],
     tips: [
       "Take iron supplements with vitamin C for enhanced absorption; avoid dairy or tea within 2 hours.",
@@ -295,7 +295,7 @@ const CATEGORIES: OtcCategorySeed[] = [
     slug: "vitamins-supplements",
     name: "Vitamins & Supplements",
     description: "Evidence-minded vitamins, minerals, and wellness supplements catalogue alias.",
-    imageUrl: "/images/otc/vitamins-supplements.webp",
+    imageUrl: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/otc/vitamins-supplements.webp",
     brands: ["Nature Made", "Centrum", "Garden of Life", "Nordic Naturals"],
     tips: ["Tell us about all supplements; some interact with prescriptions."],
     sortOrder: 145,

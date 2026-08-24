@@ -43,7 +43,7 @@ export default function LandingQuickCareDeck() {
           >
             <div className="relative h-40 w-full overflow-hidden bg-slate-900">
               <Image
-                src="/images/services/medication-counselling.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp"
                 alt="Pharmacist counselling"
                 fill
                 className="object-cover transition duration-500 group-hover:scale-105"
@@ -75,7 +75,7 @@ export default function LandingQuickCareDeck() {
           >
             <div className="relative h-40 w-full overflow-hidden bg-slate-900">
               <Image
-                src="/images/services/prescription-dispensing.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/prescription-dispensing.webp"
                 alt="Medicine pack scanning"
                 fill
                 className="object-cover transition duration-500 group-hover:scale-105"
@@ -108,7 +108,7 @@ export default function LandingQuickCareDeck() {
           >
             <div className="relative h-40 w-full overflow-hidden bg-slate-900">
               <Image
-                src="/images/services/prescription-refills.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/prescription-refills.webp"
                 alt="Prescription refill"
                 fill
                 className="object-cover transition duration-500 group-hover:scale-105"
@@ -140,7 +140,7 @@ export default function LandingQuickCareDeck() {
           >
             <div className="relative h-40 w-full overflow-hidden bg-slate-900">
               <Image
-                src="/images/services/vaccinations.webp"
+                src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/vaccinations.webp"
                 alt="Vaccinations and clinics"
                 fill
                 className="object-cover transition duration-500 group-hover:scale-105"
