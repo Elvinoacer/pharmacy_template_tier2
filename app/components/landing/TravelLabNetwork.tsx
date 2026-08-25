@@ -109,8 +109,6 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
   const [searchQuery, setSearchQuery] = useState("");
 
   const activePharmacy = displayPharmacies[currentIndex] || displayPharmacies[0];
-  const nextPharmacy =
-    displayPharmacies[(currentIndex + 1) % displayPharmacies.length];
 
   const handlePrev = () => {
     setCurrentIndex((prev) =>
@@ -141,11 +139,20 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
       id="network"
       className="relative overflow-hidden bg-[#030907] px-4 py-20 text-white sm:px-6 sm:py-28 lg:px-8"
     >
-      {/* Ambient background glows & subtle bokeh lights */}
+      {/* Background Graphic: featured_bg_image.png with subtle atmospheric blending */}
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+        <Image
+          src="/images/landing/featured_bg_image.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-60"
+        />
+        {/* Soft edge gradients and radial vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#030907] via-transparent to-[#030907]/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#030907]/90 via-[#030907]/40 to-transparent" />
         <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-emerald-700/10 blur-[140px]" />
         <div className="absolute right-0 top-1/2 h-[30rem] w-[30rem] -translate-y-1/2 rounded-full bg-teal-600/10 blur-[160px]" />
-        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-emerald-500/10 blur-[130px]" />
         <div className="landing-grain opacity-[0.05]" />
       </div>
 
