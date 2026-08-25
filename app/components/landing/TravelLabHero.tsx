@@ -122,9 +122,9 @@ export default function TravelLabHero(_props: TravelLabHeroProps) {
 
         {/* Soft film wash + legibility veils */}
         <div className="travel-lab-hero-flicker pointer-events-none absolute inset-0 mix-blend-soft-light" />
-        <div className="absolute inset-0 bg-[#070b10]/35" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/60 to-[#070b10]/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/90 via-[#070b10]/50 to-[#070b10]/15" />
+        <div className="absolute inset-0 bg-[#070b10]/55" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/75 to-[#070b10]/45" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/95 via-[#070b10]/65 to-[#070b10]/35" />
         <div className="landing-grain opacity-[0.14]" />
       </div>
 

@@ -2028,7 +2028,7 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 .travel-lab-hero-flicker {
   background: radial-gradient(
     ellipse 70% 50% at 50% 40%,
-    rgba(255, 248, 220, 0.35),
+    rgba(255, 248, 220, 0.18),
     transparent 65%
   );
   animation: travelLabHeroFlicker 7s ease-in-out infinite;
