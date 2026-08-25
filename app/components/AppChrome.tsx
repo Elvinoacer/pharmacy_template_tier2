@@ -42,6 +42,12 @@ export default function AppChrome({
     return <>{children}</>;
   }
 
+  // The platform landing page owns its full-bleed navigation and footer so
+  // the visual shell can match the product design reference exactly.
+  if (pathname === "/") {
+    return <>{children}</>;
+  }
+
   const surface = publicSurface(pathname, pharmacySlug);
   // A non-platform page with no selected tenant must never inherit Aether's
   // identity. It remains useful as a generic public template until a tenant
