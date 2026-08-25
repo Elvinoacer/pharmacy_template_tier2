@@ -120,12 +120,14 @@ export default function TravelLabHero(_props: TravelLabHeroProps) {
           );
         })}
 
-        {/* Soft film wash + legibility veils — heavy enough for white coats / bright stills */}
-        <div className="absolute inset-0 bg-[#070b10]/70" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/85 to-[#070b10]/55" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#070b10] via-[#070b10]/80 to-[#070b10]/45" />
-        <div className="travel-lab-hero-flicker pointer-events-none absolute inset-0 mix-blend-soft-light" />
-        <div className="landing-grain opacity-[0.12]" />
+        {/* Veils MUST sit above slides (slides use z-index 1–2) */}
+        <div className="pointer-events-none absolute inset-0 z-[3]">
+          <div className="absolute inset-0 bg-[#05080c]/75 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-[#070b10]/55" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/80 to-[#070b10]/50" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#070b10] via-[#070b10]/75 to-[#070b10]/40" />
+          <div className="landing-grain opacity-[0.16]" />
+        </div>
       </div>
 
       <span className="sr-only">
