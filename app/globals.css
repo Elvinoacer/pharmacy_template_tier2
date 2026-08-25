@@ -1999,6 +1999,8 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 .travel-lab-hero-frame {
   will-change: transform;
   transform: scale(1.1);
+  /* Pull bright clinical whites down so copy always sits on a dark plane */
+  filter: brightness(0.72) contrast(1.05) saturate(0.92);
 }
 
 .travel-lab-hero-frame.is-running.travel-lab-hero-frame--drift-east {
@@ -2028,7 +2030,7 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 .travel-lab-hero-flicker {
   background: radial-gradient(
     ellipse 70% 50% at 50% 40%,
-    rgba(255, 248, 220, 0.18),
+    rgba(255, 248, 220, 0.1),
     transparent 65%
   );
   animation: travelLabHeroFlicker 7s ease-in-out infinite;

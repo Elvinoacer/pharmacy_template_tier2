@@ -120,12 +120,12 @@ export default function TravelLabHero(_props: TravelLabHeroProps) {
           );
         })}
 
-        {/* Soft film wash + legibility veils */}
+        {/* Soft film wash + legibility veils — heavy enough for white coats / bright stills */}
+        <div className="absolute inset-0 bg-[#070b10]/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/85 to-[#070b10]/55" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#070b10] via-[#070b10]/80 to-[#070b10]/45" />
         <div className="travel-lab-hero-flicker pointer-events-none absolute inset-0 mix-blend-soft-light" />
-        <div className="absolute inset-0 bg-[#070b10]/55" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/75 to-[#070b10]/45" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/95 via-[#070b10]/65 to-[#070b10]/35" />
-        <div className="landing-grain opacity-[0.14]" />
+        <div className="landing-grain opacity-[0.12]" />
       </div>
 
       <span className="sr-only">
