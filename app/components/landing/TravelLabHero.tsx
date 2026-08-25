@@ -159,23 +159,22 @@ export default function TravelLabHero(_props: TravelLabHeroProps) {
         </h1>
 
         <p className="travel-lab-hero-sub mt-5 max-w-md text-base leading-relaxed text-white/75 sm:mt-6 sm:text-lg">
-          Independent chemists, licensed clinicians, and families — on one
-          digital care network across Kenya.
+          Find care. Refill medicine. Feel better.
         </p>
 
         <div className="travel-lab-hero-cta mt-8 flex flex-wrap items-center gap-3 sm:mt-10 sm:gap-4">
           <a
-            href="#network"
+            href="#demo"
             className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#e8c547] px-7 text-sm font-bold text-[#0a120e] transition duration-300 hover:bg-[#f0d56a] active:scale-[0.98]"
           >
-            Explore the network
+            See how it works
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
           </a>
           <a
-            href="#story"
+            href="#network"
             className="inline-flex min-h-12 items-center justify-center px-2 text-sm font-semibold text-white/85 underline-offset-4 transition hover:text-white hover:underline"
           >
-            Our story
+            Find a pharmacy
           </a>
         </div>
 

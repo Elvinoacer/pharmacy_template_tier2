@@ -1,12 +1,8 @@
 import { getMarketplaceFeaturedPharmacies } from "@/app/lib/services/pharmacy-directory";
 import { platform } from "@/app/lib/data";
 import TravelLabHero from "./components/landing/TravelLabHero";
-import TravelLabStory from "./components/landing/TravelLabStory";
-import TravelLabMetrics from "./components/landing/TravelLabMetrics";
-import TravelLabTimeline from "./components/landing/TravelLabTimeline";
+import LandingCareDemo from "./components/landing/LandingCareDemo";
 import TravelLabNetwork from "./components/landing/TravelLabNetwork";
-import TravelLabPartners from "./components/landing/TravelLabPartners";
-import TravelLabTeam from "./components/landing/TravelLabTeam";
 import TravelLabContact from "./components/landing/TravelLabContact";
 import LandingMobileActionBar from "./components/landing/LandingMobileActionBar";
 
@@ -23,12 +19,8 @@ export default async function MarketplacePage() {
   return (
     <div className="landing-root min-h-screen bg-[#070b10] text-[#0f172a] pb-16 lg:pb-0">
       <TravelLabHero pharmacyCount={featuredPharmacies.length || 0} initialQuery="" />
-      <TravelLabStory />
-      <TravelLabMetrics />
-      <TravelLabTimeline />
+      <LandingCareDemo />
       <TravelLabNetwork pharmacies={featuredPharmacies} />
-      <TravelLabPartners />
-      <TravelLabTeam />
       <TravelLabContact />
       <LandingMobileActionBar />
     </div>
