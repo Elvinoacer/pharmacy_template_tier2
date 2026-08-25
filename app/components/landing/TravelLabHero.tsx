@@ -120,13 +120,12 @@ export default function TravelLabHero(_props: TravelLabHeroProps) {
           );
         })}
 
-        {/* Veils MUST sit above slides (slides use z-index 1–2) */}
+        {/* Veils above slides — darker on the copy side, image still readable on the right */}
         <div className="pointer-events-none absolute inset-0 z-[3]">
-          <div className="absolute inset-0 bg-[#05080c]/75 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-[#070b10]/55" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/80 to-[#070b10]/50" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#070b10] via-[#070b10]/75 to-[#070b10]/40" />
-          <div className="landing-grain opacity-[0.16]" />
+          <div className="absolute inset-0 bg-[#070b10]/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/45 to-[#070b10]/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/92 via-[#070b10]/45 to-transparent" />
+          <div className="landing-grain opacity-[0.12]" />
         </div>
       </div>
 

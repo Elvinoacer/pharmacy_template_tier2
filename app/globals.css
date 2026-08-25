@@ -1999,8 +1999,8 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 .travel-lab-hero-frame {
   will-change: transform;
   transform: scale(1.1);
-  /* Crush clinical whites at the source */
-  filter: brightness(0.48) contrast(1.08) saturate(0.88);
+  /* Soft dim — enough for whites, not a blackout */
+  filter: brightness(0.68) contrast(1.04) saturate(0.95);
 }
 
 .travel-lab-hero-frame.is-running.travel-lab-hero-frame--drift-east {
