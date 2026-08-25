@@ -1871,16 +1871,7 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
    Marketplace landing — Luxury Editorial, Midnight Teal & Warm Gold
    ============================================================ */
 
-/* Travel Lab hero — full-bleed cinematic composition */
-@keyframes travelLabHeroKenBurns {
-  0% {
-    transform: scale(1.06);
-  }
-  100% {
-    transform: scale(1.14);
-  }
-}
-
+/* Travel Lab hero — cinematic stills reel (video-from-photos) */
 @keyframes travelLabHeroRise {
   0% {
     opacity: 0;
@@ -1892,15 +1883,167 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   }
 }
 
-.travel-lab-hero-image {
-  will-change: transform;
-  animation: travelLabHeroKenBurns 28s ease-in-out alternate infinite;
+@keyframes travelLabHeroBeatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(0.55em) skewX(-4deg);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) skewX(0);
+    filter: blur(0);
+  }
 }
 
+@keyframes travelLabHeroFlicker {
+  0%,
+  100% {
+    opacity: 0.04;
+  }
+  40% {
+    opacity: 0.09;
+  }
+  61% {
+    opacity: 0.03;
+  }
+  78% {
+    opacity: 0.11;
+  }
+}
+
+@keyframes travelLabHeroReelFill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Distinct pans so crossfades feel like camera moves, not slide decks */
+@keyframes travelLabHeroDriftEast {
+  from {
+    transform: scale(1.08) translate3d(-2.5%, 0, 0);
+  }
+  to {
+    transform: scale(1.18) translate3d(2.5%, -1%, 0);
+  }
+}
+
+@keyframes travelLabHeroDriftWest {
+  from {
+    transform: scale(1.12) translate3d(3%, -1%, 0);
+  }
+  to {
+    transform: scale(1.2) translate3d(-2%, 1%, 0);
+  }
+}
+
+@keyframes travelLabHeroDriftIn {
+  from {
+    transform: scale(1.05) translate3d(0, 1%, 0);
+  }
+  to {
+    transform: scale(1.2) translate3d(0, -1.5%, 0);
+  }
+}
+
+@keyframes travelLabHeroDriftOut {
+  from {
+    transform: scale(1.22) translate3d(-1%, 0, 0);
+  }
+  to {
+    transform: scale(1.08) translate3d(1.5%, 1%, 0);
+  }
+}
+
+@keyframes travelLabHeroDriftUp {
+  from {
+    transform: scale(1.1) translate3d(0, 3%, 0);
+  }
+  to {
+    transform: scale(1.18) translate3d(0, -2%, 0);
+  }
+}
+
+@keyframes travelLabHeroDriftSouth {
+  from {
+    transform: scale(1.14) translate3d(1%, -2%, 0);
+  }
+  to {
+    transform: scale(1.08) translate3d(-1%, 2%, 0);
+  }
+}
+
+.travel-lab-hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
+  z-index: 0;
+}
+
+.travel-lab-hero-slide.is-outgoing {
+  opacity: 0;
+  z-index: 1;
+}
+
+.travel-lab-hero-slide.is-active {
+  opacity: 1;
+  z-index: 2;
+}
+
+.travel-lab-hero-frame {
+  will-change: transform;
+  transform: scale(1.1);
+}
+
+.travel-lab-hero-frame.is-running.travel-lab-hero-frame--drift-east {
+  animation: travelLabHeroDriftEast 5.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.travel-lab-hero-frame.is-running.travel-lab-hero-frame--drift-west {
+  animation: travelLabHeroDriftWest 5.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.travel-lab-hero-frame.is-running.travel-lab-hero-frame--drift-in {
+  animation: travelLabHeroDriftIn 5.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.travel-lab-hero-frame.is-running.travel-lab-hero-frame--drift-out {
+  animation: travelLabHeroDriftOut 5.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.travel-lab-hero-frame.is-running.travel-lab-hero-frame--drift-up {
+  animation: travelLabHeroDriftUp 5.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.travel-lab-hero-frame.is-running.travel-lab-hero-frame--drift-south {
+  animation: travelLabHeroDriftSouth 5.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.travel-lab-hero-flicker {
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 40%,
+    rgba(255, 248, 220, 0.35),
+    transparent 65%
+  );
+  animation: travelLabHeroFlicker 7s ease-in-out infinite;
+}
+
+.travel-lab-hero-kicker,
 .travel-lab-hero-sub,
-.travel-lab-hero-cta {
+.travel-lab-hero-cta,
+.travel-lab-hero-reel {
   opacity: 0;
   animation: travelLabHeroRise 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.travel-lab-hero-kicker {
+  animation-delay: 0.15s;
 }
 
 .travel-lab-hero-sub {
@@ -1911,14 +2054,45 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   animation-delay: 0.95s;
 }
 
+.travel-lab-hero-reel {
+  animation-delay: 1.1s;
+}
+
+.travel-lab-hero-beat {
+  animation: travelLabHeroBeatIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.travel-lab-hero-reel-tick--live {
+  position: relative;
+  overflow: hidden;
+  background: rgba(232, 197, 71, 0.35) !important;
+}
+
+.travel-lab-hero-reel-tick--live::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: #e8c547;
+  animation: travelLabHeroReelFill 5.2s linear forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .travel-lab-hero-image {
-    animation: none;
-    transform: scale(1.06);
+  .travel-lab-hero-frame.is-running,
+  .travel-lab-hero-flicker,
+  .travel-lab-hero-reel-tick--live::after,
+  .travel-lab-hero-beat {
+    animation: none !important;
   }
 
+  .travel-lab-hero-frame {
+    transform: scale(1.08);
+  }
+
+  .travel-lab-hero-kicker,
   .travel-lab-hero-sub,
-  .travel-lab-hero-cta {
+  .travel-lab-hero-cta,
+  .travel-lab-hero-reel {
     animation: none;
     opacity: 1;
     transform: none;
