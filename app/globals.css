@@ -2183,7 +2183,7 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   --aether-green-bright: #54e39e;
   --aether-yellow: #f1dc22;
   position: relative;
-  overflow: hidden;
+  overflow-x: clip;
   background: var(--aether-bg);
   color: #f8faf6;
   font-family: var(--font-sans), sans-serif;
