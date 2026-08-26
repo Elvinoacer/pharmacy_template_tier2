@@ -5,7 +5,6 @@ export default function CareNearYouInputPolish() {
     <style jsx global>{`
       @keyframes care-search-orbit { 0%,100%{transform:translate3d(-2%,0,0);opacity:.34} 50%{transform:translate3d(3%,0,0);opacity:.62} }
       @keyframes care-search-breathe { 0%,100%{box-shadow:0 18px 42px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.075),inset 0 -1px 0 rgba(255,255,255,.02)} 50%{box-shadow:0 22px 52px rgba(0,0,0,.42),0 0 30px rgba(50,211,145,.07),inset 0 1px 0 rgba(255,255,255,.10),inset 0 -1px 0 rgba(255,255,255,.025)} }
-
       #network form[action="/pharmacies"] { position:relative;isolation:isolate;overflow:hidden;min-height:66px!important;padding:5px!important;border:1px solid rgba(165,255,211,.22)!important;border-radius:22px!important;background:linear-gradient(135deg,rgba(14,40,31,.92),rgba(3,16,11,.97))!important;box-shadow:0 18px 42px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.075),inset 0 -1px 0 rgba(255,255,255,.02)!important;animation:care-search-breathe 8s ease-in-out infinite; }
       #network form[action="/pharmacies"]::before { content:"";position:absolute;inset:1px;z-index:-1;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at 10% 50%,rgba(103,255,186,.12),transparent 25%),linear-gradient(100deg,rgba(255,255,255,.06),transparent 24%,transparent 74%,rgba(82,255,170,.055)); }
       #network form[action="/pharmacies"]::after { content:"";position:absolute;left:-8%;right:-8%;bottom:0;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent 0%,rgba(104,255,184,.08) 12%,rgba(130,255,195,.52) 50%,rgba(104,255,184,.08) 88%,transparent 100%);filter:blur(.2px);animation:care-search-orbit 6.5s ease-in-out infinite; }
@@ -18,7 +17,6 @@ export default function CareNearYouInputPolish() {
       #network form[action="/pharmacies"]:focus-within { transform:translateY(-2px);border-color:rgba(119,255,190,.78)!important;box-shadow:0 0 0 4px rgba(66,230,151,.10),0 24px 58px rgba(0,0,0,.48),0 0 40px rgba(35,220,141,.11),inset 0 1px 0 rgba(255,255,255,.12)!important; }
       #network form[action="/pharmacies"]:focus-within > div:first-child > svg { transform:scale(1.055) rotate(-3deg);background:linear-gradient(145deg,rgba(42,166,111,.60),rgba(7,57,37,.82))!important;border-color:rgba(162,255,211,.40)!important; }
       #network form[action="/pharmacies"] button[type="submit"]:active { transform:scale(.93)!important; }
-
       @media (max-width:639px) { #network form[action="/pharmacies"] { min-height:62px!important;border-radius:20px!important;padding:4px!important; } #network form[action="/pharmacies"] > div:first-child > svg { width:42px!important;height:42px!important;padding:10px;border-radius:14px!important; } #network form[action="/pharmacies"] input { height:50px!important;padding-left:10px!important;font-size:14px!important; } #network form[action="/pharmacies"] button[type="submit"] { width:52px!important;height:52px!important;border-radius:16px!important; } }
       @media (prefers-reduced-motion:reduce) { #network form[action="/pharmacies"], #network form[action="/pharmacies"]::after { animation:none!important; } }
     `}</style>
