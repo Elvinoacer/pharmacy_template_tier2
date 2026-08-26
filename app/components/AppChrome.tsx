@@ -67,8 +67,10 @@ export default function AppChrome({
           surface={surface}
           brand={brand}
         />
-        <main className="flex-1">{children}</main>
-        <Footer surface={surface} brand={brand} clearMobileActionBar={hasLandingMobileActionBar} />
+        <main className="min-w-0 flex-1">{children}</main>
+        <div id="site-footer" className="shrink-0">
+          <Footer surface={surface} brand={brand} clearMobileActionBar={hasLandingMobileActionBar} />
+        </div>
         {surface === "storefront" && <AiChatbot />}
         {surface === "storefront" && <LiveAlertCenter audience="public" />}
       </div>
