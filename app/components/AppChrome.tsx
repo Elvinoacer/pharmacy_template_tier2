@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import AiChatbot from "./AiChatbot";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import NavbarNavigationFix from "./NavbarNavigationFix";
 import { LiveAlertCenter } from "./LiveAlertCenter";
 import type { PortalSessionHint } from "@/app/lib/portal-dest";
 import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/brand";
@@ -61,6 +62,7 @@ export default function AppChrome({
       }}
     >
       <div className="mesh-bg relative flex min-h-screen flex-col">
+        <NavbarNavigationFix />
         <Navbar
           sessionUser={sessionUser}
           pharmacySlug={surface === "storefront" ? brand.slug : null}
