@@ -29,22 +29,22 @@ interface TravelLabHeroProps {
  */
 const SCENES = [
   {
-    src: "/images/landing/hero_image_0.png",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/hero_image_0.png",
     alt: "Aether pharmacy apothecary with natural supplements and care counter",
     motion: "drift-east",
   },
   {
-    src: "/images/landing/hero_imag_1_1.png",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/hero_imag_1_1.png",
     alt: "Modern accredited pharmacy interior with herbal wellness care and medical cross",
     motion: "drift-in",
   },
   {
-    src: "/images/landing/hero_bgimg1.png",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/hero_bgimg1.png",
     alt: "Warm ambient dispensary and curated wellness shelves",
     motion: "drift-west",
   },
   {
-    src: "/images/landing/hero_bg_img2.png",
+    src: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/hero_bg_img2.png",
     alt: "Luminous clinical pharmacy counter with herbal mortar and pestle",
     motion: "drift-east",
   },

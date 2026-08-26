@@ -73,7 +73,7 @@ export default function LandingCareDemo() {
       {/* Background Stills: bg_image_see_it_in_action.png */}
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
         <Image
-          src="/images/landing/bg_image_see_it_in_action.png"
+          src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/landing/bg_image_see_it_in_action.png"
           alt=""
           fill
           sizes="100vw"

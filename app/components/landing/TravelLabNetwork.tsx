@@ -142,7 +142,7 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
       {/* Background Graphic: featured_bg_image.png with subtle atmospheric blending */}
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
         <Image
-          src="/images/landing/featured_bg_image.png"
+          src={`${R2}/images/landing/featured_bg_image.png`}
           alt=""
           fill
           sizes="100vw"
