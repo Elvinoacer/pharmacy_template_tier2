@@ -45,9 +45,7 @@ export default function TravelLabContact() {
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Main CTA Frosted Glass Capsule */}
         <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-[#061810]/75 via-[#040e09]/85 to-[#0b140a]/90 p-8 shadow-[0_25px_60px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-2xl sm:p-12 lg:p-16">
-          
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-8 xl:gap-12">
-            
             {/* Left Column: Heading, Subhead & Action Buttons */}
             <div className="lg:col-span-5 xl:col-span-5">
               <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#eab308]">
@@ -72,7 +70,6 @@ export default function TravelLabContact() {
 
               {/* Action Buttons */}
               <div className="mt-8 flex flex-wrap items-center gap-4 sm:gap-5">
-                {/* Primary Button */}
                 <Link
                   href="/pharmacies"
                   className="inline-flex items-center gap-2.5 rounded-full bg-[#ffd700] px-7 py-3.5 text-sm font-bold text-[#0a120e] shadow-[0_4px_24px_rgba(255,215,0,0.35)] transition-all hover:bg-[#ffe033] hover:scale-105 active:scale-95 sm:text-base"
@@ -82,7 +79,6 @@ export default function TravelLabContact() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
 
-                {/* Secondary Button */}
                 <a
                   href="https://wa.me/254790670542?text=Hello%20Aether%20Healthcare,%20I%20have%20an%20inquiry."
                   target="_blank"
@@ -95,14 +91,13 @@ export default function TravelLabContact() {
               </div>
             </div>
 
-            {/* Right Column: Perfect Concentric Orbital Halo & 4 Floating Service Cards */}
+            {/* Right Column: Orbital desktop composition / structured mobile layout */}
             <div className="relative flex items-center justify-center lg:col-span-7 xl:col-span-7">
-              <div className="relative h-[480px] w-full max-w-[620px] sm:h-[500px]">
-                
-                {/* SVG Vector Concentric Orbital Geometry */}
+              <div className="relative w-full max-w-[620px] py-5 sm:h-[500px] sm:py-0">
+                {/* SVG Vector Concentric Orbital Geometry — decorative on tablet/desktop */}
                 <svg
                   viewBox="0 0 620 500"
-                  className="pointer-events-none absolute inset-0 h-full w-full"
+                  className="pointer-events-none absolute inset-0 hidden h-full w-full sm:block"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
@@ -124,10 +119,7 @@ export default function TravelLabContact() {
                     </radialGradient>
                   </defs>
 
-                  {/* Soft ambient yellow radial aura behind center */}
                   <circle cx="340" cy="250" r="180" fill="url(#ctaHaloGlow)" />
-
-                  {/* Ring 1 (Inner Orbit) */}
                   <circle
                     cx="340"
                     cy="250"
@@ -137,8 +129,6 @@ export default function TravelLabContact() {
                     strokeWidth="1.2"
                     strokeDasharray="4 3"
                   />
-
-                  {/* Ring 2 (Middle Orbit) */}
                   <circle
                     cx="340"
                     cy="250"
@@ -147,8 +137,6 @@ export default function TravelLabContact() {
                     strokeOpacity="0.18"
                     strokeWidth="1.2"
                   />
-
-                  {/* Ring 3 (Outer Orbit) */}
                   <circle
                     cx="340"
                     cy="250"
@@ -158,26 +146,18 @@ export default function TravelLabContact() {
                     strokeWidth="1.2"
                   />
 
-                  {/* Glowing Golden Nodes positioned on the orbits */}
-                  {/* Node 1: Inner Orbit (Left) */}
                   <circle cx="252" cy="225" r="3" fill="#ffd700" filter="url(#ctaGlow)" />
-
-                  {/* Node 2: Middle Orbit (Top - 12 o'clock) */}
                   <circle cx="340" cy="90" r="4.5" fill="#ffd700" filter="url(#ctaGlow)" />
-
-                  {/* Node 3: Middle Orbit (Bottom - 6 o'clock) */}
                   <circle cx="340" cy="410" r="4.5" fill="#ffd700" filter="url(#ctaGlow)" />
-
-                  {/* Node 4: Outer Orbit (Right - ~3:30 o'clock) */}
                   <circle cx="560" cy="285" r="4" fill="#ffd700" filter="url(#ctaGlow)" />
                 </svg>
 
                 {/* Central Heart Pulse Emblem */}
-                <div className="pointer-events-none absolute left-[54.8%] top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-                  <div className="flex h-28 w-28 items-center justify-center rounded-[2rem] border border-yellow-500/35 bg-[#121912]/95 shadow-[0_0_50px_rgba(255,215,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.2)] backdrop-blur-2xl sm:h-32 sm:w-32">
+                <div className="relative z-20 mx-auto mb-5 flex items-center justify-center sm:absolute sm:left-[54.8%] sm:top-1/2 sm:mb-0 sm:-translate-x-1/2 sm:-translate-y-1/2">
+                  <div className="flex h-24 w-24 items-center justify-center rounded-[1.75rem] border border-yellow-500/35 bg-[#121912]/95 shadow-[0_0_50px_rgba(255,215,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.2)] backdrop-blur-2xl sm:h-32 sm:w-32 sm:rounded-[2rem]">
                     <svg
                       viewBox="0 0 48 48"
-                      className="h-14 w-14 text-[#ffd700] drop-shadow-[0_0_16px_rgba(255,215,0,0.6)]"
+                      className="h-12 w-12 text-[#ffd700] drop-shadow-[0_0_16px_rgba(255,215,0,0.6)] sm:h-14 sm:w-14"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="3"
@@ -191,76 +171,82 @@ export default function TravelLabContact() {
                   </div>
                 </div>
 
-                {/* 4 Floating Service Cards Positioned Precisely Matching cta.png */}
-                
-                {/* 1. Top-Left: Find pharmacies */}
-                <Link
-                  href="/pharmacies"
-                  className="group absolute left-[4%] top-[14%] z-20 flex items-center gap-3.5 rounded-2xl border border-white/[0.08] bg-black/50 p-3.5 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-emerald-400/40 hover:bg-black/70 hover:scale-105 sm:left-[6%] sm:top-[14%]"
-                >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-700/90 text-emerald-100 shadow-sm">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="h-5 w-5 fill-current"
-                      aria-hidden="true"
-                    >
-                      <path d="M10.5 4.5h3v6h6v3h-6v6h-3v-6h-6v-3h6v-6z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white sm:text-sm whitespace-nowrap">Find pharmacies</p>
-                    <p className="text-[10px] text-slate-400 sm:text-xs">Near you</p>
-                  </div>
-                </Link>
+                {/* Service cards: 2×2 flow on mobile, orbital positioning on sm+ */}
+                <div className="grid grid-cols-2 gap-3 sm:contents">
+                  {/* 1. Top-Left: Find pharmacies */}
+                  <Link
+                    href="/pharmacies"
+                    className="group relative z-30 flex min-w-0 w-full items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-black/50 p-3 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-emerald-400/40 hover:bg-black/70 hover:scale-105 sm:absolute sm:left-[6%] sm:top-[14%] sm:w-auto sm:gap-3.5 sm:p-3.5"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-700/90 text-emerald-100 shadow-sm sm:h-11 sm:w-11">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="h-5 w-5 fill-current"
+                        aria-hidden="true"
+                      >
+                        <path d="M10.5 4.5h3v6h6v3h-6v6h-3v-6h-6v-3h6v-6z" />
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold leading-tight text-white sm:whitespace-nowrap sm:text-sm">
+                        Find pharmacies
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-slate-400 sm:text-xs">Near you</p>
+                    </div>
+                  </Link>
 
-                {/* 2. Top-Right: Refill prescriptions */}
-                <Link
-                  href="/refill"
-                  className="group absolute right-[2%] top-[15%] z-20 flex items-center gap-3.5 rounded-2xl border border-white/[0.08] bg-black/50 p-3.5 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-emerald-400/40 hover:bg-black/70 hover:scale-105 sm:right-[4%] sm:top-[15%]"
-                >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#0e2a1e] text-emerald-400 shadow-sm">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white sm:text-sm whitespace-nowrap">Refill prescriptions</p>
-                    <p className="text-[10px] text-slate-400 sm:text-xs">Quick & easy</p>
-                  </div>
-                </Link>
+                  {/* 2. Top-Right: Refill prescriptions */}
+                  <Link
+                    href="/refill"
+                    className="group relative z-30 flex min-w-0 w-full items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-black/50 p-3 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-emerald-400/40 hover:bg-black/70 hover:scale-105 sm:absolute sm:right-[4%] sm:top-[15%] sm:w-auto sm:gap-3.5 sm:p-3.5"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#0e2a1e] text-emerald-400 shadow-sm sm:h-11 sm:w-11">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold leading-tight text-white sm:whitespace-nowrap sm:text-sm">
+                        Refill prescriptions
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-slate-400 sm:text-xs">Quick &amp; easy</p>
+                    </div>
+                  </Link>
 
-                {/* 3. Bottom-Left: Health advice */}
-                <Link
-                  href="/how-do-you-feel"
-                  className="group absolute bottom-[14%] left-[4%] z-20 flex items-center gap-3.5 rounded-2xl border border-white/[0.08] bg-black/50 p-3.5 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-emerald-400/40 hover:bg-black/70 hover:scale-105 sm:bottom-[14%] sm:left-[6%]"
-                >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#0e2a1e] text-emerald-400 shadow-sm">
-                    <MessageCircle className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white sm:text-sm whitespace-nowrap">Health advice</p>
-                    <p className="text-[10px] text-slate-400 sm:text-xs">From experts</p>
-                  </div>
-                </Link>
+                  {/* 3. Bottom-Left: Health advice */}
+                  <Link
+                    href="/how-do-you-feel"
+                    className="group relative z-30 flex min-w-0 w-full items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-black/50 p-3 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-emerald-400/40 hover:bg-black/70 hover:scale-105 sm:absolute sm:bottom-[14%] sm:left-[6%] sm:w-auto sm:gap-3.5 sm:p-3.5"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#0e2a1e] text-emerald-400 shadow-sm sm:h-11 sm:w-11">
+                      <MessageCircle className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold leading-tight text-white sm:whitespace-nowrap sm:text-sm">
+                        Health advice
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-slate-400 sm:text-xs">From experts</p>
+                    </div>
+                  </Link>
 
-                {/* 4. Bottom-Right: Trusted care */}
-                <Link
-                  href="/health/self-care-guide"
-                  className="group absolute bottom-[14%] right-[2%] z-20 flex items-center gap-3.5 rounded-2xl border border-white/[0.08] bg-black/50 p-3.5 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-emerald-400/40 hover:bg-black/70 hover:scale-105 sm:bottom-[14%] sm:right-[4%]"
-                >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#0e2a1e] text-emerald-400 shadow-sm">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white sm:text-sm whitespace-nowrap">Trusted care</p>
-                    <p className="text-[10px] text-slate-400 sm:text-xs">Always</p>
-                  </div>
-                </Link>
-
+                  {/* 4. Bottom-Right: Trusted care */}
+                  <Link
+                    href="/health/self-care-guide"
+                    className="group relative z-30 flex min-w-0 w-full items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-black/50 p-3 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-emerald-400/40 hover:bg-black/70 hover:scale-105 sm:absolute sm:bottom-[14%] sm:right-[4%] sm:w-auto sm:gap-3.5 sm:p-3.5"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#0e2a1e] text-emerald-400 shadow-sm sm:h-11 sm:w-11">
+                      <ShieldCheck className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold leading-tight text-white sm:whitespace-nowrap sm:text-sm">
+                        Trusted care
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-slate-400 sm:text-xs">Always</p>
+                    </div>
+                  </Link>
+                </div>
               </div>
             </div>
-
           </div>
         </div>
-
       </div>
     </section>
   );
