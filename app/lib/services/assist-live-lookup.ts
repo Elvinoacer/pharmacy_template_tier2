@@ -47,6 +47,10 @@ function availabilityOf(stock: number, threshold: number): AssistMedicineMatch["
   return "in_stock";
 }
 
+function availabilityRank(value: AssistMedicineMatch["availability"]): number {
+  return value === "in_stock" ? 3 : value === "low_stock" ? 2 : 1;
+}
+
 /**
  * Live, public-safe network lookup used by the page-assist UI.
  * It deliberately uses the unscoped client because this feature answers
@@ -104,13 +108,14 @@ export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatc
       : [];
 
     const pharmacyById = new Map(pharmacies.map((pharmacy) => [pharmacy.id, pharmacy]));
-
     const grouped = new Map<string, AssistMedicineMatch>();
+
     for (const row of inventoryRows) {
       const pharmacy = pharmacyById.get(row.pharmacyId);
       if (!pharmacy) continue;
 
       const key = `${row.medicationMaster.id}:${row.medicationMaster.name}:${row.medicationMaster.strengthDisplay ?? ""}`;
+      const rowAvailability = availabilityOf(row.currentStock, row.lowStockThreshold);
       const existing = grouped.get(key);
       const price = Number(row.price?.toString?.() ?? row.price);
       const pharmacyMatch = {
@@ -124,9 +129,9 @@ export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatc
         if (!existing.pharmacies.some((item) => item.slug === pharmacy.slug)) {
           existing.pharmacies.push(pharmacyMatch);
         }
-        if (existing.availability === "out_of_stock" && row.currentStock > 0) {
-          existing.availability = availabilityOf(row.currentStock, row.lowStockThreshold);
-          existing.priceKes = formatPrice(Number.isFinite(price) ? price : 0);
+        if (availabilityRank(rowAvailability) > availabilityRank(existing.availability)) {
+          existing.availability = rowAvailability;
+          if (Number.isFinite(price)) existing.priceKes = formatPrice(price);
         }
         continue;
       }
@@ -138,7 +143,7 @@ export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatc
         brandName: row.medicationMaster.brandName,
         strength: row.medicationMaster.strengthDisplay,
         priceKes: formatPrice(Number.isFinite(price) ? price : 0),
-        availability: availabilityOf(row.currentStock, row.lowStockThreshold),
+        availability: rowAvailability,
         pharmacies: [pharmacyMatch],
       });
     }
@@ -152,9 +157,6 @@ export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatc
       stocksQuery: pharmacy.hasSearchedMedicine,
     }));
 
-    // For medicine searches, the most useful “pharmacy” results are the ones
-    // that actually stock the matched medicine. Merge them ahead of generic
-    // directory name/location matches.
     const stockPharmacyMatches: AssistPharmacyMatch[] = Array.from(grouped.values())
       .flatMap((medicine) => medicine.pharmacies)
       .map((pharmacy) => ({
@@ -169,7 +171,16 @@ export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatc
     const pharmacyMap = new Map<string, AssistPharmacyMatch>();
     for (const pharmacy of [...stockPharmacyMatches, ...directPharmacyMatches]) {
       const existing = pharmacyMap.get(pharmacy.slug);
-      pharmacyMap.set(pharmacy.slug, existing ? { ...existing, stocksQuery: existing.stocksQuery || pharmacy.stocksQuery, delivery: existing.delivery || pharmacy.delivery } : pharmacy);
+      pharmacyMap.set(
+        pharmacy.slug,
+        existing
+          ? {
+              ...existing,
+              stocksQuery: existing.stocksQuery || pharmacy.stocksQuery,
+              delivery: existing.delivery || pharmacy.delivery,
+            }
+          : pharmacy,
+      );
     }
 
     return {
