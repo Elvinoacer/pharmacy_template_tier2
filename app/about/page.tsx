@@ -4,9 +4,11 @@ import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
-import { gallery, team, values } from "../lib/data";
+import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { platform } from "../lib/data";
-import { getResolvedPharmacyOrNull } from "../lib/services/pharmacy-settings";
+import {
+  getStorefrontView,
+} from "../lib/services/storefront-content";
 import { ArrowRight, HeartPulse, ShieldCheck, Building2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -119,9 +121,15 @@ function NetworkAbout() {
 }
 
 export default async function AboutPage() {
-  const pharmacy = await getResolvedPharmacyOrNull();
-  if (!pharmacy) return <NetworkAbout />;
+  const view = await getStorefrontView();
+  if (view.status === "unavailable") {
+    return <StorefrontUnavailable slug={view.slug} next="/about" />;
+  }
+  if (view.status !== "active") return <NetworkAbout />;
 
+  const pharmacy = view.resolved;
+  const content = view.content;
+  const values = content.about.values;
   const aboutCopy =
     pharmacy.about ||
     `${pharmacy.name} is an independent pharmacy on the Aether network — careful dispensing, personal attention, and a counter that still looks up when you walk in.`;
@@ -156,15 +164,12 @@ export default async function AboutPage() {
                 className="mt-2 text-2xl font-semibold text-[#0c1a14] sm:text-3xl"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
-                A neighbourhood pharmacy on the Aether network
+                {content.about.storyHeading}
               </h2>
               <div className="mt-4 space-y-4 text-sm leading-relaxed text-[#5a6b62] sm:text-base">
                 <p>{aboutCopy}</p>
                 {pharmacy.address.full && <p>Find us at {pharmacy.address.full}.</p>}
-                <p>
-                  We are an independent shop — not a chain white-label. Aether gives patients a way to find us.
-                  The care is ours.
-                </p>
+                <p>{content.about.closingNote}</p>
               </div>
             </div>
           </Reveal>
@@ -182,9 +187,10 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Team roster is demo content for the seed tenant only — real tenants
-          don't inherit another pharmacy's staff photos. */}
-      {pharmacy.slug === "aether" && (
+      {/* Team + gallery are template content every tenant can personalise from
+          the Storefront Studio (/admin/settings/storefront) — real rooms no
+          longer inherit another pharmacy's staff photos by hard-coding. */}
+      {content.about.showTeam && content.team.length > 0 && (
         <section className="px-4 py-12 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <h2
@@ -194,15 +200,20 @@ export default async function AboutPage() {
               The people at the counter
             </h2>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {team.map((m) => (
-                <article key={m.id} className="overflow-hidden rounded-3xl border border-teal-900/8 bg-white">
-                  <div className="relative aspect-[4/5]">
-                    <Image src={m.photo} alt={m.name} fill className="object-cover" sizes="240px" />
-                  </div>
+              {content.team.map((m) => (
+                <article key={m.id} className="glass-tile-strong overflow-hidden rounded-3xl">
+                  {m.photo && (
+                    <div className="relative aspect-[4/5]">
+                      <Image src={m.photo} alt={m.name} fill className="object-cover" sizes="240px" />
+                    </div>
+                  )}
                   <div className="p-4">
                     <p className="font-semibold text-[#0c1a14]">{m.name}</p>
                     <p className="text-xs font-medium text-[#0d6e5a]">{m.role}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{m.bio}</p>
+                    {m.bio && <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{m.bio}</p>}
+                    {m.qualifications && (
+                      <p className="mt-2 text-xs font-medium text-teal-800/90">{m.qualifications}</p>
+                    )}
                   </div>
                 </article>
               ))}
@@ -211,15 +222,34 @@ export default async function AboutPage() {
         </section>
       )}
 
-      <section className="px-4 pb-8 sm:px-6">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 sm:grid-cols-3">
-          {gallery.slice(0, 6).map((g) => (
-            <div key={g.src} className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-              <Image src={g.src} alt={g.alt} fill className="object-cover" sizes="33vw" />
+      {content.sections.insuranceStrip && content.certifications.length > 0 && (
+        <section className="px-4 pb-8 sm:px-6">
+          <div className="mx-auto max-w-6xl">
+            <div className="glass-panel flex flex-wrap items-center gap-x-6 gap-y-3 rounded-3xl p-5 sm:p-6">
+              <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-teal-700">
+                <ShieldCheck className="h-4 w-4" aria-hidden /> Credentials
+              </span>
+              {content.certifications.map((c) => (
+                <span key={c} className="text-sm font-medium text-[#23423a]">
+                  {c}
+                </span>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
+
+      {content.about.showGallery && content.gallery.length > 0 && (
+        <section className="px-4 pb-8 sm:px-6">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 sm:grid-cols-3">
+            {content.gallery.slice(0, 6).map((g) => (
+              <div key={g.src} className="relative aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-inset ring-white/25">
+                <Image src={g.src} alt={g.alt} fill className="object-cover" sizes="33vw" />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <CtaBanner
         title={`Visit ${pharmacy.name}`}

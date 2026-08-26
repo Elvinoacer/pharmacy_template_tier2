@@ -20,7 +20,14 @@ export default function PageHero({
   const homeHref = tenantHref(slug, "/");
   return (
     <section className="relative overflow-hidden px-4 pb-10 pt-32 sm:px-6 sm:pt-36 sm:pb-12">
+      {/* Ambient glass depth — same family as the storefront hero mesh */}
+      <div className="hero-mesh-bg absolute inset-0 -z-10 opacity-45" aria-hidden />
       <div className="hero-glow -left-20 top-10 opacity-60" />
+      <div
+        className="hero-glow right-0 top-24 opacity-50"
+        style={{ background: "radial-gradient(circle, rgba(201,162,39,0.18) 0%, transparent 70%)" }}
+        aria-hidden
+      />
       <div className="relative mx-auto max-w-6xl">
         {crumbs && crumbs.length > 0 && (
           <nav aria-label="Breadcrumb" className="mb-5">

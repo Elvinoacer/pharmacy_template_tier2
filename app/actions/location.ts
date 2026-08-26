@@ -86,6 +86,13 @@ export async function savePharmacyLocationAction(
     revalidatePath("/admin/settings/location");
     revalidatePath("/");
     revalidatePath("/how-do-you-feel");
+    // Storefront surfaces render these values too (hours/contact strip,
+    // delivery facts, why-choose-us bullets, careers inbox).
+    revalidatePath("/storefront");
+    revalidatePath("/about");
+    revalidatePath("/faq");
+    revalidatePath("/delivery");
+    revalidatePath("/careers");
 
     return { success: "Location saved. Public map and directions will use these values." };
   } catch (e) {

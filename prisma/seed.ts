@@ -204,6 +204,38 @@ async function main() {
           city: "Mombasa",
           state: "Mombasa",
           country: "Kenya",
+          about:
+            "Coast Care has served families around Moi Avenue since 2009 — walk-in dispensing, morning vaccination hours, and a delivery rider who knows every shortcut between Nyali and Likoni.",
+          // Storefront Studio override document — proves one template can wear
+          // many personalities. Aether stays on pure defaults.
+          storefront: {
+            version: 1,
+            hero: {
+              subline: "right here on the coast.",
+              kickerBadge: "Open Monday–Saturday · Moi Avenue",
+            },
+            theme: {
+              brandPrimary: "#0e7490",
+              brandAccent: "#d97706",
+            },
+            whyChooseUs: {
+              bullets: [
+                "Pharmacists on shift from open to close",
+                "__DELIVERY__",
+                "Same-day refills before 3 PM",
+                "Vaccination mornings every Saturday",
+              ],
+            },
+            deliverySteps: [
+              "Send your estate or landmark via WhatsApp or the form below.",
+              "Request a refill or have a prescription ready at the counter.",
+              "We prepare your order and confirm the rider window.",
+              "Pay by M-Pesa on delivery — SMS receipt included.",
+            ],
+            careers: {
+              heading: "Join the Coast Care crew",
+            },
+          },
         },
       },
       integrations: { create: {} },

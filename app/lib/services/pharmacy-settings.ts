@@ -38,6 +38,14 @@ export type ResolvedPharmacy = {
   deliveryNotes: string | null;
   deliveryFeeKes: number | null;
   deliveryRadiusKm: number | null;
+  /** Tenant brand tints (hex) when configured — null keeps network teal. */
+  brandPrimary: string | null;
+  brandAccent: string | null;
+  social: { facebook?: string; instagram?: string; linkedin?: string };
+  insurance: string[];
+  certifications: string[];
+  /** Application inbox for careers, falling back to the shop email. */
+  careersEmail: string | null;
   /** True when values came from admin-configured PharmacySettings row. */
   fromDb: boolean;
   /** True when no tenant could be resolved — do not treat as a real shop. */
@@ -97,6 +105,22 @@ function parseHours(raw: unknown): PharmacyHour[] {
     .filter((h): h is PharmacyHour => Boolean(h));
 }
 
+function normalizedSocial(raw: unknown): { facebook?: string; instagram?: string; linkedin?: string } {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const o = raw as Record<string, unknown>;
+  const out: { facebook?: string; instagram?: string; linkedin?: string } = {};
+  for (const key of ["facebook", "instagram", "linkedin"] as const) {
+    const v = String(o[key] ?? "").trim();
+    if (v.startsWith("http")) out[key] = v;
+  }
+  return out;
+}
+
+function normalizedStringArray(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((x) => String(x ?? "").trim()).filter(Boolean);
+}
+
 function fallbackResolved(): ResolvedPharmacy {
   return {
     id: null,
@@ -122,6 +146,12 @@ function fallbackResolved(): ResolvedPharmacy {
     deliveryNotes: null,
     deliveryFeeKes: null,
     deliveryRadiusKm: null,
+    brandPrimary: null,
+    brandAccent: null,
+    social: {},
+    insurance: [],
+    certifications: [],
+    careersEmail: null,
     fromDb: false,
     unresolved: true,
   };
@@ -225,6 +255,12 @@ export async function getResolvedPharmacy(opts?: {
     deliveryNotes: row?.deliveryNotes ?? null,
     deliveryFeeKes: row?.deliveryFeeKes != null ? Number(row.deliveryFeeKes) : null,
     deliveryRadiusKm: row?.deliveryRadiusKm ?? null,
+    brandPrimary: row?.brandPrimary || null,
+    brandAccent: row?.brandAccent || null,
+    social: normalizedSocial(row?.social),
+    insurance: normalizedStringArray(row?.insurance),
+    certifications: normalizedStringArray(row?.certifications),
+    careersEmail: row?.careersEmail || null,
     fromDb: Boolean(row),
     unresolved: false,
   };

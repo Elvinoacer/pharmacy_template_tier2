@@ -2303,6 +2303,10 @@ model PharmacySettings {
   faq             Json     @default("[]")
   insurance       Json     @default("[]")
   certifications  Json     @default("[]")
+  /// Storefront Studio override document ({ version: 1, hero?, about?... }).
+  /// Deep-merged over app/lib/storefront-template.ts defaults — see
+  /// app/lib/services/storefront-content.ts for merge semantics.
+  storefront      Json     @default("{}")
   deliveryNotes   String?  @map("delivery_notes")
   deliveryFeeKes  Decimal? @map("delivery_fee_kes") @db.Decimal(10, 2)
   deliveryRadiusKm Float?  @map("delivery_radius_km")

@@ -53,6 +53,7 @@ import {
   Activity,
   Boxes,
   Syringe,
+  Palette,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { SessionUser } from "@/app/lib/types";
@@ -249,6 +250,13 @@ export const ADMIN_LINKS = [
     icon: Bell,
     group: "intelligence",
     description: "Operational alert inbox",
+  },
+  {
+    href: "/admin/settings/storefront",
+    label: "Storefront studio",
+    icon: Palette,
+    group: "intelligence",
+    description: "Personalise your /p/* room",
   },
   {
     href: "/admin/settings/location",

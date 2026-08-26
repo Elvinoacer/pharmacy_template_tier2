@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import CareerForm from "../components/CareerForm";
 import PageHero from "../components/PageHero";
-import { jobs, platform } from "../lib/data";
+import { platform } from "../lib/data";
 import ChoosePharmacy from "@/app/components/ChoosePharmacy";
-import { loadStorefront } from "@/app/components/StorefrontGate";
+import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
+import { getStorefrontView } from "@/app/lib/services/storefront-content";
 
 export const metadata: Metadata = {
   title: "Careers",
@@ -12,26 +13,32 @@ export const metadata: Metadata = {
 };
 
 export default async function CareersPage() {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/careers" />;
+  const view = await getStorefrontView();
+  if (view.status === "unavailable") {
+    return <StorefrontUnavailable slug={view.slug} next="/careers" />;
+  }
+  if (view.status !== "active") return <ChoosePharmacy next="/careers" />;
+
+  const pharmacy = view.resolved;
+  const careers = view.content.careers;
 
   return (
     <div>
       <PageHero
         eyebrow="Careers"
-        title="Build a career in community pharmacy"
-        description="We are looking for people who care about accuracy, kindness, and local health. Browse open roles or send a general application."
+        title={careers.heading}
+        description={careers.description}
         crumbs={[{ label: "Careers" }]}
       />
 
       <section className="px-4 pb-20 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-5">
-            {jobs.map((job) => (
+            {careers.jobs.map((job) => (
               <article
                 key={job.id}
                 id={job.id}
-                className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm"
+                className="glass-panel-strong rounded-3xl p-6"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-800">
@@ -60,7 +67,7 @@ export default async function CareersPage() {
             ))}
           </div>
 
-          <div className="relative h-fit rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm sm:p-8 lg:sticky lg:top-28">
+          <div className="glass-panel-strong relative h-fit rounded-3xl p-6 sm:p-8 lg:sticky lg:top-28">
             <h2
               className="text-xl font-semibold text-[#0c1a14]"
               style={{ fontFamily: "var(--font-display), serif" }}
@@ -75,8 +82,8 @@ export default async function CareersPage() {
             </div>
             <p className="mt-4 text-xs text-[#5a6b62]">
               Or email{" "}
-              <a href={`mailto:${pharmacy.email}`} className="font-semibold text-teal-800">
-                {pharmacy.email}
+              <a href={`mailto:${pharmacy.careersEmail || pharmacy.email}`} className="font-semibold text-teal-800">
+                {pharmacy.careersEmail || pharmacy.email}
               </a>{" "}
               with the subject “Careers”.
             </p>

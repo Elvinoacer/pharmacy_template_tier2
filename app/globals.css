@@ -2207,6 +2207,95 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
+/* ============================================================
+   Storefront template glass surfaces
+   Light-mode family that keeps /p/* rooms reading like the
+   landing page: translucent panels over the mesh gradient,
+   hairline white borders, saturated backdrop blur.
+   ============================================================ */
+.glass-chip {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px) saturate(1.3);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 4px 14px rgba(8, 40, 32, 0.05);
+}
+
+.glass-tile {
+  background: rgba(255, 255, 255, 0.66);
+  backdrop-filter: blur(16px) saturate(1.35);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 10px 30px rgba(8, 40, 32, 0.06);
+}
+
+.glass-tile-strong {
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 16px 44px rgba(8, 40, 32, 0.09);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 12px 36px rgba(8, 40, 32, 0.07);
+}
+
+.glass-panel-strong {
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(22px) saturate(1.45);
+  -webkit-backdrop-filter: blur(22px) saturate(1.45);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 20px 54px rgba(8, 40, 32, 0.1);
+}
+
+/* Tenant accent tints — opt-in when a pharmacy saves a brand colour in the
+   Storefront Studio. Vars are injected on <body data-tenant-theme> by
+   app/layout.tsx; defaults keep the network teal when absent. */
+[data-tenant-theme="true"] .btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--tenant-brand-primary, #0d6e5a) 0%,
+    color-mix(in srgb, var(--tenant-brand-primary, #0d6e5a) 70%, #041f19) 100%
+  );
+}
+
+[data-tenant-theme="true"] .btn-ghost {
+  border-color: color-mix(in srgb, var(--tenant-brand-primary, #0d6e5a) 30%, transparent);
+}
+
+[data-tenant-theme="true"] .gradient-text {
+  background-image: linear-gradient(
+    120deg,
+    var(--tenant-brand-accent, #c9a227) 0%,
+    var(--tenant-brand-primary, #0d6e5a) 45%,
+    color-mix(in srgb, var(--tenant-brand-primary, #0d6e5a) 60%, #ffffff) 100%
+  );
+}
+
+[data-tenant-theme="true"] .tenant-trust-band {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tenant-brand-primary, #084c3f) 82%, #041f19) 0%,
+    var(--tenant-brand-primary, #0d6e5a) 55%,
+    color-mix(in srgb, var(--tenant-brand-accent, #0f766e) 70%, #0f766e) 100%
+  );
+}
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }

@@ -4,23 +4,28 @@ import { useMemo, useState } from "react";
 import TenantLink from "./TenantLink";
 import { faqs } from "../lib/data";
 
+export type FaqEntry = { category: string; question: string; answer: string };
+
 export default function FaqAccordion({
   initialCategory,
   limit,
+  /** Per-tenant list from the storefront template layer; defaults to the shared template corpus. */
+  items = faqs,
 }: {
   initialCategory?: string;
   limit?: number;
+  items?: FaqEntry[];
 }) {
   const categories = useMemo(
-    () => Array.from(new Set(faqs.map((f) => f.category))),
-    []
+    () => Array.from(new Set(items.map((f) => f.category))),
+    [items]
   );
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState(initialCategory || "All");
   const [openId, setOpenId] = useState<number | null>(0);
 
   const filtered = useMemo(() => {
-    let list = faqs;
+    let list = items;
     if (category !== "All") list = list.filter((f) => f.category === category);
     if (query.trim()) {
       const q = query.toLowerCase();
@@ -32,7 +37,7 @@ export default function FaqAccordion({
     }
     if (limit) list = list.slice(0, limit);
     return list;
-  }, [category, query, limit]);
+  }, [items, category, query, limit]);
 
   return (
     <div>
@@ -100,7 +105,7 @@ export default function FaqAccordion({
           </p>
         )}
         {filtered.map((faq, i) => {
-          const id = faqs.indexOf(faq);
+          const id = items.indexOf(faq);
           const open = openId === id;
           return (
             <div

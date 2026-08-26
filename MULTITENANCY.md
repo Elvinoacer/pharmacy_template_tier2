@@ -65,10 +65,41 @@ Jane's demo account is linked to **Aether** and **Coast Care**.
 | Marketplace `/`, `/for-pharmacies`, `/onboard` | Storefront home `/p/{slug}` |
 | `/privacy`, `/terms`, `/login`, `/register` | Hours, address, phone, about, logo |
 | Platform name/tagline (`app/lib/data.ts` `platform`) | Delivery notes/fees, FAQ, team, insurance |
-| | Catalogue, services, vaccines, CMS-ish `PharmacySettings` |
+| Network health library (`articles` corpus) | Catalogue, services, vaccines |
 
 Visiting `/p/{slug}` sets a cookie so `/medicines`, `/services`, `/refill`
 stay on that pharmacy without duplicating every route.
+
+## Storefront template + overrides (the /p/* content model)
+
+Every `/p/{slug}` room renders from **one shared template** that tenants can
+personalise — no more copy typed into pages:
+
+1. `app/lib/storefront-template.ts` — `STOREFRONT_TEMPLATE`, the baseline
+   static information available across all `/p/*` pages (hero, quick actions,
+   why-choose bullets, values, team, gallery, FAQ, delivery steps, careers,
+   health-library labels, CTA banner, socials, insurance/certifications).
+2. Tenant identity columns — name, tagline, about, logo/cover, hours,
+   delivery fee/radius/notes, careers email (Pharmacy + PharmacySettings).
+3. `pharmacy_settings.storefront` JSONB — the Studio override document
+   `{ version: 1, … }`. Objects deep-merge; arrays/scalars replace; unknown
+   keys ignored; absent keys keep inheriting.
+4. Legacy dedicated CMS columns fill any key the doc didn't set.
+
+Resolution lives in `getStorefrontView()`
+(`app/lib/services/storefront-content.ts`, request-cached). It returns
+`active | unavailable | none`: an explicit but dead `/p/{slug}` shows the
+glass "room unavailable" screen instead of the network chooser.
+
+**Customisation UI:** Storefront Studio at `/admin/settings/storefront`
+(tabbed editor writing only deltas; blank field = template default;
+audit action `storefront_customized`). Tenants accent-brand their room via
+hex colours mirrored to `brandPrimary/Accent` and injected as CSS variables
+on `<body data-tenant-theme>`.
+
+Copy tokens: `{name}`, `{phone}`, `{city}`, `{description}` interpolate live
+tenant facts; a bullet of exactly `__DELIVERY__` renders the real delivery
+promise on storefront/about surfaces.
 
 ## Env vs database
 

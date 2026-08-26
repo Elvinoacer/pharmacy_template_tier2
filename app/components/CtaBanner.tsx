@@ -6,6 +6,7 @@ import Reveal from "./Reveal";
 import { useTenantHref } from "./TenantLink";
 
 export default function CtaBanner({
+  eyebrow = "Get in touch",
   title = "Ready to visit or need a refill?",
   description = "Call us, message on WhatsApp, or use a quick online form \u2014 we are here to help.",
   primaryHref = "/contact",
@@ -13,6 +14,7 @@ export default function CtaBanner({
   secondaryHref = "/refill",
   secondaryLabel = "Request a refill",
 }: {
+  eyebrow?: string;
   title?: string;
   description?: string;
   primaryHref?: string;
@@ -25,7 +27,7 @@ export default function CtaBanner({
   return (
     <section className="px-4 py-16 sm:px-6 sm:py-20">
       <Reveal>
-        <div className="group/banner relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-white/40">
+        <div className="group/banner relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-white/40 shadow-[0_30px_80px_rgba(8,40,32,0.22)]">
           <div className="absolute inset-0 transition-transform duration-[2s] ease-out group-hover/banner:scale-[1.02]">
             <Image
               src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/home-care-support.webp"
@@ -37,7 +39,7 @@ export default function CtaBanner({
             <div className="absolute inset-0 bg-gradient-to-r from-[#041510]/92 via-[#084c3f]/85 to-[#0d6e5a]/75" />
           </div>
           <div className="relative px-8 py-14 sm:px-12 lg:py-16">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-200/90">Get in touch</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-200/90">{eyebrow}</p>
             <h2
               className="mt-3 max-w-lg text-3xl font-semibold tracking-tight text-white sm:text-4xl"
               style={{ fontFamily: "var(--font-display), serif" }}
