@@ -216,7 +216,8 @@ export default function Navbar({
   const isCategoryActive = (cat: NavCategory) => cat.items.some((item) => isActive(item.href));
 
   const shortAddress = brand.addressShort;
-  const onDarkHero = isPlatform && pathname === "/" && !scrolled;
+  const isLandingPage = isPlatform && pathname === "/";
+  const onDarkHero = isLandingPage;
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 transition-all duration-300">
@@ -257,10 +258,12 @@ export default function Navbar({
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           <div
             className={`flex items-center justify-between rounded-2xl px-3.5 py-2 transition-all duration-300 sm:px-6 sm:py-2.5 ${
-              scrolled
-                ? "border border-white/60 bg-white/92 shadow-[0_12px_40px_rgba(8,40,32,0.12)] backdrop-blur-xl"
-                : onDarkHero
-                  ? "border border-white/10 bg-white/8 shadow-none backdrop-blur-md"
+              onDarkHero
+                ? scrolled
+                  ? "border border-white/10 bg-black/40 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+                  : "border border-white/10 bg-white/8 shadow-none backdrop-blur-md"
+                : scrolled
+                  ? "border border-white/60 bg-white/92 shadow-[0_12px_40px_rgba(8,40,32,0.12)] backdrop-blur-xl"
                   : "border border-white/40 bg-white/80 shadow-[0_8px_30px_rgba(8,40,32,0.06)] backdrop-blur-lg"
             }`}
           >
@@ -273,12 +276,12 @@ export default function Navbar({
               </span>
               <span className="flex shrink-0 flex-col leading-none whitespace-nowrap">
                 <span
-                  className={`text-lg font-bold tracking-tight sm:text-xl ${onDarkHero && !scrolled ? "text-white" : "text-[#0c1a14]"}`}
+                  className={`text-lg font-bold tracking-tight sm:text-xl ${onDarkHero ? "text-white" : "text-[#0c1a14]"}`}
                   style={{ fontFamily: "var(--font-display), serif" }}
                 >
                   {isPlatform ? "Aether" : brand.name.replace(/ Pharmacy$/i, "") || "Aether"}
                 </span>
-                <span className={`text-[9px] font-semibold uppercase tracking-[0.18em] sm:text-[10px] ${onDarkHero && !scrolled ? "text-teal-100/80" : "text-[#0d6e5a]"}`}>
+                <span className={`text-[9px] font-semibold uppercase tracking-[0.18em] sm:text-[10px] ${onDarkHero ? "text-teal-100/80" : "text-[#0d6e5a]"}`}>
                   {isPlatform ? "Network" : slug}
                 </span>
               </span>
@@ -288,7 +291,6 @@ export default function Navbar({
               {categories.map((cat) => {
                 const catActive = isCategoryActive(cat);
                 const isOpen = activeDropdown === cat.key;
-                const idle = onDarkHero && !scrolled;
                 return (
                   <div
                     key={cat.key}
@@ -301,10 +303,10 @@ export default function Navbar({
                       onClick={() => setActiveDropdown(isOpen ? null : cat.key)}
                       className={`group flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold transition-all ${
                         catActive || isOpen
-                          ? idle
+                          ? onDarkHero
                             ? "bg-white/15 text-white"
                             : "bg-teal-900/8 text-[#084c3f]"
-                          : idle
+                          : onDarkHero
                             ? "text-teal-50/90 hover:bg-white/10 hover:text-white"
                             : "text-[#2d3e35] hover:bg-teal-900/5 hover:text-[#084c3f]"
                       }`}
@@ -319,7 +321,13 @@ export default function Navbar({
                         onMouseEnter={() => handleMouseEnter(cat.key)}
                         onMouseLeave={handleMouseLeave}
                       >
-                        <div className="rounded-2xl border border-white/80 bg-white/95 p-3 shadow-2xl ring-1 ring-black/5 backdrop-blur-2xl">
+                        <div
+                          className={`rounded-2xl p-3 shadow-2xl backdrop-blur-2xl ${
+                            onDarkHero
+                              ? "border border-white/15 bg-black/85 ring-1 ring-white/10 text-white"
+                              : "border border-white/80 bg-white/95 ring-1 ring-black/5"
+                          }`}
+                        >
                           <div className="space-y-1">
                             {cat.items.map((sub) => {
                               const SubIcon = sub.icon;
@@ -329,22 +337,52 @@ export default function Navbar({
                                   key={sub.href}
                                   href={withBase(sub.href)}
                                   className={`flex items-start gap-3 rounded-xl p-2.5 transition-all ${
-                                    subActive ? "bg-teal-50/90 text-[#084c3f]" : "text-[#1a2e26] hover:bg-teal-50/60"
+                                    subActive
+                                      ? onDarkHero
+                                        ? "bg-white/15 text-white"
+                                        : "bg-teal-50/90 text-[#084c3f]"
+                                      : onDarkHero
+                                        ? "text-slate-300 hover:bg-white/10 hover:text-white"
+                                        : "text-[#1a2e26] hover:bg-teal-50/60"
                                   }`}
                                 >
-                                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-900/8 text-[#0d6e5a]">
+                                  <div
+                                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                                      onDarkHero
+                                        ? "bg-emerald-950/80 border border-emerald-500/30 text-emerald-400"
+                                        : "bg-teal-900/8 text-[#0d6e5a]"
+                                    }`}
+                                  >
                                     <SubIcon className="h-4 w-4 shrink-0" />
                                   </div>
                                   <div className="min-w-0 flex-1">
                                     <div className="flex items-center justify-between gap-2">
-                                      <span className="text-xs font-bold text-[#0c1a14]">{sub.label}</span>
+                                      <span
+                                        className={`text-xs font-bold ${
+                                          onDarkHero ? "text-white" : "text-[#0c1a14]"
+                                        }`}
+                                      >
+                                        {sub.label}
+                                      </span>
                                       {sub.badge && (
-                                        <span className="shrink-0 rounded-full bg-teal-100 px-2 py-0.5 text-[9px] font-bold text-[#0d6e5a]">
+                                        <span
+                                          className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                                            onDarkHero
+                                              ? "bg-emerald-950 border border-emerald-500/30 text-emerald-300"
+                                              : "bg-teal-100 text-[#0d6e5a]"
+                                          }`}
+                                        >
                                           {sub.badge}
                                         </span>
                                       )}
                                     </div>
-                                    <p className="truncate text-[11px] text-[#5a6b62]">{sub.desc}</p>
+                                    <p
+                                      className={`truncate text-[11px] ${
+                                        onDarkHero ? "text-slate-400" : "text-[#5a6b62]"
+                                      }`}
+                                    >
+                                      {sub.desc}
+                                    </p>
                                   </div>
                                 </Link>
                               );
@@ -362,7 +400,7 @@ export default function Navbar({
               <Link
                 href={isPlatform ? "/pharmacies?focus=search" : withBase("/search")}
                 className={`flex h-9 w-9 items-center justify-center gap-2 rounded-full border text-xs font-semibold transition sm:h-auto sm:w-auto sm:px-3 sm:py-2 ${
-                  onDarkHero && !scrolled
+                  onDarkHero
                     ? "border-white/15 bg-white/10 text-white hover:bg-white/16"
                     : "border-teal-900/10 bg-teal-50/60 text-[#084c3f] hover:bg-white hover:shadow-sm"
                 }`}
@@ -375,7 +413,7 @@ export default function Navbar({
               <Link
                 href={portalCta.href}
                 className={`hidden items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-xs font-bold transition sm:flex ${
-                  onDarkHero && !scrolled
+                  onDarkHero
                     ? "text-white hover:bg-white/10"
                     : portalCta.kind === "guest"
                       ? "text-[#2d3e35] hover:bg-teal-900/5 hover:text-[#084c3f]"
@@ -410,7 +448,7 @@ export default function Navbar({
               <button
                 type="button"
                 className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border lg:hidden ${
-                  onDarkHero && !scrolled
+                  onDarkHero
                     ? "border-white/15 bg-white/10 text-white"
                     : "border-teal-900/10 bg-white text-[#084c3f]"
                 }`}

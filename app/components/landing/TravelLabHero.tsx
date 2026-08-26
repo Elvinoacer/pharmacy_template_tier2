@@ -24,7 +24,7 @@ interface TravelLabHeroProps {
 }
 
 /**
- * Living background scenes — alternating between the two authentic high-res
+ * Living background scenes — alternating between all 4 authentic high-res
  * hero pharmacy atmospheres with cinematic cross-dissolve motion.
  */
 const SCENES = [
@@ -37,6 +37,16 @@ const SCENES = [
     src: "/images/landing/hero_imag_1_1.png",
     alt: "Modern accredited pharmacy interior with herbal wellness care and medical cross",
     motion: "drift-in",
+  },
+  {
+    src: "/images/landing/hero_bgimg1.png",
+    alt: "Warm ambient dispensary and curated wellness shelves",
+    motion: "drift-west",
+  },
+  {
+    src: "/images/landing/hero_bg_img2.png",
+    alt: "Luminous clinical pharmacy counter with herbal mortar and pestle",
+    motion: "drift-east",
   },
 ] as const;
 

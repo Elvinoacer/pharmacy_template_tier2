@@ -254,7 +254,67 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
 
           {/* Right Column: Interactive Featured Pharmacy Showcase Card */}
           <div className="relative lg:col-span-7 xl:col-span-7">
+            {/* Pharmacy Quick Selector Pills (when multiple featured pharmacies exist) */}
+            {displayPharmacies.length > 1 && (
+              <div className="mb-3.5 flex items-center justify-between gap-2 overflow-x-auto pb-1">
+                <div className="flex items-center gap-2">
+                  {displayPharmacies.map((pharmacy, idx) => (
+                    <button
+                      key={pharmacy.id}
+                      type="button"
+                      onClick={() => setCurrentIndex(idx)}
+                      className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
+                        idx === currentIndex
+                          ? "border border-emerald-400/50 bg-emerald-950/80 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
+                          : "border border-white/10 bg-black/40 text-slate-400 hover:border-white/20 hover:text-white"
+                      }`}
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      <span>{pharmacy.name}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Counter & Mobile Controls */}
+                <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+                  <span>{currentIndex + 1}</span>
+                  <span>/</span>
+                  <span>{displayPharmacies.length}</span>
+                  <div className="flex items-center gap-1 ml-1 lg:hidden">
+                    <button
+                      type="button"
+                      onClick={handlePrev}
+                      aria-label="Previous pharmacy"
+                      className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-black/60 text-white"
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      aria-label="Next pharmacy"
+                      className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-black/60 text-white"
+                    >
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="relative flex items-center">
+              {/* Previous Desktop Chevron Button */}
+              {displayPharmacies.length > 1 && (
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  aria-label="Previous pharmacy"
+                  className="absolute -left-5 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/70 p-3 text-white shadow-2xl backdrop-blur-md transition-all hover:border-emerald-400 hover:bg-black/90 hover:scale-110 lg:flex"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+              )}
+
               {/* Primary Showcase Card */}
               <div className="relative w-full overflow-hidden rounded-[2rem] border border-emerald-400/30 bg-black/30 p-5 shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(16,185,129,0.1),inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-2xl sm:p-6">
                 
@@ -280,6 +340,25 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
                       Featured Pharmacy
                     </span>
                   </div>
+
+                  {/* Top Right Dots */}
+                  {displayPharmacies.length > 1 && (
+                    <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/70 px-3 py-1.5 backdrop-blur-md">
+                      {displayPharmacies.map((_, dotIdx) => (
+                        <button
+                          key={dotIdx}
+                          type="button"
+                          onClick={() => setCurrentIndex(dotIdx)}
+                          aria-label={`Go to pharmacy ${dotIdx + 1}`}
+                          className={`h-2 rounded-full transition-all ${
+                            dotIdx === currentIndex
+                              ? "w-5 bg-emerald-400 shadow-[0_0_8px_#34d399]"
+                              : "w-2 bg-white/30 hover:bg-white/60"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Info Details */}
@@ -350,13 +429,13 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
                 </div>
               </div>
 
-              {/* Carousel Right Next Arrow */}
+              {/* Next Desktop Chevron Button */}
               {displayPharmacies.length > 1 && (
                 <button
                   type="button"
                   onClick={handleNext}
                   aria-label="Next pharmacy"
-                  className="absolute -right-5 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/70 p-3.5 text-white shadow-2xl backdrop-blur-md transition-all hover:border-emerald-400 hover:bg-black/90 hover:scale-110 lg:flex"
+                  className="absolute -right-5 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/70 p-3 text-white shadow-2xl backdrop-blur-md transition-all hover:border-emerald-400 hover:bg-black/90 hover:scale-110 lg:flex"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
