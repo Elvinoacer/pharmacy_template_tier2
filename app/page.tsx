@@ -7,6 +7,7 @@ import TravelLabContact from "./components/landing/TravelLabContact";
 import LandingMobileActionBar from "./components/landing/LandingMobileActionBar";
 import LandingMobilePolish from "./components/landing/LandingMobilePolish";
 import CareNearYouInputPolish from "./components/landing/CareNearYouInputPolish";
+import HeroSearchInputPolish from "./components/landing/HeroSearchInputPolish";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function MarketplacePage() {
     <div className="landing-root min-h-screen bg-[#030907] text-white pb-16 lg:pb-0">
       <LandingMobilePolish />
       <CareNearYouInputPolish />
+      <HeroSearchInputPolish />
       <TravelLabHero pharmacyCount={featuredPharmacies.length || 0} initialQuery="" />
       <TravelLabNetwork pharmacies={featuredPharmacies} />
       <LandingCareDemo />
