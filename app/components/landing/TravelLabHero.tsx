@@ -212,9 +212,9 @@ export default function TravelLabHero({
             <form
               action="/pharmacies"
               method="GET"
-              className="travel-lab-hero-cta mt-8 flex w-full max-w-lg items-center rounded-full border border-white/15 bg-black/40 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all focus-within:border-emerald-400/80 focus-within:ring-2 focus-within:ring-emerald-400/20 sm:p-2"
+              className="travel-lab-hero-cta relative z-20 mt-8 flex !visible !opacity-100 !translate-y-0 w-full max-w-lg items-center rounded-full border border-white/15 bg-black/40 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all focus-within:border-emerald-400/80 focus-within:ring-2 focus-within:ring-emerald-400/20 sm:p-2"
             >
-              <div className="flex flex-1 items-center pl-3 sm:pl-4">
+              <div className="flex min-w-0 flex-1 items-center pl-3 sm:pl-4">
                 <MapPin className="h-5 w-5 shrink-0 text-slate-400" />
                 <input
                   type="text"
@@ -222,7 +222,7 @@ export default function TravelLabHero({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for a pharmacy or service..."
-                  className="w-full bg-transparent pl-3 pr-2 text-sm text-white placeholder:text-slate-400 outline-none sm:text-base"
+                  className="w-full !bg-transparent !text-white !opacity-100 pl-3 pr-2 text-sm placeholder:!text-slate-400 outline-none sm:text-base"
                 />
               </div>
               <button
