@@ -24,17 +24,19 @@ import AssistResultCards, {
 } from "./AssistResultCards";
 
 /**
- * QuickPageAssist — the non-disruptive "what is this page about?" helper.
+ * QuickPageAssist — a small, familiar help dialog for explaining the current page.
  *
- * UX contract:
- *  - A quiet floating helper (bottom-left; the chatbot lives bottom-right).
- *    Never blocks content, never auto-opens a modal.
- *  - ONE gentle nudge per session (small popover, auto-dismisses) so first-time
- *    visitors discover it — then it stays out of the way.
- *  - Opens a modal that explains the current page in plain language and shows
- *    what can be done here, with an inline AI quick-assist box that returns
- *    action cards (not chat).
- *  - Shift + "/" opens it from the keyboard. Escape closes.
+ * Accessibility contract:
+ *  - clear dialog semantics with labelled title + description
+ *  - visible focus states and 44px-ish touch targets
+ *  - Escape closes, backdrop click closes
+ *  - keyboard focus moves into the dialog and is trapped while open
+ *  - focus is restored to the trigger after close
+ *  - page scrolling is locked while the modal is open
+ *
+ * The dialog intentionally uses a classic light surface rather than the global
+ * modal-card primitive, whose dark-mode rules are too opinionated for this
+ * public help UI.
  */
 
 const NUDGE_STORAGE_KEY = "aether.page-assist.nudged";
@@ -49,11 +51,6 @@ export default function QuickPageAssist() {
   const [open, setOpen] = useState(false);
   const [nudge, setNudge] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  /**
-   * Inline-assist state is keyed by pathname so navigating to a new page
-   * naturally shows a clean slate — no reset effect needed.
-   */
   const [assistByPath, setAssistByPath] = useState<{
     path: string;
     input: string;
@@ -70,18 +67,20 @@ export default function QuickPageAssist() {
   const assistError = assist.error;
 
   const abortRef = useRef<AbortController | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   const formId = useId();
 
-  // Route-aware content; recomputed on navigation
   const content: PageAssistContent = getPageAssist(pathname);
 
-  // One-time nudge per session
   useEffect(() => {
     try {
       if (sessionStorage.getItem(NUDGE_STORAGE_KEY)) return;
     } catch {
-      return; // storage unavailable — skip nudge entirely
+      return;
     }
+
     const timer = window.setTimeout(() => setNudge(true), NUDGE_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, []);
@@ -108,7 +107,12 @@ export default function QuickPageAssist() {
     }
   }, []);
 
-  // Keyboard: Shift+/ opens, Escape closes
+  const closeDialog = useCallback(() => {
+    setOpen(false);
+    window.setTimeout(() => triggerRef.current?.focus(), 0);
+  }, []);
+
+  // Open with ? outside text-entry fields and close with Escape.
   useEffect(() => {
     const onKey = (e: globalThis.KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -117,15 +121,65 @@ export default function QuickPageAssist() {
         (target.tagName === "INPUT" ||
           target.tagName === "TEXTAREA" ||
           target.isContentEditable);
-      if (e.key === "?" && !typing) {
+
+      if (e.key === "?" && !typing && !open) {
         e.preventDefault();
         setOpen(true);
         setNudge(false);
       }
-      if (e.key === "Escape" && open) setOpen(false);
+
+      if (e.key === "Escape" && open) {
+        e.preventDefault();
+        closeDialog();
+      }
     };
+
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [closeDialog, open]);
+
+  // Lock the page and implement a small, robust focus trap.
+  useEffect(() => {
+    if (!open) return;
+
+    const previousActive = document.activeElement as HTMLElement | null;
+    document.body.style.overflow = "hidden";
+    window.setTimeout(() => closeButtonRef.current?.focus(), 0);
+
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => !el.hasAttribute("aria-hidden"));
+
+      if (focusable.length === 0) {
+        e.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+      previousActive?.focus?.();
+    };
   }, [open]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -134,12 +188,14 @@ export default function QuickPageAssist() {
     async (raw: string) => {
       const query = raw.trim();
       if (query.length < 2 || loading) return;
+
       const currentPath = pathname;
       setAssistByPath({ path: currentPath, input: query, result: null, error: null });
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
       setLoading(true);
+
       try {
         const res = await fetch("/api/assist", {
           method: "POST",
@@ -176,10 +232,9 @@ export default function QuickPageAssist() {
 
   return (
     <>
-      {/* Floating helper — bottom-left, away from the chatbot FAB */}
+      {/* Floating page-help trigger */}
       <div className="pointer-events-none fixed bottom-24 left-3 z-[55] sm:bottom-24 sm:left-5 lg:bottom-6">
         <div className="pointer-events-auto relative">
-          {/* First-visit nudge */}
           {nudge && !open && (
             <div
               className="assist-enter absolute bottom-[calc(100%+0.6rem)] left-0 w-60 rounded-2xl border border-emerald-400/25 bg-[#05130d]/95 p-3.5 shadow-[0_16px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl"
@@ -188,32 +243,34 @@ export default function QuickPageAssist() {
               <button
                 type="button"
                 onClick={dismissNudge}
-                aria-label="Dismiss"
-                className="absolute right-2 top-2 rounded-full p-1 text-slate-500 transition hover:text-white"
+                aria-label="Dismiss help introduction"
+                className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300"
               >
-                <X className="h-3 w-3" aria-hidden />
+                <X className="h-3.5 w-3.5" aria-hidden />
               </button>
               <p className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-200">
                 <Sparkles className="h-3 w-3" aria-hidden />
-                New here?
+                Need a hand?
               </p>
               <p className="mt-1 text-xs leading-relaxed text-slate-300">
-                Tap the helper to see what this page can do for you — in plain language.
+                Open page help to see what you can do here and get quick guidance.
               </p>
               <button
                 type="button"
                 onClick={() => {
+                  triggerRef.current?.focus();
                   setOpen(true);
                   dismissNudge();
                 }}
-                className="mt-2.5 w-full rounded-lg bg-emerald-500/90 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-500"
+                className="mt-3 min-h-10 w-full rounded-xl bg-emerald-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#05130d]"
               >
-                Show me around
+                Open page help
               </button>
             </div>
           )}
 
           <button
+            ref={triggerRef}
             type="button"
             onClick={() => {
               setOpen((v) => !v);
@@ -221,218 +278,234 @@ export default function QuickPageAssist() {
             }}
             aria-expanded={open}
             aria-haspopup="dialog"
-            aria-label="Page help — what can I do on this page?"
-            title="What can I do here? (Shift + /)"
-            className="quick-assist-fab group flex h-11 items-center gap-2 rounded-full border border-emerald-300/25 bg-[#05130d]/90 pl-3 pr-4 text-white shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all hover:border-emerald-300/50 hover:shadow-[0_10px_36px_rgba(16,185,129,0.25)] active:scale-95"
+            aria-label="Open page help"
+            title="Page help (Shift + /)"
+            className="quick-assist-fab group flex min-h-11 items-center gap-2 rounded-full border border-emerald-300/25 bg-[#05130d]/95 pl-3 pr-4 text-white shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl transition hover:border-emerald-300/50 hover:shadow-[0_10px_36px_rgba(16,185,129,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent active:scale-95"
           >
             <span className="relative flex h-6 w-6 items-center justify-center">
               <LifeBuoy className="h-5 w-5 text-emerald-300" aria-hidden />
               <span className="quick-assist-ping absolute inset-0 rounded-full" aria-hidden />
             </span>
-            <span className="whitespace-nowrap text-xs font-semibold tracking-wide">
-              Help me here
-            </span>
+            <span className="whitespace-nowrap text-xs font-semibold tracking-wide">Page help</span>
           </button>
         </div>
       </div>
 
-      {/* Page-assist modal */}
       {open && (
         <div
-          className="modal-backdrop"
+          className="modal-backdrop !items-center !justify-center !bg-black/45"
           role="dialog"
           aria-modal="true"
           aria-labelledby={`${formId}-title`}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setOpen(false);
+          aria-describedby={`${formId}-description`}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) closeDialog();
           }}
         >
-          <div className="modal-card max-w-xl">
-            {/* Header */}
-            <div className="flex items-start justify-between gap-3 border-b border-[#e3ebe6] px-5 py-4">
-              <div className="flex min-w-0 items-start gap-3">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-sm">
-                  <Compass className="h-4 w-4" aria-hidden />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-700">
-                    {content.kicker} · quick assist
-                  </p>
-                  <h3
-                    id={`${formId}-title`}
-                    className="mt-0.5 truncate text-base font-semibold text-[#0c1a14]"
-                    style={{ fontFamily: "var(--font-display), serif" }}
-                  >
-                    {content.title}
-                  </h3>
+          <div
+            ref={dialogRef}
+            className="flex w-full max-w-2xl max-h-[min(90dvh,760px)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-[#0c1a14] shadow-[0_24px_80px_rgba(0,0,0,0.24)]"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            {/* Classic dialog header */}
+            <header className="shrink-0 border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex min-w-0 items-start gap-3">
+                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e8f5f1] text-[#0d6e5a] ring-1 ring-[#cfe8df]">
+                    <Compass className="h-5 w-5" aria-hidden />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#0d6e5a]">
+                      {content.kicker}
+                    </p>
+                    <h2
+                      id={`${formId}-title`}
+                      className="mt-1 text-lg font-semibold leading-tight text-[#0c1a14] sm:text-xl"
+                    >
+                      {content.title}
+                    </h2>
+                  </div>
                 </div>
+                <button
+                  ref={closeButtonRef}
+                  type="button"
+                  onClick={closeDialog}
+                  aria-label="Close page help"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d6e5a] focus-visible:ring-offset-2"
+                >
+                  <X className="h-5 w-5" aria-hidden />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close"
-                className="rounded-full p-1.5 text-[#8a9a92] transition hover:bg-[#f4f7f4] hover:text-[#0c1a14]"
+            </header>
+
+            {/* Scrollable content */}
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white px-5 py-5 sm:px-6 sm:py-6">
+              <p
+                id={`${formId}-description`}
+                className="max-w-2xl text-sm leading-6 text-slate-700"
               >
-                <X className="h-4 w-4" aria-hidden />
-              </button>
-            </div>
+                {content.about}
+              </p>
 
-            <div className="flex-1 overflow-y-auto px-5 py-4">
-              {/* What this page is about */}
-              <p className="text-sm leading-relaxed text-[#3b4a43]">{content.about}</p>
-
-              {/* What you can do here */}
-              <div className="mt-4 rounded-2xl border border-teal-900/10 bg-[#f6faf8] p-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-teal-700">
+              <section className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4" aria-labelledby={`${formId}-what-you-can-do`}>
+                <h3 id={`${formId}-what-you-can-do`} className="text-sm font-semibold text-slate-900">
                   What you can do here
-                </p>
-                <ul className="mt-2.5 space-y-2">
-                  {content.highlights.map((h) => (
-                    <li key={h} className="flex items-start gap-2.5 text-sm text-[#28362e]">
+                </h3>
+                <ul className="mt-3 space-y-2.5">
+                  {content.highlights.map((highlight) => (
+                    <li key={highlight} className="flex items-start gap-2.5 text-sm leading-5 text-slate-700">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
-                      {h}
+                      <span>{highlight}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
+              </section>
 
-              {/* Quick actions */}
-              <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                {content.actions.map((action) => {
-                  const href = tenantHref(slug, action.href);
-                  return action.primary ? (
-                    <Link
-                      key={action.label}
-                      href={href}
-                      onClick={() => setOpen(false)}
-                      className="group flex items-center justify-between gap-2 rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] px-4 py-3 text-white shadow-sm transition hover:shadow-md"
-                    >
-                      <span className="min-w-0">
-                        <span className="block text-sm font-semibold">{action.label}</span>
-                        <span className="mt-0.5 block truncate text-[11px] text-teal-100/85">
-                          {action.description}
+              <section className="mt-5" aria-labelledby={`${formId}-actions`}>
+                <h3 id={`${formId}-actions`} className="text-sm font-semibold text-slate-900">
+                  Quick actions
+                </h3>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {content.actions.map((action) => {
+                    const href = tenantHref(slug, action.href);
+                    return action.primary ? (
+                      <Link
+                        key={action.label}
+                        href={href}
+                        onClick={closeDialog}
+                        className="group flex min-h-16 items-center justify-between gap-3 rounded-xl border border-[#0d6e5a] bg-[#0d6e5a] px-4 py-3 text-white transition hover:bg-[#0b5f50] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d6e5a] focus-visible:ring-offset-2"
+                      >
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold">{action.label}</span>
+                          <span className="mt-0.5 block text-xs leading-4 text-teal-50">{action.description}</span>
                         </span>
-                      </span>
-                      <ArrowRight
-                        className="h-4 w-4 shrink-0 text-teal-200 transition-transform group-hover:translate-x-0.5"
-                        aria-hidden
-                      />
-                    </Link>
-                  ) : (
-                    <Link
-                      key={action.label}
-                      href={href}
-                      onClick={() => setOpen(false)}
-                      className="group flex items-center justify-between gap-2 rounded-xl border border-teal-900/10 bg-white px-4 py-3 transition hover:border-teal-600/30"
-                    >
-                      <span className="min-w-0">
-                        <span className="block text-sm font-medium text-[#0c1a14]">
-                          {action.label}
+                        <ArrowRight className="h-4 w-4 shrink-0 text-teal-100 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                      </Link>
+                    ) : (
+                      <Link
+                        key={action.label}
+                        href={href}
+                        onClick={closeDialog}
+                        className="group flex min-h-16 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 transition hover:bg-slate-50 hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d6e5a] focus-visible:ring-offset-2"
+                      >
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold">{action.label}</span>
+                          <span className="mt-0.5 block text-xs leading-4 text-slate-600">{action.description}</span>
                         </span>
-                        <span className="mt-0.5 block truncate text-[11px] text-[#5a6b62]">
-                          {action.description}
-                        </span>
-                      </span>
-                      <ArrowRight
-                        className="h-3.5 w-3.5 shrink-0 text-[#8a9a92] transition-transform group-hover:translate-x-0.5"
-                        aria-hidden
-                      />
-                    </Link>
-                  );
-                })}
-              </div>
+                        <ArrowRight className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
 
-              {/* Inline AI quick assist */}
-              <div className="mt-5 rounded-2xl border border-emerald-600/15 bg-gradient-to-b from-[#f2fbf7] to-white p-4">
-                <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">
-                  <Sparkles className="h-3 w-3" aria-hidden />
-                  Not sure where to start?
-                </p>
+              <section className="mt-5 rounded-xl border border-slate-200 bg-white p-4" aria-labelledby={`${formId}-assistant`}>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                    <Sparkles className="h-4 w-4" aria-hidden />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 id={`${formId}-assistant`} className="text-sm font-semibold text-slate-900">
+                      Need more help?
+                    </h3>
+                    <p className="mt-1 text-xs leading-5 text-slate-600">
+                      Describe what you are trying to do and the assistant will point you to the right action.
+                    </p>
+                  </div>
+                </div>
+
                 <form
-                  className="mt-2.5 flex gap-2"
+                  className="mt-3 flex flex-col gap-2 sm:flex-row"
                   onSubmit={(e) => {
                     e.preventDefault();
                     void askAssist(input);
                   }}
                 >
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) =>
-                      setAssistByPath((prev) => ({
-                        path: pathname,
-                        input: e.target.value,
-                        result: prev.path === pathname ? prev.result : null,
-                        error: prev.path === pathname ? prev.error : null,
-                      }))
-                    }
-                    placeholder="Tell me what you need, in your own words…"
-                    aria-label="Tell the assistant what you need"
-                    className="min-w-0 flex-1 rounded-xl border border-teal-900/15 bg-white px-3.5 py-2.5 text-sm text-[#0c1a14] outline-none placeholder:text-[#5a6b62]/60 focus:border-emerald-600/40 focus:ring-2 focus:ring-emerald-500/15"
-                  />
+                  <div className="min-w-0 flex-1">
+                    <label htmlFor={`${formId}-input`} className="sr-only">
+                      What do you need help with?
+                    </label>
+                    <input
+                      id={`${formId}-input`}
+                      type="text"
+                      value={input}
+                      onChange={(e) =>
+                        setAssistByPath((prev) => ({
+                          path: pathname,
+                          input: e.target.value,
+                          result: prev.path === pathname ? prev.result : null,
+                          error: prev.path === pathname ? prev.error : null,
+                        }))
+                      }
+                      placeholder="What do you need help with?"
+                      autoComplete="off"
+                      className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-500 focus:border-[#0d6e5a] focus:ring-2 focus:ring-[#0d6e5a]/20"
+                    />
+                  </div>
                   <button
                     type="submit"
                     disabled={loading || input.trim().length < 2}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-sm transition enabled:hover:scale-105 enabled:active:scale-95 disabled:opacity-40"
-                    aria-label="Ask the quick assistant"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#0d6e5a] px-4 text-sm font-semibold text-white transition hover:bg-[#0b5f50] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d6e5a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 sm:min-w-11 sm:px-3"
+                    aria-label={loading ? "Getting help" : "Ask for help"}
                   >
                     <Send className="h-4 w-4" aria-hidden />
+                    <span className="sm:hidden">Ask</span>
                   </button>
                 </form>
 
-                {/* Suggestion chips */}
-                {!result && !loading && (
-                  <div className="mt-2.5 flex flex-wrap gap-1.5">
-                    {content.suggestions.map((s) => (
+                {!result && !loading && content.suggestions.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2" aria-label="Suggested questions">
+                    {content.suggestions.map((suggestion) => (
                       <button
-                        key={s}
+                        key={suggestion}
                         type="button"
-                        onClick={() => void askAssist(s)}
-                        className="rounded-full border border-teal-900/10 bg-white px-2.5 py-1 text-[11px] font-medium text-[#33534a] transition hover:border-teal-600/30 hover:text-[#084c3f]"
+                        onClick={() => void askAssist(suggestion)}
+                        className="min-h-10 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-[#0d6e5a]/40 hover:bg-emerald-50 hover:text-[#084c3f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d6e5a] focus-visible:ring-offset-2"
                       >
-                        {s}
+                        {suggestion}
                       </button>
                     ))}
                   </div>
                 )}
 
                 {loading && (
-                  <div className="mt-3">
+                  <div className="mt-4" aria-live="polite" aria-busy="true">
+                    <span className="sr-only">Getting help</span>
                     <AssistSkeleton theme="light" />
                   </div>
                 )}
 
                 {!loading && result && (
-                  <div className="mt-3 border-t border-teal-900/10 pt-3">
+                  <div className="mt-4 border-t border-slate-200 pt-4" aria-live="polite">
                     <AssistResultCards
                       result={result}
                       theme="light"
-                      onFollowup={(q) => void askAssist(q)}
+                      onFollowup={(query) => void askAssist(query)}
                     />
                   </div>
                 )}
 
                 {assistError && (
-                  <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800" role="alert">
+                  <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm leading-5 text-amber-900" role="alert">
                     {assistError}
                   </p>
                 )}
-              </div>
+              </section>
             </div>
 
-            <div className="flex items-center justify-between gap-3 border-t border-[#e3ebe6] px-5 py-3">
-              <p className="text-[10px] text-[#5a6b62]">
-                Press <kbd className="rounded border border-[#dbe5df] bg-[#f6faf8] px-1 py-0.5">Shift + /</kbd>{" "}
-                anytime to reopen
+            {/* Dialog actions / status bar */}
+            <footer className="flex shrink-0 flex-col gap-3 border-t border-slate-200 bg-slate-50 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <p className="text-xs text-slate-600">
+                Press <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] text-slate-700">Shift + /</kbd> to open help anytime.
               </p>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
-                className="rounded-xl border border-teal-900/10 bg-white px-4 py-1.5 text-xs font-semibold text-[#084c3f] transition hover:border-teal-600/30"
+                onClick={closeDialog}
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d6e5a] focus-visible:ring-offset-2"
               >
-                Got it
+                Close help
               </button>
-            </div>
+            </footer>
           </div>
         </div>
       )}
