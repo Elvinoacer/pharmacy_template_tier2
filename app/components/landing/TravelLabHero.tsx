@@ -8,15 +8,14 @@ import {
   ChevronRight,
   Clock,
   FileText,
-  MapPin,
   MessageCircle,
   Play,
-  Search,
   ShieldCheck,
   Store,
   Users,
 } from "lucide-react";
 import SplitTextWave from "./SplitTextWave";
+import SmartSearchAssist from "../assist/SmartSearchAssist";
 
 interface TravelLabHeroProps {
   pharmacyCount?: number;
@@ -79,7 +78,6 @@ export default function TravelLabHero({
   const [active, setActive] = useState(0);
   const [outgoing, setOutgoing] = useState<number | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const activeRef = useRef(0);
 
   useEffect(() => {
@@ -208,31 +206,13 @@ export default function TravelLabHero({
               Find trusted pharmacies near you. Refill prescriptions, get health advice, and access the care you deserve.
             </p>
 
-            {/* Search Input Bar */}
-            <form
-              action="/pharmacies"
-              method="GET"
-              className="travel-lab-hero-cta relative z-20 mt-8 flex !visible !opacity-100 !translate-y-0 w-full max-w-lg items-center rounded-full border border-white/15 bg-black/40 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all focus-within:border-emerald-400/80 focus-within:ring-2 focus-within:ring-emerald-400/20 sm:p-2"
-            >
-              <div className="flex min-w-0 flex-1 items-center pl-3 sm:pl-4">
-                <MapPin className="h-5 w-5 shrink-0 text-slate-400" />
-                <input
-                  type="text"
-                  name="q"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for a pharmacy or service..."
-                  className="w-full !bg-transparent !text-white !opacity-100 pl-3 pr-2 text-sm placeholder:!text-slate-400 outline-none sm:text-base"
-                />
-              </div>
-              <button
-                type="submit"
-                aria-label="Search pharmacies"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0d825c] text-white shadow-md shadow-emerald-950/40 transition-all hover:bg-[#10a374] hover:scale-105 active:scale-95 sm:h-11 sm:w-11"
-              >
-                <Search className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
-            </form>
+            {/* Search Input Bar — AI quick assist reads the query and shows
+                what the user needs as tappable cards. Enter still searches. */}
+            <SmartSearchAssist
+              variant="hero"
+              initialQuery={initialQuery}
+              placeholder="Search for a pharmacy or service…"
+            />
 
             {/* Action Buttons */}
             <div className="travel-lab-hero-cta mt-8 flex flex-wrap items-center gap-4 sm:gap-6">

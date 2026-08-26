@@ -12,13 +12,13 @@ import {
   Layers,
   MapPin,
   MessageCircle,
-  Search,
   ShieldCheck,
   Star,
   Store,
   Zap,
 } from "lucide-react";
 import type { DirectoryPharmacy } from "@/app/lib/services/pharmacy-directory";
+import SmartSearchAssist from "../assist/SmartSearchAssist";
 
 interface TravelLabNetworkProps {
   pharmacies: DirectoryPharmacy[];
@@ -106,7 +106,6 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
     pharmacies && pharmacies.length > 0 ? pharmacies : FALLBACK_PHARMACIES;
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const activePharmacy = displayPharmacies[currentIndex] || displayPharmacies[0];
 
@@ -181,31 +180,11 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
               Quality care, trusted by your community.
             </p>
 
-            {/* Quick Search Form */}
-            <form
-              action="/pharmacies"
-              method="GET"
-              className="mt-8 flex w-full max-w-md items-center rounded-full border border-white/10 bg-black/40 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all focus-within:border-emerald-400/80 focus-within:ring-2 focus-within:ring-emerald-400/20 sm:p-2"
-            >
-              <div className="flex flex-1 items-center pl-3">
-                <MapPin className="h-5 w-5 shrink-0 text-slate-400" />
-                <input
-                  type="text"
-                  name="q"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by pharmacy name, area or service..."
-                  className="w-full bg-transparent pl-3 pr-2 text-sm text-white placeholder:text-slate-400 outline-none"
-                />
-              </div>
-              <button
-                type="submit"
-                aria-label="Search pharmacies"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0d825c] text-white shadow-md shadow-emerald-950/40 transition-all hover:bg-[#10a374] hover:scale-105 active:scale-95 sm:h-11 sm:w-11"
-              >
-                <Search className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
-            </form>
+            {/* Quick Search Form — AI quick assist built in */}
+            <SmartSearchAssist
+              variant="network"
+              placeholder="Search by pharmacy name, area or service…"
+            />
 
             {/* 3 Feature Pills Container */}
             <div className="mt-6 max-w-md rounded-2xl border border-white/[0.08] bg-black/30 p-4 backdrop-blur-md shadow-sm">

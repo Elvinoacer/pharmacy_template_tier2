@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import SearchAssistFallback from "./assist/SearchAssistFallback";
 
 export type SearchCorpus = {
   medicines: Array<{ slug: string; title: string; body: string; meta?: string }>;
@@ -149,6 +150,10 @@ export default function SearchPanel({
           {total === 0 ? "No results for" : `${total} result${total === 1 ? "" : "s"} for`}{" "}
           <span className="font-semibold text-[#0c1a14]">“{query}”</span>
         </p>
+      )}
+
+      {query.trim() && total === 0 && (
+        <SearchAssistFallback query={query} base={base} />
       )}
 
       {(query.trim() || !touched) && total > 0 && (

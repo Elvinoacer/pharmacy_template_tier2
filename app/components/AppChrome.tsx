@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import NavbarNavigationFix from "./NavbarNavigationFix";
 import { LiveAlertCenter } from "./LiveAlertCenter";
+import QuickPageAssist from "./assist/QuickPageAssist";
 import type { PortalSessionHint } from "@/app/lib/portal-dest";
 import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/brand";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
@@ -75,6 +76,9 @@ export default function AppChrome({
         </div>
         {surface === "storefront" && <AiChatbot />}
         {surface === "storefront" && <LiveAlertCenter audience="public" />}
+        {/* Non-disruptive wayfinding helper: explains the current page and
+            routes users to what they need (available on every public page). */}
+        <QuickPageAssist />
       </div>
     </TenantBrandProvider>
   );
