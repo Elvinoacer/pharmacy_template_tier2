@@ -261,62 +261,6 @@ export default function TravelLabContact() {
           </div>
         </div>
 
-        {/* Sub-bar: Priority Proof, Social Proof & Quick Links */}
-        <div className="mt-8 flex flex-col items-center justify-between gap-6 border-b border-white/10 pb-8 sm:flex-row">
-          
-          {/* Left: Your health. Our priority. */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-emerald-400 shadow-sm">
-              <ShieldCheck className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-white">Your health. Our priority.</p>
-              <p className="text-[11px] text-slate-400">Secure • Private • Reliable</p>
-            </div>
-          </div>
-
-          {/* Center: Social Proof Stack */}
-          <div className="flex items-center gap-3">
-            <div className="flex -space-x-2.5 overflow-hidden">
-              {AVATARS.map((avatar, i) => (
-                <Image
-                  key={i}
-                  src={avatar.src}
-                  alt={avatar.alt}
-                  width={34}
-                  height={34}
-                  className="inline-block h-8 w-8 rounded-full border-2 border-black/80 object-cover"
-                />
-              ))}
-            </div>
-            <div className="text-xs">
-              <p className="font-semibold text-white">Trusted by 10,000+</p>
-              <p className="text-slate-400">
-                Kenyans across{" "}
-                <span className="font-semibold text-[#34d399]">200+ pharmacies</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Right: Quick Links */}
-          <div className="flex items-center gap-8 text-xs text-slate-300">
-            <Link href="/privacy" className="transition hover:text-white">
-              Privacy
-            </Link>
-            <Link href="/terms" className="transition hover:text-white">
-              Terms
-            </Link>
-            <Link href="/for-pharmacies" className="transition hover:text-white">
-              For pharmacies
-            </Link>
-          </div>
-        </div>
-
-        {/* Copyright Footnote */}
-        <p className="mt-8 text-center text-xs text-slate-500">
-          © 2026 Aether Healthcare Group. All rights reserved.
-        </p>
-
       </div>
     </section>
   );
