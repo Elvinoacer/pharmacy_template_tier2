@@ -50,6 +50,7 @@ const PUBLIC_DESTINATIONS = [
   "/contact",
   "/about",
   "/careers",
+  "/privacy",
   "/login",
   "/register",
   "/portal",
@@ -99,12 +100,7 @@ function normalizeActions(raw: unknown, fallback: AssistAction[], base: string):
     for (const action of fallback.slice(0, MAX_ACTIONS)) {
       const href = safeHref(action.href, base);
       if (!href) continue;
-      out.push({
-        label: action.label,
-        href,
-        description: action.description,
-        primary: action.primary,
-      });
+      out.push({ label: action.label, href, description: action.description, primary: action.primary });
     }
   }
   if (out.length > 0 && !out.some((a) => a.primary)) out[0].primary = true;
@@ -113,6 +109,7 @@ function normalizeActions(raw: unknown, fallback: AssistAction[], base: string):
 
 function buildRouteMap() {
   return [
+    ["Home", "/"],
     ["Find pharmacies", "/pharmacies"],
     ["Browse medicines and OTC products", "/medicines"],
     ["Request a prescription refill", "/refill"],
@@ -125,22 +122,27 @@ function buildRouteMap() {
     ["Services", "/services"],
     ["FAQ and contact", "/faq, /contact"],
     ["About and careers", "/about, /careers"],
+    ["Privacy", "/privacy"],
     ["Patient portal and caregiver portal", "/portal, /caregiver"],
     ["Account", "/login, /register"],
+    ["Pharmacy platform information", "/platform"],
   ].map(([label, href]) => `- ${label}: ${href}`).join("\n");
 }
 
-async function rulesResponse(query: string, base: string): Promise<AssistResponse> {
+async function rulesResponse(query: string, base: string, live: AssistLiveMatches): Promise<AssistResponse> {
   const intent = matchIntentByKeywords(query);
   return {
     source: "rules",
     intent: { id: intent.id, label: intent.label, blurb: intent.blurb },
-    message: intent.id === "find-medicine"
-      ? "I’ll check the public medicine listings and show pharmacies that match it."
-      : `I’ll take you to the fastest way to ${intent.label.toLowerCase()}.`,
+    message:
+      intent.id === "find-medicine"
+        ? live.medicines.length
+          ? "I found medicine matches across the public Aether network."
+          : "I’ll check the public medicine listings and show pharmacies that match it."
+        : `I’ll take you to the fastest way to ${intent.label.toLowerCase()}.`,
     actions: normalizeActions(null, intent.actions, base),
     followups: intent.examples.slice(0, MAX_FOLLOWUPS),
-    live: await searchAssistLive(query),
+    live,
   };
 }
 
@@ -155,21 +157,23 @@ function buildSystemPrompt(): string {
   return `You are Aether's navigation assistant for a Kenyan pharmacy network.
 Your job is to understand what a person wants and guide them to the right place in the product.
 
-The app is larger than the intent list. These are the public destinations you may recommend:
+The app includes these public destinations:
 ${buildRouteMap()}
 
 Available intent anchors:
 ${catalog}
 
 Important:
-1. Use the user's exact goal, not just keywords. A medicine name, pharmacy name, area, delivery request, refill request, symptom, vaccine, screening, account problem, or health topic may appear inside a longer sentence.
-2. Live directory data is authoritative for publicly listed pharmacies and medicine inventory. Never invent a pharmacy, medicine, price, or availability.
-3. When a medicine is found, prefer the live matches and the pharmacies stocking it over generic navigation.
-4. When a pharmacy is found, use the pharmacy result and its network page rather than inventing a route.
-5. Choose one intent. Keep the message to one short sentence. Never give a dosage or personalized medical advice here.
-6. Return at most 2 actions, and only use hrefs from the public destinations above.
-7. Return 1-2 concise followups.
-8. STRICT JSON only:
+1. Understand natural language. A medicine, pharmacy, area, delivery request, refill, symptom, vaccine, screening, account problem, health topic, or route question can appear inside a longer sentence.
+2. Live directory data is authoritative for public medicines and pharmacies. Never invent a medicine, pharmacy, stock state, or price.
+3. When a medicine is found in live data, prioritize those medicine matches and the pharmacies attached to them.
+4. When a pharmacy is found, prioritize that pharmacy result.
+5. For “where can I find X?”, answer with live results rather than a generic route when possible.
+6. For “how do I …?”, “where is …?”, or “take me to …”, use the route map and choose the best public destination.
+7. Keep the reply to one short sentence. Never provide dosage or personalized medical advice.
+8. Return at most 2 actions and only use public hrefs from the route map.
+9. Return 1-2 concise followups.
+10. STRICT JSON only:
 {"intent":"<id>","message":"<string>","actions":[{"label":"<string>","href":"<string>","description":"<string>","primary":<boolean>}],"followups":["<string>"]}`;
 }
 
@@ -182,9 +186,7 @@ export async function POST(request: Request) {
   }
 
   const query = typeof body.query === "string" ? body.query.trim().slice(0, MAX_QUERY_LENGTH) : "";
-  if (query.length < 2) {
-    return Response.json({ error: "query required (min 2 characters)" }, { status: 400 });
-  }
+  if (query.length < 2) return Response.json({ error: "query required (min 2 characters)" }, { status: 400 });
 
   let base = "";
   if (typeof body.base === "string") {
@@ -200,23 +202,17 @@ export async function POST(request: Request) {
     );
   }
 
+  const live = await searchAssistLive(query);
   const apiKey = groqApiKey();
-  if (!apiKey) return Response.json(await rulesResponse(query, base));
+  if (!apiKey) return Response.json(await rulesResponse(query, base, live));
 
   try {
-    const live = await searchAssistLive(query);
     const client = groqClient(apiKey);
     const completion = await client.chat.completions.create({
       model: groqModelName(),
       messages: [
         { role: "system", content: buildSystemPrompt() },
-        {
-          role: "user",
-          content: JSON.stringify({
-            query,
-            live,
-          }),
-        },
+        { role: "user", content: JSON.stringify({ query, live }) },
       ],
       temperature: 0.15,
       max_completion_tokens: 360,
@@ -231,14 +227,12 @@ export async function POST(request: Request) {
     try {
       parsed = JSON.parse(raw) as Record<string, unknown>;
     } catch {
-      return Response.json(await rulesResponse(query, base));
+      return Response.json(await rulesResponse(query, base, live));
     }
 
     const intentId = typeof parsed.intent === "string" ? parsed.intent : "";
     const intent = getAssistIntent(intentId) ?? getAssistIntent(DEFAULT_INTENT_ID)!;
-    let message = safeText(parsed.message, 220);
-    if (!message) message = `I’ll help you ${intent.label.toLowerCase()}.`;
-
+    const message = safeText(parsed.message, 220) || `I’ll help you ${intent.label.toLowerCase()}.`;
     const followups = Array.isArray(parsed.followups)
       ? parsed.followups.map((f) => safeText(f, 80)).filter(Boolean).slice(0, 2)
       : intent.examples.slice(0, 2);
@@ -253,6 +247,6 @@ export async function POST(request: Request) {
     } satisfies AssistResponse);
   } catch (err) {
     console.error("[assist]", err);
-    return Response.json(await rulesResponse(query, base));
+    return Response.json(await rulesResponse(query, base, live));
   }
 }
