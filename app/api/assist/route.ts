@@ -1,5 +1,6 @@
 import { groqApiKey, groqClient, groqModelName, GROQ_NO_REASONING } from "@/app/lib/groq";
 import { checkRateLimit } from "@/app/lib/rate-limit";
+import { searchAssistLive, type AssistLiveMatches } from "@/app/lib/services/assist-live-lookup";
 import {
   ASSIST_INTENTS,
   DEFAULT_INTENT_ID,
@@ -10,18 +11,6 @@ import {
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
-
-/**
- * Quick-assist intent router.
- *
- * The landing-page search bars and the per-page assist modal POST a free-text
- * query here. Instead of answering with a chat reply, we interpret WHAT THE
- * USER NEEDS and return structured "show, don't tell" data: a short
- * acknowledgement, direct action cards (label + href) and follow-up prompts.
- *
- * Falls back to deterministic keyword routing when Groq is unavailable, so
- * wayfinding never breaks.
- */
 
 const MAX_QUERY_LENGTH = 200;
 const MAX_ACTIONS = 3;
@@ -40,7 +29,33 @@ type AssistResponse = {
   message: string;
   actions: AssistActionDto[];
   followups: string[];
+  live: AssistLiveMatches;
 };
+
+const PUBLIC_DESTINATIONS = [
+  "/",
+  "/pharmacies",
+  "/medicines",
+  "/refill",
+  "/delivery",
+  "/order",
+  "/vaccinations",
+  "/screenings",
+  "/how-do-you-feel",
+  "/health",
+  "/health/self-care-guide",
+  "/health/counselling",
+  "/services",
+  "/faq",
+  "/contact",
+  "/about",
+  "/careers",
+  "/login",
+  "/register",
+  "/portal",
+  "/caregiver",
+  "/platform",
+];
 
 function clientIp(request: Request): string {
   const fwd = request.headers.get("x-forwarded-for");
@@ -51,9 +66,9 @@ function clientIp(request: Request): string {
 function safeHref(href: unknown, base: string): string | null {
   if (typeof href !== "string" || !href.startsWith("/") || href.startsWith("//")) return null;
   const trimmed = href.slice(0, 300);
-  if (base && trimmed !== base && !trimmed.startsWith(`${base}/`)) {
-    return `${base}${trimmed}`;
-  }
+  const root = trimmed.split("?")[0].split("#")[0];
+  if (!PUBLIC_DESTINATIONS.includes(root)) return null;
+  if (base && trimmed !== base && !trimmed.startsWith(`${base}/`)) return `${base}${trimmed}`;
   return trimmed;
 }
 
@@ -62,11 +77,7 @@ function safeText(value: unknown, max: number): string {
   return value.replace(/\s+/g, " ").trim().slice(0, max);
 }
 
-function normalizeActions(
-  raw: unknown,
-  fallback: AssistAction[],
-  base: string,
-): AssistActionDto[] {
+function normalizeActions(raw: unknown, fallback: AssistAction[], base: string): AssistActionDto[] {
   const out: AssistActionDto[] = [];
   if (Array.isArray(raw)) {
     for (const item of raw) {
@@ -100,14 +111,36 @@ function normalizeActions(
   return out;
 }
 
-function rulesResponse(query: string, base: string): AssistResponse {
+function buildRouteMap() {
+  return [
+    ["Find pharmacies", "/pharmacies"],
+    ["Browse medicines and OTC products", "/medicines"],
+    ["Request a prescription refill", "/refill"],
+    ["Get delivery or manage an order", "/delivery, /order"],
+    ["Vaccinations", "/vaccinations"],
+    ["Health screenings", "/screenings"],
+    ["Symptom check", "/how-do-you-feel"],
+    ["Health library and self-care", "/health, /health/self-care-guide"],
+    ["Medication counselling", "/health/counselling"],
+    ["Services", "/services"],
+    ["FAQ and contact", "/faq, /contact"],
+    ["About and careers", "/about, /careers"],
+    ["Patient portal and caregiver portal", "/portal, /caregiver"],
+    ["Account", "/login, /register"],
+  ].map(([label, href]) => `- ${label}: ${href}`).join("\n");
+}
+
+async function rulesResponse(query: string, base: string): Promise<AssistResponse> {
   const intent = matchIntentByKeywords(query);
   return {
     source: "rules",
     intent: { id: intent.id, label: intent.label, blurb: intent.blurb },
-    message: `Here's the fastest way to ${intent.label.toLowerCase()}:`,
+    message: intent.id === "find-medicine"
+      ? "I’ll check the public medicine listings and show pharmacies that match it."
+      : `I’ll take you to the fastest way to ${intent.label.toLowerCase()}.`,
     actions: normalizeActions(null, intent.actions, base),
     followups: intent.examples.slice(0, MAX_FOLLOWUPS),
+    live: await searchAssistLive(query),
   };
 }
 
@@ -116,23 +149,27 @@ function buildSystemPrompt(): string {
     const actions = intent.actions
       .map((a) => `      - label: ${a.label} | href: ${a.href} | description: ${a.description}`)
       .join("\n");
-    return `  - id: "${intent.id}" — ${intent.label}: ${intent.blurb}
-    example queries: ${intent.examples.join("; ")}
-    suggested actions:
-${actions}`;
+    return `  - id: "${intent.id}" — ${intent.label}: ${intent.blurb}\n    example queries: ${intent.examples.join("; ")}\n    suggested actions:\n${actions}`;
   }).join("\n");
 
-  return `You are the quick-assist router for a Kenyan community pharmacy network. Users type short, real-life needs into a search bar. Your job is NOT to chat — it is to recognise what they need and hand back actionable links.
+  return `You are Aether's navigation assistant for a Kenyan pharmacy network.
+Your job is to understand what a person wants and guide them to the right place in the product.
 
-Available intents (choose exactly one):
+The app is larger than the intent list. These are the public destinations you may recommend:
+${buildRouteMap()}
+
+Available intent anchors:
 ${catalog}
 
-Rules:
-1. Pick the single best-matching intent id. If nothing matches, choose "find-pharmacy".
-2. "message": acknowledge what they need in 1 short sentence (max ~25 words). Warm, plain English. Never give medical advice or dosages. Never use markdown.
-3. "actions": pick 1-3 actions from the intent's suggested actions. You may lightly rewrite the label so it fits their exact request, but you MUST copy the href values exactly. Mark exactly one action with "primary": true.
-4. "followups": 2-3 short alternative things they might want (each max 6 words).
-5. Respond with STRICT JSON only, matching this shape:
+Important:
+1. Use the user's exact goal, not just keywords. A medicine name, pharmacy name, area, delivery request, refill request, symptom, vaccine, screening, account problem, or health topic may appear inside a longer sentence.
+2. Live directory data is authoritative for publicly listed pharmacies and medicine inventory. Never invent a pharmacy, medicine, price, or availability.
+3. When a medicine is found, prefer the live matches and the pharmacies stocking it over generic navigation.
+4. When a pharmacy is found, use the pharmacy result and its network page rather than inventing a route.
+5. Choose one intent. Keep the message to one short sentence. Never give a dosage or personalized medical advice here.
+6. Return at most 2 actions, and only use hrefs from the public destinations above.
+7. Return 1-2 concise followups.
+8. STRICT JSON only:
 {"intent":"<id>","message":"<string>","actions":[{"label":"<string>","href":"<string>","description":"<string>","primary":<boolean>}],"followups":["<string>"]}`;
 }
 
@@ -149,17 +186,13 @@ export async function POST(request: Request) {
     return Response.json({ error: "query required (min 2 characters)" }, { status: 400 });
   }
 
-  // Storefront base must be a strict /p/{slug} prefix or empty.
   let base = "";
   if (typeof body.base === "string") {
     const candidate = body.base.trim();
     if (candidate && /^\/p\/[a-z0-9][a-z0-9-]{1,60}$/i.test(candidate)) base = candidate;
   }
 
-  const rl = checkRateLimit(`assist:${clientIp(request)}`, {
-    limit: 30,
-    windowMs: 60_000,
-  });
+  const rl = checkRateLimit(`assist:${clientIp(request)}`, { limit: 30, windowMs: 60_000 });
   if (!rl.allowed) {
     return Response.json(
       { error: `Too many requests. Try again in ${rl.retryAfterSeconds}s.` },
@@ -168,18 +201,25 @@ export async function POST(request: Request) {
   }
 
   const apiKey = groqApiKey();
-  if (!apiKey) return Response.json(rulesResponse(query, base));
+  if (!apiKey) return Response.json(await rulesResponse(query, base));
 
   try {
+    const live = await searchAssistLive(query);
     const client = groqClient(apiKey);
     const completion = await client.chat.completions.create({
       model: groqModelName(),
       messages: [
         { role: "system", content: buildSystemPrompt() },
-        { role: "user", content: query },
+        {
+          role: "user",
+          content: JSON.stringify({
+            query,
+            live,
+          }),
+        },
       ],
-      temperature: 0.2,
-      max_completion_tokens: 500,
+      temperature: 0.15,
+      max_completion_tokens: 360,
       top_p: 0.9,
       stream: false,
       response_format: { type: "json_object" },
@@ -191,33 +231,28 @@ export async function POST(request: Request) {
     try {
       parsed = JSON.parse(raw) as Record<string, unknown>;
     } catch {
-      return Response.json(rulesResponse(query, base));
+      return Response.json(await rulesResponse(query, base));
     }
 
     const intentId = typeof parsed.intent === "string" ? parsed.intent : "";
     const intent = getAssistIntent(intentId) ?? getAssistIntent(DEFAULT_INTENT_ID)!;
-
     let message = safeText(parsed.message, 220);
-    if (!message) message = `Here's the fastest way to ${intent.label.toLowerCase()}:`;
+    if (!message) message = `I’ll help you ${intent.label.toLowerCase()}.`;
 
     const followups = Array.isArray(parsed.followups)
-      ? parsed.followups
-          .map((f) => safeText(f, 80))
-          .filter(Boolean)
-          .slice(0, MAX_FOLLOWUPS)
-      : [];
-    if (followups.length === 0) followups.push(...intent.examples.slice(0, 2));
+      ? parsed.followups.map((f) => safeText(f, 80)).filter(Boolean).slice(0, 2)
+      : intent.examples.slice(0, 2);
 
-    const response: AssistResponse = {
+    return Response.json({
       source: "ai",
       intent: { id: intent.id, label: intent.label, blurb: intent.blurb },
       message,
-      actions: normalizeActions(parsed.actions, intent.actions, base),
+      actions: normalizeActions(parsed.actions, intent.actions, base).slice(0, 2),
       followups,
-    };
-    return Response.json(response);
+      live,
+    } satisfies AssistResponse);
   } catch (err) {
     console.error("[assist]", err);
-    return Response.json(rulesResponse(query, base));
+    return Response.json(await rulesResponse(query, base));
   }
 }
