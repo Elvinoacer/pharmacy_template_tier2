@@ -2670,3 +2670,26 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
     opacity: 1 !important;
   }
 }
+
+/* ============================================================
+   Register page — pixel-faithful design mockup backgrounds
+   Uses reg-bg-mobile.png on small screens, reg-bg-pc.png on lg+
+   ============================================================ */
+.reg-bg {
+  background-image: url("/register/reg-bg-mobile.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #051205;
+}
+
+@media (min-width: 1024px) {
+  .reg-bg {
+    background-image: url("/register/reg-bg-pc.png");
+  }
+}
+
+/* Native date input — keep the calendar picker legible on dark surfaces */
+.reg-bg input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.6);
+}
