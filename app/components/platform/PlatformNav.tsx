@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { ClipboardCheck, FileText, LayoutDashboard, Menu, Store, Users, X } from "lucide-react";
+import { ClipboardCheck, FileText, LayoutDashboard, LogOut, Menu, Store, Users, X } from "lucide-react";
+import { logoutAction } from "@/app/actions/auth";
 
 export const PLATFORM_NAV = [
   { href: "/platform", label: "Overview", icon: LayoutDashboard },
@@ -45,8 +46,21 @@ export default function PlatformNav({ email, mobileOnly = false }: { email: stri
         </button>
         {open && (
           <div className="absolute inset-x-0 top-full border-b border-white/15 bg-[#071512] p-3 shadow-2xl">
-            <nav id="platform-mobile-nav" aria-label="Platform navigation" className="grid gap-1">{links(true)}</nav>
-            <p className="truncate px-3 py-3 text-xs text-teal-50/70" title={email}>{email}</p>
+            <nav id="platform-mobile-nav" aria-label="Platform navigation" className="grid gap-1">
+              {links(true)}
+            </nav>
+            <div className="mt-2 border-t border-white/10 pt-2">
+              <p className="truncate px-3 py-3 text-xs text-teal-50/70" title={email}>{email}</p>
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/10 hover:text-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+                >
+                  <LogOut className="h-4 w-4" aria-hidden />
+                  <span>Sign out</span>
+                </button>
+              </form>
+            </div>
           </div>
         )}
       </>
