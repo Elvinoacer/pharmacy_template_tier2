@@ -2,10 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { getSessionUser, requireStaff, writeAuditLog, AuthError } from "@/app/lib/auth";
+import { prismaUnscoped } from "@/app/lib/db";
 import {
   upsertPharmacySettings,
   type PharmacyHour,
 } from "@/app/lib/services/pharmacy-settings";
+import { getTenant } from "@/app/lib/tenant";
 
 export type LocationActionState = {
   error?: string;
@@ -20,7 +22,6 @@ function parseHoursText(raw: string): PharmacyHour[] {
     .map((line) => {
       const parts = line.split("|").map((p) => p.trim());
       if (parts.length >= 2) return { day: parts[0], time: parts.slice(1).join("|").trim() };
-      // fallback: "Day: Time" or "Day - Time"
       const m = line.match(/^(.+?)[:–-]\s*(.+)$/);
       if (m) return { day: m[1].trim(), time: m[2].trim() };
       return null;
@@ -42,6 +43,31 @@ export async function savePharmacyLocationAction(
     const user = await getSessionUser();
     requireStaff(user);
 
+    // Prefer tenant context; fall back to the owner's active membership so
+    // post-verification setup works even if the staff cookie is missing.
+    let pharmacyId: string | null = null;
+    try {
+      const tenant = await getTenant();
+      pharmacyId = tenant.pharmacyId;
+    } catch {
+      pharmacyId = null;
+    }
+    if (!pharmacyId) {
+      pharmacyId = user!.activePharmacyId || user!.memberships[0]?.pharmacyId || null;
+    }
+    if (!pharmacyId) {
+      return { error: "No pharmacy selected. Open setup from your approved application first." };
+    }
+
+    const allowed =
+      user!.platformAdmin ||
+      user!.memberships.some(
+        (m) => m.pharmacyId === pharmacyId && m.status === "active",
+      );
+    if (!allowed) {
+      return { error: "You do not have access to update this pharmacy." };
+    }
+
     const latitude = parseCoord(formData.get("latitude"));
     const longitude = parseCoord(formData.get("longitude"));
 
@@ -58,46 +84,96 @@ export async function savePharmacyLocationAction(
     const hoursText = String(formData.get("hoursText") || "");
     const hours = parseHoursText(hoursText);
 
-    await upsertPharmacySettings({
-      displayName: String(formData.get("displayName") || "") || null,
-      phone: String(formData.get("phone") || "") || null,
-      email: String(formData.get("email") || "") || null,
-      whatsapp: String(formData.get("whatsapp") || "") || null,
-      addressLine1: String(formData.get("addressLine1") || "") || null,
-      addressLine2: String(formData.get("addressLine2") || "") || null,
-      city: String(formData.get("city") || "") || null,
-      state: String(formData.get("state") || "") || null,
-      zip: String(formData.get("zip") || "") || null,
-      country: String(formData.get("country") || "") || null,
-      latitude,
-      longitude,
-      placeId: String(formData.get("placeId") || "") || null,
-      mapsEmbedUrl: String(formData.get("mapsEmbedUrl") || "") || null,
-      hours,
-      updatedById: user!.id,
+    const displayName = String(formData.get("displayName") || "").trim() || null;
+    const phone = String(formData.get("phone") || "").trim() || null;
+    const email = String(formData.get("email") || "").trim() || null;
+    const whatsapp = String(formData.get("whatsapp") || "").trim() || null;
+    const addressLine1 = String(formData.get("addressLine1") || "").trim() || null;
+    const addressLine2 = String(formData.get("addressLine2") || "").trim() || null;
+    const city = String(formData.get("city") || "").trim() || null;
+    const state = String(formData.get("state") || "").trim() || null;
+    const zip = String(formData.get("zip") || "").trim() || null;
+    const country = String(formData.get("country") || "").trim() || null;
+
+    // Write settings with an explicit pharmacyId so we never depend solely on ALS/cookie.
+    await prismaUnscoped.pharmacySettings.upsert({
+      where: { pharmacyId },
+      create: {
+        pharmacyId,
+        displayName,
+        phone,
+        email,
+        whatsapp,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        zip,
+        country,
+        latitude,
+        longitude,
+        placeId: String(formData.get("placeId") || "").trim() || null,
+        mapsEmbedUrl: String(formData.get("mapsEmbedUrl") || "").trim() || null,
+        hours: hours as object,
+        updatedById: user!.id,
+      },
+      update: {
+        displayName,
+        phone,
+        email,
+        whatsapp,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        zip,
+        country,
+        latitude,
+        longitude,
+        placeId: String(formData.get("placeId") || "").trim() || null,
+        mapsEmbedUrl: String(formData.get("mapsEmbedUrl") || "").trim() || null,
+        hours: hours as object,
+        updatedById: user!.id,
+      },
     });
 
-    await writeAuditLog(user!.id, "pharmacy_location_updated", "pharmacy_settings", undefined, {
+    // Keep the pharmacy row in sync so go-live checklist and directory see city/phone/pin.
+    await prismaUnscoped.pharmacy.update({
+      where: { id: pharmacyId },
+      data: {
+        ...(displayName ? { name: displayName } : {}),
+        phone,
+        whatsapp,
+        email: email || undefined,
+        city,
+        county: state,
+        country: country || "Kenya",
+        latitude,
+        longitude,
+      },
+    });
+
+    await writeAuditLog(user!.id, "pharmacy_location_updated", "pharmacy_settings", pharmacyId, {
       latitude,
       longitude,
     });
 
     revalidatePath("/contact");
     revalidatePath("/admin/settings/location");
+    revalidatePath("/admin/setup");
     revalidatePath("/");
     revalidatePath("/how-do-you-feel");
-    // Storefront surfaces render these values too (hours/contact strip,
-    // delivery facts, why-choose-us bullets, careers inbox).
     revalidatePath("/storefront");
     revalidatePath("/about");
     revalidatePath("/faq");
     revalidatePath("/delivery");
     revalidatePath("/careers");
+    revalidatePath("/onboard");
 
-    return { success: "Location saved. Public map and directions will use these values." };
+    return { success: "Location and contact saved. You can return to the go-live checklist." };
   } catch (e) {
     if (e instanceof AuthError) return { error: e.message };
     console.error("[savePharmacyLocation]", e);
-    return { error: "Could not save location settings." };
+    return { error: "Could not save location settings. Please try again." };
   }
 }

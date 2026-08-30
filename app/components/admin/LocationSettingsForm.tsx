@@ -1,7 +1,10 @@
 "use client";
 
 import { useActionState, useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import {
+  ArrowLeft,
+  CheckCircle2,
   Crosshair,
   ExternalLink,
   Loader2,
@@ -56,8 +59,10 @@ function buildDirections(lat: string, lng: string, address: string) {
 
 export default function LocationSettingsForm({
   defaults,
+  pharmacyName,
 }: {
   defaults: LocationFormDefaults;
+  pharmacyName?: string;
 }) {
   const [state, action, pending] = useActionState(savePharmacyLocationAction, initial);
   const [lat, setLat] = useState(defaults.latitude);
@@ -70,9 +75,7 @@ export default function LocationSettingsForm({
   const [geoNote, setGeoNote] = useState<string | null>(null);
 
   useEffect(() => {
-    if (state.success) {
-      setGeoNote(state.success);
-    }
+    if (state.success) setGeoNote(state.success);
   }, [state.success]);
 
   const useMyLocation = useCallback(() => {
@@ -92,15 +95,11 @@ export default function LocationSettingsForm({
           `Captured current location (±${Math.round(accuracy)} m). Review the pin, then save.`,
         );
 
-        // Best-effort reverse geocode via OpenStreetMap Nominatim (no key).
         try {
           const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
-          const res = await fetch(url, {
-            headers: { Accept: "application/json" },
-          });
+          const res = await fetch(url, { headers: { Accept: "application/json" } });
           if (res.ok) {
             const data = (await res.json()) as {
-              display_name?: string;
               address?: {
                 road?: string;
                 pedestrian?: string;
@@ -122,7 +121,7 @@ export default function LocationSettingsForm({
             }
           }
         } catch {
-          // Reverse geocode is optional
+          // optional
         }
         setGeoBusy(false);
       },
@@ -141,16 +140,46 @@ export default function LocationSettingsForm({
   const fullAddress = [line1, city, defaults.state, defaults.zip].filter(Boolean).join(", ");
   const preview = buildPreviewEmbed(lat, lng, embedOverride);
   const directions = buildDirections(lat, lng, fullAddress || defaults.addressLine1);
+  const knownName = defaults.displayName || pharmacyName || "Your pharmacy";
 
   return (
     <form action={action} className="space-y-6">
+      {/* Identity already known from onboarding — show, don't re-ask */}
+      <div className="rounded-2xl border border-teal-900/10 bg-gradient-to-br from-teal-50/80 to-white p-5 sm:p-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0d6e5a]">
+          Already on file
+        </p>
+        <h2 className="mt-1.5 text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+          {knownName}
+        </h2>
+        <dl className="mt-3 grid gap-2 text-sm text-[#5a6b62] sm:grid-cols-2">
+          {defaults.email && (
+            <div>
+              <dt className="text-[11px] font-semibold uppercase tracking-wide text-[#7a8b84]">Email</dt>
+              <dd className="mt-0.5 break-all">{defaults.email}</dd>
+            </div>
+          )}
+          {defaults.phone && (
+            <div>
+              <dt className="text-[11px] font-semibold uppercase tracking-wide text-[#7a8b84]">Phone</dt>
+              <dd className="mt-0.5">{defaults.phone}</dd>
+            </div>
+          )}
+        </dl>
+        <p className="mt-3 text-xs leading-relaxed text-[#7a8b84]">
+          These came from your application. You can adjust contact details below if anything changed.
+        </p>
+        {/* Hidden so save still receives them if user does not edit contact card */}
+        <input type="hidden" name="displayName" value={defaults.displayName} />
+      </div>
+
+      {/* Map pin — primary task after verification */}
       <div className="admin-card rounded-2xl border p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold admin-text">Pharmacy location</h2>
-            <p className="mt-1 text-xs admin-muted">
-              Capture your pin once — the public contact page shows the map and a Get directions
-              button automatically.
+            <h2 className="text-sm font-semibold admin-text">Map pin</h2>
+            <p className="mt-1 text-xs leading-relaxed admin-muted">
+              Patients use this for directions. Capture once from your phone at the premises, or type coordinates.
             </p>
           </div>
           <button
@@ -169,13 +198,14 @@ export default function LocationSettingsForm({
         </div>
 
         {(geoError || state.error) && (
-          <p className="mt-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-700 dark:text-rose-300">
+          <p className="mt-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-700 dark:text-rose-300" role="alert">
             {geoError || state.error}
           </p>
         )}
         {(geoNote || state.success) && !geoError && !state.error && (
-          <p className="mt-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-800 dark:text-emerald-300">
-            {geoNote || state.success}
+          <p className="mt-3 flex items-start gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-800 dark:text-emerald-300">
+            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <span>{geoNote || state.success}</span>
           </p>
         )}
 
@@ -212,14 +242,17 @@ export default function LocationSettingsForm({
               value={line1}
               onChange={(e) => setLine1(e.target.value)}
               className="input-admin mt-1.5 w-full"
+              placeholder="Building, street, or estate"
+              autoComplete="street-address"
             />
           </label>
           <label className="block text-xs font-semibold admin-muted sm:col-span-2">
-            Address line 2
+            Address line 2 <span className="font-normal opacity-70">(optional)</span>
             <input
               name="addressLine2"
               defaultValue={defaults.addressLine2}
               className="input-admin mt-1.5 w-full"
+              autoComplete="address-line2"
             />
           </label>
           <label className="block text-xs font-semibold admin-muted">
@@ -229,19 +262,21 @@ export default function LocationSettingsForm({
               value={city}
               onChange={(e) => setCity(e.target.value)}
               className="input-admin mt-1.5 w-full"
+              autoComplete="address-level2"
             />
           </label>
           <label className="block text-xs font-semibold admin-muted">
-            State / county
+            County / state
             <input
               name="state"
               defaultValue={defaults.state}
               className="input-admin mt-1.5 w-full"
+              autoComplete="address-level1"
             />
           </label>
           <label className="block text-xs font-semibold admin-muted">
-            Postal code
-            <input name="zip" defaultValue={defaults.zip} className="input-admin mt-1.5 w-full" />
+            Postal code <span className="font-normal opacity-70">(optional)</span>
+            <input name="zip" defaultValue={defaults.zip} className="input-admin mt-1.5 w-full" autoComplete="postal-code" />
           </label>
           <label className="block text-xs font-semibold admin-muted">
             Country
@@ -249,25 +284,20 @@ export default function LocationSettingsForm({
               name="country"
               defaultValue={defaults.country}
               className="input-admin mt-1.5 w-full"
+              autoComplete="country-name"
             />
           </label>
         </div>
       </div>
 
+      {/* Contact — pre-filled, editable only if needed */}
       <div className="admin-card rounded-2xl border p-5 sm:p-6">
-        <h2 className="text-sm font-semibold admin-text">Contact details</h2>
+        <h2 className="text-sm font-semibold admin-text">Public contact</h2>
+        <p className="mt-1 text-xs admin-muted">Shown on your storefront. Pre-filled from onboarding where available.</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="block text-xs font-semibold admin-muted sm:col-span-2">
-            Display name
-            <input
-              name="displayName"
-              defaultValue={defaults.displayName}
-              className="input-admin mt-1.5 w-full"
-            />
-          </label>
           <label className="block text-xs font-semibold admin-muted">
             Phone
-            <input name="phone" defaultValue={defaults.phone} className="input-admin mt-1.5 w-full" />
+            <input name="phone" defaultValue={defaults.phone} className="input-admin mt-1.5 w-full" autoComplete="tel" />
           </label>
           <label className="block text-xs font-semibold admin-muted">
             WhatsApp
@@ -275,14 +305,15 @@ export default function LocationSettingsForm({
               name="whatsapp"
               defaultValue={defaults.whatsapp}
               className="input-admin mt-1.5 w-full"
+              autoComplete="tel"
             />
           </label>
           <label className="block text-xs font-semibold admin-muted sm:col-span-2">
-            Email
-            <input name="email" defaultValue={defaults.email} className="input-admin mt-1.5 w-full" />
+            Public email
+            <input name="email" type="email" defaultValue={defaults.email} className="input-admin mt-1.5 w-full" autoComplete="email" />
           </label>
           <label className="block text-xs font-semibold admin-muted sm:col-span-2">
-            Hours (one per line: Day | Time)
+            Opening hours <span className="font-normal opacity-70">(one per line: Day | Time)</span>
             <textarea
               name="hoursText"
               defaultValue={defaults.hoursText}
@@ -292,7 +323,7 @@ export default function LocationSettingsForm({
             />
           </label>
           <label className="block text-xs font-semibold admin-muted sm:col-span-2">
-            Custom map embed URL (optional)
+            Custom map embed URL <span className="font-normal opacity-70">(optional)</span>
             <input
               name="mapsEmbedUrl"
               value={embedOverride}
@@ -309,7 +340,7 @@ export default function LocationSettingsForm({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold admin-text">
             <MapPin className="h-4 w-4 admin-accent-text" />
-            Public map preview
+            Map preview
           </h2>
           {directions && (
             <a
@@ -319,7 +350,7 @@ export default function LocationSettingsForm({
               className="inline-flex items-center gap-1.5 text-xs font-semibold admin-accent-text hover:underline"
             >
               <Navigation className="h-3.5 w-3.5" />
-              Test Get directions
+              Test directions
               <ExternalLink className="h-3 w-3 opacity-60" />
             </a>
           )}
@@ -343,14 +374,21 @@ export default function LocationSettingsForm({
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Link
+          href="/admin/setup"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-teal-900/10 bg-white px-4 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-slate-50"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to checklist
+        </Link>
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-teal-600 to-teal-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-teal-600 to-teal-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm disabled:opacity-50"
         >
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          Save location
+          Save and continue
         </button>
       </div>
     </form>
