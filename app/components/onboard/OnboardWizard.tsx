@@ -74,10 +74,23 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
   );
 
   if (status === "approved" || status === "active") return (
-    <div className="rounded-3xl border border-teal-900/10 bg-white p-6 text-center sm:p-8">
-      <h2 className="text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>You are approved</h2>
-      <p className="mt-2 text-sm text-[#5a6b62]">Finish branding and hours, then go live.</p>
-      <Link href="/admin/setup" className="btn-primary mt-6 inline-flex w-full justify-center sm:w-auto">Open setup wizard</Link>
+    <div className="rounded-3xl border border-emerald-200/80 bg-gradient-to-b from-emerald-50/90 to-white p-6 text-center shadow-sm sm:p-8">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">Verified</p>
+      <h2 className="mt-3 text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+        {name || "Your pharmacy"} is approved
+      </h2>
+      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#5a6b62]">
+        Next: confirm your map pin, phone, and opening hours — we will not ask again for the trading name or email you already provided.
+      </p>
+      <Link href="/admin/setup" className="btn-primary mt-6 inline-flex w-full justify-center sm:w-auto">
+        Continue to setup
+      </Link>
+      <p className="mt-4 text-xs text-[#7a8b84]">
+        Or jump straight to{" "}
+        <Link href="/admin/settings/location" className="font-semibold text-[#0d6e5a] underline-offset-2 hover:underline">
+          location &amp; contact
+        </Link>
+      </p>
     </div>
   );
 

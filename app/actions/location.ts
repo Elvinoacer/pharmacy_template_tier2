@@ -3,16 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { getSessionUser, requireStaff, writeAuditLog, AuthError } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
-import {
-  upsertPharmacySettings,
-  type PharmacyHour,
-} from "@/app/lib/services/pharmacy-settings";
 import { getTenant } from "@/app/lib/tenant";
 
 export type LocationActionState = {
   error?: string;
   success?: string;
 };
+
+type PharmacyHour = { day: string; time: string };
 
 function parseHoursText(raw: string): PharmacyHour[] {
   return raw
@@ -95,7 +93,6 @@ export async function savePharmacyLocationAction(
     const zip = String(formData.get("zip") || "").trim() || null;
     const country = String(formData.get("country") || "").trim() || null;
 
-    // Write settings with an explicit pharmacyId so we never depend solely on ALS/cookie.
     await prismaUnscoped.pharmacySettings.upsert({
       where: { pharmacyId },
       create: {
@@ -137,7 +134,6 @@ export async function savePharmacyLocationAction(
       },
     });
 
-    // Keep the pharmacy row in sync so go-live checklist and directory see city/phone/pin.
     await prismaUnscoped.pharmacy.update({
       where: { id: pharmacyId },
       data: {
