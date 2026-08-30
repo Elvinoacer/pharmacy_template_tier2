@@ -7,6 +7,7 @@ import Navbar from "./Navbar";
 import NavbarNavigationFix from "./NavbarNavigationFix";
 import { LiveAlertCenter } from "./LiveAlertCenter";
 import QuickPageAssist from "./assist/QuickPageAssist";
+import VerificationStatusModal from "./VerificationStatusModal";
 import type { PortalSessionHint } from "@/app/lib/portal-dest";
 import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/brand";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
@@ -79,6 +80,8 @@ export default function AppChrome({
         {/* Non-disruptive wayfinding helper: explains the current page and
             routes users to what they need (available on every public page). */}
         <QuickPageAssist />
+        {/* One-time modal when a pharmacy owner returns after approve / reject / needs_info */}
+        {sessionUser ? <VerificationStatusModal /> : null}
       </div>
     </TenantBrandProvider>
   );

@@ -6,10 +6,105 @@ import { redirect } from "next/navigation";
 import { prismaUnscoped } from "@/app/lib/db";
 import { getSessionUser, requirePlatformAdmin, writeAuditLog } from "@/app/lib/auth";
 import { STAFF_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
+import { sendDelivery } from "@/app/lib/services/delivery";
 
 async function actor() {
   const user = await getSessionUser();
   return requirePlatformAdmin(user);
+}
+
+function appUrl() {
+  return process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "http://localhost:3000";
+}
+
+/** Notify the pharmacy owner by email when the application decision changes. */
+async function notifyOwnerOfDecision(opts: {
+  pharmacyId: string;
+  pharmacyName: string;
+  decision: "approve" | "reject" | "needs_info";
+  notes: string;
+  ownerUserId: string | null;
+  pharmacyEmail: string | null;
+}) {
+  let toEmail = opts.pharmacyEmail?.trim() || null;
+  let ownerName = "there";
+
+  if (opts.ownerUserId) {
+    const owner = await prismaUnscoped.user.findUnique({
+      where: { id: opts.ownerUserId },
+      select: {
+        email: true,
+        profile: { select: { fullName: true } },
+      },
+    });
+    if (owner?.email) toEmail = owner.email;
+    if (owner?.profile?.fullName) ownerName = owner.profile.fullName.split(" ")[0] || ownerName;
+  }
+
+  if (!toEmail) return;
+
+  const base = appUrl();
+  let subject = "";
+  let body = "";
+
+  if (opts.decision === "approve") {
+    subject = `${opts.pharmacyName} has been approved — next steps`;
+    body = [
+      `Hi ${ownerName},`,
+      "",
+      `Great news — **${opts.pharmacyName}** has been verified and approved to join the Aether Pharmacy Network.`,
+      opts.notes ? `\nReviewer note: ${opts.notes}` : "",
+      "",
+      "### What to do next",
+      "1. Sign in and open **Admin → Setup** to finish the go-live checklist.",
+      "2. Confirm hours, contact details, and catalogue basics.",
+      "3. List your pharmacy when you are ready to appear on the marketplace.",
+      "",
+      `[Continue to setup](${base}/admin/setup)`,
+      "",
+      "Welcome aboard.",
+      "— Aether Network",
+    ]
+      .filter(Boolean)
+      .join("\n");
+  } else if (opts.decision === "reject") {
+    subject = `Update on ${opts.pharmacyName} application`;
+    body = [
+      `Hi ${ownerName},`,
+      "",
+      `We reviewed the application for **${opts.pharmacyName}** and are unable to approve it at this time.`,
+      "",
+      `**Reason:** ${opts.notes || "Not specified."}`,
+      "",
+      "If you believe this was in error, reply to this email or contact support with any additional documentation.",
+      "",
+      "— Aether Network",
+    ].join("\n");
+  } else {
+    subject = `More information needed for ${opts.pharmacyName}`;
+    body = [
+      `Hi ${ownerName},`,
+      "",
+      `We need a little more information before we can complete verification for **${opts.pharmacyName}**.`,
+      "",
+      `**What we need:** ${opts.notes || "Please review your application and update the missing details."}`,
+      "",
+      "You can edit and resubmit from the onboarding flow:",
+      `[Open onboarding](${base}/onboard)`,
+      "",
+      "— Aether Network",
+    ].join("\n");
+  }
+
+  await sendDelivery({
+    channel: "email",
+    purpose: "transactional",
+    recipient: { email: toEmail },
+    subject,
+    body,
+  }).catch((err) => {
+    console.error("[platform] owner decision email failed", err);
+  });
 }
 
 export async function reviewPharmacyAction(formData: FormData): Promise<void> {
@@ -40,6 +135,14 @@ export async function reviewPharmacyAction(formData: FormData): Promise<void> {
           message: notes || "Licence verified — pharmacy approved",
         },
       });
+      await notifyOwnerOfDecision({
+        pharmacyId,
+        pharmacyName: pharmacy.name,
+        decision: "approve",
+        notes,
+        ownerUserId: pharmacy.ownerUserId,
+        pharmacyEmail: pharmacy.email,
+      });
     } else if (decision === "reject") {
       if (!notes) throw new Error("A reason is required to reject.");
       await prismaUnscoped.pharmacy.update({
@@ -54,6 +157,14 @@ export async function reviewPharmacyAction(formData: FormData): Promise<void> {
           message: notes,
         },
       });
+      await notifyOwnerOfDecision({
+        pharmacyId,
+        pharmacyName: pharmacy.name,
+        decision: "reject",
+        notes,
+        ownerUserId: pharmacy.ownerUserId,
+        pharmacyEmail: pharmacy.email,
+      });
     } else if (decision === "needs_info") {
       if (!notes) throw new Error("Tell the owner what is missing.");
       await prismaUnscoped.pharmacy.update({
@@ -67,6 +178,14 @@ export async function reviewPharmacyAction(formData: FormData): Promise<void> {
           type: "needs_info",
           message: notes,
         },
+      });
+      await notifyOwnerOfDecision({
+        pharmacyId,
+        pharmacyName: pharmacy.name,
+        decision: "needs_info",
+        notes,
+        ownerUserId: pharmacy.ownerUserId,
+        pharmacyEmail: pharmacy.email,
       });
     } else if (decision === "under_review") {
       await prismaUnscoped.pharmacy.update({
@@ -155,7 +274,6 @@ export async function impersonatePharmacyAction(formData: FormData): Promise<voi
     path: "/",
     maxAge: 60 * 60 * 8,
   });
-  // Marker so the admin shell can show an impersonation banner with an exit.
   jar.set("aether_impersonation", pharmacyId, {
     httpOnly: true,
     sameSite: "lax",
@@ -171,7 +289,6 @@ export async function impersonatePharmacyAction(formData: FormData): Promise<voi
   redirect("/admin");
 }
 
-/** Leave support view: drop the impersonated tenant cookies, return to /platform. */
 export async function exitImpersonationAction(): Promise<void> {
   await actor();
   const jar = await cookies();
@@ -180,10 +297,6 @@ export async function exitImpersonationAction(): Promise<void> {
   redirect("/platform");
 }
 
-/**
- * Super-admin tenant edit: identity + contact + licence fields.
- * Slug changes are guarded for format and uniqueness.
- */
 export async function updatePharmacyAction(formData: FormData): Promise<void> {
   const user = await actor();
   const pharmacyId = String(formData.get("pharmacyId") || "");
@@ -225,9 +338,6 @@ export async function updatePharmacyAction(formData: FormData): Promise<void> {
   revalidatePath(`/platform/pharmacies/${pharmacyId}`);
 }
 
-/**
- * Suspend a tenant with a recorded reason (onboarding timeline + audit).
- */
 export async function suspendPharmacyAction(formData: FormData): Promise<void> {
   const user = await actor();
   const pharmacyId = String(formData.get("pharmacyId") || "");
@@ -255,10 +365,6 @@ export async function suspendPharmacyAction(formData: FormData): Promise<void> {
   revalidatePath(`/platform/pharmacies/${pharmacyId}`);
 }
 
-/**
- * User administration: activate / suspend a user and grant/revoke
- * platform-admin. Self-lockout is blocked.
- */
 export async function updateUserAction(formData: FormData): Promise<void> {
   const admin = await actor();
   const userId = String(formData.get("userId") || "");
@@ -282,7 +388,6 @@ export async function updateUserAction(formData: FormData): Promise<void> {
   if (Object.keys(data).length === 0) throw new Error("Nothing to change.");
 
   await prismaUnscoped.user.update({ where: { id: userId }, data });
-  // Force re-authentication of any live sessions for suspended users.
   if (status === "suspended" || status === "inactive") {
     await prismaUnscoped.session.deleteMany({ where: { userId } }).catch(() => {});
   }
