@@ -8,6 +8,11 @@ import { getSessionUser, requirePlatformAdmin, writeAuditLog } from "@/app/lib/a
 import { STAFF_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 import { sendDelivery } from "@/app/lib/services/delivery";
 
+export type ReviewActionState = {
+  error?: string;
+  success?: string;
+};
+
 async function actor() {
   const user = await getSessionUser();
   return requirePlatformAdmin(user);
@@ -17,7 +22,6 @@ function appUrl() {
   return process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "http://localhost:3000";
 }
 
-/** Notify the pharmacy owner by email when the application decision changes. */
 async function notifyOwnerOfDecision(opts: {
   pharmacyId: string;
   pharmacyName: string;
@@ -107,14 +111,17 @@ async function notifyOwnerOfDecision(opts: {
   });
 }
 
-export async function reviewPharmacyAction(formData: FormData): Promise<void> {
+export async function reviewPharmacyAction(
+  _prev: ReviewActionState,
+  formData: FormData,
+): Promise<ReviewActionState> {
   try {
     const user = await actor();
     const pharmacyId = String(formData.get("pharmacyId") || "");
     const decision = String(formData.get("decision") || "");
     const notes = String(formData.get("notes") || "").trim();
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
-    if (!pharmacy) throw new Error("Pharmacy not found.");
+    if (!pharmacy) return { error: "Pharmacy not found." };
 
     if (decision === "approve") {
       await prismaUnscoped.pharmacy.update({
@@ -144,7 +151,7 @@ export async function reviewPharmacyAction(formData: FormData): Promise<void> {
         pharmacyEmail: pharmacy.email,
       });
     } else if (decision === "reject") {
-      if (!notes) throw new Error("A reason is required to reject.");
+      if (!notes) return { error: "Add a reason before rejecting." };
       await prismaUnscoped.pharmacy.update({
         where: { id: pharmacyId },
         data: { status: "rejected", rejectionReason: notes, listed: false },
@@ -166,7 +173,7 @@ export async function reviewPharmacyAction(formData: FormData): Promise<void> {
         pharmacyEmail: pharmacy.email,
       });
     } else if (decision === "needs_info") {
-      if (!notes) throw new Error("Tell the owner what is missing.");
+      if (!notes) return { error: "Tell the owner what information is missing." };
       await prismaUnscoped.pharmacy.update({
         where: { id: pharmacyId },
         data: { status: "needs_info", verificationNotes: notes },
@@ -192,8 +199,16 @@ export async function reviewPharmacyAction(formData: FormData): Promise<void> {
         where: { id: pharmacyId },
         data: { status: "under_review" },
       });
+      await prismaUnscoped.pharmacyOnboardingEvent.create({
+        data: {
+          pharmacyId,
+          actorId: user.id,
+          type: "under_review",
+          message: notes || "Application marked under review",
+        },
+      });
     } else {
-      throw new Error("Unknown decision.");
+      return { error: "Choose a verification decision." };
     }
 
     await writeAuditLog(
@@ -205,9 +220,21 @@ export async function reviewPharmacyAction(formData: FormData): Promise<void> {
     ).catch(() => {});
 
     revalidatePath("/platform");
+    revalidatePath("/platform/applications");
+    revalidatePath("/platform/pharmacies");
     revalidatePath(`/platform/pharmacies/${pharmacyId}`);
+    revalidatePath("/onboard");
+
+    const labels: Record<string, string> = {
+      approve: "Approved — owner notified by email.",
+      reject: "Rejected — owner notified with your reason.",
+      needs_info: "Marked needs info — owner notified.",
+      under_review: "Marked under review.",
+    };
+    return { success: labels[decision] || "Decision saved." };
   } catch (err) {
-    throw err instanceof Error ? err : new Error("Review failed.");
+    console.error("[platform] review", err);
+    return { error: err instanceof Error ? err.message : "Review failed. Try again." };
   }
 }
 
@@ -256,6 +283,7 @@ export async function setPharmacyLiveAction(formData: FormData): Promise<void> {
 
     revalidatePath("/");
     revalidatePath("/platform");
+    revalidatePath(`/platform/pharmacies/${pharmacyId}`);
   } catch (err) {
     throw err instanceof Error ? err : new Error("Update failed.");
   }
