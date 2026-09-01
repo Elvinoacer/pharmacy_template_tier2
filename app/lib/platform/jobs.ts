@@ -70,15 +70,21 @@ export async function processJobBatch(limit = 25, workerId = `w-${process.pid}`)
 
     try {
       const run = async () => {
-        await executeJob(job.type, (job.payload as Record<string, unknown>) ?? {}, job.pharmacyId);
+        const result = await executeJob(job.id, job.type, (job.payload as Record<string, unknown>) ?? {}, job.pharmacyId);
+        await prismaUnscoped.job.update({
+          where: { id: job.id },
+          data: {
+            status: "succeeded",
+            completedAt: new Date(),
+            lastError: null,
+            attempts: attemptNo,
+            progress: 100,
+            result: (result ?? { ok: true }) as object,
+          },
+        });
       };
       if (job.pharmacyId) await withPharmacy(job.pharmacyId, run);
       else await withPlatformBypass(run);
-
-      await prismaUnscoped.job.update({
-        where: { id: job.id },
-        data: { status: "succeeded", completedAt: new Date(), lastError: null, attempts: attemptNo },
-      });
       ok++;
     } catch (err) {
       const message = err instanceof Error ? err.message.slice(0, 500) : "job_failed";
@@ -100,7 +106,12 @@ export async function processJobBatch(limit = 25, workerId = `w-${process.pid}`)
   return { scanned: due.length, ok, failed };
 }
 
-async function executeJob(type: string, payload: Record<string, unknown>, pharmacyId: string | null) {
+async function executeJob(
+  jobId: string,
+  type: string,
+  payload: Record<string, unknown>,
+  pharmacyId: string | null,
+): Promise<Record<string, unknown> | void> {
   if (type === "webhook.dispatch") {
     const { dispatchTenantWebhooks } = await import("@/app/lib/platform/webhooks");
     if (pharmacyId) await dispatchTenantWebhooks(pharmacyId, String(payload.eventType || "event"), payload);
@@ -108,8 +119,7 @@ async function executeJob(type: string, payload: Record<string, unknown>, pharma
   }
   if (type === "notification.deliver") {
     const { processQueuedDeliveries } = await import("@/app/lib/platform/notifications");
-    await processQueuedDeliveries(pharmacyId, 20);
-    return;
+    return processQueuedDeliveries(pharmacyId, 20);
   }
   if (type === "billing.dunning") {
     const { applyDunning } = await import("@/app/lib/platform/billing");
@@ -119,31 +129,31 @@ async function executeJob(type: string, payload: Record<string, unknown>, pharma
   if (type === "meter.record") {
     const { recordUsage } = await import("@/app/lib/platform/metering");
     if (pharmacyId) {
-      await recordUsage(pharmacyId, String(payload.metric || "unknown"), Number(payload.quantity || 1), {
-        eventId: payload.eventId ? String(payload.eventId) : undefined,
-      });
+      const eventId = payload.eventId ? String(payload.eventId) : `job:${jobId}:meter`;
+      await recordUsage(pharmacyId, String(payload.metric || "unknown"), Number(payload.quantity || 1), { eventId });
     }
     return;
   }
   if (type === "pos.sync" && pharmacyId) {
     const { runPosSync } = await import("@/app/lib/platform/pos-sync");
-    await runPosSync(pharmacyId, (payload.medications as never) ?? [], payload.branchId ? String(payload.branchId) : null);
-    return;
+    return runPosSync(
+      pharmacyId,
+      (payload.medications as never) ?? [],
+      payload.branchId ? String(payload.branchId) : null,
+      { jobId },
+    );
   }
   if (type === "data.export" && pharmacyId) {
     const { runDataExport } = await import("@/app/lib/platform/data-lifecycle");
-    await runDataExport(pharmacyId, String(payload.requestId || ""));
-    return;
+    return runDataExport(pharmacyId, String(payload.requestId || ""));
   }
   if (type === "data.delete" && pharmacyId) {
     const { runDataDeletion } = await import("@/app/lib/platform/data-lifecycle");
-    await runDataDeletion(pharmacyId, String(payload.requestId || ""));
-    return;
+    return runDataDeletion(pharmacyId, String(payload.requestId || ""));
   }
   if (type === "billing.cycle") {
     const { processSubscriptionCycle } = await import("@/app/lib/platform/billing");
-    await processSubscriptionCycle();
-    return;
+    return processSubscriptionCycle();
   }
   console.warn("[jobs] unknown type", type);
 }

@@ -4,6 +4,7 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { recordIntegrationHealth } from "@/app/lib/platform/integrations";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
+import { isFeatureEnabled } from "@/app/lib/platform/entitlements";
 
 export type PosMedication = {
   sku?: string;
@@ -27,7 +28,34 @@ export type PosMedication = {
   version?: number;
 };
 
-export async function runPosSync(pharmacyId: string, medications: PosMedication[], branchId?: string | null) {
+export type PosSyncResult = {
+  ok: true;
+  upserted: number;
+  created: number;
+  updated: number;
+  skipped: number;
+  lowStockAlerts: number;
+  conflicts: number;
+  progress: number;
+};
+
+async function setJobProgress(jobId: string | undefined, progress: number, result?: object) {
+  if (!jobId) return;
+  await prismaUnscoped.job.update({
+    where: { id: jobId },
+    data: { progress, ...(result ? { result: result as object } : {}) },
+  }).catch(() => {});
+}
+
+export async function runPosSync(
+  pharmacyId: string,
+  medications: PosMedication[],
+  branchId?: string | null,
+  opts?: { jobId?: string },
+): Promise<PosSyncResult> {
+  const entitled = await isFeatureEnabled(pharmacyId, "pos_sync");
+  if (!entitled) throw new Error("ENTITLEMENT_EXCEEDED:pos_sync");
+
   return withPharmacy(pharmacyId, async () => {
     const { setAbsoluteStock, applyStockChange, notifyStockThresholds } = await import(
       "@/app/lib/services/stock"
@@ -35,20 +63,43 @@ export async function runPosSync(pharmacyId: string, medications: PosMedication[
     type StockResult = Awaited<ReturnType<typeof setAbsoluteStock>>;
     const stockResults: StockResult[] = [];
     let upserted = 0;
+    let created = 0;
+    let updated = 0;
     let skipped = 0;
     let lowStockAlerts = 0;
-    const conflicts: Array<{ sku?: string; inventoryId?: string; platform: number; pos: number }> = [];
+    let conflictCount = 0;
+    const total = Math.max(medications.length, 1);
 
-    for (const m of medications) {
+    await setJobProgress(opts?.jobId, 0, { recordsReceived: medications.length });
+
+    for (let i = 0; i < medications.length; i++) {
+      const m = medications[i];
       const slug = m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const existing = m.sku
         ? await prismaUnscoped.pharmacyInventory.findFirst({ where: { pharmacyId, sku: m.sku } })
         : await prismaUnscoped.pharmacyInventory.findFirst({ where: { pharmacyId, slug } });
 
       if (existing) {
-        if (m.version != null && existing.version > m.version) {
+        const versionConflict = m.version != null && existing.version > m.version;
+        const stockConflict = existing.currentStock !== m.stockQty;
+        if (versionConflict || stockConflict) {
+          await prismaUnscoped.inventorySyncConflict.create({
+            data: {
+              pharmacyId,
+              inventoryId: existing.id,
+              jobId: opts?.jobId ?? null,
+              sku: m.sku ?? null,
+              platformStock: existing.currentStock,
+              posStock: m.stockQty,
+              platformVersion: existing.version,
+              posVersion: m.version ?? null,
+              status: "open",
+            },
+          });
+          conflictCount++;
+        }
+        if (versionConflict) {
           skipped++;
-          conflicts.push({ sku: m.sku, inventoryId: existing.id, platform: existing.currentStock, pos: m.stockQty });
           continue;
         }
         const stockResult = await prismaUnscoped.$transaction(async (tx) => {
@@ -71,9 +122,7 @@ export async function runPosSync(pharmacyId: string, medications: PosMedication[
           });
         });
         stockResults.push(stockResult);
-        if (existing.currentStock !== m.stockQty) {
-          conflicts.push({ sku: m.sku, inventoryId: existing.id, platform: existing.currentStock, pos: m.stockQty });
-        }
+        updated++;
       } else {
         await prismaUnscoped.$transaction(async (tx) => {
           const master = await tx.medicationMaster.create({
@@ -123,9 +172,20 @@ export async function runPosSync(pharmacyId: string, medications: PosMedication[
             stockResults.push(stockResult);
           }
         });
+        created++;
       }
       upserted++;
       if (m.stockQty <= m.lowStockThreshold) lowStockAlerts++;
+      const pct = Math.min(99, Math.round(((i + 1) / total) * 100));
+      if ((i + 1) % 10 === 0 || i === medications.length - 1) {
+        await setJobProgress(opts?.jobId, pct, {
+          recordsReceived: medications.length,
+          recordsUpdated: updated,
+          recordsCreated: created,
+          conflicts: conflictCount,
+          skipped,
+        });
+      }
     }
 
     await notifyStockThresholds(stockResults);
@@ -139,6 +199,61 @@ export async function runPosSync(pharmacyId: string, medications: PosMedication[
       });
     }
     await recordIntegrationHealth(pharmacyId, "pos", true);
-    return { ok: true as const, upserted, skipped, lowStockAlerts, conflicts };
+    const result: PosSyncResult = {
+      ok: true,
+      upserted,
+      created,
+      updated,
+      skipped,
+      lowStockAlerts,
+      conflicts: conflictCount,
+      progress: 100,
+    };
+    await setJobProgress(opts?.jobId, 100, result);
+    return result;
+  });
+}
+
+export async function resolveInventoryConflict(
+  conflictId: string,
+  action: "accept_pos" | "accept_platform" | "ignore",
+  actorId?: string | null,
+) {
+  const row = await prismaUnscoped.inventorySyncConflict.findUnique({ where: { id: conflictId } });
+  if (!row || row.status !== "open") throw new Error("conflict_not_found");
+
+  return withPharmacy(row.pharmacyId, async () => {
+    if (action === "accept_pos") {
+      const { setAbsoluteStock } = await import("@/app/lib/services/stock");
+      await prismaUnscoped.$transaction(async (tx) => {
+        await setAbsoluteStock(tx, {
+          inventoryId: row.inventoryId,
+          newStock: row.posStock,
+          reason: "pos_sync",
+          notes: "Conflict resolved: accept POS",
+          relatedType: "pos_conflict",
+          relatedId: row.id,
+          actorId: actorId ?? null,
+        });
+        await tx.pharmacyInventory.update({
+          where: { id: row.inventoryId },
+          data: { version: { increment: 1 }, syncedAt: new Date() },
+        });
+      });
+    } else if (action === "accept_platform") {
+      await prismaUnscoped.pharmacyInventory.update({
+        where: { id: row.inventoryId },
+        data: { version: { increment: 1 } },
+      });
+    }
+
+    return prismaUnscoped.inventorySyncConflict.update({
+      where: { id: row.id },
+      data: {
+        status: action === "accept_pos" ? "accepted_pos" : action === "accept_platform" ? "accepted_platform" : "ignored",
+        resolvedAt: new Date(),
+        resolvedById: actorId ?? null,
+      },
+    });
   });
 }

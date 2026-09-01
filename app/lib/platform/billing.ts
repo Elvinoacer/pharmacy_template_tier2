@@ -6,6 +6,8 @@ import { DEFAULT_PLAN_FEATURES } from "@/app/lib/platform/entitlements";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { enqueueOutbox } from "@/app/lib/platform/outbox";
 import { recordLifecycle } from "@/app/lib/platform/lifecycle";
+import { stkPush } from "@/app/lib/services/daraja";
+import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
 
 export async function ensureDefaultPlans() {
   const defs = [
@@ -68,42 +70,77 @@ export async function syncEntitlementsFromPlan(pharmacyId: string, planId: strin
   }
 }
 
-function invoiceNumber() {
-  const y = new Date().getFullYear();
-  const n = Math.floor(Math.random() * 1_000_000)
-    .toString()
-    .padStart(6, "0");
-  return `INV-${y}-${n}`;
+export async function nextInvoiceNumber(): Promise<string> {
+  const rows = await prismaUnscoped.$queryRaw<Array<{ n: bigint | number }>>`
+    SELECT nextval('invoice_number_seq') AS n
+  `;
+  const y = new Date().getUTCFullYear();
+  const n = Number(rows[0]?.n ?? 0);
+  return `INV-${y}-${String(n).padStart(8, "0")}`;
 }
 
-export async function issueSubscriptionInvoice(subscriptionId: string) {
+async function createInvoiceSafe(data: Parameters<typeof prismaUnscoped.invoice.create>[0]["data"]) {
+  for (let i = 0; i < 3; i++) {
+    try {
+      return await prismaUnscoped.invoice.create({
+        data: { ...data, number: await nextInvoiceNumber() },
+      });
+    } catch (err) {
+      const code = (err as { code?: string }).code;
+      if (code === "P2002") {
+        const existing = await prismaUnscoped.invoice.findFirst({
+          where: {
+            subscriptionId: (data as { subscriptionId?: string }).subscriptionId ?? undefined,
+            periodStart: (data as { periodStart?: Date }).periodStart,
+            periodEnd: (data as { periodEnd?: Date }).periodEnd,
+          },
+        });
+        if (existing) return existing;
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error("invoice_number_collision");
+}
+
+export async function issueSubscriptionInvoice(
+  subscriptionId: string,
+  period?: { start: Date; end: Date },
+) {
   const sub = await prismaUnscoped.subscription.findUnique({
     where: { id: subscriptionId },
     include: { plan: true },
   });
   if (!sub) throw new Error("subscription_not_found");
-  const invoice = await prismaUnscoped.invoice.create({
-    data: {
-      pharmacyId: sub.pharmacyId,
-      subscriptionId: sub.id,
-      number: invoiceNumber(),
-      periodStart: sub.currentPeriodStart,
-      periodEnd: sub.currentPeriodEnd,
-      subtotalKes: sub.plan.priceKes,
-      taxKes: 0,
-      totalKes: sub.plan.priceKes,
-      status: "open",
-      dueAt: sub.currentPeriodEnd,
-      items: {
-        create: [
-          {
-            description: `${sub.plan.name} (${sub.plan.interval})`,
-            quantity: 1,
-            unitKes: sub.plan.priceKes,
-            totalKes: sub.plan.priceKes,
-          },
-        ],
-      },
+  const periodStart = period?.start ?? sub.currentPeriodStart;
+  const periodEnd = period?.end ?? sub.currentPeriodEnd;
+
+  const existing = await prismaUnscoped.invoice.findFirst({
+    where: { subscriptionId: sub.id, periodStart, periodEnd },
+  });
+  if (existing) return existing;
+
+  const invoice = await createInvoiceSafe({
+    pharmacyId: sub.pharmacyId,
+    subscriptionId: sub.id,
+    number: "pending",
+    periodStart,
+    periodEnd,
+    subtotalKes: sub.plan.priceKes,
+    taxKes: 0,
+    totalKes: sub.plan.priceKes,
+    status: "open",
+    dueAt: periodEnd,
+    items: {
+      create: [
+        {
+          description: `${sub.plan.name} (${sub.plan.interval})`,
+          quantity: 1,
+          unitKes: sub.plan.priceKes,
+          totalKes: sub.plan.priceKes,
+        },
+      ],
     },
   });
   await prismaUnscoped.billingEvent.create({
@@ -120,6 +157,10 @@ export async function issueSubscriptionInvoice(subscriptionId: string) {
 }
 
 export async function markInvoicePaid(invoiceId: string, actorId?: string | null) {
+  const current = await prismaUnscoped.invoice.findUnique({ where: { id: invoiceId } });
+  if (!current) throw new Error("invoice_not_found");
+  if (current.status === "paid") return current;
+
   const invoice = await prismaUnscoped.invoice.update({
     where: { id: invoiceId },
     data: { status: "paid", paidAt: new Date() },
@@ -132,6 +173,12 @@ export async function markInvoicePaid(invoiceId: string, actorId?: string | null
     where: { id: invoice.pharmacyId },
     data: { lifecycleStatus: "active", restrictedAt: null },
   });
+  if (invoice.subscriptionId) {
+    await prismaUnscoped.subscription.updateMany({
+      where: { id: invoice.subscriptionId, status: { not: "cancelled" } },
+      data: { status: "active" },
+    });
+  }
   await recordAuditRequired({
     actorId,
     action: "billing.invoice.paid",
@@ -201,11 +248,12 @@ export async function processSubscriptionCycle() {
     take: 100,
   });
   for (const sub of endingTrials) {
-    await issueSubscriptionInvoice(sub.id);
-    await prismaUnscoped.subscription.update({
-      where: { id: sub.id },
+    const claimed = await prismaUnscoped.subscription.updateMany({
+      where: { id: sub.id, status: "trialing", trialEndsAt: sub.trialEndsAt ?? undefined },
       data: { status: "past_due" },
     });
+    if (claimed.count === 0) continue;
+    await issueSubscriptionInvoice(sub.id, { start: sub.currentPeriodStart, end: sub.currentPeriodEnd });
     invoiced++;
   }
 
@@ -214,12 +262,25 @@ export async function processSubscriptionCycle() {
     take: 100,
   });
   for (const sub of renewing) {
-    const periodEnd = new Date(sub.currentPeriodEnd.getTime() + 30 * 86400000);
-    await prismaUnscoped.subscription.update({
-      where: { id: sub.id },
-      data: { currentPeriodStart: sub.currentPeriodEnd, currentPeriodEnd: periodEnd },
+    const nextEnd = new Date(sub.currentPeriodEnd.getTime() + 30 * 86400000);
+    const claimed = await prismaUnscoped.subscription.updateMany({
+      where: {
+        id: sub.id,
+        status: "active",
+        currentPeriodEnd: sub.currentPeriodEnd,
+        cancelAt: null,
+      },
+      data: {
+        currentPeriodStart: sub.currentPeriodEnd,
+        currentPeriodEnd: nextEnd,
+        ...(sub.pendingPlanId ? { planId: sub.pendingPlanId, pendingPlanId: null } : {}),
+      },
     });
-    await issueSubscriptionInvoice(sub.id);
+    if (claimed.count === 0) continue;
+    if (sub.pendingPlanId) {
+      await syncEntitlementsFromPlan(sub.pharmacyId, sub.pendingPlanId);
+    }
+    await issueSubscriptionInvoice(sub.id, { start: sub.currentPeriodEnd, end: nextEnd });
     invoiced++;
   }
 
@@ -228,10 +289,11 @@ export async function processSubscriptionCycle() {
     take: 50,
   });
   for (const sub of cancelling) {
-    await prismaUnscoped.subscription.update({
-      where: { id: sub.id },
+    const claimed = await prismaUnscoped.subscription.updateMany({
+      where: { id: sub.id, status: { in: ["active", "past_due", "trialing"] }, cancelAt: { lte: now } },
       data: { status: "cancelled", cancelledAt: now },
     });
+    if (claimed.count === 0) continue;
     await recordLifecycle(sub.pharmacyId, "plan_changed", { reason: "cancelled_at_period_end" });
   }
 
@@ -251,4 +313,207 @@ export async function processSubscriptionCycle() {
   }
 
   return { invoiced, activated, cancelled: cancelling.length };
+}
+
+export async function changePlan(
+  subscriptionId: string,
+  planSlug: string,
+  timing: "immediate" | "period_end" = "period_end",
+  actorId?: string | null,
+) {
+  const sub = await prismaUnscoped.subscription.findUnique({
+    where: { id: subscriptionId },
+    include: { plan: true },
+  });
+  if (!sub) throw new Error("subscription_not_found");
+  const next = await prismaUnscoped.plan.findUnique({ where: { slug: planSlug } });
+  if (!next || !next.active) throw new Error("plan_not_found");
+  if (next.id === sub.planId && !sub.pendingPlanId) return sub;
+
+  const upgrade = Number(next.priceKes) >= Number(sub.plan.priceKes);
+  const applyNow = timing === "immediate" || upgrade;
+
+  if (applyNow) {
+    await prismaUnscoped.subscription.update({
+      where: { id: sub.id },
+      data: { planId: next.id, pendingPlanId: null, status: sub.status === "trialing" ? "trialing" : "active" },
+    });
+    await syncEntitlementsFromPlan(sub.pharmacyId, next.id);
+    if (upgrade && Number(next.priceKes) > Number(sub.plan.priceKes)) {
+      const delta = Number(next.priceKes) - Number(sub.plan.priceKes);
+      await createInvoiceSafe({
+        pharmacyId: sub.pharmacyId,
+        subscriptionId: sub.id,
+        number: "pending",
+        periodStart: new Date(),
+        periodEnd: sub.currentPeriodEnd,
+        subtotalKes: delta,
+        taxKes: 0,
+        totalKes: delta,
+        status: "open",
+        dueAt: new Date(),
+        items: {
+          create: [
+            {
+              description: `Proration upgrade ${sub.plan.name} → ${next.name}`,
+              quantity: 1,
+              unitKes: delta,
+              totalKes: delta,
+            },
+          ],
+        },
+      });
+    }
+  } else {
+    await prismaUnscoped.subscription.update({
+      where: { id: sub.id },
+      data: { pendingPlanId: next.id },
+    });
+  }
+
+  await recordLifecycle(sub.pharmacyId, "plan_changed", {
+    fromStatus: sub.plan.slug,
+    toStatus: planSlug,
+    actorId: actorId ?? undefined,
+    meta: { timing: applyNow ? "immediate" : "period_end" },
+  });
+  return prismaUnscoped.subscription.findUnique({ where: { id: sub.id } });
+}
+
+export async function cancelSubscription(subscriptionId: string, atPeriodEnd = true, actorId?: string | null) {
+  const sub = await prismaUnscoped.subscription.findUnique({ where: { id: subscriptionId } });
+  if (!sub) throw new Error("subscription_not_found");
+  if (atPeriodEnd) {
+    await prismaUnscoped.subscription.update({
+      where: { id: sub.id },
+      data: { cancelAt: sub.currentPeriodEnd },
+    });
+  } else {
+    await prismaUnscoped.subscription.update({
+      where: { id: sub.id },
+      data: { status: "cancelled", cancelledAt: new Date(), cancelAt: new Date() },
+    });
+  }
+  await recordLifecycle(sub.pharmacyId, "plan_changed", {
+    reason: atPeriodEnd ? "cancel_at_period_end" : "cancelled_immediate",
+    actorId: actorId ?? undefined,
+  });
+}
+
+export async function resumeSubscription(subscriptionId: string, actorId?: string | null) {
+  const sub = await prismaUnscoped.subscription.findUnique({ where: { id: subscriptionId } });
+  if (!sub) throw new Error("subscription_not_found");
+  if (sub.status === "cancelled" && sub.currentPeriodEnd < new Date()) {
+    throw new Error("period_ended");
+  }
+  await prismaUnscoped.subscription.update({
+    where: { id: sub.id },
+    data: {
+      cancelAt: null,
+      cancelledAt: null,
+      status: sub.status === "cancelled" ? "active" : sub.status,
+    },
+  });
+  await recordLifecycle(sub.pharmacyId, "plan_changed", { reason: "resumed", actorId: actorId ?? undefined });
+}
+
+export async function collectInvoicePayment(invoiceId: string, opts?: { phone?: string; actorId?: string | null }) {
+  const invoice = await prismaUnscoped.invoice.findUnique({
+    where: { id: invoiceId },
+    include: { pharmacy: { select: { id: true } } },
+  });
+  if (!invoice) throw new Error("invoice_not_found");
+  if (invoice.status === "paid") return { ok: true as const, alreadyPaid: true, invoiceId };
+
+  const method = await prismaUnscoped.billingPaymentMethod.findFirst({
+    where: { pharmacyId: invoice.pharmacyId, isDefault: true },
+  });
+  const phone = opts?.phone || method?.mpesaPhone;
+  if (!phone) throw new Error("billing_phone_missing");
+
+  const payment = await prismaUnscoped.billingPayment.create({
+    data: {
+      pharmacyId: invoice.pharmacyId,
+      invoiceId: invoice.id,
+      provider: "mpesa",
+      status: "pending",
+      amountKes: invoice.totalKes,
+      phone,
+    },
+  });
+
+  const creds = await resolveDarajaCredentials(null);
+  const push = await stkPush({
+    amount: Number(invoice.totalKes),
+    phone,
+    accountReference: invoice.number.slice(0, 12),
+    transactionDesc: `Aether ${invoice.number}`,
+    credentials: creds,
+  });
+
+  if (!push.ok) {
+    await prismaUnscoped.billingPayment.update({
+      where: { id: payment.id },
+      data: { status: "failed", failureReason: push.error },
+    });
+    return { ok: false as const, error: push.error, paymentId: payment.id };
+  }
+
+  await prismaUnscoped.billingPayment.update({
+    where: { id: payment.id },
+    data: {
+      status: "processing",
+      checkoutRequestId: push.checkoutRequestId,
+      merchantRequestId: push.merchantRequestId,
+    },
+  });
+  await recordAuditRequired({
+    actorId: opts?.actorId,
+    action: "billing.invoice.collect",
+    resource: "invoice",
+    resourceId: invoiceId,
+    tenantId: invoice.pharmacyId,
+    details: { paymentId: payment.id },
+  });
+  return {
+    ok: true as const,
+    paymentId: payment.id,
+    checkoutRequestId: push.checkoutRequestId,
+    alreadyPaid: false,
+    invoiceId,
+  };
+}
+
+export async function completeBillingPayment(opts: {
+  checkoutRequestId: string;
+  mpesaReceipt?: string | null;
+  resultCode: number;
+  resultDesc?: string | null;
+}) {
+  const row = await prismaUnscoped.billingPayment.findFirst({
+    where: { checkoutRequestId: opts.checkoutRequestId },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!row) return null;
+  if (row.status === "succeeded") return row;
+
+  if (opts.resultCode === 0) {
+    await prismaUnscoped.billingPayment.update({
+      where: { id: row.id },
+      data: {
+        status: "succeeded",
+        providerRef: opts.mpesaReceipt ?? row.providerRef,
+        paidAt: new Date(),
+        failureReason: null,
+      },
+    });
+    await markInvoicePaid(row.invoiceId);
+    return prismaUnscoped.billingPayment.findUnique({ where: { id: row.id } });
+  }
+
+  await prismaUnscoped.billingPayment.update({
+    where: { id: row.id },
+    data: { status: "failed", failureReason: opts.resultDesc ?? "stk_failed" },
+  });
+  return prismaUnscoped.billingPayment.findUnique({ where: { id: row.id } });
 }

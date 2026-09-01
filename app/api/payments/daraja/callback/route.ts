@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prismaUnscoped, withTenantTx } from "@/app/lib/db";
-import { withPharmacy } from "@/app/lib/tenant-context";
+import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import {
   completeDarajaPayment,
   failDarajaPayment,
@@ -9,6 +9,7 @@ import {
   markWebhookProcessed,
   recordInboundWebhook,
 } from "@/app/lib/platform/webhooks";
+import { completeBillingPayment } from "@/app/lib/platform/billing";
 
 export const runtime = "nodejs";
 
@@ -33,29 +34,63 @@ export async function POST(req: Request) {
     };
 
     const cb = body.Body?.stkCallback;
-    if (!cb?.CheckoutRequestID) {
+    const checkoutRequestId = cb?.CheckoutRequestID;
+    if (!checkoutRequestId) {
       return NextResponse.json({ ok: false, error: "no_callback" }, { status: 400 });
     }
 
-    const payment = await prismaUnscoped.payment.findFirst({
-      where: {
-        OR: [
-          { checkoutRequestId: cb.CheckoutRequestID },
-          { providerRef: cb.CheckoutRequestID },
-        ],
-      },
-      orderBy: { createdAt: "desc" },
+    const lookedUp = await withPlatformBypass(async () => {
+      const payment = await prismaUnscoped.payment.findFirst({
+        where: {
+          OR: [
+            { checkoutRequestId },
+            { providerRef: checkoutRequestId },
+          ],
+        },
+        orderBy: { createdAt: "desc" },
+      });
+      const billing = await prismaUnscoped.billingPayment.findFirst({
+        where: { checkoutRequestId },
+        orderBy: { createdAt: "desc" },
+      });
+      return { payment, billing };
     });
 
+    if (lookedUp.billing && !lookedUp.payment) {
+      const inbound = await recordInboundWebhook({
+        pharmacyId: lookedUp.billing.pharmacyId,
+        provider: "daraja",
+        providerEventId: checkoutRequestId,
+        eventType: "stk.billing.callback",
+        payload: body,
+      });
+      if (inbound.duplicate && inbound.event.status === "delivered") {
+        return NextResponse.json({ ok: true, note: "duplicate" });
+      }
+      const items = cb.CallbackMetadata?.Item ?? [];
+      const receipt = items.find((i) => i.Name === "MpesaReceiptNumber")?.Value;
+      await withPlatformBypass(async () =>
+        completeBillingPayment({
+          checkoutRequestId,
+          mpesaReceipt: receipt != null ? String(receipt) : null,
+          resultCode: cb.ResultCode ?? 1,
+          resultDesc: cb.ResultDesc,
+        }),
+      );
+      await markWebhookProcessed(inbound.event.id);
+      return NextResponse.json({ ok: true, note: "billing" });
+    }
+
+    const payment = lookedUp.payment;
     if (!payment) {
-      console.warn("[daraja callback] payment not found", cb.CheckoutRequestID);
+      console.warn("[daraja callback] payment not found", checkoutRequestId);
       return NextResponse.json({ ok: true, note: "payment_not_found" });
     }
 
     const inbound = await recordInboundWebhook({
       pharmacyId: payment.pharmacyId,
       provider: "daraja",
-      providerEventId: cb.CheckoutRequestID,
+      providerEventId: checkoutRequestId,
       eventType: "stk.callback",
       payload: body,
     });
@@ -72,7 +107,7 @@ export async function POST(req: Request) {
               where: { id: payment.id },
               data: {
                 merchantRequestId: cb.MerchantRequestID,
-                checkoutRequestId: payment.checkoutRequestId || cb.CheckoutRequestID,
+                checkoutRequestId: payment.checkoutRequestId || checkoutRequestId,
               },
             })
             .catch(() => {});

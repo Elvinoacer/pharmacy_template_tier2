@@ -1,27 +1,57 @@
+import { AsyncLocalStorage } from "node:async_hooks";
+import type { Pool } from "pg";
 import { PrismaClient } from "@/app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { buildPostgresConfig } from "@/app/lib/db/config";
+import { createRlsPool, resolveRlsScope, rlsGucValues } from "@/app/lib/db/rls";
 import { TENANT_MODELS, TENANT_RELATION_MODELS } from "@/app/lib/tenant-models";
 import { failClosedId, peekTenant } from "@/app/lib/tenant-context";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
+  prismaRls: ReturnType<typeof extendRls> | undefined;
   prismaScoped: ReturnType<typeof extendTenant> | undefined;
+  rlsPool: Pool | undefined;
 };
 
-function createPrismaClient(): PrismaClient {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error(
-      "DATABASE_URL is not set. Add it in your environment (.env.local in " +
-        "dev, or your host's project settings in production).",
-    );
+const rlsTx = new AsyncLocalStorage<true>();
+
+function getRlsPool(): Pool {
+  if (!globalForPrisma.rlsPool) {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      throw new Error(
+        "DATABASE_URL is not set. Add it in your environment (.env.local in " +
+          "dev, or your host's project settings in production).",
+      );
+    }
+    globalForPrisma.rlsPool = createRlsPool(buildPostgresConfig(connectionString));
   }
+  return globalForPrisma.rlsPool;
+}
 
-  const adapter = new PrismaPg(buildPostgresConfig(connectionString));
-
+function createPrismaClient(): PrismaClient {
+  const factory = new PrismaPg(getRlsPool());
+  const origConnect = factory.connect.bind(factory);
+  factory.connect = async () => {
+    const adapter = await origConnect();
+    const origStart = adapter.startTransaction.bind(adapter);
+    adapter.startTransaction = async (isolation) => {
+      const tx = await origStart(isolation);
+      const guc = rlsGucValues(await resolveRlsScope());
+      const bypass = guc.platformBypass.replace(/'/g, "");
+      const pharmacyId = guc.pharmacyId.replace(/'/g, "");
+      await tx.executeRaw({
+        sql: `SELECT set_config('app.platform_bypass', '${bypass}', true), set_config('app.pharmacy_id', '${pharmacyId}', true)`,
+        args: [],
+        argTypes: [],
+      });
+      return tx;
+    };
+    return adapter;
+  };
   return new PrismaClient({
-    adapter,
+    adapter: factory,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 }
@@ -31,6 +61,36 @@ function getPrismaClient(): PrismaClient {
     globalForPrisma.prisma = createPrismaClient();
   }
   return globalForPrisma.prisma;
+}
+
+function extendRls(client: PrismaClient) {
+  return client.$extends({
+    query: {
+      $allModels: {
+        async $allOperations({ model, operation, args, query }) {
+          if (rlsTx.getStore()) return query(args);
+          const guc = rlsGucValues(await resolveRlsScope());
+          const raw = getPrismaClient();
+          const delegate = String(model).charAt(0).toLowerCase() + String(model).slice(1);
+          return rlsTx.run(true, () =>
+            raw.$transaction(async (tx) => {
+              await tx.$executeRaw`SELECT set_config('app.platform_bypass', ${guc.platformBypass}, true), set_config('app.pharmacy_id', ${guc.pharmacyId}, true)`;
+              const table = (tx as unknown as Record<string, Record<string, (a: unknown) => Promise<unknown>>>)[delegate];
+              if (!table?.[operation]) return query(args);
+              return table[operation](args);
+            }),
+          );
+        },
+      },
+    },
+  });
+}
+
+function getRlsClient() {
+  if (!globalForPrisma.prismaRls) {
+    globalForPrisma.prismaRls = extendRls(getPrismaClient());
+  }
+  return globalForPrisma.prismaRls;
 }
 
 /**
@@ -205,7 +265,7 @@ function extendTenant(client: PrismaClient) {
 
 function getScopedClient() {
   if (!globalForPrisma.prismaScoped) {
-    globalForPrisma.prismaScoped = extendTenant(getPrismaClient());
+    globalForPrisma.prismaScoped = extendTenant(getRlsClient() as unknown as PrismaClient);
   }
   return globalForPrisma.prismaScoped;
 }
@@ -216,7 +276,7 @@ function getScopedClient() {
  */
 export const prismaUnscoped = new Proxy({} as PrismaClient, {
   get(_target, prop, receiver) {
-    return Reflect.get(getPrismaClient(), prop, receiver);
+    return Reflect.get(getRlsClient(), prop, receiver);
   },
 });
 

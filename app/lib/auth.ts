@@ -48,6 +48,7 @@ type UserWithMemberships = {
   lastReauthAt?: Date | null;
   profile?: { id: string; fullName: string | null } | null;
   memberships?: Array<{
+    id: string;
     role: string;
     status: string;
     pharmacy: { id: string; slug: string; name: string };
@@ -56,6 +57,7 @@ type UserWithMemberships = {
 
 function membershipsOf(user: UserWithMemberships): SessionUser["memberships"] {
   return (user.memberships ?? []).map((m) => ({
+    id: m.id,
     pharmacyId: m.pharmacy.id,
     slug: m.pharmacy.slug,
     name: m.pharmacy.name,

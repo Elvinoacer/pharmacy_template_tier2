@@ -406,10 +406,27 @@ enum PlatformRoleName {
 
 enum WebhookDeliveryStatus {
   pending
+  processing
   delivered
   failed
   retrying
   dead_letter
+}
+
+enum SyncConflictStatus {
+  open
+  accepted_pos
+  accepted_platform
+  merged
+  ignored
+}
+
+enum BillingPaymentStatus {
+  pending
+  processing
+  succeeded
+  failed
+  cancelled
 }
 
 enum NotificationDeliveryStatus {
@@ -562,6 +579,8 @@ model Pharmacy {
   paymentMethods           BillingPaymentMethod[]
   tenantConfigs            TenantConfig[]
   billingEvents            BillingEvent[]
+  inventorySyncConflicts   InventorySyncConflict[]
+  billingPayments          BillingPayment[]
 
   @@index([status])
   @@index([lifecycleStatus])
@@ -610,7 +629,9 @@ model CustomerPharmacy {
   @@map("customer_pharmacies")
 }
 
-/// Per-pharmacy integration credentials & locale. Secrets are encrypted at rest.
+/// Tenant feature/config state (locale, timezone, POS key hash, optional credential overrides).
+/// Actual provider accounts/secrets also live on IntegrationAccount (one row per kind+provider).
+/// Prefer IntegrationAccount for new credentials; this row remains the tenant-level config surface.
 model PharmacyIntegration {
   id                      String   @id @default(uuid()) @db.Uuid
   pharmacyId              String   @unique @map("pharmacy_id") @db.Uuid
@@ -1916,6 +1937,7 @@ model PharmacyInventory {
   prescriptionFills PrescriptionFill[]
   /// Historical price points (audit §46).
   priceHistory    MedicationPriceHistory[]
+  syncConflicts   InventorySyncConflict[]
 
   @@index([medicationMasterId])
   @@index([overTheCounter])
@@ -3549,8 +3571,9 @@ model Plan {
   createdAt   DateTime        @default(now()) @map("created_at")
   updatedAt   DateTime        @updatedAt @map("updated_at")
 
-  features      PlanFeature[]
-  subscriptions Subscription[]
+  features               PlanFeature[]
+  subscriptions          Subscription[]
+  pendingSubscriptions   Subscription[] @relation("PendingPlan")
 
   @@map("plans")
 }
@@ -3579,13 +3602,15 @@ model Subscription {
   trialEndsAt           DateTime?          @map("trial_ends_at")
   cancelAt              DateTime?          @map("cancel_at")
   cancelledAt           DateTime?          @map("cancelled_at")
+  pendingPlanId         String?            @map("pending_plan_id") @db.Uuid
   externalSubscriptionId String?           @map("external_subscription_id")
   createdAt             DateTime           @default(now()) @map("created_at")
   updatedAt             DateTime           @updatedAt @map("updated_at")
 
-  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
-  plan     Plan     @relation(fields: [planId], references: [id], onDelete: Restrict)
-  invoices Invoice[]
+  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Restrict)
+  pendingPlan Plan?    @relation("PendingPlan", fields: [pendingPlanId], references: [id], onDelete: SetNull)
+  invoices    Invoice[]
 
   @@index([pharmacyId, status])
   @@index([planId])
@@ -3612,7 +3637,9 @@ model Invoice {
   subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
   items        InvoiceItem[]
   dunningCases DunningCase[]
+  payments     BillingPayment[]
 
+  @@unique([subscriptionId, periodStart, periodEnd], name: "invoices_subscription_period_key")
   @@index([pharmacyId, status])
   @@map("invoices")
 }
@@ -3853,6 +3880,8 @@ model Job {
   lockedAt    DateTime? @map("locked_at")
   lockedBy    String?   @map("locked_by")
   lastError   String?   @map("last_error")
+  progress    Int       @default(0)
+  result      Json?
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
@@ -3934,6 +3963,8 @@ model NotificationTemplate {
   @@map("notification_templates")
 }
 
+/// External provider account + credentials for a tenant.
+/// PharmacyIntegration = tenant config/feature state; this model = the actual connected account.
 model IntegrationAccount {
   id           String            @id @default(uuid()) @db.Uuid
   pharmacyId   String            @map("pharmacy_id") @db.Uuid
@@ -4075,6 +4106,8 @@ model DataExportRequest {
   status       DataRequestStatus @default(requested)
   archiveUrl   String?           @map("archive_url")
   error        String?
+  expiresAt    DateTime?         @map("expires_at")
+  downloadTokenHash String?      @map("download_token_hash")
   requestedAt  DateTime          @default(now()) @map("requested_at")
   completedAt  DateTime?         @map("completed_at")
 
@@ -4100,6 +4133,54 @@ model DataDeletionRequest {
 
   @@index([pharmacyId, status])
   @@map("data_deletion_requests")
+}
+
+model InventorySyncConflict {
+  id               String             @id @default(uuid()) @db.Uuid
+  pharmacyId       String             @map("pharmacy_id") @db.Uuid
+  inventoryId      String             @map("inventory_id") @db.Uuid
+  jobId            String?            @map("job_id") @db.Uuid
+  sku              String?
+  platformStock    Int                @map("platform_stock")
+  posStock         Int                @map("pos_stock")
+  platformVersion  Int                @map("platform_version")
+  posVersion       Int?               @map("pos_version")
+  status           SyncConflictStatus @default(open)
+  resolvedAt       DateTime?          @map("resolved_at")
+  resolvedById     String?            @map("resolved_by") @db.Uuid
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  pharmacy  Pharmacy          @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  inventory PharmacyInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId, status])
+  @@index([inventoryId])
+  @@map("inventory_sync_conflicts")
+}
+
+model BillingPayment {
+  id                String               @id @default(uuid()) @db.Uuid
+  pharmacyId        String               @map("pharmacy_id") @db.Uuid
+  invoiceId         String               @map("invoice_id") @db.Uuid
+  provider          String
+  status            BillingPaymentStatus @default(pending)
+  amountKes         Decimal              @map("amount_kes") @db.Decimal(12, 2)
+  phone             String?
+  checkoutRequestId String?              @map("checkout_request_id")
+  merchantRequestId String?              @map("merchant_request_id")
+  providerRef       String?              @map("provider_ref")
+  failureReason     String?              @map("failure_reason")
+  paidAt            DateTime?            @map("paid_at")
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  invoice  Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId, invoiceId])
+  @@index([checkoutRequestId])
+  @@map("billing_payments")
 }
 
 model RetentionPolicy {

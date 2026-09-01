@@ -3,29 +3,20 @@ import "server-only";
 import { prismaUnscoped } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { sendDelivery, type DeliveryPayload } from "@/app/lib/services/delivery";
-import { recordUsage } from "@/app/lib/platform/metering";
+import { recordUsage, usageTotalMessages } from "@/app/lib/platform/metering";
 import { assertWithinLimit } from "@/app/lib/platform/entitlements";
+import {
+  asPayload,
+  fallbackChain,
+  remainingChannels,
+  CHANNEL_FALLBACK,
+  type StoredDeliveryPayload,
+} from "@/app/lib/platform/notification-fallback";
 
-const CHANNEL_FALLBACK: Record<string, string[]> = {
-  whatsapp: ["whatsapp", "sms", "email"],
-  sms: ["sms", "whatsapp", "email"],
-  email: ["email", "sms"],
-  push: ["push", "sms", "email"],
-  critical: ["push", "sms", "whatsapp", "email"],
-};
+export { asPayload, fallbackChain, remainingChannels, CHANNEL_FALLBACK };
+export type { StoredDeliveryPayload };
 
-function asPayload(raw: unknown): DeliveryPayload | null {
-  if (!raw || typeof raw !== "object") return null;
-  const p = raw as Partial<DeliveryPayload>;
-  if (!p.channel || !p.body) return null;
-  return {
-    channel: p.channel,
-    body: p.body,
-    subject: p.subject ?? null,
-    recipient: p.recipient ?? {},
-    purpose: p.purpose ?? "transactional",
-  };
-}
+const BILLABLE_CHANNELS = new Set(["sms", "whatsapp", "email"]);
 
 export async function queueNotificationDelivery(input: {
   pharmacyId: string;
@@ -34,7 +25,7 @@ export async function queueNotificationDelivery(input: {
   payload: DeliveryPayload;
   preferred?: string;
 }) {
-  const chain = CHANNEL_FALLBACK[input.preferred || input.channel] ?? [input.channel];
+  const chain = fallbackChain(input.preferred || input.channel);
   const delivery = await prismaUnscoped.notificationDelivery.create({
     data: {
       pharmacyId: input.pharmacyId,
@@ -49,6 +40,7 @@ export async function queueNotificationDelivery(input: {
         purpose: input.payload.purpose ?? "transactional",
         recipient: input.payload.recipient ?? {},
         fallback: chain,
+        attempted: [],
       } as object,
     },
   });
@@ -73,7 +65,6 @@ export async function processQueuedDeliveries(pharmacyId: string | null, limit =
     });
     if (claimed.count === 0) continue;
 
-    const started = Date.now();
     const stored = asPayload(row.payload);
     if (!stored) {
       await prismaUnscoped.notificationDelivery.update({
@@ -83,40 +74,93 @@ export async function processQueuedDeliveries(pharmacyId: string | null, limit =
       continue;
     }
 
-    try {
-      const metric = stored.channel === "sms" ? "sms" : stored.channel === "whatsapp" ? "whatsapp" : stored.channel === "email" ? "email" : "messages";
-      await assertWithinLimit(row.pharmacyId, "messages", await (await import("@/app/lib/platform/metering")).usageTotal(row.pharmacyId, metric));
-
-      const result = await withPharmacy(row.pharmacyId, async () => sendDelivery(stored));
-      const terminal = result.status === "sent" || result.status === "delivered" || result.status === "pending";
-      await prismaUnscoped.notificationAttempt.create({
-        data: {
-          deliveryId: row.id,
-          attempt: row.attempt + 1,
-          status: result.status,
-          error: result.error ?? null,
-          latencyMs: Date.now() - started,
-        },
-      });
+    const chain = fallbackChain(stored.channel, stored.fallback);
+    const attempted = stored.attempted ?? [];
+    const toTry = remainingChannels(chain, attempted);
+    if (toTry.length === 0) {
       await prismaUnscoped.notificationDelivery.update({
         where: { id: row.id },
-        data: {
-          status: result.status === "failed"
-            ? (row.attempt + 1 >= 5 ? "dead_letter" : "retrying")
-            : result.status === "pending"
-              ? "sent"
-              : result.status === "delivered"
-                ? "delivered"
-                : "sent",
-          provider: result.provider ?? null,
-          providerMessageId: result.providerMessageId ?? null,
-          error: result.error ?? null,
-          sentAt: terminal ? new Date() : undefined,
-          scheduledAt: result.status === "failed" ? new Date(Date.now() + 2 ** row.attempt * 1000) : undefined,
-        },
+        data: { status: "dead_letter", error: "fallback_exhausted", payload: { ...stored, fallback: chain, attempted } as object },
       });
-      if (result.status === "sent" || result.status === "delivered") {
-        await recordUsage(row.pharmacyId, metric, 1, { eventId: `delivery:${row.id}` });
+      continue;
+    }
+
+    try {
+      await assertWithinLimit(row.pharmacyId, "messages", await usageTotalMessages(row.pharmacyId));
+
+      let lastError: string | null = null;
+      let succeeded = false;
+      let lastProvider: string | null = null;
+      let lastProviderMessageId: string | null = null;
+      let lastChannel = stored.channel;
+      const newlyAttempted = [...attempted];
+
+      for (const channel of toTry) {
+        const started = Date.now();
+        const payload: DeliveryPayload = {
+          channel: channel as DeliveryPayload["channel"],
+          body: stored.body,
+          subject: stored.subject,
+          recipient: (stored.recipient ?? {}) as DeliveryPayload["recipient"],
+          purpose: stored.purpose,
+        };
+        const result = await withPharmacy(row.pharmacyId, async () =>
+          sendDelivery(payload, { persist: false }),
+        );
+        newlyAttempted.push(channel);
+        await prismaUnscoped.notificationAttempt.create({
+          data: {
+            deliveryId: row.id,
+            attempt: newlyAttempted.length,
+            status: result.status,
+            error: result.error ?? null,
+            latencyMs: Date.now() - started,
+          },
+        });
+
+        if (result.status === "sent" || result.status === "delivered" || result.status === "pending") {
+          succeeded = true;
+          lastChannel = channel as DeliveryPayload["channel"];
+          lastProvider = result.provider ?? null;
+          lastProviderMessageId = result.providerMessageId ?? null;
+          lastError = result.error ?? null;
+          if (BILLABLE_CHANNELS.has(channel)) {
+            await recordUsage(row.pharmacyId, "messages", 1, {
+              eventId: `delivery:${row.id}:${channel}`,
+              meta: { channel },
+            });
+          }
+          break;
+        }
+        lastError = result.error ?? "deliver_failed";
+      }
+
+      const workerAttempt = row.attempt + 1;
+      if (succeeded) {
+        await prismaUnscoped.notificationDelivery.update({
+          where: { id: row.id },
+          data: {
+            status: lastError && lastProvider == null ? "sent" : "sent",
+            channel: lastChannel === "in_app" || lastChannel === "portal" ? "in_app" : (lastChannel as "email" | "sms" | "whatsapp" | "push" | "in_app"),
+            provider: lastProvider,
+            providerMessageId: lastProviderMessageId,
+            error: lastError,
+            sentAt: new Date(),
+            payload: { ...stored, fallback: chain, attempted: newlyAttempted } as object,
+          },
+        });
+      } else {
+        const exhausted = remainingChannels(chain, newlyAttempted).length === 0;
+        const dead = exhausted || workerAttempt >= 5;
+        await prismaUnscoped.notificationDelivery.update({
+          where: { id: row.id },
+          data: {
+            status: dead ? "dead_letter" : "retrying",
+            error: lastError,
+            scheduledAt: dead ? undefined : new Date(Date.now() + 2 ** Math.min(workerAttempt, 10) * 1000),
+            payload: { ...stored, fallback: chain, attempted: newlyAttempted } as object,
+          },
+        });
       }
     } catch (err) {
       await prismaUnscoped.notificationDelivery.update({
@@ -124,7 +168,7 @@ export async function processQueuedDeliveries(pharmacyId: string | null, limit =
         data: {
           status: row.attempt + 1 >= 5 ? "dead_letter" : "retrying",
           error: err instanceof Error ? err.message.slice(0, 400) : "deliver_failed",
-          scheduledAt: new Date(Date.now() + 2 ** row.attempt * 1000),
+          scheduledAt: new Date(Date.now() + 2 ** Math.min(row.attempt, 10) * 1000),
         },
       });
     }

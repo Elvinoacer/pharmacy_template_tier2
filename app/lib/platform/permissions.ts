@@ -74,3 +74,8 @@ export function membershipPermissions(
   for (const p of extra ?? []) set.add(p);
   return set;
 }
+
+/** Owner is the only implicit bypass. super_admin must be listed on the action. */
+export function platformRoleAllowed(role: string, roles: string[]): boolean {
+  return roles.includes("*") || roles.includes(role) || role === "owner";
+}

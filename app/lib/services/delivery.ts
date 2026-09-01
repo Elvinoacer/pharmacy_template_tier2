@@ -323,7 +323,15 @@ async function sendWhatsapp(payload: DeliveryPayload): Promise<DeliveryResult> {
   return { status: "sent", provider: "whatsapp_cloud", providerMessageId: json?.messages?.[0]?.id };
 }
 
-export async function sendDelivery(payload: DeliveryPayload): Promise<DeliveryResult> {
+export type SendDeliveryOptions = {
+  /** Queue workers already own a NotificationDelivery row — do not create another. */
+  persist?: boolean;
+};
+
+export async function sendDelivery(
+  payload: DeliveryPayload,
+  opts?: SendDeliveryOptions,
+): Promise<DeliveryResult> {
   try {
     // Consent gates — marketing campaigns and reminders respect opt-out toggles.
     // Transactional messages (order confirmations, staff replies, etc.) always go through
@@ -360,12 +368,12 @@ export async function sendDelivery(payload: DeliveryPayload): Promise<DeliveryRe
     else result = { status: "failed", error: `Unsupported channel: ${payload.channel}` };
 
     const pharmacyId = peekTenant()?.pharmacyId;
-    if (pharmacyId) {
+    if (pharmacyId && opts?.persist !== false) {
       const { prismaUnscoped } = await import("@/app/lib/db");
       await prismaUnscoped.notificationDelivery.create({
         data: {
           pharmacyId,
-          channel: payload.channel === "in_app" ? "in_app" : payload.channel === "portal" ? "in_app" : payload.channel,
+          channel: payload.channel,
           status: result.status === "failed" ? "failed" : result.status === "delivered" ? "delivered" : "sent",
           provider: result.provider ?? null,
           providerMessageId: result.providerMessageId ?? null,

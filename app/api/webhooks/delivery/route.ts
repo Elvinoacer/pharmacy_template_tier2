@@ -1,31 +1,32 @@
 import type { NextRequest } from "next/server";
-import { createHmac, timingSafeEqual } from "crypto";
 import { prismaUnscoped } from "@/app/lib/db";
-import { withPharmacy } from "@/app/lib/tenant-context";
+import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import {
   markWebhookProcessed,
   recordInboundWebhook,
+  verifyInboundProvider,
 } from "@/app/lib/platform/webhooks";
 
 export const runtime = "nodejs";
 
 type DeliveryStatus = "sent" | "delivered" | "failed" | "opened" | "clicked" | "replied";
 
-function timingEqual(a: string, b: string) {
-  const left = Buffer.from(a);
-  const right = Buffer.from(b);
-  return left.length === right.length && timingSafeEqual(left, right);
-}
-
 function authorized(request: NextRequest, rawBody: string) {
-  const signature = request.headers.get("x-webhook-signature") || request.headers.get("x-aether-signature");
-  const secret = process.env.DELIVERY_WEBHOOK_SECRET?.trim();
-  if (signature && secret) {
-    const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
-    return timingEqual(expected, signature.replace(/^sha256=/, ""));
-  }
-  if (!secret) return process.env.NODE_ENV !== "production";
-  return request.headers.get("authorization") === `Bearer ${secret}`;
+  const provider = request.headers.get("x-delivery-provider") || "delivery";
+  const secret =
+    provider === "twilio"
+      ? process.env.TWILIO_AUTH_TOKEN
+      : provider === "whatsapp"
+        ? process.env.WHATSAPP_APP_SECRET || process.env.WHATSAPP_ACCESS_TOKEN
+        : provider === "resend"
+          ? process.env.RESEND_WEBHOOK_SECRET
+          : process.env.DELIVERY_WEBHOOK_SECRET;
+  return verifyInboundProvider({
+    provider,
+    rawBody,
+    headers: request.headers,
+    secret,
+  });
 }
 
 function isStatus(value: unknown): value is DeliveryStatus {
@@ -55,15 +56,18 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "Invalid delivery event" }, { status: 400 });
   }
 
-  const notification = body.notificationId
-    ? await prismaUnscoped.notification.findUnique({ where: { id: body.notificationId } })
-    : null;
-  const message = body.messageId
-    ? await prismaUnscoped.message.findUnique({
-        where: { id: body.messageId },
-        include: { conversation: { select: { pharmacyId: true } } },
-      })
-    : null;
+  const { notification, message } = await withPlatformBypass(async () => {
+    const notification = body.notificationId
+      ? await prismaUnscoped.notification.findUnique({ where: { id: body.notificationId } })
+      : null;
+    const message = body.messageId
+      ? await prismaUnscoped.message.findUnique({
+          where: { id: body.messageId },
+          include: { conversation: { select: { pharmacyId: true } } },
+        })
+      : null;
+    return { notification, message };
+  });
 
   const pharmacyId = notification?.pharmacyId || message?.conversation.pharmacyId;
   if (!pharmacyId) {

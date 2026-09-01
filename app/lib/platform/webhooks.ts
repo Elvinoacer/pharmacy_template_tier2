@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createHmac, timingSafeEqual } from "crypto";
 import { prismaUnscoped } from "@/app/lib/db";
 import { decryptSecret } from "@/app/lib/platform/secrets";
 import { signHmacSha256, verifyHmacSha256 } from "@/app/lib/platform/totp";
@@ -10,6 +11,66 @@ export function signWebhookBody(secret: string, body: string): string {
 
 export function verifyWebhookSignature(secret: string, body: string, header: string | null): boolean {
   return verifyHmacSha256(secret, body, header);
+}
+
+export type InboundProvider =
+  | "daraja"
+  | "twilio"
+  | "whatsapp"
+  | "resend"
+  | "delivery"
+  | "pos"
+  | "generic";
+
+function timingEqual(a: string, b: string) {
+  const left = Buffer.from(a);
+  const right = Buffer.from(b);
+  return left.length === right.length && timingSafeEqual(left, right);
+}
+
+/** Provider-specific inbound auth. Generic HMAC is not used as a universal verifier. */
+export function verifyInboundProvider(input: {
+  provider: InboundProvider | string;
+  rawBody: string;
+  headers: Headers | { get(name: string): string | null };
+  secret?: string | null;
+}): boolean {
+  const secret = input.secret?.trim() || "";
+  const h = input.headers;
+  const get = (name: string) => h.get(name);
+
+  switch (input.provider) {
+    case "daraja":
+      // Daraja authenticates by CheckoutRequestID correlation, not HMAC.
+      return true;
+    case "twilio": {
+      const sig = get("x-twilio-signature");
+      if (!secret || !sig) return false;
+      return timingEqual(createHmac("sha1", secret).update(input.rawBody).digest("base64"), sig);
+    }
+    case "whatsapp": {
+      const sig = get("x-hub-signature-256");
+      if (!secret || !sig) return false;
+      return verifyHmacSha256(secret, input.rawBody, sig);
+    }
+    case "resend": {
+      const sig = get("svix-signature") || get("webhook-signature");
+      if (!secret || !sig) return false;
+      const part = sig.split(" ").find((p) => p.startsWith("v1,"))?.slice(3) || sig;
+      return verifyHmacSha256(secret, input.rawBody, part);
+    }
+    case "delivery": {
+      const header = get("x-webhook-signature") || get("x-aether-signature");
+      if (secret && header) return verifyHmacSha256(secret, input.rawBody, header);
+      if (!secret) return process.env.NODE_ENV !== "production";
+      return get("authorization") === `Bearer ${secret}`;
+    }
+    case "pos":
+      return Boolean(get("authorization")?.startsWith("Bearer "));
+    default:
+      if (!secret) return process.env.NODE_ENV !== "production";
+      return verifyHmacSha256(secret, input.rawBody, get("x-aether-signature") || get("x-webhook-signature"));
+  }
 }
 
 export async function recordInboundWebhook(input: {
@@ -90,8 +151,14 @@ export async function dispatchTenantWebhooks(
 }
 
 export async function attemptWebhookDelivery(id: string) {
+  const claimed = await prismaUnscoped.webhookDelivery.updateMany({
+    where: { id, status: { in: ["pending", "retrying"] } },
+    data: { status: "processing" },
+  });
+  if (claimed.count === 0) return;
+
   const row = await prismaUnscoped.webhookDelivery.findUnique({ where: { id } });
-  if (!row || row.status === "delivered" || row.status === "dead_letter") return;
+  if (!row) return;
   const ep = await prismaUnscoped.webhookEndpoint.findUnique({ where: { id: row.endpointId } });
   if (!ep) {
     await prismaUnscoped.webhookDelivery.update({ where: { id }, data: { status: "dead_letter", lastError: "endpoint_missing" } });
@@ -135,11 +202,6 @@ export async function processWebhookDeliveryBatch(limit = 40) {
     orderBy: { nextAttemptAt: "asc" },
   });
   for (const row of due) {
-    const claimed = await prismaUnscoped.webhookDelivery.updateMany({
-      where: { id: row.id, status: { in: ["pending", "retrying"] } },
-      data: { status: "pending" },
-    });
-    if (claimed.count === 0) continue;
     await attemptWebhookDelivery(row.id);
   }
   return { scanned: due.length };

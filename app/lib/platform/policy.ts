@@ -3,7 +3,7 @@ import "server-only";
 import { AuthError, requirePlatformAdmin } from "@/app/lib/auth";
 import type { SessionUser } from "@/app/lib/types";
 import { getTenant } from "@/app/lib/tenant";
-import { membershipPermissions, type Permission } from "@/app/lib/platform/permissions";
+import { membershipPermissions, platformRoleAllowed, type Permission } from "@/app/lib/platform/permissions";
 import { isFeatureEnabled } from "@/app/lib/platform/entitlements";
 import { prismaUnscoped } from "@/app/lib/db";
 
@@ -61,6 +61,18 @@ export async function authorize(input: AuthorizeInput): Promise<SessionUser> {
     throw new AuthError(`Missing permission: ${input.action}`, 403);
   }
 
+  if (input.branchId && membership.role !== "owner" && membership.role !== "manager") {
+    const scoped = await prismaUnscoped.branchMembership.count({
+      where: { membershipId: membership.id },
+    });
+    if (scoped > 0) {
+      const allowed = await prismaUnscoped.branchMembership.findFirst({
+        where: { membershipId: membership.id, branchId: input.branchId },
+      });
+      if (!allowed) throw new AuthError("No access to this branch", 403);
+    }
+  }
+
   return actor;
 }
 
@@ -88,21 +100,20 @@ export async function requireEntitled(
   return actor;
 }
 
-const POWER_ROLES = new Set(["owner", "super_admin"]);
-
 export function effectivePlatformRole(user: SessionUser): string {
   if (user.platformRole && user.platformRole !== "none") return user.platformRole;
   if (user.platformAdmin) return "super_admin";
   return "none";
 }
 
+/** Owner is the only implicit bypass. super_admin must be listed on the action. */
 export function requirePlatformRole(
   user: SessionUser | null,
   roles: string[],
 ): SessionUser {
   const admin = requirePlatformAdmin(user);
   const role = effectivePlatformRole(admin);
-  if (roles.includes("*") || roles.includes(role) || POWER_ROLES.has(role)) {
+  if (platformRoleAllowed(role, roles)) {
     return admin;
   }
   throw new AuthError("Insufficient platform role", 403);

@@ -13,7 +13,7 @@ export type ReviewActionState = {
   success?: string;
 };
 
-async function actor(roles: string[] = ["super_admin", "support", "operator"], stepUp = false) {
+async function actor(roles: string[] = ["super_admin", "support", "operator"], stepUp = true) {
   return requirePlatformAction(roles, { stepUp });
 }
 
@@ -322,7 +322,7 @@ export async function exitImpersonationAction(): Promise<void> {
 }
 
 export async function updatePharmacyAction(formData: FormData): Promise<void> {
-  const user = await actor(["super_admin"], false);
+  const user = await actor(["super_admin"], true);
   const pharmacyId = String(formData.get("pharmacyId") || "");
   const name = String(formData.get("name") || "").trim();
   const slug = String(formData.get("slug") || "").trim().toLowerCase();
@@ -472,4 +472,70 @@ export async function revokeDeviceAction(formData: FormData): Promise<void> {
     resourceId: deviceId,
   });
   revalidatePath("/platform/security");
+}
+
+export async function resolvePosConflictAction(formData: FormData): Promise<void> {
+  const user = await actor(["super_admin", "operator"], true);
+  const conflictId = String(formData.get("conflictId") || "");
+  const action = String(formData.get("action") || "");
+  if (!conflictId) throw new Error("Missing conflict.");
+  if (action !== "accept_pos" && action !== "accept_platform" && action !== "ignore") {
+    throw new Error("Unknown resolution.");
+  }
+  const { resolveInventoryConflict } = await import("@/app/lib/platform/pos-sync");
+  await resolveInventoryConflict(conflictId, action, user.id);
+  await recordAuditRequired({
+    actorId: user.id,
+    action: `pos.conflict.${action}`,
+    resource: "inventory_sync_conflict",
+    resourceId: conflictId,
+  });
+  revalidatePath("/platform/integrations/conflicts");
+}
+
+export async function collectInvoiceAction(formData: FormData): Promise<void> {
+  const user = await actor(["super_admin", "billing_admin"], true);
+  const invoiceId = String(formData.get("invoiceId") || "");
+  const phone = String(formData.get("phone") || "").trim() || undefined;
+  if (!invoiceId) throw new Error("Missing invoice.");
+  const { collectInvoicePayment } = await import("@/app/lib/platform/billing");
+  const result = await collectInvoicePayment(invoiceId, { phone, actorId: user.id });
+  revalidatePath("/platform/invoices");
+  revalidatePath("/platform/billing");
+  if (!result.ok) throw new Error(result.error || "Collection failed.");
+}
+
+export async function requestExportAction(formData: FormData): Promise<void> {
+  const user = await actor(["owner"], true);
+  const pharmacyId = String(formData.get("pharmacyId") || "");
+  if (!pharmacyId) throw new Error("Missing pharmacy.");
+  const { requestDataExport } = await import("@/app/lib/platform/data-lifecycle");
+  await requestDataExport(pharmacyId, user.id);
+  revalidatePath("/platform/compliance");
+}
+
+export async function requestDeletionAction(formData: FormData): Promise<void> {
+  const user = await actor(["owner"], true);
+  const pharmacyId = String(formData.get("pharmacyId") || "");
+  if (!pharmacyId) throw new Error("Missing pharmacy.");
+  const { requestDataDeletion } = await import("@/app/lib/platform/data-lifecycle");
+  await requestDataDeletion(pharmacyId, { actorId: user.id });
+  revalidatePath("/platform/compliance");
+}
+
+export async function changePlanAction(formData: FormData): Promise<{ error?: string; success?: string }> {
+  try {
+    const user = await actor(["super_admin", "billing_admin"], true);
+    const subscriptionId = String(formData.get("subscriptionId") || "");
+    const planSlug = String(formData.get("planSlug") || "");
+    const timing = String(formData.get("timing") || "period_end") === "immediate" ? "immediate" : "period_end";
+    if (!subscriptionId || !planSlug) return { error: "Missing plan change fields." };
+    const { changePlan } = await import("@/app/lib/platform/billing");
+    await changePlan(subscriptionId, planSlug, timing, user.id);
+    revalidatePath("/platform/subscriptions");
+    revalidatePath("/platform/billing");
+    return { success: timing === "immediate" ? "Plan updated now." : "Plan change scheduled for period end." };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Plan change failed." };
+  }
 }

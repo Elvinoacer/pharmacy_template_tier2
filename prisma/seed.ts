@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { buildPostgresConfig } from "../app/lib/db/config";
+import { createRlsPool } from "../app/lib/db/rls";
+import { withPlatformBypass } from "../app/lib/tenant-context";
 import { VACCINE_CATALOG, DEFAULT_IMMUNIZATION_POLICY } from "../app/lib/vaccination-catalog";
 
 loadEnv({ path: path.resolve(process.cwd(), ".env") });
@@ -14,7 +16,7 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is required for seeding");
 }
 
-const adapter = new PrismaPg(buildPostgresConfig(connectionString));
+const adapter = new PrismaPg(createRlsPool(buildPostgresConfig(connectionString)));
 const prisma = new PrismaClient({ adapter });
 
 async function hash(password: string) {
@@ -1963,7 +1965,7 @@ async function main() {
   console.log("  peter@example.com             (caregiver)");
 }
 
-main()
+withPlatformBypass(() => main())
   .catch((e) => {
     console.error(e);
     process.exit(1);

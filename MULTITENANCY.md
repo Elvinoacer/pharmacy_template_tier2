@@ -15,10 +15,21 @@ one patient identity, and one super-admin console. Tenant data never mixes.
 | Patient identity | One `User` + `CustomerProfile` across the network |
 | Patient ↔ pharmacy | `customer_pharmacies` + per-pharmacy `loyalty_accounts` |
 | Staff access | `pharmacy_memberships` (owner / manager / pharmacist / staff) |
-| Secrets | Platform env + per-tenant `pharmacy_integrations` (not extra `.env` files) |
+| Secrets | Platform env + per-tenant `pharmacy_integrations` (config) and `integration_accounts` (credentials) |
+| RLS | Postgres FORCE ROW LEVEL SECURITY; `app.pharmacy_id` / `app.platform_bypass` set on every pooled connection from ALS |
 
-Fail-closed: if no tenant can be resolved, queries use a zero UUID so they
-return **empty**, never another pharmacy's rows.
+Fail-closed: if no tenant can be resolved, queries use a zero UUID **and**
+Postgres RLS denies the row (`app.current_pharmacy_id()` is NULL). Platform
+workers must call `withPlatformBypass()` so `app.platform_bypass = '1'`.
+
+Neon table-owner roles typically have `BYPASSRLS`, which ignores even
+`FORCE ROW LEVEL SECURITY`. The app therefore `SET ROLE aether_runtime`
+(NOBYPASSRLS) on every pooled connection before setting the tenant GUC.
+
+`PharmacyIntegration` is tenant **configuration** (locale, timezone, POS key
+hash, optional credential overrides). `IntegrationAccount` is the **connected
+external account** (kind + provider + secrets). Prefer `IntegrationAccount`
+for new credentials.
 
 ## Onboarding (pharmacy)
 

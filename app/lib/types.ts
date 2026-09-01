@@ -9,6 +9,7 @@ export type RefillStatus = PrismaRefillStatus;
 export type PharmacyMemberRole = PrismaPharmacyMemberRole | "owner" | "manager" | "pharmacist" | "staff";
 
 export type StaffMembership = {
+  id: string;
   pharmacyId: string;
   slug: string;
   name: string;

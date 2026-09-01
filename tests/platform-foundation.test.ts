@@ -46,7 +46,7 @@ describe("tenant isolation conventions", () => {
   });
 
   it("scopes new platform models through TENANT_MODELS", () => {
-    for (const model of ["Payment", "ApiKey", "OutboxEvent", "Subscription", "PharmacyBranch"]) {
+    for (const model of ["Payment", "ApiKey", "OutboxEvent", "Subscription", "PharmacyBranch", "WebhookDelivery", "BillingPayment", "InventorySyncConflict"]) {
       assert.ok(TENANT_MODELS.has(model), `missing ${model}`);
     }
   });
