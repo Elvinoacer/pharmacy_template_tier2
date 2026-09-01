@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/db";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getSessionUser } from "@/app/lib/auth";
 import { formatMpesaPhone } from "@/app/lib/services/daraja";
 
@@ -51,10 +51,16 @@ export async function guestCreateOrderAction(
   }
 
   const rateKey = `guest-order:${phone.replace(/\D/g, "").slice(-9)}`;
-  const rl = checkRateLimit(rateKey, { limit: 5, windowMs: 60 * 60 * 1000 });
+  const rl = await checkRateLimitAsync(rateKey, {
+    limit: 5,
+    windowMs: 60 * 60 * 1000,
+    failClosed: true,
+  });
   if (!rl.allowed) {
     return {
-      error: `Too many orders from this number. Try again in ${rl.retryAfterSeconds}s, or call the pharmacy.`,
+      error: rl.degraded
+        ? "Security service temporarily unavailable. Please try again shortly."
+        : `Too many orders from this number. Try again in ${rl.retryAfterSeconds}s, or call the pharmacy.`,
     };
   }
 

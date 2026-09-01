@@ -7,6 +7,7 @@ import { getR2Config } from "@/app/lib/r2";
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const EXPORT_DIR = path.resolve(process.cwd(), "data", "exports");
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 async function ensureExportDir(pharmacyId: string): Promise<string> {
   const dir = path.join(EXPORT_DIR, pharmacyId);
@@ -20,6 +21,11 @@ export type StoredArchiveMeta = {
   sizeBytes: number;
 };
 
+/**
+ * Persist an export archive.
+ * Production requires R2/S3 — local filesystem is only allowed outside production
+ * to avoid silent data loss on horizontally scaled / serverless hosts.
+ */
 export async function saveExportArchive(
   pharmacyId: string,
   requestId: string,
@@ -61,7 +67,13 @@ export async function saveExportArchive(
     };
   }
 
-  // Local private storage fallback
+  if (IS_PRODUCTION) {
+    throw new Error(
+      "export_storage_unavailable: R2/S3 is required in production. Local filesystem fallback is disabled.",
+    );
+  }
+
+  // Local private storage fallback (development / test only)
   const dir = await ensureExportDir(pharmacyId);
   const filePath = path.join(dir, `${requestId}.json`);
   await fs.writeFile(filePath, buffer, { mode: 0o600 });
@@ -104,6 +116,10 @@ export async function loadExportArchive(storageUrl: string): Promise<Buffer | nu
     }
 
     if (storageUrl.startsWith("file://")) {
+      if (IS_PRODUCTION) {
+        // Do not serve local-file URLs in production (stale/invalid after scale-out).
+        return null;
+      }
       const filePath = storageUrl.replace(/^file:\/\//, "");
       return await fs.readFile(filePath);
     }
@@ -139,7 +155,7 @@ export async function deleteExportArchive(storageUrl: string): Promise<void> {
       return;
     }
 
-    if (storageUrl.startsWith("file://")) {
+    if (storageUrl.startsWith("file://") && !IS_PRODUCTION) {
       const filePath = storageUrl.replace(/^file:\/\//, "");
       await fs.unlink(filePath).catch(() => {});
     }
