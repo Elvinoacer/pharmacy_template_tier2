@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import {
   isR2Configured,
   R2_MAX_BYTES,
@@ -21,9 +21,10 @@ function clientIp(request: Request): string {
  * Rate-limited public upload scoped to an existing symptom session.
  */
 export async function POST(req: Request) {
-  const rl = checkRateLimit(`feel-upload:${clientIp(req)}`, {
+  const rl = await checkRateLimitAsync(`feel-upload:${clientIp(req)}`, {
     limit: 12,
     windowMs: 60_000,
+    failClosed: true,
   });
   if (!rl.allowed) {
     return NextResponse.json(

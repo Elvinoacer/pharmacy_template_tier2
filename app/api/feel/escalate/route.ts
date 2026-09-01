@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import {
   escalateSymptomSession,
   getSymptomSessionDetail,
@@ -16,9 +16,10 @@ function clientIp(request: Request): string {
 
 /** POST — escalate to pharmacist (creates ticket + alerts staff) */
 export async function POST(request: Request) {
-  const rl = checkRateLimit(`feel-escalate:${clientIp(request)}`, {
+  const rl = await checkRateLimitAsync(`feel-escalate:${clientIp(request)}`, {
     limit: 8,
     windowMs: 60_000,
+    failClosed: true,
   });
   if (!rl.allowed) {
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import {
   getSymptomSessionDetail,
   recordSymptomCheckIn,
@@ -17,9 +17,10 @@ function clientIp(request: Request): string {
 
 /** POST — record a feeling check-in (better / same / worse) */
 export async function POST(request: Request) {
-  const rl = checkRateLimit(`feel-checkin:${clientIp(request)}`, {
+  const rl = await checkRateLimitAsync(`feel-checkin:${clientIp(request)}`, {
     limit: 15,
     windowMs: 60_000,
+    failClosed: true,
   });
   if (!rl.allowed) {
     return NextResponse.json(

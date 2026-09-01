@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { searchMedicinesByImage } from "@/app/lib/services/medication-image-search";
 
 export const runtime = "nodejs";
@@ -18,9 +18,10 @@ function clientIp(request: Request): string {
  * Returns the same catalog card shape used on /medicines.
  */
 export async function POST(req: Request) {
-  const rl = checkRateLimit(`med-image-search:${clientIp(req)}`, {
+  const rl = await checkRateLimitAsync(`med-image-search:${clientIp(req)}`, {
     limit: 8,
     windowMs: 60_000,
+    failClosed: true,
   });
   if (!rl.allowed) {
     return NextResponse.json(

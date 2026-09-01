@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import {
   getSymptomSessionDetail,
   sendSymptomMessage,
@@ -17,9 +17,10 @@ function clientIp(request: Request): string {
 
 /** POST — send a user message (text + optional image URLs); AI replies until escalated */
 export async function POST(request: Request) {
-  const rl = checkRateLimit(`feel-chat:${clientIp(request)}`, {
+  const rl = await checkRateLimitAsync(`feel-chat:${clientIp(request)}`, {
     limit: 20,
     windowMs: 60_000,
+    failClosed: true,
   });
   if (!rl.allowed) {
     return NextResponse.json(

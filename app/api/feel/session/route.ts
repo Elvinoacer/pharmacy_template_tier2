@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import {
   createSymptomSession,
   getSymptomSessionDetail,
@@ -92,9 +92,10 @@ export async function GET(request: Request) {
 
 /** POST — create a new symptom session */
 export async function POST(request: Request) {
-  const rl = checkRateLimit(`feel-session:${clientIp(request)}`, {
+  const rl = await checkRateLimitAsync(`feel-session:${clientIp(request)}`, {
     limit: 10,
     windowMs: 60_000,
+    failClosed: true,
   });
   if (!rl.allowed) {
     return NextResponse.json(

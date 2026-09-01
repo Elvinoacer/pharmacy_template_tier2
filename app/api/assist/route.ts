@@ -1,5 +1,5 @@
 import { groqApiKey, groqClient, groqModelName, GROQ_NO_REASONING } from "@/app/lib/groq";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { searchAssistLive, type AssistLiveMatches } from "@/app/lib/services/assist-live-lookup";
 import {
   ASSIST_INTENTS,
@@ -100,7 +100,7 @@ function normalizeActions(raw: unknown, fallback: AssistAction[], base: string):
     for (const action of fallback.slice(0, MAX_ACTIONS)) {
       const href = safeHref(action.href, base);
       if (!href) continue;
-      out.push({ label: action.label, href, description: action.description, primary: action.primary });
+      out.push({ label: action.label, href: href, description: action.description, primary: action.primary });
     }
   }
   if (out.length > 0 && !out.some((a) => a.primary)) out[0].primary = true;
@@ -194,7 +194,11 @@ export async function POST(request: Request) {
     if (candidate && /^\/p\/[a-z0-9][a-z0-9-]{1,60}$/i.test(candidate)) base = candidate;
   }
 
-  const rl = checkRateLimit(`assist:${clientIp(request)}`, { limit: 30, windowMs: 60_000 });
+  const rl = await checkRateLimitAsync(`assist:${clientIp(request)}`, {
+    limit: 30,
+    windowMs: 60_000,
+    failClosed: true,
+  });
   if (!rl.allowed) {
     return Response.json(
       { error: `Too many requests. Try again in ${rl.retryAfterSeconds}s.` },
