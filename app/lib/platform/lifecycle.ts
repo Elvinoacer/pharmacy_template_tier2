@@ -16,7 +16,7 @@ export async function recordLifecycle(
       toStatus: opts?.toStatus ?? null,
       reason: opts?.reason ?? null,
       actorId: opts?.actorId ?? null,
-      meta: opts?.meta ?? {},
+      meta: (opts?.meta ?? {}) as object,
     },
   });
 }

@@ -8,7 +8,7 @@ function periodKey(d = new Date()) {
 
 export async function recordUsage(pharmacyId: string, metric: string, quantity = 1, meta: Record<string, unknown> = {}) {
   await prismaUnscoped.usageRecord.create({
-    data: { pharmacyId, metric, quantity, period: periodKey(), meta },
+    data: { pharmacyId, metric, quantity, period: periodKey(), meta: meta as object },
   });
 }
 

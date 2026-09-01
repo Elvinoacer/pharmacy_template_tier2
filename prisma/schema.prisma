@@ -968,7 +968,7 @@ model CustomerPreference {
 
 model Prescription {
   id               String             @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId       String             @map("customer_id") @db.Uuid
   medicineName     String             @map("medicine_name")
   rxReference      String?            @map("rx_reference")
@@ -1073,7 +1073,7 @@ model Prescription {
 
 model RefillRequest {
   id                String           @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId        String?          @map("customer_id") @db.Uuid
   prescriptionId    String?          @map("prescription_id") @db.Uuid
   medicineName      String           @map("medicine_name")
@@ -1110,7 +1110,7 @@ model RefillRequest {
 
 model TimelineEvent {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId  String?  @map("customer_id") @db.Uuid
   userId      String?  @map("user_id") @db.Uuid
   eventType   String   @map("event_type")
@@ -1136,7 +1136,7 @@ model TimelineEvent {
 
 model Segment {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   name        String
   description String?
   rules       Json     @default("{}")
@@ -1172,7 +1172,7 @@ model CustomerSegment {
 
 model Conversation {
   id            String              @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId    String?             @map("customer_id") @db.Uuid
   channel       ConversationChannel
   subject       String?
@@ -1214,7 +1214,7 @@ model Message {
 
 model MessageTemplate {
   id          String               @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   name        String
   channel     ConversationChannel
   subject     String?
@@ -1238,7 +1238,7 @@ model MessageTemplate {
 
 model Notification {
   id          String              @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId  String?             @map("customer_id") @db.Uuid
   userId      String?             @map("user_id") @db.Uuid
   channel     NotificationChannel
@@ -1278,7 +1278,7 @@ model Notification {
 
 model Reminder {
   id           String               @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId   String               @map("customer_id") @db.Uuid
   type         ReminderType
   title        String
@@ -1306,7 +1306,7 @@ model Reminder {
 
 model Campaign {
   id           String          @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   name         String
   description  String?
   channel      CampaignChannel
@@ -1335,7 +1335,7 @@ model Campaign {
 
 model LoyaltyAccount {
   id              String      @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId      String @map("customer_id") @db.Uuid
   points          Int         @default(0)
   tier            LoyaltyTier @default(bronze)
@@ -1377,7 +1377,7 @@ model LoyaltyTransaction {
 
 model Coupon {
   id              String       @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   code            String
   description     String?
   discountType    DiscountType @map("discount_type")
@@ -1406,7 +1406,7 @@ model Coupon {
 
 model Enquiry {
   id           String        @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId   String?       @map("customer_id") @db.Uuid
   name         String
   email        String?
@@ -1433,7 +1433,7 @@ model Enquiry {
 
 model Feedback {
   id            String         @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId    String?        @map("customer_id") @db.Uuid
   name          String?
   email         String?
@@ -1461,7 +1461,7 @@ model Feedback {
 
 model KnowledgeArticle {
   id         String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   title      String
   category   String   @default("general")
   content    String
@@ -1484,7 +1484,7 @@ model KnowledgeArticle {
 
 model AiConversation {
   id           String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId   String?   @map("customer_id") @db.Uuid
   userId       String?   @map("user_id") @db.Uuid
   sessionKey   String?   @map("session_key")
@@ -1522,7 +1522,7 @@ model AiMessage {
 
 model AuditLog {
   id         String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   actorId    String?  @map("actor_id") @db.Uuid
   actorType  String   @default("user") @map("actor_type")
   action     String
@@ -1552,7 +1552,7 @@ model AuditLog {
 
 model CustomerNote {
   id         String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId String   @map("customer_id") @db.Uuid
   authorId   String?  @map("author_id") @db.Uuid
   body       String
@@ -1623,7 +1623,7 @@ model PrescriptionClarificationLog {
 /// to follow up on unconfirmed doses.
 model MedicationSchedule {
   id             String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   prescriptionId String   @map("prescription_id") @db.Uuid
   customerId     String   @map("customer_id") @db.Uuid
   /// Time-of-day in HH:mm (24h, project timezone). E.g. "08:00", "20:00".
@@ -1766,7 +1766,7 @@ model AdherenceFollowUp {
 /// Public medicines browse uses the same rows (image, brands, tips, publicVisible).
 model MedicationCategory {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   /// Human label shown in UI, e.g. "Pain Relief".
   name        String
   /// Stable key stored on Medication.category, e.g. "pain-relief".
@@ -1880,7 +1880,7 @@ model MedicationMaster {
 /// OrderItem/Prescription FKs continue to resolve after the migration.
 model PharmacyInventory {
   id              String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   medicationMasterId String @map("medication_master_id") @db.Uuid
   /// Pharmacy-specific slug. Unique per pharmacy (single-tenant → @unique).
   slug            String
@@ -1964,7 +1964,7 @@ model InventoryLot {
 /// quantityDelta is signed: positive = stock in, negative = stock out.
 model StockMovement {
   id                    String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   pharmacyInventoryId   String   @map("pharmacy_inventory_id") @db.Uuid
   inventoryLotId        String?  @map("inventory_lot_id") @db.Uuid
   /// sale | receive | adjust | dispatch | refill | pos_sync | return | write_off
@@ -2116,7 +2116,7 @@ model MedicationLookup {
 /// refill payments, and the portal shop. Created by staff at the counter, or by customers from the portal.
 model Order {
   id           String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId   String?  @map("customer_id") @db.Uuid
   /// Where the order originated: counter (staff at POS), portal (customer online), refill (linked to a RefillRequest), website (guest).
   source       String   @default("counter")
@@ -2296,7 +2296,7 @@ enum PaymentProvider {
 
 model Payment {
   id           String         @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   orderId      String         @map("order_id") @db.Uuid
   customerId   String?        @map("customer_id") @db.Uuid
   amount       Decimal        @db.Decimal(10, 2)
@@ -2349,7 +2349,7 @@ model Payment {
 /// A cron job (or event hook) reads these and credits points accordingly.
 model LoyaltyRule {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   name        String
   trigger     String   // refill_completed | order_paid | first_order | birthday | referral_completed
   points      Int      @default(0)
@@ -2389,7 +2389,7 @@ model CaregiverInvite {
 /// be paid (M-Pesa or counter) before status becomes confirmed.
 model PharmacyService {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   slug        String
   title       String
   /// One-line card blurb.
@@ -2429,7 +2429,7 @@ model PharmacyService {
 ///   none | unpaid | pending | paid | waived | cash
 model ServiceBooking {
   id              String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   serviceId       String   @map("service_id") @db.Uuid
   customerId      String?  @map("customer_id") @db.Uuid
   fullName        String   @map("full_name")
@@ -2481,7 +2481,7 @@ model ServiceBooking {
 /// Has its own read/unread state, severity, and a `retry` action when applicable.
 model AdminNotification {
   id         String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   /// Type of event: refill_new | enquiry_new | feedback_low | ai_escalation | stock_low | payment_failed | campaign_failed | reminder_failed | symptom_escalation | symptom_checkin
   type       String
   title      String
@@ -2510,7 +2510,7 @@ model AdminNotification {
 /// Public pages fall back to static `app/lib/data.ts` when this row is missing.
 model PharmacySettings {
   id              String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @unique @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @unique @map("pharmacy_id") @db.Uuid
   displayName     String?  @map("display_name")
   phone           String?
   email           String?
@@ -2590,7 +2590,7 @@ enum SymptomFeeling {
 /// logged-in customers link via customerId/userId.
 model SymptomSession {
   id               String               @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   /// Opaque browser key for guest sessions (stored in localStorage).
   guestKey         String?              @map("guest_key")
   customerId       String?              @map("customer_id") @db.Uuid
@@ -2773,7 +2773,7 @@ enum CommerceEventType {
 
 model PrescriptionFill {
   id                  String                @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   prescriptionId      String                @map("prescription_id") @db.Uuid
   /// Linked commercial order that paid for this fill (nullable for legacy / dispatched-without-charge).
   orderId             String?               @unique @map("order_id") @db.Uuid
@@ -2825,7 +2825,7 @@ model PrescriptionFill {
 
 model InventoryReservation {
   id              String             @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   orderId         String             @map("order_id") @db.Uuid
   orderItemId     String?            @map("order_item_id") @db.Uuid
   inventoryId     String             @map("inventory_id") @db.Uuid
@@ -2860,7 +2860,7 @@ model InventoryReservation {
 
 model Refund {
   id            String        @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   paymentId     String        @map("payment_id") @db.Uuid
   orderId       String        @map("order_id") @db.Uuid
   amount        Decimal       @db.Decimal(10, 2)
@@ -2908,7 +2908,7 @@ model InventoryAllocation {
 
 model CommerceEvent {
   id          String              @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   eventType   CommerceEventType
   entityType  String              @map("entity_type")
   entityId    String              @map("entity_id") @db.Uuid
@@ -2936,7 +2936,7 @@ model CommerceEvent {
 
 model MedicationPriceHistory {
   id              String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   inventoryId     String    @map("inventory_id") @db.Uuid
   price           Decimal   @db.Decimal(10, 2)
   costPrice       Decimal?  @map("cost_price") @db.Decimal(10, 2)
@@ -2960,7 +2960,7 @@ model MedicationPriceHistory {
 
 model CashierSession {
   id              String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   userId          String    @map("user_id") @db.Uuid
   openedAt        DateTime  @default(now()) @map("opened_at")
   openingFloat    Decimal   @default(0) @map("opening_float") @db.Decimal(10, 2)
@@ -2986,7 +2986,7 @@ model CashierSession {
 
 model HealthScreeningRecord {
   id                      String            @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId              String?           @map("customer_id") @db.Uuid
   conductedById           String?           @map("conducted_by_id") @db.Uuid
   screeningType           String            @default("general") @map("screening_type") // blood_pressure | blood_glucose | bmi_weight | temperature | wellness_check | point_of_care_test | multi_panel
@@ -3051,7 +3051,7 @@ model HealthScreeningRecord {
 
 model ClinicalReferral {
   id                      String                 @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   screeningId             String?                @map("screening_id") @db.Uuid
   customerId              String?                @map("customer_id") @db.Uuid
   referredById            String?                @map("referred_by_id") @db.Uuid
@@ -3098,7 +3098,7 @@ model ClinicalReferral {
 
 model PharmacyImmunizationPolicy {
   id                            String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @unique @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @unique @map("pharmacy_id") @db.Uuid
   enabled                       Boolean  @default(true)
   jurisdiction                  String   @default("Kenya")
   authorizingBody               String   @default("Pharmacy and Poisons Board (PPB) / Ministry of Health") @map("authorizing_body")
@@ -3125,7 +3125,7 @@ model PharmacyImmunizationPolicy {
 
 model VaccineProduct {
   id                    String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   slug                  String
   name                  String
   antigen               String
@@ -3182,7 +3182,7 @@ model VaccineProduct {
 
 model ImmunizerCredential {
   id             String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   userId         String    @map("user_id") @db.Uuid
   /// immunization_certificate | cpr_bls | anaphylaxis | acls | ppb_licence
   credentialType String    @map("credential_type")
@@ -3208,7 +3208,7 @@ model ImmunizerCredential {
 
 model ImmunizationAppointment {
   id               String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   vaccineProductId String    @map("vaccine_product_id") @db.Uuid
   customerId       String?   @map("customer_id") @db.Uuid
   serviceBookingId String?   @unique @map("service_booking_id") @db.Uuid
@@ -3375,7 +3375,7 @@ model AdverseEventFollowingImmunization {
 
 model PreventiveCounsellingSession {
   id              String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   customerId      String?   @map("customer_id") @db.Uuid
   counsellorId    String?   @map("counsellor_id") @db.Uuid
   campaignId      String?   @map("campaign_id") @db.Uuid
@@ -3413,7 +3413,7 @@ model PreventiveCounsellingSession {
 
 model PublicHealthCampaign {
   id                String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @default("00000000-0000-0000-0000-000000000000") @map("pharmacy_id") @db.Uuid
   campaignId        String?   @unique @map("crm_campaign_id") @db.Uuid
   slug              String
   title             String

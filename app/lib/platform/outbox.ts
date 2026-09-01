@@ -17,7 +17,7 @@ export async function enqueueOutbox(input: {
       eventType: input.eventType,
       aggregateType: input.aggregateType,
       aggregateId: input.aggregateId,
-      payload: input.payload,
+      payload: input.payload as object,
       status: "pending",
       nextAttemptAt: new Date(),
     },

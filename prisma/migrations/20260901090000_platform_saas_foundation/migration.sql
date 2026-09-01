@@ -18,7 +18,7 @@ DO $$ BEGIN CREATE TYPE "NotificationDeliveryStatus" AS ENUM ('queued','processi
 DO $$ BEGIN CREATE TYPE "LedgerDirection" AS ENUM ('debit','credit'); EXCEPTION WHEN duplicate_object THEN null; END $$;
 DO $$ BEGIN CREATE TYPE "DataRequestStatus" AS ENUM ('requested','processing','ready','failed','cancelled','completed'); EXCEPTION WHEN duplicate_object THEN null; END $$;
 
--- ── Drop dangerous Aether pharmacy_id defaults ────────────────
+-- Replace Aether tenant default with fail-closed zero UUID (not a real pharmacy).
 DO $$
 DECLARE r record;
 BEGIN
@@ -28,7 +28,10 @@ BEGIN
     WHERE table_schema = 'public'
       AND column_default LIKE '%00000000-0000-4000-a000-000000000001%'
   LOOP
-    EXECUTE format('ALTER TABLE %I.%I ALTER COLUMN %I DROP DEFAULT', r.table_schema, r.table_name, r.column_name);
+    EXECUTE format(
+      'ALTER TABLE %I.%I ALTER COLUMN %I SET DEFAULT %L::uuid',
+      r.table_schema, r.table_name, r.column_name, '00000000-0000-0000-0000-000000000000'
+    );
   END LOOP;
 END $$;
 

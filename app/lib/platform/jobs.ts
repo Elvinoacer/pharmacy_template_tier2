@@ -14,7 +14,7 @@ export async function enqueueJob(input: {
     data: {
       type: input.type,
       pharmacyId: input.pharmacyId ?? null,
-      payload: input.payload ?? {},
+      payload: (input.payload ?? {}) as object,
       runAt: input.runAt ?? new Date(),
       maxAttempts: input.maxAttempts ?? 8,
       status: "queued",

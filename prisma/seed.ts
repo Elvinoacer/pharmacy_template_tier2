@@ -1897,16 +1897,49 @@ async function main() {
 
   console.log(`Seeded ${VACCINE_CATALOG.length} vaccine products, campaigns, credentials, and demo immunisation records.`);
 
-  const { ensureDefaultPlans, startTrial } = await import("../app/lib/platform/billing");
-  await ensureDefaultPlans();
+  const planDefs = [
+    { slug: "starter", name: "Starter", priceKes: 4999, sortOrder: 1, features: { staff: 2, branches: 1, messages: 500, ai: 50 } },
+    { slug: "professional", name: "Professional", priceKes: 14999, sortOrder: 2, features: { staff: 10, branches: 3, messages: 5000, ai: 2000 } },
+    { slug: "enterprise", name: "Enterprise", priceKes: 49999, sortOrder: 3, features: { staff: null, branches: null, messages: null, ai: null } },
+  ] as const;
+  for (const d of planDefs) {
+    const plan = await prisma.plan.upsert({
+      where: { slug: d.slug },
+      update: { name: d.name, priceKes: d.priceKes, active: true, sortOrder: d.sortOrder },
+      create: { slug: d.slug, name: d.name, priceKes: d.priceKes, interval: "monthly", active: true, sortOrder: d.sortOrder },
+    });
+    for (const [key, limitInt] of Object.entries(d.features)) {
+      await prisma.planFeature.upsert({
+        where: { planId_key: { planId: plan.id, key } },
+        update: { enabled: true, limitInt },
+        create: { planId: plan.id, key, enabled: true, limitInt },
+      });
+    }
+  }
   for (const pharmacyId of [AETHER_ID, COAST_ID]) {
     const existingBranch = await prisma.pharmacyBranch.findFirst({ where: { pharmacyId, isDefault: true } });
     const branch = existingBranch ?? await prisma.pharmacyBranch.create({
       data: { pharmacyId, name: "Main Branch", code: "MAIN", isDefault: true },
     });
     await prisma.pharmacy.update({ where: { id: pharmacyId }, data: { defaultBranchId: branch.id } });
+    const planSlug = pharmacyId === AETHER_ID ? "professional" : "starter";
+    const plan = await prisma.plan.findUnique({ where: { slug: planSlug } });
     const sub = await prisma.subscription.findFirst({ where: { pharmacyId } });
-    if (!sub) await startTrial(pharmacyId, pharmacyId === AETHER_ID ? "professional" : "starter", 14);
+    if (!sub && plan) {
+      const now = new Date();
+      const trialEnds = new Date(now.getTime() + 14 * 86400000);
+      await prisma.subscription.create({
+        data: {
+          pharmacyId,
+          planId: plan.id,
+          status: "trialing",
+          startedAt: now,
+          currentPeriodStart: now,
+          currentPeriodEnd: trialEnds,
+          trialEndsAt: trialEnds,
+        },
+      });
+    }
   }
 
   await prisma.auditLog.create({

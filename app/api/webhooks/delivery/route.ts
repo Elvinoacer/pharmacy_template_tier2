@@ -84,7 +84,8 @@ export async function POST(request: NextRequest) {
       await prismaUnscoped.notification.update({
         where: { id: notification.id },
         data: {
-          status: body.status === "replied" ? "delivered" : body.status,
+          status: (body.status === "replied" ? "delivered" : body.status) as
+            "sent" | "delivered" | "failed" | "opened" | "clicked",
           openedAt: body.status === "opened" ? new Date() : undefined,
           deliveredAt: body.status === "delivered" ? new Date() : undefined,
         },
@@ -93,14 +94,22 @@ export async function POST(request: NextRequest) {
     if (message) {
       await prismaUnscoped.message.update({
         where: { id: message.id },
-        data: { status: body.status },
+        data: {
+          status: (body.status === "replied" ? "delivered" : body.status) as
+            "sent" | "delivered" | "failed" | "opened" | "clicked",
+        },
       });
     }
     if (body.deliveryId) {
       await prismaUnscoped.notificationDelivery.updateMany({
         where: { id: body.deliveryId, pharmacyId },
         data: {
-          status: body.status === "replied" ? "delivered" : body.status === "clicked" ? "delivered" : body.status,
+          status:
+            body.status === "failed"
+              ? "failed"
+              : body.status === "sent"
+                ? "sent"
+                : "delivered",
           deliveredAt: body.status === "delivered" ? new Date() : undefined,
           openedAt: body.status === "opened" ? new Date() : undefined,
         },
