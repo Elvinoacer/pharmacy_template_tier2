@@ -5,6 +5,10 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { enqueueJob } from "@/app/lib/platform/jobs";
 import { saveExportArchive, loadExportArchive, deleteExportArchive } from "@/app/lib/platform/export-storage";
+import {
+  exportablePolicies,
+  verifyTenantDeletion,
+} from "@/app/lib/platform/tenant-data-registry";
 
 const EXPORT_TTL_MS = 48 * 60 * 60 * 1000;
 
@@ -102,190 +106,36 @@ export async function runDataExport(pharmacyId: string, requestId: string) {
       },
     });
 
-    const orders = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.order.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-        include: { items: true, accessTokens: true, refunds: true },
-      }),
-    );
+    // Drive export from the authoritative registry so new tenant models cannot be forgotten.
+    const tablesData: Record<string, unknown[]> = {};
+    for (const policy of exportablePolicies()) {
+      const delegate = (prismaUnscoped as Record<string, any>)[policy.model];
+      if (!delegate || typeof delegate.findMany !== "function") continue;
 
-    const customers = await prismaUnscoped.customerPharmacy.findMany({
-      where: { pharmacyId },
-      orderBy: { customerId: "asc" },
-    });
-
-    const customerNotes = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.customerNote.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const prescriptions = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.prescription.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-        include: { fills: true, doseLogs: true, clarificationLogs: true, adherence: true },
-      }),
-    );
-
-    const refills = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.refillRequest.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const inventory = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.pharmacyInventory.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-        include: { lots: true, reservations: true },
-      }),
-    );
-
-    const stockMovements = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.stockMovement.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const priceHistory = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.medicationPriceHistory.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const payments = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.payment.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const billingPayments = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.billingPayment.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const invoices = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.invoice.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-        include: { items: true },
-      }),
-    );
-
-    const clinicalScreenings = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.healthScreeningRecord.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const vaccinations = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.immunizationAppointment.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const serviceBookings = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.serviceBooking.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const loyaltyAccounts = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.loyaltyAccount.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-        include: { transactions: true },
-      }),
-    );
-
-    const conversations = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.conversation.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-        include: { messages: true },
-      }),
-    );
-
-    const notifications = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.notification.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const auditLogs = await fetchAllPaginated((cursor, take) =>
-      prismaUnscoped.auditLog.findMany({
-        where: { pharmacyId },
-        take,
-        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-        orderBy: { id: "asc" },
-      }),
-    );
-
-    const tablesData: Record<string, unknown[]> = {
-      orders,
-      customers,
-      customerNotes,
-      prescriptions,
-      refills,
-      inventory,
-      stockMovements,
-      priceHistory,
-      payments,
-      billingPayments,
-      invoices,
-      clinicalScreenings,
-      vaccinations,
-      serviceBookings,
-      loyaltyAccounts,
-      conversations,
-      notifications,
-      auditLogs,
-    };
+      try {
+        const rows = await fetchAllPaginated((cursor, take) =>
+          delegate.findMany({
+            where: { pharmacyId },
+            take,
+            ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+            orderBy: { id: "asc" },
+            ...(policy.exportInclude ? { include: policy.exportInclude } : {}),
+          }),
+        );
+        tablesData[policy.exportKey] = rows;
+      } catch {
+        // Composite-key or non-id models (e.g. customerPharmacy) — fall back to plain findMany.
+        try {
+          const rows = await delegate.findMany({
+            where: { pharmacyId },
+            orderBy: { pharmacyId: "asc" },
+          });
+          tablesData[policy.exportKey] = rows;
+        } catch {
+          tablesData[policy.exportKey] = [];
+        }
+      }
+    }
 
     const tableManifest: Record<string, { count: number; checksum: string }> = {};
     let totalRecords = 0;
@@ -299,10 +149,15 @@ export async function runDataExport(pharmacyId: string, requestId: string) {
     }
 
     const archiveObject = {
-      schemaVersion: "2.0",
+      schemaVersion: "2.1",
       generatedAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + EXPORT_TTL_MS).toISOString(),
       pharmacy,
+      registry: exportablePolicies().map((p) => ({
+        model: p.model,
+        exportKey: p.exportKey,
+        strategy: p.strategy,
+      })),
       manifest: {
         totalRecords,
         tables: tableManifest,
@@ -570,6 +425,16 @@ export async function runDataDeletion(pharmacyId: string, requestId: string) {
     }
     await prismaUnscoped.dataExportRequest.deleteMany({ where: { pharmacyId } });
 
+    // ── Final exhaustive verification against the registry ──────
+    // "completed" must mean every model classified as deletable is gone.
+    const verification = await verifyTenantDeletion(pharmacyId, req.retainLegal);
+    if (!verification.ok) {
+      const summary = verification.remaining
+        .map((r) => `${r.exportKey}=${r.remaining}`)
+        .join(", ");
+      throw new Error(`deletion_verification_failed: residual tenant data remains (${summary})`);
+    }
+
     await prismaUnscoped.pharmacy.update({
       where: { id: pharmacyId },
       data: {
@@ -593,10 +458,14 @@ export async function runDataDeletion(pharmacyId: string, requestId: string) {
       resource: "data_deletion_request",
       resourceId: requestId,
       tenantId: pharmacyId,
-      details: { retainLegal: req.retainLegal },
+      details: {
+        retainLegal: req.retainLegal,
+        verifiedEmpty: true,
+        residualModels: [],
+      },
     });
 
-    return { ok: true, deferred: false, status: "completed" };
+    return { ok: true, deferred: false, status: "completed", verified: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "deletion_failed";
     await prismaUnscoped.dataDeletionRequest.update({

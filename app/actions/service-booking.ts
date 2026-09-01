@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/db";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getSessionUser } from "@/app/lib/auth";
 import {
   createServiceBooking,
@@ -47,7 +47,11 @@ export async function bookServiceAction(
   }
 
   const rateKey = `service-booking:${phone.replace(/\D/g, "").slice(-9)}`;
-  const rl = checkRateLimit(rateKey, { limit: 8, windowMs: 60 * 60 * 1000 });
+  const rl = await checkRateLimitAsync(rateKey, {
+    limit: 8,
+    windowMs: 60 * 60 * 1000,
+    failClosed: true,
+  });
   if (!rl.allowed) {
     return {
       error: `Too many booking attempts. Try again in ${rl.retryAfterSeconds}s, or call the pharmacy.`,
