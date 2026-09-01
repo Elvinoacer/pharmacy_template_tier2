@@ -24,7 +24,7 @@ function kes(n: number): string {
 }
 
 const cardLinkClass =
-  "group block rounded-2xl border border-white/15 bg-white/[0.05] p-5 transition hover:-translate-y-0.5 hover:border-teal-300/40 hover:bg-white/[0.08] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071512]";
+  "group block rounded-2xl border border-teal-200/20 bg-teal-950/40 p-4 sm:p-5 transition duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-teal-300/45 hover:bg-teal-900/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06110f]";
 
 export default async function PlatformHomePage() {
   const since = new Date();
@@ -153,42 +153,44 @@ export default async function PlatformHomePage() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
+      {/* Hero */}
       <section
         aria-labelledby="platform-overview-title"
-        className="rounded-3xl border border-teal-200/20 bg-[linear-gradient(135deg,rgba(13,110,90,.28),rgba(7,21,18,.55)_55%,rgba(255,255,255,.05))] px-5 py-6 sm:px-8 sm:py-8"
+        className="rounded-2xl border border-teal-300/25 bg-[linear-gradient(145deg,rgba(20,120,100,.32),rgba(6,17,15,.72)_50%,rgba(255,255,255,.04))] px-4 py-5 sm:rounded-3xl sm:px-6 sm:py-7 md:px-8"
       >
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-100">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-200 sm:text-xs">
           Platform overview
         </p>
-        <div className="mt-3 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-          <div>
+        <div className="mt-2.5 flex flex-col gap-4 sm:mt-3 sm:gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0">
             <h1
               id="platform-overview-title"
-              className="text-3xl font-semibold tracking-tight sm:text-4xl"
+              className="text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               Network control
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-teal-50/80">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-teal-50/90">
               Review pharmacy applications by priority, monitor network activity, and manage platform
               access from one place.
             </p>
           </div>
           <Link
             href="/platform/applications"
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#071512] transition hover:bg-teal-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071512]"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-100 px-4 py-2.5 text-sm font-semibold text-[#06110f] transition active:scale-[0.98] hover:bg-teal-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06110f]"
           >
             Open verification queue <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
       </section>
 
+      {/* Stats */}
       <section aria-labelledby="network-statistics-title">
         <h2 id="network-statistics-title" className="sr-only">
           Network statistics
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
@@ -197,24 +199,26 @@ export default async function PlatformHomePage() {
                 href={stat.href}
                 className={`${cardLinkClass} ${
                   "highlight" in stat && stat.highlight
-                    ? "border-amber-400/40 bg-amber-400/10"
+                    ? "border-amber-400/50 bg-amber-500/15"
                     : ""
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-teal-50/75">
+                <div className="flex items-start justify-between gap-2 sm:gap-3">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-teal-100/85 sm:text-xs">
                       {stat.label}
                     </p>
-                    <p className="mt-3 text-3xl font-semibold tabular-nums">
+                    <p className="mt-2 text-2xl font-semibold tabular-nums text-white sm:mt-3 sm:text-3xl">
                       {stat.value.toLocaleString("en-KE")}
                     </p>
                   </div>
-                  <span className="rounded-xl border border-teal-200/15 bg-teal-300/15 p-2.5 text-teal-100">
-                    <Icon className="h-5 w-5" aria-hidden />
+                  <span className="shrink-0 rounded-xl border border-teal-200/20 bg-teal-300/15 p-2 text-teal-100 sm:p-2.5">
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
                   </span>
                 </div>
-                <p className="mt-3 text-xs text-teal-50/75">{stat.detail}</p>
+                <p className="mt-2 text-[11px] leading-4 text-teal-100/80 sm:mt-3 sm:text-xs">
+                  {stat.detail}
+                </p>
               </Link>
             );
           })}
@@ -224,31 +228,34 @@ export default async function PlatformHomePage() {
       {/* Attention board */}
       <section
         aria-labelledby="attention-title"
-        className="overflow-hidden rounded-2xl border border-white/15 bg-white/[0.04]"
+        className="overflow-hidden rounded-2xl border border-teal-200/20 bg-teal-950/35"
       >
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
-          <div>
-            <h2 id="attention-title" className="flex items-center gap-2 text-lg font-semibold">
-              <AlertTriangle className="h-5 w-5 text-amber-300" />
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-teal-200/15 px-4 py-3.5 sm:gap-3 sm:px-5 sm:py-4">
+          <div className="min-w-0">
+            <h2
+              id="attention-title"
+              className="flex items-center gap-2 text-base font-semibold text-white sm:text-lg"
+            >
+              <AlertTriangle className="h-4 w-4 shrink-0 text-amber-300 sm:h-5 sm:w-5" aria-hidden />
               Needs verification
             </h2>
-            <p className="mt-0.5 text-xs text-teal-50/70">
+            <p className="mt-0.5 text-[11px] text-teal-100/75 sm:text-xs">
               Sorted by urgency — aging submissions and needs-info first
             </p>
           </div>
           <Link
             href="/platform/applications"
-            className="text-xs font-semibold text-teal-100 underline-offset-4 hover:underline"
+            className="text-xs font-semibold text-teal-200 underline-offset-4 transition hover:text-teal-100 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 rounded"
           >
             Full queue
           </Link>
         </div>
         {attention.length === 0 ? (
-          <p className="px-5 py-10 text-center text-sm text-teal-50/70">
+          <p className="px-4 py-8 text-center text-sm text-teal-100/75 sm:px-5 sm:py-10">
             No applications waiting. Queue is clear.
           </p>
         ) : (
-          <ul className="divide-y divide-white/10">
+          <ul className="divide-y divide-teal-200/10">
             {attention.map((item) => {
               const priority = verificationPriority(
                 item.status,
@@ -260,18 +267,18 @@ export default async function PlatformHomePage() {
                 <li key={item.id}>
                   <Link
                     href={`/platform/pharmacies/${item.id}`}
-                    className="flex min-h-16 flex-col gap-2 px-5 py-4 transition hover:bg-white/[0.05] sm:flex-row sm:items-center sm:justify-between"
+                    className="flex min-h-[3.75rem] flex-col gap-2 px-4 py-3.5 transition active:bg-teal-300/10 hover:bg-teal-300/8 focus:outline-none focus-visible:bg-teal-300/10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-300 sm:min-h-16 sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate text-sm font-semibold">{item.name}</p>
+                        <p className="truncate text-sm font-semibold text-white">{item.name}</p>
                         <span
                           className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase ${priorityBadgeClass(priority)}`}
                         >
                           {priorityLabel(priority)}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-teal-50/65">
+                      <p className="mt-1 text-xs text-teal-100/75">
                         {item.city || "Location not set"}
                         {age != null ? ` · ${age === 0 ? "today" : `${age}d waiting`}` : ""}
                       </p>
@@ -282,7 +289,7 @@ export default async function PlatformHomePage() {
                       >
                         {formatStatus(item.status)}
                       </span>
-                      <ArrowRight className="h-4 w-4 text-teal-100/50" />
+                      <ArrowRight className="h-4 w-4 text-teal-200/60" aria-hidden />
                     </div>
                   </Link>
                 </li>
@@ -292,34 +299,41 @@ export default async function PlatformHomePage() {
         )}
       </section>
 
+      {/* Activity + Quick actions */}
       <section
         className="grid gap-4 lg:grid-cols-[1.35fr_.65fr]"
         aria-label="Network activity and quick actions"
       >
-        <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-5 sm:p-6">
+        <div className="rounded-2xl border border-teal-200/20 bg-teal-950/35 p-4 sm:p-5 md:p-6">
           <div>
-            <h2 className="text-lg font-semibold">Network activity</h2>
-            <p className="mt-1 text-xs text-teal-50/75">Last 30 days across all pharmacies</p>
+            <h2 className="text-base font-semibold text-white sm:text-lg">Network activity</h2>
+            <p className="mt-1 text-xs text-teal-100/75">Last 30 days across all pharmacies</p>
           </div>
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid grid-cols-1 gap-3 xs:grid-cols-3 sm:mt-6 sm:grid-cols-3">
             {[
               { label: "Orders", value: orders30d.toLocaleString("en-KE") },
               { label: "Refill requests", value: refills30d.toLocaleString("en-KE") },
               { label: "Collected online", value: kes(gmv30d) },
             ].map((item) => (
-              <div key={item.label} className="rounded-xl border border-white/15 bg-black/15 p-4">
-                <p className="text-xs font-medium text-teal-50/75">{item.label}</p>
-                <p className="mt-2 text-xl font-semibold tabular-nums">{item.value}</p>
+              <div
+                key={item.label}
+                className="rounded-xl border border-teal-200/15 bg-black/25 p-3.5 sm:p-4"
+              >
+                <p className="text-xs font-medium text-teal-100/80">{item.label}</p>
+                <p className="mt-1.5 text-lg font-semibold tabular-nums text-white sm:mt-2 sm:text-xl">
+                  {item.value}
+                </p>
               </div>
             ))}
           </div>
         </div>
-        <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-5 sm:p-6">
+
+        <div className="rounded-2xl border border-teal-200/20 bg-teal-950/35 p-4 sm:p-5 md:p-6">
           <div>
-            <h2 className="text-lg font-semibold">Quick actions</h2>
-            <p className="mt-1 text-xs text-teal-50/75">Most common platform tasks</p>
+            <h2 className="text-base font-semibold text-white sm:text-lg">Quick actions</h2>
+            <p className="mt-1 text-xs text-teal-100/75">Most common platform tasks</p>
           </div>
-          <nav aria-label="Quick actions" className="mt-4 grid gap-2">
+          <nav aria-label="Quick actions" className="mt-3 grid gap-1.5 sm:mt-4 sm:gap-2">
             {[
               ["Review applications", "/platform/applications"],
               ["Manage pharmacies", "/platform/pharmacies"],
@@ -329,42 +343,45 @@ export default async function PlatformHomePage() {
               <Link
                 key={href}
                 href={href}
-                className="flex min-h-11 items-center justify-between rounded-xl border border-white/15 px-3 py-3 text-sm font-medium text-teal-50/85 transition hover:bg-white/[0.07] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300"
+                className="flex min-h-11 items-center justify-between rounded-xl border border-teal-200/15 px-3 py-2.5 text-sm font-medium text-teal-50/95 transition active:scale-[0.98] hover:bg-teal-300/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300"
               >
                 {label}
-                <ArrowRight className="h-4 w-4 text-teal-100/70" aria-hidden />
+                <ArrowRight className="h-4 w-4 text-teal-200/70" aria-hidden />
               </Link>
             ))}
           </nav>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-white/15 bg-white/[0.04]">
-        <div className="border-b border-white/15 px-5 py-4">
-          <h2 className="font-semibold">Top tenants</h2>
-          <p className="mt-0.5 text-xs text-teal-50/75">By order value in the last 30 days</p>
+      {/* Top tenants */}
+      <section className="overflow-hidden rounded-2xl border border-teal-200/20 bg-teal-950/35">
+        <div className="border-b border-teal-200/15 px-4 py-3.5 sm:px-5 sm:py-4">
+          <h2 className="font-semibold text-white">Top tenants</h2>
+          <p className="mt-0.5 text-xs text-teal-100/75">By order value in the last 30 days</p>
         </div>
         {topTenants.length === 0 ? (
-          <p className="px-5 py-10 text-center text-sm text-teal-50/70">No completed activity yet.</p>
+          <p className="px-4 py-8 text-center text-sm text-teal-100/75 sm:px-5 sm:py-10">
+            No completed activity yet.
+          </p>
         ) : (
-          <div className="divide-y divide-white/10">
+          <div className="divide-y divide-teal-200/10">
             {topTenants.map((tenant, index) => (
               <Link
                 key={tenant.id}
                 href={`/platform/pharmacies/${tenant.id}`}
-                className="flex min-h-16 items-center gap-3 px-5 py-3.5 transition hover:bg-white/[0.05] focus:bg-white/[0.07] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-300"
+                className="flex min-h-[3.5rem] items-center gap-3 px-4 py-3 transition active:bg-teal-300/10 hover:bg-teal-300/8 focus:outline-none focus-visible:bg-teal-300/10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-300 sm:min-h-16 sm:px-5 sm:py-3.5"
               >
                 <span
                   aria-label={`Rank ${index + 1}`}
-                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/15 bg-white/5 text-xs text-teal-50/70"
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-teal-200/20 bg-teal-300/10 text-xs font-medium text-teal-100"
                 >
                   {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{tenant.name}</p>
-                  <p className="mt-0.5 text-xs text-teal-50/75">{tenant.orderCount} orders</p>
+                  <p className="truncate text-sm font-medium text-white">{tenant.name}</p>
+                  <p className="mt-0.5 text-xs text-teal-100/75">{tenant.orderCount} orders</p>
                 </div>
-                <p className="text-sm font-semibold tabular-nums">{kes(tenant.revenue)}</p>
+                <p className="text-sm font-semibold tabular-nums text-teal-50">{kes(tenant.revenue)}</p>
               </Link>
             ))}
           </div>
