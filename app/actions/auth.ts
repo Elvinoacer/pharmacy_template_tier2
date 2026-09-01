@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getRequestMeta } from "@/app/lib/request-meta";
 import { emailVerificationBody, passwordResetBody, sendDelivery } from "@/app/lib/services/delivery";
 import { validateCsrfToken } from "@/app/lib/csrf";
@@ -52,12 +52,17 @@ export async function registerAction(
   }
 
   const meta = await getRequestMeta();
-  const limited = checkRateLimit(`register:${meta.ip}:${email.toLowerCase()}`, {
+  const limited = await checkRateLimitAsync(`register:${meta.ip}:${email.toLowerCase()}`, {
     limit: 5,
     windowMs: 15 * 60 * 1000,
+    failClosed: true,
   });
   if (!limited.allowed) {
-    return { error: `Too many registration attempts. Try again in ${limited.retryAfterSeconds} seconds.` };
+    return {
+      error: limited.degraded
+        ? "Security service temporarily unavailable. Please try again shortly."
+        : `Too many registration attempts. Try again in ${limited.retryAfterSeconds} seconds.`,
+    };
   }
 
   let userId: string | null = null;
@@ -115,13 +120,23 @@ export async function loginAction(
   }
 
   const meta = await getRequestMeta();
-  const ipLimit = checkRateLimit(`login:ip:${meta.ip}`, { limit: 20, windowMs: 15 * 60 * 1000 });
-  const accountLimit = checkRateLimit(`login:account:${email.toLowerCase()}`, {
+  const ipLimit = await checkRateLimitAsync(`login:ip:${meta.ip}`, {
+    limit: 20,
+    windowMs: 15 * 60 * 1000,
+    failClosed: true,
+  });
+  const accountLimit = await checkRateLimitAsync(`login:account:${email.toLowerCase()}`, {
     limit: 8,
     windowMs: 15 * 60 * 1000,
+    failClosed: true,
   });
   if (!ipLimit.allowed || !accountLimit.allowed) {
-    return { error: "Too many sign-in attempts. Please wait before trying again." };
+    const degraded = ipLimit.degraded || accountLimit.degraded;
+    return {
+      error: degraded
+        ? "Security service temporarily unavailable. Please try again shortly."
+        : "Too many sign-in attempts. Please wait before trying again.",
+    };
   }
 
   let postLoginPath: string | null = null;
@@ -165,12 +180,17 @@ export async function forgotPasswordAction(
   if (!email) return { error: "Email is required." };
 
   const meta = await getRequestMeta();
-  const limited = checkRateLimit(`forgot:${meta.ip}:${email.toLowerCase()}`, {
+  const limited = await checkRateLimitAsync(`forgot:${meta.ip}:${email.toLowerCase()}`, {
     limit: 4,
     windowMs: 60 * 60 * 1000,
+    failClosed: true,
   });
   if (!limited.allowed) {
-    return { error: "Too many reset requests. Please wait before trying again." };
+    return {
+      error: limited.degraded
+        ? "Security service temporarily unavailable. Please try again shortly."
+        : "Too many reset requests. Please wait before trying again.",
+    };
   }
 
   const token = await createPasswordReset(email);
@@ -213,8 +233,18 @@ export async function resetPasswordAction(
   if (passwordError) return { error: passwordError };
 
   const meta = await getRequestMeta();
-  const limited = checkRateLimit(`reset:${meta.ip}`, { limit: 8, windowMs: 60 * 60 * 1000 });
-  if (!limited.allowed) return { error: "Too many reset attempts. Please wait before trying again." };
+  const limited = await checkRateLimitAsync(`reset:${meta.ip}`, {
+    limit: 8,
+    windowMs: 60 * 60 * 1000,
+    failClosed: true,
+  });
+  if (!limited.allowed) {
+    return {
+      error: limited.degraded
+        ? "Security service temporarily unavailable. Please try again shortly."
+        : "Too many reset attempts. Please wait before trying again.",
+    };
+  }
 
   const ok = await resetPasswordWithToken(token, password);
   if (!ok) return { error: "Invalid or expired reset link." };
