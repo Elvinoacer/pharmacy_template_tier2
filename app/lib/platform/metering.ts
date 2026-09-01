@@ -6,10 +6,39 @@ function periodKey(d = new Date()) {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
-export async function recordUsage(pharmacyId: string, metric: string, quantity = 1, meta: Record<string, unknown> = {}) {
-  await prismaUnscoped.usageRecord.create({
-    data: { pharmacyId, metric, quantity, period: periodKey(), meta: meta as object },
-  });
+export async function recordUsage(
+  pharmacyId: string,
+  metric: string,
+  quantity = 1,
+  opts?: { eventId?: string; billable?: boolean; unit?: string; meta?: Record<string, unknown> },
+) {
+  const eventId = opts?.eventId ?? null;
+  if (eventId) {
+    const existing = await prismaUnscoped.usageRecord.findFirst({
+      where: { pharmacyId, eventId },
+    });
+    if (existing) return existing;
+  }
+  try {
+    return await prismaUnscoped.usageRecord.create({
+      data: {
+        pharmacyId,
+        metric,
+        quantity,
+        period: periodKey(),
+        eventId,
+        billable: opts?.billable ?? true,
+        unit: opts?.unit ?? "count",
+        meta: (opts?.meta ?? {}) as object,
+      },
+    });
+  } catch (err) {
+    if (eventId) {
+      const again = await prismaUnscoped.usageRecord.findFirst({ where: { pharmacyId, eventId } });
+      if (again) return again;
+    }
+    throw err;
+  }
 }
 
 export async function usageTotal(pharmacyId: string, metric: string, period = periodKey()) {

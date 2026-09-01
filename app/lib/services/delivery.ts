@@ -353,10 +353,35 @@ export async function sendDelivery(payload: DeliveryPayload): Promise<DeliveryRe
     if (payload.channel === "whatsapp" && payload.recipient.preferences?.whatsappEnabled === false) {
       return { status: "failed", error: "Customer has disabled WhatsApp" };
     }
-    if (payload.channel === "email") return sendEmail(payload);
-    if (payload.channel === "sms") return sendSms(payload);
-    if (payload.channel === "whatsapp") return sendWhatsapp(payload);
-    return { status: "failed", error: `Unsupported channel: ${payload.channel}` };
+    let result: DeliveryResult;
+    if (payload.channel === "email") result = await sendEmail(payload);
+    else if (payload.channel === "sms") result = await sendSms(payload);
+    else if (payload.channel === "whatsapp") result = await sendWhatsapp(payload);
+    else result = { status: "failed", error: `Unsupported channel: ${payload.channel}` };
+
+    const pharmacyId = peekTenant()?.pharmacyId;
+    if (pharmacyId) {
+      const { prismaUnscoped } = await import("@/app/lib/db");
+      await prismaUnscoped.notificationDelivery.create({
+        data: {
+          pharmacyId,
+          channel: payload.channel === "in_app" ? "in_app" : payload.channel === "portal" ? "in_app" : payload.channel,
+          status: result.status === "failed" ? "failed" : result.status === "delivered" ? "delivered" : "sent",
+          provider: result.provider ?? null,
+          providerMessageId: result.providerMessageId ?? null,
+          error: result.error ?? null,
+          payload: {
+            channel: payload.channel,
+            body: payload.body,
+            subject: payload.subject ?? null,
+            purpose: payload.purpose ?? "transactional",
+            recipient: payload.recipient ?? {},
+          } as object,
+          sentAt: result.status === "failed" ? undefined : new Date(),
+        },
+      }).catch(() => {});
+    }
+    return result;
   } catch (error) {
     return {
       status: "failed",

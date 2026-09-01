@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getSessionUser } from "@/app/lib/auth";
 import { logoutAction } from "@/app/actions/auth";
 import { platform } from "@/app/lib/data";
@@ -11,6 +12,12 @@ export default async function PlatformLayout({ children }: { children: React.Rea
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/platform");
   if (!user.platformAdmin) redirect("/admin");
+  const h = await headers();
+  const path = h.get("x-pathname") || h.get("x-invoke-path") || "";
+  const onSecurity = path.includes("/platform/security");
+  if (!user.twoFactorEnabled && !onSecurity) {
+    redirect("/platform/security?mfa=required");
+  }
 
   return (
     <div

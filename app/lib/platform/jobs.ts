@@ -26,7 +26,25 @@ function backoff(attempts: number) {
   return Math.min(60 * 60 * 1000, 1500 * 2 ** Math.min(attempts, 10));
 }
 
+const STALE_MS = 15 * 60 * 1000;
+
+export async function recoverStaleJobs() {
+  const cutoff = new Date(Date.now() - STALE_MS);
+  const res = await prismaUnscoped.job.updateMany({
+    where: { status: "running", lockedAt: { lt: cutoff } },
+    data: {
+      status: "failed",
+      lastError: "stale_lock_recovered",
+      lockedAt: null,
+      lockedBy: null,
+      runAt: new Date(),
+    },
+  });
+  return res.count;
+}
+
 export async function processJobBatch(limit = 25, workerId = `w-${process.pid}`) {
+  await recoverStaleJobs();
   const due = await prismaUnscoped.job.findMany({
     where: {
       status: { in: ["queued", "failed"] },
@@ -101,8 +119,30 @@ async function executeJob(type: string, payload: Record<string, unknown>, pharma
   if (type === "meter.record") {
     const { recordUsage } = await import("@/app/lib/platform/metering");
     if (pharmacyId) {
-      await recordUsage(pharmacyId, String(payload.metric || "unknown"), Number(payload.quantity || 1));
+      await recordUsage(pharmacyId, String(payload.metric || "unknown"), Number(payload.quantity || 1), {
+        eventId: payload.eventId ? String(payload.eventId) : undefined,
+      });
     }
+    return;
+  }
+  if (type === "pos.sync" && pharmacyId) {
+    const { runPosSync } = await import("@/app/lib/platform/pos-sync");
+    await runPosSync(pharmacyId, (payload.medications as never) ?? [], payload.branchId ? String(payload.branchId) : null);
+    return;
+  }
+  if (type === "data.export" && pharmacyId) {
+    const { runDataExport } = await import("@/app/lib/platform/data-lifecycle");
+    await runDataExport(pharmacyId, String(payload.requestId || ""));
+    return;
+  }
+  if (type === "data.delete" && pharmacyId) {
+    const { runDataDeletion } = await import("@/app/lib/platform/data-lifecycle");
+    await runDataDeletion(pharmacyId, String(payload.requestId || ""));
+    return;
+  }
+  if (type === "billing.cycle") {
+    const { processSubscriptionCycle } = await import("@/app/lib/platform/billing");
+    await processSubscriptionCycle();
     return;
   }
   console.warn("[jobs] unknown type", type);

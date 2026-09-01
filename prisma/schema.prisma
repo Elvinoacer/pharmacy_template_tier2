@@ -3636,12 +3636,16 @@ model UsageRecord {
   metric     String
   quantity   Int      @default(1)
   period     String
+  eventId    String?  @map("event_id")
+  billable   Boolean  @default(true)
+  unit       String   @default("count")
   meta       Json     @default("{}")
   createdAt  DateTime @default(now()) @map("created_at")
 
   pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
 
   @@index([pharmacyId, metric, period])
+  @@unique([pharmacyId, eventId])
   @@map("usage_records")
 }
 
@@ -3791,9 +3795,27 @@ model WebhookEvent {
   pharmacy Pharmacy         @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
   endpoint WebhookEndpoint? @relation(fields: [endpointId], references: [id], onDelete: SetNull)
 
-  @@unique([provider, providerEventId])
+  @@unique([pharmacyId, provider, providerEventId])
   @@index([pharmacyId, status])
   @@map("webhook_events")
+}
+
+model WebhookDelivery {
+  id          String                @id @default(uuid()) @db.Uuid
+  pharmacyId  String                @map("pharmacy_id") @db.Uuid
+  endpointId  String                @map("endpoint_id") @db.Uuid
+  eventType   String                @map("event_type")
+  payload     Json
+  status      WebhookDeliveryStatus @default(pending)
+  attempts    Int                   @default(0)
+  lastError   String?               @map("last_error")
+  nextAttemptAt DateTime            @default(now()) @map("next_attempt_at")
+  deliveredAt DateTime?             @map("delivered_at")
+  createdAt   DateTime              @default(now()) @map("created_at")
+
+  @@index([status, nextAttemptAt])
+  @@index([pharmacyId])
+  @@map("webhook_deliveries")
 }
 
 model OutboxEvent {
@@ -3867,6 +3889,7 @@ model NotificationDelivery {
   providerMessageId String?                @map("provider_message_id")
   attempt       Int                        @default(0)
   error         String?
+  payload       Json                       @default("{}")
   scheduledAt   DateTime                   @default(now()) @map("scheduled_at")
   sentAt        DateTime?                  @map("sent_at")
   deliveredAt   DateTime?                  @map("delivered_at")

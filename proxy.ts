@@ -47,6 +47,7 @@ export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
 
   for (const h of TENANT_HEADERS) requestHeaders.delete(h)
+  requestHeaders.set('x-pathname', pathname)
 
   if (
     pathname.startsWith('/api/') &&

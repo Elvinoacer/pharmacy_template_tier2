@@ -23,6 +23,9 @@ export type SessionUser = {
   fullName: string | null;
   customerId: string | null;
   platformAdmin: boolean;
+  platformRole: string;
+  twoFactorEnabled: boolean;
+  lastReauthAt: Date | null;
   memberships: StaffMembership[];
   activePharmacyId: string | null;
 };

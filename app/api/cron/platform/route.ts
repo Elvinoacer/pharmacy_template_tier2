@@ -3,7 +3,9 @@ import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { processJobBatch } from "@/app/lib/platform/jobs";
 import { processOutboxBatch } from "@/app/lib/platform/outbox";
 import { processQueuedDeliveries } from "@/app/lib/platform/notifications";
-import { applyDunning } from "@/app/lib/platform/billing";
+import { processWebhookDeliveryBatch } from "@/app/lib/platform/webhooks";
+import { recoverStaleJobs } from "@/app/lib/platform/jobs";
+import { applyDunning, processSubscriptionCycle } from "@/app/lib/platform/billing";
 import { prismaUnscoped } from "@/app/lib/db";
 
 export const runtime = "nodejs";
@@ -20,9 +22,12 @@ export async function GET(request: NextRequest) {
   if (!authorized(request)) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const result = await withPlatformBypass(async () => {
+    const stale = await recoverStaleJobs();
     const jobs = await processJobBatch(40);
     const outbox = await processOutboxBatch(50);
     const deliveries = await processQueuedDeliveries(null, 40);
+    const webhooks = await processWebhookDeliveryBatch(40);
+    const billing = await processSubscriptionCycle();
 
     const overdue = await prismaUnscoped.invoice.findMany({
       where: { status: "open", dueAt: { lt: new Date() } },
@@ -34,7 +39,7 @@ export async function GET(request: NextRequest) {
       await applyDunning(inv.id);
       dunning++;
     }
-    return { jobs, outbox, deliveries, dunning };
+    return { stale, jobs, outbox, deliveries, webhooks, billing, dunning };
   });
 
   return Response.json({ ok: true, ...result });

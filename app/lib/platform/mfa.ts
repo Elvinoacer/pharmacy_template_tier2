@@ -35,7 +35,12 @@ export async function confirmMfa(userId: string, code: string): Promise<boolean>
   if (!verifyTotp(user.twoFactorSecret, code)) return false;
   await prismaUnscoped.user.update({
     where: { id: userId },
-    data: { twoFactorEnabled: true, mfaEnrolledAt: new Date(), mfaEnforced: user.platformAdmin },
+    data: {
+      twoFactorEnabled: true,
+      mfaEnrolledAt: new Date(),
+      mfaEnforced: user.platformAdmin,
+      lastReauthAt: new Date(),
+    },
   });
   return true;
 }

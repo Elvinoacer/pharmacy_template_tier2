@@ -3,17 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prismaUnscoped } from "@/app/lib/db";
-import { getSessionUser, requirePlatformAdmin, writeAuditLog } from "@/app/lib/auth";
+import { getSessionUser } from "@/app/lib/auth";
 import { sendDelivery } from "@/app/lib/services/delivery";
+import { requirePlatformAction } from "@/app/lib/platform/policy";
+import { recordAuditRequired } from "@/app/lib/platform/audit";
 
 export type ReviewActionState = {
   error?: string;
   success?: string;
 };
 
-async function actor() {
-  const user = await getSessionUser();
-  return requirePlatformAdmin(user);
+async function actor(roles: string[] = ["super_admin", "support", "operator"], stepUp = false) {
+  return requirePlatformAction(roles, { stepUp });
 }
 
 function appUrl() {
@@ -114,7 +115,7 @@ export async function reviewPharmacyAction(
   formData: FormData,
 ): Promise<ReviewActionState> {
   try {
-    const user = await actor();
+    const user = await actor(["super_admin"], true);
     const pharmacyId = String(formData.get("pharmacyId") || "");
     const decision = String(formData.get("decision") || "");
     const notes = String(formData.get("notes") || "").trim();
@@ -211,13 +212,14 @@ export async function reviewPharmacyAction(
       return { error: "Choose a verification decision." };
     }
 
-    await writeAuditLog(
-      user.id,
-      `pharmacy.${decision}`,
-      "pharmacy",
-      pharmacyId,
-      { notes },
-    ).catch(() => {});
+    await recordAuditRequired({
+      actorId: user.id,
+      action: `pharmacy.${decision}`,
+      resource: "pharmacy",
+      resourceId: pharmacyId,
+      tenantId: pharmacyId,
+      reason: notes || null,
+    });
 
     revalidatePath("/platform");
     revalidatePath("/platform/applications");
@@ -240,12 +242,12 @@ export async function reviewPharmacyAction(
 
 export async function setPharmacyLiveAction(formData: FormData): Promise<void> {
   try {
-    const user = await actor();
     const pharmacyId = String(formData.get("pharmacyId") || "");
     const listed = String(formData.get("listed") || "") === "true";
     const featured = String(formData.get("featured") || "") === "true";
     const suspend = String(formData.get("suspend") || "") === "true";
     const restore = String(formData.get("restore") || "") === "true";
+    const user = await actor(["super_admin", "operator"], suspend || restore);
 
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
     if (!pharmacy) throw new Error("Pharmacy not found.");
@@ -273,13 +275,14 @@ export async function setPharmacyLiveAction(formData: FormData): Promise<void> {
       });
     }
 
-    await writeAuditLog(
-      user.id,
-      "pharmacy.flags",
-      "pharmacy",
-      pharmacyId,
-      { listed, featured, suspend, restore },
-    ).catch(() => {});
+    await recordAuditRequired({
+      actorId: user.id,
+      action: "pharmacy.flags",
+      resource: "pharmacy",
+      resourceId: pharmacyId,
+      tenantId: pharmacyId,
+      details: { listed, featured, suspend, restore },
+    });
 
     revalidatePath("/");
     revalidatePath("/platform");
@@ -290,11 +293,11 @@ export async function setPharmacyLiveAction(formData: FormData): Promise<void> {
 }
 
 export async function impersonatePharmacyAction(formData: FormData): Promise<void> {
-  const user = await actor();
+  const mode = String(formData.get("mode") || "read_only") === "act_as_tenant" ? "act_as_tenant" : "read_only";
+  const user = await actor(["super_admin", "support"], mode === "act_as_tenant");
   const pharmacyId = String(formData.get("pharmacyId") || "");
   const reason = String(formData.get("reason") || "").trim();
   const ticketRef = String(formData.get("ticketRef") || "").trim();
-  const mode = String(formData.get("mode") || "read_only") === "act_as_tenant" ? "act_as_tenant" : "read_only";
   const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
   if (!pharmacy) throw new Error("Pharmacy not found");
   if (!reason) throw new Error("A support reason is required before entering a tenant.");
@@ -312,14 +315,14 @@ export async function impersonatePharmacyAction(formData: FormData): Promise<voi
 }
 
 export async function exitImpersonationAction(): Promise<void> {
-  const user = await actor();
+  const user = await actor(["super_admin", "support"], false);
   const { endSupportSession } = await import("@/app/lib/platform/support-session");
   await endSupportSession(user.id);
   redirect("/platform");
 }
 
 export async function updatePharmacyAction(formData: FormData): Promise<void> {
-  const user = await actor();
+  const user = await actor(["super_admin"], false);
   const pharmacyId = String(formData.get("pharmacyId") || "");
   const name = String(formData.get("name") || "").trim();
   const slug = String(formData.get("slug") || "").trim().toLowerCase();
@@ -350,9 +353,14 @@ export async function updatePharmacyAction(formData: FormData): Promise<void> {
     data: { name, slug, legalName, phone, email, whatsapp, city, county, licenseNumber },
   });
 
-  await writeAuditLog(user.id, "pharmacy.update", "pharmacy", pharmacyId, {
-    fields: { name, slug, legalName, phone, email, whatsapp, city, county, licenseNumber },
-  }).catch(() => {});
+  await recordAuditRequired({
+    actorId: user.id,
+    action: "pharmacy.update",
+    resource: "pharmacy",
+    resourceId: pharmacyId,
+    tenantId: pharmacyId,
+    details: { fields: { name, slug, legalName, phone, email, whatsapp, city, county, licenseNumber } },
+  });
 
   revalidatePath("/platform");
   revalidatePath("/platform/pharmacies");
@@ -360,7 +368,7 @@ export async function updatePharmacyAction(formData: FormData): Promise<void> {
 }
 
 export async function suspendPharmacyAction(formData: FormData): Promise<void> {
-  const user = await actor();
+  const user = await actor(["super_admin"], true);
   const pharmacyId = String(formData.get("pharmacyId") || "");
   const reason = String(formData.get("reason") || "").trim();
   if (!reason) throw new Error("A suspension reason is required.");
@@ -380,14 +388,21 @@ export async function suspendPharmacyAction(formData: FormData): Promise<void> {
       message: `Suspended: ${reason}`,
     },
   });
-  await writeAuditLog(user.id, "pharmacy.suspended", "pharmacy", pharmacyId, { reason }).catch(() => {});
+  await recordAuditRequired({
+    actorId: user.id,
+    action: "pharmacy.suspended",
+    resource: "pharmacy",
+    resourceId: pharmacyId,
+    tenantId: pharmacyId,
+    reason,
+  });
 
   revalidatePath("/platform");
   revalidatePath(`/platform/pharmacies/${pharmacyId}`);
 }
 
 export async function updateUserAction(formData: FormData): Promise<void> {
-  const admin = await actor();
+  const admin = await actor(["super_admin", "security"], true);
   const userId = String(formData.get("userId") || "");
   const status = String(formData.get("status") || "").trim();
   const platformAdmin = String(formData.get("platformAdmin") || "").trim();
@@ -413,7 +428,48 @@ export async function updateUserAction(formData: FormData): Promise<void> {
     await prismaUnscoped.session.deleteMany({ where: { userId } }).catch(() => {});
   }
 
-  await writeAuditLog(admin.id, "user.update", "user", userId, { ...data }).catch(() => {});
+  await recordAuditRequired({
+    actorId: admin.id,
+    action: "user.update",
+    resource: "user",
+    resourceId: userId,
+    details: { ...data },
+    reason: "platform user administration",
+  });
 
   revalidatePath(back);
+}
+
+export async function revokeSessionAction(formData: FormData): Promise<void> {
+  const admin = await actor(["super_admin", "security"], true);
+  const sessionId = String(formData.get("sessionId") || "");
+  if (!sessionId) throw new Error("Missing session.");
+  await prismaUnscoped.session.update({
+    where: { id: sessionId },
+    data: { revokedAt: new Date() },
+  });
+  await recordAuditRequired({
+    actorId: admin.id,
+    action: "security.session.revoke",
+    resource: "session",
+    resourceId: sessionId,
+  });
+  revalidatePath("/platform/security");
+}
+
+export async function revokeDeviceAction(formData: FormData): Promise<void> {
+  const admin = await actor(["super_admin", "security"], true);
+  const deviceId = String(formData.get("deviceId") || "");
+  if (!deviceId) throw new Error("Missing device.");
+  await prismaUnscoped.pushDevice.update({
+    where: { id: deviceId },
+    data: { revokedAt: new Date() },
+  });
+  await recordAuditRequired({
+    actorId: admin.id,
+    action: "security.device.revoke",
+    resource: "push_device",
+    resourceId: deviceId,
+  });
+  revalidatePath("/platform/security");
 }

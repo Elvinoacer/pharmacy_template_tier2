@@ -43,6 +43,9 @@ type UserWithMemberships = {
   email: string;
   role: string;
   platformAdmin?: boolean;
+  platformRole?: string;
+  twoFactorEnabled?: boolean;
+  lastReauthAt?: Date | null;
   profile?: { id: string; fullName: string | null } | null;
   memberships?: Array<{
     role: string;
@@ -80,6 +83,9 @@ async function toSessionUser(user: UserWithMemberships): Promise<SessionUser> {
     fullName: user.profile?.fullName ?? null,
     customerId: user.profile?.id ?? null,
     platformAdmin: user.platformAdmin === true,
+    platformRole: user.platformRole || (user.platformAdmin ? "super_admin" : "none"),
+    twoFactorEnabled: user.twoFactorEnabled === true,
+    lastReauthAt: user.lastReauthAt ?? null,
     memberships,
     activePharmacyId,
   };
@@ -208,6 +214,7 @@ export async function getSessionUserByToken(token: string): Promise<SessionUser 
   });
 
   if (!session) return null;
+  if (session.revokedAt) return null;
   if (session.expiresAt < new Date()) {
     await prisma.session.delete({ where: { id: session.id } }).catch(() => {});
     return null;

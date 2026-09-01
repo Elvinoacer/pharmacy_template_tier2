@@ -2,6 +2,7 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { getSessionUser } from "@/app/lib/auth";
 import { PlatformPage, PlatformTable } from "@/app/platform/_components/PlatformPage";
 import { startMfaEnrollmentAction } from "@/app/actions/mfa";
+import { revokeDeviceAction, revokeSessionAction } from "@/app/actions/platform";
 import MfaEnrollForm from "@/app/platform/_components/MfaEnrollForm";
 
 export const metadata = { title: "Security" };
@@ -40,16 +41,35 @@ export default async function SecurityPage() {
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">Active sessions</h2>
       <PlatformTable
-        headers={["User", "IP", "Expires"]}
+        headers={["User", "IP", "Expires", ""]}
         empty="No sessions."
-        rows={sessions.map((s) => [s.user.email, s.ipAddress || "—", s.expiresAt.toISOString()])}
+        rows={sessions.map((s) => [
+          s.user.email,
+          s.ipAddress || "—",
+          s.expiresAt.toISOString(),
+          <form key={s.id} action={revokeSessionAction}>
+            <input type="hidden" name="sessionId" value={s.id} />
+            <button className="text-xs font-semibold text-rose-200 hover:underline">Revoke</button>
+          </form>,
+        ])}
       />
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">Devices</h2>
       <PlatformTable
-        headers={["User", "Label", "Last seen", "Revoked"]}
+        headers={["User", "Label", "Last seen", "Revoked", ""]}
         empty="No devices registered."
-        rows={devices.map((d) => [d.user.email, d.label || "—", d.lastSeenAt.toISOString(), d.revokedAt ? "yes" : "no"])}
+        rows={devices.map((d) => [
+          d.user.email,
+          d.label || "—",
+          d.lastSeenAt.toISOString(),
+          d.revokedAt ? "yes" : "no",
+          d.revokedAt ? "—" : (
+            <form key={d.id} action={revokeDeviceAction}>
+              <input type="hidden" name="deviceId" value={d.id} />
+              <button className="text-xs font-semibold text-rose-200 hover:underline">Revoke</button>
+            </form>
+          ),
+        ])}
       />
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">Support sessions</h2>

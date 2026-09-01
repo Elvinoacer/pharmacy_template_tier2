@@ -241,6 +241,16 @@ export async function withTenantTx<T>(
   const client = getPrismaClient();
   return client.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.pharmacy_id', ${pharmacyId}, true)`;
+    await tx.$executeRaw`SELECT set_config('app.platform_bypass', '', true)`;
+    return fn(tx as unknown as PrismaClient);
+  });
+}
+
+/** Platform-wide transaction: explicit bypass GUC, never implied by NULL tenant. */
+export async function withPlatformTx<T>(fn: (tx: PrismaClient) => Promise<T>): Promise<T> {
+  const client = getPrismaClient();
+  return client.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.platform_bypass', '1', true)`;
     return fn(tx as unknown as PrismaClient);
   });
 }

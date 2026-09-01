@@ -190,3 +190,65 @@ export async function applyDunning(invoiceId: string) {
   }
   return row;
 }
+
+export async function processSubscriptionCycle() {
+  const now = new Date();
+  let invoiced = 0;
+  let activated = 0;
+  const endingTrials = await prismaUnscoped.subscription.findMany({
+    where: { status: "trialing", trialEndsAt: { lte: now } },
+    include: { plan: true },
+    take: 100,
+  });
+  for (const sub of endingTrials) {
+    await issueSubscriptionInvoice(sub.id);
+    await prismaUnscoped.subscription.update({
+      where: { id: sub.id },
+      data: { status: "past_due" },
+    });
+    invoiced++;
+  }
+
+  const renewing = await prismaUnscoped.subscription.findMany({
+    where: { status: "active", currentPeriodEnd: { lte: now }, cancelAt: null },
+    take: 100,
+  });
+  for (const sub of renewing) {
+    const periodEnd = new Date(sub.currentPeriodEnd.getTime() + 30 * 86400000);
+    await prismaUnscoped.subscription.update({
+      where: { id: sub.id },
+      data: { currentPeriodStart: sub.currentPeriodEnd, currentPeriodEnd: periodEnd },
+    });
+    await issueSubscriptionInvoice(sub.id);
+    invoiced++;
+  }
+
+  const cancelling = await prismaUnscoped.subscription.findMany({
+    where: { status: { in: ["active", "past_due", "trialing"] }, cancelAt: { lte: now } },
+    take: 50,
+  });
+  for (const sub of cancelling) {
+    await prismaUnscoped.subscription.update({
+      where: { id: sub.id },
+      data: { status: "cancelled", cancelledAt: now },
+    });
+    await recordLifecycle(sub.pharmacyId, "plan_changed", { reason: "cancelled_at_period_end" });
+  }
+
+  const paid = await prismaUnscoped.invoice.findMany({
+    where: { status: "paid", subscriptionId: { not: null } },
+    take: 50,
+    include: { subscription: true },
+  });
+  for (const inv of paid) {
+    if (inv.subscription && inv.subscription.status !== "active") {
+      await prismaUnscoped.subscription.update({
+        where: { id: inv.subscription.id },
+        data: { status: "active" },
+      });
+      activated++;
+    }
+  }
+
+  return { invoiced, activated, cancelled: cancelling.length };
+}

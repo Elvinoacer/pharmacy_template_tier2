@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prismaUnscoped } from "@/app/lib/db";
+import { prismaUnscoped, withTenantTx } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import {
   completeDarajaPayment,
@@ -65,6 +65,7 @@ export async function POST(req: Request) {
 
     try {
       await withPharmacy(payment.pharmacyId, async () => {
+        await withTenantTx(payment.pharmacyId, async () => {
         if (cb.MerchantRequestID && !payment.merchantRequestId) {
           await prismaUnscoped.payment
             .update({
@@ -93,6 +94,7 @@ export async function POST(req: Request) {
             reason: cb.ResultDesc || "Customer declined or STK timed out",
           });
         }
+        });
       });
       await markWebhookProcessed(inbound.event.id);
     } catch (err) {

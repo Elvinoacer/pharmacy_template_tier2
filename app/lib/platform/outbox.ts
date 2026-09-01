@@ -37,10 +37,11 @@ export async function processOutboxBatch(limit = 50) {
 
   let processed = 0;
   for (const event of due) {
-    await prismaUnscoped.outboxEvent.update({
-      where: { id: event.id },
+    const claimed = await prismaUnscoped.outboxEvent.updateMany({
+      where: { id: event.id, status: { in: ["pending", "failed"] } },
       data: { status: "processing", attempts: { increment: 1 } },
     });
+    if (claimed.count === 0) continue;
     try {
       await withPharmacy(event.pharmacyId, async () => {
         await dispatchOutbox(event);
