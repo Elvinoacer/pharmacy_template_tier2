@@ -230,10 +230,20 @@ export function isStaff(role: UserRole): boolean {
 }
 
 export function requireStaff(user: SessionUser | null): SessionUser {
-  if (!user || !isStaff(user.role)) {
+  if (!user || (!isStaff(user.role) && !user.platformAdmin)) {
     throw new AuthError("Staff access required", 403);
   }
   return user;
+}
+
+export async function assertCanMutateTenant(): Promise<void> {
+  const { activeSupportSession, supportIsReadOnly } = await import(
+    "@/app/lib/platform/support-session"
+  );
+  const session = await activeSupportSession();
+  if (supportIsReadOnly(session)) {
+    throw new AuthError("This support session is read-only", 403);
+  }
 }
 
 /**
@@ -244,6 +254,7 @@ export function requireStaff(user: SessionUser | null): SessionUser {
  */
 export async function requireManager(user: SessionUser | null): Promise<SessionUser> {
   if (!user) throw new AuthError("Manager access required", 403);
+  await assertCanMutateTenant();
   if (user.platformAdmin) return user;
 
   const qualifies = (role: string) => role === "owner" || role === "manager";

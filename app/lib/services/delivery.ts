@@ -1,5 +1,8 @@
 import "server-only";
 
+import { peekTenant } from "@/app/lib/tenant-context";
+import { resolveSenderIdentity, type SenderIdentity } from "@/app/lib/platform/integrations";
+
 type DeliveryChannel = "email" | "sms" | "whatsapp" | "portal" | "in_app" | "push";
 
 export type DeliveryRecipient = {
@@ -46,6 +49,10 @@ function supportEmail() {
 
 function supportPhone() {
   return process.env.SUPPORT_PHONE?.trim() || "0790670542";
+}
+
+async function sender(): Promise<SenderIdentity> {
+  return resolveSenderIdentity(peekTenant()?.pharmacyId ?? null);
 }
 
 /**
@@ -159,12 +166,14 @@ function renderMarkdownToEmailHtml(src: string): string {
   return out.join("\n");
 }
 
-function buildEmailHtml(subject: string, bodyText: string) {
+function buildEmailHtml(subject: string, bodyText: string, identity: SenderIdentity) {
   const renderedBody = renderMarkdownToEmailHtml(bodyText);
-  const support = supportEmail();
-  const phone = supportPhone();
+  const support = identity.supportEmail || supportEmail();
+  const phone = identity.supportPhone || supportPhone();
   const year = new Date().getFullYear();
-  const logoUrl = `${appUrl()}/icon-192.png`;
+  const logoUrl = identity.logoUrl || `${appUrl()}/icon-192.png`;
+  const brand = identity.name || "Aether Network";
+  const tagline = identity.tagline || "Care, close to home";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -183,9 +192,9 @@ function buildEmailHtml(subject: string, bodyText: string) {
           </tr>
           <tr>
             <td style="padding: 32px 36px 20px 36px; text-align: center; background: linear-gradient(165deg, #0d6e5a 0%, #0a5c4b 55%, #084c3f 100%);">
-              <img src="${logoUrl}" width="56" height="56" alt="Aether Pharmacy" style="display: block; margin: 0 auto 14px auto; border-radius: 14px; border: 1px solid rgba(201, 162, 39, 0.45); box-shadow: 0 8px 20px rgba(0,0,0,0.18);" />
-              <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(201, 162, 39, 0.95);">Aether Pharmacy</p>
-              <p style="margin: 6px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.78);">Care, refined</p>
+              <img src="${logoUrl}" width="56" height="56" alt="${escapeHtml(brand)}" style="display: block; margin: 0 auto 14px auto; border-radius: 14px; border: 1px solid rgba(201, 162, 39, 0.45); box-shadow: 0 8px 20px rgba(0,0,0,0.18);" />
+              <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(201, 162, 39, 0.95);">${escapeHtml(brand)}</p>
+              <p style="margin: 6px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.78);">${escapeHtml(tagline)}</p>
             </td>
           </tr>
           <tr>
@@ -199,7 +208,7 @@ function buildEmailHtml(subject: string, bodyText: string) {
           <tr>
             <td style="padding: 20px 36px 28px 36px; background-color: #faf8f4; text-align: center; border-top: 1px solid rgba(201, 162, 39, 0.18);">
               <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #7a8a82;">
-                &copy; ${year} Aether Pharmacy
+                &copy; ${year} ${escapeHtml(brand)}
               </p>
               <p style="margin: 8px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #94a39b;">
                 <a href="mailto:${support}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${support}</a>
@@ -219,9 +228,11 @@ function buildEmailHtml(subject: string, bodyText: string) {
 async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
   if (!payload.recipient.email) return { status: "failed", error: "Customer email is missing" };
 
-  const resendKey = process.env.RESEND_API_KEY?.trim();
-  const from = process.env.EMAIL_FROM?.trim();
+  const identity = await sender();
+  const resendKey = identity.resendApiKey;
+  const from = identity.emailFrom;
   if (!resendKey || !from) return { status: "pending", error: "Email provider is not configured" };
+  const subject = payload.subject || identity.name;
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -232,9 +243,9 @@ async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
     body: JSON.stringify({
       from,
       to: payload.recipient.email,
-      subject: payload.subject || "Aether Pharmacy",
+      subject,
       text: payload.body,
-      html: buildEmailHtml(payload.subject || "Aether Pharmacy", payload.body)
+      html: buildEmailHtml(subject, payload.body, identity)
     }),
   });
 
@@ -249,9 +260,10 @@ async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
 async function sendSms(payload: DeliveryPayload): Promise<DeliveryResult> {
   if (!payload.recipient.phone) return { status: "failed", error: "Customer phone is missing" };
 
-  const sid = process.env.TWILIO_ACCOUNT_SID?.trim();
-  const token = process.env.TWILIO_AUTH_TOKEN?.trim();
-  const from = process.env.TWILIO_SMS_FROM?.trim();
+  const identity = await sender();
+  const sid = identity.twilioSid;
+  const token = identity.twilioToken;
+  const from = identity.twilioFrom;
   if (!sid || !token || !from) return { status: "pending", error: "SMS provider is not configured" };
 
   const params = new URLSearchParams({
@@ -280,8 +292,9 @@ async function sendSms(payload: DeliveryPayload): Promise<DeliveryResult> {
 async function sendWhatsapp(payload: DeliveryPayload): Promise<DeliveryResult> {
   if (!payload.recipient.phone) return { status: "failed", error: "Customer phone is missing" };
 
-  const token = process.env.WHATSAPP_ACCESS_TOKEN?.trim();
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID?.trim();
+  const identity = await sender();
+  const token = identity.whatsappToken;
+  const phoneNumberId = identity.whatsappPhoneNumberId;
   if (!token || !phoneNumberId) {
     return { status: "pending", error: "WhatsApp provider is not configured" };
   }
@@ -322,8 +335,11 @@ export async function sendDelivery(payload: DeliveryPayload): Promise<DeliveryRe
       return { status: "failed", error: "Customer has opted out of reminders" };
     }
 
-    if (payload.channel === "portal" || payload.channel === "in_app" || payload.channel === "push") {
-      return { status: "delivered", provider: "portal" };
+    if (payload.channel === "portal" || payload.channel === "in_app") {
+      return { status: "sent", provider: "portal" };
+    }
+    if (payload.channel === "push") {
+      return { status: "sent", provider: "fcm" };
     }
     // Enforce customer communication preferences — if they've disabled a channel,
     // we never send via it. Caller is expected to have populated `recipient.preferences`
@@ -350,9 +366,9 @@ export async function sendDelivery(payload: DeliveryPayload): Promise<DeliveryRe
 }
 
 export function passwordResetBody(token: string) {
-  return `Use this password reset link: ${appUrl()}/reset-password?token=${token}\n\nIf you did not request this, ignore this message.\n\n— Aether Pharmacy (${supportEmail()})`;
+  return `Use this password reset link: ${appUrl()}/reset-password?token=${token}\n\nIf you did not request this, ignore this message.\n\n— Aether Network (${supportEmail()})`;
 }
 
 export function emailVerificationBody(token: string) {
-  return `Verify your email address: ${appUrl()}/api/verify-email?token=${token}\n\nIf you did not create an Aether Pharmacy account, ignore this message.\n\n— Aether Pharmacy (${supportEmail()})`;
+  return `Verify your email address: ${appUrl()}/api/verify-email?token=${token}\n\nIf you did not create an Aether Network account, ignore this message.\n\n— Aether Network (${supportEmail()})`;
 }

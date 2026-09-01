@@ -125,8 +125,27 @@ export default async function PharmacyReviewPage({
             >
               Storefront <ExternalLink className="h-3.5 w-3.5" />
             </Link>
-            <form action={impersonatePharmacyAction}>
+            <form action={impersonatePharmacyAction} className="flex flex-wrap items-end gap-2">
               <input type="hidden" name="pharmacyId" value={pharmacy.id} />
+              <input
+                name="reason"
+                required
+                placeholder="Support reason"
+                className="h-10 min-w-[12rem] rounded-xl border border-white/20 bg-black/30 px-3 text-xs text-white outline-none"
+              />
+              <input
+                name="ticketRef"
+                placeholder="Ticket #"
+                className="h-10 w-28 rounded-xl border border-white/20 bg-black/30 px-3 text-xs text-white outline-none"
+              />
+              <select
+                name="mode"
+                className="h-10 rounded-xl border border-white/20 bg-black/30 px-2 text-xs text-white"
+                defaultValue="read_only"
+              >
+                <option value="read_only">Read only</option>
+                <option value="act_as_tenant">Act as tenant</option>
+              </select>
               <button
                 type="submit"
                 className="inline-flex min-h-10 items-center rounded-xl border border-white/20 px-3 text-xs font-semibold text-teal-50 hover:bg-white/5"

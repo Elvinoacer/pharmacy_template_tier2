@@ -266,6 +266,13 @@ export const ADMIN_LINKS = [
     description: "Store & branch config",
   },
   {
+    href: "/admin/settings/integrations",
+    label: "Integrations",
+    icon: Settings,
+    group: "intelligence",
+    description: "M-Pesa, SMS, WhatsApp, POS",
+  },
+  {
     href: "/admin/setup",
     label: "Go-live checklist",
     icon: ClipboardCheck,

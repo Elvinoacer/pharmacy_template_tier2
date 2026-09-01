@@ -56,6 +56,25 @@ const WHERE_OPERATIONS = new Set([
   "upsert",
 ]);
 
+export class TenantRequiredError extends Error {
+  constructor(model?: string) {
+    super(model ? `TENANT_REQUIRED:${model}` : "TENANT_REQUIRED");
+    this.name = "TenantRequiredError";
+  }
+}
+
+const MUTATING_OPS = new Set([
+  "create",
+  "createMany",
+  "createManyAndReturn",
+  "update",
+  "updateMany",
+  "updateManyAndReturn",
+  "delete",
+  "deleteMany",
+  "upsert",
+]);
+
 function injectPharmacyId(data: Record<string, unknown> | undefined, pharmacyId: string) {
   if (!data || typeof data !== "object") return data;
   if (data.pharmacyId) return data;
@@ -88,6 +107,10 @@ function extendTenant(client: PrismaClient) {
 
           const { bypass, pharmacyId } = await resolveScope();
           if (bypass) return query(args);
+
+          if (!pharmacyId && MUTATING_OPS.has(operation) && !TENANT_RELATION_MODELS.has(modelName)) {
+            throw new TenantRequiredError(modelName);
+          }
 
           const scopedId = pharmacyId || failClosedId();
           const nextArgs = { ...(args as Record<string, unknown>) };
@@ -209,5 +232,17 @@ export const prisma = new Proxy({} as PrismaClient, {
     return Reflect.get(getScopedClient(), prop, receiver);
   },
 });
+
+/** Run work in a transaction with Postgres GUC set for RLS. */
+export async function withTenantTx<T>(
+  pharmacyId: string,
+  fn: (tx: PrismaClient) => Promise<T>,
+): Promise<T> {
+  const client = getPrismaClient();
+  return client.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.pharmacy_id', ${pharmacyId}, true)`;
+    return fn(tx as unknown as PrismaClient);
+  });
+}
 
 export default prisma;

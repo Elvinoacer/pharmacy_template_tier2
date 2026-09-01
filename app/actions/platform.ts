@@ -1,11 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prismaUnscoped } from "@/app/lib/db";
 import { getSessionUser, requirePlatformAdmin, writeAuditLog } from "@/app/lib/auth";
-import { STAFF_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 import { sendDelivery } from "@/app/lib/services/delivery";
 
 export type ReviewActionState = {
@@ -142,6 +140,8 @@ export async function reviewPharmacyAction(
           message: notes || "Licence verified — pharmacy approved",
         },
       });
+      const { provisionTenant } = await import("@/app/lib/platform/provision");
+      await provisionTenant(pharmacyId, user.id);
       await notifyOwnerOfDecision({
         pharmacyId,
         pharmacyName: pharmacy.name,
@@ -292,36 +292,29 @@ export async function setPharmacyLiveAction(formData: FormData): Promise<void> {
 export async function impersonatePharmacyAction(formData: FormData): Promise<void> {
   const user = await actor();
   const pharmacyId = String(formData.get("pharmacyId") || "");
+  const reason = String(formData.get("reason") || "").trim();
+  const ticketRef = String(formData.get("ticketRef") || "").trim();
+  const mode = String(formData.get("mode") || "read_only") === "act_as_tenant" ? "act_as_tenant" : "read_only";
   const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
   if (!pharmacy) throw new Error("Pharmacy not found");
+  if (!reason) throw new Error("A support reason is required before entering a tenant.");
 
-  const jar = await cookies();
-  jar.set(STAFF_PHARMACY_COOKIE, pharmacyId, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 8,
-  });
-  jar.set("aether_impersonation", pharmacyId, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 8,
-  });
-  await writeAuditLog(
-    user.id,
-    "pharmacy.support_view",
-    "pharmacy",
+  const { startSupportSession } = await import("@/app/lib/platform/support-session");
+  await startSupportSession({
+    adminId: user.id,
     pharmacyId,
-  ).catch(() => {});
+    reason,
+    ticketRef,
+    mode,
+    hours: 2,
+  });
   redirect("/admin");
 }
 
 export async function exitImpersonationAction(): Promise<void> {
-  await actor();
-  const jar = await cookies();
-  jar.delete(STAFF_PHARMACY_COOKIE);
-  jar.delete("aether_impersonation");
+  const user = await actor();
+  const { endSupportSession } = await import("@/app/lib/platform/support-session");
+  await endSupportSession(user.id);
   redirect("/platform");
 }
 

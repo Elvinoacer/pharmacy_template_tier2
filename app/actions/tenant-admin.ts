@@ -26,6 +26,59 @@ export async function switchPharmacyAction(formData: FormData) {
   redirect("/admin");
 }
 
+export async function saveTenantIntegrationsAction(formData: FormData) {
+  const user = await getSessionUser();
+  if (!user?.activePharmacyId) redirect("/admin");
+  const pharmacyId = user.activePharmacyId;
+  const can =
+    user.platformAdmin ||
+    user.memberships.some(
+      (m) => m.pharmacyId === pharmacyId && (m.role === "owner" || m.role === "manager"),
+    );
+  if (!can) redirect("/admin/settings/integrations");
+
+  const { saveTenantDaraja } = await import("@/app/lib/platform/integrations");
+  const { recordAuditRequired } = await import("@/app/lib/platform/audit");
+
+  const shortcode = String(formData.get("darajaShortcode") || "").trim();
+  const key = String(formData.get("darajaConsumerKey") || "").trim();
+  const secret = String(formData.get("darajaConsumerSecret") || "").trim();
+  const passkey = String(formData.get("darajaPasskey") || "").trim();
+  if (shortcode && key && secret && passkey) {
+    await saveTenantDaraja(pharmacyId, {
+      consumerKey: key,
+      consumerSecret: secret,
+      passkey,
+      shortcode,
+    });
+  }
+
+  await prismaUnscoped.pharmacyIntegration.upsert({
+    where: { pharmacyId },
+    update: {
+      emailFromOverride: String(formData.get("emailFromOverride") || "").trim() || null,
+      supportEmailOverride: String(formData.get("supportEmailOverride") || "").trim() || null,
+      supportPhoneOverride: String(formData.get("supportPhoneOverride") || "").trim() || null,
+    },
+    create: {
+      pharmacyId,
+      emailFromOverride: String(formData.get("emailFromOverride") || "").trim() || null,
+      supportEmailOverride: String(formData.get("supportEmailOverride") || "").trim() || null,
+      supportPhoneOverride: String(formData.get("supportPhoneOverride") || "").trim() || null,
+    },
+  });
+
+  await recordAuditRequired({
+    actorId: user.id,
+    action: "integrations.update",
+    resource: "pharmacy_integration",
+    tenantId: pharmacyId,
+    reason: "tenant credentials updated",
+  });
+  revalidatePath("/admin/settings/integrations");
+  redirect("/admin/settings/integrations");
+}
+
 export async function goLiveAction() {
   const user = await getSessionUser();
   if (!user?.activePharmacyId) redirect("/admin");

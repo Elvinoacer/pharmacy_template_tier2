@@ -1,24 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/app/lib/db";
+import { prismaUnscoped } from "@/app/lib/db";
+import { withPharmacy } from "@/app/lib/tenant-context";
+import { authenticatePos, recordIntegrationHealth } from "@/app/lib/platform/integrations";
+import { beginIdempotent, completeIdempotent } from "@/app/lib/platform/idempotency";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
 
 export const runtime = "nodejs";
-
-/**
- * POS sync endpoint — accepts a list of medications from the pharmacy's
- * external POS system and upserts them into our `medications` table.
- *
- * Auth: requires `POS_API_KEY` env var, sent as `Authorization: Bearer <key>`.
- *
- * Body shape:
- * {
- *   "medications": [
- *     { "sku": "PARA-500", "name": "Paracetamol 500mg", "category": "pain-relief",
- *       "price": 25.00, "stockQty": 120, "imageUrl": "...", "description": "..." }
- *   ]
- * }
- */
 
 const MedicationInput = z.object({
   sku: z.string().optional(),
@@ -39,22 +27,22 @@ const MedicationInput = z.object({
   publicListing: z.boolean().default(false),
   prescriptionRequired: z.boolean().default(true),
   active: z.boolean().default(true),
+  version: z.coerce.number().int().optional(),
 });
 
 const Body = z.object({
-  medications: z.array(MedicationInput).min(1).max(1000),
+  tenant: z.string().optional(),
+  branchId: z.string().uuid().optional(),
+  medications: z.array(MedicationInput).min(1).max(200),
 });
 
-function authorized(req: Request) {
-  const secret = process.env.POS_API_KEY?.trim();
-  if (!secret) return false; // POS sync disabled until key is set.
-  return req.headers.get("authorization") === `Bearer ${secret}`;
-}
-
 export async function POST(req: Request) {
-  if (!authorized(req)) {
+  const auth = await authenticatePos(req.headers.get("authorization"));
+  if (!auth) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+
+  const idempotencyKey = req.headers.get("idempotency-key")?.trim();
   let parsed: z.infer<typeof Body>;
   try {
     parsed = Body.parse(await req.json());
@@ -62,115 +50,154 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_body", detail: e instanceof Error ? e.message : undefined }, { status: 400 });
   }
 
-  const { setAbsoluteStock, applyStockChange, notifyStockThresholds } = await import(
-    "@/app/lib/services/stock"
-  );
-  type StockResult = Awaited<ReturnType<typeof setAbsoluteStock>>;
-  const stockResults: StockResult[] = [];
+  if (parsed.tenant && parsed.tenant !== auth.pharmacyId) {
+    return NextResponse.json({ error: "tenant_mismatch" }, { status: 403 });
+  }
 
-  let upserted = 0;
-  let lowStockAlerts = 0;
-  for (const m of parsed.medications) {
-    const slug = m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    // Find by SKU (preferred) or slug — these live on PharmacyInventory now.
-    const existing = m.sku
-      ? await prisma.pharmacyInventory
-          .findFirst({
-            where: { sku: m.sku },
-            include: { medicationMaster: { select: { id: true, name: true } } },
-          })
-          .catch(() => null)
-      : await prisma.pharmacyInventory
-          .findFirst({
-            where: { slug },
-            include: { medicationMaster: { select: { id: true, name: true } } },
-          })
-          .catch(() => null);
+  if (idempotencyKey) {
+    const gate = await beginIdempotent({
+      pharmacyId: auth.pharmacyId,
+      key: idempotencyKey,
+      method: "POST",
+      path: "/api/integrations/pos",
+      body: parsed,
+    });
+    if (gate.conflict) return NextResponse.json({ error: "idempotency_conflict" }, { status: 409 });
+    if (gate.replay) {
+      return NextResponse.json(gate.replay.responseBody ?? { ok: true }, { status: gate.replay.responseCode ?? 200 });
+    }
+  }
 
-    if (existing) {
-      // Commercial fields only — never overwrite clinical master data from POS.
-      const result = await prisma.$transaction(async (tx) => {
-        await tx.pharmacyInventory.update({
-          where: { id: existing.id },
-          data: {
-            price: m.price,
-            lowStockThreshold: m.lowStockThreshold,
-            syncedAt: new Date(),
-          },
-        });
-        return setAbsoluteStock(tx, {
-          inventoryId: existing.id,
-          newStock: m.stockQty,
-          reason: "pos_sync",
-          notes: "POS absolute stock sync",
-          relatedType: "pos_sync",
-        });
-      });
-      stockResults.push(result);
-    } else {
-      // Create master (minimal) + inventory, then log opening stock movement.
-      await prisma.$transaction(async (tx) => {
-        const master = await tx.medicationMaster.create({
-          data: {
-            name: m.name,
-            slug,
-            genericName: m.name.split(" ")[0] || m.name,
-            category: m.category,
-            description: m.description || null,
-            indications: m.indications || null,
-            dosage: m.dosage || null,
-            sideEffects: m.sideEffects || null,
-            contraindications: m.contraindications || null,
-            storage: m.storage || null,
-            imageUrl: m.imageUrl || null,
-            acquisitionMethod: "pos_sync",
-            enrichmentStatus: "minimal",
-            enrichmentScore: 30,
-          },
-        });
-        const inv = await tx.pharmacyInventory.create({
-          data: {
-            medicationMasterId: master.id,
-            slug,
-            sku: m.sku || null,
-            price: m.price,
-            currentStock: 0,
-            lowStockThreshold: m.lowStockThreshold,
-            overTheCounter: m.overTheCounter,
-            publicListing: m.publicListing,
-            prescriptionRequired: m.prescriptionRequired,
-            active: m.active,
-            syncedAt: new Date(),
-          },
-        });
-        if (m.stockQty > 0) {
-          const result = await applyStockChange(tx, {
-            inventoryId: inv.id,
-            quantityDelta: m.stockQty,
-            reason: "pos_sync",
-            notes: "POS opening stock",
-            relatedType: "pos_sync",
-            skipLots: true,
+  const result = await withPharmacy(auth.pharmacyId, async () => {
+    const { setAbsoluteStock, applyStockChange, notifyStockThresholds } = await import(
+      "@/app/lib/services/stock"
+    );
+    type StockResult = Awaited<ReturnType<typeof setAbsoluteStock>>;
+    const stockResults: StockResult[] = [];
+    let upserted = 0;
+    let skipped = 0;
+    let lowStockAlerts = 0;
+    const conflicts: Array<{ sku?: string; platform: number; pos: number }> = [];
+
+    for (const m of parsed.medications) {
+      const slug = m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const existing = m.sku
+        ? await prismaUnscoped.pharmacyInventory.findFirst({
+            where: { pharmacyId: auth.pharmacyId, sku: m.sku },
+          })
+        : await prismaUnscoped.pharmacyInventory.findFirst({
+            where: { pharmacyId: auth.pharmacyId, slug },
           });
-          stockResults.push(result);
+
+      if (existing) {
+        if (m.version != null && existing.version > m.version) {
+          skipped++;
+          conflicts.push({ sku: m.sku, platform: existing.currentStock, pos: m.stockQty });
+          continue;
         }
+        const stockResult = await prismaUnscoped.$transaction(async (tx) => {
+          await tx.pharmacyInventory.update({
+            where: { id: existing.id },
+            data: {
+              price: m.price,
+              lowStockThreshold: m.lowStockThreshold,
+              syncedAt: new Date(),
+              version: { increment: 1 },
+              branchId: parsed.branchId ?? existing.branchId,
+            },
+          });
+          return setAbsoluteStock(tx, {
+            inventoryId: existing.id,
+            newStock: m.stockQty,
+            reason: "pos_sync",
+            notes: "POS absolute stock sync",
+            relatedType: "pos_sync",
+          });
+        });
+        stockResults.push(stockResult);
+        if (existing.currentStock !== m.stockQty) {
+          conflicts.push({ sku: m.sku, platform: existing.currentStock, pos: m.stockQty });
+        }
+      } else {
+        await prismaUnscoped.$transaction(async (tx) => {
+          const master = await tx.medicationMaster.create({
+            data: {
+              name: m.name,
+              slug,
+              genericName: m.name.split(" ")[0] || m.name,
+              category: m.category,
+              description: m.description || null,
+              indications: m.indications || null,
+              dosage: m.dosage || null,
+              sideEffects: m.sideEffects || null,
+              contraindications: m.contraindications || null,
+              storage: m.storage || null,
+              imageUrl: m.imageUrl || null,
+              acquisitionMethod: "pos_sync",
+              enrichmentStatus: "minimal",
+              enrichmentScore: 30,
+            },
+          });
+          const inv = await tx.pharmacyInventory.create({
+            data: {
+              pharmacyId: auth.pharmacyId,
+              medicationMasterId: master.id,
+              slug,
+              sku: m.sku || null,
+              price: m.price,
+              currentStock: 0,
+              lowStockThreshold: m.lowStockThreshold,
+              overTheCounter: m.overTheCounter,
+              publicListing: m.publicListing,
+              prescriptionRequired: m.prescriptionRequired,
+              active: m.active,
+              syncedAt: new Date(),
+              branchId: parsed.branchId ?? null,
+            },
+          });
+          if (m.stockQty > 0) {
+            const stockResult = await applyStockChange(tx, {
+              inventoryId: inv.id,
+              quantityDelta: m.stockQty,
+              reason: "pos_sync",
+              notes: "POS opening stock",
+              relatedType: "pos_sync",
+              skipLots: true,
+            });
+            stockResults.push(stockResult);
+          }
+        });
+      }
+      upserted++;
+      if (m.stockQty <= m.lowStockThreshold) lowStockAlerts++;
+    }
+
+    await notifyStockThresholds(stockResults);
+    if (lowStockAlerts > 0) {
+      await recordAdminNotification({
+        type: "stock_low",
+        title: `${lowStockAlerts} medications are low on stock`,
+        body: `${lowStockAlerts} of ${upserted} synced medications are at or below their low-stock threshold.`,
+        severity: "warning",
+        relatedType: "medication",
       });
     }
-    upserted++;
-    if (m.stockQty <= m.lowStockThreshold) lowStockAlerts++;
-  }
 
-  await notifyStockThresholds(stockResults);
+    await recordIntegrationHealth(auth.pharmacyId, "pos", true);
+    return { ok: true, upserted, skipped, lowStockAlerts, conflicts };
+  });
 
-  if (lowStockAlerts > 0) {
-    await recordAdminNotification({
-      type: "stock_low",
-      title: `${lowStockAlerts} medications are low on stock`,
-      body: `${lowStockAlerts} of ${upserted} synced medications are at or below their low-stock threshold.`,
-      severity: "warning",
-      relatedType: "medication",
+  const headerKey = req.headers.get("idempotency-key")?.trim();
+  if (headerKey) {
+    const gate = await beginIdempotent({
+      pharmacyId: auth.pharmacyId,
+      key: headerKey,
+      method: "POST",
+      path: "/api/integrations/pos",
+      body: parsed,
     });
+    if (gate.pending) await completeIdempotent(gate.pending.id, 200, result);
   }
 
-  return NextResponse.json({ ok: true, upserted, lowStockAlerts });
+  return NextResponse.json(result);
 }

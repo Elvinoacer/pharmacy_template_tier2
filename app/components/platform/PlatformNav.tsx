@@ -3,15 +3,40 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { ClipboardCheck, FileText, LayoutDashboard, LogOut, Menu, Store, Users, X } from "lucide-react";
+import {
+  Activity,
+  Bell,
+  ClipboardCheck,
+  CreditCard,
+  FileText,
+  Flag,
+  KeyRound,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Plug,
+  Shield,
+  Store,
+  Users,
+  Webhook,
+  X,
+} from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 
 export const PLATFORM_NAV = [
   { href: "/platform", label: "Overview", icon: LayoutDashboard },
   { href: "/platform/applications", label: "Applications", icon: ClipboardCheck },
   { href: "/platform/pharmacies", label: "Pharmacies", icon: Store },
+  { href: "/platform/billing", label: "Billing", icon: CreditCard },
+  { href: "/platform/jobs", label: "Jobs", icon: Activity },
+  { href: "/platform/integrations", label: "Integrations", icon: Plug },
+  { href: "/platform/webhooks", label: "Webhooks", icon: Webhook },
+  { href: "/platform/notifications", label: "Delivery", icon: Bell },
   { href: "/platform/users", label: "Users", icon: Users },
+  { href: "/platform/security", label: "Security", icon: Shield },
+  { href: "/platform/feature-flags", label: "Flags", icon: Flag },
   { href: "/platform/audit", label: "Audit log", icon: FileText },
+  { href: "/platform/compliance", label: "Compliance", icon: KeyRound },
 ] as const;
 
 export default function PlatformNav({ email, mobileOnly = false }: { email: string; mobileOnly?: boolean }) {
@@ -67,5 +92,5 @@ export default function PlatformNav({ email, mobileOnly = false }: { email: stri
     );
   }
 
-  return <nav aria-label="Platform navigation" className="flex flex-1 flex-col gap-1 p-4">{links(false)}</nav>;
+  return <nav aria-label="Platform navigation" className="flex flex-1 flex-col gap-1 overflow-y-auto p-4">{links(false)}</nav>;
 }

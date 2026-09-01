@@ -12,6 +12,8 @@ const EXTERNAL_API_PREFIXES = [
   '/api/cron/',
   '/api/webhooks/',
   '/api/payments/daraja/callback',
+  '/api/integrations/',
+  '/api/v1/',
 ] as const
 
 function isExternalApiPath(pathname: string): boolean {

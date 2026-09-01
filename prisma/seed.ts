@@ -133,6 +133,8 @@ async function main() {
       role: "manager",
       emailVerified: true,
       platformAdmin: true,
+      platformRole: "super_admin",
+      twoFactorEnabled: false,
     },
   });
 
@@ -147,6 +149,7 @@ async function main() {
         "Aether Pharmacy has served families across Nairobi for over 15 years with expert dispensing, personalised counselling, and convenient care services.",
       licenseNumber: "PPB-DEMO-0001",
       status: "active",
+      lifecycleStatus: "active",
       listed: true,
       featured: true,
       email: "support@gtss.software",
@@ -187,6 +190,7 @@ async function main() {
       description: "Walk-in dispensing and vaccinations along Moi Avenue.",
       licenseNumber: "PPB-DEMO-0002",
       status: "active",
+      lifecycleStatus: "active",
       listed: true,
       featured: false,
       email: "coast@aether.health",
@@ -1892,6 +1896,18 @@ async function main() {
   });
 
   console.log(`Seeded ${VACCINE_CATALOG.length} vaccine products, campaigns, credentials, and demo immunisation records.`);
+
+  const { ensureDefaultPlans, startTrial } = await import("../app/lib/platform/billing");
+  await ensureDefaultPlans();
+  for (const pharmacyId of [AETHER_ID, COAST_ID]) {
+    const existingBranch = await prisma.pharmacyBranch.findFirst({ where: { pharmacyId, isDefault: true } });
+    const branch = existingBranch ?? await prisma.pharmacyBranch.create({
+      data: { pharmacyId, name: "Main Branch", code: "MAIN", isDefault: true },
+    });
+    await prisma.pharmacy.update({ where: { id: pharmacyId }, data: { defaultBranchId: branch.id } });
+    const sub = await prisma.subscription.findFirst({ where: { pharmacyId } });
+    if (!sub) await startTrial(pharmacyId, pharmacyId === AETHER_ID ? "professional" : "starter", 14);
+  }
 
   await prisma.auditLog.create({
     data: {

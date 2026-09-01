@@ -305,6 +305,138 @@ enum PharmacyMemberStatus {
   suspended
 }
 
+enum PharmacyLifecycleStatus {
+  onboarding
+  trial
+  active
+  past_due
+  restricted
+  suspended
+  archived
+  pending_deletion
+  deleted
+  regulatory_hold
+  migration
+}
+
+enum SupportSessionMode {
+  read_only
+  act_as_tenant
+}
+
+enum SubscriptionStatus {
+  trialing
+  active
+  past_due
+  cancelled
+  unpaid
+  paused
+}
+
+enum InvoiceStatus {
+  draft
+  open
+  paid
+  void
+  uncollectible
+}
+
+enum BillingInterval {
+  monthly
+  yearly
+}
+
+enum DunningStatus {
+  open
+  warning
+  grace
+  restricted
+  suspended
+  resolved
+  written_off
+}
+
+enum JobStatus {
+  queued
+  running
+  succeeded
+  failed
+  cancelled
+  dead_letter
+}
+
+enum OutboxStatus {
+  pending
+  processing
+  processed
+  failed
+  dead_letter
+}
+
+enum IntegrationKind {
+  daraja
+  twilio_sms
+  whatsapp
+  email
+  pos
+  storage
+  maps
+  ai
+  custom
+}
+
+enum IntegrationHealth {
+  unconfigured
+  connected
+  warning
+  error
+  disabled
+}
+
+enum PlatformRoleName {
+  none
+  owner
+  super_admin
+  billing_admin
+  support
+  security
+  operator
+  auditor
+}
+
+enum WebhookDeliveryStatus {
+  pending
+  delivered
+  failed
+  retrying
+  dead_letter
+}
+
+enum NotificationDeliveryStatus {
+  queued
+  processing
+  sent
+  delivered
+  failed
+  retrying
+  dead_letter
+  cancelled
+}
+
+enum LedgerDirection {
+  debit
+  credit
+}
+
+enum DataRequestStatus {
+  requested
+  processing
+  ready
+  failed
+  cancelled
+  completed
+}
+
 /// A tenant on the Aether network. One row per pharmacy business.
 model Pharmacy {
   id                 String         @id @default(uuid()) @db.Uuid
@@ -330,6 +462,15 @@ model Pharmacy {
   submittedAt        DateTime?      @map("submitted_at")
   goLiveAt           DateTime?      @map("go_live_at")
   setupCompletedAt   DateTime?      @map("setup_completed_at")
+  /// SaaS operational lifecycle (independent of onboarding `status`).
+  lifecycleStatus    PharmacyLifecycleStatus @default(onboarding) @map("lifecycle_status")
+  trialEndsAt        DateTime?      @map("trial_ends_at")
+  restrictedAt       DateTime?      @map("restricted_at")
+  suspendedAt        DateTime?      @map("suspended_at")
+  archivedAt         DateTime?      @map("archived_at")
+  deletionRequestedAt DateTime?     @map("deletion_requested_at")
+  deletedAt          DateTime?      @map("deleted_at")
+  defaultBranchId    String?        @map("default_branch_id") @db.Uuid
   ownerUserId        String?        @map("owner_user_id") @db.Uuid
   /// Contact (copied into PharmacySettings on approval; kept here for directory cards)
   email              String?
@@ -395,8 +536,35 @@ model Pharmacy {
   refunds                  Refund[]
   priceHistory             MedicationPriceHistory[]
   commerceEvents           CommerceEvent[]
+  branches                 PharmacyBranch[]
+  lifecycleEvents          PharmacyLifecycleEvent[]
+  subscriptions            Subscription[]
+  invoices                 Invoice[]
+  usageRecords             UsageRecord[]
+  apiKeys                  ApiKey[]
+  webhookEndpoints         WebhookEndpoint[]
+  webhookEvents            WebhookEvent[]
+  outboxEvents             OutboxEvent[]
+  jobs                     Job[]
+  supportSessions          SupportSession[]
+  entitlements             TenantEntitlement[]
+  featureOverrides         FeatureOverride[]
+  customDomains            CustomDomain[]
+  dataExportRequests       DataExportRequest[]
+  dataDeletionRequests     DataDeletionRequest[]
+  ledgerAccounts           LedgerAccount[]
+  notificationDeliveries   NotificationDelivery[]
+  integrationAccounts      IntegrationAccount[]
+  suppliers                Supplier[]
+  purchaseOrders           PurchaseOrder[]
+  idempotencyKeys          IdempotencyKey[]
+  dunningCases             DunningCase[]
+  paymentMethods           BillingPaymentMethod[]
+  tenantConfigs            TenantConfig[]
+  billingEvents            BillingEvent[]
 
   @@index([status])
+  @@index([lifecycleStatus])
   @@index([listed, featured])
   @@index([city])
   @@index([county])
@@ -409,6 +577,8 @@ model PharmacyMembership {
   userId      String               @map("user_id") @db.Uuid
   role        PharmacyMemberRole   @default(staff)
   status      PharmacyMemberStatus @default(active)
+  /// Fine-grained permissions. Empty = inherit from role defaults.
+  permissions String[]             @default([])
   invitedById String?              @map("invited_by") @db.Uuid
   invitedAt   DateTime?            @map("invited_at")
   acceptedAt  DateTime?            @map("accepted_at")
@@ -417,6 +587,7 @@ model PharmacyMembership {
 
   pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branchMemberships BranchMembership[]
 
   @@unique([pharmacyId, userId])
   @@index([userId])
@@ -465,6 +636,14 @@ model PharmacyIntegration {
   whatsappAccessTokenEnc  String?  @map("whatsapp_access_token_enc")
   /// POS integration
   posApiKeyHash           String?  @map("pos_api_key_hash")
+  darajaLastSuccessAt     DateTime? @map("daraja_last_success_at")
+  darajaLastError         String?   @map("daraja_last_error")
+  commsLastSuccessAt      DateTime? @map("comms_last_success_at")
+  commsLastError          String?   @map("comms_last_error")
+  posLastSyncAt           DateTime? @map("pos_last_sync_at")
+  posLastError            String?   @map("pos_last_error")
+  secretsVersion          Int       @default(1) @map("secrets_version")
+  secretsRotatedAt        DateTime? @map("secrets_rotated_at")
   updatedAt               DateTime @updatedAt @map("updated_at")
   createdAt               DateTime @default(now()) @map("created_at")
 
@@ -519,9 +698,13 @@ model User {
   phoneVerified    Boolean    @default(false) @map("phone_verified")
   twoFactorEnabled Boolean    @default(false) @map("two_factor_enabled")
   twoFactorSecret  String?    @map("two_factor_secret")
+  mfaEnforced      Boolean    @default(false) @map("mfa_enforced")
+  mfaEnrolledAt    DateTime?  @map("mfa_enrolled_at")
+  lastReauthAt     DateTime?  @map("last_reauth_at")
   status           UserStatus @default(active)
   /// Platform super-admin (verifies pharmacies, manages the network). Independent of pharmacy membership.
   platformAdmin    Boolean    @default(false) @map("platform_admin")
+  platformRole     PlatformRoleName @default(none) @map("platform_role")
   lastLoginAt      DateTime?  @map("last_login_at")
   createdAt        DateTime   @default(now()) @map("created_at")
   updatedAt        DateTime   @updatedAt @map("updated_at")
@@ -581,7 +764,15 @@ model User {
   memberships           PharmacyMembership[]
   ownedPharmacies       Pharmacy[]              @relation("PharmacyOwner")
   verifiedPharmacies    Pharmacy[]              @relation("PharmacyVerifier")
+  mfaRecoveryCodes      MfaRecoveryCode[]
+  supportSessions       SupportSession[]        @relation("SupportSessionAdmin")
+  createdApiKeys        ApiKey[]                @relation("ApiKeyCreator")
+  stepUpChallenges      StepUpChallenge[]
+  sensitiveAccessLogs   SensitiveAccessLog[]
+  dataExportRequests    DataExportRequest[]     @relation("DataExportActor")
+  dataDeletionRequests  DataDeletionRequest[]   @relation("DataDeletionActor")
 
+  @@index([platformRole])
   @@map("users")
 }
 
@@ -590,10 +781,15 @@ model User {
 model PushDevice {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
+  pharmacyId String? @map("pharmacy_id") @db.Uuid
   /// The FCM registration token returned by `getToken()` in the browser.
   token     String   @unique
   /// User-agent so the user can recognise "Chrome on Mac", "iPhone Safari", etc.
   label     String?
+  browser   String?
+  os        String?
+  ipAddress String?  @map("ip_address")
+  revokedAt DateTime? @map("revoked_at")
   /// Bumped on every /api/push/register call so we can prune stale devices.
   lastSeenAt DateTime @default(now()) @map("last_seen_at")
   createdAt DateTime @default(now()) @map("created_at")
@@ -601,6 +797,8 @@ model PushDevice {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([pharmacyId])
+  @@index([revokedAt])
   @@map("push_devices")
 }
 
@@ -611,11 +809,15 @@ model Session {
   expiresAt DateTime @map("expires_at")
   ipAddress String?  @map("ip_address")
   userAgent String?  @map("user_agent")
+  lastSeenAt DateTime? @map("last_seen_at")
+  revokedAt DateTime? @map("revoked_at")
+  mfaVerifiedAt DateTime? @map("mfa_verified_at")
   createdAt DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([revokedAt])
   @@map("sessions")
 }
 
@@ -749,6 +951,12 @@ model CustomerPreference {
   marketingConsent  Boolean  @default(false) @map("marketing_consent")
   reminderConsent   Boolean  @default(true) @map("reminder_consent")
   birthdayMessages  Boolean  @default(true) @map("birthday_messages")
+  timezone          String   @default("Africa/Nairobi")
+  quietHoursStart   String?  @map("quiet_hours_start")
+  quietHoursEnd     String?  @map("quiet_hours_end")
+  preferredChannel  String?  @map("preferred_channel")
+  fallbackChannel   String?  @map("fallback_channel")
+  frequencyCapDaily Int?     @map("frequency_cap_daily")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
   customer CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -760,7 +968,7 @@ model CustomerPreference {
 
 model Prescription {
   id               String             @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId       String             @map("customer_id") @db.Uuid
   medicineName     String             @map("medicine_name")
   rxReference      String?            @map("rx_reference")
@@ -865,7 +1073,7 @@ model Prescription {
 
 model RefillRequest {
   id                String           @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId        String?          @map("customer_id") @db.Uuid
   prescriptionId    String?          @map("prescription_id") @db.Uuid
   medicineName      String           @map("medicine_name")
@@ -902,7 +1110,7 @@ model RefillRequest {
 
 model TimelineEvent {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId  String?  @map("customer_id") @db.Uuid
   userId      String?  @map("user_id") @db.Uuid
   eventType   String   @map("event_type")
@@ -928,7 +1136,7 @@ model TimelineEvent {
 
 model Segment {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   name        String
   description String?
   rules       Json     @default("{}")
@@ -964,7 +1172,7 @@ model CustomerSegment {
 
 model Conversation {
   id            String              @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId    String?             @map("customer_id") @db.Uuid
   channel       ConversationChannel
   subject       String?
@@ -1006,7 +1214,7 @@ model Message {
 
 model MessageTemplate {
   id          String               @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   name        String
   channel     ConversationChannel
   subject     String?
@@ -1030,7 +1238,7 @@ model MessageTemplate {
 
 model Notification {
   id          String              @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId  String?             @map("customer_id") @db.Uuid
   userId      String?             @map("user_id") @db.Uuid
   channel     NotificationChannel
@@ -1046,7 +1254,15 @@ model Notification {
   deletedAt   DateTime?           @map("deleted_at")
   sentAt      DateTime?           @map("sent_at")
   openedAt    DateTime?           @map("opened_at")
+  scheduledAt DateTime?           @map("scheduled_at")
+  deliveredAt DateTime?           @map("delivered_at")
+  provider    String?
+  providerMessageId String?       @map("provider_message_id")
+  attemptCount Int                @default(0) @map("attempt_count")
+  lastError   String?             @map("last_error")
   createdAt   DateTime            @default(now()) @map("created_at")
+
+  deliveries NotificationDelivery[]
 
   customer CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: Cascade)
   user     User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1062,7 +1278,7 @@ model Notification {
 
 model Reminder {
   id           String               @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId   String               @map("customer_id") @db.Uuid
   type         ReminderType
   title        String
@@ -1090,7 +1306,7 @@ model Reminder {
 
 model Campaign {
   id           String          @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   name         String
   description  String?
   channel      CampaignChannel
@@ -1119,7 +1335,7 @@ model Campaign {
 
 model LoyaltyAccount {
   id              String      @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId      String @map("customer_id") @db.Uuid
   points          Int         @default(0)
   tier            LoyaltyTier @default(bronze)
@@ -1161,7 +1377,7 @@ model LoyaltyTransaction {
 
 model Coupon {
   id              String       @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   code            String
   description     String?
   discountType    DiscountType @map("discount_type")
@@ -1190,7 +1406,7 @@ model Coupon {
 
 model Enquiry {
   id           String        @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId   String?       @map("customer_id") @db.Uuid
   name         String
   email        String?
@@ -1217,7 +1433,7 @@ model Enquiry {
 
 model Feedback {
   id            String         @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId    String?        @map("customer_id") @db.Uuid
   name          String?
   email         String?
@@ -1245,7 +1461,7 @@ model Feedback {
 
 model KnowledgeArticle {
   id         String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   title      String
   category   String   @default("general")
   content    String
@@ -1268,7 +1484,7 @@ model KnowledgeArticle {
 
 model AiConversation {
   id           String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId   String?   @map("customer_id") @db.Uuid
   userId       String?   @map("user_id") @db.Uuid
   sessionKey   String?   @map("session_key")
@@ -1306,13 +1522,21 @@ model AiMessage {
 
 model AuditLog {
   id         String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   actorId    String?  @map("actor_id") @db.Uuid
+  actorType  String   @default("user") @map("actor_type")
   action     String
   entityType String?  @map("entity_type")
   entityId   String?  @map("entity_id") @db.Uuid
   details    Json     @default("{}")
+  before     Json?
+  after      Json?
+  reason     String?
+  requestId  String?  @map("request_id")
+  correlationId String? @map("correlation_id")
+  branchId   String?  @map("branch_id") @db.Uuid
   ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
   createdAt  DateTime @default(now()) @map("created_at")
 
   actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
@@ -1321,12 +1545,14 @@ model AuditLog {
   pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Restrict)
 
   @@index([pharmacyId])
+  @@index([action])
+  @@index([requestId])
   @@map("audit_logs")
 }
 
 model CustomerNote {
   id         String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId String   @map("customer_id") @db.Uuid
   authorId   String?  @map("author_id") @db.Uuid
   body       String
@@ -1397,7 +1623,7 @@ model PrescriptionClarificationLog {
 /// to follow up on unconfirmed doses.
 model MedicationSchedule {
   id             String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   prescriptionId String   @map("prescription_id") @db.Uuid
   customerId     String   @map("customer_id") @db.Uuid
   /// Time-of-day in HH:mm (24h, project timezone). E.g. "08:00", "20:00".
@@ -1540,7 +1766,7 @@ model AdherenceFollowUp {
 /// Public medicines browse uses the same rows (image, brands, tips, publicVisible).
 model MedicationCategory {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   /// Human label shown in UI, e.g. "Pain Relief".
   name        String
   /// Stable key stored on Medication.category, e.g. "pain-relief".
@@ -1654,7 +1880,7 @@ model MedicationMaster {
 /// OrderItem/Prescription FKs continue to resolve after the migration.
 model PharmacyInventory {
   id              String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   medicationMasterId String @map("medication_master_id") @db.Uuid
   /// Pharmacy-specific slug. Unique per pharmacy (single-tenant → @unique).
   slug            String
@@ -1674,6 +1900,8 @@ model PharmacyInventory {
   active          Boolean  @default(true)
   /// Last time the POS sync touched this row.
   syncedAt       DateTime? @map("synced_at")
+  branchId       String?   @map("branch_id") @db.Uuid
+  version        Int       @default(1)
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
@@ -1695,8 +1923,10 @@ model PharmacyInventory {
   @@index([active])
   @@index([currentStock])
   pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Restrict)
+  branch   PharmacyBranch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
 
   @@index([pharmacyId])
+  @@index([branchId])
   @@unique([pharmacyId, slug])
   @@unique([pharmacyId, sku])
   @@map("pharmacy_inventory")
@@ -1734,7 +1964,7 @@ model InventoryLot {
 /// quantityDelta is signed: positive = stock in, negative = stock out.
 model StockMovement {
   id                    String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   pharmacyInventoryId   String   @map("pharmacy_inventory_id") @db.Uuid
   inventoryLotId        String?  @map("inventory_lot_id") @db.Uuid
   /// sale | receive | adjust | dispatch | refill | pos_sync | return | write_off
@@ -1886,7 +2116,7 @@ model MedicationLookup {
 /// refill payments, and the portal shop. Created by staff at the counter, or by customers from the portal.
 model Order {
   id           String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId   String?  @map("customer_id") @db.Uuid
   /// Where the order originated: counter (staff at POS), portal (customer online), refill (linked to a RefillRequest), website (guest).
   source       String   @default("counter")
@@ -1961,6 +2191,7 @@ model Order {
   expiresAt          DateTime? @map("expires_at")
   /// Structured reason enum for cancellations (audit §57).
   cancellationReason String?  @map("cancellation_reason")
+  branchId           String?  @map("branch_id") @db.Uuid
 
   customer  CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   dispenserNoteBy User? @relation("OrderDispenser", fields: [dispenserNoteById], references: [id], onDelete: SetNull)
@@ -1978,8 +2209,11 @@ model Order {
   prescriptionFill PrescriptionFill?
   /// Prescriptions converted into this dispensing order.
   dispensedPrescriptions Prescription[] @relation("PrescriptionDispensingOrder")
+  branch PharmacyBranch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  accessTokens OrderAccessToken[]
 
   @@index([customerId])
+  @@index([branchId])
   @@index([status])
   @@index([guestPhone])
   @@index([dispatchedAt])
@@ -2062,7 +2296,7 @@ enum PaymentProvider {
 
 model Payment {
   id           String         @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   orderId      String         @map("order_id") @db.Uuid
   customerId   String?        @map("customer_id") @db.Uuid
   amount       Decimal        @db.Decimal(10, 2)
@@ -2084,6 +2318,12 @@ model Payment {
   initiatedById String?       @map("initiated_by") @db.Uuid
   /// Explicit timestamp for when the payment actually settled (audit §62).
   paidAt       DateTime?      @map("paid_at")
+  currency     String         @default("KES")
+  expectedAmount Decimal?     @map("expected_amount") @db.Decimal(10, 2)
+  expectedShortcode String?   @map("expected_shortcode")
+  payerPhone   String?        @map("payer_phone")
+  reconciledAt DateTime?      @map("reconciled_at")
+  reconciliationNotes String? @map("reconciliation_notes")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
 
@@ -2109,7 +2349,7 @@ model Payment {
 /// A cron job (or event hook) reads these and credits points accordingly.
 model LoyaltyRule {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   name        String
   trigger     String   // refill_completed | order_paid | first_order | birthday | referral_completed
   points      Int      @default(0)
@@ -2149,7 +2389,7 @@ model CaregiverInvite {
 /// be paid (M-Pesa or counter) before status becomes confirmed.
 model PharmacyService {
   id          String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   slug        String
   title       String
   /// One-line card blurb.
@@ -2189,7 +2429,7 @@ model PharmacyService {
 ///   none | unpaid | pending | paid | waived | cash
 model ServiceBooking {
   id              String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   serviceId       String   @map("service_id") @db.Uuid
   customerId      String?  @map("customer_id") @db.Uuid
   fullName        String   @map("full_name")
@@ -2241,7 +2481,7 @@ model ServiceBooking {
 /// Has its own read/unread state, severity, and a `retry` action when applicable.
 model AdminNotification {
   id         String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   /// Type of event: refill_new | enquiry_new | feedback_low | ai_escalation | stock_low | payment_failed | campaign_failed | reminder_failed | symptom_escalation | symptom_checkin
   type       String
   title      String
@@ -2270,7 +2510,7 @@ model AdminNotification {
 /// Public pages fall back to static `app/lib/data.ts` when this row is missing.
 model PharmacySettings {
   id              String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @unique @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @unique @map("pharmacy_id") @db.Uuid
   displayName     String?  @map("display_name")
   phone           String?
   email           String?
@@ -2350,7 +2590,7 @@ enum SymptomFeeling {
 /// logged-in customers link via customerId/userId.
 model SymptomSession {
   id               String               @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   /// Opaque browser key for guest sessions (stored in localStorage).
   guestKey         String?              @map("guest_key")
   customerId       String?              @map("customer_id") @db.Uuid
@@ -2533,7 +2773,7 @@ enum CommerceEventType {
 
 model PrescriptionFill {
   id                  String                @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   prescriptionId      String                @map("prescription_id") @db.Uuid
   /// Linked commercial order that paid for this fill (nullable for legacy / dispatched-without-charge).
   orderId             String?               @unique @map("order_id") @db.Uuid
@@ -2585,7 +2825,7 @@ model PrescriptionFill {
 
 model InventoryReservation {
   id              String             @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   orderId         String             @map("order_id") @db.Uuid
   orderItemId     String?            @map("order_item_id") @db.Uuid
   inventoryId     String             @map("inventory_id") @db.Uuid
@@ -2620,7 +2860,7 @@ model InventoryReservation {
 
 model Refund {
   id            String        @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   paymentId     String        @map("payment_id") @db.Uuid
   orderId       String        @map("order_id") @db.Uuid
   amount        Decimal       @db.Decimal(10, 2)
@@ -2668,7 +2908,7 @@ model InventoryAllocation {
 
 model CommerceEvent {
   id          String              @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   eventType   CommerceEventType
   entityType  String              @map("entity_type")
   entityId    String              @map("entity_id") @db.Uuid
@@ -2696,7 +2936,7 @@ model CommerceEvent {
 
 model MedicationPriceHistory {
   id              String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   inventoryId     String    @map("inventory_id") @db.Uuid
   price           Decimal   @db.Decimal(10, 2)
   costPrice       Decimal?  @map("cost_price") @db.Decimal(10, 2)
@@ -2720,7 +2960,7 @@ model MedicationPriceHistory {
 
 model CashierSession {
   id              String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   userId          String    @map("user_id") @db.Uuid
   openedAt        DateTime  @default(now()) @map("opened_at")
   openingFloat    Decimal   @default(0) @map("opening_float") @db.Decimal(10, 2)
@@ -2746,7 +2986,7 @@ model CashierSession {
 
 model HealthScreeningRecord {
   id                      String            @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId              String?           @map("customer_id") @db.Uuid
   conductedById           String?           @map("conducted_by_id") @db.Uuid
   screeningType           String            @default("general") @map("screening_type") // blood_pressure | blood_glucose | bmi_weight | temperature | wellness_check | point_of_care_test | multi_panel
@@ -2811,7 +3051,7 @@ model HealthScreeningRecord {
 
 model ClinicalReferral {
   id                      String                 @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   screeningId             String?                @map("screening_id") @db.Uuid
   customerId              String?                @map("customer_id") @db.Uuid
   referredById            String?                @map("referred_by_id") @db.Uuid
@@ -2858,7 +3098,7 @@ model ClinicalReferral {
 
 model PharmacyImmunizationPolicy {
   id                            String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @unique @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @unique @map("pharmacy_id") @db.Uuid
   enabled                       Boolean  @default(true)
   jurisdiction                  String   @default("Kenya")
   authorizingBody               String   @default("Pharmacy and Poisons Board (PPB) / Ministry of Health") @map("authorizing_body")
@@ -2885,7 +3125,7 @@ model PharmacyImmunizationPolicy {
 
 model VaccineProduct {
   id                    String   @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   slug                  String
   name                  String
   antigen               String
@@ -2942,7 +3182,7 @@ model VaccineProduct {
 
 model ImmunizerCredential {
   id             String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   userId         String    @map("user_id") @db.Uuid
   /// immunization_certificate | cpr_bls | anaphylaxis | acls | ppb_licence
   credentialType String    @map("credential_type")
@@ -2968,7 +3208,7 @@ model ImmunizerCredential {
 
 model ImmunizationAppointment {
   id               String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   vaccineProductId String    @map("vaccine_product_id") @db.Uuid
   customerId       String?   @map("customer_id") @db.Uuid
   serviceBookingId String?   @unique @map("service_booking_id") @db.Uuid
@@ -3135,7 +3375,7 @@ model AdverseEventFollowingImmunization {
 
 model PreventiveCounsellingSession {
   id              String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   customerId      String?   @map("customer_id") @db.Uuid
   counsellorId    String?   @map("counsellor_id") @db.Uuid
   campaignId      String?   @map("campaign_id") @db.Uuid
@@ -3173,7 +3413,7 @@ model PreventiveCounsellingSession {
 
 model PublicHealthCampaign {
   id                String    @id @default(uuid()) @db.Uuid
-  pharmacyId      String    @default("00000000-0000-4000-a000-000000000001") @map("pharmacy_id") @db.Uuid
+  pharmacyId      String    @map("pharmacy_id") @db.Uuid
   campaignId        String?   @unique @map("crm_campaign_id") @db.Uuid
   slug              String
   title             String
@@ -3205,5 +3445,782 @@ model PublicHealthCampaign {
   @@index([pharmacyId])
   @@unique([pharmacyId, slug])
   @@map("public_health_campaigns")
+}
+
+// ── Platform SaaS foundation ──────────────────────────────────
+
+model PharmacyBranch {
+  id          String   @id @default(uuid()) @db.Uuid
+  pharmacyId  String   @map("pharmacy_id") @db.Uuid
+  name        String
+  code        String?
+  isDefault   Boolean  @default(false) @map("is_default")
+  phone       String?
+  email       String?
+  addressLine1 String? @map("address_line1")
+  city        String?
+  county      String?
+  latitude    Float?
+  longitude   Float?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  memberships BranchMembership[]
+  hours       BranchHours[]
+  deliveryZones BranchDeliveryZone[]
+  inventory   PharmacyInventory[]
+  orders      Order[]
+
+  @@unique([pharmacyId, code])
+  @@index([pharmacyId, active])
+  @@map("pharmacy_branches")
+}
+
+model BranchMembership {
+  id           String   @id @default(uuid()) @db.Uuid
+  branchId     String   @map("branch_id") @db.Uuid
+  membershipId String   @map("membership_id") @db.Uuid
+  role         PharmacyMemberRole @default(staff)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  branch     PharmacyBranch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  membership PharmacyMembership  @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, membershipId])
+  @@map("branch_memberships")
+}
+
+model BranchHours {
+  id        String   @id @default(uuid()) @db.Uuid
+  branchId  String   @map("branch_id") @db.Uuid
+  day       String
+  openTime  String?  @map("open_time")
+  closeTime String?  @map("close_time")
+  closed    Boolean  @default(false)
+
+  branch PharmacyBranch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, day])
+  @@map("branch_hours")
+}
+
+model BranchDeliveryZone {
+  id          String   @id @default(uuid()) @db.Uuid
+  branchId    String   @map("branch_id") @db.Uuid
+  name        String
+  radiusKm    Float?   @map("radius_km")
+  feeKes      Decimal? @map("fee_kes") @db.Decimal(10, 2)
+  active      Boolean  @default(true)
+
+  branch PharmacyBranch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId])
+  @@map("branch_delivery_zones")
+}
+
+model PharmacyLifecycleEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  type       String
+  fromStatus String?  @map("from_status")
+  toStatus   String?  @map("to_status")
+  reason     String?
+  actorId    String?  @map("actor_id") @db.Uuid
+  meta       Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId, createdAt(sort: Desc)])
+  @@map("pharmacy_lifecycle_events")
+}
+
+model Plan {
+  id          String          @id @default(uuid()) @db.Uuid
+  slug        String          @unique
+  name        String
+  description String?
+  priceKes    Decimal         @map("price_kes") @db.Decimal(12, 2)
+  interval    BillingInterval @default(monthly)
+  active      Boolean         @default(true)
+  sortOrder   Int             @default(0) @map("sort_order")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  features      PlanFeature[]
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model PlanFeature {
+  id        String  @id @default(uuid()) @db.Uuid
+  planId    String  @map("plan_id") @db.Uuid
+  key       String
+  limitInt  Int?    @map("limit_int")
+  enabled   Boolean @default(true)
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, key])
+  @@map("plan_features")
+}
+
+model Subscription {
+  id                    String             @id @default(uuid()) @db.Uuid
+  pharmacyId            String             @map("pharmacy_id") @db.Uuid
+  planId                String             @map("plan_id") @db.Uuid
+  status                SubscriptionStatus @default(trialing)
+  startedAt             DateTime           @default(now()) @map("started_at")
+  currentPeriodStart    DateTime           @map("current_period_start")
+  currentPeriodEnd      DateTime           @map("current_period_end")
+  trialEndsAt           DateTime?          @map("trial_ends_at")
+  cancelAt              DateTime?          @map("cancel_at")
+  cancelledAt           DateTime?          @map("cancelled_at")
+  externalSubscriptionId String?           @map("external_subscription_id")
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  plan     Plan     @relation(fields: [planId], references: [id], onDelete: Restrict)
+  invoices Invoice[]
+
+  @@index([pharmacyId, status])
+  @@index([planId])
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id             String        @id @default(uuid()) @db.Uuid
+  pharmacyId     String        @map("pharmacy_id") @db.Uuid
+  subscriptionId String?       @map("subscription_id") @db.Uuid
+  number         String        @unique
+  periodStart    DateTime      @map("period_start")
+  periodEnd      DateTime      @map("period_end")
+  subtotalKes    Decimal       @map("subtotal_kes") @db.Decimal(12, 2)
+  taxKes         Decimal       @default(0) @map("tax_kes") @db.Decimal(12, 2)
+  totalKes       Decimal       @map("total_kes") @db.Decimal(12, 2)
+  status         InvoiceStatus @default(open)
+  dueAt          DateTime      @map("due_at")
+  paidAt         DateTime?     @map("paid_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  pharmacy     Pharmacy      @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  items        InvoiceItem[]
+  dunningCases DunningCase[]
+
+  @@index([pharmacyId, status])
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String  @id @default(uuid()) @db.Uuid
+  invoiceId   String  @map("invoice_id") @db.Uuid
+  description String
+  quantity    Int     @default(1)
+  unitKes     Decimal @map("unit_kes") @db.Decimal(12, 2)
+  totalKes    Decimal @map("total_kes") @db.Decimal(12, 2)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_items")
+}
+
+model UsageRecord {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  metric     String
+  quantity   Int      @default(1)
+  period     String
+  meta       Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId, metric, period])
+  @@map("usage_records")
+}
+
+model BillingEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  type       String
+  payload    Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId, createdAt(sort: Desc)])
+  @@map("billing_events")
+}
+
+model BillingPaymentMethod {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  type       String
+  label      String?
+  last4      String?
+  mpesaPhone String?  @map("mpesa_phone")
+  isDefault  Boolean  @default(false) @map("is_default")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId])
+  @@map("billing_payment_methods")
+}
+
+model DunningCase {
+  id         String        @id @default(uuid()) @db.Uuid
+  pharmacyId String        @map("pharmacy_id") @db.Uuid
+  invoiceId  String        @map("invoice_id") @db.Uuid
+  status     DunningStatus @default(open)
+  warningAt  DateTime?     @map("warning_at")
+  graceUntil DateTime?     @map("grace_until")
+  resolvedAt DateTime?     @map("resolved_at")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  invoice  Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId, status])
+  @@map("dunning_cases")
+}
+
+model TenantEntitlement {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  key        String
+  enabled    Boolean  @default(true)
+  limitInt   Int?     @map("limit_int")
+  source     String   @default("plan")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@unique([pharmacyId, key])
+  @@map("tenant_entitlements")
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique
+  description String?
+  defaultOn   Boolean  @default(false) @map("default_on")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  overrides FeatureOverride[]
+
+  @@map("feature_flags")
+}
+
+model FeatureOverride {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  flagId     String   @map("flag_id") @db.Uuid
+  enabled    Boolean
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  pharmacy Pharmacy    @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  flag     FeatureFlag @relation(fields: [flagId], references: [id], onDelete: Cascade)
+
+  @@unique([pharmacyId, flagId])
+  @@map("feature_overrides")
+}
+
+model ApiKey {
+  id          String    @id @default(uuid()) @db.Uuid
+  pharmacyId  String    @map("pharmacy_id") @db.Uuid
+  name        String
+  prefix      String
+  hash        String    @unique
+  scopes      String[]  @default([])
+  lastUsedAt  DateTime? @map("last_used_at")
+  expiresAt   DateTime? @map("expires_at")
+  revokedAt   DateTime? @map("revoked_at")
+  createdById String?   @map("created_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  pharmacy  Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  createdBy User?    @relation("ApiKeyCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([pharmacyId])
+  @@index([prefix])
+  @@map("api_keys")
+}
+
+model WebhookEndpoint {
+  id           String    @id @default(uuid()) @db.Uuid
+  pharmacyId   String    @map("pharmacy_id") @db.Uuid
+  url          String
+  secretEnc    String    @map("secret_enc")
+  events       String[]  @default([])
+  active       Boolean   @default(true)
+  lastDeliveryAt DateTime? @map("last_delivery_at")
+  lastError    String?   @map("last_error")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  deliveries WebhookEvent[]
+
+  @@index([pharmacyId, active])
+  @@map("webhook_endpoints")
+}
+
+model WebhookEvent {
+  id             String                @id @default(uuid()) @db.Uuid
+  pharmacyId     String                @map("pharmacy_id") @db.Uuid
+  endpointId     String?               @map("endpoint_id") @db.Uuid
+  provider       String
+  providerEventId String?              @map("provider_event_id")
+  eventType      String                @map("event_type")
+  payload        Json
+  status         WebhookDeliveryStatus @default(pending)
+  attempts       Int                   @default(0)
+  processedAt    DateTime?             @map("processed_at")
+  lastError      String?               @map("last_error")
+  createdAt      DateTime              @default(now()) @map("created_at")
+
+  pharmacy Pharmacy         @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  endpoint WebhookEndpoint? @relation(fields: [endpointId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, providerEventId])
+  @@index([pharmacyId, status])
+  @@map("webhook_events")
+}
+
+model OutboxEvent {
+  id            String       @id @default(uuid()) @db.Uuid
+  pharmacyId    String       @map("pharmacy_id") @db.Uuid
+  eventType     String       @map("event_type")
+  aggregateType String       @map("aggregate_type")
+  aggregateId   String       @map("aggregate_id")
+  payload       Json
+  status        OutboxStatus @default(pending)
+  attempts      Int          @default(0)
+  nextAttemptAt DateTime     @default(now()) @map("next_attempt_at")
+  processedAt   DateTime?    @map("processed_at")
+  lastError     String?      @map("last_error")
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([status, nextAttemptAt])
+  @@index([pharmacyId, eventType])
+  @@map("outbox_events")
+}
+
+model Job {
+  id          String    @id @default(uuid()) @db.Uuid
+  pharmacyId  String?   @map("pharmacy_id") @db.Uuid
+  type        String
+  status      JobStatus @default(queued)
+  payload     Json      @default("{}")
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(8) @map("max_attempts")
+  runAt       DateTime  @default(now()) @map("run_at")
+  startedAt   DateTime? @map("started_at")
+  completedAt DateTime? @map("completed_at")
+  lockedAt    DateTime? @map("locked_at")
+  lockedBy    String?   @map("locked_by")
+  lastError   String?   @map("last_error")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy?    @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  attemptsLog JobAttempt[]
+
+  @@index([status, runAt])
+  @@index([pharmacyId, type])
+  @@map("jobs")
+}
+
+model JobAttempt {
+  id         String   @id @default(uuid()) @db.Uuid
+  jobId      String   @map("job_id") @db.Uuid
+  attempt    Int
+  startedAt  DateTime @default(now()) @map("started_at")
+  finishedAt DateTime? @map("finished_at")
+  error      String?
+  output     Json?
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@map("job_attempts")
+}
+
+model NotificationDelivery {
+  id            String                     @id @default(uuid()) @db.Uuid
+  pharmacyId    String                     @map("pharmacy_id") @db.Uuid
+  notificationId String?                   @map("notification_id") @db.Uuid
+  channel       NotificationChannel
+  status        NotificationDeliveryStatus @default(queued)
+  provider      String?
+  providerMessageId String?                @map("provider_message_id")
+  attempt       Int                        @default(0)
+  error         String?
+  scheduledAt   DateTime                   @default(now()) @map("scheduled_at")
+  sentAt        DateTime?                  @map("sent_at")
+  deliveredAt   DateTime?                  @map("delivered_at")
+  openedAt      DateTime?                  @map("opened_at")
+  createdAt     DateTime                   @default(now()) @map("created_at")
+
+  pharmacy     Pharmacy      @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  notification Notification? @relation(fields: [notificationId], references: [id], onDelete: SetNull)
+  attempts     NotificationAttempt[]
+
+  @@index([pharmacyId, status])
+  @@index([notificationId])
+  @@map("notification_deliveries")
+}
+
+model NotificationAttempt {
+  id          String   @id @default(uuid()) @db.Uuid
+  deliveryId  String   @map("delivery_id") @db.Uuid
+  attempt     Int
+  status      String
+  error       String?
+  latencyMs   Int?     @map("latency_ms")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  delivery NotificationDelivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryId])
+  @@map("notification_attempts")
+}
+
+model NotificationTemplate {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String?  @map("pharmacy_id") @db.Uuid
+  key        String
+  channel    NotificationChannel
+  subject    String?
+  body       String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@unique([pharmacyId, key, channel])
+  @@map("notification_templates")
+}
+
+model IntegrationAccount {
+  id           String            @id @default(uuid()) @db.Uuid
+  pharmacyId   String            @map("pharmacy_id") @db.Uuid
+  kind         IntegrationKind
+  provider     String
+  status       IntegrationHealth @default(unconfigured)
+  config       Json              @default("{}")
+  secretsEnc   String?           @map("secrets_enc")
+  webhookSecretEnc String?       @map("webhook_secret_enc")
+  cursor       String?
+  lastSyncAt   DateTime?         @map("last_sync_at")
+  lastSuccessAt DateTime?        @map("last_success_at")
+  lastError    String?           @map("last_error")
+  secretsVersion Int             @default(1) @map("secrets_version")
+  rotatedAt    DateTime?         @map("rotated_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  checks   IntegrationHealthCheck[]
+
+  @@unique([pharmacyId, kind, provider])
+  @@map("integration_accounts")
+}
+
+model IntegrationHealthCheck {
+  id          String   @id @default(uuid()) @db.Uuid
+  accountId   String   @map("account_id") @db.Uuid
+  ok          Boolean
+  latencyMs   Int?     @map("latency_ms")
+  error       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  account IntegrationAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, createdAt(sort: Desc)])
+  @@map("integration_health_checks")
+}
+
+model SupportSession {
+  id              String             @id @default(uuid()) @db.Uuid
+  pharmacyId      String             @map("pharmacy_id") @db.Uuid
+  platformAdminId String             @map("platform_admin_id") @db.Uuid
+  mode            SupportSessionMode @default(read_only)
+  reason          String
+  ticketRef       String?            @map("ticket_ref")
+  startedAt       DateTime           @default(now()) @map("started_at")
+  expiresAt       DateTime           @map("expires_at")
+  endedAt         DateTime?          @map("ended_at")
+  ipAddress       String?            @map("ip_address")
+  userAgent       String?            @map("user_agent")
+
+  pharmacy      Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  platformAdmin User     @relation("SupportSessionAdmin", fields: [platformAdminId], references: [id], onDelete: Restrict)
+
+  @@index([pharmacyId, endedAt])
+  @@index([platformAdminId])
+  @@map("support_sessions")
+}
+
+model MfaRecoveryCode {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  codeHash  String    @map("code_hash")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("mfa_recovery_codes")
+}
+
+model StepUpChallenge {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  action    String
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("step_up_challenges")
+}
+
+model IdempotencyKey {
+  id           String   @id @default(uuid()) @db.Uuid
+  pharmacyId   String   @map("pharmacy_id") @db.Uuid
+  key          String
+  method       String
+  path         String
+  requestHash  String   @map("request_hash")
+  responseCode Int?     @map("response_code")
+  responseBody Json?
+  createdAt    DateTime @default(now()) @map("created_at")
+  expiresAt    DateTime @map("expires_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@unique([pharmacyId, key, method, path])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
+}
+
+model RateLimitCounter {
+  id        String   @id @default(uuid()) @db.Uuid
+  bucketKey String   @unique @map("bucket_key")
+  count     Int      @default(0)
+  resetAt   DateTime @map("reset_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([resetAt])
+  @@map("rate_limit_counters")
+}
+
+model CustomDomain {
+  id         String    @id @default(uuid()) @db.Uuid
+  pharmacyId String    @map("pharmacy_id") @db.Uuid
+  hostname   String    @unique
+  verified   Boolean   @default(false)
+  isPrimary  Boolean   @default(false) @map("is_primary")
+  status     String    @default("pending")
+  verifiedAt DateTime? @map("verified_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId])
+  @@map("custom_domains")
+}
+
+model DataExportRequest {
+  id           String            @id @default(uuid()) @db.Uuid
+  pharmacyId   String            @map("pharmacy_id") @db.Uuid
+  actorId      String?           @map("actor_id") @db.Uuid
+  status       DataRequestStatus @default(requested)
+  archiveUrl   String?           @map("archive_url")
+  error        String?
+  requestedAt  DateTime          @default(now()) @map("requested_at")
+  completedAt  DateTime?         @map("completed_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  actor    User?    @relation("DataExportActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([pharmacyId, status])
+  @@map("data_export_requests")
+}
+
+model DataDeletionRequest {
+  id          String            @id @default(uuid()) @db.Uuid
+  pharmacyId  String            @map("pharmacy_id") @db.Uuid
+  actorId     String?           @map("actor_id") @db.Uuid
+  status      DataRequestStatus @default(requested)
+  retainLegal Boolean           @default(true) @map("retain_legal")
+  scheduledFor DateTime         @map("scheduled_for")
+  completedAt DateTime?         @map("completed_at")
+  error       String?
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  actor    User?    @relation("DataDeletionActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([pharmacyId, status])
+  @@map("data_deletion_requests")
+}
+
+model RetentionPolicy {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String?  @map("pharmacy_id") @db.Uuid
+  resource   String
+  retainDays Int      @map("retain_days")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@unique([pharmacyId, resource])
+  @@map("retention_policies")
+}
+
+model LedgerAccount {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  code       String
+  name       String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  pharmacy Pharmacy      @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  entries  LedgerEntry[]
+
+  @@unique([pharmacyId, code])
+  @@map("ledger_accounts")
+}
+
+model LedgerEntry {
+  id          String          @id @default(uuid()) @db.Uuid
+  accountId   String          @map("account_id") @db.Uuid
+  direction   LedgerDirection
+  amountKes   Decimal         @map("amount_kes") @db.Decimal(12, 2)
+  reference   String?
+  description String?
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  account LedgerAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, createdAt])
+  @@map("ledger_entries")
+}
+
+model SensitiveAccessLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  pharmacyId String?  @map("pharmacy_id") @db.Uuid
+  resource   String
+  resourceId String   @map("resource_id")
+  purpose    String?
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([pharmacyId, createdAt(sort: Desc)])
+  @@index([resource, resourceId])
+  @@map("sensitive_access_logs")
+}
+
+model OrderAccessToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  orderId   String    @map("order_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_access_tokens")
+}
+
+model TenantConfig {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  key        String
+  value      Json
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@unique([pharmacyId, key])
+  @@map("tenant_configs")
+}
+
+model Supplier {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  name       String
+  email      String?
+  phone      String?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy        @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  orders   PurchaseOrder[]
+
+  @@index([pharmacyId, active])
+  @@map("suppliers")
+}
+
+model PurchaseOrder {
+  id         String   @id @default(uuid()) @db.Uuid
+  pharmacyId String   @map("pharmacy_id") @db.Uuid
+  supplierId String   @map("supplier_id") @db.Uuid
+  status     String   @default("draft")
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  pharmacy Pharmacy            @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  supplier Supplier            @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  items    PurchaseOrderItem[]
+  receipts GoodsReceipt[]
+
+  @@index([pharmacyId, status])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id               String @id @default(uuid()) @db.Uuid
+  purchaseOrderId  String @map("purchase_order_id") @db.Uuid
+  inventoryId      String? @map("inventory_id") @db.Uuid
+  name             String
+  quantity         Int
+  unitCostKes      Decimal @map("unit_cost_kes") @db.Decimal(10, 2)
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@map("purchase_order_items")
+}
+
+model GoodsReceipt {
+  id              String   @id @default(uuid()) @db.Uuid
+  purchaseOrderId String   @map("purchase_order_id") @db.Uuid
+  receivedAt      DateTime @default(now()) @map("received_at")
+  notes           String?
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@map("goods_receipts")
 }
 

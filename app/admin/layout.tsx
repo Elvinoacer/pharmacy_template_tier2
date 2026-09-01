@@ -60,7 +60,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
             <span>
               <strong>Support view:</strong> you are working inside <strong>{impersonatedName}</strong>
-              . Actions here affect this pharmacy.
+              . Mutations require an act-as-tenant session.
             </span>
           </p>
           <div className="flex items-center gap-3">

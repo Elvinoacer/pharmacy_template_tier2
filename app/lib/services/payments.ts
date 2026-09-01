@@ -1,13 +1,16 @@
 import "server-only";
 
-import { prisma } from "@/app/lib/db";
+import { createHash, randomBytes } from "crypto";
+import { prisma, prismaUnscoped } from "@/app/lib/db";
 import {
-  darajaConfigured,
+  darajaConfiguredFor,
   formatMpesaPhone,
   phoneLast9,
   stkPush,
   stkQuery,
 } from "@/app/lib/services/daraja";
+import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
+import { peekTenant } from "@/app/lib/tenant-context";
 
 /** How long a pending STK is considered "in flight" before allowing a retry. */
 export const STK_PENDING_WINDOW_MS = 90 * 1000;
@@ -39,9 +42,31 @@ export type InitiateStkResult =
  * - customer: own order
  * - guest: website order + phone last-9 match (or order guestPhone)
  */
+export async function issueOrderAccessToken(orderId: string, ttlMinutes = 30): Promise<string> {
+  const raw = randomBytes(24).toString("base64url");
+  await prismaUnscoped.orderAccessToken.create({
+    data: {
+      orderId,
+      tokenHash: createHash("sha256").update(raw).digest("hex"),
+      expiresAt: new Date(Date.now() + ttlMinutes * 60 * 1000),
+    },
+  });
+  return raw;
+}
+
+export async function verifyOrderAccessToken(orderId: string, token?: string | null): Promise<boolean> {
+  if (!token) return false;
+  const hash = createHash("sha256").update(token).digest("hex");
+  const row = await prismaUnscoped.orderAccessToken.findFirst({
+    where: { orderId, tokenHash: hash, expiresAt: { gt: new Date() } },
+  });
+  return Boolean(row);
+}
+
 export async function canInitiatePayment(opts: {
   orderId: string;
   phone?: string;
+  accessToken?: string | null;
   session?: { id: string; customerId?: string | null; role: string } | null;
   staff?: boolean;
 }): Promise<{ allowed: boolean; reason?: string; order: Awaited<ReturnType<typeof loadOrder>> }> {
@@ -60,7 +85,11 @@ export async function canInitiatePayment(opts: {
     return { allowed: true, order };
   }
 
-  // Guest pay: phone must match guestPhone or a note / payment history last-9.
+  if (await verifyOrderAccessToken(opts.orderId, opts.accessToken)) {
+    return { allowed: true, order };
+  }
+
+  // Guest pay: phone must match guestPhone AND a short-lived access token is preferred.
   const phone = opts.phone ? phoneLast9(opts.phone) : "";
   if (phone && order.guestPhone && phoneLast9(order.guestPhone) === phone) {
     return { allowed: true, order };
@@ -205,7 +234,9 @@ export async function initiateStkPayment(opts: {
     }
   }
 
-  if (!darajaConfigured()) {
+  const pharmacyId = order.pharmacyId || peekTenant()?.pharmacyId || null;
+  const creds = await resolveDarajaCredentials(pharmacyId);
+  if (!creds || !(await darajaConfiguredFor(pharmacyId))) {
     const payment = await prisma.payment.create({
       data: {
         orderId: order.id,
@@ -217,14 +248,16 @@ export async function initiateStkPayment(opts: {
         attemptCount: recentAttempts + 1,
         lastAttemptAt: new Date(),
         initiatedById: opts.initiatedById ?? null,
-        failureReason: "Daraja not configured on this environment",
+        failureReason: "Daraja not configured for this pharmacy",
+        expectedAmount: amount,
+        payerPhone: phone,
       },
     });
     return {
       ok: false,
       error: "daraja_not_configured",
       message:
-        "M-Pesa is not configured. Set DARAJA_* env vars, or mark paid at the counter.",
+        "M-Pesa is not configured for this pharmacy. Add tenant Daraja credentials, or mark paid at the counter.",
       paymentId: payment.id,
       statusCode: 503,
     };
@@ -241,6 +274,10 @@ export async function initiateStkPayment(opts: {
       attemptCount: recentAttempts + 1,
       lastAttemptAt: new Date(),
       initiatedById: opts.initiatedById ?? null,
+      expectedAmount: amount,
+      expectedShortcode: creds.shortcode,
+      payerPhone: phone,
+      currency: "KES",
     },
   });
 
@@ -259,6 +296,7 @@ export async function initiateStkPayment(opts: {
     phone,
     accountReference: `AE${order.id.replace(/-/g, "").slice(0, 10)}`,
     transactionDesc: `Order ${order.id.slice(0, 8)}`,
+    credentials: creds,
   });
 
   if (!push.ok) {
@@ -311,12 +349,24 @@ export async function completeDarajaPayment(opts: {
   paymentId: string;
   mpesaReceipt?: string | null;
   resultDesc?: string | null;
+  providerAmount?: number | null;
 }): Promise<{ orderId: string; status: string; alreadyDone: boolean }> {
   const payment = await prisma.payment.findUnique({
     where: { id: opts.paymentId },
     include: { order: true },
   });
   if (!payment) throw new Error("payment_not_found");
+
+  const expected = Number(payment.expectedAmount ?? payment.amount);
+  if (opts.providerAmount != null && Number.isFinite(opts.providerAmount) && Math.abs(opts.providerAmount - expected) > 0.009) {
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        reconciliationNotes: `amount_mismatch expected=${expected} provider=${opts.providerAmount}`,
+      },
+    });
+    throw new Error("payment_amount_mismatch");
+  }
 
   if (payment.status === "completed") {
     return {
@@ -341,6 +391,9 @@ export async function completeDarajaPayment(opts: {
         status: "completed",
         providerRef: opts.mpesaReceipt || payment.providerRef,
         failureReason: null,
+        paidAt: new Date(),
+        reconciledAt: new Date(),
+        reconciliationNotes: opts.resultDesc ?? payment.reconciliationNotes,
       },
     });
 
@@ -491,9 +544,10 @@ export async function resolvePaymentStatus(opts: {
     opts.queryProvider &&
     payment.status === "pending" &&
     payment.checkoutRequestId &&
-    darajaConfigured()
+    (await darajaConfiguredFor(payment.pharmacyId))
   ) {
-    const q = await stkQuery(payment.checkoutRequestId);
+    const creds = await resolveDarajaCredentials(payment.pharmacyId);
+    const q = await stkQuery(payment.checkoutRequestId, creds);
     if (q.ok) {
       if (q.resultCode === "0") {
         // Success without receipt in query response — complete without receipt.
