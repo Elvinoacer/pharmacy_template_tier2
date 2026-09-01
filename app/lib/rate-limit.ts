@@ -5,6 +5,8 @@ import { prismaUnscoped } from "@/app/lib/db";
 export type RateLimitResult = {
   allowed: boolean;
   retryAfterSeconds: number;
+  /** True when the distributed store was unavailable and we degraded. */
+  degraded?: boolean;
 };
 
 const memory = new Map<string, { count: number; resetAt: number }>();
@@ -14,18 +16,22 @@ function memoryLimit(key: string, limit: number, windowMs: number): RateLimitRes
   const existing = memory.get(key);
   if (!existing || existing.resetAt <= now) {
     memory.set(key, { count: 1, resetAt: now + windowMs });
-    return { allowed: true, retryAfterSeconds: 0 };
+    return { allowed: true, retryAfterSeconds: 0, degraded: true };
   }
   if (existing.count >= limit) {
-    return { allowed: false, retryAfterSeconds: Math.ceil((existing.resetAt - now) / 1000) };
+    return {
+      allowed: false,
+      retryAfterSeconds: Math.ceil((existing.resetAt - now) / 1000),
+      degraded: true,
+    };
   }
   existing.count += 1;
-  return { allowed: true, retryAfterSeconds: 0 };
+  return { allowed: true, retryAfterSeconds: 0, degraded: true };
 }
 
 /**
- * Distributed rate limiter backed by Postgres. Falls back to process memory
- * if the counter table is unavailable (e.g. before migration).
+ * Process-local rate limiter. Prefer checkRateLimitAsync for anything
+ * security-sensitive or multi-instance. Keep this only for non-critical UI paths.
  */
 export function checkRateLimit(
   key: string,
@@ -34,9 +40,25 @@ export function checkRateLimit(
   return memoryLimit(key, options.limit, options.windowMs);
 }
 
+export type RateLimitAsyncOptions = {
+  limit: number;
+  windowMs: number;
+  /**
+   * When true (recommended for login, registration, password reset, payments,
+   * MFA, OTP, guest order, AI/chat), a distributed-store failure rejects the
+   * request instead of silently falling back to process-local memory.
+   */
+  failClosed?: boolean;
+};
+
+/**
+ * Distributed rate limiter backed by Postgres.
+ * - failClosed: false (default) → fall back to process memory on store failure
+ * - failClosed: true → reject (allowed: false) when the store is unavailable
+ */
 export async function checkRateLimitAsync(
   key: string,
-  options: { limit: number; windowMs: number },
+  options: RateLimitAsyncOptions,
 ): Promise<RateLimitResult> {
   const newResetAt = new Date(Date.now() + options.windowMs);
   try {
@@ -51,7 +73,12 @@ export async function checkRateLimitAsync(
       RETURNING "count", "reset_at"
     `;
     const row = rows[0];
-    if (!row) return memoryLimit(key, options.limit, options.windowMs);
+    if (!row) {
+      if (options.failClosed) {
+        return { allowed: false, retryAfterSeconds: 30, degraded: true };
+      }
+      return memoryLimit(key, options.limit, options.windowMs);
+    }
 
     const count = Number(row.count);
     const resetTime = new Date(row.reset_at).getTime();
@@ -63,11 +90,22 @@ export async function checkRateLimitAsync(
     }
     return { allowed: true, retryAfterSeconds: 0 };
   } catch {
+    if (options.failClosed) {
+      // Fail closed: do not silently downgrade security endpoints to per-process memory.
+      return { allowed: false, retryAfterSeconds: 30, degraded: true };
+    }
     return memoryLimit(key, options.limit, options.windowMs);
   }
 }
 
-export function rateLimitKey(parts: { ip?: string; user?: string; phone?: string; tenant?: string; endpoint?: string; device?: string }) {
+export function rateLimitKey(parts: {
+  ip?: string;
+  user?: string;
+  phone?: string;
+  tenant?: string;
+  endpoint?: string;
+  device?: string;
+}) {
   return ["rl", parts.endpoint, parts.tenant, parts.user, parts.phone, parts.ip, parts.device]
     .filter(Boolean)
     .join(":");
