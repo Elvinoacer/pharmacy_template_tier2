@@ -15,7 +15,7 @@ import {
   MAX_TOOL_ROUNDS,
   executeAiTool,
 } from "@/app/lib/ai-tools";
-import { checkRateLimit } from "@/app/lib/rate-limit";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -175,9 +175,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const rl = checkRateLimit(`chat:${clientIp(request)}`, {
+  const rl = await checkRateLimitAsync(`chat:${clientIp(request)}`, {
     limit: 30,
     windowMs: 60_000,
+    failClosed: true,
   });
   if (!rl.allowed) {
     return Response.json(
