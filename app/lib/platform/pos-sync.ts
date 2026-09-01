@@ -218,11 +218,25 @@ export async function resolveInventoryConflict(
   conflictId: string,
   action: "accept_pos" | "accept_platform" | "ignore",
   actorId?: string | null,
+  opts?: { expectedVersion?: number; force?: boolean },
 ) {
   const row = await prismaUnscoped.inventorySyncConflict.findUnique({ where: { id: conflictId } });
   if (!row || row.status !== "open") throw new Error("conflict_not_found");
 
   return withPharmacy(row.pharmacyId, async () => {
+    const currentInventory = await prismaUnscoped.pharmacyInventory.findUnique({
+      where: { id: row.inventoryId },
+      select: { id: true, version: true, currentStock: true },
+    });
+    if (!currentInventory) throw new Error("inventory_item_not_found");
+
+    const expectedVersion = opts?.expectedVersion ?? row.platformVersion;
+    if (!opts?.force && currentInventory.version !== expectedVersion) {
+      throw new Error(
+        `CONFLICT_VERSION_MISMATCH: Inventory version has changed from ${expectedVersion} to ${currentInventory.version} since conflict was detected. Refresh conflict details before resolving.`,
+      );
+    }
+
     if (action === "accept_pos") {
       const { setAbsoluteStock } = await import("@/app/lib/services/stock");
       await prismaUnscoped.$transaction(async (tx) => {

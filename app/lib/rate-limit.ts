@@ -38,27 +38,29 @@ export async function checkRateLimitAsync(
   key: string,
   options: { limit: number; windowMs: number },
 ): Promise<RateLimitResult> {
-  const now = new Date();
+  const newResetAt = new Date(Date.now() + options.windowMs);
   try {
-    const row = await prismaUnscoped.rateLimitCounter.findUnique({ where: { bucketKey: key } });
-    if (!row || row.resetAt <= now) {
-      await prismaUnscoped.rateLimitCounter.upsert({
-        where: { bucketKey: key },
-        update: { count: 1, resetAt: new Date(now.getTime() + options.windowMs) },
-        create: { bucketKey: key, count: 1, resetAt: new Date(now.getTime() + options.windowMs) },
-      });
-      return { allowed: true, retryAfterSeconds: 0 };
+    const rows = await prismaUnscoped.$queryRaw<Array<{ count: number; reset_at: Date }>>`
+      INSERT INTO "rate_limit_counters" ("id", "bucket_key", "count", "reset_at", "updated_at")
+      VALUES (gen_random_uuid(), ${key}, 1, ${newResetAt}, NOW())
+      ON CONFLICT ("bucket_key") DO UPDATE
+      SET
+        "count" = CASE WHEN "rate_limit_counters"."reset_at" <= NOW() THEN 1 ELSE "rate_limit_counters"."count" + 1 END,
+        "reset_at" = CASE WHEN "rate_limit_counters"."reset_at" <= NOW() THEN ${newResetAt} ELSE "rate_limit_counters"."reset_at" END,
+        "updated_at" = NOW()
+      RETURNING "count", "reset_at"
+    `;
+    const row = rows[0];
+    if (!row) return memoryLimit(key, options.limit, options.windowMs);
+
+    const count = Number(row.count);
+    const resetTime = new Date(row.reset_at).getTime();
+    const nowTime = Date.now();
+
+    if (count > options.limit) {
+      const retryAfter = Math.max(1, Math.ceil((resetTime - nowTime) / 1000));
+      return { allowed: false, retryAfterSeconds: retryAfter };
     }
-    if (row.count >= options.limit) {
-      return {
-        allowed: false,
-        retryAfterSeconds: Math.max(1, Math.ceil((row.resetAt.getTime() - now.getTime()) / 1000)),
-      };
-    }
-    await prismaUnscoped.rateLimitCounter.update({
-      where: { bucketKey: key },
-      data: { count: { increment: 1 } },
-    });
     return { allowed: true, retryAfterSeconds: 0 };
   } catch {
     return memoryLimit(key, options.limit, options.windowMs);

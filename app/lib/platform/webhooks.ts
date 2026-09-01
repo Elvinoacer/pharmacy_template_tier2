@@ -195,14 +195,38 @@ export async function attemptWebhookDelivery(id: string) {
   }
 }
 
+const STALE_WEBHOOK_DELIVERY_MS = 10 * 60 * 1000;
+
+export async function recoverStaleWebhookDeliveries() {
+  const cutoff = new Date(Date.now() - STALE_WEBHOOK_DELIVERY_MS);
+  const res = await prismaUnscoped.webhookDelivery.updateMany({
+    where: {
+      status: "processing",
+      OR: [
+        { nextAttemptAt: { lt: cutoff } },
+        { createdAt: { lt: cutoff } },
+      ],
+    },
+    data: {
+      status: "retrying",
+      lastError: "stale_lock_recovered",
+      nextAttemptAt: new Date(),
+    },
+  });
+  return res.count;
+}
+
 export async function processWebhookDeliveryBatch(limit = 40) {
+  await recoverStaleWebhookDeliveries();
   const due = await prismaUnscoped.webhookDelivery.findMany({
     where: { status: { in: ["pending", "retrying"] }, nextAttemptAt: { lte: new Date() } },
     take: limit,
     orderBy: { nextAttemptAt: "asc" },
   });
+  let processed = 0;
   for (const row of due) {
     await attemptWebhookDelivery(row.id);
+    processed++;
   }
-  return { scanned: due.length };
+  return { scanned: due.length, processed };
 }

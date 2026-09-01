@@ -4,6 +4,8 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { decryptSecret, encryptSecret, hashApiKey } from "@/app/lib/platform/secrets";
 import type { DarajaEnv } from "@/app/lib/services/daraja";
 
+import { getPlatformConfig } from "@/app/lib/platform-settings";
+
 export type DarajaCredentials = {
   consumerKey: string;
   consumerSecret: string;
@@ -51,6 +53,31 @@ function platformDaraja(): DarajaCredentials | null {
 
 export async function resolveDarajaCredentials(pharmacyId: string | null): Promise<DarajaCredentials | null> {
   if (pharmacyId) {
+    // Check IntegrationAccount first (canonical source)
+    const account = await prismaUnscoped.integrationAccount.findUnique({
+      where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
+    }).catch(() => null);
+
+    if (account?.secretsEnc) {
+      try {
+        const decrypted = JSON.parse(decryptSecret(account.secretsEnc) || "{}");
+        const cfg = (account.config ?? {}) as { shortcode?: string; env?: string };
+        if (decrypted.consumerKey && decrypted.consumerSecret && decrypted.passkey && cfg.shortcode) {
+          return {
+            consumerKey: decrypted.consumerKey,
+            consumerSecret: decrypted.consumerSecret,
+            shortcode: cfg.shortcode,
+            passkey: decrypted.passkey,
+            env: cfg.env === "production" ? "production" : "sandbox",
+            callbackUrl: process.env.DARAJA_CALLBACK_URL?.trim() || "",
+            source: "tenant",
+          };
+        }
+      } catch {
+        // Fall back to legacy PharmacyIntegration
+      }
+    }
+
     const row = await prismaUnscoped.pharmacyIntegration.findUnique({ where: { pharmacyId } });
     const key = decryptSecret(row?.darajaConsumerKeyEnc);
     const secret = decryptSecret(row?.darajaConsumerSecretEnc);
@@ -71,15 +98,13 @@ export async function resolveDarajaCredentials(pharmacyId: string | null): Promi
 }
 
 export async function resolveSenderIdentity(pharmacyId: string | null): Promise<SenderIdentity> {
-  const platformName = "Aether Network";
-  const platformEmail = process.env.EMAIL_FROM?.trim() || process.env.SUPPORT_EMAIL?.trim() || "support@gtss.software";
-  const platformPhone = process.env.SUPPORT_PHONE?.trim() || "0790670542";
+  const platform = getPlatformConfig();
   const base: SenderIdentity = {
     pharmacyId,
-    name: platformName,
-    emailFrom: process.env.EMAIL_FROM?.trim() || null,
-    supportEmail: platformEmail,
-    supportPhone: platformPhone,
+    name: platform.brandName,
+    emailFrom: platform.emailFrom,
+    supportEmail: platform.supportEmail,
+    supportPhone: platform.supportPhone,
     logoUrl: null,
     tagline: null,
     resendApiKey: process.env.RESEND_API_KEY?.trim() || null,
@@ -129,6 +154,35 @@ export async function saveTenantDaraja(
   pharmacyId: string,
   input: { consumerKey: string; consumerSecret: string; passkey: string; shortcode: string; env?: string },
 ) {
+  const env = input.env === "production" ? "production" : "sandbox";
+  const secretsPayload = JSON.stringify({
+    consumerKey: input.consumerKey,
+    consumerSecret: input.consumerSecret,
+    passkey: input.passkey,
+  });
+
+  // Upsert canonical IntegrationAccount
+  await prismaUnscoped.integrationAccount.upsert({
+    where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
+    update: {
+      status: "connected",
+      config: { shortcode: input.shortcode, env },
+      secretsEnc: encryptSecret(secretsPayload),
+      rotatedAt: new Date(),
+      secretsVersion: { increment: 1 },
+    },
+    create: {
+      pharmacyId,
+      kind: "daraja",
+      provider: "daraja",
+      status: "connected",
+      config: { shortcode: input.shortcode, env },
+      secretsEnc: encryptSecret(secretsPayload),
+      rotatedAt: new Date(),
+    },
+  }).catch(() => {});
+
+  // Legacy sync
   await prismaUnscoped.pharmacyIntegration.upsert({
     where: { pharmacyId },
     update: {
@@ -136,7 +190,7 @@ export async function saveTenantDaraja(
       darajaConsumerSecretEnc: encryptSecret(input.consumerSecret),
       darajaPasskeyEnc: encryptSecret(input.passkey),
       darajaShortcode: input.shortcode,
-      darajaEnv: input.env === "production" ? "production" : "sandbox",
+      darajaEnv: env,
       secretsRotatedAt: new Date(),
       secretsVersion: { increment: 1 },
     },
@@ -146,13 +200,13 @@ export async function saveTenantDaraja(
       darajaConsumerSecretEnc: encryptSecret(input.consumerSecret),
       darajaPasskeyEnc: encryptSecret(input.passkey),
       darajaShortcode: input.shortcode,
-      darajaEnv: input.env === "production" ? "production" : "sandbox",
+      darajaEnv: env,
       secretsRotatedAt: new Date(),
     },
   });
 }
 
-export async function authenticateApiKey(raw: string | null) {
+export async function authenticateApiKey(raw: string | null, requiredScopes?: string[]) {
   if (!raw) return null;
   const token = raw.replace(/^Bearer\s+/i, "").trim();
   if (!token) return null;
@@ -160,6 +214,15 @@ export async function authenticateApiKey(raw: string | null) {
   const key = await prismaUnscoped.apiKey.findUnique({ where: { hash } });
   if (!key || key.revokedAt) return null;
   if (key.expiresAt && key.expiresAt < new Date()) return null;
+
+  if (requiredScopes && requiredScopes.length > 0) {
+    const hasWildcard = key.scopes.includes("*") || key.scopes.includes("admin");
+    if (!hasWildcard) {
+      const hasAny = requiredScopes.some((s) => key.scopes.includes(s));
+      if (!hasAny) return null;
+    }
+  }
+
   await prismaUnscoped.apiKey.update({
     where: { id: key.id },
     data: { lastUsedAt: new Date() },
@@ -167,10 +230,18 @@ export async function authenticateApiKey(raw: string | null) {
   return key;
 }
 
+export async function requireApiKey(raw: string | null, requiredScopes?: string[]) {
+  const key = await authenticateApiKey(raw, requiredScopes);
+  if (!key) {
+    throw new Error("API_KEY_UNAUTHORIZED: Missing, expired, revoked, or insufficient scope for API key");
+  }
+  return key;
+}
+
 export async function authenticatePos(raw: string | null) {
-  const apiKey = await authenticateApiKey(raw);
-  if (apiKey && (apiKey.scopes.length === 0 || apiKey.scopes.includes("inventory.write") || apiKey.scopes.includes("pos.sync"))) {
-    return { pharmacyId: apiKey.pharmacyId, via: "api_key" as const };
+  const apiKey = await authenticateApiKey(raw, ["inventory.write", "pos.sync", "inventory.sync", "pos"]);
+  if (apiKey) {
+    return { pharmacyId: apiKey.pharmacyId, via: "api_key" as const, key: apiKey };
   }
 
   const token = raw?.replace(/^Bearer\s+/i, "").trim();

@@ -61,7 +61,7 @@ export async function authorize(input: AuthorizeInput): Promise<SessionUser> {
     throw new AuthError(`Missing permission: ${input.action}`, 403);
   }
 
-  if (input.branchId && membership.role !== "owner" && membership.role !== "manager") {
+  if (input.branchId && membership.role !== "owner") {
     const scoped = await prismaUnscoped.branchMembership.count({
       where: { membershipId: membership.id },
     });

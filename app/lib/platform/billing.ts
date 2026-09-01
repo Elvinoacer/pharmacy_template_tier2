@@ -273,6 +273,7 @@ export async function processSubscriptionCycle() {
       data: {
         currentPeriodStart: sub.currentPeriodEnd,
         currentPeriodEnd: nextEnd,
+        status: "past_due", // Explicit: renewed period requires invoice payment to return to active
         ...(sub.pendingPlanId ? { planId: sub.pendingPlanId, pendingPlanId: null } : {}),
       },
     });
@@ -340,29 +341,36 @@ export async function changePlan(
     });
     await syncEntitlementsFromPlan(sub.pharmacyId, next.id);
     if (upgrade && Number(next.priceKes) > Number(sub.plan.priceKes)) {
-      const delta = Number(next.priceKes) - Number(sub.plan.priceKes);
-      await createInvoiceSafe({
-        pharmacyId: sub.pharmacyId,
-        subscriptionId: sub.id,
-        number: "pending",
-        periodStart: new Date(),
-        periodEnd: sub.currentPeriodEnd,
-        subtotalKes: delta,
-        taxKes: 0,
-        totalKes: delta,
-        status: "open",
-        dueAt: new Date(),
-        items: {
-          create: [
-            {
-              description: `Proration upgrade ${sub.plan.name} → ${next.name}`,
-              quantity: 1,
-              unitKes: delta,
-              totalKes: delta,
-            },
-          ],
-        },
-      });
+      const fullDelta = Number(next.priceKes) - Number(sub.plan.priceKes);
+      const totalMs = Math.max(1, sub.currentPeriodEnd.getTime() - sub.currentPeriodStart.getTime());
+      const remainingMs = Math.max(0, sub.currentPeriodEnd.getTime() - Date.now());
+      const fractionRemaining = remainingMs / totalMs;
+      const proratedDelta = Math.max(0, Math.round(fullDelta * fractionRemaining));
+
+      if (proratedDelta > 0) {
+        await createInvoiceSafe({
+          pharmacyId: sub.pharmacyId,
+          subscriptionId: sub.id,
+          number: "pending",
+          periodStart: new Date(),
+          periodEnd: sub.currentPeriodEnd,
+          subtotalKes: proratedDelta,
+          taxKes: 0,
+          totalKes: proratedDelta,
+          status: "open",
+          dueAt: new Date(),
+          items: {
+            create: [
+              {
+                description: `Prorated upgrade ${sub.plan.name} → ${next.name} (${Math.round(fractionRemaining * 100)}% cycle remaining)`,
+                quantity: 1,
+                unitKes: proratedDelta,
+                totalKes: proratedDelta,
+              },
+            ],
+          },
+        });
+      }
     }
   } else {
     await prismaUnscoped.subscription.update({
@@ -486,18 +494,39 @@ export async function collectInvoicePayment(invoiceId: string, opts?: { phone?: 
 
 export async function completeBillingPayment(opts: {
   checkoutRequestId: string;
+  merchantRequestId?: string | null;
   mpesaReceipt?: string | null;
+  amount?: number | null;
+  phone?: string | null;
   resultCode: number;
   resultDesc?: string | null;
 }) {
   const row = await prismaUnscoped.billingPayment.findFirst({
     where: { checkoutRequestId: opts.checkoutRequestId },
     orderBy: { createdAt: "desc" },
+    include: { invoice: true },
   });
   if (!row) return null;
   if (row.status === "succeeded") return row;
 
   if (opts.resultCode === 0) {
+    // Reconcile amount if provided by the callback
+    if (opts.amount != null) {
+      const expected = Number(row.amountKes);
+      const received = Number(opts.amount);
+      if (Math.abs(expected - received) > 1.0) {
+        await prismaUnscoped.billingPayment.update({
+          where: { id: row.id },
+          data: {
+            status: "failed",
+            failureReason: `amount_mismatch: expected ${expected}, got ${received}`,
+            providerRef: opts.mpesaReceipt ?? row.providerRef,
+          },
+        });
+        return prismaUnscoped.billingPayment.findUnique({ where: { id: row.id } });
+      }
+    }
+
     await prismaUnscoped.billingPayment.update({
       where: { id: row.id },
       data: {

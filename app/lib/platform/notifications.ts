@@ -47,7 +47,29 @@ export async function queueNotificationDelivery(input: {
   return { delivery, chain, payload: input.payload };
 }
 
+const STALE_NOTIFICATION_DELIVERY_MS = 10 * 60 * 1000;
+
+export async function recoverStaleNotificationDeliveries() {
+  const cutoff = new Date(Date.now() - STALE_NOTIFICATION_DELIVERY_MS);
+  const res = await prismaUnscoped.notificationDelivery.updateMany({
+    where: {
+      status: "processing",
+      OR: [
+        { sentAt: { lt: cutoff } },
+        { sentAt: null, createdAt: { lt: cutoff } },
+      ],
+    },
+    data: {
+      status: "retrying",
+      error: "stale_lock_recovered",
+      scheduledAt: new Date(),
+    },
+  });
+  return res.count;
+}
+
 export async function processQueuedDeliveries(pharmacyId: string | null, limit = 25) {
+  await recoverStaleNotificationDeliveries();
   const due = await prismaUnscoped.notificationDelivery.findMany({
     where: {
       status: { in: ["queued", "retrying"] },

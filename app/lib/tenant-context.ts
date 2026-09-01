@@ -1,6 +1,4 @@
 import { AsyncLocalStorage, createHook, executionAsyncId } from "node:async_hooks";
-import { enterRlsScope } from "@/app/lib/db/rls";
-
 export const STAFF_PHARMACY_COOKIE = "aether_staff_pharmacy";
 export const PUBLIC_PHARMACY_COOKIE = "aether_pharmacy";
 
@@ -12,18 +10,32 @@ export type TenantStore = {
   bypass: boolean;
 };
 
-export const tenantAls = new AsyncLocalStorage<TenantStore>();
+const globalTenant = globalThis as unknown as {
+  __aether_tenant_als?: AsyncLocalStorage<TenantStore>;
+  __aether_tenant_scopes?: Map<number, TenantStore>;
+  __aether_tenant_hook?: boolean;
+};
 
-const scopes = new Map<number, TenantStore>();
-createHook({
-  init(asyncId, _type, triggerAsyncId) {
-    const scope = scopes.get(triggerAsyncId);
-    if (scope) scopes.set(asyncId, scope);
-  },
-  destroy(asyncId) {
-    scopes.delete(asyncId);
-  },
-}).enable();
+export const tenantAls: AsyncLocalStorage<TenantStore> =
+  globalTenant.__aether_tenant_als ??
+  (globalTenant.__aether_tenant_als = new AsyncLocalStorage<TenantStore>());
+
+const scopes: Map<number, TenantStore> =
+  globalTenant.__aether_tenant_scopes ??
+  (globalTenant.__aether_tenant_scopes = new Map<number, TenantStore>());
+
+if (!globalTenant.__aether_tenant_hook) {
+  globalTenant.__aether_tenant_hook = true;
+  createHook({
+    init(asyncId, _type, triggerAsyncId) {
+      const scope = scopes.get(triggerAsyncId);
+      if (scope) scopes.set(asyncId, scope);
+    },
+    destroy(asyncId) {
+      scopes.delete(asyncId);
+    },
+  }).enable();
+}
 
 function bindScope(store: TenantStore) {
   scopes.set(executionAsyncId(), store);
@@ -36,14 +48,12 @@ export function boundTenant(): TenantStore | undefined {
 export function withPlatformBypass<T>(fn: () => T): T {
   const store = { pharmacyId: null, slug: null, bypass: true };
   bindScope(store);
-  enterRlsScope({ bypass: true, pharmacyId: null });
   return tenantAls.run(store, fn);
 }
 
 export function withPharmacy<T>(pharmacyId: string, fn: () => T, slug?: string | null): T {
   const store = { pharmacyId, slug: slug ?? null, bypass: false };
   bindScope(store);
-  enterRlsScope({ bypass: false, pharmacyId });
   return tenantAls.run(store, fn);
 }
 

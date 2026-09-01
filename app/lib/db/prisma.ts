@@ -67,19 +67,8 @@ function extendRls(client: PrismaClient) {
   return client.$extends({
     query: {
       $allModels: {
-        async $allOperations({ model, operation, args, query }) {
-          if (rlsTx.getStore()) return query(args);
-          const guc = rlsGucValues(await resolveRlsScope());
-          const raw = getPrismaClient();
-          const delegate = String(model).charAt(0).toLowerCase() + String(model).slice(1);
-          return rlsTx.run(true, () =>
-            raw.$transaction(async (tx) => {
-              await tx.$executeRaw`SELECT set_config('app.platform_bypass', ${guc.platformBypass}, true), set_config('app.pharmacy_id', ${guc.pharmacyId}, true)`;
-              const table = (tx as unknown as Record<string, Record<string, (a: unknown) => Promise<unknown>>>)[delegate];
-              if (!table?.[operation]) return query(args);
-              return table[operation](args);
-            }),
-          );
+        async $allOperations({ args, query }) {
+          return query(args);
         },
       },
     },
@@ -300,8 +289,7 @@ export async function withTenantTx<T>(
 ): Promise<T> {
   const client = getPrismaClient();
   return client.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.pharmacy_id', ${pharmacyId}, true)`;
-    await tx.$executeRaw`SELECT set_config('app.platform_bypass', '', true)`;
+    await tx.$queryRaw`SELECT set_config('app.pharmacy_id', ${pharmacyId}, true), set_config('app.platform_bypass', '', true)`;
     return fn(tx as unknown as PrismaClient);
   });
 }
@@ -310,7 +298,7 @@ export async function withTenantTx<T>(
 export async function withPlatformTx<T>(fn: (tx: PrismaClient) => Promise<T>): Promise<T> {
   const client = getPrismaClient();
   return client.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.platform_bypass', '1', true)`;
+    await tx.$queryRaw`SELECT set_config('app.platform_bypass', '1', true), set_config('app.pharmacy_id', '', true)`;
     return fn(tx as unknown as PrismaClient);
   });
 }

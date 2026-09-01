@@ -17,12 +17,10 @@ export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
   if (!id || !token) return new Response("Missing id or token", { status: 400 });
 
-  const row = await readExportArchive(id, token);
-  if (!row?.archiveUrl) return new Response("Not found or expired", { status: 404 });
+  const result = await readExportArchive(id, token);
+  if (!result) return new Response("Not found or expired", { status: 404 });
 
-  const base64 = row.archiveUrl.replace(/^data:application\/json;base64,/, "");
-  const buf = Buffer.from(base64, "base64");
-  return new Response(buf, {
+  return new Response(new Uint8Array(result.buffer), {
     headers: {
       "Content-Type": "application/json",
       "Content-Disposition": `attachment; filename="export-${id.slice(0, 8)}.json"`,

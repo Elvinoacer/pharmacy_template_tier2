@@ -1,5 +1,21 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import { describe, it } from "node:test";
+import { config as loadEnv } from "dotenv";
+
+loadEnv({ path: path.resolve(process.cwd(), ".env") });
+loadEnv({ path: path.resolve(process.cwd(), ".env.local"), override: true });
+
+try {
+  const serverOnlyPath = require.resolve("server-only");
+  require.cache[serverOnlyPath] = {
+    id: serverOnlyPath,
+    filename: serverOnlyPath,
+    loaded: true,
+    exports: {},
+  } as unknown as NodeJS.Module;
+} catch {}
+
 import {
   generateTotpSecret,
   totpCode,
@@ -49,5 +65,61 @@ describe("tenant isolation conventions", () => {
     for (const model of ["Payment", "ApiKey", "OutboxEvent", "Subscription", "PharmacyBranch", "WebhookDelivery", "BillingPayment", "InventorySyncConflict"]) {
       assert.ok(TENANT_MODELS.has(model), `missing ${model}`);
     }
+  });
+});
+
+describe("export storage adapter", () => {
+  it("saves and loads export archive correctly with checksum", async () => {
+    const { saveExportArchive, loadExportArchive, deleteExportArchive } = await import(
+      "../app/lib/platform/export-storage"
+    );
+    const testData = JSON.stringify({ schemaVersion: "2.0", test: true, count: 42 });
+    const pharmacyId = "11111111-1111-4111-a111-111111111111";
+    const requestId = `test-exp-${Date.now()}`;
+
+    const meta = await saveExportArchive(pharmacyId, requestId, testData);
+    assert.ok(meta.storageUrl);
+    assert.ok(meta.checksum);
+    assert.equal(meta.sizeBytes, Buffer.from(testData).length);
+
+    const loaded = await loadExportArchive(meta.storageUrl);
+    assert.ok(loaded);
+    assert.equal(loaded?.toString("utf8"), testData);
+
+    await deleteExportArchive(meta.storageUrl);
+  });
+});
+
+describe("rate limiting", () => {
+  it("allows requests up to limit and rejects beyond limit", async () => {
+    const { checkRateLimitAsync } = await import("../app/lib/rate-limit");
+    const key = `test-rl-${Date.now()}`;
+    const opts = { limit: 3, windowMs: 60000 };
+
+    const r1 = await checkRateLimitAsync(key, opts);
+    assert.equal(r1.allowed, true);
+    const r2 = await checkRateLimitAsync(key, opts);
+    assert.equal(r2.allowed, true);
+    const r3 = await checkRateLimitAsync(key, opts);
+    assert.equal(r3.allowed, true);
+    const r4 = await checkRateLimitAsync(key, opts);
+    assert.equal(r4.allowed, false);
+    assert.ok(r4.retryAfterSeconds > 0);
+  });
+});
+
+describe("platform observability", () => {
+  it("returns structured health check results", async () => {
+    const { platformHealthCheck, platformOpsSnapshot } = await import(
+      "../app/lib/platform/observability"
+    );
+    const health = await platformHealthCheck();
+    assert.ok(health.status === "healthy" || health.status === "degraded" || health.status === "unhealthy");
+    assert.ok(typeof health.checks.queueBacklog === "number");
+
+    const snap = await platformOpsSnapshot();
+    assert.ok(snap.jobs);
+    assert.ok(snap.billing);
+    assert.ok(snap.pos);
   });
 });
