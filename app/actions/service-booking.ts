@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/app/lib/db";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getSessionUser } from "@/app/lib/auth";
 import {
@@ -59,23 +58,13 @@ export async function bookServiceAction(
   }
 
   const session = await getSessionUser().catch(() => null);
-  let customerId: string | null = session?.customerId ?? null;
 
-  if (!customerId && email) {
-    const byEmail = await prisma.customerProfile.findFirst({
-      where: { user: { email } },
-      select: { id: true },
-    });
-    customerId = byEmail?.id ?? null;
-  }
-  if (!customerId && phone) {
-    const digits = phone.replace(/\D/g, "");
-    const byPhone = await prisma.customerProfile.findFirst({
-      where: { phone: { contains: digits.slice(-9) } },
-      select: { id: true },
-    });
-    customerId = byPhone?.id ?? null;
-  }
+  // Never infer account ownership from public form fields. Email addresses and
+  // phone numbers are identifiers, not authentication factors. Only an
+  // authenticated customer session may attach a booking/order to that account;
+  // otherwise the booking remains a guest record even if its contact details
+  // happen to match an existing customer.
+  const customerId = session?.customerId ?? null;
 
   let result: Awaited<ReturnType<typeof createServiceBooking>>;
   try {
@@ -136,7 +125,8 @@ export async function bookServiceAction(
     /* non-fatal */
   }
 
-  // Customer push — immediate acknowledgement
+  // Customer push — immediate acknowledgement. Guest bookings can use the
+  // one-shot push token supplied by that browser, but never a guessed account.
   await notifyBookingCustomer(
     {
       id: booking.id,
