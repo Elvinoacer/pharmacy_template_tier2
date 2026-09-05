@@ -37,7 +37,7 @@ export default async function MetricsPage() {
     `.catch(() => []),
   ]);
 
-  const last30Days = Number(last30DayRows[0]?.count ?? 0n);
+  const last30Days = Number(last30DayRows[0]?.count ?? 0);
   const methodCounts: Record<string, number> = {};
   for (const m of byMethod) methodCounts[m.acquisitionMethod] = m._count._all;
 
