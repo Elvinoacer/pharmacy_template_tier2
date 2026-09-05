@@ -47,6 +47,52 @@ async function setJobProgress(jobId: string | undefined, progress: number, resul
   }).catch(() => {});
 }
 
+function normalizedSlug(m: PosMedication) {
+  return (
+    m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+  );
+}
+
+async function recordConflict(opts: {
+  pharmacyId: string;
+  inventoryId: string;
+  jobId?: string;
+  sku?: string;
+  platformStock: number;
+  posStock: number;
+  platformVersion: number;
+  posVersion?: number;
+}) {
+  const existing = await prismaUnscoped.inventorySyncConflict.findFirst({
+    where: {
+      pharmacyId: opts.pharmacyId,
+      inventoryId: opts.inventoryId,
+      status: "open",
+      platformStock: opts.platformStock,
+      posStock: opts.posStock,
+      platformVersion: opts.platformVersion,
+      posVersion: opts.posVersion ?? null,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  if (existing) return { conflict: existing, created: false };
+
+  const conflict = await prismaUnscoped.inventorySyncConflict.create({
+    data: {
+      pharmacyId: opts.pharmacyId,
+      inventoryId: opts.inventoryId,
+      jobId: opts.jobId ?? null,
+      sku: opts.sku ?? null,
+      platformStock: opts.platformStock,
+      posStock: opts.posStock,
+      platformVersion: opts.platformVersion,
+      posVersion: opts.posVersion ?? null,
+      status: "open",
+    },
+  });
+  return { conflict, created: true };
+}
+
 export async function runPosSync(
   pharmacyId: string,
   medications: PosMedication[],
@@ -74,7 +120,7 @@ export async function runPosSync(
 
     for (let i = 0; i < medications.length; i++) {
       const m = medications[i];
-      const slug = m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const slug = normalizedSlug(m);
       const existing = m.sku
         ? await prismaUnscoped.pharmacyInventory.findFirst({ where: { pharmacyId, sku: m.sku } })
         : await prismaUnscoped.pharmacyInventory.findFirst({ where: { pharmacyId, slug } });
@@ -82,67 +128,87 @@ export async function runPosSync(
       if (existing) {
         const versionConflict = m.version != null && existing.version > m.version;
         const stockConflict = existing.currentStock !== m.stockQty;
+
         if (versionConflict || stockConflict) {
-          await prismaUnscoped.inventorySyncConflict.create({
-            data: {
-              pharmacyId,
-              inventoryId: existing.id,
-              jobId: opts?.jobId ?? null,
-              sku: m.sku ?? null,
-              platformStock: existing.currentStock,
-              posStock: m.stockQty,
-              platformVersion: existing.version,
-              posVersion: m.version ?? null,
-              status: "open",
-            },
-          });
-          conflictCount++;
-        }
-        if (versionConflict) {
-          skipped++;
-          continue;
-        }
-        const stockResult = await prismaUnscoped.$transaction(async (tx) => {
-          await tx.pharmacyInventory.update({
-            where: { id: existing.id },
-            data: {
-              price: m.price,
-              lowStockThreshold: m.lowStockThreshold,
-              syncedAt: new Date(),
-              version: { increment: 1 },
-              branchId: branchId ?? existing.branchId,
-            },
-          });
-          return setAbsoluteStock(tx, {
+          const recorded = await recordConflict({
+            pharmacyId,
             inventoryId: existing.id,
-            newStock: m.stockQty,
-            reason: "pos_sync",
-            notes: "POS absolute stock sync",
-            relatedType: "pos_sync",
+            jobId: opts?.jobId,
+            sku: m.sku,
+            platformStock: existing.currentStock,
+            posStock: m.stockQty,
+            platformVersion: existing.version,
+            posVersion: m.version,
           });
-        });
-        stockResults.push(stockResult);
-        updated++;
+          if (recorded.created) conflictCount++;
+
+          // A conflict means "decision pending". Do not overwrite either stock
+          // or metadata/version, otherwise the later resolver acts on stale state.
+          skipped++;
+        } else {
+          const stockResult = await prismaUnscoped.$transaction(async (tx) => {
+            await tx.pharmacyInventory.update({
+              where: { id: existing.id },
+              data: {
+                price: m.price,
+                lowStockThreshold: m.lowStockThreshold,
+                overTheCounter: m.overTheCounter,
+                publicListing: m.publicListing,
+                prescriptionRequired: m.prescriptionRequired,
+                active: m.active,
+                syncedAt: new Date(),
+                version: { increment: 1 },
+                branchId: branchId ?? existing.branchId,
+              },
+            });
+            return setAbsoluteStock(tx, {
+              inventoryId: existing.id,
+              newStock: m.stockQty,
+              reason: "pos_sync",
+              notes: "POS absolute stock sync",
+              relatedType: "pos_sync",
+            });
+          });
+          stockResults.push(stockResult);
+          updated++;
+          upserted++;
+        }
       } else {
         await prismaUnscoped.$transaction(async (tx) => {
-          const master = await tx.medicationMaster.create({
-            data: {
-              name: m.name,
-              slug,
-              genericName: m.name.split(" ")[0] || m.name,
-              category: m.category,
-              description: m.description || null,
-              indications: m.indications || null,
-              dosage: m.dosage || null,
-              sideEffects: m.sideEffects || null,
-              contraindications: m.contraindications || null,
-              storage: m.storage || null,
-              imageUrl: m.imageUrl || null,
-              acquisitionMethod: "pos_sync",
-              enrichmentStatus: "minimal",
-              enrichmentScore: 30,
+          // Reuse the shared medication master whenever a normalized identity
+          // already exists. POS identity belongs on inventory/SKU, not in a
+          // duplicate global medication record.
+          let master = await tx.medicationMaster.findFirst({
+            where: {
+              OR: [
+                { slug },
+                { name: { equals: m.name, mode: "insensitive" } },
+              ],
             },
+            orderBy: { createdAt: "asc" },
           });
+
+          if (!master) {
+            master = await tx.medicationMaster.create({
+              data: {
+                name: m.name,
+                slug,
+                genericName: m.name.split(" ")[0] || m.name,
+                category: m.category,
+                description: m.description || null,
+                indications: m.indications || null,
+                dosage: m.dosage || null,
+                sideEffects: m.sideEffects || null,
+                contraindications: m.contraindications || null,
+                storage: m.storage || null,
+                imageUrl: m.imageUrl || null,
+                acquisitionMethod: "pos_sync",
+                enrichmentStatus: "minimal",
+                enrichmentScore: 30,
+              },
+            });
+          }
+
           const inv = await tx.pharmacyInventory.create({
             data: {
               pharmacyId,
@@ -173,8 +239,9 @@ export async function runPosSync(
           }
         });
         created++;
+        upserted++;
       }
-      upserted++;
+
       if (m.stockQty <= m.lowStockThreshold) lowStockAlerts++;
       const pct = Math.min(99, Math.round(((i + 1) / total) * 100));
       if ((i + 1) % 10 === 0 || i === medications.length - 1) {
@@ -193,7 +260,7 @@ export async function runPosSync(
       await recordAdminNotification({
         type: "stock_low",
         title: `${lowStockAlerts} medications are low on stock`,
-        body: `${lowStockAlerts} of ${upserted} synced medications are at or below their low-stock threshold.`,
+        body: `${lowStockAlerts} synced POS rows are at or below their low-stock threshold.`,
         severity: "warning",
         relatedType: "medication",
       });
@@ -264,7 +331,12 @@ export async function resolveInventoryConflict(
     return prismaUnscoped.inventorySyncConflict.update({
       where: { id: row.id },
       data: {
-        status: action === "accept_pos" ? "accepted_pos" : action === "accept_platform" ? "accepted_platform" : "ignored",
+        status:
+          action === "accept_pos"
+            ? "accepted_pos"
+            : action === "accept_platform"
+              ? "accepted_platform"
+              : "ignored",
         resolvedAt: new Date(),
         resolvedById: actorId ?? null,
       },
