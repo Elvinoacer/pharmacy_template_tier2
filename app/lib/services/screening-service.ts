@@ -1,5 +1,6 @@
 import "server-only";
 
+import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/app/lib/db";
 import { addTimelineEvent } from "@/app/lib/auth";
 import {
@@ -12,8 +13,6 @@ import {
 } from "@/app/lib/screening-utils";
 
 export * from "@/app/lib/screening-utils";
-
-// ── Database CRUD Operations ──────────────────────────────────
 
 export type RecordScreeningInput = {
   customerId?: string | null;
@@ -37,16 +36,13 @@ export type RecordScreeningInput = {
   spO2Percent?: number | null;
   poctType?: string | null;
   poctResult?: string | null;
-  poctValues?: Record<string, any>;
+  poctValues?: Prisma.InputJsonObject;
   notes?: string | null;
   equipmentUsed?: string | null;
   requiresReferral?: boolean;
   referralUrgency?: ReferralUrgency | null;
 };
 
-/**
- * Creates a new Health Screening Record in the database.
- */
 export async function recordHealthScreening(input: RecordScreeningInput) {
   const bpCls = classifyBloodPressure(input.systolicBp, input.diastolicBp);
   const bgCls = classifyBloodGlucose(input.bloodGlucose, input.glucoseUnit, input.fastingStatus);
@@ -135,9 +131,6 @@ export type CreateReferralInput = {
   pharmacistRecommendations?: string | null;
 };
 
-/**
- * Creates an official Pharmacist Clinical Referral.
- */
 export async function createClinicalReferral(input: CreateReferralInput) {
   const dateStr = new Date().toISOString().slice(0, 7).replace("-", "");
   const randomSuffix = Math.floor(1000 + Math.random() * 9000);
