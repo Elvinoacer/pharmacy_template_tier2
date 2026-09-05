@@ -85,3 +85,18 @@ describe("guest service booking account isolation", () => {
     assert.doesNotMatch(source, /contains:\s*digits\.slice\(-9\)/);
   });
 });
+
+describe("caregiver invitation account isolation", () => {
+  it("requires proof of an existing account and preserves its global role", () => {
+    const source = readFileSync(
+      new URL("../app/actions/caregiver.ts", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(source, /verifyPassword\(password, existingUser\.passwordHash\)/);
+    assert.match(source, /caregiver-accept:\$\{invite\.id\}/);
+    assert.match(source, /failClosed:\s*true/);
+    assert.equal((source.match(/role:\s*"caregiver"/g) ?? []).length, 1);
+    assert.doesNotMatch(source, /passwordHash:\s*user\.passwordHash\s*\|\|/);
+  });
+});
