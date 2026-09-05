@@ -1,0 +1,24 @@
+/*
+ * Performance-focused overrides kept separate from the legacy design stylesheet.
+ *
+ * The registration artwork is intentionally retained for visual parity, but the
+ * browser should not download the original ~2 MB PNG files. Routing those local
+ * assets through Next's image optimizer preserves the design while delivering
+ * responsive WebP/AVIF output from the optimizer cache.
+ */
+.reg-bg {
+  background-image: url("/_next/image?url=%2Fregister%2Freg-bg-mobile.png&w=1080&q=72");
+}
+
+@media (min-width: 1024px) {
+  .reg-bg {
+    background-image: url("/_next/image?url=%2Fregister%2Freg-bg-pc.png&w=1920&q=72");
+  }
+}
+
+/* Avoid painting long off-screen operational/public sections until they are
+ * near the viewport. The intrinsic size keeps scroll geometry stable. */
+[data-defer-paint="true"] {
+  content-visibility: auto;
+  contain-intrinsic-size: 800px;
+}
