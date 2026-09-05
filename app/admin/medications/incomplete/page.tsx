@@ -60,8 +60,8 @@ export default async function IncompleteMedicationsPage({
   return (
     <AdminShell
       user={user}
-      title="Incomplete Medications"
-      subtitle="MedicationMaster records flagged for enrichment (Phase 5). Add the missing clinical fields to complete them."
+      title="Missing medicine details"
+      subtitle="Find incomplete records and add the information staff and patients need."
     >
       <div className="mb-6 flex items-center justify-between">
         <Link
@@ -130,7 +130,7 @@ export default async function IncompleteMedicationsPage({
                     }`}>
                       {m.enrichmentScore}%
                     </div>
-                    <div className="text-[10px] admin-soft">{m.enrichmentStatus}</div>
+                    <div className="text-xs admin-soft">{m.enrichmentStatus}</div>
                   </div>
                   {inv && (
                     <Link

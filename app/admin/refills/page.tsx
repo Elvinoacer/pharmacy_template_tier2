@@ -143,7 +143,7 @@ export default async function AdminRefillsPage({
   return (
     <AdminShell
       user={user}
-      title="Medication Refills & Schedules"
+      title="Refills & schedules"
       subtitle={`${stats.totalPrescriptionsOnRefill} maintenance prescriptions · ${stats.activeRequestsCount} active requests · ${stats.dueInNext7DaysCount} due this week`}
     >
       <RefillManagementView

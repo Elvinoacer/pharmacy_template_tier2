@@ -227,7 +227,7 @@ export function AdminNotificationsPanel({
       )}
 
       {/* List */}
-      <div className="overflow-x-auto scroll-admin">
+      <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin">
         <table className="table-admin">
           <thead>
             <tr>
@@ -264,10 +264,10 @@ export function AdminNotificationsPanel({
                   >
                     <td>
                       <p className="font-medium admin-text">{n.customerName || "—"}</p>
-                      <p className="text-[10px] capitalize admin-soft">{n.type}</p>
+                      <p className="text-xs capitalize admin-soft">{n.type}</p>
                     </td>
                     <td>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-medium capitalize admin-muted">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-xs font-medium capitalize admin-muted">
                         <ChannelIcon className="h-2.5 w-2.5" /> {n.channel}
                       </span>
                     </td>
@@ -279,7 +279,7 @@ export function AdminNotificationsPanel({
                       <p className="truncate text-xs admin-muted max-w-[280px]">{n.body}</p>
                     </td>
                     <td>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLOR[n.status] || "bg-slate-500/15 text-slate-600"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[n.status] || "bg-slate-500/15 text-slate-600"}`}>
                         {n.status}
                       </span>
                       {n.status === "failed" && (

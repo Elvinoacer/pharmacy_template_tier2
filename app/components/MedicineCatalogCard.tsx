@@ -33,7 +33,7 @@ export default function MedicineCatalogCard({
   return (
     <TenantLink
       href={`/medicines/${item.slug}`}
-      className="card-lift group flex flex-col justify-between overflow-hidden rounded-3xl border border-[#e3ebe6] bg-white shadow-xs transition duration-300 hover:border-teal-500/40 hover:shadow-lg"
+      className="card-lift group flex flex-col justify-between overflow-hidden rounded-3xl glass-panel shadow-xs transition duration-300 hover:border-teal-500/40 hover:shadow-lg"
     >
       <div>
         <div className="relative h-36 overflow-hidden bg-[#f4f7f4]">
@@ -87,7 +87,7 @@ export default function MedicineCatalogCard({
         </div>
       </div>
 
-      <div className="border-t border-[#f0f4f1] p-4 pt-3 bg-[#fafcfb]">
+      <div className="border-t border-[var(--line)] p-4 pt-3 bg-[var(--card-elev)]">
         <div className="flex items-center justify-between">
           <div>
             <span className="text-[10px] font-medium text-[#8a9a92] block">Price</span>

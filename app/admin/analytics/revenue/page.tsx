@@ -31,8 +31,8 @@ export default async function RevenueAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Revenue Analytics"
-      description="Revenue, collections, COGS, gross profit and gross margin for the selected period."
+      title="Revenue & margin"
+      description="Compare sales, collections, costs, and profit for the selected period."
       period={period}
       basePath="/admin/analytics/revenue"
     >
@@ -78,7 +78,7 @@ export default async function RevenueAnalyticsPage({
                         title={`Collected: ${formatKES(d.collected)}`}
                       />
                     </div>
-                    <span className="text-[9px] admin-muted rotate-45 origin-left whitespace-nowrap">
+                    <span className="text-xs admin-muted rotate-45 origin-left whitespace-nowrap">
                       {d.date.slice(5)}
                     </span>
                   </div>
@@ -95,7 +95,7 @@ export default async function RevenueAnalyticsPage({
       </AdminPanel>
 
       <AdminPanel title="Daily breakdown" description="Exact numbers per day.">
-        <div className="overflow-x-auto">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-left admin-muted border-b border-[var(--admin-border)]">

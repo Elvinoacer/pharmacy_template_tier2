@@ -114,12 +114,12 @@ export function ClinicalSafetyAlert({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-purple-800">Controlled Substance:</span>
-                <span className="rounded-full bg-purple-200/80 px-2 py-0.5 text-[10px] font-bold text-purple-800">
+                <span className="rounded-full bg-purple-200/80 px-2 py-0.5 text-xs font-bold text-purple-800">
                   {controlledDrug.schedule?.toUpperCase().replace("_", " ") || "DDA REGULATED"}
                 </span>
               </div>
               <p className="mt-1 text-purple-800/90">{controlledDrug.notes}</p>
-              <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-semibold text-purple-900">
+              <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-purple-900">
                 <span className="inline-flex items-center gap-1 rounded bg-purple-100 px-1.5 py-0.5">
                   ✓ Valid Prescriber License Req.
                 </span>
@@ -147,13 +147,13 @@ export function ClinicalSafetyAlert({
               <div key={idx} className="rounded-lg border border-amber-200 bg-white/80 p-2.5">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-800">{dup.medicineName}</span>
-                  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800">
+                  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-800">
                     {dup.status} · {dup.prescribedDate}
                   </span>
                 </div>
-                <p className="mt-1 text-[11px] text-amber-900">{dup.message}</p>
-                {dup.dosage && <p className="mt-0.5 text-[10px] text-slate-600">Current Dosage: {dup.dosage}</p>}
-                {dup.prescriber && <p className="text-[10px] text-slate-600">Prescriber: {dup.prescriber}</p>}
+                <p className="mt-1 text-xs text-amber-900">{dup.message}</p>
+                {dup.dosage && <p className="mt-0.5 text-xs text-slate-600">Current Dosage: {dup.dosage}</p>}
+                {dup.prescriber && <p className="text-xs text-slate-600">Prescriber: {dup.prescriber}</p>}
               </div>
             ))}
           </div>
@@ -193,7 +193,7 @@ export function ClinicalSafetyAlert({
                       {inter.drugA} ↔ {inter.drugB}
                     </span>
                     <span
-                      className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                      className={`rounded px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider ${
                         inter.severity === "contraindicated"
                           ? "bg-rose-600 text-white"
                           : inter.severity === "severe"
@@ -204,11 +204,11 @@ export function ClinicalSafetyAlert({
                       {inter.severity}
                     </span>
                   </div>
-                  <p className="mt-1 text-[11px] font-medium">{inter.description}</p>
-                  <p className="mt-1 text-[10px] text-slate-600">
+                  <p className="mt-1 text-xs font-medium">{inter.description}</p>
+                  <p className="mt-1 text-xs text-slate-600">
                     <strong>Effect:</strong> {inter.clinicalEffect}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-emerald-800">
+                  <p className="mt-0.5 text-xs text-emerald-800">
                     <strong>Management:</strong> {inter.management}
                   </p>
                 </div>
@@ -238,7 +238,7 @@ export function ClinicalSafetyAlert({
                 )}
                 <div>
                   <p className="font-bold">{contra.title}</p>
-                  <p className="mt-0.5 text-[11px] leading-relaxed">{contra.message}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed">{contra.message}</p>
                 </div>
               </div>
             </div>
@@ -263,29 +263,29 @@ export function ClinicalSafetyAlert({
 
           {expandedAlternatives && (
             <div className="mt-2.5 space-y-2">
-              <p className="text-[11px] text-emerald-800">
+              <p className="text-xs text-emerald-800">
                 Equivalent generic options available in stock with lower cost to patient:
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {genericAlternatives.map((alt) => (
                   <div
                     key={alt.id}
-                    className="flex flex-col justify-between rounded-lg border border-emerald-200 bg-white p-2.5 shadow-sm"
+                    className="flex flex-col justify-between rounded-lg border border-emerald-200 bg-[var(--admin-card)] p-2.5 shadow-sm"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-1">
                         <span className="font-bold text-slate-900">{alt.name}</span>
                         {alt.savingsPercent > 0 && (
-                          <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800">
+                          <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-bold text-emerald-800">
                             Save {alt.savingsPercent}%
                           </span>
                         )}
                       </div>
-                      <p className="mt-0.5 text-[10px] text-slate-500">
+                      <p className="mt-0.5 text-xs text-slate-500">
                         {alt.genericName} {alt.strengthDisplay ? `· ${alt.strengthDisplay}` : ""} {alt.dosageForm ? `· ${alt.dosageForm}` : ""}
                       </p>
                       <p className="mt-1 font-semibold text-slate-800">
-                        KES {alt.price.toLocaleString()} <span className="text-[10px] font-normal text-slate-500">({alt.stockQty} in stock)</span>
+                        KES {alt.price.toLocaleString()} <span className="text-xs font-normal text-slate-500">({alt.stockQty} in stock)</span>
                       </p>
                     </div>
 
@@ -293,7 +293,7 @@ export function ClinicalSafetyAlert({
                       <button
                         type="button"
                         onClick={() => onSelectAlternative(alt)}
-                        className="mt-2 inline-flex items-center justify-center gap-1 rounded-md bg-emerald-600 px-2 py-1 text-[10px] font-bold text-white transition hover:bg-emerald-700"
+                        className="mt-2 inline-flex items-center justify-center gap-1 rounded-md bg-emerald-600 px-2 py-1 text-xs font-bold text-white transition hover:bg-emerald-700"
                       >
                         <span>Substitute with Generic</span>
                         <ArrowRight className="h-3 w-3" />
@@ -328,14 +328,14 @@ export function ClinicalSafetyAlert({
                 <Utensils className="mt-0.5 h-3.5 w-3.5 text-amber-600 shrink-0" />
                 <div>
                   <span className="font-bold admin-text">Food Condition:</span>
-                  <p className="mt-0.5 text-[11px]">{dosageAlert.foodInstructions}</p>
+                  <p className="mt-0.5 text-xs">{dosageAlert.foodInstructions}</p>
                 </div>
               </div>
               <div className="flex items-start gap-1.5 rounded-lg bg-[var(--admin-inset)] p-2">
                 <Snowflake className="mt-0.5 h-3.5 w-3.5 text-blue-600 shrink-0" />
                 <div>
                   <span className="font-bold admin-text">Storage Instructions:</span>
-                  <p className="mt-0.5 text-[11px]">{dosageAlert.storageInstructions}</p>
+                  <p className="mt-0.5 text-xs">{dosageAlert.storageInstructions}</p>
                 </div>
               </div>
             </div>
@@ -343,7 +343,7 @@ export function ClinicalSafetyAlert({
             {dosageAlert.auxiliaryWarnings.length > 0 && (
               <div className="rounded-lg bg-amber-500/10 p-2 text-amber-900">
                 <span className="font-bold">Auxiliary Labels / Warnings:</span>
-                <ul className="mt-1 list-disc pl-4 space-y-0.5 text-[11px]">
+                <ul className="mt-1 list-disc pl-4 space-y-0.5 text-xs">
                   {dosageAlert.auxiliaryWarnings.map((w, i) => (
                     <li key={i}>{w}</li>
                   ))}

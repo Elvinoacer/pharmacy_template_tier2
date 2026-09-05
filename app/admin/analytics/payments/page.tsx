@@ -30,8 +30,8 @@ export default async function PaymentsAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Payment Analytics"
-      description="Payment attempts, success/failure rates, collected by provider, and outstanding receivables with aging."
+      title="Payments & balances"
+      description="Review payment results, collections, and outstanding balances."
       period={period}
       basePath="/admin/analytics/payments"
     >
@@ -72,7 +72,7 @@ export default async function PaymentsAnalyticsPage({
       </AdminPanel>
 
       <AdminPanel title="Top Outstanding Customers">
-        <div className="overflow-x-auto">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-left admin-muted border-b border-[var(--admin-border)]">

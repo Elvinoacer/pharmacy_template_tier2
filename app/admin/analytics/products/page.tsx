@@ -28,13 +28,13 @@ export default async function ProductsAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Product Profitability"
-      description="Per-medicine: units sold, revenue, COGS, gross profit, margin %, discounts, refunds."
+      title="Medicine profitability"
+      description="Compare medicine sales, costs, discounts, and margins."
       period={period}
       basePath="/admin/analytics/products"
     >
       <AdminPanel title="Top products by net sales" description={`${products.length} products with sales in this period.`}>
-        <div className="overflow-x-auto">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-left admin-muted border-b border-[var(--admin-border)]">

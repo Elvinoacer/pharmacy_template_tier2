@@ -13,6 +13,8 @@ import { getResolvedPharmacyOrNull } from "./lib/services/pharmacy-settings";
 import { platformBrand, type PublicBrand } from "./lib/brand";
 import { headers } from "next/headers";
 import "./globals.css";
+import { themeBootstrap } from "./lib/theme-bootstrap";
+import ThemeToggle, { ThemeProvider } from "./components/ThemeProvider";
 
 ensureEnvConfigured();
 
@@ -36,8 +38,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#020b08",
-  colorScheme: "dark",
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f4f7f4" }, { media: "(prefers-color-scheme: dark)", color: "#081410" }],
+  colorScheme: "light dark",
 };
 
 export const metadata: Metadata = {
@@ -117,18 +119,22 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const sessionHint = sessionUser ? { role: sessionUser.role, customerId: sessionUser.customerId, fullName: sessionUser.fullName, platformAdmin: sessionUser.platformAdmin } : null;
 
   return (
-    <html lang="en" className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}>
+      <head><script dangerouslySetInnerHTML={{ __html: themeBootstrap }} /></head>
       <body
-        className="flex min-h-full flex-col bg-[#020b08] font-sans"
+        className="flex min-h-full flex-col bg-background font-sans"
         data-tenant-theme={tenantStyle ? "true" : undefined}
         style={tenantStyle}
       >
-        <AetherCursor />
-        <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
-        <AppChrome sessionUser={sessionHint} pharmacySlug={tenant.slug} storefrontBrand={storefrontBrand} platformBrand={platformBrand()}>
-          {children}
-        </AppChrome>
-        <Toaster />
+        <ThemeProvider>
+          <div className="global-theme-control"><ThemeToggle /></div>
+          <AetherCursor />
+          <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
+          <AppChrome sessionUser={sessionHint} pharmacySlug={tenant.slug} storefrontBrand={storefrontBrand} platformBrand={platformBrand()}>
+            {children}
+          </AppChrome>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

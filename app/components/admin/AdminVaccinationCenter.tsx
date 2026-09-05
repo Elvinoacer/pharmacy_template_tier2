@@ -243,9 +243,9 @@ export function AdminVaccinationCenter({
               ))}
             </select>
           </div>
-          <div className="overflow-x-auto">
+          <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="text-[11px] uppercase tracking-wider admin-muted">
+              <thead className="text-xs uppercase tracking-wider admin-muted">
                 <tr>
                   <th className="pb-2">Patient</th>
                   <th className="pb-2">Vaccine</th>
@@ -399,16 +399,16 @@ export function AdminVaccinationCenter({
             {adminPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Syringe className="h-4 w-4" />}
             {adminPending ? "Saving…" : "Save administration record"}
           </button>
-          <p className="sm:col-span-2 text-[11px] admin-muted">
+          <p className="sm:col-span-2 text-xs admin-muted">
             Lot, site, route, VIS, immuniser, and observation are required for a complete legal record. Patient remains on site for the observation window.
           </p>
         </form>
       )}
 
       {tab === "records" && (
-        <div className="admin-card overflow-x-auto p-5">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region admin-card overflow-x-auto p-5">
           <table className="w-full min-w-[800px] text-left text-sm">
-            <thead className="text-[11px] uppercase tracking-wider admin-muted">
+            <thead className="text-xs uppercase tracking-wider admin-muted">
               <tr>
                 <th className="pb-2">Certificate</th>
                 <th className="pb-2">Patient</th>
@@ -496,7 +496,7 @@ export function AdminVaccinationCenter({
                 <li key={r.id} className="rounded-xl border border-[var(--admin-border)] p-3 text-sm">
                   <p className="font-semibold">{r.immunization.vaccine.name} · {r.severity}</p>
                   <p className="mt-1 text-xs admin-muted">{r.symptoms}</p>
-                  <p className="mt-1 text-[11px]">{r.reportedToAuthority ? "Reported to authority" : "Internal record"} · {r.outcome}</p>
+                  <p className="mt-1 text-xs">{r.reportedToAuthority ? "Reported to authority" : "Internal record"} · {r.outcome}</p>
                 </li>
               ))}
               {aefi.length === 0 && <p className="text-sm admin-muted">No AEFI reports.</p>}
@@ -506,9 +506,9 @@ export function AdminVaccinationCenter({
       )}
 
       {tab === "counselling" && (
-        <div className="admin-card overflow-x-auto p-5">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region admin-card overflow-x-auto p-5">
           <table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="text-[11px] uppercase tracking-wider admin-muted">
+            <thead className="text-xs uppercase tracking-wider admin-muted">
               <tr>
                 <th className="pb-2">Patient</th>
                 <th className="pb-2">Topic</th>
@@ -617,7 +617,7 @@ export function AdminVaccinationCenter({
                   <li key={c.id} className="rounded-xl border border-[var(--admin-border)] p-3 text-sm">
                     <p className="font-medium">{c.title}</p>
                     <p className="text-xs admin-muted">{c.user.email} · {c.issuedBy}</p>
-                    <p className={`mt-1 text-[11px] ${expired ? "text-rose-600" : ""}`}>
+                    <p className={`mt-1 text-xs ${expired ? "text-rose-600" : ""}`}>
                       {c.expiresAt ? `Expires ${new Date(c.expiresAt).toLocaleDateString()}` : "No expiry"}
                       {expired ? " — RENEW" : ""}
                     </p>

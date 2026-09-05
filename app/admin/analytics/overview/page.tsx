@@ -41,8 +41,8 @@ export default async function AnalyticsOverviewPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Analytics Overview"
-      description="Top-line numbers across the pharmacy for the selected period."
+      title="Performance overview"
+      description="Review the pharmacy’s key measures for the selected period."
       period={period as PeriodOption}
       basePath="/admin/analytics/overview"
     >
@@ -297,7 +297,7 @@ export default async function AnalyticsOverviewPage({
 function FunnelStat({ label, value, accent }: { label: string; value: number; accent?: string }) {
   return (
     <div className="rounded-lg border border-[var(--admin-border)] p-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wider admin-muted">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider admin-muted">{label}</p>
       <p className={`mt-1 text-2xl font-bold ${accent ?? "admin-text"}`}>{value}</p>
     </div>
   );
@@ -306,7 +306,7 @@ function FunnelStat({ label, value, accent }: { label: string; value: number; ac
 function RowKV({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
     <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
-      <p className="text-[11px] uppercase tracking-wider admin-muted">{label}</p>
+      <p className="text-xs uppercase tracking-wider admin-muted">{label}</p>
       <p className={`mt-0.5 font-semibold ${accent ?? "admin-text"}`}>{value}</p>
     </div>
   );

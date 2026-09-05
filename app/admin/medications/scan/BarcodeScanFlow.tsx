@@ -289,7 +289,7 @@ export function BarcodeScanFlow() {
                 {result.master.manufacturer ? ` · ${result.master.manufacturer}` : ""}
               </p>
               {result.master.controlledDrug && (
-                <span className="mt-1 inline-block rounded-full bg-rose-500/10 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:text-rose-400">
+                <span className="mt-1 inline-block rounded-full bg-rose-500/10 px-2 py-0.5 text-xs font-bold text-rose-700 dark:text-rose-400">
                   Controlled · {result.master.controlledDrugSchedule}
                 </span>
               )}

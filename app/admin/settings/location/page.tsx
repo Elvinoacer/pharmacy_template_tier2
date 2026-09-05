@@ -65,7 +65,7 @@ export default async function AdminLocationSettingsPage() {
   return (
     <AdminShell
       user={user}
-      title="Confirm location & contact"
+      title="Pharmacy details"
       subtitle={`Finish the public profile for ${pharmacy.name} — only fill what is still missing.`}
     >
       <LocationSettingsForm defaults={defaults} pharmacyName={pharmacy.name} />

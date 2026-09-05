@@ -48,7 +48,7 @@ export default async function AnalyticsIndexPage() {
       <div className="space-y-6">
         <AdminPanel
           title="Analytics"
-          description="Commerce-grade analytics for the whole pharmacy. Drill into each domain for charts and breakdowns."
+          description="Choose a report to explore the figures that matter to your next decision."
         >
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {cards.map((c) => {
@@ -68,7 +68,7 @@ export default async function AnalyticsIndexPage() {
                       <Icon className="h-4 w-4" />
                     </span>
                   </div>
-                  <div className="mt-3 flex items-center gap-1 text-xs font-medium text-[var(--admin-accent)] opacity-0 transition group-hover:opacity-100">
+                  <div className="mt-3 flex items-center gap-1 text-xs font-medium text-[var(--admin-accent)] transition">
                     Open <ArrowRight className="h-3 w-3" />
                   </div>
                 </Link>
@@ -77,18 +77,11 @@ export default async function AnalyticsIndexPage() {
           </div>
         </AdminPanel>
 
-        <AdminPanel
-          title="What changed"
-          description="Summary of the commerce-ledger rebuild that powers these dashboards."
-        >
-          <ul className="space-y-2 text-xs admin-muted">
-            <li>• Added <strong>PrescriptionFill</strong>, <strong>InventoryReservation</strong>, <strong>Refund</strong>, <strong>InventoryAllocation</strong>, <strong>CommerceEvent</strong>, <strong>MedicationPriceHistory</strong>, <strong>CashierSession</strong> as first-class models.</li>
-            <li>• Order now tracks <strong>lifecycle / payment / fulfillment stages</strong> separately (audit §15) — no more mixing them in a single status string.</li>
-            <li>• OrderItem snapshots <strong>cost price + gross/net/profit</strong> at sale time (audit §17) so historical margin never depends on today&apos;s price.</li>
-            <li>• Reservation lifecycle: stock held as <strong>reservation_create</strong>, converted to <strong>sale</strong> on fulfillment, released on cancel/expire (audit §8, §9, §10).</li>
-            <li>• New <code>/api/cron/reservations</code> cron auto-releases expired reservations every 15 minutes.</li>
-            <li>• Loyalty cron now keys off <strong>Payment.status = completed</strong> instead of Order.status (audit §23, §62).</li>
-            <li>• All financial analytics use explicit <code>paidAt</code> / <code>fulfilledAt</code> / <code>processedAt</code> timestamps — never <code>updatedAt</code> (audit §62).</li>
+        <AdminPanel title="Choose the report for your next decision" description="Use the same date range when comparing reports.">
+          <ul className="space-y-3 text-sm admin-muted">
+            <li><strong className="admin-text">Balance the day:</strong> compare payments with expected sales in reconciliation.</li>
+            <li><strong className="admin-text">Plan purchases:</strong> review stock risks and medicine profitability.</li>
+            <li><strong className="admin-text">Improve patient follow-up:</strong> compare refill progress and patient activity.</li>
           </ul>
         </AdminPanel>
       </div>

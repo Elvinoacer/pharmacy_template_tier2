@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminModal } from "./AdminModal";
+
 import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -182,7 +184,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 sm:p-4 backdrop-blur-sm overflow-y-auto">
+    <AdminModal label="New refill request" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center  p-3 sm:p-4  overflow-y-auto">
       <div className="relative w-full max-w-2xl rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-[var(--admin-border)] pb-3.5">
@@ -196,7 +198,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
             </div>
           </div>
           <button
-            onClick={onClose}
+            aria-label="Close dialog" onClick={onClose}
             className="rounded-full p-1.5 admin-soft hover:bg-[var(--admin-inset)] transition"
           >
             <X className="h-4 w-4" />
@@ -206,7 +208,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Intake Channel Selector */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Intake Channel</label>
+            <label className="text-xs font-bold uppercase tracking-wider admin-soft">Intake Channel</label>
             <div className="grid grid-cols-4 gap-2">
               {[
                 { id: "phone", label: "Phone Call", icon: Phone, color: "text-blue-600" },
@@ -238,14 +240,14 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
           {/* Patient Quick Search / Auto-Fill */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">
                 Existing Patient Lookup (Optional)
               </label>
               {selectedCustomer && (
                 <button
                   type="button"
                   onClick={handleClearCustomer}
-                  className="text-[11px] font-bold text-rose-600 hover:underline"
+                  className="text-xs font-bold text-rose-600 hover:underline"
                 >
                   Clear Selection
                 </button>
@@ -279,9 +281,9 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
                       >
                         <div>
                           <strong className="admin-text">{c.fullName}</strong>
-                          <p className="text-[10px] admin-soft font-mono">{c.phone || c.email || "No direct contact"}</p>
+                          <p className="text-xs admin-soft font-mono">{c.phone || c.email || "No direct contact"}</p>
                         </div>
-                        <span className="rounded bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                        <span className="rounded bg-emerald-500/15 px-2 py-0.5 text-xs font-bold text-emerald-700">
                           Select Patient
                         </span>
                       </button>
@@ -297,10 +299,10 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
                   </div>
                   <div>
                     <h4 className="text-xs font-bold admin-text">{selectedCustomer.fullName}</h4>
-                    <p className="text-[10px] admin-soft font-mono">{selectedCustomer.phone || selectedCustomer.email}</p>
+                    <p className="text-xs admin-soft font-mono">{selectedCustomer.phone || selectedCustomer.email}</p>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-white/40 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-white/40 px-2 py-0.5 rounded-full">
                   Profile Linked
                 </span>
               </div>
@@ -310,7 +312,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
           {/* Active Prescriptions Quick Picker */}
           {selectedCustomer && (
             <div className="space-y-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
                 <Pill className="h-3 w-3" /> Select from Patient's Active Prescriptions:
               </label>
 
@@ -335,12 +337,12 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
                       >
                         <div className="flex items-start justify-between">
                           <strong className="font-bold admin-text">{rx.medicineName}</strong>
-                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${rx.refillsRemaining > 0 ? "bg-emerald-500/15 text-emerald-700" : "bg-rose-500/15 text-rose-700"}`}>
+                          <span className={`text-xs font-bold px-1.5 py-0.2 rounded-full ${rx.refillsRemaining > 0 ? "bg-emerald-500/15 text-emerald-700" : "bg-rose-500/15 text-rose-700"}`}>
                             {rx.refillsRemaining} left
                           </span>
                         </div>
-                        <p className="text-[10px] admin-soft mt-0.5">{rx.dosage || "Standard regimen"} · Rx {rx.rxReference || "—"}</p>
-                        <div className="mt-1 flex items-center justify-between text-[10px]">
+                        <p className="text-xs admin-soft mt-0.5">{rx.dosage || "Standard regimen"} · Rx {rx.rxReference || "—"}</p>
+                        <div className="mt-1 flex items-center justify-between text-xs">
                           <span className="text-emerald-700 font-semibold">{rx.statusLabel}</span>
                           {rx.currentStock !== null && (
                             <span className="admin-soft">{rx.currentStock} in stock</span>
@@ -357,7 +359,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
           {/* Patient Details Row */}
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Patient Full Name *</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Patient Full Name *</label>
               <input
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
@@ -367,7 +369,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Phone Number *</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Phone Number *</label>
               <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -381,7 +383,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
           {/* Medicine & Prescription Reference */}
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Medicine Name *</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Medicine Name *</label>
               <input
                 value={medicineName}
                 onChange={(e) => setMedicineName(e.target.value)}
@@ -391,7 +393,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Rx Reference / Number</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Rx Reference / Number</label>
               <input
                 value={rxReference}
                 onChange={(e) => setRxReference(e.target.value)}
@@ -404,7 +406,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
           {/* Fulfillment & Date Preferences */}
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Fulfillment Method</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Fulfillment Method</label>
               <select
                 value={pickupPreference}
                 onChange={(e) => setPickupPreference(e.target.value as any)}
@@ -415,7 +417,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Preferred Date</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Preferred Date</label>
               <input
                 type="date"
                 value={preferredDate}
@@ -424,7 +426,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Time Window</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Time Window</label>
               <select
                 value={preferredTime}
                 onChange={(e) => setPreferredTime(e.target.value)}
@@ -440,7 +442,7 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
 
           {/* Notes */}
           <div className="space-y-1">
-            <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Staff / Delivery Notes</label>
+            <label className="text-xs font-bold uppercase tracking-wider admin-soft">Staff / Delivery Notes</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -469,6 +471,6 @@ export function NewRefillModal({ onClose }: { onClose: () => void }) {
           </div>
         </form>
       </div>
-    </div>
+    </AdminModal>
   );
 }

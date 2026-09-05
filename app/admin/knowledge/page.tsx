@@ -27,35 +27,35 @@ export default async function AdminKnowledgePage() {
   return (
     <AdminShell
       user={user}
-      title="AI knowledge base"
-      subtitle="The virtual assistant answers only from approved articles plus Tier 1 pharmacy facts."
+      title="Assistant knowledge"
+      subtitle="Maintain approved articles that support the assistant’s responses."
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total articles</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total articles</p>
             <FileText className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{stats.total}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Approved</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Approved</p>
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" />
           </div>
           <p className="mt-1 text-2xl font-bold text-emerald-700">{stats.approved}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Drafts</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Drafts</p>
             <FileText className="h-3.5 w-3.5 text-amber-700" />
           </div>
           <p className="mt-1 text-2xl font-bold text-amber-700">{stats.drafts}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Categories</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Categories</p>
             <FolderTree className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{stats.categories}</p>
@@ -109,11 +109,11 @@ export default async function AdminKnowledgePage() {
                       <div className="flex items-center gap-2">
                         <p className="font-semibold admin-text">{a.title}</p>
                         {a.isApproved ? (
-                          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                             <CheckCircle2 className="h-2.5 w-2.5" /> approved
                           </span>
                         ) : (
-                          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-700">
                             draft
                           </span>
                         )}

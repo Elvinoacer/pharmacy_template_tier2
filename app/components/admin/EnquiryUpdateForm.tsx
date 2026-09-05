@@ -38,7 +38,7 @@ export function EnquiryUpdateForm({
         </div>
       )}
       <div>
-        <label className="block text-[10px] uppercase tracking-wide admin-soft">Status</label>
+        <label className="block text-xs uppercase tracking-wide admin-soft">Status</label>
         <select
           name="status"
           defaultValue={status}
@@ -52,7 +52,7 @@ export function EnquiryUpdateForm({
         </select>
       </div>
       <div className="flex-1 min-w-[180px]">
-        <label className="block text-[10px] uppercase tracking-wide admin-soft">Staff notes</label>
+        <label className="block text-xs uppercase tracking-wide admin-soft">Staff notes</label>
         <input
           name="staffNotes"
           defaultValue={staffNotes}

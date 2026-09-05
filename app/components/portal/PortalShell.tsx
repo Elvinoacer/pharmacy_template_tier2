@@ -1,5 +1,7 @@
 "use client";
 
+import ThemeToggle from "@/app/components/ThemeProvider";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -401,6 +403,7 @@ export function PortalShell({
         </div>
 
         <div className="ml-auto flex items-center gap-1.5">
+          <ThemeToggle />
           <PharmacySwitcher />
           <PushEnableChip audience="portal" />
           <BellButton unread={unread} />

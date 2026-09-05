@@ -80,13 +80,13 @@ export function RefillManagementView({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold admin-soft">Refill Queue</span>
+            <span className="text-xs font-semibold admin-soft">Refill Queue</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600">
               <RefreshCw className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold admin-text">{stats.activeRequestsCount}</p>
-          <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">
+          <span className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">
             {stats.submittedCount} new · {stats.underReviewCount} in review
           </span>
         </button>
@@ -105,13 +105,13 @@ export function RefillManagementView({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-blue-700 dark:text-blue-300">Due (Next 7 Days)</span>
+            <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">Due (Next 7 Days)</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-600">
               <Calendar className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-blue-900 dark:text-blue-200">{stats.dueInNext7DaysCount}</p>
-          <span className="text-[10px] text-blue-700/80 dark:text-blue-300/80 font-medium">
+          <span className="text-xs text-blue-700/80 dark:text-blue-300/80 font-medium">
             Active maintenance schedules
           </span>
         </button>
@@ -130,13 +130,13 @@ export function RefillManagementView({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-amber-700 dark:text-amber-300">Overdue Refills</span>
+            <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">Overdue Refills</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600">
               <Clock className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-amber-900 dark:text-amber-200">{stats.overdueRefillsCount}</p>
-          <span className="text-[10px] text-amber-700/80 dark:text-amber-300/80 font-medium">
+          <span className="text-xs text-amber-700/80 dark:text-amber-300/80 font-medium">
             Supply run out · Needs reminder
           </span>
         </button>
@@ -152,13 +152,13 @@ export function RefillManagementView({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-rose-700 dark:text-rose-300">Missing Refills (&gt;14d)</span>
+            <span className="text-xs font-semibold text-rose-700 dark:text-rose-300">Missing Refills (&gt;14d)</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/15 text-rose-600">
               <ShieldAlert className="h-4 w-4" />
             </div>
           </div>
           <p className="mt-2 text-xl font-extrabold text-rose-900 dark:text-rose-200">{missingPatients.length}</p>
-          <span className="text-[10px] text-rose-700/80 dark:text-rose-300/80 font-semibold">
+          <span className="text-xs text-rose-700/80 dark:text-rose-300/80 font-semibold">
             High non-adherence risk
           </span>
         </button>
@@ -178,7 +178,7 @@ export function RefillManagementView({
           >
             <RefreshCw className="h-3.5 w-3.5" />
             Active Refill Queue
-            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-[10px]">{stats.activeRequestsCount}</span>
+            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-xs">{stats.activeRequestsCount}</span>
           </button>
 
           <button
@@ -192,7 +192,7 @@ export function RefillManagementView({
           >
             <Calendar className="h-3.5 w-3.5" />
             Refill Schedules &amp; Due Patients
-            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-[10px]">{schedules.length}</span>
+            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-xs">{schedules.length}</span>
           </button>
 
           <button
@@ -207,7 +207,7 @@ export function RefillManagementView({
             <ShieldAlert className="h-3.5 w-3.5" />
             Missing Refills &amp; Non-Adherence
             {missingPatients.length > 0 && (
-              <span className="rounded-full bg-rose-700 text-white px-1.5 py-0.2 text-[10px] font-extrabold">
+              <span className="rounded-full bg-rose-700 text-white px-1.5 py-0.2 text-xs font-extrabold">
                 {missingPatients.length}
               </span>
             )}
@@ -224,7 +224,7 @@ export function RefillManagementView({
           >
             <Clock className="h-3.5 w-3.5" />
             Refill History &amp; Dispense Ledgers
-            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-[10px]">{historyRows.length}</span>
+            <span className="rounded-full bg-black/15 px-1.5 py-0.2 text-xs">{historyRows.length}</span>
           </button>
         </div>
 
@@ -249,7 +249,7 @@ export function RefillManagementView({
               <p className="text-xs admin-soft">When customers submit refills online or staff record inbound requests, they appear here.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto scroll-admin rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
+            <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
               <table className="table-admin">
                 <thead>
                   <tr>

@@ -58,7 +58,7 @@ export default async function AdminServiceBookingsPage({
     <AdminShell
       user={user}
       title="Service bookings"
-      subtitle="Requests from the public service forms — confirm, record payment, complete"
+      subtitle="Review booking requests, confirm payments, and record completed appointments."
       actions={
         <Link
           href="/admin/services"

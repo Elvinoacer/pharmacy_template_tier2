@@ -41,7 +41,7 @@ export default function PharmacySwitcher() {
         aria-haspopup="menu"
         aria-expanded={open}
         disabled={pending}
-        className="flex h-9 max-w-[220px] items-center gap-1.5 rounded-full border border-teal-900/15 bg-white px-3 text-xs font-semibold text-[#084c3f] transition hover:bg-[#f0faf6] disabled:opacity-60"
+        className="flex h-11 max-w-[125px] sm:max-w-[220px] items-center gap-1.5 rounded-full border border-teal-900/15 bg-white px-3 text-xs font-semibold text-[#084c3f] transition hover:bg-[#f0faf6] disabled:opacity-60"
         title="Switch active pharmacy"
       >
         <Building2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -52,7 +52,7 @@ export default function PharmacySwitcher() {
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} aria-hidden />
-          <div className="absolute right-0 top-full z-40 mt-2 w-72 origin-top-right rounded-2xl border border-[#e3ebe6] bg-white p-2 shadow-xl animate-scale-in">
+          <div className="absolute right-0 top-full z-40 mt-2 w-72 max-w-[calc(100vw-2rem)] origin-top-right rounded-2xl border border-[#e3ebe6] bg-white p-2 shadow-xl animate-scale-in">
             <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-[#8a9a92]">
               Your pharmacies
             </p>

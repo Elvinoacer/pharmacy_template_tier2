@@ -10,7 +10,7 @@ export function PharmacySwitcher({ user, compact }: { user: SessionUser; compact
   if (!current && !user.platformAdmin) return null;
   if (user.memberships.length <= 1 && !user.platformAdmin) {
     return (
-      <p className={compact ? "truncate text-[10px] font-semibold text-emerald-700" : "truncate text-xs text-emerald-800"}>
+      <p className={compact ? "truncate text-xs font-semibold text-emerald-700" : "truncate text-xs text-emerald-800"}>
         {current?.name || "Pharmacy"}
       </p>
     );
@@ -19,7 +19,7 @@ export function PharmacySwitcher({ user, compact }: { user: SessionUser; compact
     return (
       <Link
         href="/admin/select"
-        className={compact ? "text-[10px] font-semibold text-emerald-700 underline" : "text-xs text-emerald-800 underline"}
+        className={compact ? "text-xs font-semibold text-emerald-700 underline" : "text-xs text-emerald-800 underline"}
       >
         Choose pharmacy
       </Link>
@@ -31,8 +31,9 @@ export function PharmacySwitcher({ user, compact }: { user: SessionUser; compact
         name="pharmacyId"
         defaultValue={current?.pharmacyId}
         onChange={(e) => e.currentTarget.form?.requestSubmit()}
-        className="max-w-full truncate rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2 py-1 text-[11px] font-semibold admin-text"
+        className="max-w-full truncate rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2 py-1 text-xs font-semibold admin-text"
         title="Switch pharmacy"
+        aria-label="Active pharmacy"
       >
         {user.memberships.map((m) => (
           <option key={m.pharmacyId} value={m.pharmacyId}>

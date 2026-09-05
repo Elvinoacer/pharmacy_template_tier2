@@ -311,7 +311,7 @@ export default async function AdminMedicationsPage({
   return (
     <AdminShell
       user={user}
-      title="Medication catalog"
+      title="Medicine catalogue"
       subtitle={`${stats.total} in inventory · ${stats.active} active · manage stock, Rx links & public listing`}
       actions={
         <div className="flex flex-wrap items-center gap-2">
@@ -409,7 +409,7 @@ export default async function AdminMedicationsPage({
               name="q"
               defaultValue={q || ""}
               placeholder="Search name, generic, brand, SKU, barcode, shelf…"
-              className="w-full rounded-xl bg-transparent py-2.5 pl-10 pr-10 text-sm font-medium outline-none transition-colors hover:bg-black/5 focus:bg-white dark:hover:bg-white/5 dark:focus:bg-black/40"
+              className="w-full rounded-xl bg-transparent py-2.5 pl-10 pr-10 text-sm font-medium outline-none transition-colors hover:bg-black/5 focus:bg-[var(--admin-card)] dark:hover:bg-white/5 dark:focus:bg-black/40"
             />
             {q && (
               <Link
@@ -422,7 +422,7 @@ export default async function AdminMedicationsPage({
           </div>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100"
+            className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 dark:bg-[var(--admin-card)] dark:text-black dark:hover:bg-gray-100"
           >
             <Search className="h-4 w-4" /> Search
           </button>
@@ -507,11 +507,11 @@ export default async function AdminMedicationsPage({
           Keep inventory synced from your pharmacy POS. Contact{" "}
           <strong className="text-indigo-600 dark:text-indigo-400">0790670542</strong> for setup.
           Once configured, POST to{" "}
-          <code className="rounded bg-indigo-500/10 px-1 py-0.5 font-mono text-[10px]">
+          <code className="rounded bg-indigo-500/10 px-1 py-0.5 font-mono text-xs">
             /api/integrations/pos
           </code>{" "}
           with your{" "}
-          <code className="rounded bg-indigo-500/10 px-1 py-0.5 font-mono text-[10px]">
+          <code className="rounded bg-indigo-500/10 px-1 py-0.5 font-mono text-xs">
             POS_API_KEY
           </code>
           .
@@ -562,7 +562,7 @@ export default async function AdminMedicationsPage({
         variant="admin"
       />
 
-      <p className="mt-4 text-[10px] admin-soft">
+      <p className="mt-4 text-xs admin-soft">
         Last POS sync: {lastSynced ? formatDateTime(lastSynced) : "never"}
       </p>
     </AdminShell>

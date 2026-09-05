@@ -306,7 +306,7 @@ export default function ImageUploadField(props: Props) {
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
               {!multi && (
-                <div className="truncate border-t border-[var(--admin-border)] px-2 py-1 text-[10px] admin-soft">
+                <div className="truncate border-t border-[var(--admin-border)] px-2 py-1 text-xs admin-soft">
                   {url}
                 </div>
               )}
@@ -354,7 +354,7 @@ export default function ImageUploadField(props: Props) {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <span className="text-[10px] admin-soft">{progress}%</span>
+              <span className="text-xs admin-soft">{progress}%</span>
             </div>
           )}
         </div>
@@ -402,13 +402,13 @@ export default function ImageUploadField(props: Props) {
       )}
 
       {error && (
-        <div className="flex items-start gap-1.5 text-[11px] text-red-400">
+        <div className="flex items-start gap-1.5 text-xs text-red-400">
           <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      <p className="text-[10px] admin-soft">{hint}</p>
+      <p className="text-xs admin-soft">{hint}</p>
     </div>
   );
 }

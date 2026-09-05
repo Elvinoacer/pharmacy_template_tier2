@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { AdminPanel } from "@/app/components/admin/AdminUI";
-import { BarChart3 } from "lucide-react";
 import type { SessionUser } from "@/app/lib/types";
 
 export type PeriodOption = "today" | "7d" | "30d" | "quarter" | "year";
@@ -29,6 +27,7 @@ export function PeriodSelector({
           key={p}
           href={`${basePath}?period=${p}`}
           scroll={false}
+          aria-current={current === p ? "date" : undefined}
           className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
             current === p
               ? "border-[var(--admin-accent)] bg-[var(--admin-accent)] text-[var(--admin-btn-fg)]"
@@ -58,20 +57,8 @@ export function AnalyticsShell({
   children: React.ReactNode;
 }) {
   return (
-    <AdminShell user={user}>
+    <AdminShell user={user} title={title} subtitle={description} actions={<PeriodSelector current={period} basePath={basePath} />}>
       <div className="space-y-6">
-        <AdminPanel
-          title={title}
-          description={description}
-          action={<PeriodSelector current={period} basePath={basePath} />}
-        >
-          <div className="flex items-center gap-2 text-xs admin-muted">
-            <BarChart3 className="h-3.5 w-3.5" />
-            <span>
-              Period: <strong>{PERIOD_LABELS[period]}</strong>
-            </span>
-          </div>
-        </AdminPanel>
         {children}
       </div>
     </AdminShell>

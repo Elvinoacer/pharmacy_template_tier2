@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Sparkles, FileText, AlertCircle, Check, Save, Wand2 } from "lucide-react";
@@ -11,6 +13,7 @@ export default function LoyaltyForm({
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [customerId, setCustomerId] = useState("");
   const [description, setDescription] = useState("");
@@ -37,16 +40,16 @@ export default function LoyaltyForm({
           variant="admin"
           required
         />
-        <p className="mt-1 text-[10px] admin-soft">
+        <p className="mt-1 text-xs admin-soft">
           Searchable by name, email, or phone. Only customer accounts appear.
         </p>
       </div>
 
       <div>
-        <label className="label-admin">Points adjustment *</label>
+        <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Points adjustment *</label>
         <div className="relative">
           <Sparkles className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input
+          <input id={`${fieldPrefix}-1`}
             name="points"
             type="number"
             required
@@ -54,7 +57,7 @@ export default function LoyaltyForm({
             className="input-admin pl-9"
           />
         </div>
-        <p className="mt-1 text-[10px] admin-soft">
+        <p className="mt-1 text-xs admin-soft">
           Use positive numbers to add, negative to subtract.
         </p>
       </div>
@@ -72,7 +75,7 @@ export default function LoyaltyForm({
               setDescription("Manual adjustment — compensation for delayed refill");
               toast.success("Reason template filled.");
             }}
-            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110"
+            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-xs font-semibold text-white hover:brightness-110"
             title="Use a reason template"
           >
             <Wand2 className="h-2.5 w-2.5" /> Template

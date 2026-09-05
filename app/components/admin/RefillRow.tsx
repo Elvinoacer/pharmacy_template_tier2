@@ -92,7 +92,7 @@ export function RefillRow({
                   <ChevronRight className="h-3 w-3 admin-soft opacity-0 transition group-hover:opacity-100" />
                 )}
               </div>
-              <div className="mt-0.5 flex flex-wrap gap-2 text-[10px] admin-soft">
+              <div className="mt-0.5 flex flex-wrap gap-2 text-xs admin-soft">
                 {refill.phone && (
                   <span className="inline-flex items-center gap-0.5 font-mono">
                     <Phone className="h-2.5 w-2.5" /> {refill.phone}
@@ -111,12 +111,12 @@ export function RefillRow({
         {/* Medicine */}
         <td>
           <p className="font-medium admin-text">{refill.medicineName}</p>
-          <p className="font-mono text-[10px] admin-soft">{refill.rxReference || "—"}</p>
+          <p className="font-mono text-xs admin-soft">{refill.rxReference || "—"}</p>
         </td>
 
         {/* Source */}
         <td>
-          <span className="inline-flex items-center rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-medium capitalize admin-muted">
+          <span className="inline-flex items-center rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-xs font-medium capitalize admin-muted">
             {refill.source}
           </span>
         </td>
@@ -131,7 +131,7 @@ export function RefillRow({
 
         {/* Status */}
         <td>
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${meta.color}`}>
+          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${meta.color}`}>
             {meta.label}
           </span>
         </td>
@@ -142,7 +142,7 @@ export function RefillRow({
             <button
               type="button"
               onClick={() => (onReview ? onReview(refill.id) : setShowReview(true))}
-              className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-1 text-[11px] font-bold text-white shadow-sm hover:brightness-110 transition"
+              className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-1 text-xs font-bold text-white shadow-sm hover:brightness-110 transition"
             >
               <ShieldCheck className="h-3 w-3" /> Review
             </button>
@@ -151,7 +151,7 @@ export function RefillRow({
               type="button"
               onClick={() => setShowContact(true)}
               title="Contact Patient"
-              className="inline-flex items-center rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] p-1 text-[10px] admin-soft hover:admin-text hover:bg-[var(--admin-inset-2)] transition"
+              className="inline-flex items-center rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] p-1 text-xs admin-soft hover:admin-text hover:bg-[var(--admin-inset-2)] transition"
             >
               <MessageSquare className="h-3 w-3 text-emerald-600" />
             </button>
@@ -174,7 +174,7 @@ export function RefillRow({
                 type="submit"
                 disabled={pending}
                 title="Save status"
-                className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-2 py-1 text-[10px] font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)] hover:brightness-110 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-2 py-1 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)] hover:brightness-110 disabled:opacity-50"
               >
                 {pending ? (
                   <><span className="typing-dot" /> Saving…</>

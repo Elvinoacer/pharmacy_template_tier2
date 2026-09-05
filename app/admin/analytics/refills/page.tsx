@@ -30,8 +30,8 @@ export default async function RefillsAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Refill Analytics"
-      description="Refill funnel, turnaround time, revenue per refill, and by-source breakdown."
+      title="Refill report"
+      description="Follow refill progress, turnaround time, and revenue."
       period={period}
       basePath="/admin/analytics/refills"
     >

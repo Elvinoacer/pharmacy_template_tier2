@@ -29,8 +29,8 @@ export default async function InventoryAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Inventory Analytics"
-      description="Stock levels, reserved units, inventory value, expiring value, write-offs, reorder suggestions."
+      title="Stock report"
+      description="Review stock value, reserved units, expiry risks, and write-offs."
       period={period}
       basePath="/admin/analytics/inventory"
     >

@@ -78,8 +78,8 @@ export default async function AdminCampaignsPage({
   return (
     <AdminShell
       user={user}
-      title="Campaign management"
-      subtitle="Design, schedule and launch targeted marketing campaigns"
+      title="Campaigns"
+      subtitle="Create outreach campaigns and review their audience, schedule, and progress."
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -90,7 +90,7 @@ export default async function AdminCampaignsPage({
           { label: "Sent", value: stats.sent, color: "text-emerald-700" },
         ].map((s) => (
           <div key={s.label} className="admin-stat p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{s.label}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">{s.label}</p>
             <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
           </div>
         ))}
@@ -152,11 +152,11 @@ export default async function AdminCampaignsPage({
                             <ChannelIcon className="h-3.5 w-3.5" />
                           </span>
                           <p className="font-semibold admin-text">{c.name}</p>
-                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLOR[c.status]}`}>
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[c.status]}`}>
                             {c.status}
                           </span>
                         </div>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs admin-muted">
                           <span className="inline-flex items-center gap-1">
                             <Users className="h-2.5 w-2.5" />
                             {c.segment?.name || "All customers"}
@@ -178,7 +178,7 @@ export default async function AdminCampaignsPage({
                         )}
                         <p className="mt-1.5 line-clamp-2 text-xs admin-muted">{c.body}</p>
                         {cStats && (
-                          <div className="mt-2 flex flex-wrap gap-2 text-[10px]">
+                          <div className="mt-2 flex flex-wrap gap-2 text-xs">
                             {typeof cStats.sent === "number" && (
                               <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Sent: {cStats.sent}</span>
                             )}

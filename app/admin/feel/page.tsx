@@ -74,13 +74,13 @@ export default async function AdminFeelInboxPage({
   return (
     <AdminShell
       user={user}
-      title="How do you feel"
-      subtitle="Urgent symptom check-ins — separate from Contact enquiries. Feeling-worse alerts and pharmacist handoffs land here."
+      title="Symptom check-ins"
+      subtitle="Review patient symptoms and pharmacist handoffs. Start with urgent check-ins."
     >
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4 ring-1 ring-rose-500/30">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-rose-700">
+            <p className="text-xs font-semibold uppercase tracking-wide text-rose-700">
               Feeling worse
             </p>
             <AlertCircle className="h-3.5 w-3.5 text-rose-600" />
@@ -89,7 +89,7 @@ export default async function AdminFeelInboxPage({
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">
               Needs pharmacist
             </p>
             <AlertCircle className="h-3.5 w-3.5 text-amber-700" />
@@ -98,7 +98,7 @@ export default async function AdminFeelInboxPage({
         </div>
         {(["active", "monitoring"] as const).map((s) => (
           <div key={s} className="admin-stat p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{s}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">{s}</p>
             <p className="mt-1 text-2xl font-bold admin-text">{byStatus[s] || 0}</p>
           </div>
         ))}
@@ -155,25 +155,25 @@ export default async function AdminFeelInboxPage({
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                          className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
                             STATUS_STYLE[s.status] || STATUS_STYLE.active
                           }`}
                         >
                           {s.status}
                         </span>
                         {isWorse && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-rose-700">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-2 py-0.5 text-xs font-bold uppercase text-rose-700">
                             <AlertCircle className="h-3 w-3" />
                             feeling worse
                           </span>
                         )}
                         {s.severity && (
-                          <span className="text-[10px] font-semibold uppercase admin-muted">
+                          <span className="text-xs font-semibold uppercase admin-muted">
                             {s.severity}
                           </span>
                         )}
                         {s.feelingTrend && !isWorse && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold admin-muted">
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold admin-muted">
                             <Activity className="h-3 w-3" />
                             felt {s.feelingTrend}
                           </span>

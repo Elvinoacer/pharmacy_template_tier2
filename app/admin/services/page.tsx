@@ -52,7 +52,7 @@ export default async function AdminServicesPage() {
     <AdminShell
       user={user}
       title="Pharmacy services"
-      subtitle="Catalogue shown on the public /services pages — with optional pricing and online booking"
+      subtitle="Manage available services, prices, and online booking options."
       actions={
         <Link
           href="/admin/services/bookings"

@@ -48,7 +48,7 @@ export function RefillFilter({
               : "bg-[var(--admin-inset)] admin-muted hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
           }`}
         >
-          All <span className="rounded-full bg-black/15 px-1.5 text-[10px]">{total}</span>
+          All <span className="rounded-full bg-black/15 px-1.5 text-xs">{total}</span>
         </Link>
         {REFILL_STATUSES.map((s) => {
           const Icon = ICONS[s.value] || Pill;
@@ -66,7 +66,7 @@ export function RefillFilter({
             >
               <Icon className="h-3 w-3" />
               {s.label}
-              <span className="rounded-full bg-black/15 px-1.5 text-[10px]">{count}</span>
+              <span className="rounded-full bg-black/15 px-1.5 text-xs">{count}</span>
             </Link>
           );
         })}

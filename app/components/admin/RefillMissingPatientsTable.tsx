@@ -106,7 +106,7 @@ export function RefillMissingPatientsTable({
                 }`}
               >
                 <span>{chip.label}</span>
-                <span className={`rounded-full px-1.5 py-0.2 text-[10px] font-bold ${active ? "bg-white/20 text-white" : chip.color || "bg-black/5 admin-soft"}`}>
+                <span className={`rounded-full px-1.5 py-0.2 text-xs font-bold ${active ? "bg-white/20 text-white" : chip.color || "bg-black/5 admin-soft"}`}>
                   {chip.count}
                 </span>
               </button>
@@ -128,10 +128,10 @@ export function RefillMissingPatientsTable({
 
       {/* Patients Table */}
       <div className="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
-        <div className="overflow-x-auto">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-[11px] font-bold uppercase tracking-wider admin-soft">
+              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-xs font-bold uppercase tracking-wider admin-soft">
                 <th className="py-3 px-3.5">Patient &amp; Contact</th>
                 <th className="py-3 px-3">Medication</th>
                 <th className="py-3 px-3">Therapy Gap</th>
@@ -146,7 +146,7 @@ export function RefillMissingPatientsTable({
                   <td colSpan={6} className="py-12 text-center admin-soft">
                     <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-500/50 mb-2" />
                     <p className="font-bold text-xs">No missing refill lapses found</p>
-                    <p className="text-[11px] mt-0.5">All active chronic patients are currently on-schedule</p>
+                    <p className="text-xs mt-0.5">All active chronic patients are currently on-schedule</p>
                   </td>
                 </tr>
               ) : (
@@ -171,7 +171,7 @@ export function RefillMissingPatientsTable({
                           </div>
                           <div>
                             <strong className="admin-text font-bold block">{row.customerName}</strong>
-                            <span className="font-mono text-[10px] admin-soft block">{row.phone || "No phone"}</span>
+                            <span className="font-mono text-xs admin-soft block">{row.phone || "No phone"}</span>
                           </div>
                         </div>
                       </td>
@@ -179,7 +179,7 @@ export function RefillMissingPatientsTable({
                       {/* Medication */}
                       <td className="py-3 px-3">
                         <strong className="admin-text font-bold block">{row.medicineName}</strong>
-                        <span className="text-[10px] admin-soft block">{row.dosage || "Standard Dose"}</span>
+                        <span className="text-xs admin-soft block">{row.dosage || "Standard Dose"}</span>
                       </td>
 
                       {/* Therapy Gap */}
@@ -191,7 +191,7 @@ export function RefillMissingPatientsTable({
                             <AlertTriangle className="h-3 w-3 shrink-0" />
                             {row.gapDays} days without medication
                           </span>
-                          <span className="block text-[10px] admin-soft font-mono">
+                          <span className="block text-xs admin-soft font-mono">
                             Due date was: {formatDate(row.nextRefillDue)}
                           </span>
                         </div>
@@ -200,9 +200,9 @@ export function RefillMissingPatientsTable({
                       {/* PDC Adherence Meter */}
                       <td className="py-3 px-3">
                         <div className="space-y-1 min-w-[120px]">
-                          <div className="flex items-center justify-between text-[10px]">
+                          <div className="flex items-center justify-between text-xs">
                             <span className="font-bold admin-text">{row.adherenceRate}% PDC</span>
-                            <span className={`font-bold uppercase text-[9px] ${
+                            <span className={`font-bold uppercase text-xs ${
                               isSevere ? "text-rose-600" : "text-amber-600"
                             }`}>
                               {row.riskLevel} risk
@@ -221,7 +221,7 @@ export function RefillMissingPatientsTable({
 
                       {/* Caregivers & Prescriber */}
                       <td className="py-3 px-3">
-                        <div className="text-[10px] space-y-0.5">
+                        <div className="text-xs space-y-0.5">
                           {row.caregivers.length > 0 ? (
                             <div className="flex items-center gap-1 text-emerald-700 font-semibold">
                               <Users className="h-3 w-3" />
@@ -243,7 +243,7 @@ export function RefillMissingPatientsTable({
                               setInterveneTarget(row);
                               setClinicalNotes(`Clinical call with patient regarding ${row.gapDays}-day lapse in ${row.medicineName} therapy.`);
                             }}
-                            className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent)] px-2.5 py-1 text-[11px] font-bold text-[var(--admin-btn-fg)] shadow-sm hover:brightness-110 transition"
+                            className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent)] px-2.5 py-1 text-xs font-bold text-[var(--admin-btn-fg)] shadow-sm hover:brightness-110 transition"
                           >
                             <HeartHandshake className="h-3 w-3" /> Intervene
                           </button>
@@ -326,7 +326,7 @@ export function RefillMissingPatientsTable({
 
             {/* Strategy Selector */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Intervention Action</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Intervention Action</label>
               <select
                 value={interventionType}
                 onChange={(e) => setInterventionType(e.target.value)}
@@ -342,7 +342,7 @@ export function RefillMissingPatientsTable({
 
             {/* Notes */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Clinical Notes &amp; Outcome</label>
+              <label className="text-xs font-bold uppercase tracking-wider admin-soft">Clinical Notes &amp; Outcome</label>
               <textarea
                 rows={4}
                 value={clinicalNotes}
@@ -365,7 +365,7 @@ export function RefillMissingPatientsTable({
                   <strong className="font-bold text-emerald-900 dark:text-emerald-200 block">
                     Copy Registered Caregiver
                   </strong>
-                  <span className="text-[10px] admin-soft block">
+                  <span className="text-xs admin-soft block">
                     Send WhatsApp summary to {interveneTarget.caregivers[0].name} ({interveneTarget.caregivers[0].phone || "on file"})
                   </span>
                 </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState, useState, useTransition } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Tag, Sparkles, Hash, Calendar, AlertCircle, Check, Save, RefreshCw, Pencil, Trash2, X } from "lucide-react";
@@ -46,6 +48,7 @@ export default function CouponForm({
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   coupons?: ExistingCoupon[];
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [code, setCode] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -117,7 +120,7 @@ export default function CouponForm({
             <button
               type="button"
               onClick={generateCode}
-              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110"
+              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-xs font-semibold text-white hover:brightness-110"
               title="Auto-generate a unique code"
             >
               <RefreshCw className="h-2.5 w-2.5" /> Generate unique
@@ -137,47 +140,47 @@ export default function CouponForm({
         </div>
 
         <div>
-          <label className="label-admin">Description</label>
-          <input name="description" placeholder="25% off summer essentials" className="input-admin" />
+          <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Description</label>
+          <input id={`${fieldPrefix}-1`} name="description" placeholder="25% off summer essentials" className="input-admin" />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label-admin">Discount type</label>
-            <select name="discountType" className="input-admin" defaultValue="percent">
+            <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Discount type</label>
+            <select id={`${fieldPrefix}-2`} name="discountType" className="input-admin" defaultValue="percent">
               <option value="percent">Percent (%)</option>
               <option value="fixed">Fixed amount ($)</option>
               <option value="points">Bonus points</option>
             </select>
           </div>
           <div>
-            <label className="label-admin">Discount value *</label>
-            <input name="discountValue" type="number" min="0" step="0.01" required placeholder="25" className="input-admin" />
+            <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Discount value *</label>
+            <input id={`${fieldPrefix}-3`} name="discountValue" type="number" min="0" step="0.01" required placeholder="25" className="input-admin" />
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label-admin">Points cost</label>
+            <label htmlFor={`${fieldPrefix}-4`} className="label-admin">Points cost</label>
             <div className="relative">
               <Sparkles className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input name="pointsCost" type="number" min="0" placeholder="100" className="input-admin pl-9" />
+              <input id={`${fieldPrefix}-4`} name="pointsCost" type="number" min="0" placeholder="100" className="input-admin pl-9" />
             </div>
           </div>
           <div>
-            <label className="label-admin">Max redemptions</label>
+            <label htmlFor={`${fieldPrefix}-5`} className="label-admin">Max redemptions</label>
             <div className="relative">
               <Hash className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input name="maxRedemptions" type="number" min="0" placeholder="Unlimited" className="input-admin pl-9" />
+              <input id={`${fieldPrefix}-5`} name="maxRedemptions" type="number" min="0" placeholder="Unlimited" className="input-admin pl-9" />
             </div>
           </div>
         </div>
 
         <div>
-          <label className="label-admin">Valid until</label>
+          <label htmlFor={`${fieldPrefix}-6`} className="label-admin">Valid until</label>
           <div className="relative">
             <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input name="validUntil" type="date" className="input-admin pl-9" />
+            <input id={`${fieldPrefix}-6`} name="validUntil" type="date" className="input-admin pl-9" />
           </div>
         </div>
 
@@ -212,7 +215,7 @@ export default function CouponForm({
                     <button
                       type="button"
                       onClick={() => toggleActive(c)}
-                      className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold transition ${
+                      className={`rounded-full px-1.5 py-0.5 text-xs font-semibold transition ${
                         c.active
                           ? "bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25"
                           : "bg-slate-500/15 text-slate-500 hover:bg-slate-500/25"
@@ -223,7 +226,7 @@ export default function CouponForm({
                     </button>
                   </div>
                   <p className="mt-0.5 truncate text-xs admin-muted">{c.description || "No description"}</p>
-                  <p className="mt-0.5 text-[10px] admin-soft">
+                  <p className="mt-0.5 text-xs admin-soft">
                     Updated {formatDateTime(c.updatedAt)} · {c.redemptions}
                     {c.maxRedemptions ? `/${c.maxRedemptions}` : ""} redeemed
                   </p>

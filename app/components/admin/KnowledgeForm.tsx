@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { BookOpen, FolderTree, Star, FileText, Brain, AlertCircle, Check, Save, Trash2, Pencil, X } from "lucide-react";
@@ -21,6 +23,7 @@ export default function KnowledgeForm({
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   articles?: Article[];
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -81,10 +84,10 @@ export default function KnowledgeForm({
         {editingId && <input type="hidden" name="id" value={editingId} />}
 
         <div>
-          <label className="label-admin">Title *</label>
+          <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Title *</label>
           <div className="relative">
             <BookOpen className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input
+            <input id={`${fieldPrefix}-1`}
               name="title"
               required
               placeholder="When should I take my antibiotics?"
@@ -97,10 +100,10 @@ export default function KnowledgeForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label-admin">Category</label>
+            <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Category</label>
             <div className="relative">
               <FolderTree className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input
+              <input id={`${fieldPrefix}-2`}
                 name="category"
                 defaultValue="general"
                 placeholder="general, dosage, side-effects…"
@@ -111,10 +114,10 @@ export default function KnowledgeForm({
             </div>
           </div>
           <div>
-            <label className="label-admin">Priority (higher = first)</label>
+            <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Priority (higher = first)</label>
             <div className="relative">
               <Star className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input
+              <input id={`${fieldPrefix}-3`}
                 name="priority"
                 type="number"
                 defaultValue={0}
@@ -127,10 +130,10 @@ export default function KnowledgeForm({
         </div>
 
         <div>
-          <label className="label-admin">Content *</label>
+          <label htmlFor={`${fieldPrefix}-4`} className="label-admin">Content *</label>
           <div className="relative">
             <FileText className="pointer-events-none absolute left-3 top-3 h-3.5 w-3.5 admin-soft" />
-            <textarea
+            <textarea id={`${fieldPrefix}-4`}
               name="content"
               required
               rows={6}
@@ -140,7 +143,7 @@ export default function KnowledgeForm({
               onChange={(e) => editingId && setEditContent(e.target.value)}
             />
           </div>
-          <p className="mt-1 text-[10px] admin-soft">
+          <p className="mt-1 text-xs admin-soft">
             Only approved articles will be used by the AI assistant. Markdown supported.
           </p>
         </div>
@@ -194,11 +197,11 @@ export default function KnowledgeForm({
                   <div className="flex items-center gap-2">
                     <p className="font-semibold admin-text">{a.title}</p>
                     {a.isApproved ? (
-                      <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                      <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                         <Check className="h-2.5 w-2.5" /> approved
                       </span>
                     ) : (
-                      <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-700">draft</span>
+                      <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-700">draft</span>
                     )}
                   </div>
                   <p className="mt-0.5 text-xs admin-muted">

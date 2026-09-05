@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState, useEffect, useRef, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { toast } from "@/app/components/Toaster";
@@ -15,6 +17,7 @@ export default function CampaignForm({
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   segments: { id: string; name: string }[];
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [body, setBody] = useState("");
   const [name, setName] = useState("");
@@ -68,10 +71,10 @@ export default function CampaignForm({
       )}
 
       <div>
-        <label className="label-admin">Campaign name *</label>
+        <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Campaign name *</label>
         <div className="relative">
           <Megaphone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input
+          <input id={`${fieldPrefix}-1`}
             name="name"
             required
             value={name}
@@ -83,8 +86,8 @@ export default function CampaignForm({
       </div>
 
       <div>
-        <label className="label-admin">Description</label>
-        <input
+        <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Description</label>
+        <input id={`${fieldPrefix}-2`}
           name="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -95,8 +98,8 @@ export default function CampaignForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="label-admin">Channel</label>
-          <select name="channel" className="input-admin" defaultValue="email">
+          <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Channel</label>
+          <select id={`${fieldPrefix}-3`} name="channel" className="input-admin" defaultValue="email">
             <option value="email">Email</option>
             <option value="sms">SMS</option>
             <option value="whatsapp">WhatsApp</option>
@@ -104,8 +107,8 @@ export default function CampaignForm({
           </select>
         </div>
         <div>
-          <label className="label-admin">Target segment</label>
-          <select name="segmentId" className="input-admin" defaultValue="">
+          <label htmlFor={`${fieldPrefix}-4`} className="label-admin">Target segment</label>
+          <select id={`${fieldPrefix}-4`} name="segmentId" className="input-admin" defaultValue="">
             <option value="">All customers</option>
             {segments.map((s) => (
               <option key={s.id} value={s.id}>
@@ -117,10 +120,10 @@ export default function CampaignForm({
       </div>
 
       <div>
-        <label className="label-admin">Subject (email only)</label>
+        <label htmlFor={`${fieldPrefix}-5`} className="label-admin">Subject (email only)</label>
         <div className="relative">
           <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input
+          <input id={`${fieldPrefix}-5`}
             name="subject"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
@@ -137,7 +140,7 @@ export default function CampaignForm({
             type="button"
             onClick={aiDraft}
             disabled={aiLoading}
-            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-xs font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
             title="Let AI draft the body"
           >
             <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
@@ -158,7 +161,7 @@ export default function CampaignForm({
               key={v}
               type="button"
               onClick={() => setBody((b) => b + (b && !b.endsWith(" ") ? " " : "") + v)}
-              className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
+              className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
             >
               {v}
             </button>
@@ -214,7 +217,7 @@ export default function CampaignForm({
               onChange={(e) => setScheduledFor(e.target.value)}
               className="input-admin pl-9"
             />
-            <p className="mt-1 text-[10px] admin-soft">
+            <p className="mt-1 text-xs admin-soft">
               Cron will auto-launch this campaign at the scheduled local time.
             </p>
           </div>
@@ -222,13 +225,13 @@ export default function CampaignForm({
         {mode === "now" && (
           <>
             <input type="hidden" name="sendNow" value="true" />
-            <p className="text-[10px] admin-soft">
+            <p className="text-xs admin-soft">
               Campaign will launch immediately on submit. Each recipient gets a personalized message.
             </p>
           </>
         )}
         {mode === "draft" && (
-          <p className="text-[10px] admin-soft">
+          <p className="text-xs admin-soft">
             Saved as draft — launch later from the campaigns list.
           </p>
         )}

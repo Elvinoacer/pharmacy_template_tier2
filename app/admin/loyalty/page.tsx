@@ -117,34 +117,34 @@ export default async function AdminLoyaltyPage({
   return (
     <AdminShell
       user={user}
-      title="Loyalty program"
-      subtitle="Adjust points, manage coupons, and automate earning rules"
+      title="Loyalty & rewards"
+      subtitle="Manage points, coupons, and earning rules for your patients and customers."
     >
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Active points</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Active points</p>
             <Sparkles className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{totalPoints.toLocaleString()}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Lifetime points</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Lifetime points</p>
             <TrendingUp className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{totalLifetime.toLocaleString()}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Active coupons</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Active coupons</p>
             <Tag className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{activeCoupons}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Members</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Members</p>
             <Award className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{memberCount}</p>
@@ -153,10 +153,10 @@ export default async function AdminLoyaltyPage({
 
       <AdminPanel
         title="Automation rules"
-        description="Live rules from /api/cron/loyalty (daily). Only implemented triggers are listed."
+        description="These earning rules are checked daily. Review the active rules before adjusting points."
         className="mb-6"
         action={
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700">
             <Zap className="h-2.5 w-2.5" /> Cron-backed
           </span>
         }
@@ -170,9 +170,9 @@ export default async function AdminLoyaltyPage({
             <div key={r.trigger} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold admin-text">{r.label}</p>
-                <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
+                <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
               </div>
-              <p className="mt-0.5 text-[10px] admin-soft">{r.desc}</p>
+              <p className="mt-0.5 text-xs admin-soft">{r.desc}</p>
               <p className="mt-2 text-sm font-bold admin-accent-text">
                 {r.points > 0 ? `+${r.points} pts` : r.multiplier}
               </p>
@@ -182,18 +182,18 @@ export default async function AdminLoyaltyPage({
             <div key={r.id} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold admin-text">{r.name}</p>
-                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${r.active ? "bg-emerald-500/10 text-emerald-700" : "bg-slate-500/10 text-slate-500"}`}>
+                <span className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${r.active ? "bg-emerald-500/10 text-emerald-700" : "bg-slate-500/10 text-slate-500"}`}>
                   {r.active ? "DB rule" : "Inactive"}
                 </span>
               </div>
-              <p className="mt-0.5 text-[10px] admin-soft">Trigger: {r.trigger}</p>
+              <p className="mt-0.5 text-xs admin-soft">Trigger: {r.trigger}</p>
               <p className="mt-2 text-sm font-bold admin-accent-text">
                 +{r.points} pts{r.multiplier ? ` · ×${r.multiplier}` : ""}
               </p>
             </div>
           ))}
         </div>
-        <p className="mt-3 text-[10px] admin-soft">
+        <p className="mt-3 text-xs admin-soft">
           Schedule via external cron provider (daily 06:00) hitting <code className="md-code">/api/cron/loyalty</code> with secret parameter or header.
         </p>
       </AdminPanel>
@@ -204,7 +204,7 @@ export default async function AdminLoyaltyPage({
           description="Add or remove points from a customer's balance"
           action={
             recentTx[0] ? (
-              <span className="text-[10px] uppercase tracking-wide admin-soft">
+              <span className="text-xs uppercase tracking-wide admin-soft">
                 Last update {formatTimeAgo(recentTx[0].createdAt)}
               </span>
             ) : undefined
@@ -267,14 +267,14 @@ export default async function AdminLoyaltyPage({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm font-bold admin-accent-text">{c.code}</span>
-                      <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${c.active ? "bg-emerald-500/15 text-emerald-700" : "bg-slate-500/15 text-slate-500"}`}>
+                      <span className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${c.active ? "bg-emerald-500/15 text-emerald-700" : "bg-slate-500/15 text-slate-500"}`}>
                         {c.active ? "active" : "archived"}
                       </span>
                     </div>
                     <p className="mt-0.5 truncate text-xs admin-muted">
                       {c.description || "No description"}
                     </p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs admin-muted">
                       <span className="inline-flex items-center gap-0.5">
                         {c.discountType === "percent" ? <Percent className="h-2.5 w-2.5" /> : <DollarSign className="h-2.5 w-2.5" />}
                         {Number(c.discountValue)}
@@ -337,7 +337,7 @@ export default async function AdminLoyaltyPage({
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium admin-text">{a.customer.fullName}</p>
-                    <p className="text-[10px] admin-soft">
+                    <p className="text-xs admin-soft">
                       Lifetime: {a.lifetimePoints} · Referral: {a.referralCode}
                       {a.transactions[0] && (
                         <> · Last: {formatTimeAgo(a.transactions[0].createdAt)}</>
@@ -346,8 +346,8 @@ export default async function AdminLoyaltyPage({
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="font-bold admin-text">{a.points}</span>
-                    <span className="text-[10px] admin-soft">pts</span>
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${TIER_COLOR[a.tier]}`}>
+                    <span className="text-xs admin-soft">pts</span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${TIER_COLOR[a.tier]}`}>
                       {a.tier}
                     </span>
                   </div>

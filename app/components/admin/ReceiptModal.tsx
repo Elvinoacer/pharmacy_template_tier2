@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminModal } from "./AdminModal";
+
 import { useEffect, useState } from "react";
 import {
   Printer,
@@ -129,7 +131,7 @@ export function ReceiptModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+    <AdminModal label="Dispensing and sales receipt" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center  p-4 ">
       <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-2xl animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
@@ -140,7 +142,7 @@ export function ReceiptModal({
             </div>
             <div>
               <h2 className="text-sm font-bold admin-text">Dispensing &amp; Sales Receipt</h2>
-              <p className="text-[11px] admin-soft">
+              <p className="text-xs admin-soft">
                 {receipt ? `${receipt.receiptNumber} · ${receipt.customer.fullName}` : "Loading details…"}
               </p>
             </div>
@@ -175,7 +177,7 @@ export function ReceiptModal({
               onClick={() => setActiveView("thermal")}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 activeView === "thermal"
-                  ? "bg-white text-slate-900 shadow-xs dark:bg-black dark:text-white"
+                  ? "bg-[var(--admin-card)] text-slate-900 shadow-xs dark:bg-black dark:text-white"
                   : "admin-muted hover:text-[var(--admin-text)]"
               }`}
             >
@@ -186,7 +188,7 @@ export function ReceiptModal({
               onClick={() => setActiveView("a4")}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 activeView === "a4"
-                  ? "bg-white text-slate-900 shadow-xs dark:bg-black dark:text-white"
+                  ? "bg-[var(--admin-card)] text-slate-900 shadow-xs dark:bg-black dark:text-white"
                   : "admin-muted hover:text-[var(--admin-text)]"
               }`}
             >
@@ -197,7 +199,7 @@ export function ReceiptModal({
               onClick={() => setActiveView("label")}
               className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 activeView === "label"
-                  ? "bg-white text-slate-900 shadow-xs dark:bg-black dark:text-white"
+                  ? "bg-[var(--admin-card)] text-slate-900 shadow-xs dark:bg-black dark:text-white"
                   : "admin-muted hover:text-[var(--admin-text)]"
               }`}
             >
@@ -230,20 +232,20 @@ export function ReceiptModal({
             </div>
           ) : activeView === "thermal" ? (
             /* ── 80mm Thermal POS Receipt Layout ── */
-            <div className="receipt-print-area mx-auto max-w-[340px] rounded-xl border border-slate-300 bg-white p-5 text-slate-950 shadow-md font-mono text-xs">
+            <div className="receipt-print-area mx-auto max-w-[340px] rounded-xl border border-slate-300 bg-[var(--admin-card)] p-5 text-slate-950 shadow-md font-mono text-xs">
               <div className="border-b border-dashed border-slate-400 pb-3 text-center">
                 <h1 className="text-base font-black tracking-tight uppercase">{receipt.pharmacy.name}</h1>
-                <p className="text-[10px] text-slate-600 mt-0.5">{receipt.pharmacy.address}</p>
-                <p className="text-[10px] text-slate-600">Tel: {receipt.pharmacy.phone}</p>
-                <p className="text-[9px] text-slate-500 mt-1">
+                <p className="text-xs text-slate-600 mt-0.5">{receipt.pharmacy.address}</p>
+                <p className="text-xs text-slate-600">Tel: {receipt.pharmacy.phone}</p>
+                <p className="text-xs text-slate-500 mt-1">
                   KRA PIN: {receipt.pharmacy.taxPin}
                 </p>
-                <div className="mt-2 inline-block rounded bg-slate-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-700">
+                <div className="mt-2 inline-block rounded bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-700">
                   {receipt.orderType}
                 </div>
               </div>
 
-              <div className="border-b border-dashed border-slate-400 py-2.5 text-[11px] space-y-1">
+              <div className="border-b border-dashed border-slate-400 py-2.5 text-xs space-y-1">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Receipt:</span>
                   <span className="font-bold">{receipt.receiptNumber}</span>
@@ -257,7 +259,7 @@ export function ReceiptModal({
                   <span className="font-bold text-right truncate max-w-[180px]">{receipt.customer.fullName}</span>
                 </div>
                 {receipt.prescriber && (
-                  <div className="flex justify-between text-[10px]">
+                  <div className="flex justify-between text-xs">
                     <span className="text-slate-500">Prescriber:</span>
                     <span>{receipt.prescriber}</span>
                   </div>
@@ -266,25 +268,25 @@ export function ReceiptModal({
 
               {/* Items */}
               <div className="border-b border-dashed border-slate-400 py-2.5">
-                <div className="flex justify-between text-[10px] uppercase font-bold text-slate-500 pb-1 border-b border-slate-200">
+                <div className="flex justify-between text-xs uppercase font-bold text-slate-500 pb-1 border-b border-slate-200">
                   <span>Item / Qty</span>
                   <span>Total</span>
                 </div>
                 <div className="divide-y divide-slate-100 pt-1">
                   {receipt.items.map((item) => (
-                    <div key={item.id} className="py-1.5 text-[11px]">
+                    <div key={item.id} className="py-1.5 text-xs">
                       <div className="flex justify-between font-bold text-slate-900">
                         <span>{item.name}</span>
                         <span>KES {item.totalPrice.toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between text-[10px] text-slate-500">
+                      <div className="flex justify-between text-xs text-slate-500">
                         <span>
                           {item.quantity} {item.billingUnit} @ {item.unitPrice.toLocaleString()}
                         </span>
                         {item.batchNumber && <span>Lot: {item.batchNumber}</span>}
                       </div>
                       {item.dosageInstructions && (
-                        <p className="mt-0.5 text-[10px] italic text-emerald-800">
+                        <p className="mt-0.5 text-xs italic text-emerald-800">
                           Dir: {item.dosageInstructions}
                         </p>
                       )}
@@ -309,16 +311,16 @@ export function ReceiptModal({
                   <span>TOTAL PAID:</span>
                   <span>KES {receipt.amountPaid.toLocaleString()}</span>
                 </div>
-                <div className="pt-1.5 flex justify-between text-[10px] text-slate-600">
+                <div className="pt-1.5 flex justify-between text-xs text-slate-600">
                   <span>Method: {receipt.paymentMethod}</span>
                   {receipt.mpesaReceipt && <span className="font-bold">Ref: {receipt.mpesaReceipt}</span>}
                 </div>
               </div>
 
               {/* Dispenser & Counselling Note */}
-              <div className="border-t border-dashed border-slate-400 pt-3 text-center text-[10px] text-slate-500 space-y-1">
+              <div className="border-t border-dashed border-slate-400 pt-3 text-center text-xs text-slate-500 space-y-1">
                 {receipt.dispenserNote && (
-                  <div className="rounded bg-slate-50 p-1.5 text-left text-[10px] text-slate-700 border border-slate-200">
+                  <div className="rounded bg-slate-50 p-1.5 text-left text-xs text-slate-700 border border-slate-200">
                     <strong>Counsel:</strong> {receipt.dispenserNote}
                   </div>
                 )}
@@ -327,15 +329,15 @@ export function ReceiptModal({
                     Dispensed by: {receipt.dispensedBy.name} ({receipt.dispensedBy.role})
                   </p>
                 )}
-                <p className="text-[9px] text-slate-400 pt-1">
+                <p className="text-xs text-slate-400 pt-1">
                   Medicines dispensed are non-returnable once taken per PPB regulations.
                 </p>
-                <p className="font-bold text-emerald-800 text-[10px]">Thank you for your visit!</p>
+                <p className="font-bold text-emerald-800 text-xs">Thank you for your visit!</p>
               </div>
             </div>
           ) : activeView === "a4" ? (
             /* ── Full A4 Standard Invoice Layout ── */
-            <div className="receipt-print-area mx-auto max-w-xl rounded-xl border border-slate-200 bg-white p-8 text-slate-900 shadow-sm font-sans">
+            <div className="receipt-print-area mx-auto max-w-xl rounded-xl border border-slate-200 bg-[var(--admin-card)] p-8 text-slate-900 shadow-sm font-sans">
               <div className="flex items-start justify-between border-b border-slate-200 pb-6">
                 <div>
                   <h1 className="text-xl font-black tracking-tight text-slate-950 uppercase">
@@ -359,14 +361,14 @@ export function ReceiptModal({
               {/* Patient & Dispenser Strip */}
               <div className="grid grid-cols-2 gap-4 py-4 border-b border-slate-200 text-xs">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Billed &amp; Dispensed To</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Billed &amp; Dispensed To</p>
                   <p className="mt-1 font-bold text-sm text-slate-900">{receipt.customer.fullName}</p>
                   {receipt.customer.phone && <p className="text-slate-600">{receipt.customer.phone}</p>}
                   {receipt.customer.email && <p className="text-slate-600">{receipt.customer.email}</p>}
                   {receipt.customer.address && <p className="text-slate-500">{receipt.customer.address}</p>}
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Clinical &amp; Dispenser Details</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Clinical &amp; Dispenser Details</p>
                   {receipt.prescriber && <p className="mt-1 font-semibold text-slate-800">Prescriber: {receipt.prescriber}</p>}
                   {receipt.dispensedBy && (
                     <p className="text-slate-700">
@@ -381,7 +383,7 @@ export function ReceiptModal({
               <div className="py-4">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-slate-300 text-[10px] uppercase text-slate-500">
+                    <tr className="border-b border-slate-300 text-xs uppercase text-slate-500">
                       <th className="pb-2 font-bold">Item Description &amp; Administration</th>
                       <th className="pb-2 text-center font-bold">Batch / Exp</th>
                       <th className="pb-2 text-center font-bold">Qty</th>
@@ -395,17 +397,17 @@ export function ReceiptModal({
                         <td className="py-2.5 pr-2">
                           <p className="font-bold text-slate-900">{item.name}</p>
                           {item.genericName && item.genericName !== item.name && (
-                            <p className="text-[11px] text-slate-500">Generic: {item.genericName}</p>
+                            <p className="text-xs text-slate-500">Generic: {item.genericName}</p>
                           )}
                           {item.dosageInstructions && (
-                            <p className="mt-0.5 text-[11px] italic text-emerald-800">
+                            <p className="mt-0.5 text-xs italic text-emerald-800">
                               Directions: {item.dosageInstructions}
                             </p>
                           )}
                         </td>
-                        <td className="py-2.5 text-center font-mono text-[10px] text-slate-600">
+                        <td className="py-2.5 text-center font-mono text-xs text-slate-600">
                           {item.batchNumber || "—"}
-                          {item.expiryDate && <p className="text-[9px] text-slate-400">Exp: {item.expiryDate}</p>}
+                          {item.expiryDate && <p className="text-xs text-slate-400">Exp: {item.expiryDate}</p>}
                         </td>
                         <td className="py-2.5 text-center text-slate-800 font-semibold">
                           {item.quantity} {item.billingUnit}
@@ -451,16 +453,16 @@ export function ReceiptModal({
             </div>
           ) : (
             /* ── Container Dispensing Sticker Label (50x30mm) ── */
-            <div className="receipt-print-area mx-auto max-w-sm rounded-xl border-2 border-slate-900 bg-white p-4 text-slate-950 shadow-md font-sans">
+            <div className="receipt-print-area mx-auto max-w-sm rounded-xl border-2 border-slate-900 bg-[var(--admin-card)] p-4 text-slate-950 shadow-md font-sans">
               <div className="border-b-2 border-slate-900 pb-2 text-center">
                 <p className="text-xs font-black uppercase tracking-wider">{receipt.pharmacy.name}</p>
-                <p className="text-[9px] text-slate-600">Helpline: {receipt.pharmacy.phone}</p>
+                <p className="text-xs text-slate-600">Helpline: {receipt.pharmacy.phone}</p>
               </div>
 
               <div className="py-3 space-y-2 text-xs">
                 <div className="flex justify-between font-bold text-slate-900 text-xs border-b border-slate-200 pb-1">
                   <span>Patient: {receipt.customer.fullName}</span>
-                  <span className="font-mono text-[10px]">{receipt.createdAt.slice(0, 10)}</span>
+                  <span className="font-mono text-xs">{receipt.createdAt.slice(0, 10)}</span>
                 </div>
 
                 <div className="space-y-2">
@@ -472,7 +474,7 @@ export function ReceiptModal({
                       <p className="mt-1 text-xs font-bold text-emerald-800">
                         Directions: {it.dosageInstructions || "Take as directed by pharmacist."}
                       </p>
-                      <p className="mt-1 font-mono text-[9px] text-slate-500">
+                      <p className="mt-1 font-mono text-xs text-slate-500">
                         Qty: {it.quantity} {it.billingUnit} | Lot: {it.batchNumber || "N/A"}
                         {it.expiryDate ? ` | Exp: ${it.expiryDate}` : ""}
                       </p>
@@ -480,12 +482,12 @@ export function ReceiptModal({
                   ))}
                 </div>
 
-                <div className="rounded border border-rose-300 bg-rose-50 p-1.5 text-center text-[10px] font-black text-rose-800 tracking-wide uppercase">
+                <div className="rounded border border-rose-300 bg-rose-50 p-1.5 text-center text-xs font-black text-rose-800 tracking-wide uppercase">
                   KEEP OUT OF REACH OF CHILDREN
                 </div>
 
                 {receipt.dispensedBy && (
-                  <p className="text-right text-[9px] text-slate-500">
+                  <p className="text-right text-xs text-slate-500">
                     Dispensed by: {receipt.dispensedBy.name}
                   </p>
                 )}
@@ -508,7 +510,7 @@ export function ReceiptModal({
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full bg-emerald-600/10 px-2.5 py-1 text-[11px] font-bold text-emerald-700 hover:bg-emerald-600/20"
+                    className="inline-flex items-center gap-1 rounded-full bg-emerald-600/10 px-2.5 py-1 text-xs font-bold text-emerald-700 hover:bg-emerald-600/20"
                   >
                     <MessageSquare className="h-3 w-3" />
                     <span>Open in WhatsApp Web</span>
@@ -560,7 +562,7 @@ export function ReceiptModal({
 
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-[var(--admin-border)] bg-[var(--admin-card-2)] px-5 py-3">
-          <p className="text-[11px] admin-soft">
+          <p className="text-xs admin-soft">
             Directly formatted for standard 80mm ESC/POS thermal printers &amp; standard laser printers.
           </p>
           <div className="flex items-center gap-2">
@@ -583,6 +585,6 @@ export function ReceiptModal({
           </div>
         </div>
       </div>
-    </div>
+    </AdminModal>
   );
 }

@@ -23,23 +23,23 @@ export default async function AdminSegmentsPage() {
   return (
     <AdminShell
       user={user}
-      title="Customer segmentation"
-      subtitle="Group customers for targeted campaigns and reminders"
+      title="Patient groups"
+      subtitle="Organize patients into groups for relevant reminders and outreach."
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total segments</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total segments</p>
           <p className="mt-1 text-2xl font-bold admin-text">{segments.length}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">System segments</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">System segments</p>
           <p className="mt-1 text-2xl font-bold admin-accent-text">
             {segments.filter((s) => s.isSystem).length}
           </p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total memberships</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total memberships</p>
           <p className="mt-1 text-2xl font-bold admin-text">{totalMembers}</p>
         </div>
       </div>
@@ -71,14 +71,14 @@ export default async function AdminSegmentsPage() {
                       <p className="line-clamp-1 text-xs admin-muted">
                         {s.description || "No description"}
                       </p>
-                      <p className="mt-0.5 text-[10px] uppercase tracking-wide admin-soft">
+                      <p className="mt-0.5 text-xs uppercase tracking-wide admin-soft">
                         {s.isSystem ? "System segment" : "Custom"}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold admin-text">{s._count.members}</p>
-                    <p className="text-[10px] admin-soft">members</p>
+                    <p className="text-xs admin-soft">members</p>
                   </div>
                 </li>
               ))}

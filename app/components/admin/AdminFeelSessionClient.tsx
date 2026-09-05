@@ -367,24 +367,24 @@ export default function AdminFeelSessionClient({
 
           <div className="flex flex-wrap gap-2">
             <span
-              className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase ${
+              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${
                 STATUS_STYLE[session.status] || STATUS_STYLE.active
               }`}
             >
               {session.status}
             </span>
             {session.severity && (
-              <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-0.5 text-[10px] font-semibold uppercase admin-muted">
+              <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-0.5 text-xs font-semibold uppercase admin-muted">
                 {session.severity}
               </span>
             )}
             {session.category && (
-              <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-0.5 text-[10px] font-semibold uppercase admin-muted">
+              <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-0.5 text-xs font-semibold uppercase admin-muted">
                 {session.category}
               </span>
             )}
             {session.feelingTrend && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2.5 py-0.5 text-[10px] font-semibold uppercase admin-muted">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2.5 py-0.5 text-xs font-semibold uppercase admin-muted">
                 <Activity className="h-3 w-3" />
                 felt {session.feelingTrend}
               </span>
@@ -410,7 +410,7 @@ export default function AdminFeelSessionClient({
                 CRM conversation
               </Link>
             )}
-            <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-semibold uppercase admin-soft">
+            <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-xs font-semibold uppercase admin-soft">
               How do you feel · not a contact enquiry
             </span>
           </div>
@@ -438,11 +438,11 @@ export default function AdminFeelSessionClient({
             </Link>
           )}
           {session.guestKey && (
-            <p className="text-[10px] admin-soft">Guest key: {session.guestKey.slice(0, 18)}…</p>
+            <p className="text-xs admin-soft">Guest key: {session.guestKey.slice(0, 18)}…</p>
           )}
           {session.checkIns.length > 0 && (
             <div className="mt-3 border-t admin-border pt-3">
-              <p className="text-[10px] font-bold uppercase tracking-wider admin-muted">
+              <p className="text-xs font-bold uppercase tracking-wider admin-muted">
                 Feeling trend
               </p>
               <ul className="mt-2 max-h-36 space-y-1 overflow-y-auto pr-1">
@@ -470,11 +470,11 @@ export default function AdminFeelSessionClient({
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <LivePill live={live} error={pollError} compact />
-            <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-semibold uppercase admin-muted">
+            <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-xs font-semibold uppercase admin-muted">
               {session.messages.length} messages
             </span>
             {session.lastMessageAt && (
-              <span className="hidden text-[10px] admin-soft sm:inline">
+              <span className="hidden text-xs admin-soft sm:inline">
                 Last {formatDateTime(session.lastMessageAt)}
               </span>
             )}
@@ -496,10 +496,10 @@ export default function AdminFeelSessionClient({
                   className={`rounded-xl border px-3 py-2.5 text-sm ${messageBubbleClass(m.role)}`}
                 >
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider admin-muted">
+                    <span className="text-xs font-bold uppercase tracking-wider admin-muted">
                       {roleLabel(m.role)}
                     </span>
-                    <span className="text-[10px] admin-soft">{formatDateTime(m.createdAt)}</span>
+                    <span className="text-xs admin-soft">{formatDateTime(m.createdAt)}</span>
                   </div>
                   <p className="whitespace-pre-wrap leading-relaxed admin-text">{m.content}</p>
                   {m.imageUrls && m.imageUrls.length > 0 && (
@@ -619,7 +619,7 @@ export default function AdminFeelSessionClient({
                   )}
                 </div>
 
-                <p className="text-[11px] leading-relaxed admin-muted">
+                <p className="text-xs leading-relaxed admin-muted">
                   While this thread is open, new visitor messages are marked seen and the sidebar
                   badge stays clear for this case. Mark resolved when finished so only brand-new
                   alerts take badge space.
@@ -645,7 +645,7 @@ function LivePill({
   if (error) {
     return (
       <span
-        className={`inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase text-amber-900 ${
+        className={`inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold uppercase text-amber-900 ${
           compact ? "" : ""
         }`}
         title={error}
@@ -656,7 +656,7 @@ function LivePill({
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase text-emerald-800">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold uppercase text-emerald-800">
       <span className="relative flex h-2 w-2">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
         <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />

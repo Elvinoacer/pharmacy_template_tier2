@@ -75,19 +75,19 @@ export default async function AdminSetupPage() {
   return (
     <AdminShell
       user={user}
-      title="Go-live checklist"
+      title="Getting ready to go live"
       subtitle={`Finish setup for ${pharmacy.name} before listing in the marketplace.`}
     >
       <div className="mb-6 rounded-2xl border border-teal-900/10 bg-gradient-to-br from-teal-50/90 to-white p-5 sm:p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0d6e5a]">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--admin-accent-text)]">
               Progress
             </p>
-            <p className="mt-1 text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+            <p className="mt-1 text-2xl font-semibold text-[var(--admin-text)]" style={{ fontFamily: "var(--font-display), serif" }}>
               {done} of {checks.length} complete
             </p>
-            <p className="mt-1 text-sm text-[#5a6b62]">
+            <p className="mt-1 text-sm text-[var(--admin-text-muted)]">
               {remaining === 0
                 ? "You are ready to list in the marketplace."
                 : `${remaining} item${remaining === 1 ? "" : "s"} left — start with location if the pin is missing.`}
@@ -127,7 +127,7 @@ export default async function AdminSetupPage() {
                   {!c.ok && (
                     <Link
                       href={c.href}
-                      className="inline-flex items-center gap-1 rounded-lg bg-white/80 px-2.5 py-1 text-xs font-semibold text-[#0d6e5a] shadow-sm ring-1 ring-teal-900/10 hover:bg-white"
+                      className="inline-flex items-center gap-1 rounded-lg bg-white/80 px-2.5 py-1 text-xs font-semibold text-[var(--admin-accent-text)] shadow-sm ring-1 ring-teal-900/10 hover:bg-[var(--admin-card)]"
                     >
                       <Icon className="h-3.5 w-3.5" />
                       Complete
@@ -152,7 +152,7 @@ export default async function AdminSetupPage() {
           {canGoLive ? "List this pharmacy in the marketplace" : "Complete the checklist to go live"}
         </button>
       </form>
-      <p className="mt-3 text-xs text-[#7a8b84]">
+      <p className="mt-3 text-xs text-[var(--admin-text-soft)]">
         Current status: {pharmacy.status.replace(/_/g, " ")}
         {pharmacy.listed ? " · listed" : " · not listed yet"}
       </p>

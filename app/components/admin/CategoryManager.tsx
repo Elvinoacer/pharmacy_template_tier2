@@ -487,22 +487,22 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-semibold admin-text">{c.name}</p>
                   {!c.active && (
-                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
                       Inactive
                     </span>
                   )}
                   {c.publicVisible === false && (
-                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] font-semibold admin-muted">
+                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-semibold admin-muted">
                       Hidden on site
                     </span>
                   )}
                   {c.slug === "general" && (
-                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] font-semibold admin-muted">
+                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-semibold admin-muted">
                       Default
                     </span>
                   )}
                 </div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] admin-soft">
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs admin-soft">
                   <span className="inline-flex items-center gap-1 font-mono">
                     <Hash className="h-3 w-3" />
                     {c.slug}
@@ -515,7 +515,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
 
               <Link
                 href={`/admin/medications?category=${encodeURIComponent(c.slug)}`}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-[11px] font-semibold admin-muted transition hover:text-[var(--admin-text)]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset-2)] px-2.5 py-1 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)]"
                 title="View medications in this category"
               >
                 <Package className="h-3 w-3" />
@@ -620,7 +620,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
       )}
 
       {pending && (
-        <p className="flex items-center gap-1.5 text-[11px] admin-soft">
+        <p className="flex items-center gap-1.5 text-xs admin-soft">
           <Loader2 className="h-3 w-3 animate-spin" /> Saving…
         </p>
       )}
@@ -682,7 +682,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
               placeholder="pain-relief"
               className="input-admin font-mono text-xs"
             />
-            <p className="mt-1 text-[10px] admin-soft">
+            <p className="mt-1 text-xs admin-soft">
               Stored on each medication. Renaming the slug re-tags all meds in this category.
             </p>
           </div>
@@ -783,7 +783,7 @@ export function CategoryManager({ initial }: { initial: CategoryRow[] }) {
           <div className="space-y-3">
             <p className="text-sm admin-muted">
               Delete <strong className="admin-text">{modal.row.name}</strong>
-              <span className="font-mono text-[11px] admin-soft"> ({modal.row.slug})</span>?
+              <span className="font-mono text-xs admin-soft"> ({modal.row.slug})</span>?
             </p>
             {modal.row.count > 0 ? (
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">

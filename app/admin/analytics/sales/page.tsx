@@ -30,8 +30,8 @@ export default async function SalesAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Sales Analytics"
-      description="Orders, units, average order value, basket size, and reservation funnel."
+      title="Sales report"
+      description="Review orders, units sold, and reservation progress."
       period={period}
       basePath="/admin/analytics/sales"
     >
@@ -92,7 +92,7 @@ export default async function SalesAnalyticsPage({
 function FunnelStat({ label, value, accent }: { label: string; value: number; accent?: string }) {
   return (
     <div className="rounded-lg border border-[var(--admin-border)] p-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wider admin-muted">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider admin-muted">{label}</p>
       <p className={`mt-1 text-2xl font-bold ${accent ?? "admin-text"}`}>{value}</p>
     </div>
   );

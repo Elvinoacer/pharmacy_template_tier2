@@ -373,7 +373,7 @@ export function AdminScreeningCenter({
   return (
     <div className="space-y-6">
       {/* Header Actions & Quick Operations Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-3xl border border-gray-100 shadow-2xs">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-[var(--admin-card)] p-4 rounded-3xl border border-gray-100 shadow-2xs">
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => {
@@ -400,7 +400,7 @@ export function AdminScreeningCenter({
           </button>
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition shadow-2xs"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-[var(--admin-card)] px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition shadow-2xs"
             title="Export screening log to CSV for PPB audits"
           >
             <Download className="h-3.5 w-3.5 text-gray-500" /> Export CSV
@@ -426,7 +426,7 @@ export function AdminScreeningCenter({
           className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition ${
             activeTab === "screenings"
               ? "bg-teal-900 text-white shadow-sm"
-              : "bg-white text-gray-600 hover:bg-gray-100"
+              : "bg-[var(--admin-card)] text-gray-600 hover:bg-gray-100"
           }`}
         >
           <Activity className="h-3.5 w-3.5" /> All Screenings ({screenings.length})
@@ -436,7 +436,7 @@ export function AdminScreeningCenter({
           className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition ${
             activeTab === "referrals"
               ? "bg-teal-900 text-white shadow-sm"
-              : "bg-white text-gray-600 hover:bg-gray-100"
+              : "bg-[var(--admin-card)] text-gray-600 hover:bg-gray-100"
           }`}
         >
           <Building2 className="h-3.5 w-3.5" /> Clinical Referrals Queue ({referrals.length})
@@ -446,7 +446,7 @@ export function AdminScreeningCenter({
           className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition ${
             activeTab === "emergency"
               ? "bg-red-700 text-white shadow-sm"
-              : "bg-white text-red-700 hover:bg-red-50"
+              : "bg-[var(--admin-card)] text-red-700 hover:bg-red-50"
           }`}
         >
           <Ambulance className="h-3.5 w-3.5" /> Emergency &amp; Red Flags ({emergencyScreenings.length + emergencyReferrals.length})
@@ -457,7 +457,7 @@ export function AdminScreeningCenter({
       {activeTab === "screenings" && (
         <div className="space-y-4">
           {/* Filters Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 border border-gray-100 shadow-2xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[var(--admin-card)] p-4 border border-gray-100 shadow-2xs">
             <div className="relative min-w-[240px] flex-1">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
               <input
@@ -495,7 +495,7 @@ export function AdminScreeningCenter({
           </div>
 
           {/* Table */}
-          <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-2xs">
+          <div className="overflow-hidden rounded-3xl border border-gray-100 bg-[var(--admin-card)] shadow-2xs">
             <table className="w-full text-left text-xs">
               <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider">
                 <tr>
@@ -519,51 +519,51 @@ export function AdminScreeningCenter({
                   filteredScreenings.map((s) => (
                     <tr key={s.id} className="hover:bg-gray-50/70 transition">
                       <td className="px-4 py-3.5">
-                        <p className="font-bold text-[#0c1a14]">{s.patientName}</p>
-                        <p className="text-[11px] text-gray-600">{s.patientPhone || (s.customer ? "Registered Customer" : "Walk-in")}</p>
+                        <p className="font-bold text-[var(--admin-text)]">{s.patientName}</p>
+                        <p className="text-xs text-gray-600">{s.patientPhone || (s.customer ? "Registered Customer" : "Walk-in")}</p>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-[11px] font-bold text-teal-800 capitalize">
+                        <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-bold text-teal-800 capitalize">
                           {s.screeningType.replace(/_/g, " ")}
                         </span>
                       </td>
                       <td className="px-4 py-3.5 space-y-0.5">
                         {s.systolicBp && s.diastolicBp && (
-                          <div className="text-[11px]">
+                          <div className="text-xs">
                             <span className="font-semibold">BP: </span>
                             <span>{s.systolicBp}/{s.diastolicBp} mmHg</span>
                             <span className="text-gray-600 capitalize ml-1">({s.bpCategory?.replace(/_/g, " ")})</span>
                           </div>
                         )}
                         {s.bloodGlucose != null && (
-                          <div className="text-[11px]">
+                          <div className="text-xs">
                             <span className="font-semibold">Glucose: </span>
                             <span>{s.bloodGlucose} {s.glucoseUnit || "mmol/L"}</span>
                             <span className="text-gray-600 capitalize ml-1">({s.glucoseCategory?.replace(/_/g, " ")})</span>
                           </div>
                         )}
                         {s.bmi != null && (
-                          <div className="text-[11px]">
+                          <div className="text-xs">
                             <span className="font-semibold">BMI: </span>
                             <span>{s.bmi} kg/m²</span>
                             <span className="text-gray-600 capitalize ml-1">({s.bmiCategory?.replace(/_/g, " ")})</span>
                           </div>
                         )}
                         {s.temperatureC != null && (
-                          <div className="text-[11px]">
+                          <div className="text-xs">
                             <span className="font-semibold">Temp: </span>
                             <span>{s.temperatureC} °C</span>
                           </div>
                         )}
                         {s.poctType && (
-                          <div className="text-[11px] text-indigo-900 font-medium">
+                          <div className="text-xs text-indigo-900 font-medium">
                             <span>POCT ({s.poctType}): {s.poctResult || "Done"}</span>
                           </div>
                         )}
                       </td>
                       <td className="px-4 py-3.5">
                         {s.requiresReferral ? (
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${
                             s.referralUrgency === "emergency"
                               ? "bg-red-100 text-red-800"
                               : s.referralUrgency === "urgent"
@@ -573,15 +573,15 @@ export function AdminScreeningCenter({
                             <AlertCircle className="h-3 w-3" /> {s.referralUrgency || "Routine"}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-teal-800 font-medium">
+                          <span className="inline-flex items-center gap-1 text-xs text-teal-800 font-medium">
                             <CheckCircle2 className="h-3 w-3 text-teal-600" /> Normal
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3.5 text-gray-600 text-[11px]">
+                      <td className="px-4 py-3.5 text-gray-600 text-xs">
                         {s.conductedBy?.email || "Pharmacist"}
                       </td>
-                      <td className="px-4 py-3.5 text-gray-600 text-[11px]">
+                      <td className="px-4 py-3.5 text-gray-600 text-xs">
                         {new Date(s.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3.5 text-right space-x-1.5">
@@ -614,7 +614,7 @@ export function AdminScreeningCenter({
       {activeTab === "referrals" && (
         <div className="space-y-4">
           {/* Referral Filters */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 border border-gray-100 shadow-2xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[var(--admin-card)] p-4 border border-gray-100 shadow-2xs">
             <div className="relative min-w-[240px] flex-1">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
               <input
@@ -642,25 +642,25 @@ export function AdminScreeningCenter({
           {/* Referrals Grid */}
           <div className="grid gap-4 md:grid-cols-2">
             {filteredReferrals.length === 0 ? (
-              <div className="col-span-2 rounded-2xl border border-dashed border-gray-200 bg-white p-12 text-center text-gray-500 text-xs">
+              <div className="col-span-2 rounded-2xl border border-dashed border-gray-200 bg-[var(--admin-card)] p-12 text-center text-gray-500 text-xs">
                 No clinical referrals found matching criteria.
               </div>
             ) : (
               filteredReferrals.map((r) => (
                 <div
                   key={r.id}
-                  className="rounded-3xl border border-gray-100 bg-white p-5 shadow-xs space-y-3 hover:border-teal-700/30 transition"
+                  className="rounded-3xl border border-gray-100 bg-[var(--admin-card)] p-5 shadow-xs space-y-3 hover:border-teal-700/30 transition"
                 >
                   <div className="flex items-center justify-between border-b pb-2.5">
                     <div>
                       <span className="font-mono font-bold text-xs text-teal-900 bg-teal-50 px-2 py-0.5 rounded-md">
                         {r.referenceCode}
                       </span>
-                      <span className="text-[11px] text-gray-600 ml-2">
+                      <span className="text-xs text-gray-600 ml-2">
                         {new Date(r.issuedAt).toLocaleDateString()}
                       </span>
                     </div>
-                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase ${
+                    <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full uppercase ${
                       r.urgency === "emergency"
                         ? "bg-red-100 text-red-800"
                         : r.urgency === "urgent"
@@ -672,8 +672,8 @@ export function AdminScreeningCenter({
                   </div>
 
                   <div>
-                    <span className="text-gray-600 text-[11px]">Patient: </span>
-                    <span className="font-bold text-xs text-[#0c1a14]">{r.patientName}</span>
+                    <span className="text-gray-600 text-xs">Patient: </span>
+                    <span className="font-bold text-xs text-[var(--admin-text)]">{r.patientName}</span>
                     {r.patientPhone && <span className="text-gray-600 text-xs ml-1">({r.patientPhone})</span>}
                   </div>
 
@@ -692,11 +692,11 @@ export function AdminScreeningCenter({
 
                   <div className="flex items-center justify-between pt-2 border-t border-gray-50 text-xs">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-gray-600 text-[11px]">Status:</span>
+                      <span className="text-gray-600 text-xs">Status:</span>
                       <select
                         value={r.status}
                         onChange={(e) => handleUpdateReferralStatus(r.id, e.target.value)}
-                        className="rounded-lg border border-gray-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-teal-950"
+                        className="rounded-lg border border-gray-200 bg-[var(--admin-card)] px-2 py-0.5 text-xs font-semibold text-teal-950"
                       >
                         <option value="issued">Issued</option>
                         <option value="shared">Shared with Patient</option>
@@ -731,9 +731,9 @@ export function AdminScreeningCenter({
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 pt-2">
               {KENYAN_REFERRAL_DESTINATIONS.emergencyServices.map((ems, idx) => (
-                <div key={idx} className="rounded-2xl bg-white p-3.5 border border-red-200 text-xs space-y-1">
+                <div key={idx} className="rounded-2xl bg-[var(--admin-card)] p-3.5 border border-red-200 text-xs space-y-1">
                   <p className="font-bold text-gray-900">{ems.name}</p>
-                  <p className="text-[10px] text-gray-500">{ems.description}</p>
+                  <p className="text-xs text-gray-500">{ems.description}</p>
                   <a href={`tel:${ems.number.replace(/[^0-9+]/g, "")}`} className="font-bold text-red-700 text-sm block mt-1">
                     📞 {ems.number}
                   </a>
@@ -745,14 +745,14 @@ export function AdminScreeningCenter({
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">Flagged Critical Screening Cases</h4>
             {emergencyScreenings.length === 0 ? (
-              <p className="text-xs text-gray-500 bg-white p-8 rounded-3xl border border-gray-100 text-center">
+              <p className="text-xs text-gray-500 bg-[var(--admin-card)] p-8 rounded-3xl border border-gray-100 text-center">
                 No active critical emergency vitals recorded.
               </p>
             ) : (
               emergencyScreenings.map((s) => (
-                <div key={s.id} className="rounded-2xl border border-red-200 bg-white p-4 flex items-center justify-between">
+                <div key={s.id} className="rounded-2xl border border-red-200 bg-[var(--admin-card)] p-4 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-sm text-[#0c1a14]">{s.patientName}</span>
+                    <span className="font-bold text-sm text-[var(--admin-text)]">{s.patientName}</span>
                     <span className="text-xs text-gray-600 ml-2">({s.patientPhone || "Walk-in"})</span>
                     <div className="text-xs text-red-700 font-semibold mt-1">
                       {s.bpCategory === "hypertensive_crisis" && `BP: ${s.systolicBp}/${s.diastolicBp} mmHg (Hypertensive Crisis!) `}
@@ -784,11 +784,11 @@ export function AdminScreeningCenter({
       {/* ── MODAL: RECORD HEALTH SCREENING ── */}
       {showRecordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto">
-          <div className="relative w-full max-w-3xl rounded-3xl bg-white p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
+          <div className="relative w-full max-w-3xl rounded-3xl bg-[var(--admin-card)] p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-4">
               <div className="flex items-center gap-2">
                 <Activity className="h-5 w-5 text-teal-800" />
-                <h3 className="font-bold text-base text-[#0c1a14]">Record Health Screening</h3>
+                <h3 className="font-bold text-base text-[var(--admin-text)]">Record Health Screening</h3>
               </div>
               <button onClick={() => setShowRecordModal(false)} className="p-1.5 text-gray-400 hover:text-gray-700">
                 <X className="h-5 w-5" />
@@ -803,28 +803,28 @@ export function AdminScreeningCenter({
               <button
                 type="button"
                 onClick={() => applyAdminPreset("bp")}
-                className="px-2.5 py-1 rounded-lg bg-white font-semibold text-teal-900 border border-teal-100 hover:bg-teal-50"
+                className="px-2.5 py-1 rounded-lg bg-[var(--admin-card)] font-semibold text-teal-900 border border-teal-100 hover:bg-teal-50"
               >
                 Normal BP (120/80)
               </button>
               <button
                 type="button"
                 onClick={() => applyAdminPreset("glucose")}
-                className="px-2.5 py-1 rounded-lg bg-white font-semibold text-teal-900 border border-teal-100 hover:bg-teal-50"
+                className="px-2.5 py-1 rounded-lg bg-[var(--admin-card)] font-semibold text-teal-900 border border-teal-100 hover:bg-teal-50"
               >
                 Fasting Glucose (5.4)
               </button>
               <button
                 type="button"
                 onClick={() => applyAdminPreset("wellness")}
-                className="px-2.5 py-1 rounded-lg bg-white font-semibold text-teal-900 border border-teal-100 hover:bg-teal-50"
+                className="px-2.5 py-1 rounded-lg bg-[var(--admin-card)] font-semibold text-teal-900 border border-teal-100 hover:bg-teal-50"
               >
                 Full Wellness Panel
               </button>
               <button
                 type="button"
                 onClick={() => applyAdminPreset("malaria")}
-                className="px-2.5 py-1 rounded-lg bg-white font-semibold text-teal-900 border border-teal-100 hover:bg-teal-50"
+                className="px-2.5 py-1 rounded-lg bg-[var(--admin-card)] font-semibold text-teal-900 border border-teal-100 hover:bg-teal-50"
               >
                 Malaria RDT (Neg)
               </button>
@@ -860,7 +860,7 @@ export function AdminScreeningCenter({
                     <select
                       value={recCustomerId}
                       onChange={(e) => handleCustomerSelect(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 mt-1"
+                      className="w-full rounded-xl border border-gray-200 bg-[var(--admin-card)] px-3 py-2 mt-1"
                     >
                       <option value="">-- Choose registered customer --</option>
                       {customers.map((c) => (
@@ -883,7 +883,7 @@ export function AdminScreeningCenter({
                       value={recName}
                       onChange={(e) => setRecName(e.target.value)}
                       placeholder="e.g. John Mwangi"
-                      className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 mt-1"
+                      className="w-full rounded-xl border border-gray-200 bg-[var(--admin-card)] px-3 py-2 mt-1"
                     />
                   </div>
                   <div>
@@ -894,7 +894,7 @@ export function AdminScreeningCenter({
                       value={recPhone}
                       onChange={(e) => setRecPhone(e.target.value)}
                       placeholder="07..."
-                      className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 mt-1"
+                      className="w-full rounded-xl border border-gray-200 bg-[var(--admin-card)] px-3 py-2 mt-1"
                     />
                   </div>
                   <div>
@@ -905,7 +905,7 @@ export function AdminScreeningCenter({
                       value={recAge}
                       onChange={(e) => setRecAge(e.target.value)}
                       placeholder="45"
-                      className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 mt-1"
+                      className="w-full rounded-xl border border-gray-200 bg-[var(--admin-card)] px-3 py-2 mt-1"
                     />
                   </div>
                 </div>
@@ -918,7 +918,7 @@ export function AdminScreeningCenter({
                   name="screeningType"
                   value={recType}
                   onChange={(e) => setRecType(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 mt-1"
+                  className="w-full rounded-xl border border-gray-200 bg-[var(--admin-card)] px-3 py-2 mt-1"
                 >
                   <option value="wellness_check">Comprehensive Basic Wellness Check</option>
                   <option value="blood_pressure">Blood Pressure Screening</option>
@@ -938,7 +938,7 @@ export function AdminScreeningCenter({
                       <Heart className="h-3.5 w-3.5 text-red-500" /> Blood Pressure
                     </span>
                     {recSys && recDia && (
-                      <span className="text-[10px] font-bold text-teal-800 uppercase">
+                      <span className="text-xs font-bold text-teal-800 uppercase">
                         {liveBp.category.replace(/_/g, " ")}
                       </span>
                     )}
@@ -953,7 +953,7 @@ export function AdminScreeningCenter({
                         placeholder="Systolic"
                         className="w-full rounded-lg border border-gray-200 px-2 py-1.5"
                       />
-                      <span className="text-[10px] text-gray-600">Systolic</span>
+                      <span className="text-xs text-gray-600">Systolic</span>
                     </div>
                     <div>
                       <input
@@ -964,7 +964,7 @@ export function AdminScreeningCenter({
                         placeholder="Diastolic"
                         className="w-full rounded-lg border border-gray-200 px-2 py-1.5"
                       />
-                      <span className="text-[10px] text-gray-600">Diastolic</span>
+                      <span className="text-xs text-gray-600">Diastolic</span>
                     </div>
                     <div>
                       <input
@@ -975,7 +975,7 @@ export function AdminScreeningCenter({
                         placeholder="Pulse"
                         className="w-full rounded-lg border border-gray-200 px-2 py-1.5"
                       />
-                      <span className="text-[10px] text-gray-600">BPM</span>
+                      <span className="text-xs text-gray-600">BPM</span>
                     </div>
                   </div>
                 </div>
@@ -987,7 +987,7 @@ export function AdminScreeningCenter({
                       <Activity className="h-3.5 w-3.5 text-teal-600" /> Blood Glucose
                     </span>
                     {recGlu && (
-                      <span className="text-[10px] font-bold text-teal-800 uppercase">
+                      <span className="text-xs font-bold text-teal-800 uppercase">
                         {liveGlu.category.replace(/_/g, " ")}
                       </span>
                     )}
@@ -1037,7 +1037,7 @@ export function AdminScreeningCenter({
                       <Scale className="h-3.5 w-3.5 text-indigo-500" /> Weight &amp; Height (BMI)
                     </span>
                     {liveBmi.bmi && (
-                      <span className="text-[10px] font-bold text-teal-800">
+                      <span className="text-xs font-bold text-teal-800">
                         BMI: {liveBmi.bmi} ({liveBmi.category})
                       </span>
                     )}
@@ -1162,7 +1162,7 @@ export function AdminScreeningCenter({
                           name="referralDestinationType"
                           value={recRefDest}
                           onChange={(e) => setRecRefDest(e.target.value)}
-                          className="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 mt-0.5"
+                          className="w-full rounded-lg border border-gray-200 bg-[var(--admin-card)] px-2 py-1.5 mt-0.5"
                         >
                           <option value="clinic">Clinic (Primary Care)</option>
                           <option value="hospital">Hospital (Secondary/Tertiary)</option>
@@ -1179,7 +1179,7 @@ export function AdminScreeningCenter({
                           value={recRefFacility}
                           onChange={(e) => setRecRefFacility(e.target.value)}
                           placeholder="Facility Name"
-                          className="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 mt-0.5"
+                          className="w-full rounded-lg border border-gray-200 bg-[var(--admin-card)] px-2 py-1.5 mt-0.5"
                         />
                       </div>
                       <div>
@@ -1188,7 +1188,7 @@ export function AdminScreeningCenter({
                           name="referralUrgency"
                           value={recRefUrgency}
                           onChange={(e) => setRecRefUrgency(e.target.value)}
-                          className="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 mt-0.5"
+                          className="w-full rounded-lg border border-gray-200 bg-[var(--admin-card)] px-2 py-1.5 mt-0.5"
                         >
                           <option value="routine">Routine (1–2 weeks)</option>
                           <option value="urgent">Urgent (24–48 hours)</option>
@@ -1204,7 +1204,7 @@ export function AdminScreeningCenter({
                         value={recRefReason}
                         onChange={(e) => setRecRefReason(e.target.value)}
                         placeholder="e.g. Stage 2 Hypertension (152/96 mmHg) requiring physician workup"
-                        className="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 mt-0.5"
+                        className="w-full rounded-lg border border-gray-200 bg-[var(--admin-card)] px-2 py-1.5 mt-0.5"
                       />
                     </div>
                   </div>
@@ -1235,11 +1235,11 @@ export function AdminScreeningCenter({
       {/* ── MODAL: ISSUE STANDALONE CLINICAL REFERRAL ── */}
       {showReferralModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-3xl bg-white p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-[var(--admin-card)] p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-4">
               <div className="flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-teal-800" />
-                <h3 className="font-bold text-base text-[#0c1a14]">Issue Pharmacist Clinical Referral</h3>
+                <h3 className="font-bold text-base text-[var(--admin-text)]">Issue Pharmacist Clinical Referral</h3>
               </div>
               <button onClick={() => setShowReferralModal(false)} className="p-1.5 text-gray-400 hover:text-gray-700">
                 <X className="h-5 w-5" />
@@ -1322,14 +1322,14 @@ export function AdminScreeningCenter({
 
               {/* Quick Facility Picker */}
               <div className="bg-gray-50 p-2.5 rounded-xl space-y-1">
-                <span className="text-[10px] font-bold text-gray-500">Auto-Select Kenyan Facility:</span>
+                <span className="text-xs font-bold text-gray-500">Auto-Select Kenyan Facility:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {KENYAN_REFERRAL_DESTINATIONS.hospitals.slice(0, 5).map((h, i) => (
                     <button
                       key={i}
                       type="button"
                       onClick={() => handleFacilitySelect(h.name)}
-                      className="px-2 py-0.5 text-[11px] rounded-lg bg-white border border-gray-200 hover:bg-teal-50"
+                      className="px-2 py-0.5 text-xs rounded-lg bg-[var(--admin-card)] border border-gray-200 hover:bg-teal-50"
                     >
                       {h.name.split(" ")[0]}
                     </button>
@@ -1337,7 +1337,7 @@ export function AdminScreeningCenter({
                   <button
                     type="button"
                     onClick={() => handleFacilitySelect("Pathologists Lancet Kenya (Cerba Lancet)")}
-                    className="px-2 py-0.5 text-[11px] rounded-lg bg-white border border-gray-200 hover:bg-teal-50"
+                    className="px-2 py-0.5 text-xs rounded-lg bg-[var(--admin-card)] border border-gray-200 hover:bg-teal-50"
                   >
                     Lancet Lab
                   </button>
@@ -1430,12 +1430,12 @@ export function AdminScreeningCenter({
 
       {/* ── MODAL: VIEW / PRINT CLINICAL REFERRAL SLIP ── */}
       {selectedReferral && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto print:p-0 print:bg-white">
-          <div className="relative w-full max-w-2xl rounded-3xl bg-white p-6 sm:p-8 shadow-2xl space-y-6 print:shadow-none print:p-0 max-h-[95vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto print:p-0 print:bg-[var(--admin-card)]">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-[var(--admin-card)] p-6 sm:p-8 shadow-2xl space-y-6 print:shadow-none print:p-0 max-h-[95vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-4 print:hidden">
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-teal-800" />
-                <span className="font-bold text-sm text-[#0c1a14]">Official Pharmacist Referral Slip</span>
+                <span className="font-bold text-sm text-[var(--admin-text)]">Official Pharmacist Referral Slip</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -1461,7 +1461,7 @@ export function AdminScreeningCenter({
               </div>
             </div>
 
-            <div className="border border-gray-300 rounded-2xl p-6 sm:p-8 space-y-5 bg-white text-[#0c1a14] text-xs">
+            <div className="border border-gray-300 rounded-2xl p-6 sm:p-8 space-y-5 bg-[var(--admin-card)] text-[var(--admin-text)] text-xs">
               <div className="flex items-center justify-between border-b pb-4">
                 <div>
                   <h3 className="font-bold text-lg text-teal-950">{pharmacy.name}</h3>
@@ -1469,11 +1469,11 @@ export function AdminScreeningCenter({
                   <p className="text-gray-500">Tel: {pharmacy.phone} | Reg: PPB/PREM/04928</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">Referral Ref</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-400 block">Referral Ref</span>
                   <span className="font-mono font-bold text-sm text-teal-900 bg-teal-50 px-2 py-0.5 rounded-md inline-block">
                     {selectedReferral.referenceCode}
                   </span>
-                  <span className="text-[10px] text-gray-500 block mt-1">
+                  <span className="text-xs text-gray-500 block mt-1">
                     Date: {new Date(selectedReferral.issuedAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -1482,7 +1482,7 @@ export function AdminScreeningCenter({
               <div className="grid grid-cols-2 gap-4 bg-gray-50 p-3.5 rounded-xl">
                 <div>
                   <span className="text-gray-500 font-semibold">Patient Name: </span>
-                  <span className="font-bold text-[#0c1a14]">{selectedReferral.patientName}</span>
+                  <span className="font-bold text-[var(--admin-text)]">{selectedReferral.patientName}</span>
                 </div>
                 <div>
                   <span className="text-gray-500 font-semibold">Contact: </span>
@@ -1531,7 +1531,7 @@ export function AdminScreeningCenter({
                 </div>
               )}
 
-              <div className="text-[10px] text-gray-500 italic bg-gray-50 p-2 rounded-lg border border-gray-100">
+              <div className="text-xs text-gray-500 italic bg-gray-50 p-2 rounded-lg border border-gray-100">
                 * Note for receiving physician: Issued after pharmacy screening. Screening is a preliminary risk detection tool and is not a definitive diagnosis.
               </div>
 
@@ -1539,11 +1539,11 @@ export function AdminScreeningCenter({
                 <div>
                   <p className="font-semibold text-gray-700">Referring Pharmacist:</p>
                   <p className="text-gray-500">Licensed Pharmacist on Duty</p>
-                  <p className="text-[10px] text-gray-400">Aether Pharmacy Clinical Practice</p>
+                  <p className="text-xs text-gray-400">Aether Pharmacy Clinical Practice</p>
                 </div>
                 <div className="text-right">
                   <div className="w-36 border-b border-gray-400 mb-1"></div>
-                  <p className="text-[10px] text-gray-500">Pharmacist Signature &amp; Official Stamp</p>
+                  <p className="text-xs text-gray-500">Pharmacist Signature &amp; Official Stamp</p>
                 </div>
               </div>
             </div>
@@ -1554,9 +1554,9 @@ export function AdminScreeningCenter({
       {/* ── MODAL: VIEW SCREENING DETAILS ── */}
       {selectedScreening && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto">
-          <div className="relative w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl space-y-4 text-xs">
+          <div className="relative w-full max-w-xl rounded-3xl bg-[var(--admin-card)] p-6 shadow-2xl space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-bold text-sm text-[#0c1a14]">Health Screening Record Details</h3>
+              <h3 className="font-bold text-sm text-[var(--admin-text)]">Health Screening Record Details</h3>
               <button onClick={() => setSelectedScreening(null)} className="p-1.5 text-gray-400 hover:text-gray-700">
                 <X className="h-5 w-5" />
               </button>
@@ -1564,11 +1564,11 @@ export function AdminScreeningCenter({
 
             <div className="space-y-3">
               <div className="bg-gray-50 p-3 rounded-xl">
-                <p className="font-bold text-sm text-[#0c1a14]">{selectedScreening.patientName}</p>
-                <p className="text-gray-600 text-[11px]">
+                <p className="font-bold text-sm text-[var(--admin-text)]">{selectedScreening.patientName}</p>
+                <p className="text-gray-600 text-xs">
                   Phone: {selectedScreening.patientPhone || "N/A"} | Age: {selectedScreening.patientAge || "N/A"}
                 </p>
-                <p className="text-gray-500 text-[10px] mt-1">
+                <p className="text-gray-500 text-xs mt-1">
                   Recorded on {new Date(selectedScreening.createdAt).toLocaleString()} by {selectedScreening.conductedBy?.email || "Pharmacist"}
                 </p>
               </div>
@@ -1578,21 +1578,21 @@ export function AdminScreeningCenter({
                   <div className="rounded-xl border p-2.5">
                     <span className="font-semibold text-gray-500">Blood Pressure</span>
                     <p className="font-bold text-sm">{selectedScreening.systolicBp}/{selectedScreening.diastolicBp} mmHg</p>
-                    <p className="text-[10px] text-teal-800 capitalize">{selectedScreening.bpCategory?.replace(/_/g, " ")}</p>
+                    <p className="text-xs text-teal-800 capitalize">{selectedScreening.bpCategory?.replace(/_/g, " ")}</p>
                   </div>
                 )}
                 {selectedScreening.bloodGlucose != null && (
                   <div className="rounded-xl border p-2.5">
                     <span className="font-semibold text-gray-500">Blood Glucose</span>
                     <p className="font-bold text-sm">{selectedScreening.bloodGlucose} {selectedScreening.glucoseUnit || "mmol/L"}</p>
-                    <p className="text-[10px] text-teal-800 capitalize">{selectedScreening.fastingStatus} • {selectedScreening.glucoseCategory?.replace(/_/g, " ")}</p>
+                    <p className="text-xs text-teal-800 capitalize">{selectedScreening.fastingStatus} • {selectedScreening.glucoseCategory?.replace(/_/g, " ")}</p>
                   </div>
                 )}
                 {selectedScreening.bmi != null && (
                   <div className="rounded-xl border p-2.5">
                     <span className="font-semibold text-gray-500">BMI &amp; Weight</span>
                     <p className="font-bold text-sm">{selectedScreening.bmi} kg/m² ({selectedScreening.weightKg} kg)</p>
-                    <p className="text-[10px] text-teal-800 capitalize">{selectedScreening.bmiCategory?.replace(/_/g, " ")}</p>
+                    <p className="text-xs text-teal-800 capitalize">{selectedScreening.bmiCategory?.replace(/_/g, " ")}</p>
                   </div>
                 )}
                 {selectedScreening.temperatureC != null && (
@@ -1610,7 +1610,7 @@ export function AdminScreeningCenter({
                 </div>
               )}
 
-              <div className="text-[11px] text-gray-500 pt-2 border-t">
+              <div className="text-xs text-gray-500 pt-2 border-t">
                 Equipment: {selectedScreening.equipmentUsed || "Calibrated clinical devices"}
               </div>
 

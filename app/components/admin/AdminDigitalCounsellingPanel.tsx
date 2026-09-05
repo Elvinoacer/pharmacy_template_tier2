@@ -78,7 +78,7 @@ export function AdminDigitalCounsellingPanel({
             <h3 className="font-bold text-xs admin-heading sm:text-sm">
               Pharmacist Digital Patient Counselling Checklist
             </h3>
-            <p className="text-[11px] admin-muted">
+            <p className="text-xs admin-muted">
               Verify and check off the 12 clinical counselling pillars before dispensing to {customerName || "patient"}.
             </p>
           </div>
@@ -121,7 +121,7 @@ export function AdminDigitalCounsellingPanel({
             style={{ width: `${percentage}%` }}
           />
         </div>
-        <span className="text-[11px] font-bold text-[#0c1a14] dark:text-emerald-300">
+        <span className="text-xs font-bold text-[var(--admin-text)] dark:text-emerald-300">
           {completedCount} / 12 ({percentage}%)
         </span>
       </div>
@@ -214,7 +214,7 @@ export function AdminDigitalCounsellingPanel({
         />
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-[var(--admin-border)] pt-3 text-[11px] admin-muted">
+      <div className="mt-4 flex items-center justify-between border-t border-[var(--admin-border)] pt-3 text-xs admin-muted">
         <span>
           Verification Status: <strong className={completedCount === 12 ? "text-emerald-600 font-bold" : ""}>{completedCount} / 12 pillars checked.</strong>
         </span>
@@ -262,7 +262,7 @@ function PillarCheckItem({
           className="rounded-sm accent-emerald-600 cursor-pointer"
         />
       </div>
-      <p className="mt-1 line-clamp-2 text-[11px] opacity-80">{detail}</p>
+      <p className="mt-1 line-clamp-2 text-xs opacity-80">{detail}</p>
     </div>
   );
 }

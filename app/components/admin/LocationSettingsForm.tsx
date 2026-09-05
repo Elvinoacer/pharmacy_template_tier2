@@ -146,27 +146,27 @@ export default function LocationSettingsForm({
     <form action={action} className="space-y-6">
       {/* Identity already known from onboarding — show, don't re-ask */}
       <div className="rounded-2xl border border-teal-900/10 bg-gradient-to-br from-teal-50/80 to-white p-5 sm:p-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0d6e5a]">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--admin-accent-text)]">
           Already on file
         </p>
-        <h2 className="mt-1.5 text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+        <h2 className="mt-1.5 text-lg font-semibold text-[var(--admin-text)]" style={{ fontFamily: "var(--font-display), serif" }}>
           {knownName}
         </h2>
-        <dl className="mt-3 grid gap-2 text-sm text-[#5a6b62] sm:grid-cols-2">
+        <dl className="mt-3 grid gap-2 text-sm text-[var(--admin-text-muted)] sm:grid-cols-2">
           {defaults.email && (
             <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-wide text-[#7a8b84]">Email</dt>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--admin-text-soft)]">Email</dt>
               <dd className="mt-0.5 break-all">{defaults.email}</dd>
             </div>
           )}
           {defaults.phone && (
             <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-wide text-[#7a8b84]">Phone</dt>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--admin-text-soft)]">Phone</dt>
               <dd className="mt-0.5">{defaults.phone}</dd>
             </div>
           )}
         </dl>
-        <p className="mt-3 text-xs leading-relaxed text-[#7a8b84]">
+        <p className="mt-3 text-xs leading-relaxed text-[var(--admin-text-soft)]">
           These came from your application. You can adjust contact details below if anything changed.
         </p>
         {/* Hidden so save still receives them if user does not edit contact card */}
@@ -377,7 +377,7 @@ export default function LocationSettingsForm({
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link
           href="/admin/setup"
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-teal-900/10 bg-white px-4 py-2.5 text-sm font-semibold text-[#0c1a14] hover:bg-slate-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-teal-900/10 bg-[var(--admin-card)] px-4 py-2.5 text-sm font-semibold text-[var(--admin-text)] hover:bg-slate-50"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to checklist

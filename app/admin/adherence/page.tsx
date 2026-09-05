@@ -34,7 +34,7 @@ export default async function AdminAdherencePage() {
   return (
     <AdminShell
       user={user}
-      title="Adherence & Chronic Care Hub"
+      title="Adherence & follow-up"
       subtitle={`${outreachQueue.length} clinical follow-ups pending · ${enrollments.length} Med Sync patients · ${chronicData.summary.totalChronicPatients} chronic maintenance patients`}
     >
       <AdminAdherenceCommandCenter

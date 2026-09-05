@@ -180,7 +180,7 @@ export default function PharmacyDirectory({
   return (
     <div>
       {/* Search + location toolbar */}
-      <div className="rounded-3xl border border-teal-900/10 bg-white p-3 shadow-sm sm:p-4">
+      <div className="glass-panel rounded-3xl p-3 sm:p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a9a92]" aria-hidden />
@@ -362,7 +362,7 @@ export default function PharmacyDirectory({
 
       {/* Grid / empty state */}
       {sorted.length === 0 ? (
-        <div className="mt-8 rounded-3xl border border-dashed border-teal-900/20 bg-white/70 p-12 text-center">
+        <div className="mt-8 rounded-3xl border border-dashed border-teal-900/20 bg-white/70 p-6 sm:p-12 text-center">
           <PackageCheck className="mx-auto h-8 w-8 text-[#8a9a92]" aria-hidden />
           <h2 className="mt-4 text-base font-semibold text-[#0c1a14]">No pharmacies match those filters</h2>
           <p className="mx-auto mt-1 max-w-md text-xs leading-5 text-[#5a6b62]">
@@ -452,7 +452,7 @@ function PharmacyCard({
     : `/p/${pharmacy.slug}/medicines`;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-3xl border border-[#e3ebe6] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <article className="group flex flex-col overflow-hidden rounded-3xl glass-panel shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="relative h-48 overflow-hidden bg-[#084c3f]">
         <Image
           src={cover}

@@ -1,5 +1,7 @@
 "use client";
 
+import ThemeToggle from "@/app/components/ThemeProvider";
+
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -350,6 +352,7 @@ export function CaregiverShell({
             <span className="block max-w-[160px] truncate text-[11px] text-[#5a6b62]">{user.email}</span>
           </div>
         </div>
+        <ThemeToggle />
       </header>
 
       {/* Main scroll area */}

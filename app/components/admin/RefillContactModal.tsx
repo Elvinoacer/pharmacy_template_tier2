@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminModal } from "./AdminModal";
+
 import { useState, useTransition } from "react";
 import {
   Phone,
@@ -128,7 +130,7 @@ export function PatientContactModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 sm:p-4 backdrop-blur-sm overflow-y-auto">
+    <AdminModal label="Patient contact and follow-up" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center  p-3 sm:p-4  overflow-y-auto">
       <div className="relative w-full max-w-xl rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-[var(--admin-border)] pb-3">
@@ -144,7 +146,7 @@ export function PatientContactModal({
             </div>
           </div>
           <button
-            onClick={onClose}
+            aria-label="Close dialog" onClick={onClose}
             className="rounded-full p-1.5 admin-soft hover:bg-[var(--admin-inset)] transition"
           >
             <X className="h-4 w-4" />
@@ -171,7 +173,7 @@ export function PatientContactModal({
 
         {/* Template Selector */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-wider admin-soft flex items-center gap-1">
+          <label className="text-xs font-bold uppercase tracking-wider admin-soft flex items-center gap-1">
             <FileText className="h-3 w-3 text-emerald-600" /> Quick Clinical Templates
           </label>
           <div className="flex flex-wrap gap-1.5">
@@ -180,7 +182,7 @@ export function PatientContactModal({
                 key={tpl.id}
                 type="button"
                 onClick={() => setMessage(tpl.text)}
-                className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-semibold admin-text hover:border-emerald-500/40 hover:bg-emerald-500/10 transition"
+                className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-xs font-semibold admin-text hover:border-emerald-500/40 hover:bg-emerald-500/10 transition"
               >
                 {tpl.label}
               </button>
@@ -190,7 +192,7 @@ export function PatientContactModal({
 
         {/* Channel Switcher */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Dispatch Channel</label>
+          <label className="text-xs font-bold uppercase tracking-wider admin-soft">Dispatch Channel</label>
           <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
@@ -231,15 +233,15 @@ export function PatientContactModal({
         {/* Message Editor */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Message Body</label>
+            <label className="text-xs font-bold uppercase tracking-wider admin-soft">Message Body</label>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] admin-soft font-mono">
+              <span className="text-xs admin-soft font-mono">
                 {charCount} chars · {smsSegments} SMS {smsSegments === 1 ? "segment" : "segments"}
               </span>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="text-[10px] font-bold text-emerald-700 hover:underline inline-flex items-center gap-0.5"
+                className="text-xs font-bold text-emerald-700 hover:underline inline-flex items-center gap-0.5"
               >
                 <Copy className="h-2.5 w-2.5" /> Copy
               </button>
@@ -287,7 +289,7 @@ export function PatientContactModal({
           </div>
         </div>
       </div>
-    </div>
+    </AdminModal>
   );
 }
 
@@ -341,7 +343,7 @@ export function PrescriberContactModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 sm:p-4 backdrop-blur-sm overflow-y-auto">
+    <AdminModal label="Patient contact and follow-up" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center  p-3 sm:p-4  overflow-y-auto">
       <div className="relative w-full max-w-xl rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
         <div className="flex items-start justify-between border-b border-[var(--admin-border)] pb-3">
           <div className="flex items-center gap-2.5">
@@ -374,7 +376,7 @@ export function PrescriberContactModal({
                 <span className="font-mono admin-text font-bold">{target.prescriberPhone}</span>
                 <a
                   href={`tel:${target.prescriberPhone}`}
-                  className="rounded-lg bg-blue-600 px-2.5 py-0.5 text-[11px] font-bold text-white shadow-sm hover:bg-blue-700 transition"
+                  className="rounded-lg bg-blue-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition"
                 >
                   Call Now
                 </a>
@@ -391,7 +393,7 @@ export function PrescriberContactModal({
 
         {/* Method Switcher */}
         <div className="space-y-1">
-          <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Contact Method</label>
+          <label className="text-xs font-bold uppercase tracking-wider admin-soft">Contact Method</label>
           <div className="grid grid-cols-4 gap-1.5 text-xs">
             {(["phone", "whatsapp", "email", "in_person"] as const).map((m) => (
               <button
@@ -412,7 +414,7 @@ export function PrescriberContactModal({
 
         {/* Inquiry Text */}
         <div className="space-y-1">
-          <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Inquiry / Authorization Details</label>
+          <label className="text-xs font-bold uppercase tracking-wider admin-soft">Inquiry / Authorization Details</label>
           <textarea
             rows={5}
             value={inquiry}
@@ -423,7 +425,7 @@ export function PrescriberContactModal({
 
         {/* Doctor Response / Resolution */}
         <div className="space-y-1">
-          <label className="text-[11px] font-bold uppercase tracking-wider admin-soft">Doctor Response / Verbal Authorization Note</label>
+          <label className="text-xs font-bold uppercase tracking-wider admin-soft">Doctor Response / Verbal Authorization Note</label>
           <input
             value={doctorResponse}
             onChange={(e) => setDoctorResponse(e.target.value)}
@@ -479,6 +481,6 @@ export function PrescriberContactModal({
           </div>
         </div>
       </div>
-    </div>
+    </AdminModal>
   );
 }

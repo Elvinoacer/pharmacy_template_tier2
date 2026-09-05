@@ -84,13 +84,13 @@ export default async function AdminMessagesPage({
   return (
     <AdminShell
       user={user}
-      title="Communication center"
-      subtitle="Centralized email, SMS, WhatsApp, and portal threads."
+      title="Conversations"
+      subtitle="Find patient conversations across email, SMS, WhatsApp, and the portal."
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total threads</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total threads</p>
           <p className="mt-1 text-2xl font-bold admin-text">{total}</p>
         </div>
         {["email", "sms", "whatsapp", "portal"].map((ch) => {
@@ -98,7 +98,7 @@ export default async function AdminMessagesPage({
           return (
             <div key={ch} className="admin-stat p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{ch}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide admin-muted">{ch}</p>
                 <Icon className="h-3.5 w-3.5 admin-accent-text" />
               </div>
               <p className="mt-1 text-2xl font-bold admin-text">{byChannel[ch] || 0}</p>
@@ -163,11 +163,11 @@ export default async function AdminMessagesPage({
                       <p className="font-semibold admin-text">
                         {c.customer?.fullName || "Unknown customer"}
                       </p>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_COLOR[c.status] || "bg-slate-500/15 text-slate-600"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_COLOR[c.status] || "bg-slate-500/15 text-slate-600"}`}>
                         {c.status}
                       </span>
                       {c.assignedTo && (
-                        <span className="text-[10px] admin-soft">
+                        <span className="text-xs admin-soft">
                           Assigned to {c.assignedTo.email}
                         </span>
                       )}
@@ -175,7 +175,7 @@ export default async function AdminMessagesPage({
                     <p className="mt-0.5 truncate text-sm admin-muted">
                       {c.subject || c.messages[0]?.body?.slice(0, 100) || "No messages"}
                     </p>
-                    <p className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wide admin-soft">
+                    <p className="mt-1 flex items-center gap-1 text-xs uppercase tracking-wide admin-soft">
                       <Clock className="h-2.5 w-2.5" />
                       {c.lastMessageAt ? formatDateTime(c.lastMessageAt) : "—"}
                     </p>

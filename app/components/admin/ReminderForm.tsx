@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { CalendarClock, Mail, MessageSquare, MessageCircle, Bell, Type, FileText, Calendar, AlertCircle, Check, Send, Zap, Wand2 } from "lucide-react";
@@ -30,6 +32,7 @@ export default function ReminderForm({
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [customerId, setCustomerId] = useState("");
   const [sendNow, setSendNow] = useState(false);
@@ -82,16 +85,16 @@ export default function ReminderForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="label-admin">Type</label>
-          <select name="type" className="input-admin" defaultValue="custom">
+          <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Type</label>
+          <select id={`${fieldPrefix}-1`} name="type" className="input-admin" defaultValue="custom">
             {TYPES.map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
         </div>
         <div>
-          <label className="label-admin">Channel</label>
-          <select name="channel" className="input-admin" defaultValue="email">
+          <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Channel</label>
+          <select id={`${fieldPrefix}-2`} name="channel" className="input-admin" defaultValue="email">
             {CHANNELS.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.value === "in_app" ? "In-app" : c.value.charAt(0).toUpperCase() + c.value.slice(1)}
@@ -102,10 +105,10 @@ export default function ReminderForm({
       </div>
 
       <div>
-        <label className="label-admin">Title *</label>
+        <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Title *</label>
         <div className="relative">
           <Type className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input
+          <input id={`${fieldPrefix}-3`}
             name="title"
             required
             value={title}
@@ -123,7 +126,7 @@ export default function ReminderForm({
             type="button"
             onClick={aiDraft}
             disabled={aiLoading}
-            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-xs font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
           >
             <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
           </button>

@@ -40,7 +40,7 @@ export default async function NewMedicationPage() {
   ]);
 
   return (
-    <AdminShell user={user} title="Manual Entry — Medication" subtitle="Last-resort entry (Phase 3.5). All fields are editable here.">
+    <AdminShell user={user} title="Enter medicine details" subtitle="Add a medicine manually. Check the clinical details before saving.">
       <div className="mb-6">
         <Link
           href="/admin/medications/add"

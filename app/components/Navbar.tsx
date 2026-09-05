@@ -1,5 +1,7 @@
 "use client";
 
+import ThemeToggle from "@/app/components/ThemeProvider";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -425,10 +427,11 @@ export default function Navbar({
                 <span className="hidden md:inline">{portalCta.shortLabel}</span>
               </Link>
 
+              <ThemeToggle />
               {isPlatform ? (
                 <Link
                   href="/for-pharmacies"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-3 py-2 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] sm:px-4 sm:py-2.5"
+                  className="hidden sm:inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#084c3f] px-3 py-2 text-xs font-bold text-white shadow-md shadow-teal-900/20 transition-all hover:scale-[1.02] sm:px-4 sm:py-2.5"
                 >
                   <Building2 className="h-3.5 w-3.5 shrink-0 text-teal-200" />
                   <span className="hidden min-[400px]:inline">Join as a pharmacy</span>

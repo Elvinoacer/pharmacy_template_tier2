@@ -83,21 +83,21 @@ export default async function AdminCustomerDetailPage({
             <div className="flex items-start gap-2">
               <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-wide admin-soft">Email</p>
+                <p className="text-xs uppercase tracking-wide admin-soft">Email</p>
                 <p className="truncate admin-text">{customer.user.email}</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
               <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
-                <p className="text-[10px] uppercase tracking-wide admin-soft">Phone</p>
+                <p className="text-xs uppercase tracking-wide admin-soft">Phone</p>
                 <p className="admin-text">{customer.phone || "—"}</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
               <Calendar className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
-                <p className="text-[10px] uppercase tracking-wide admin-soft">Date of birth</p>
+                <p className="text-xs uppercase tracking-wide admin-soft">Date of birth</p>
                 <p className="admin-text">
                   {customer.dateOfBirth ? formatDate(customer.dateOfBirth) : "—"}
                 </p>
@@ -106,14 +106,14 @@ export default async function AdminCustomerDetailPage({
             <div className="flex items-start gap-2">
               <Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
-                <p className="text-[10px] uppercase tracking-wide admin-soft">Branch</p>
+                <p className="text-xs uppercase tracking-wide admin-soft">Branch</p>
                 <p className="admin-text">{customer.preferredBranch}</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
-                <p className="text-[10px] uppercase tracking-wide admin-soft">Address</p>
+                <p className="text-xs uppercase tracking-wide admin-soft">Address</p>
                 <p className="admin-text">
                   {[customer.addressLine1, customer.city, customer.zip].filter(Boolean).join(", ") || "—"}
                 </p>
@@ -127,7 +127,7 @@ export default async function AdminCustomerDetailPage({
           title="Segments"
           description="Group this customer for campaigns"
           action={
-            <span className="text-[10px] uppercase tracking-wide admin-soft">
+            <span className="text-xs uppercase tracking-wide admin-soft">
               {customer.segments.length} active
             </span>
           }
@@ -139,7 +139,7 @@ export default async function AdminCustomerDetailPage({
             {customer.segments.map((s) => (
               <span
                 key={s.segmentId}
-                className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2 py-0.5 text-[10px] font-medium admin-accent-text"
+                className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2 py-0.5 text-xs font-medium admin-accent-text"
               >
                 <Layers className="h-2.5 w-2.5" /> {s.segment.name}
               </span>
@@ -175,14 +175,14 @@ export default async function AdminCustomerDetailPage({
               <div className="flex items-end justify-between">
                 <div>
                   <p className="text-3xl font-bold admin-text">{customer.loyaltyAccount.points}</p>
-                  <p className="text-[10px] uppercase tracking-wide admin-soft">Points balance</p>
+                  <p className="text-xs uppercase tracking-wide admin-soft">Points balance</p>
                 </div>
-                <span className="rounded-full bg-gradient-to-br from-amber-400 to-amber-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--admin-btn-fg)]">
+                <span className="rounded-full bg-gradient-to-br from-amber-400 to-amber-600 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-[var(--admin-btn-fg)]">
                   {customer.loyaltyAccount.tier}
                 </span>
               </div>
               <div className="mt-3 rounded-xl bg-[var(--admin-inset)] p-3">
-                <p className="text-[10px] uppercase tracking-wide admin-soft">Referral code</p>
+                <p className="text-xs uppercase tracking-wide admin-soft">Referral code</p>
                 <p className="font-mono text-lg font-bold admin-accent-text">{customer.loyaltyAccount.referralCode}</p>
               </div>
               <p className="mt-2 text-xs admin-muted">
@@ -201,7 +201,7 @@ export default async function AdminCustomerDetailPage({
           title="Customer timeline"
           description="Most recent activity"
           action={
-            <span className="text-[10px] uppercase tracking-wide admin-soft">
+            <span className="text-xs uppercase tracking-wide admin-soft">
               {customer.timelineEvents.length} events
             </span>
           }
@@ -214,12 +214,12 @@ export default async function AdminCustomerDetailPage({
               {customer.timelineEvents.slice(0, 30).map((e) => (
                 <li key={e.id} className="relative">
                   <span className="absolute -left-2.5 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[var(--admin-accent)] ring-4 ring-[var(--admin-bg)]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--admin-card)]" />
                   </span>
                   <div className="ml-4">
                     <p className="text-sm font-semibold admin-text">{e.title}</p>
                     {e.description && <p className="text-xs admin-muted">{e.description}</p>}
-                    <p className="mt-0.5 text-[10px] uppercase tracking-wide admin-soft">
+                    <p className="mt-0.5 text-xs uppercase tracking-wide admin-soft">
                       {formatDateTime(e.createdAt)}
                     </p>
                   </div>
@@ -261,11 +261,11 @@ export default async function AdminCustomerDetailPage({
                   >
                     <div className="min-w-0">
                       <p className="truncate font-medium admin-text">{r.medicineName}</p>
-                      <p className="text-[10px] admin-soft">
+                      <p className="text-xs admin-soft">
                         {formatDate(r.createdAt)}
                       </p>
                     </div>
-                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${meta.color}`}>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${meta.color}`}>
                       {meta.label}
                     </span>
                   </li>
@@ -290,11 +290,11 @@ export default async function AdminCustomerDetailPage({
                 >
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate font-medium admin-text">{p.medicineName}</p>
-                    <span className="shrink-0 rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] capitalize admin-muted">
+                    <span className="shrink-0 rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs capitalize admin-muted">
                       {p.status.replace("_", " ")}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-[10px] admin-soft">
+                  <p className="mt-0.5 text-xs admin-soft">
                     {p.rxReference || "No ref"} · {p.refillsRemaining ?? 0} refills left
                   </p>
                 </li>
@@ -318,10 +318,10 @@ export default async function AdminCustomerDetailPage({
                 >
                   <div className="min-w-0">
                     <p className="truncate font-medium admin-text">{c.caregiverName}</p>
-                    <p className="text-[10px] admin-soft">{c.relationship || "Caregiver"}</p>
+                    <p className="text-xs admin-soft">{c.relationship || "Caregiver"}</p>
                   </div>
                   <span
-                    className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
                       c.status === "active"
                         ? "bg-emerald-500/15 text-emerald-700"
                         : "bg-rose-500/15 text-rose-600"
@@ -367,24 +367,24 @@ export default async function AdminCustomerDetailPage({
             <div className="rounded-xl bg-[var(--admin-inset)] p-3">
               <Pill className="h-4 w-4 admin-accent-text" />
               <p className="mt-2 text-2xl font-bold admin-text">{customer.refillRequests.length}</p>
-              <p className="text-[10px] uppercase tracking-wide admin-soft">Total refills</p>
+              <p className="text-xs uppercase tracking-wide admin-soft">Total refills</p>
             </div>
             <div className="rounded-xl bg-[var(--admin-inset)] p-3">
               <FileText className="h-4 w-4 admin-accent-text" />
               <p className="mt-2 text-2xl font-bold admin-text">{customer.prescriptions.length}</p>
-              <p className="text-[10px] uppercase tracking-wide admin-soft">Prescriptions</p>
+              <p className="text-xs uppercase tracking-wide admin-soft">Prescriptions</p>
             </div>
             <div className="rounded-xl bg-[var(--admin-inset)] p-3">
               <HeartHandshake className="h-4 w-4 admin-accent-text" />
               <p className="mt-2 text-2xl font-bold admin-text">{customer.caregivers.length}</p>
-              <p className="text-[10px] uppercase tracking-wide admin-soft">Caregivers</p>
+              <p className="text-xs uppercase tracking-wide admin-soft">Caregivers</p>
             </div>
             <div className="rounded-xl bg-[var(--admin-inset)] p-3">
               <Sparkles className="h-4 w-4 admin-accent-text" />
               <p className="mt-2 text-2xl font-bold admin-text">
                 {customer.loyaltyAccount?.points ?? 0}
               </p>
-              <p className="text-[10px] uppercase tracking-wide admin-soft">Loyalty pts</p>
+              <p className="text-xs uppercase tracking-wide admin-soft">Loyalty pts</p>
             </div>
           </div>
         </AdminPanel>
@@ -447,7 +447,7 @@ async function CommerceSummaryPanel({ customerId }: { customerId: string }) {
         <Stat label="Last purchase" value={lastPurchaseAt ? new Date(lastPurchaseAt).toLocaleDateString() : "—"} />
       </div>
 
-      <div className="mt-4 overflow-x-auto">
+      <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region mt-4 overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
             <tr className="text-left admin-muted border-b border-[var(--admin-border)]">
@@ -501,7 +501,7 @@ async function CommerceSummaryPanel({ customerId }: { customerId: string }) {
 function Stat({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
     <div className="rounded-xl bg-[var(--admin-inset)] p-3">
-      <p className="text-[10px] uppercase tracking-wide admin-soft">{label}</p>
+      <p className="text-xs uppercase tracking-wide admin-soft">{label}</p>
       <p className={`mt-1 text-base font-bold ${accent ?? "admin-text"}`}>{value}</p>
     </div>
   );

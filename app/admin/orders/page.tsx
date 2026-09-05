@@ -229,8 +229,8 @@ export default async function AdminOrdersPage({
   return (
     <AdminShell
       user={user}
-      title="Orders & Revenue"
-      subtitle="Counter M-Pesa/cash, remote reservations, dispatch tracking"
+      title="Sales & orders"
+      subtitle="Record counter sales, manage reservations, and follow payments and deliveries."
       actions={
         <div className="flex items-center gap-2">
           <PeriodSelect period={period} status={status} />
@@ -247,28 +247,28 @@ export default async function AdminOrdersPage({
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total revenue ({period})</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total revenue ({period})</p>
             <DollarSign className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">KES {totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Orders</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Orders</p>
             <ShoppingCart className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{orderCount}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Avg order value</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Avg order value</p>
             <TrendingUp className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">KES {avgOrderValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Waived</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Waived</p>
             <AlertTriangle className="h-3.5 w-3.5 text-amber-700" />
           </div>
           <p className="mt-1 text-2xl font-bold text-amber-700">{waivedOrders}</p>
@@ -278,7 +278,7 @@ export default async function AdminOrdersPage({
       {/* Revenue sparkline */}
       {dayKeys.length > 1 && (
         <div className="mb-6 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4">
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide admin-muted">Daily revenue</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide admin-muted">Daily revenue</p>
           <div className="flex h-20 items-end gap-1">
             {dayKeys.slice(-30).map((d) => {
               const v = byDay[d];
@@ -293,15 +293,16 @@ export default async function AdminOrdersPage({
               );
             })}
           </div>
-          <p className="mt-2 text-[10px] admin-soft">{dayKeys.length} days with sales</p>
+          <p className="mt-2 text-xs admin-soft">{dayKeys.length} days with sales</p>
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Record OTC sale form */}
         <AdminPanel
-          title="Record counter sale"
-          description="Cash or M-Pesa STK. OTC defaults to auto-dispatch; uncheck to hold as a paid reservation."
+          id="record-sale"
+          title="Record a counter sale"
+          description="Accept cash or M-Pesa. Turn off automatic dispatch if the customer will collect later."
         >
           <OrderForm
             action={adminCreateOrderAction}
@@ -333,7 +334,7 @@ export default async function AdminOrdersPage({
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-semibold admin-text">{displayName}</p>
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${
                           o.status === "paid" ? "bg-emerald-500/15 text-emerald-700"
                           : o.status === "waived" ? "bg-amber-500/15 text-amber-700"
                           : o.status === "fulfilled" ? "bg-blue-500/15 text-blue-700"
@@ -343,19 +344,19 @@ export default async function AdminOrdersPage({
                           {o.status}
                         </span>
                         {isDispatched ? (
-                          <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                          <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700">
                             dispatched
                           </span>
                         ) : o.status === "paid" ? (
-                          <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                          <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
                             await dispatch
                           </span>
                         ) : null}
-                        <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] admin-muted">
+                        <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
                           {o.source}
                         </span>
                         {o.fulfillment && o.fulfillment !== "reserve" && (
-                          <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] admin-muted">
+                          <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
                             {o.fulfillment}
                           </span>
                         )}
@@ -364,16 +365,16 @@ export default async function AdminOrdersPage({
                         {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                       </p>
                       {o.reason && (
-                        <p className="mt-0.5 text-[10px] text-amber-800/90">
+                        <p className="mt-0.5 text-xs text-amber-800/90">
                           Reason: {o.reason}
                         </p>
                       )}
                       {o.dispenserNote && (
-                        <p className="mt-0.5 text-[10px] text-emerald-800/90">
+                        <p className="mt-0.5 text-xs text-emerald-800/90">
                           Dispenser: {o.dispenserNote}
                         </p>
                       )}
-                      <p className="mt-1 text-[10px] admin-soft">
+                      <p className="mt-1 text-xs admin-soft">
                         {formatDateTime(o.createdAt)}
                         {o.guestPhone && <> · {o.guestPhone}</>}
                         {o.payments[0] && o.payments[0].providerRef && (

@@ -19,7 +19,7 @@ const AVATARS = [
 
 export default function TravelLabContact() {
   return (
-    <section id="contact" className="relative overflow-hidden bg-[#030907] px-4 py-20 text-white sm:px-6 sm:py-28 lg:px-8">
+    <section id="contact" className="relative overflow-hidden bg-[var(--background)] px-4 py-20 text-white sm:px-6 sm:py-28 lg:px-8">
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
         <div className="absolute -left-32 top-1/4 h-[30rem] w-[30rem] rounded-full bg-emerald-600/10 blur-[150px]" />
         <div className="absolute right-10 top-1/3 h-[35rem] w-[35rem] rounded-full bg-yellow-500/10 blur-[160px]" />

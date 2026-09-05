@@ -66,12 +66,12 @@ export function MedicationBulkActions({ rows }: { rows: Row[] }) {
         </button>
         {selected.size > 0 && (
           <>
-            <span className="text-[10px] admin-soft">{selected.size} selected</span>
+            <span className="text-xs admin-soft">{selected.size} selected</span>
             <button
               type="button"
               disabled={pending}
               onClick={() => run("deactivate")}
-              className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-1 text-[10px] font-semibold text-rose-600 disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-1 text-xs font-semibold text-rose-600 disabled:opacity-50"
             >
               <Archive className="h-3 w-3" /> Deactivate
             </button>
@@ -79,7 +79,7 @@ export function MedicationBulkActions({ rows }: { rows: Row[] }) {
               type="button"
               disabled={pending}
               onClick={() => run("activate")}
-              className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-700 disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 disabled:opacity-50"
             >
               <Eye className="h-3 w-3" /> Activate
             </button>
@@ -87,7 +87,7 @@ export function MedicationBulkActions({ rows }: { rows: Row[] }) {
               type="button"
               disabled={pending}
               onClick={() => run("unpublish")}
-              className="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-1 text-[10px] font-semibold text-slate-600 disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-1 text-xs font-semibold text-slate-600 disabled:opacity-50"
             >
               <EyeOff className="h-3 w-3" /> Hide public
             </button>
@@ -95,7 +95,7 @@ export function MedicationBulkActions({ rows }: { rows: Row[] }) {
               type="button"
               disabled={pending}
               onClick={() => run("publish")}
-              className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-1 text-[10px] font-semibold text-blue-700 disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-1 text-xs font-semibold text-blue-700 disabled:opacity-50"
             >
               <Eye className="h-3 w-3" /> Show public
             </button>
@@ -109,7 +109,7 @@ export function MedicationBulkActions({ rows }: { rows: Row[] }) {
             key={r.id}
             type="button"
             onClick={() => toggleOne(r.id)}
-            className={`rounded-full border px-2 py-0.5 text-[10px] ${
+            className={`rounded-full border px-2 py-0.5 text-xs ${
               selected.has(r.id)
                 ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text"
                 : "border-[var(--admin-border)] admin-muted"

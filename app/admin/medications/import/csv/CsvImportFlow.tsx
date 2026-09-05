@@ -245,7 +245,7 @@ export function CsvImportFlow() {
       <div className="space-y-4">
         <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-4">
           <h3 className="mb-3 text-sm font-semibold admin-text">Preview (first 10 rows)</h3>
-          <div className="overflow-x-auto">
+          <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-[var(--admin-border-2)]">
@@ -317,15 +317,15 @@ export function CsvImportFlow() {
         <div className="mt-4 grid grid-cols-3 gap-4 text-center">
           <div>
             <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{summary.created}</p>
-            <p className="text-[10px] admin-soft">New masters</p>
+            <p className="text-xs admin-soft">New masters</p>
           </div>
           <div>
             <p className="text-2xl font-black text-blue-600 dark:text-blue-400">{summary.matched}</p>
-            <p className="text-[10px] admin-soft">Matched existing</p>
+            <p className="text-xs admin-soft">Matched existing</p>
           </div>
           <div>
             <p className="text-2xl font-black text-amber-600 dark:text-amber-400">{summary.flagged}</p>
-            <p className="text-[10px] admin-soft">Flagged for enrichment</p>
+            <p className="text-xs admin-soft">Flagged for enrichment</p>
           </div>
         </div>
       )}

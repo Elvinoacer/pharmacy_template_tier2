@@ -162,10 +162,10 @@ export function RefillHistoryTable({
           <p className="text-xs admin-soft">Completed and cancelled refill records will appear here.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto scroll-admin rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
           <table className="table-admin text-xs">
             <thead>
-              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-[11px] font-bold uppercase tracking-wider admin-soft">
+              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-xs font-bold uppercase tracking-wider admin-soft">
                 <th>Customer / Patient</th>
                 <th>Medicine &amp; Rx #</th>
                 <th>Fill Sequence</th>
@@ -198,7 +198,7 @@ export function RefillHistoryTable({
                         ) : (
                           <span className="font-bold text-xs admin-text block">{r.customerName || "Guest"}</span>
                         )}
-                        <p className="text-[10px] admin-soft font-mono">{r.phone || r.email || "—"}</p>
+                        <p className="text-xs admin-soft font-mono">{r.phone || r.email || "—"}</p>
                       </div>
                     </td>
 
@@ -206,7 +206,7 @@ export function RefillHistoryTable({
                     <td>
                       <div className="space-y-0.5">
                         <p className="font-bold text-xs admin-text">{r.medicineName}</p>
-                        <p className="text-[10px] admin-soft font-mono">Rx: {r.rxReference || "—"}</p>
+                        <p className="text-xs admin-soft font-mono">Rx: {r.rxReference || "—"}</p>
                       </div>
                     </td>
 
@@ -218,7 +218,7 @@ export function RefillHistoryTable({
                             Fill #{fill.fillNumber}
                           </span>
                           {fill.dispensedBy && (
-                            <p className="text-[10px] admin-soft">by {fill.dispensedBy.email.split("@")[0]}</p>
+                            <p className="text-xs admin-soft">by {fill.dispensedBy.email.split("@")[0]}</p>
                           )}
                         </div>
                       ) : (
@@ -229,20 +229,20 @@ export function RefillHistoryTable({
                     {/* Turnaround */}
                     <td>
                       <div className="space-y-0.5">
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700">
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
                           <Timer className="h-3 w-3" /> {turnaround}
                         </span>
-                        <p className="text-[9px] admin-soft">{formatDateTime(r.statusUpdatedAt)}</p>
+                        <p className="text-xs admin-soft">{formatDateTime(r.statusUpdatedAt)}</p>
                       </div>
                     </td>
 
                     {/* Source */}
                     <td>
                       <div className="flex items-center gap-1.5">
-                        <span className="rounded bg-black/5 dark:bg-white/10 px-2 py-0.5 text-[10px] font-bold capitalize admin-text">
+                        <span className="rounded bg-black/5 dark:bg-white/10 px-2 py-0.5 text-xs font-bold capitalize admin-text">
                           {r.source}
                         </span>
-                        <span className="text-[10px] admin-soft">
+                        <span className="text-xs admin-soft">
                           {r.pickupPreference === "delivery" ? "🚚 Delivery" : "🏢 Pickup"}
                         </span>
                       </div>
@@ -259,7 +259,7 @@ export function RefillHistoryTable({
                             Kes {Number(order.total).toLocaleString()}
                             <ExternalLink className="h-2.5 w-2.5" />
                           </Link>
-                          <div className="flex items-center gap-1 text-[10px]">
+                          <div className="flex items-center gap-1 text-xs">
                             <span
                               className={`font-bold ${
                                 order.amountPaid >= order.total ? "text-emerald-600" : "text-amber-600"
@@ -282,7 +282,7 @@ export function RefillHistoryTable({
                     {/* Status */}
                     <td>
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold capitalize ${
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold capitalize ${
                           r.status === "collected"
                             ? "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
                             : r.status === "cancelled"

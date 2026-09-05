@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminModal } from "./AdminModal";
+
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -200,24 +202,24 @@ export function RefillReviewCockpit({
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+      <AdminModal label="Review refill request" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center  p-4 ">
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-8 text-center space-y-3">
           <Pill className="h-8 w-8 animate-spin mx-auto text-emerald-600" />
           <p className="text-xs font-semibold admin-muted">Loading Refill Review Cockpit…</p>
         </div>
-      </div>
+      </AdminModal>
     );
   }
 
   if (!data || !data.refill) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+      <AdminModal label="Review refill request" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center  p-4 ">
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-6 text-center space-y-4 max-w-sm">
           <AlertTriangle className="h-8 w-8 mx-auto text-amber-500" />
           <p className="text-sm font-bold admin-text">Refill request not found</p>
           <button onClick={onClose} className="btn-secondary text-xs">Close</button>
         </div>
-      </div>
+      </AdminModal>
     );
   }
 
@@ -231,7 +233,7 @@ export function RefillReviewCockpit({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 sm:p-4 backdrop-blur-sm overflow-y-auto">
+      <AdminModal label="Review refill request" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center  p-2 sm:p-4  overflow-y-auto">
         <div className="relative w-full max-w-4xl rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[var(--admin-border)] bg-[var(--admin-inset)] px-5 py-3.5">
@@ -242,11 +244,11 @@ export function RefillReviewCockpit({
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-sm font-extrabold admin-text">Pharmacist Refill Review Cockpit</h2>
-                  <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 capitalize">
+                  <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-700 capitalize">
                     {refill.status.replace("_", " ")}
                   </span>
                 </div>
-                <p className="text-[11px] admin-soft">
+                <p className="text-xs admin-soft">
                   Submitted {formatDateTime(refill.createdAt)} via <strong className="capitalize">{refill.source}</strong>
                 </p>
               </div>
@@ -283,7 +285,7 @@ export function RefillReviewCockpit({
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-semibold admin-soft">Pickup Preference:</span>
+                <span className="text-xs font-semibold admin-soft">Pickup Preference:</span>
                 <span className="inline-flex items-center gap-1 rounded-md bg-black/10 px-2 py-0.5 text-xs font-bold capitalize admin-text">
                   {refill.pickupPreference === "delivery" ? <Truck className="h-3 w-3" /> : <Package className="h-3 w-3" />}
                   {refill.pickupPreference}
@@ -301,7 +303,7 @@ export function RefillReviewCockpit({
                 <ul className="space-y-1 text-xs text-rose-800 dark:text-rose-200">
                   {clinicalSafety.interactions.map((it, idx) => (
                     <li key={idx} className="flex items-start gap-1.5">
-                      <span className="font-semibold uppercase text-[10px] rounded bg-rose-500/20 px-1 py-0.2">{it.severity}</span>
+                      <span className="font-semibold uppercase text-xs rounded bg-rose-500/20 px-1 py-0.2">{it.severity}</span>
                       <span><strong>{it.drugA}</strong> interacts with <strong>{it.drugB}</strong>: {it.description}</span>
                     </li>
                   ))}
@@ -322,7 +324,7 @@ export function RefillReviewCockpit({
                       href={`/admin/customers/${customer.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] font-bold text-emerald-600 hover:underline flex items-center gap-0.5"
+                      className="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-0.5"
                     >
                       CRM Profile <ExternalLink className="h-2.5 w-2.5" />
                     </a>
@@ -365,7 +367,7 @@ export function RefillReviewCockpit({
                     <Stethoscope className="h-3.5 w-3.5" /> Prescription Authorization
                   </span>
                   {rx && (
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${refillsRemaining > 0 ? "bg-emerald-500/15 text-emerald-700" : "bg-rose-500/15 text-rose-700"}`}>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${refillsRemaining > 0 ? "bg-emerald-500/15 text-emerald-700" : "bg-rose-500/15 text-rose-700"}`}>
                       {refillsRemaining} Refills Left
                     </span>
                   )}
@@ -386,7 +388,7 @@ export function RefillReviewCockpit({
                   {rx?.prescriberLicense && (
                     <div className="flex justify-between">
                       <span className="admin-soft">License / Clinic:</span>
-                      <span className="font-mono text-[11px] admin-text">{rx.prescriberLicense} ({rx.prescriberFacility || "Clinic"})</span>
+                      <span className="font-mono text-xs admin-text">{rx.prescriberLicense} ({rx.prescriberFacility || "Clinic"})</span>
                     </div>
                   )}
                   {rx?.lastFilledAt && (
@@ -419,10 +421,10 @@ export function RefillReviewCockpit({
 
               {rx?.medication?.lots && rx.medication.lots.length > 0 ? (
                 <div className="space-y-1">
-                  <p className="text-[11px] font-semibold admin-soft">FEFO Batches in Stock:</p>
+                  <p className="text-xs font-semibold admin-soft">FEFO Batches in Stock:</p>
                   <div className="flex flex-wrap gap-2">
                     {rx.medication.lots.map((lot) => (
-                      <div key={lot.id} className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-[11px]">
+                      <div key={lot.id} className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 py-1 text-xs">
                         <span className="font-mono font-bold admin-text">{lot.batchNumber}</span>
                         <span className="admin-soft ml-1.5">(Exp: {formatDate(lot.expiryDate)} · {lot.quantity} left)</span>
                       </div>
@@ -476,7 +478,7 @@ export function RefillReviewCockpit({
               )}
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold admin-soft">Dispenser / Pharmacist Notes</label>
+                <label className="text-xs font-semibold admin-soft">Dispenser / Pharmacist Notes</label>
                 <input
                   value={approvalNotes}
                   onChange={(e) => setApprovalNotes(e.target.value)}
@@ -527,7 +529,7 @@ export function RefillReviewCockpit({
             </div>
           </div>
         </div>
-      </div>
+      </AdminModal>
 
       {contactPatientModal && (
         <PatientContactModal

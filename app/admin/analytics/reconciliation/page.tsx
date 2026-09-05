@@ -30,8 +30,8 @@ export default async function ReconciliationPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Reconciliation"
-      description="Compare expected sales against collected amounts by provider. Investigate discrepancies."
+      title="Payment reconciliation"
+      description="Compare expected sales with collections and investigate differences."
       period={period}
       basePath="/admin/analytics/reconciliation"
     >

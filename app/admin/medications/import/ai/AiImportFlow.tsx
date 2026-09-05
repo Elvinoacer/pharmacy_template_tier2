@@ -89,7 +89,7 @@ export function AiImportFlow() {
       <div className="flex items-center gap-2 text-xs">
         {(["prompt", "paste", "review"] as const).map((s, i) => (
           <div key={s} className="flex items-center gap-2">
-            <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${
+            <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
               step === s || (step === "saving" && s === "review")
                 ? "bg-[var(--admin-accent)] text-white"
                 : "bg-[var(--admin-inset)] admin-muted"
@@ -116,7 +116,7 @@ export function AiImportFlow() {
                 <Copy className="h-3.5 w-3.5" /> Copy Prompt
               </button>
             </div>
-            <pre className="max-h-64 overflow-auto rounded-lg bg-[var(--admin-inset)] p-3 text-[11px] leading-relaxed admin-text whitespace-pre-wrap">{MEDICATION_AI_PROMPT}</pre>
+            <pre className="max-h-64 overflow-auto rounded-lg bg-[var(--admin-inset)] p-3 text-xs leading-relaxed admin-text whitespace-pre-wrap">{MEDICATION_AI_PROMPT}</pre>
           </div>
 
           <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-4">
@@ -126,7 +126,7 @@ export function AiImportFlow() {
               <li><strong>Back of pack</strong> — manufacturer, barcode, storage.</li>
               <li><strong>Patient leaflet</strong> — indications, side effects, contraindications.</li>
             </ul>
-            <p className="mt-2 text-[10px] admin-soft">
+            <p className="mt-2 text-xs admin-soft">
               Photos are processed entirely by your AI tool — they never touch our servers unless you upload them later as gallery images.
             </p>
           </div>

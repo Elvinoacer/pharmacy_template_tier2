@@ -14,8 +14,8 @@ export default async function ScanPage() {
   return (
     <AdminShell
       user={user}
-      title="Scan Barcode / QR Code"
-      subtitle="Camera scan (Chromium browsers) or manual entry for hardware scanners. Looks up MedicationMaster.barcode."
+      title="Scan a medicine"
+      subtitle="Scan a pack or enter its barcode to find a matching medicine."
     >
       <div className="mb-6">
         <Link

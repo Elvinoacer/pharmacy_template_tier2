@@ -68,33 +68,33 @@ export default async function AdminRemindersPage() {
   return (
     <AdminShell
       user={user}
-      title="Reminder engine"
-      subtitle="Schedule and dispatch refill, pickup, and wellness reminders"
+      title="Patient reminders"
+      subtitle="Schedule refill, collection, and wellness reminders, then track their delivery."
       actions={<ProcessRemindersButton />}
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-3 gap-3">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Scheduled</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Scheduled</p>
           <p className="mt-1 text-2xl font-bold text-amber-700">{stats.scheduled}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Sent</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Sent</p>
           <p className="mt-1 text-2xl font-bold text-emerald-700">{stats.sent}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Failed</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Failed</p>
           <p className="mt-1 text-2xl font-bold text-rose-600">{stats.failed}</p>
         </div>
       </div>
 
       {/* Honest automation status — only claim what the code actually does */}
       <AdminPanel
-        title="What the cron actually does"
-        description="Live behaviours wired in /api/cron/reminders (every 5 minutes)"
+        title="How reminders work"
+        description="Scheduled reminders are checked every five minutes."
         className="mb-6"
         action={
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700">
             <Zap className="h-2.5 w-2.5" /> Live
           </span>
         }
@@ -103,54 +103,54 @@ export default async function AdminRemindersPage() {
           <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
             <CalendarClock className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Due scheduled reminders</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              Fires any Reminder row with status=scheduled whose scheduledFor has passed (honours reminderConsent).
+            <p className="mt-1 text-xs admin-soft">
+              Sends due reminders to patients who have agreed to receive them.
             </p>
-            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
           </div>
           <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
             <Sparkles className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Scheduled campaigns</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              Auto-launches campaigns with status=scheduled when scheduledFor is due (honours marketingConsent).
+            <p className="mt-1 text-xs admin-soft">
+              Starts scheduled campaigns when they are due, respecting each patient’s marketing preferences.
             </p>
-            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
           </div>
           <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
             <Mail className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Scheduled staff messages</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              Sends Message rows with status=scheduled once scheduledFor passes.
+            <p className="mt-1 text-xs admin-soft">
+              Sends staff messages at their scheduled time.
             </p>
-            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
           </div>
           <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
             <HeartPulse className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Low adherence staff alerts</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              Creates AdminNotification when adherence drops below 70% over 14 days (max once per Rx / 7 days).
+            <p className="mt-1 text-xs admin-soft">
+              Alerts staff when adherence falls below 70% over 14 days. Each prescription is flagged at most once a week.
             </p>
-            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700">Active</span>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
           </div>
           <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
             <Cake className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Birthday greeting + points</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              Runs in the separate loyalty cron (/api/cron/loyalty), not this reminders endpoint.
+            <p className="mt-1 text-xs admin-soft">
+              Birthday messages and rewards are managed by the loyalty programme.
             </p>
-            <span className="mt-2 inline-block rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-blue-700">Loyalty cron</span>
+            <span className="mt-2 inline-block rounded-full bg-blue-500/10 px-1.5 py-0.5 text-xs font-semibold text-blue-700">Loyalty programme</span>
           </div>
           <div className="rounded-xl border border-dashed border-[var(--admin-border)] bg-[var(--admin-inset)]/50 p-3 opacity-70">
             <Pill className="h-4 w-4 admin-soft" />
             <p className="mt-2 text-sm font-semibold admin-muted">Auto refill / pickup / promo</p>
-            <p className="mt-1 text-[10px] admin-soft">
-              Not auto-generated. Schedule these manually with the form, or extend the cron later.
+            <p className="mt-1 text-xs admin-soft">
+              These reminders need to be scheduled using the form below.
             </p>
-            <span className="mt-2 inline-block rounded-full bg-slate-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-slate-500">Not automated</span>
+            <span className="mt-2 inline-block rounded-full bg-slate-500/10 px-1.5 py-0.5 text-xs font-semibold text-slate-500">Not automated</span>
           </div>
         </div>
-        <p className="mt-3 text-[10px] admin-soft">
-          External cron hits <code className="md-code">/api/cron/reminders</code> every 5 minutes.
+        <p className="mt-3 text-xs admin-soft">
+          Scheduled reminders are processed every five minutes.
           Use <strong>Process due now</strong> to run the same jobs immediately.
         </p>
       </AdminPanel>
@@ -188,7 +188,7 @@ export default async function AdminRemindersPage() {
                         <div className="min-w-0">
                           <p className="font-semibold admin-text">{r.title}</p>
                           <p className="text-xs admin-muted">{r.customer.fullName}</p>
-                          <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] admin-soft">
+                          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs admin-soft">
                             <span className="inline-flex items-center gap-0.5 capitalize">
                               <ChannelIcon className="h-2.5 w-2.5" /> {r.channel}
                             </span>
@@ -199,7 +199,7 @@ export default async function AdminRemindersPage() {
                           </div>
                         </div>
                       </div>
-                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLOR[r.status]}`}>
+                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[r.status]}`}>
                         {r.status}
                       </span>
                     </div>

@@ -1,5 +1,6 @@
 import { getMarketplaceFeaturedPharmacies } from "@/app/lib/services/pharmacy-directory";
 import { platform } from "@/app/lib/data";
+import CarePathways from "./components/landing/CarePathways";
 import TravelLabHero from "./components/landing/TravelLabHero";
 import TravelLabNetwork from "./components/landing/TravelLabNetwork";
 import LandingCareDemo from "./components/landing/LandingCareDemo";
@@ -20,11 +21,12 @@ export default async function MarketplacePage() {
   const featuredPharmacies = await getMarketplaceFeaturedPharmacies();
 
   return (
-    <div className="landing-root min-h-screen bg-[#030907] text-white pb-16 lg:pb-0">
+    <div className="landing-root min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-16 lg:pb-0">
       <LandingMobilePolish />
       <CareNearYouInputPolish />
       <HeroSearchInputPolish />
       <TravelLabHero pharmacyCount={featuredPharmacies.length || 0} initialQuery="" />
+      <CarePathways />
       <TravelLabNetwork pharmacies={featuredPharmacies} />
       <LandingCareDemo />
       <TravelLabContact />

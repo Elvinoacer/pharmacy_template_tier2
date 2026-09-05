@@ -128,12 +128,12 @@ export function ServiceBookingsPanel({
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-semibold admin-text">{b.fullName}</p>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${statusBadge(b.status)}`}
+                      className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${statusBadge(b.status)}`}
                     >
                       {b.status.replace(/_/g, " ")}
                     </span>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${payBadge(b.paymentStatus)}`}
+                      className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${payBadge(b.paymentStatus)}`}
                     >
                       {b.paymentStatus}
                     </span>
@@ -151,7 +151,7 @@ export function ServiceBookingsPanel({
                       </span>
                     )}
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] admin-soft">
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs admin-soft">
                     <span className="inline-flex items-center gap-1">
                       <Phone className="h-3 w-3" /> {b.phone}
                     </span>
@@ -173,7 +173,7 @@ export function ServiceBookingsPanel({
                     </p>
                   )}
                   {b.paidVia && (
-                    <p className="mt-1 text-[11px] admin-soft">
+                    <p className="mt-1 text-xs admin-soft">
                       Paid via {b.paidVia}
                       {b.paymentRef ? ` · ref ${b.paymentRef}` : ""}
                     </p>
@@ -188,7 +188,7 @@ export function ServiceBookingsPanel({
                       <form action={payAction} className="flex flex-wrap items-end gap-2">
                         <input type="hidden" name="bookingId" value={b.id} />
                         <div>
-                          <label className="label-admin !text-[10px]">Record payment</label>
+                          <label className="label-admin !text-xs">Record payment</label>
                           <select name="paidVia" className="input-admin !py-1.5 text-xs" defaultValue="cash">
                             <option value="cash">Cash</option>
                             <option value="card">Card</option>
@@ -197,7 +197,7 @@ export function ServiceBookingsPanel({
                           </select>
                         </div>
                         <div>
-                          <label className="label-admin !text-[10px]">Ref (optional)</label>
+                          <label className="label-admin !text-xs">Ref (optional)</label>
                           <input
                             name="paymentRef"
                             placeholder="Receipt #"

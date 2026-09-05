@@ -168,17 +168,17 @@ function StatusBadges({ m }: { m: CatalogMed }) {
   return (
     <div className="flex flex-wrap items-center gap-1">
       {m.overTheCounter ? (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+        <span className="inline-flex items-center gap-0.5 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
           <Boxes className="h-2.5 w-2.5" /> OTC
         </span>
       ) : m.prescriptionRequired ? (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-violet-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700 dark:text-violet-400">
+        <span className="inline-flex items-center gap-0.5 rounded-md bg-violet-500/10 px-1.5 py-0.5 text-xs font-semibold text-violet-700 dark:text-violet-400">
           <FileText className="h-2.5 w-2.5" /> Rx
         </span>
       ) : null}
       {m.controlledDrug && (
         <span
-          className="inline-flex items-center gap-0.5 rounded-md bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:text-rose-400"
+          className="inline-flex items-center gap-0.5 rounded-md bg-rose-500/10 px-1.5 py-0.5 text-xs font-semibold text-rose-700 dark:text-rose-400"
           title={m.controlledDrugSchedule || "Controlled"}
         >
           <Shield className="h-2.5 w-2.5" />
@@ -188,23 +188,23 @@ function StatusBadges({ m }: { m: CatalogMed }) {
         </span>
       )}
       {m.publicListing && (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700 dark:text-blue-400">
+        <span className="inline-flex items-center gap-0.5 rounded-md bg-blue-500/10 px-1.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-400">
           <Tag className="h-2.5 w-2.5" /> Public
         </span>
       )}
       {m.requiresRefrigeration && (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700 dark:text-sky-400">
+        <span className="inline-flex items-center gap-0.5 rounded-md bg-sky-500/10 px-1.5 py-0.5 text-xs font-semibold text-sky-700 dark:text-sky-400">
           <Snowflake className="h-2.5 w-2.5" /> Cold
         </span>
       )}
       {!m.active && (
-        <span className="inline-flex items-center rounded-md bg-slate-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-400">
+        <span className="inline-flex items-center rounded-md bg-slate-500/10 px-1.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
           Inactive
         </span>
       )}
       {m.enrichmentStatus !== "complete" && m.enrichmentScore < 70 && (
         <span
-          className="inline-flex items-center gap-0.5 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-400"
+          className="inline-flex items-center gap-0.5 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400"
           title={`Enrichment ${m.enrichmentScore}% · ${m.enrichmentStatus}`}
         >
           <AlertTriangle className="h-2.5 w-2.5" /> {m.enrichmentScore}%
@@ -223,12 +223,12 @@ function StockCell({ m }: { m: CatalogMed }) {
         <span className={`text-sm font-bold tabular-nums ${tone.className}`}>
           {m.currentStock}
         </span>
-        <span className="text-[10px] admin-soft">≤{m.lowStockThreshold}</span>
+        <span className="text-xs admin-soft">≤{m.lowStockThreshold}</span>
       </div>
       <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[var(--admin-inset)]">
         <div className={`h-full rounded-full ${tone.bar}`} style={{ width: `${pct}%` }} />
       </div>
-      <p className={`mt-0.5 text-[10px] font-medium ${tone.className}`}>{tone.label}</p>
+      <p className={`mt-0.5 text-xs font-medium ${tone.className}`}>{tone.label}</p>
     </div>
   );
 }
@@ -322,14 +322,14 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
           </button>
           {selectedCount > 0 && (
             <>
-              <span className="text-[10px] font-semibold admin-soft">
+              <span className="text-xs font-semibold admin-soft">
                 {selectedCount} selected
               </span>
               <button
                 type="button"
                 disabled={pending}
                 onClick={() => runBulk("deactivate")}
-                className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-1 text-[10px] font-semibold text-rose-600 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-1 text-xs font-semibold text-rose-600 disabled:opacity-50"
               >
                 <Archive className="h-3 w-3" /> Deactivate
               </button>
@@ -337,7 +337,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                 type="button"
                 disabled={pending}
                 onClick={() => runBulk("activate")}
-                className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-700 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 disabled:opacity-50"
               >
                 <Eye className="h-3 w-3" /> Activate
               </button>
@@ -345,7 +345,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                 type="button"
                 disabled={pending}
                 onClick={() => runBulk("unpublish")}
-                className="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-1 text-[10px] font-semibold text-slate-600 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-1 text-xs font-semibold text-slate-600 disabled:opacity-50"
               >
                 <EyeOff className="h-3 w-3" /> Hide public
               </button>
@@ -353,7 +353,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                 type="button"
                 disabled={pending}
                 onClick={() => runBulk("publish")}
-                className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-1 text-[10px] font-semibold text-blue-700 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-1 text-xs font-semibold text-blue-700 disabled:opacity-50"
               >
                 <Eye className="h-3 w-3" /> Show public
               </button>
@@ -457,7 +457,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                     >
                       {m.name}
                     </Link>
-                    <p className="mt-0.5 line-clamp-1 text-[11px] admin-soft">
+                    <p className="mt-0.5 line-clamp-1 text-xs admin-soft">
                       {[m.genericName, m.strengthDisplay, m.dosageForm]
                         .filter(Boolean)
                         .join(" · ")}
@@ -474,10 +474,10 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                           KES {formatPrice(m.price)}
                         </p>
                         {m.sku && (
-                          <p className="font-mono text-[10px] admin-soft">SKU {m.sku}</p>
+                          <p className="font-mono text-xs admin-soft">SKU {m.sku}</p>
                         )}
                       </div>
-                      <div className="text-right text-[10px] admin-soft">
+                      <div className="text-right text-xs admin-soft">
                         {m.prescriptionCount > 0 && (
                           <p className="inline-flex items-center gap-0.5 font-semibold text-violet-600 dark:text-violet-400">
                             <FileText className="h-3 w-3" />
@@ -502,10 +502,10 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
     <div className="space-y-4">
       {toolbar}
       <div className="overflow-hidden rounded-2xl border border-gray-200/60 bg-white/40 shadow-sm ring-1 ring-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/20 dark:ring-white/10">
-        <div className="overflow-x-auto">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
           <table className="w-full min-w-[960px] text-left text-sm">
             <thead>
-              <tr className="border-b border-[var(--admin-border-2)] bg-[var(--admin-inset)]/60 text-[10px] font-semibold uppercase tracking-wider admin-muted">
+              <tr className="border-b border-[var(--admin-border-2)] bg-[var(--admin-inset)]/60 text-xs font-semibold uppercase tracking-wider admin-muted">
                 <th className="w-10 px-3 py-3">
                   <button
                     type="button"
@@ -565,7 +565,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                           >
                             {m.name}
                           </Link>
-                          <p className="truncate text-[11px] admin-soft">
+                          <p className="truncate text-xs admin-soft">
                             {[
                               m.genericName,
                               m.strengthDisplay,
@@ -575,7 +575,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                               .filter(Boolean)
                               .join(" · ")}
                           </p>
-                          <p className="mt-0.5 flex flex-wrap gap-x-2 font-mono text-[10px] admin-soft">
+                          <p className="mt-0.5 flex flex-wrap gap-x-2 font-mono text-xs admin-soft">
                             {m.sku && <span>SKU {m.sku}</span>}
                             {m.barcode && <span>EAN {m.barcode}</span>}
                           </p>
@@ -584,11 +584,11 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                     </td>
 
                     <td className="px-3 py-3">
-                      <span className="inline-flex rounded-md bg-[var(--admin-inset)] px-2 py-1 text-[10px] font-medium capitalize admin-muted">
+                      <span className="inline-flex rounded-md bg-[var(--admin-inset)] px-2 py-1 text-xs font-medium capitalize admin-muted">
                         {m.category.replace(/-/g, " ")}
                       </span>
                       {m.manufacturer && (
-                        <p className="mt-1 max-w-[9rem] truncate text-[10px] admin-soft">
+                        <p className="mt-1 max-w-[9rem] truncate text-xs admin-soft">
                           {m.manufacturer}
                         </p>
                       )}
@@ -607,15 +607,15 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                         {formatPrice(m.price)}
                       </p>
                       {m.purchasePrice != null && (
-                        <p className="text-[10px] admin-soft">
+                        <p className="text-xs admin-soft">
                           cost {formatPrice(m.purchasePrice)}
                         </p>
                       )}
-                      <p className="text-[10px] admin-soft">KES</p>
+                      <p className="text-xs admin-soft">KES</p>
                     </td>
 
                     <td className="px-3 py-3">
-                      <div className="space-y-0.5 text-[11px]">
+                      <div className="space-y-0.5 text-xs">
                         {m.prescriptionCount > 0 ? (
                           <Link
                             href={`/admin/prescriptions?q=${encodeURIComponent(m.name)}`}
@@ -642,12 +642,12 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
                         {m.shelfLocation || "—"}
                       </p>
                       {m.supplier && (
-                        <p className="max-w-[8rem] truncate text-[10px] admin-soft">
+                        <p className="max-w-[8rem] truncate text-xs admin-soft">
                           {m.supplier}
                         </p>
                       )}
                       {m.packSize && (
-                        <p className="max-w-[8rem] truncate text-[10px] admin-soft">
+                        <p className="max-w-[8rem] truncate text-xs admin-soft">
                           {m.packSize}
                         </p>
                       )}

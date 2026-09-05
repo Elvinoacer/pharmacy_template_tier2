@@ -78,14 +78,14 @@ export default async function AdminEnquiriesPage({
   return (
     <AdminShell
       user={user}
-      title="Online enquiries"
+      title="Patient enquiries"
       subtitle={`${total} enquir${total === 1 ? "y" : "ies"} from website, portal, and AI`}
     >
       {/* Quick stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {(["new", "in_progress", "resolved", "closed"] as const).map((s) => (
           <div key={s} className="admin-stat p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">
               {s.replace("_", " ")}
             </p>
             <p className="mt-1 text-2xl font-bold admin-text">{counts[s]}</p>
@@ -133,12 +133,12 @@ export default async function AdminEnquiriesPage({
                       <span className="text-lg">{TYPE_ICON[e.type] || "💬"}</span>
                       <p className="font-semibold admin-text">{e.name}</p>
                       {e.customer && (
-                        <span className="rounded-full bg-[var(--admin-accent-soft)] px-2 py-0.5 text-[10px] font-medium admin-accent-text">
+                        <span className="rounded-full bg-[var(--admin-accent-soft)] px-2 py-0.5 text-xs font-medium admin-accent-text">
                           <User className="mr-0.5 inline h-2.5 w-2.5" />
                           Registered
                         </span>
                       )}
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLOR[e.status]}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[e.status]}`}>
                         {e.status.replace("_", " ")}
                       </span>
                     </div>

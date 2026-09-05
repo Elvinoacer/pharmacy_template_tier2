@@ -154,12 +154,12 @@ export function StaffNotesList({
           </span>
           <div className="min-w-0 flex-1">
             {n.isPinned && (
-              <span className="mb-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+              <span className="mb-1 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-amber-700">
                 <Pin className="h-2.5 w-2.5" /> Pinned
               </span>
             )}
             <p className="whitespace-pre-wrap admin-text/90">{n.body}</p>
-            <p className="mt-1 text-[10px] admin-soft">
+            <p className="mt-1 text-xs admin-soft">
               {n.authorEmail || "Unknown"} · {formatDateTime(n.createdAt)}
             </p>
           </div>

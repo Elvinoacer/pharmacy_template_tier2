@@ -41,8 +41,8 @@ export default async function AdminDispensingPage({
   return (
     <AdminShell
       user={user}
-      title="Dispensing Register"
-      subtitle="Comprehensive audit trail of all prescription fills, OTC sales, controlled drugs, and generic substitutions"
+      title="Dispensing register"
+      subtitle="Find completed fills, sales, and substitutions in one searchable record."
     >
       <DispensingRegisterTable
         initialRecords={data.records}

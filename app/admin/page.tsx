@@ -3,6 +3,7 @@ import { getAdminAnalytics } from "@/app/lib/services/crm";
 import { getInventoryHealth } from "@/app/lib/services/stock";
 import { refillStatusMeta } from "@/app/lib/types";
 import { AdminCard, AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminToday } from "@/app/components/admin/AdminToday";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { redirect } from "next/navigation";
 import {
@@ -24,7 +25,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export const metadata = { title: "CRM Analytics" };
+export const metadata = { title: "Pharmacy workspace" };
 
 export default async function AdminDashboardPage() {
   const user = await getSessionUser();
@@ -45,8 +46,8 @@ export default async function AdminDashboardPage() {
   return (
     <AdminShell
       user={user}
-      title="Engagement analytics"
-      subtitle="Live snapshot of customers, refills, inventory, and engagement for this pharmacy."
+      title="Today’s workspace"
+      subtitle="Start with open requests, patient follow-ups, and stock that needs attention."
       actions={
         <div className="flex flex-wrap gap-2">
           <Link href="/admin/inventory" className="btn-admin">
@@ -58,6 +59,8 @@ export default async function AdminDashboardPage() {
         </div>
       }
     >
+      <AdminToday refills={a.activeRefills} enquiries={a.openEnquiries} escalations={a.aiEscalations} />
+      <h2 className="mb-4 text-lg font-semibold admin-text">Stock to check</h2>
       {/* Inventory health strip */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Link href="/admin/inventory#low" className="block">
@@ -73,14 +76,14 @@ export default async function AdminDashboardPage() {
           <AdminCard
             label="Out of stock"
             value={inv.counts.outOfStock}
-            hint={`${inv.counts.totalActive} active SKUs`}
+            hint={`${inv.counts.totalActive} active medicines`}
             icon={PackageX}
             accent={inv.counts.outOfStock > 0 ? "danger" : "neutral"}
           />
         </Link>
         <Link href="/admin/inventory#expiry" className="block">
           <AdminCard
-            label="Expiring ≤30d"
+            label="Expiring within 30 days"
             value={inv.counts.expiringLots}
             hint={`${inv.counts.expiredLots} expired lots`}
             icon={Clock}
@@ -93,13 +96,15 @@ export default async function AdminDashboardPage() {
           <AdminCard
             label="Reorder now"
             value={inv.counts.reorder}
-            hint="Velocity + threshold"
+            hint="Based on sales and stock levels"
             icon={Truck}
             accent={inv.counts.reorder > 0 ? "accent" : "neutral"}
           />
         </Link>
       </div>
 
+      <details className="admin-dashboard-details">
+      <summary>Performance at a glance <span>Patients, communication, and refill activity</span></summary>
       {/* KPI cards */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <AdminCard
@@ -140,6 +145,7 @@ export default async function AdminDashboardPage() {
         <AdminCard label="Refill pipeline" value={totalRefills} hint="All statuses" icon={Activity} accent="info" />
       </div>
 
+      </details>
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Refill pipeline (largest) */}
         <AdminPanel
@@ -218,13 +224,13 @@ export default async function AdminDashboardPage() {
         <AdminPanel title="AI assistant" description="Customer self-service usage">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-[var(--admin-inset)] p-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide admin-muted">
+              <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide admin-muted">
                 <Brain className="h-3 w-3" /> Conversations
               </div>
               <p className="mt-1 text-2xl font-bold admin-text">{a.aiConversations}</p>
             </div>
             <div className="rounded-xl bg-[var(--admin-inset)] p-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide admin-muted">
+              <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide admin-muted">
                 <TrendingUp className="h-3 w-3" /> Escalations
               </div>
               <p className="mt-1 text-2xl font-bold text-amber-500">{a.aiEscalations}</p>

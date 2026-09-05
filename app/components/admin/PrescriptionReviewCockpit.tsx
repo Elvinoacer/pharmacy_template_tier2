@@ -345,7 +345,7 @@ export function PrescriptionReviewCockpit({
               <span className="text-xs font-bold uppercase tracking-wider admin-soft inline-flex items-center gap-1.5">
                 <Activity className="h-3.5 w-3.5 text-emerald-600" /> Lifecycle Stage Stepper (Click stage to advance)
               </span>
-              <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+              <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                 Step {currentStageMeta.stepIndex} of {PRIMARY_LIFECYCLE_STAGES.length}
               </span>
             </div>
@@ -372,7 +372,7 @@ export function PrescriptionReviewCockpit({
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                         isCurrent
                           ? "bg-emerald-600 text-white shadow-sm"
                           : isCompleted
@@ -385,7 +385,7 @@ export function PrescriptionReviewCockpit({
                         {stageInfo.label}
                       </span>
                     </div>
-                    <span className="text-[10px] admin-soft leading-tight line-clamp-2">
+                    <span className="text-xs admin-soft leading-tight line-clamp-2">
                       {stageInfo.description}
                     </span>
                   </button>
@@ -418,7 +418,7 @@ export function PrescriptionReviewCockpit({
                   <button
                     type="button"
                     onClick={() => handleTransitionStatus("approved")}
-                    className="rounded-xl border border-amber-600/40 bg-white/90 px-3.5 py-1.5 text-xs font-bold text-amber-900 transition hover:bg-white active:scale-95"
+                    className="rounded-xl border border-amber-600/40 bg-white/90 px-3.5 py-1.5 text-xs font-bold text-amber-900 transition hover:bg-[var(--admin-card)] active:scale-95"
                   >
                     Direct Approve for Dispensing
                   </button>
@@ -532,29 +532,29 @@ export function PrescriptionReviewCockpit({
 
               <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 text-xs">
                 <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
-                  <span className="text-[10px] font-bold uppercase admin-soft block mb-1">Medication</span>
+                  <span className="text-xs font-bold uppercase admin-soft block mb-1">Medication</span>
                   <span className="font-extrabold text-sm admin-text">{rx.medicineName}</span>
                 </div>
                 <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
-                  <span className="text-[10px] font-bold uppercase admin-soft block mb-1">Dosage &amp; Frequency</span>
+                  <span className="text-xs font-bold uppercase admin-soft block mb-1">Dosage &amp; Frequency</span>
                   <span className="font-bold admin-text">{rx.dosage || "1 dose"}</span>
-                  {rx.schedule && <p className="text-[10px] admin-soft mt-0.5">{rx.schedule}</p>}
+                  {rx.schedule && <p className="text-xs admin-soft mt-0.5">{rx.schedule}</p>}
                 </div>
                 <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
-                  <span className="text-[10px] font-bold uppercase admin-soft block mb-1">Total Quantity</span>
+                  <span className="text-xs font-bold uppercase admin-soft block mb-1">Total Quantity</span>
                   <span className="font-extrabold text-sm admin-text">{rx.quantity ?? 1} units</span>
-                  <p className="text-[10px] admin-soft mt-0.5">{rx.daysSupply ?? 30} days course supply</p>
+                  <p className="text-xs admin-soft mt-0.5">{rx.daysSupply ?? 30} days course supply</p>
                 </div>
                 <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
-                  <span className="text-[10px] font-bold uppercase admin-soft block mb-1">Refills Authorized</span>
+                  <span className="text-xs font-bold uppercase admin-soft block mb-1">Refills Authorized</span>
                   <span className="font-bold admin-text">{rx.refillsRemaining ?? 0} refills left</span>
                 </div>
                 <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
-                  <span className="text-[10px] font-bold uppercase admin-soft block mb-1">Received On</span>
+                  <span className="text-xs font-bold uppercase admin-soft block mb-1">Received On</span>
                   <span className="font-bold admin-text">{formatDateTime(rx.createdAt)}</span>
                 </div>
                 <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
-                  <span className="text-[10px] font-bold uppercase admin-soft block mb-1">Catalogue Stock</span>
+                  <span className="text-xs font-bold uppercase admin-soft block mb-1">Catalogue Stock</span>
                   <span className={`font-bold inline-flex items-center gap-1 ${
                     rx.medication && rx.medication.currentStock >= (rx.quantity || 1)
                       ? "text-emerald-600"
@@ -582,7 +582,7 @@ export function PrescriptionReviewCockpit({
                   {rx.reviewNotes}
                 </p>
                 {rx.reviewedBy && (
-                  <p className="text-[10px] admin-soft">
+                  <p className="text-xs admin-soft">
                     Recorded by <strong>{rx.reviewedBy.email}</strong> on {rx.reviewedAt ? formatDateTime(rx.reviewedAt) : "—"}
                   </p>
                 )}
@@ -599,7 +599,7 @@ export function PrescriptionReviewCockpit({
                   <span className="font-semibold admin-text inline-flex items-center gap-1.5">
                     <UserCheck className="h-4 w-4 text-emerald-600" /> Patient Identity
                   </span>
-                  <span className={`font-bold px-2 py-0.5 rounded-full text-[10px] ${
+                  <span className={`font-bold px-2 py-0.5 rounded-full text-xs ${
                     rx.patientVerified ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/15 text-amber-700"
                   }`}>
                     {rx.patientVerified ? "✓ Verified" : "Pending"}
@@ -610,7 +610,7 @@ export function PrescriptionReviewCockpit({
                   <span className="font-semibold admin-text inline-flex items-center gap-1.5">
                     <Stethoscope className="h-4 w-4 text-emerald-600" /> Prescriber Credentials
                   </span>
-                  <span className={`font-bold px-2 py-0.5 rounded-full text-[10px] ${
+                  <span className={`font-bold px-2 py-0.5 rounded-full text-xs ${
                     rx.prescriberVerified ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/15 text-amber-700"
                   }`}>
                     {rx.prescriberVerified ? "✓ Verified" : "Pending"}
@@ -621,7 +621,7 @@ export function PrescriptionReviewCockpit({
                   <span className="font-semibold admin-text inline-flex items-center gap-1.5">
                     <HelpCircle className="h-4 w-4 text-emerald-600" /> Clinical Clarity
                   </span>
-                  <span className={`font-bold px-2 py-0.5 rounded-full text-[10px] ${
+                  <span className={`font-bold px-2 py-0.5 rounded-full text-xs ${
                     !rx.isUnclear ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-rose-500/15 text-rose-700"
                   }`}>
                     {!rx.isUnclear ? "✓ Clear Order" : "Flagged Unclear"}
@@ -650,7 +650,7 @@ export function PrescriptionReviewCockpit({
               <UserCheck className="h-5 w-5 text-emerald-600" />
               <div>
                 <h3 className="text-sm font-bold admin-text">Patient Identity &amp; Record Verification</h3>
-                <p className="text-[11px] admin-soft">Verify patient identity, allergies, and contact file</p>
+                <p className="text-xs admin-soft">Verify patient identity, allergies, and contact file</p>
               </div>
             </div>
 
@@ -693,7 +693,7 @@ export function PrescriptionReviewCockpit({
               <Stethoscope className="h-5 w-5 text-emerald-600" />
               <div>
                 <h3 className="text-sm font-bold admin-text">Prescriber Credentials Verification</h3>
-                <p className="text-[11px] admin-soft">Practitioner registration, board license, and clinic file</p>
+                <p className="text-xs admin-soft">Practitioner registration, board license, and clinic file</p>
               </div>
             </div>
 
@@ -807,7 +807,7 @@ export function PrescriptionReviewCockpit({
                     <span className="font-bold text-xs admin-text capitalize inline-flex items-center gap-1.5">
                       <PhoneCall className="h-3.5 w-3.5 text-emerald-600" /> {log.contactMethod} with {log.contactedTo}
                     </span>
-                    <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
                       log.resolved ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/15 text-amber-700"
                     }`}>
                       {log.resolved ? "✓ Resolved" : "Awaiting response"}
@@ -824,7 +824,7 @@ export function PrescriptionReviewCockpit({
                       <p className="admin-text mt-0.5">{log.doctorResponse}</p>
                     </div>
                   )}
-                  <p className="text-[10px] admin-soft">
+                  <p className="text-xs admin-soft">
                     Logged on {formatDateTime(log.createdAt)} {log.staff && `by ${log.staff.email}`}
                   </p>
                 </div>
@@ -855,7 +855,7 @@ export function PrescriptionReviewCockpit({
                     Open Document <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
-                <p className="truncate font-mono text-[11px] admin-soft bg-[var(--admin-inset)] p-2.5 rounded-xl border border-[var(--admin-border)]">
+                <p className="truncate font-mono text-xs admin-soft bg-[var(--admin-inset)] p-2.5 rounded-xl border border-[var(--admin-border)]">
                   {url}
                 </p>
               </div>

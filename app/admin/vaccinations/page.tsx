@@ -63,8 +63,8 @@ export default async function AdminVaccinationsPage() {
   return (
     <AdminShell
       user={user}
-      title="Vaccination & Preventive Services"
-      subtitle="Clinic queue, lot-traced administration, AEFI, preventive counselling, public-health campaigns, immuniser credentials, and local policy."
+      title="Vaccination clinic"
+      subtitle="Manage clinic requests, record vaccinations, and review follow-up information."
     >
       <div className="mb-6 grid gap-3 sm:grid-cols-4">
         <AdminCard label="Open clinic queue" value={openQueue} hint="Requested / screened / scheduled" icon={CalendarCheck} accent="info" />

@@ -29,8 +29,8 @@ export default async function PrescriptionsAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Prescription Analytics"
-      description="Per-prescription financial summary, fill counts, billing, and outstanding balance."
+      title="Prescription report"
+      description="Review prescription fills, billing, and outstanding balances."
       period={period}
       basePath="/admin/analytics/prescriptions"
     >
@@ -62,7 +62,7 @@ export default async function PrescriptionsAnalyticsPage({
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
-      <p className="text-[11px] uppercase tracking-wider admin-muted">{label}</p>
+      <p className="text-xs uppercase tracking-wider admin-muted">{label}</p>
       <p className="mt-0.5 font-semibold admin-text">{value}</p>
     </div>
   );

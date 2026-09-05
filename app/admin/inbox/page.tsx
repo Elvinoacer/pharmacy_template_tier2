@@ -48,8 +48,8 @@ export default async function AdminInboxPage({
   return (
     <AdminShell
       user={user}
-      title="Admin Inbox"
-      subtitle="Alerts, enquiries, and escalations needing your attention"
+      title="Attention inbox"
+      subtitle="Review operational alerts, enquiries, and escalations that need a response."
     >
       <div className="grid gap-6">
         <AdminPanel

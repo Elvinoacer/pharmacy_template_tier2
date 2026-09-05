@@ -39,7 +39,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
       {/* Hero — platform surface, network chrome comes from the global Navbar */}
       <section className="relative overflow-hidden px-4 pb-10 pt-32 sm:px-6 sm:pt-36">
         <div className="hero-glow -left-20 top-10 opacity-60" />
-        <div className="relative mx-auto max-w-7xl">
+        <div className="page-hero-glass relative mx-auto max-w-7xl">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-teal-800/10 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#084c3f]">
               <Sparkles className="h-3 w-3" aria-hidden /> {platform.name} Pharmacy Directory

@@ -133,7 +133,7 @@ export default function SymptomSessionReplyForm({
           </button>
         )}
       </div>
-      <p className="text-[11px] leading-relaxed admin-muted">
+      <p className="text-xs leading-relaxed admin-muted">
         Opening this thread clears the urgent sidebar badge. Mark resolved when you are done so
         only new escalations and “feeling worse” alerts take badge space.
       </p>

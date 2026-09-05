@@ -50,7 +50,7 @@ export default async function AdminCustomersPage({
   return (
     <AdminShell
       user={user}
-      title="Customer CRM"
+      title="Patients & customers"
       subtitle={`${total} customer${total === 1 ? "" : "s"} on file`}
     >
       {/* Search bar with explicit submit + clear buttons */}
@@ -98,7 +98,7 @@ export default async function AdminCustomersPage({
             description={sp.q ? "Try a different search term." : "New customers will appear here once they register."}
           />
         ) : (
-          <div className="overflow-x-auto scroll-admin">
+          <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin">
             <table className="table-admin">
               <thead>
                 <tr>
@@ -121,7 +121,7 @@ export default async function AdminCustomersPage({
                     <tr key={c.id}>
                       <td>
                         <div className="flex items-center gap-3">
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[10px] font-bold text-[var(--admin-btn-fg)]">
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-xs font-bold text-[var(--admin-btn-fg)]">
                             {initials || "?"}
                           </span>
                           <div className="min-w-0">
@@ -149,7 +149,7 @@ export default async function AdminCustomersPage({
                           {c.segments.slice(0, 3).map((s) => (
                             <span
                               key={s.segmentId}
-                              className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] admin-accent-text"
+                              className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-accent-text"
                             >
                               {s.segment.name}
                             </span>
@@ -165,8 +165,8 @@ export default async function AdminCustomersPage({
                             <span className="font-mono text-xs font-semibold admin-text">
                               {c.loyaltyAccount.points}
                             </span>
-                            <span className="text-[10px] admin-soft">pts</span>
-                            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${TIER_COLOR[c.loyaltyAccount.tier] || "bg-slate-500/15 text-slate-600"}`}>
+                            <span className="text-xs admin-soft">pts</span>
+                            <span className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${TIER_COLOR[c.loyaltyAccount.tier] || "bg-slate-500/15 text-slate-600"}`}>
                               {c.loyaltyAccount.tier}
                             </span>
                           </div>

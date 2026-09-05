@@ -14,8 +14,8 @@ export default async function LibraryPage() {
   return (
     <AdminShell
       user={user}
-      title="Shared Medication Library"
-      subtitle="Search the universal clinical registry. Add to your pharmacy with one click — only fill price, stock, supplier."
+      title="Medicine library"
+      subtitle="Find an existing medicine, then add your pharmacy’s price and stock details."
     >
       <div className="mb-6">
         <Link

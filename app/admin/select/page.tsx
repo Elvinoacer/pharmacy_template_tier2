@@ -36,14 +36,14 @@ export default async function SelectPharmacyPage() {
 
   return (
     <div className="mesh-bg flex min-h-screen items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md rounded-3xl border border-teal-900/10 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+      <div className="w-full max-w-md glass-panel rounded-3xl p-6 sm:p-8">
+        <h1 className="text-2xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
           Which pharmacy?
         </h1>
-        <p className="mt-2 text-sm text-[#5a6b62]">
+        <p className="mt-2 text-sm text-[var(--muted)]">
           {user.platformAdmin
-            ? "Open a tenant workspace. Isolation is enforced — you only see that pharmacy's records."
-            : "Your account has access to more than one tenant. Choose a workspace."}
+            ? "Choose a pharmacy to view its records and manage its daily work."
+            : "Choose the pharmacy you want to work with."}
         </p>
         <ul className="mt-6 space-y-2">
           {options.map((m) => (
@@ -52,8 +52,8 @@ export default async function SelectPharmacyPage() {
                 <input type="hidden" name="pharmacyId" value={m.pharmacyId} />
                 <button className="flex w-full items-center justify-between rounded-2xl border border-teal-900/10 px-4 py-3 text-left hover:bg-teal-50">
                   <span>
-                    <span className="block font-semibold text-[#0c1a14]">{m.name}</span>
-                    <span className="text-xs uppercase text-[#7a8b84]">{m.role}</span>
+                    <span className="block font-semibold text-[var(--foreground)]">{m.name}</span>
+                    <span className="text-xs uppercase text-[var(--muted)]">{m.role}</span>
                   </span>
                 </button>
               </form>

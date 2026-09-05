@@ -83,15 +83,15 @@ export default async function AdminNotificationsPage({
   return (
     <AdminShell
       user={user}
-      title="Notification center"
-      subtitle="Outbound log, admin inbox, and Firebase Cloud Messaging setup"
+      title="Notification settings & history"
+      subtitle="Review sent notifications and manage notification preferences."
     >
       {/* Stats */}
       <div className="mb-6 flex flex-wrap gap-3">
         {counts.map((c) => (
           <div key={c.status} className="admin-stat px-4 py-3">
             <div className="flex items-center gap-2">
-              <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${statusColor(c.status)}`}>
+              <span className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${statusColor(c.status)}`}>
                 {c.status}
               </span>
             </div>
@@ -99,11 +99,11 @@ export default async function AdminNotificationsPage({
           </div>
         ))}
         <div className="admin-stat px-4 py-3 border-l-4 border-rose-500">
-          <p className="text-[10px] uppercase tracking-wide admin-soft">Failed (retryable)</p>
+          <p className="text-xs uppercase tracking-wide admin-soft">Failed (retryable)</p>
           <p className="mt-1 text-2xl font-bold text-rose-600">{failedCount}</p>
         </div>
         <div className="admin-stat px-4 py-3 border-l-4 border-amber-500">
-          <p className="text-[10px] uppercase tracking-wide admin-soft">Admin inbox (unread)</p>
+          <p className="text-xs uppercase tracking-wide admin-soft">Admin inbox (unread)</p>
           <p className="mt-1 text-2xl font-bold text-amber-700">{adminInboxCount}</p>
         </div>
       </div>

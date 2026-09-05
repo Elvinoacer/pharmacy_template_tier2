@@ -26,8 +26,8 @@ export default async function AdminInventoryPage() {
   return (
     <AdminShell
       user={user}
-      title="Inventory health"
-      subtitle="Low stock, expiry risk, and reorder suggestions — so the shelf never surprises you."
+      title="Stock & expiry"
+      subtitle="Review low stock, expired batches, and reorder suggestions."
       actions={
         <Link href="/admin/medications" className="btn-admin">
           <Package className="h-4 w-4" /> Full catalogue
@@ -168,7 +168,7 @@ export default async function AdminInventoryPage() {
               description="No active lots are expired or expiring in the next 60 days. Receive stock with batch + expiry to enable this."
             />
           ) : (
-            <div className="overflow-x-auto">
+            <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
               <table className="w-full min-w-[36rem] text-left text-sm">
                 <thead>
                   <tr className="border-b border-[var(--admin-border)] text-xs uppercase tracking-wide admin-soft">
@@ -188,7 +188,7 @@ export default async function AdminInventoryPage() {
                       <td className="px-2 py-2">{formatDate(l.expiryDate)}</td>
                       <td className="px-2 py-2 text-right tabular-nums">{l.quantity}</td>
                       <td className="px-2 py-2">
-                        <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700">
+                        <span className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-700">
                           Expired
                         </span>
                       </td>
@@ -209,7 +209,7 @@ export default async function AdminInventoryPage() {
                       <td className="px-2 py-2">{formatDate(l.expiryDate)}</td>
                       <td className="px-2 py-2 text-right tabular-nums">{l.quantity}</td>
                       <td className="px-2 py-2">
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">
                           {l.daysUntilExpiry}d left
                         </span>
                       </td>
@@ -242,7 +242,7 @@ export default async function AdminInventoryPage() {
               description="Stock levels and recent velocity look fine."
             />
           ) : (
-            <div className="overflow-x-auto">
+            <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
               <table className="w-full min-w-[40rem] text-left text-sm">
                 <thead>
                   <tr className="border-b border-[var(--admin-border)] text-xs uppercase tracking-wide admin-soft">

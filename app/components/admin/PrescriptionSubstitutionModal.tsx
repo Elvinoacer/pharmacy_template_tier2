@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminModal } from "./AdminModal";
+
 import { useEffect, useState } from "react";
 import {
   X,
@@ -121,7 +123,7 @@ export function PrescriptionSubstitutionModal({
   const selectedAlt = alternatives.find((a) => a.id === selectedAltId);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+    <AdminModal label="Review medicine substitution" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center  p-4 ">
       <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-2xl animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--admin-border)] px-5 py-4 bg-[var(--admin-card-2)]">
@@ -131,13 +133,13 @@ export function PrescriptionSubstitutionModal({
             </div>
             <div>
               <h2 className="text-sm font-bold admin-text">Pharmacist Generic Substitution</h2>
-              <p className="text-[11px] admin-soft">
+              <p className="text-xs admin-soft">
                 Replace prescribed brand with in-stock bioequivalent generic
               </p>
             </div>
           </div>
           <button
-            type="button"
+            aria-label="Close dialog" type="button"
             onClick={onClose}
             className="rounded-lg p-1.5 text-slate-400 hover:bg-[var(--admin-hover)] hover:text-slate-200"
           >
@@ -148,7 +150,7 @@ export function PrescriptionSubstitutionModal({
         <form onSubmit={handleSubstitute} className="p-5 space-y-4">
           {/* Currently Prescribed Card */}
           <div className="rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] p-3 text-xs">
-            <span className="font-bold text-[10px] uppercase tracking-wider admin-muted">Currently Prescribed Medicine</span>
+            <span className="font-bold text-xs uppercase tracking-wider admin-muted">Currently Prescribed Medicine</span>
             <p className="text-sm font-black admin-text mt-0.5">{currentMedicineName}</p>
           </div>
 
@@ -188,11 +190,11 @@ export function PrescriptionSubstitutionModal({
                       />
                       <div>
                         <p className="font-bold text-slate-900 dark:text-slate-100">{alt.name}</p>
-                        <p className="text-[11px] text-slate-500">
+                        <p className="text-xs text-slate-500">
                           {alt.genericName} {alt.strengthDisplay ? `· ${alt.strengthDisplay}` : ""}{" "}
                           {alt.dosageForm ? `· ${alt.dosageForm}` : ""}
                         </p>
-                        <p className="mt-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                        <p className="mt-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                           ✓ {alt.stockQty} in stock (Immediate handoff)
                         </p>
                       </div>
@@ -200,7 +202,7 @@ export function PrescriptionSubstitutionModal({
                     <div className="text-right shrink-0">
                       <p className="font-black text-slate-900 dark:text-slate-100">KES {alt.price.toLocaleString()}</p>
                       {alt.savingsPercent > 0 && (
-                        <span className="mt-0.5 inline-flex items-center gap-0.5 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                        <span className="mt-0.5 inline-flex items-center gap-0.5 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
                           <TrendingDown className="h-2.5 w-2.5" />
                           Save {alt.savingsPercent}%
                         </span>
@@ -223,7 +225,7 @@ export function PrescriptionSubstitutionModal({
                   key={r}
                   type="button"
                   onClick={() => setReason(r)}
-                  className={`rounded-full px-2.5 py-1 text-[10px] font-semibold transition text-left ${
+                  className={`rounded-full px-2.5 py-1 text-xs font-semibold transition text-left ${
                     reason === r
                       ? "bg-emerald-700 text-white shadow-2xs"
                       : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-hover)]"
@@ -235,7 +237,7 @@ export function PrescriptionSubstitutionModal({
               <button
                 type="button"
                 onClick={() => setReason("custom")}
-                className={`rounded-full px-2.5 py-1 text-[10px] font-semibold transition ${
+                className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${
                   reason === "custom"
                     ? "bg-emerald-700 text-white shadow-2xs"
                     : "bg-[var(--admin-inset)] admin-text hover:bg-[var(--admin-hover)]"
@@ -273,6 +275,6 @@ export function PrescriptionSubstitutionModal({
           </div>
         </form>
       </div>
-    </div>
+    </AdminModal>
   );
 }

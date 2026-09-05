@@ -14,8 +14,8 @@ export default async function AiImportPage() {
   return (
     <AdminShell
       user={user}
-      title="AI-Assisted Import"
-      subtitle="Provider-agnostic: bring your own AI (ChatGPT, Claude, Gemini, Grok, GLM, Kimi). No AI API costs, no vendor lock-in."
+      title="Import with AI assistance"
+      subtitle="Prepare a medicine list with your preferred AI tool, then review it before importing."
     >
       <div className="mb-6">
         <Link

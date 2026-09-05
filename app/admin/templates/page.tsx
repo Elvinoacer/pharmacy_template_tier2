@@ -32,12 +32,12 @@ export default async function AdminTemplatesPage() {
     <AdminShell
       user={user}
       title="Message templates"
-      subtitle="Reusable snippets for emails, SMS, WhatsApp, and portal messages"
+      subtitle="Create reusable messages for email, SMS, WhatsApp, and the portal."
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total</p>
           <p className="mt-1 text-2xl font-bold admin-text">{templates.length}</p>
         </div>
         {["email", "sms", "whatsapp", "portal"].map((ch) => {
@@ -45,7 +45,7 @@ export default async function AdminTemplatesPage() {
           return (
             <div key={ch} className="admin-stat p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">{ch}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide admin-muted">{ch}</p>
                 <Icon className="h-3 w-3 admin-accent-text" />
               </div>
               <p className="mt-1 text-2xl font-bold admin-text">{byChannel[ch] || 0}</p>
@@ -90,7 +90,7 @@ export default async function AdminTemplatesPage() {
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold admin-text">{t.name}</p>
-                        <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
+                        <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs admin-muted">
                           <span className="capitalize">{t.channel}</span>
                           <span>·</span>
                           <span className="inline-flex items-center gap-0.5">

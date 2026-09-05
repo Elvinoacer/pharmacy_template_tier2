@@ -28,7 +28,7 @@ export default function PageHero({
         style={{ background: "radial-gradient(circle, rgba(201,162,39,0.18) 0%, transparent 70%)" }}
         aria-hidden
       />
-      <div className="relative mx-auto max-w-6xl">
+      <div className="page-hero-glass relative mx-auto max-w-6xl">
         {crumbs && crumbs.length > 0 && (
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex flex-wrap items-center gap-1.5 text-xs text-[#5a6b62]">
@@ -45,7 +45,7 @@ export default function PageHero({
                       {c.label}
                     </Link>
                   ) : (
-                    <span className="font-medium text-[#0c1a14]">{c.label}</span>
+                    <span aria-current="page" className="font-medium text-[#0c1a14]">{c.label}</span>
                   )}
                 </li>
               ))}

@@ -50,25 +50,25 @@ export default async function AdminFeedbackPage() {
   return (
     <AdminShell
       user={user}
-      title="Customer feedback"
+      title="Patient feedback"
       subtitle={`${items.length} feedback ${items.length === 1 ? "entry" : "entries"} from customers`}
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total</p>
           <p className="mt-1 text-2xl font-bold admin-text">{stats.total}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">New</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">New</p>
           <p className="mt-1 text-2xl font-bold text-rose-600">{stats.new}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Responded</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Responded</p>
           <p className="mt-1 text-2xl font-bold text-emerald-700">{stats.responded}</p>
         </div>
         <div className="admin-stat p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Avg rating</p>
+          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Avg rating</p>
           <p className="mt-1 text-2xl font-bold text-amber-700">{stats.avgRating}</p>
         </div>
       </div>
@@ -94,10 +94,10 @@ export default async function AdminFeedbackPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-semibold admin-text">{f.title || f.name || "Anonymous"}</p>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLOR[f.status]}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[f.status]}`}>
                         {f.status}
                       </span>
-                      <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] capitalize admin-muted">
+                      <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-xs capitalize admin-muted">
                         {f.type}
                       </span>
                       {f.rating ? (
@@ -112,7 +112,7 @@ export default async function AdminFeedbackPage() {
                       ) : null}
                     </div>
                     <p className="mt-2 text-sm admin-text">{f.body}</p>
-                    <p className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wide admin-soft">
+                    <p className="mt-1 flex items-center gap-1 text-xs uppercase tracking-wide admin-soft">
                       <Clock className="h-2.5 w-2.5" />
                       {formatDateTime(f.createdAt)}
                       {f.email && <span className="ml-2 normal-case admin-muted">· {f.email}</span>}
@@ -122,7 +122,7 @@ export default async function AdminFeedbackPage() {
                       <div className="mt-3 flex items-start gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-2 text-sm">
                         <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
                         <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
                             Staff response
                           </p>
                           <p className="mt-0.5 admin-text">{f.staffResponse}</p>

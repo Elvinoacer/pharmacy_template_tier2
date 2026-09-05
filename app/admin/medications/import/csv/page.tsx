@@ -14,8 +14,8 @@ export default async function CsvImportPage() {
   return (
     <AdminShell
       user={user}
-      title="Import from Excel / CSV"
-      subtitle="Upload .csv (or .xlsx — save as CSV first), map columns, preview, import. Matches existing MedicationMaster records first."
+      title="Import a medicine list"
+      subtitle="Upload a CSV, match its columns, and review the preview before importing."
     >
       <div className="mb-6">
         <Link

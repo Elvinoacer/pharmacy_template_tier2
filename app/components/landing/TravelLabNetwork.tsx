@@ -136,7 +136,7 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
   return (
     <section
       id="network"
-      className="relative overflow-hidden bg-[#030907] px-4 py-20 text-white sm:px-6 sm:py-28 lg:px-8"
+      className="relative overflow-hidden bg-[var(--background)] px-4 py-20 text-[var(--foreground)] sm:px-6 sm:py-28 lg:px-8"
     >
       {/* Background Graphic: featured_bg_image.png with subtle atmospheric blending */}
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
@@ -148,8 +148,8 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
           className="object-cover opacity-60"
         />
         {/* Soft edge gradients and radial vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#030907] via-transparent to-[#030907]/90" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#030907]/90 via-[#030907]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-transparent to-[var(--background)]/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--background)]/90 via-[var(--background)]/40 to-transparent" />
         <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-emerald-700/10 blur-[140px]" />
         <div className="absolute right-0 top-1/2 h-[30rem] w-[30rem] -translate-y-1/2 rounded-full bg-teal-600/10 blur-[160px]" />
         <div className="landing-grain opacity-[0.05]" />
@@ -161,20 +161,20 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
           
           {/* Left Column: Heading, Subhead, Search Bar & 3 Feature Chips */}
           <div className="lg:col-span-5 xl:col-span-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#2dd4bf]">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--brand)]">
               Care Near You
             </p>
 
             <h2
-              className="mt-4 text-4xl font-normal leading-[1.06] tracking-[-0.02em] text-white sm:text-5xl lg:text-6xl"
+              className="mt-4 text-4xl font-normal leading-[1.06] tracking-[-0.02em] text-[var(--foreground)] sm:text-5xl lg:text-6xl"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               Choose a trusted
               <br />
-              local <span className="text-[#2dd4bf]">pharmacy.</span>
+              local <span className="text-[var(--brand)]">pharmacy.</span>
             </h2>
 
-            <p className="mt-4 max-w-md text-base leading-relaxed text-slate-300">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-[var(--muted)]">
               Discover verified pharmacies near you.
               <br />
               Quality care, trusted by your community.
@@ -208,9 +208,9 @@ export default function TravelLabNetwork({ pharmacies }: TravelLabNetworkProps) 
                     <Layers className="h-4 w-4" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-white">0 OTC Items</h3>
+                    <h3 className="text-xs font-bold text-white">OTC essentials</h3>
                     <p className="text-[10px] leading-tight text-slate-400 mt-0.5">
-                      Wide range of OTC medicines in stock
+                      Explore availability with your pharmacy
                     </p>
                   </div>
                 </div>

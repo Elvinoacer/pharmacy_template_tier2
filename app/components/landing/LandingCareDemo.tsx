@@ -68,7 +68,7 @@ export default function LandingCareDemo() {
   return (
     <section
       id="demo"
-      className="relative overflow-hidden bg-[#030907] px-4 py-20 text-white sm:px-6 sm:py-28 lg:px-8"
+      className="relative overflow-hidden bg-[var(--background)] px-4 py-20 text-[var(--foreground)] sm:px-6 sm:py-28 lg:px-8"
     >
       {/* Background Stills: bg_image_see_it_in_action.png */}
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
@@ -80,8 +80,8 @@ export default function LandingCareDemo() {
           className="object-cover opacity-70"
         />
         {/* Soft edge gradients and deep emerald vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#030907] via-transparent to-[#030907]/90" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#030907]/95 via-[#030907]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-transparent to-[var(--background)]/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--background)]/95 via-[var(--background)]/60 to-transparent" />
         <div className="absolute -left-28 top-1/4 h-[32rem] w-[32rem] rounded-full bg-emerald-600/15 blur-[150px]" />
         <div className="absolute right-10 top-1/3 h-[35rem] w-[35rem] rounded-full bg-emerald-500/10 blur-[160px]" />
         <div className="landing-grain opacity-[0.06]" />
@@ -93,24 +93,24 @@ export default function LandingCareDemo() {
           
           {/* Left Column: Headline, Subtitle, 3 Trust Indicators */}
           <div className="lg:col-span-4 xl:col-span-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#2dd4bf]">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--brand)]">
               Aether Care
             </p>
 
             <h2
-              className="mt-4 text-4xl font-normal leading-[1.04] tracking-[-0.03em] text-white sm:text-5xl lg:text-6xl"
+              className="mt-4 text-4xl font-normal leading-[1.04] tracking-[-0.03em] text-[var(--foreground)] sm:text-5xl lg:text-6xl"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               Less waiting.
               <br />
               More getting
               <br />
-              <span className="italic text-[#8ce394] drop-shadow-[0_2px_14px_rgba(140,227,148,0.35)]">
+              <span className="italic text-[var(--brand)] drop-shadow-[0_2px_14px_rgba(140,227,148,0.35)]">
                 better.
               </span>
             </h2>
 
-            <p className="mt-5 max-w-md text-base leading-relaxed text-slate-300">
+            <p className="mt-5 max-w-md text-base leading-relaxed text-[var(--muted)]">
               Refill prescriptions, track orders, and get your medicines delivered — all in one secure place.
             </p>
 
@@ -122,8 +122,8 @@ export default function LandingCareDemo() {
                   <Lock className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Secure & private</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Your health data is protected</p>
+                  <h3 className="text-sm font-bold text-[var(--foreground)]">Secure & private</h3>
+                  <p className="text-xs text-[var(--muted)] mt-0.5">Your health data is protected</p>
                 </div>
               </div>
 
@@ -133,8 +133,8 @@ export default function LandingCareDemo() {
                   <Clock className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Save time</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Refill in minutes, pay securely</p>
+                  <h3 className="text-sm font-bold text-[var(--foreground)]">Save time</h3>
+                  <p className="text-xs text-[var(--muted)] mt-0.5">Refill in minutes, pay securely</p>
                 </div>
               </div>
 
@@ -144,8 +144,8 @@ export default function LandingCareDemo() {
                   <Truck className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Fast delivery</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Medicines to your doorstep</p>
+                  <h3 className="text-sm font-bold text-[var(--foreground)]">Fast delivery</h3>
+                  <p className="text-xs text-[var(--muted)] mt-0.5">Medicines to your doorstep</p>
                 </div>
               </div>
             </div>

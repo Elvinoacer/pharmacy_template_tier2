@@ -171,11 +171,11 @@ export function LibrarySearchFlow() {
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold admin-text truncate">{m.name}</h3>
                     {m.alreadyStocked && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
                         <Check className="h-3 w-3" /> In your inventory
                       </span>
                     )}
-                    <span className="ml-auto rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] font-semibold admin-muted">
+                    <span className="ml-auto rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-xs font-semibold admin-muted">
                       {m.enrichmentScore}% complete
                     </span>
                   </div>
@@ -186,12 +186,12 @@ export function LibrarySearchFlow() {
                     {m.manufacturer ? ` · ${m.manufacturer}` : ""}
                   </p>
                   {m.activeIngredients.length > 0 && (
-                    <p className="mt-1 text-[10px] admin-soft">
+                    <p className="mt-1 text-xs admin-soft">
                       Active: {m.activeIngredients.map((ai) => `${ai.name}${ai.amount ? ` ${ai.amount}${ai.unit || ""}` : ""}`).join(", ")}
                     </p>
                   )}
                   {m.barcode && (
-                    <p className="mt-0.5 text-[10px] font-mono admin-soft">Barcode: {m.barcode}</p>
+                    <p className="mt-0.5 text-xs font-mono admin-soft">Barcode: {m.barcode}</p>
                   )}
                 </div>
               </div>

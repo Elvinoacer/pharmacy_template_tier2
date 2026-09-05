@@ -64,7 +64,7 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
       <div className="grid gap-3 sm:grid-cols-4">
         <div className="rounded-2xl bg-[var(--admin-inset)] p-4 border border-[var(--admin-inset-2)]">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider admin-soft">14-Day Rate</span>
+            <span className="text-xs font-bold uppercase tracking-wider admin-soft">14-Day Rate</span>
             <Activity className="h-4 w-4 admin-accent-text" />
           </div>
           <p className={`mt-2 text-3xl font-extrabold ${
@@ -74,34 +74,34 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
           }`}>
             {stats.adherenceRate}%
           </p>
-          <p className="text-[10px] admin-soft mt-1">Strict calculated compliance</p>
+          <p className="text-xs admin-soft mt-1">Strict calculated compliance</p>
         </div>
 
         <div className="rounded-2xl bg-[var(--admin-inset)] p-4 border border-[var(--admin-inset-2)]">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider admin-soft">Streak</span>
+            <span className="text-xs font-bold uppercase tracking-wider admin-soft">Streak</span>
             <Award className="h-4 w-4 admin-accent-text" />
           </div>
           <p className="mt-2 text-3xl font-extrabold admin-text">{stats.currentStreakDays}d</p>
-          <p className="text-[10px] admin-soft mt-1">Consecutive taken days</p>
+          <p className="text-xs admin-soft mt-1">Consecutive taken days</p>
         </div>
 
         <div className="rounded-2xl bg-[var(--admin-inset)] p-4 border border-[var(--admin-inset-2)]">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider admin-soft">Logged Doses</span>
+            <span className="text-xs font-bold uppercase tracking-wider admin-soft">Logged Doses</span>
             <Calendar className="h-4 w-4 admin-accent-text" />
           </div>
           <p className="mt-2 text-3xl font-extrabold admin-text">{stats.totalLogged}</p>
-          <p className="text-[10px] admin-soft mt-1">Patient + Caregiver logs</p>
+          <p className="text-xs admin-soft mt-1">Patient + Caregiver logs</p>
         </div>
 
         <div className="rounded-2xl bg-[var(--admin-inset)] p-4 border border-[var(--admin-inset-2)]">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700">Missed Doses</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-rose-700">Missed Doses</span>
             <ShieldAlert className="h-4 w-4 text-rose-600" />
           </div>
           <p className="mt-2 text-3xl font-extrabold text-rose-700">{stats.missedCount}</p>
-          <p className="text-[10px] text-rose-600 mt-1">Includes auto-missed past due</p>
+          <p className="text-xs text-rose-600 mt-1">Includes auto-missed past due</p>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
                 className={`rounded-xl px-2 py-3 text-center transition ${colors[d.status]}`}
                 title={`${d.date}: ${d.status}`}
               >
-                <p className="text-[9px] uppercase opacity-80">
+                <p className="text-xs uppercase opacity-80">
                   {new Date(d.date + "T00:00:00Z").toLocaleDateString(PROJECT_LOCALE, {
                     weekday: "short",
                     timeZone: PROJECT_TIMEZONE,
@@ -136,7 +136,7 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
                     timeZone: PROJECT_TIMEZONE,
                   })}
                 </p>
-                <p className="mt-1 text-[9px] font-extrabold uppercase tracking-tight">
+                <p className="mt-1 text-xs font-extrabold uppercase tracking-tight">
                   {d.status === "none" ? "—" : d.status}
                 </p>
               </div>
@@ -162,12 +162,12 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
                     <Pill className="h-4 w-4 admin-accent-text" />
                     <div>
                       <span className="font-bold admin-text">{rx.medicineName}</span>
-                      <span className="ml-2 font-mono text-[11px] admin-soft">Formula: {formula.formulaLabel}</span>
+                      <span className="ml-2 font-mono text-xs admin-soft">Formula: {formula.formulaLabel}</span>
                     </div>
                   </div>
 
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
                       metrics.adherenceRate >= 80
                         ? "bg-emerald-100 text-emerald-800"
                         : metrics.adherenceRate >= 60
@@ -179,7 +179,7 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
                   </span>
                 </div>
 
-                <div className="mt-2.5 flex items-center justify-between text-[11px] admin-soft">
+                <div className="mt-2.5 flex items-center justify-between text-xs admin-soft">
                   <span>Stock Remaining: {metrics.unitsRemaining} / {metrics.totalQuantity} units (~{metrics.daysRemaining} days supply)</span>
                   <span>{metrics.takenDosesCount} taken · {metrics.missedDosesCount} missed</span>
                 </div>
@@ -203,13 +203,13 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
               >
                 <div>
                   <span className="font-bold admin-text">{d.prescription.medicineName}</span>
-                  <span className="ml-2 text-[11px] admin-soft">
+                  <span className="ml-2 text-xs admin-soft">
                     {formatDate(d.scheduledDate)} {d.scheduledTime ? `@ ${d.scheduledTime}` : ""}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
+                    className={`rounded-full px-2 py-0.5 text-xs font-bold uppercase ${
                       d.status === "taken" ? "bg-emerald-100 text-emerald-800"
                       : d.status === "missed" ? "bg-rose-100 text-rose-800"
                       : d.status === "late" ? "bg-amber-100 text-amber-800"
@@ -218,7 +218,7 @@ export async function AdminAdherencePanel({ customerId }: { customerId: string }
                   >
                     {d.status}
                   </span>
-                  <span className="text-[10px] admin-soft">
+                  <span className="text-xs admin-soft">
                     by {d.recordedBy} {d.caregiverId ? "(caregiver)" : ""}
                   </span>
                 </div>

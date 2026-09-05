@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Layers, FileText, AlertCircle, Check, Save } from "lucide-react";
@@ -9,6 +11,7 @@ export default function SegmentForm({
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
 
   return (
@@ -25,18 +28,18 @@ export default function SegmentForm({
       )}
 
       <div>
-        <label className="label-admin">Segment name *</label>
+        <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Segment name *</label>
         <div className="relative">
           <Layers className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input name="name" required placeholder="e.g. Diabetes care patients" className="input-admin pl-9" />
+          <input id={`${fieldPrefix}-1`} name="name" required placeholder="e.g. Diabetes care patients" className="input-admin pl-9" />
         </div>
       </div>
 
       <div>
-        <label className="label-admin">Description</label>
+        <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Description</label>
         <div className="relative">
           <FileText className="pointer-events-none absolute left-3 top-3 h-3.5 w-3.5 admin-soft" />
-          <textarea name="description" rows={3} placeholder="What unites customers in this segment?" className="input-admin resize-y pl-9" />
+          <textarea id={`${fieldPrefix}-2`} name="description" rows={3} placeholder="What unites customers in this segment?" className="input-admin resize-y pl-9" />
         </div>
       </div>
 

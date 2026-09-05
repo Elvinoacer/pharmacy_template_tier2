@@ -247,18 +247,18 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-semibold admin-text">{s.title}</p>
                   {!s.active && (
-                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-600">
+                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-600">
                       Inactive
                     </span>
                   )}
                   {!s.bookable && (
-                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] font-semibold admin-muted">
+                    <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-semibold admin-muted">
                       Not bookable
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 line-clamp-1 text-[11px] admin-soft">{s.short}</p>
-                <div className="mt-1 flex flex-wrap gap-2 text-[11px] admin-muted">
+                <p className="mt-0.5 line-clamp-1 text-xs admin-soft">{s.short}</p>
+                <div className="mt-1 flex flex-wrap gap-2 text-xs admin-muted">
                   <span className="font-mono">{s.slug}</span>
                   {s.price != null ? (
                     <span className="inline-flex items-center gap-0.5 font-semibold text-emerald-700">
@@ -441,7 +441,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                 placeholder="Leave blank = no paywall"
                 className="input-admin"
               />
-              <p className="mt-1 text-[10px] admin-soft">
+              <p className="mt-1 text-xs admin-soft">
                 When set, customers must pay to confirm online bookings.
               </p>
             </div>
@@ -556,7 +556,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
       </Modal>
 
       {pending && (
-        <p className="flex items-center gap-1.5 text-[11px] admin-soft">
+        <p className="flex items-center gap-1.5 text-xs admin-soft">
           <Loader2 className="h-3 w-3 animate-spin" /> Saving…
         </p>
       )}

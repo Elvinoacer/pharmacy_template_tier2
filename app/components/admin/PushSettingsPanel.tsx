@@ -119,10 +119,10 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
         {/* Device list */}
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-wide admin-soft">
+            <span className="text-xs font-semibold uppercase tracking-wide admin-soft">
               Registered devices
             </span>
-            <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-[10px] admin-muted">
+            <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-xs admin-muted">
               {devices.length}
             </span>
           </div>
@@ -130,7 +130,7 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[var(--admin-border)] px-4 py-6 text-center">
               <Smartphone className="h-6 w-6 admin-soft" />
               <p className="mt-2 text-xs admin-muted">No devices registered yet.</p>
-              <p className="mt-0.5 text-[10px] admin-soft">
+              <p className="mt-0.5 text-xs admin-soft">
                 Enable push on this device to add it to the list.
               </p>
             </div>
@@ -146,8 +146,8 @@ export function PushSettingsPanel({ devices }: { devices: Device[] }) {
                       <Smartphone className="mr-1 inline h-3 w-3" />
                       {d.label || "Device"}
                     </p>
-                    <p className="truncate font-mono text-[10px] admin-soft">{d.token.slice(0, 24)}…</p>
-                    <p className="mt-0.5 text-[10px] admin-soft">
+                    <p className="truncate font-mono text-xs admin-soft">{d.token.slice(0, 24)}…</p>
+                    <p className="mt-0.5 text-xs admin-soft">
                       Last seen {formatDateTime(d.lastSeenAt)}
                     </p>
                   </div>

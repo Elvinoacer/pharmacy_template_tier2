@@ -185,7 +185,7 @@ export function RefillSchedulesTable({
                 }`}
               >
                 <span>{chip.label}</span>
-                <span className={`rounded-full px-1.5 py-0.2 text-[10px] font-bold ${active ? "bg-white/20 text-white" : chip.color || "bg-black/5 admin-soft"}`}>
+                <span className={`rounded-full px-1.5 py-0.2 text-xs font-bold ${active ? "bg-white/20 text-white" : chip.color || "bg-black/5 admin-soft"}`}>
                   {chip.count}
                 </span>
               </button>
@@ -235,10 +235,10 @@ export function RefillSchedulesTable({
 
       {/* Table */}
       <div className="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-sm">
-        <div className="overflow-x-auto">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-[11px] font-bold uppercase tracking-wider admin-soft">
+              <tr className="border-b border-[var(--admin-border)] bg-[var(--admin-inset)]/60 text-xs font-bold uppercase tracking-wider admin-soft">
                 <th className="py-3 px-3.5 w-8">
                   <button onClick={toggleSelectAll} className="flex items-center">
                     {selectedIds.size > 0 && selectedIds.size === filtered.length ? (
@@ -274,7 +274,7 @@ export function RefillSchedulesTable({
                   <td colSpan={7} className="py-12 text-center admin-soft">
                     <Pill className="mx-auto h-8 w-8 opacity-40 mb-2" />
                     <p className="font-bold text-xs">No refill schedules matching criteria</p>
-                    <p className="text-[11px] mt-0.5">Try changing filters or search terms</p>
+                    <p className="text-xs mt-0.5">Try changing filters or search terms</p>
                   </td>
                 </tr>
               ) : (
@@ -319,7 +319,7 @@ export function RefillSchedulesTable({
                           </div>
                           <div>
                             <strong className="admin-text font-bold block">{sch.customerName}</strong>
-                            <span className="font-mono text-[10px] admin-soft block">
+                            <span className="font-mono text-xs admin-soft block">
                               {sch.phone || sch.email || "No direct phone"}
                             </span>
                           </div>
@@ -330,7 +330,7 @@ export function RefillSchedulesTable({
                       <td className="py-3 px-3">
                         <div className="space-y-0.5">
                           <strong className="admin-text font-bold text-xs">{sch.medicineName}</strong>
-                          <div className="flex items-center gap-1.5 text-[10px] admin-soft">
+                          <div className="flex items-center gap-1.5 text-xs admin-soft">
                             <span>{sch.dosage || "Standard Dose"}</span>
                             <span>•</span>
                             <span className="font-mono">Rx {sch.rxReference || "On File"}</span>
@@ -342,7 +342,7 @@ export function RefillSchedulesTable({
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-bold ${
                               sch.refillsRemaining > 2
                                 ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
                                 : sch.refillsRemaining > 0
@@ -354,7 +354,7 @@ export function RefillSchedulesTable({
                           </span>
                         </div>
                         {sch.refillsRemaining === 0 && (
-                          <span className="text-[9px] font-bold text-rose-600 block mt-0.5">
+                          <span className="text-xs font-bold text-rose-600 block mt-0.5">
                             Prescriber renewal required
                           </span>
                         )}
@@ -363,7 +363,7 @@ export function RefillSchedulesTable({
                       {/* Supply Countdown */}
                       <td className="py-3 px-3">
                         <div className="space-y-1 min-w-[140px]">
-                          <div className="flex items-center justify-between text-[10px]">
+                          <div className="flex items-center justify-between text-xs">
                             <span className={`font-bold ${
                               daysRem < 0 ? "text-rose-600" : daysRem <= 3 ? "text-amber-600" : "text-emerald-700"
                             }`}>
@@ -386,14 +386,14 @@ export function RefillSchedulesTable({
                       {/* Stock Buffer */}
                       <td className="py-3 px-3">
                         {sch.currentStock !== null ? (
-                          <div className="text-[10px] space-y-0.5">
+                          <div className="text-xs space-y-0.5">
                             <span className={`font-bold ${sch.currentStock > 10 ? "text-emerald-700" : "text-amber-700"}`}>
                               {sch.currentStock} units on hand
                             </span>
-                            <span className="block text-[9px] admin-soft">FEFO Verified</span>
+                            <span className="block text-xs admin-soft">FEFO Verified</span>
                           </div>
                         ) : (
-                          <span className="text-[10px] admin-soft">Unlinked item</span>
+                          <span className="text-xs admin-soft">Unlinked item</span>
                         )}
                       </td>
 

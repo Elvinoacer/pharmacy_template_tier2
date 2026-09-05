@@ -118,12 +118,12 @@ export function OrderSettleActions({
   return (
     <div className="mt-1 space-y-1 text-right">
       {customerReason && (
-        <p className="text-left text-[10px] admin-soft">
+        <p className="text-left text-xs admin-soft">
           <span className="font-semibold admin-muted">Reason:</span> {customerReason}
         </p>
       )}
       {existingDispenserNote && (
-        <p className="text-left text-[10px] text-emerald-700/90">
+        <p className="text-left text-xs text-emerald-700/90">
           <span className="font-semibold">Dispenser note:</span> {existingDispenserNote}
         </p>
       )}
@@ -133,7 +133,7 @@ export function OrderSettleActions({
           <button
             type="button"
             onClick={() => setStkOpen((v) => !v)}
-            className="block w-full text-[10px] font-semibold text-teal-700 hover:underline"
+            className="block w-full text-xs font-semibold text-teal-700 hover:underline"
           >
             {stkOpen ? "Hide M-Pesa" : "M-Pesa STK…"}
           </button>
@@ -160,7 +160,7 @@ export function OrderSettleActions({
               }
               void markPaid(true);
             }}
-            className="block w-full text-[10px] font-semibold text-emerald-700 hover:underline disabled:opacity-50"
+            className="block w-full text-xs font-semibold text-emerald-700 hover:underline disabled:opacity-50"
           >
             Mark paid + dispatch
           </button>
@@ -168,14 +168,14 @@ export function OrderSettleActions({
             type="button"
             disabled={busy}
             onClick={() => markPaid(false)}
-            className="block w-full text-[10px] font-semibold text-emerald-700/80 hover:underline disabled:opacity-50"
+            className="block w-full text-xs font-semibold text-emerald-700/80 hover:underline disabled:opacity-50"
           >
             Mark paid (hold)
           </button>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="block w-full text-[10px] font-semibold text-amber-700 hover:underline"
+            className="block w-full text-xs font-semibold text-amber-700 hover:underline"
           >
             {open ? "Cancel waive" : "Waive…"}
           </button>
@@ -194,7 +194,7 @@ export function OrderSettleActions({
               }
               void dispatch();
             }}
-            className="block w-full text-[10px] font-semibold text-blue-700 hover:underline disabled:opacity-50"
+            className="block w-full text-xs font-semibold text-blue-700 hover:underline disabled:opacity-50"
           >
             {dispatchOpen ? "Hide dispatch form" : "Mark dispatched"}
           </button>
@@ -204,7 +204,7 @@ export function OrderSettleActions({
       {/* Dispenser note capture — shown when Rx gate needs it, or staff opens dispatch form. */}
       {(dispatchOpen || (paidHeld && hasRxItem)) && !isDispatched && (
         <div className="mt-1 space-y-1 rounded-lg border border-blue-500/30 bg-blue-500/5 p-2 text-left">
-          <label className="block text-[10px] font-semibold text-blue-800">
+          <label className="block text-xs font-semibold text-blue-800">
             Dispenser note{hasRxItem ? " *" : ""}
           </label>
           <textarea
@@ -212,7 +212,7 @@ export function OrderSettleActions({
             onChange={(e) => setDispenserNote(e.target.value)}
             rows={2}
             placeholder="Condition observed, counselling, validity…"
-            className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-[10px] admin-text"
+            className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-xs admin-text"
           />
           <button
             type="button"
@@ -221,7 +221,7 @@ export function OrderSettleActions({
               if (pending) void markPaid(true);
               else void dispatch();
             }}
-            className="w-full rounded bg-blue-600/15 px-2 py-1 text-[10px] font-semibold text-blue-800 hover:bg-blue-600/25 disabled:opacity-50"
+            className="w-full rounded bg-blue-600/15 px-2 py-1 text-xs font-semibold text-blue-800 hover:bg-blue-600/25 disabled:opacity-50"
           >
             {pending ? "Confirm paid + dispatch" : "Confirm dispatch"}
           </button>
@@ -233,7 +233,7 @@ export function OrderSettleActions({
           type="button"
           disabled={busy}
           onClick={() => undispatch()}
-          className="block w-full text-[10px] font-semibold text-slate-600 hover:underline disabled:opacity-50"
+          className="block w-full text-xs font-semibold text-slate-600 hover:underline disabled:opacity-50"
         >
           Undo dispatch
         </button>
@@ -245,12 +245,12 @@ export function OrderSettleActions({
           className="mt-2 space-y-1.5 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-inset)] p-2 text-left"
         >
           <input type="hidden" name="id" value={orderId} />
-          <label className="block text-[10px] admin-soft">Scope</label>
+          <label className="block text-xs admin-soft">Scope</label>
           <select
             name="scope"
             value={scope}
             onChange={(e) => setScope(e.target.value as typeof scope)}
-            className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-[10px] admin-text"
+            className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-xs admin-text"
           >
             <option value="one_time">One-time</option>
             <option value="recurring_until">Recurring until date</option>
@@ -262,7 +262,7 @@ export function OrderSettleActions({
               name="until"
               value={until}
               onChange={(e) => setUntil(e.target.value)}
-              className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-[10px] admin-text"
+              className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-xs admin-text"
             />
           )}
           <input
@@ -270,11 +270,11 @@ export function OrderSettleActions({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Waive reason (optional)"
-            className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-[10px] admin-text"
+            className="w-full rounded border border-[var(--admin-border)] bg-[var(--admin-bg)] px-1.5 py-1 text-xs admin-text"
           />
           <ConfirmSubmitButton
             message="Waive this payment?"
-            className="w-full rounded bg-amber-500/15 px-2 py-1 text-[10px] font-semibold text-amber-700"
+            className="w-full rounded bg-amber-500/15 px-2 py-1 text-xs font-semibold text-amber-700"
           >
             Confirm waive
           </ConfirmSubmitButton>
@@ -286,7 +286,7 @@ export function OrderSettleActions({
         <button
           type="button"
           onClick={() => setReceiptOpen(true)}
-          className="inline-flex items-center gap-1 rounded bg-[var(--admin-accent-soft)] px-2 py-0.5 text-[10px] font-bold admin-accent-text hover:brightness-110"
+          className="inline-flex items-center gap-1 rounded bg-[var(--admin-accent-soft)] px-2 py-0.5 text-xs font-bold admin-accent-text hover:brightness-110"
         >
           <Printer className="h-2.5 w-2.5" />
           <span>Receipt</span>

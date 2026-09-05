@@ -28,9 +28,9 @@ export function AdminCard({
     <div className="admin-stat">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wider admin-muted">{label}</p>
-          <p className="mt-1.5 text-2xl font-bold tracking-tight admin-text">{value}</p>
-          {hint && <p className="mt-1 text-xs admin-soft">{hint}</p>}
+          <p className="text-xs font-semibold admin-muted">{label}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight admin-text">{value}</p>
+          {hint && <p className="mt-1 text-sm admin-soft">{hint}</p>}
         </div>
         {icon && (
           <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${accentClass} shadow-md`}>
@@ -61,12 +61,12 @@ export function AdminPanel({
   id?: string;
 }) {
   return (
-    <section id={id} className={`admin-card p-5 ${className}`}>
+    <section id={id} className={`admin-card p-5 sm:p-6 ${className}`}>
       {(title || action) && (
-        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div className="admin-panel-heading flex flex-wrap items-start justify-between gap-3">
           <div>
             {title && <h2 className="text-sm font-semibold admin-text">{title}</h2>}
-            {description && <p className="mt-0.5 text-xs admin-muted">{description}</p>}
+            {description && <p className="mt-0.5 text-sm admin-muted">{description}</p>}
           </div>
           {action}
         </div>
@@ -111,7 +111,7 @@ export function AdminEmptyState({
         <Icon className="h-6 w-6" />
       </span>
       <p className="mt-3 text-sm font-semibold admin-text">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-xs admin-muted">{description}</p>}
+      {description && <p className="mt-1 max-w-sm text-sm admin-muted">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

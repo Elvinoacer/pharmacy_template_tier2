@@ -48,28 +48,28 @@ export default async function AdminAiEscalationsPage() {
   return (
     <AdminShell
       user={user}
-      title="AI escalation inbox"
-      subtitle="Conversations the assistant flagged for human review"
+      title="AI review queue"
+      subtitle="Review conversations and adherence alerts that need a member of staff."
     >
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Open escalations</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Open escalations</p>
             <AlertCircle className="h-3.5 w-3.5 text-amber-700" />
           </div>
           <p className="mt-1 text-2xl font-bold text-amber-700">{conversations.length}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Total AI convos</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total AI convos</p>
             <Sparkles className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">{aiStats._count}</p>
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">With customer</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">With customer</p>
             <User className="h-3.5 w-3.5 admin-accent-text" />
           </div>
           <p className="mt-1 text-2xl font-bold admin-text">
@@ -78,7 +78,7 @@ export default async function AdminAiEscalationsPage() {
         </div>
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide admin-muted">Adherence alerts</p>
+            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Adherence alerts</p>
             <Activity className="h-3.5 w-3.5 text-rose-600" />
           </div>
           <p className="mt-1 text-2xl font-bold text-rose-600">{adherenceAlerts.length}</p>
@@ -92,7 +92,7 @@ export default async function AdminAiEscalationsPage() {
           description="Customers with adherence below 70% in the last 14 days — AI suggests a follow-up"
           className="mb-6"
           action={
-            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf]/20 to-[#0d6e5a]/20 px-2 py-0.5 text-[10px] font-semibold admin-accent-text">
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf]/20 to-[#0d6e5a]/20 px-2 py-0.5 text-xs font-semibold admin-accent-text">
               <Sparkles className="h-2.5 w-2.5" /> AI-analyzed
             </span>
           }
@@ -113,7 +113,7 @@ export default async function AdminAiEscalationsPage() {
                   <span className="font-bold text-rose-600">{Math.round(rate)}%</span>
                   <a
                     href={`/admin/prescriptions/${prescription.id}`}
-                    className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-semibold admin-accent-text hover:bg-[var(--admin-inset-2)]"
+                    className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-xs font-semibold admin-accent-text hover:bg-[var(--admin-inset-2)]"
                   >
                     Review →
                   </a>
@@ -153,7 +153,7 @@ export default async function AdminAiEscalationsPage() {
                           <p className="font-semibold admin-text">
                             {conv.customer?.fullName || "Website visitor"}
                           </p>
-                          <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
+                          <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs admin-muted">
                             {conv.customer?.user.email && (
                               <span className="inline-flex items-center gap-0.5">
                                 <Mail className="h-2.5 w-2.5" /> {conv.customer.user.email}
@@ -198,7 +198,7 @@ export default async function AdminAiEscalationsPage() {
                                 : "mr-8 bg-[var(--admin-accent-soft)]"
                             }`}
                           >
-                            <span className="text-[10px] uppercase tracking-wide admin-soft">
+                            <span className="text-xs uppercase tracking-wide admin-soft">
                               {m.role}
                             </span>
                             <p className="mt-1 whitespace-pre-wrap admin-text">{m.content}</p>

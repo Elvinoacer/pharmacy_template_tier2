@@ -71,7 +71,8 @@ export default function AppChrome({
           surface={surface}
           brand={brand}
         />
-        <main className="min-w-0 flex-1">{children}</main>
+        <a href="#main-content" className="skip-link">Skip to content</a>
+        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1">{children}</main>
         <div id="site-footer" className="shrink-0">
           <Footer surface={surface} brand={brand} clearMobileActionBar={hasLandingMobileActionBar} />
         </div>

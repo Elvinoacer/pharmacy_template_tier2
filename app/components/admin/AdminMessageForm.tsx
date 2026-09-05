@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Mail, MessageSquare, MessageCircle, Layout, FileText, Calendar, AlertCircle, Check, Send, Wand2 } from "lucide-react";
@@ -20,6 +22,7 @@ export default function AdminMessageForm({
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   customerId: string;
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [channel, setChannel] = useState<string>("email");
   const [body, setBody] = useState("");
@@ -76,7 +79,7 @@ export default function AdminMessageForm({
 
       {/* Channel picker */}
       <div>
-        <label className="label-admin">Channel</label>
+        <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Channel</label>
         <div className="grid grid-cols-4 gap-1.5">
           {CHANNELS.map((c) => {
             const Icon = c.icon;
@@ -86,13 +89,13 @@ export default function AdminMessageForm({
                 key={c.value}
                 type="button"
                 onClick={() => setChannel(c.value)}
-                className={`flex cursor-pointer flex-col items-center gap-1 rounded-lg border px-2 py-2 text-[10px] font-semibold transition ${
+                className={`flex cursor-pointer flex-col items-center gap-1 rounded-lg border px-2 py-2 text-xs font-semibold transition ${
                   isActive
                     ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text"
                     : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-muted hover:border-[var(--admin-accent)] hover:text-[var(--admin-text)]"
                 }`}
               >
-                <input type="radio" name="channel" value={c.value} checked={isActive} onChange={() => setChannel(c.value)} className="sr-only" />
+                <input id={`${fieldPrefix}-1`} type="radio" name="channel" value={c.value} checked={isActive} onChange={() => setChannel(c.value)} className="sr-only" />
                 <Icon className="h-4 w-4" />
                 {c.label}
               </button>
@@ -103,10 +106,10 @@ export default function AdminMessageForm({
 
       {current.hasSubject && (
         <div>
-          <label className="label-admin">Subject</label>
+          <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Subject</label>
           <div className="relative">
             <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input
+            <input id={`${fieldPrefix}-2`}
               name="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
@@ -127,7 +130,7 @@ export default function AdminMessageForm({
             type="button"
             onClick={aiDraft}
             disabled={aiLoading}
-            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2.5 py-0.5 text-[10px] font-semibold text-white transition hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2.5 py-0.5 text-xs font-semibold text-white transition hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
             title="Let AI polish your draft"
           >
             <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Polishing…" : "AI polish"}
@@ -145,10 +148,10 @@ export default function AdminMessageForm({
       </div>
 
       <div>
-        <label className="label-admin">Schedule (optional)</label>
+        <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Schedule (optional)</label>
         <div className="relative">
           <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input
+          <input id={`${fieldPrefix}-3`}
             name="scheduledFor"
             type="datetime-local"
             value={scheduledFor}
@@ -156,7 +159,7 @@ export default function AdminMessageForm({
             className="input-admin pl-9"
           />
         </div>
-        <p className="mt-1 text-[10px] admin-soft">
+        <p className="mt-1 text-xs admin-soft">
           Leave empty to send immediately. Times use the pharmacy timezone. A cron
           job delivers scheduled messages at the correct local moment.
         </p>

@@ -63,8 +63,8 @@ export default async function MetricsPage() {
   return (
     <AdminShell
       user={user}
-      title="Medication Module Metrics"
-      subtitle="Phase 6 — track acquisition-method usage over time. As the shared library grows, reuse rate should climb."
+      title="Catalogue activity"
+      subtitle="See how medicines are added and how often existing records are reused."
     >
       <div className="mb-6">
         <Link
@@ -136,7 +136,7 @@ export default async function MetricsPage() {
                 >
                   <p className="text-xs font-semibold uppercase tracking-wide admin-soft">{s}</p>
                   <p className={`mt-1 text-2xl font-black ${color}`}>{count}</p>
-                  <p className="text-[10px] admin-soft">{pct}% of library</p>
+                  <p className="text-xs admin-soft">{pct}% of library</p>
                 </Link>
               );
             })}
@@ -170,7 +170,7 @@ function StatCard({ label, value, sub, highlight }: { label: string; value: numb
     <div className={`rounded-2xl border p-5 ${highlight ? "border-emerald-500/30 bg-emerald-500/5" : "border-[var(--admin-border-2)] bg-[var(--admin-card)]"}`}>
       <p className="text-xs font-semibold uppercase tracking-wide admin-soft">{label}</p>
       <p className="mt-2 text-3xl font-black admin-text">{value}</p>
-      <p className="mt-1 text-[10px] admin-soft">{sub}</p>
+      <p className="mt-1 text-xs admin-soft">{sub}</p>
     </div>
   );
 }

@@ -65,8 +65,8 @@ export default async function AddMedicationChooserPage() {
   return (
     <AdminShell
       user={user}
-      title="Add Medication"
-      subtitle="Choose how to add a medication. Manual entry is the fallback, not the default."
+      title="Add a medicine"
+      subtitle="Choose a method to add medicines to your pharmacy catalogue."
     >
       <div className="mb-6">
         <Link
@@ -91,7 +91,7 @@ export default async function AddMedicationChooserPage() {
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-200 text-gray-400 dark:bg-white/5">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <span className="rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-bold text-gray-500 dark:bg-white/10 dark:text-gray-400">
+                    <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-bold text-gray-500 dark:bg-white/10 dark:text-gray-400">
                       Coming soon
                     </span>
                   </div>
@@ -118,7 +118,7 @@ export default async function AddMedicationChooserPage() {
                       <Icon className="h-5 w-5" />
                     </div>
                     {m.badge && (
-                      <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                      <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
                         {m.badge}
                       </span>
                     )}

@@ -27,13 +27,13 @@ export default async function StaffAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Staff Analytics"
-      description="Sales by staff, orders, dispatches, prescription fills, cash collected, refunds approved, adjustments."
+      title="Staff activity report"
+      description="Review sales, dispensing, collections, and adjustments by staff member."
       period={period}
       basePath="/admin/analytics/staff"
     >
       <AdminPanel title="Per-staff breakdown">
-        <div className="overflow-x-auto">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-left admin-muted border-b border-[var(--admin-border)]">

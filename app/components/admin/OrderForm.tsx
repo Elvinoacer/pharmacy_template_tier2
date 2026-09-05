@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { toast } from "@/app/components/Toaster";
@@ -53,6 +55,7 @@ export default function OrderForm({
   medications: Medication[];
   customers?: Customer[];
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [customerId, setCustomerId] = useState("");
   const [medicationId, setMedicationId] = useState("");
@@ -175,7 +178,7 @@ export default function OrderForm({
               window.location.reload();
             }}
           />
-          <p className="mt-2 text-[10px] text-teal-800">
+          <p className="mt-2 text-xs text-teal-800">
             {autoDispatch
               ? "On success this counter sale auto-marks as dispatched with FEFO lot deduction."
               : "On success the order stays paid/reserved until you mark dispatched."}
@@ -231,7 +234,7 @@ export default function OrderForm({
               <span>Patient / Customer {isRx ? "*" : "(optional for walk-in)"}</span>
             </label>
             {isRx && (
-              <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-[9px] font-bold text-blue-700 dark:text-blue-300">
+              <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-xs font-bold text-blue-700 dark:text-blue-300">
                 Patient Required for Rx Dispense
               </span>
             )}
@@ -247,10 +250,10 @@ export default function OrderForm({
           {!customerId && (
             <div className="grid gap-3 sm:grid-cols-3 pt-1">
               <div>
-                <label className="label-admin text-[11px]">Walk-in Patient Name {isRx ? "*" : ""}</label>
+                <label htmlFor={`${fieldPrefix}-1`} className="label-admin text-xs">Walk-in Patient Name {isRx ? "*" : ""}</label>
                 <div className="relative">
                   <User className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                  <input
+                  <input id={`${fieldPrefix}-1`}
                     name="customerName"
                     required={isRx}
                     placeholder="e.g. Jane Doe"
@@ -259,10 +262,10 @@ export default function OrderForm({
                 </div>
               </div>
               <div>
-                <label className="label-admin text-[11px]">Patient Phone {isRx ? "*" : ""}</label>
+                <label htmlFor={`${fieldPrefix}-2`} className="label-admin text-xs">Patient Phone {isRx ? "*" : ""}</label>
                 <div className="relative">
                   <Phone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                  <input
+                  <input id={`${fieldPrefix}-2`}
                     name="customerPhone"
                     type="tel"
                     required={isRx}
@@ -274,10 +277,10 @@ export default function OrderForm({
                 </div>
               </div>
               <div>
-                <label className="label-admin text-[11px]">Patient Email (Receipt/Invite)</label>
+                <label htmlFor={`${fieldPrefix}-3`} className="label-admin text-xs">Patient Email (Receipt/Invite)</label>
                 <div className="relative">
                   <Mail className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                  <input
+                  <input id={`${fieldPrefix}-3`}
                     name="customerEmail"
                     type="email"
                     placeholder="jane@example.com"
@@ -291,8 +294,8 @@ export default function OrderForm({
 
         {/* ── Medication Selection ── */}
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 space-y-3">
-          <label className="label-admin font-bold text-xs">Select Medication *</label>
-          <select
+          <label htmlFor={`${fieldPrefix}-4`} className="label-admin font-bold text-xs">Select Medication *</label>
+          <select id={`${fieldPrefix}-4`}
             name="medicationId"
             required
             value={medicationId}
@@ -332,19 +335,19 @@ export default function OrderForm({
                   Prescription Dispensing &amp; Validation (Required for Rx)
                 </h3>
               </div>
-              <span className="rounded-full bg-blue-600 px-2.5 py-0.5 text-[9px] font-bold text-white uppercase tracking-wider">
+              <span className="rounded-full bg-blue-600 px-2.5 py-0.5 text-xs font-bold text-white uppercase tracking-wider">
                 Certified Fill #1
               </span>
             </div>
 
-            <p className="text-[11px] text-blue-900/90 dark:text-blue-300">
+            <p className="text-xs text-blue-900/90 dark:text-blue-300">
               This medication requires a valid prescription. Completing this sale will automatically create and link the <strong>Prescription</strong>, record <strong>PrescriptionFill #1</strong>, and deduct stock exactly once via FEFO lot allocation.
             </p>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div>
-                <label className="label-admin text-[11px]">Prescribing Doctor / Clinician *</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-5`} className="label-admin text-xs">Prescribing Doctor / Clinician *</label>
+                <input id={`${fieldPrefix}-5`}
                   name="prescriber"
                   required
                   value={prescriber}
@@ -355,8 +358,8 @@ export default function OrderForm({
               </div>
 
               <div>
-                <label className="label-admin text-[11px]">Prescriber License / KMPDC #</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-6`} className="label-admin text-xs">Prescriber License / KMPDC #</label>
+                <input id={`${fieldPrefix}-6`}
                   name="prescriberLicense"
                   value={prescriberLicense}
                   onChange={(e) => setPrescriberLicense(e.target.value)}
@@ -366,8 +369,8 @@ export default function OrderForm({
               </div>
 
               <div>
-                <label className="label-admin text-[11px]">Prescription Ref / Serial #</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-7`} className="label-admin text-xs">Prescription Ref / Serial #</label>
+                <input id={`${fieldPrefix}-7`}
                   name="rxReference"
                   value={rxReference}
                   onChange={(e) => setRxReference(e.target.value)}
@@ -377,8 +380,8 @@ export default function OrderForm({
               </div>
 
               <div>
-                <label className="label-admin text-[11px]">Authorized Refills (0 for one-time)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-8`} className="label-admin text-xs">Authorized Refills (0 for one-time)</label>
+                <input id={`${fieldPrefix}-8`}
                   name="refillsRemaining"
                   type="number"
                   min="0"
@@ -390,8 +393,8 @@ export default function OrderForm({
               </div>
 
               <div>
-                <label className="label-admin text-[11px]">Days Supply</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-9`} className="label-admin text-xs">Days Supply</label>
+                <input id={`${fieldPrefix}-9`}
                   name="daysSupply"
                   type="number"
                   min="1"
@@ -402,8 +405,8 @@ export default function OrderForm({
               </div>
 
               <div>
-                <label className="label-admin text-[11px]">Patient National ID / Passport</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-10`} className="label-admin text-xs">Patient National ID / Passport</label>
+                <input id={`${fieldPrefix}-10`}
                   name="patientNationalId"
                   value={patientNationalId}
                   onChange={(e) => setPatientNationalId(e.target.value)}
@@ -422,7 +425,7 @@ export default function OrderForm({
               <Lock className="h-3.5 w-3.5 text-purple-700" />
               <span>Controlled Substance Compliance (DDA / Kenya PPB Schedule)</span>
             </div>
-            <p className="text-[11px] text-purple-900/90 dark:text-purple-300">
+            <p className="text-xs text-purple-900/90 dark:text-purple-300">
               Entry will be automatically logged to the regulatory <strong>Controlled Drugs Register</strong>. Ensure doctor license and patient national ID are verified.
             </p>
           </div>
@@ -432,10 +435,10 @@ export default function OrderForm({
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 space-y-3">
           <div className="grid gap-3 sm:grid-cols-3">
             <div>
-              <label className="label-admin">Quantity *</label>
+              <label htmlFor={`${fieldPrefix}-11`} className="label-admin">Quantity *</label>
               <div className="relative">
                 <Hash className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                <input
+                <input id={`${fieldPrefix}-11`}
                   name="quantity"
                   type="number"
                   min="1"
@@ -448,8 +451,8 @@ export default function OrderForm({
             </div>
 
             <div>
-              <label className="label-admin">Dispensing Unit (Broken Pack Support)</label>
-              <select
+              <label htmlFor={`${fieldPrefix}-12`} className="label-admin">Dispensing Unit (Broken Pack Support)</label>
+              <select id={`${fieldPrefix}-12`}
                 value={billingUnit}
                 onChange={(e) => setBillingUnit(e.target.value)}
                 className="input-admin text-xs"
@@ -467,10 +470,10 @@ export default function OrderForm({
             </div>
 
             <div>
-              <label className="label-admin">Coupon Code (optional)</label>
+              <label htmlFor={`${fieldPrefix}-13`} className="label-admin">Coupon Code (optional)</label>
               <div className="relative">
                 <Tag className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                <input
+                <input id={`${fieldPrefix}-13`}
                   name="couponCode"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
@@ -482,10 +485,10 @@ export default function OrderForm({
           </div>
 
           <div>
-            <label className="label-admin">Dosage &amp; Administration Instructions</label>
+            <label htmlFor={`${fieldPrefix}-14`} className="label-admin">Dosage &amp; Administration Instructions</label>
             <div className="relative">
               <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input
+              <input id={`${fieldPrefix}-14`}
                 name="dosage"
                 placeholder="e.g. 1 tablet twice daily with food for 5 days"
                 className="input-admin pl-9 text-xs"
@@ -494,24 +497,24 @@ export default function OrderForm({
           </div>
 
           <div>
-            <label className="label-admin">
+            <label htmlFor={`${fieldPrefix}-15`} className="label-admin">
               Pharmacist Dispenser Note &amp; Counselling {isRx ? "*" : "(optional)"}
             </label>
-            <textarea
+            <textarea id={`${fieldPrefix}-15`}
               name="dispenserNote"
               rows={2}
               required={isRx}
               placeholder="Condition observed, counselling provided, validity notes…"
               className="input-admin resize-y text-xs"
             />
-            <p className="mt-1 text-[10px] admin-soft">
+            <p className="mt-1 text-xs admin-soft">
               Clinical note from the dispenser — permanently recorded on the dispensing register and printed on the patient receipt.
             </p>
           </div>
 
           <div>
-            <label className="label-admin">Customer Reason (if known)</label>
-            <select name="reason" className="input-admin text-xs" defaultValue="">
+            <label htmlFor={`${fieldPrefix}-16`} className="label-admin">Customer Reason (if known)</label>
+            <select id={`${fieldPrefix}-16`} name="reason" className="input-admin text-xs" defaultValue="">
               <option value="">— none —</option>
               <option value="for known condition">For a known condition</option>
               <option value="recommended by pharmacist">Recommended by pharmacist</option>
@@ -525,7 +528,7 @@ export default function OrderForm({
         {/* ── Payment Method & Settlement ── */}
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 space-y-3">
           <div>
-            <label className="label-admin">Payment Method</label>
+            <label htmlFor={`${fieldPrefix}-17`} className="label-admin">Payment Method</label>
             <div className="flex flex-wrap gap-2">
               {(
                 [
@@ -542,7 +545,7 @@ export default function OrderForm({
                       : "border-[var(--admin-border)] admin-muted"
                   }`}
                 >
-                  <input
+                  <input id={`${fieldPrefix}-17`}
                     type="radio"
                     name="paymentMethodRadio"
                     checked={paymentMethod === m.value}
@@ -557,10 +560,10 @@ export default function OrderForm({
 
           {paymentMethod === "daraja" && (
             <div>
-              <label className="label-admin">M-Pesa Phone (Customer)</label>
+              <label htmlFor={`${fieldPrefix}-18`} className="label-admin">M-Pesa Phone (Customer)</label>
               <div className="relative">
                 <Phone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-                <input
+                <input id={`${fieldPrefix}-18`}
                   name="mpesaPhone"
                   type="tel"
                   required
@@ -570,7 +573,7 @@ export default function OrderForm({
                   className="input-admin pl-9 text-xs"
                 />
               </div>
-              <p className="mt-1 text-[10px] admin-soft">
+              <p className="mt-1 text-xs admin-soft">
                 Staff triggers the push; customer confirms with PIN on handset.
               </p>
             </div>
@@ -585,7 +588,7 @@ export default function OrderForm({
             />
             <span>
               <span className="font-bold admin-text">Mark as dispensed / dispatched immediately</span>
-              <span className="mt-0.5 block text-[10px] admin-soft">
+              <span className="mt-0.5 block text-xs admin-soft">
                 Checked for counter sales (patient leaves with medicines now). Uncheck for paid remote reservations to dispatch later.
               </span>
             </span>
@@ -598,7 +601,7 @@ export default function OrderForm({
                 KES {total.toLocaleString()}
               </p>
             </div>
-            <p className="mt-1 text-[10px] admin-soft">
+            <p className="mt-1 text-xs admin-soft">
               {isRx
                 ? "Prescription Fill #1 will be created and unified with this order with single stock deduction."
                 : "Standard counter sale will be recorded and added to revenue."}

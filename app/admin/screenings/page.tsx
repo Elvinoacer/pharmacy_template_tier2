@@ -96,8 +96,8 @@ export default async function AdminScreeningsPage() {
   return (
     <AdminShell
       user={user}
-      title="Health Screenings & Clinical Referrals"
-      subtitle="Point-of-care vitals logging, clinical risk screening, and structured referrals to Clinics, Hospitals, Laboratories, Specialists, and Emergency EMS."
+      title="Screenings & referrals"
+      subtitle="Record vital signs and screening results, then arrange referrals when needed."
     >
       {/* Overview Stat Cards */}
       <div className="mb-6 grid gap-3 sm:grid-cols-4">

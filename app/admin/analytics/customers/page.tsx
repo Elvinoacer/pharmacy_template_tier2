@@ -30,8 +30,8 @@ export default async function CustomersAnalyticsPage({
 
   return (
     <AnalyticsShell user={user}
-      title="Customer Analytics"
-      description="Lifetime value, repeat purchase rate, average customer value, and top customers by spend."
+      title="Patient activity report"
+      description="Review repeat visits, patient spending, and outstanding balances."
       period={period}
       basePath="/admin/analytics/customers"
     >
@@ -43,7 +43,7 @@ export default async function CustomersAnalyticsPage({
       </StatGrid>
 
       <AdminPanel title="Top Customers by Spend" description="Lifetime spend, outstanding balance, fills, refills.">
-        <div className="overflow-x-auto">
+        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-left admin-muted border-b border-[var(--admin-border)]">
@@ -65,7 +65,7 @@ export default async function CustomersAnalyticsPage({
                     <Link href={`/admin/customers/${c.customerId}`} className="admin-text font-medium hover:text-[var(--admin-accent)]">
                       {c.fullName}
                     </Link>
-                    <div className="text-[10px] admin-muted">{c.email}</div>
+                    <div className="text-xs admin-muted">{c.email}</div>
                   </td>
                   <td className="py-2 pr-4 text-right admin-muted">{c.totalOrders}</td>
                   <td className="py-2 pr-4 text-right admin-text font-semibold">{formatKES(c.lifetimeSpend)}</td>

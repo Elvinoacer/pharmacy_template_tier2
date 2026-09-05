@@ -2693,3 +2693,123 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 .reg-bg input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1) opacity(0.6);
 }
+
+/* Shared glass system. Solid fields keep long forms readable over the ambient canvas. */
+:root {
+  --glass-fill: rgba(255, 255, 255, .8);
+  --glass-edge: rgba(255, 255, 255, .88);
+  --glass-shadow: 0 12px 40px rgba(20, 66, 49, .075), inset 0 1px 0 rgba(255,255,255,.7);
+  --canvas-glow: rgba(71, 177, 135, .12);
+  color-scheme: light;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #081410;
+  --foreground: #edf7f2;
+  --muted: #adc2b7;
+  --muted-2: #94afa1;
+  --card: #12251d;
+  --card-elev: #193027;
+  --surface: rgba(18, 37, 29, .88);
+  --brand: #6cdec0;
+  --brand-deep: #9bead5;
+  --brand-soft: #19392d;
+  --brand-tint: #10291f;
+  --line: rgba(175, 219, 198, .15);
+  --line-2: rgba(175, 219, 198, .24);
+  --glass-fill: rgba(18, 37, 29, .84);
+  --glass-edge: rgba(181, 232, 208, .16);
+  --glass-shadow: 0 12px 40px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.055);
+  --canvas-glow: rgba(52, 160, 118, .12);
+}
+body { background: var(--background); color: var(--foreground); }
+.mesh-bg, .shell-grid {
+  background: radial-gradient(ellipse at 0 0, var(--canvas-glow), transparent 60%),
+    radial-gradient(ellipse at 100% 80%, rgba(201,162,39,.065), transparent 55%), var(--background);
+}
+:where(.glass, .glass-panel, .glass-panel-strong, .card-premium, .card-stat, .page-hero-glass) {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+/* Match the specificity of the existing component rules. */
+.glass, .glass-panel, .glass-panel-strong, .card-premium, .card-stat { background: var(--glass-fill); border-color: var(--glass-edge); box-shadow: var(--glass-shadow); }
+.page-hero-glass { padding: clamp(1.25rem, 4vw, 3rem); border-radius: 1.75rem; }
+.admin-card { background: color-mix(in srgb, var(--admin-card) 86%, transparent); backdrop-filter: blur(16px); }
+.shell-header { background: var(--glass-fill); border-color: var(--line); backdrop-filter: blur(20px); }
+.shell-main, .shell-header, .page-container { min-width: 0; }
+.shell-main { overscroll-behavior-y: contain; }
+.btn-ghost { background: var(--glass-fill); color: var(--brand-deep); border-color: var(--line-2); }
+.btn-ghost:hover { background: var(--card-elev); }
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border: 1px solid var(--line-2); border-radius: 50%; background: var(--glass-fill); color: var(--foreground); cursor: pointer; backdrop-filter: blur(16px); }
+.theme-toggle:hover { background: var(--brand-soft); }
+.global-theme-control { position: fixed; right: 1rem; top: 1rem; z-index: 60; }
+body:has(header .theme-toggle, .shell-grid-admin) .global-theme-control { display: none; }
+.skip-link { position: fixed; left: 1rem; top: -6rem; z-index: 200; padding: .8rem 1.2rem; border-radius: 1rem; background: var(--card); color: var(--foreground); }
+.skip-link:focus { top: 1rem; }
+:where(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid #23b791; outline-offset: 4px; }
+:where(input, select, textarea) { scroll-margin-block: 6rem; }
+.care-dock { position: fixed; bottom: 0; inset-inline: 0; z-index: 40; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: .35rem; padding: .65rem .75rem calc(.65rem + env(safe-area-inset-bottom)); background: var(--glass-fill); border-top: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); backdrop-filter: blur(20px); }
+.care-dock a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3rem; min-height: 52px; border-radius: 1rem; color: var(--muted); font-size: .7rem; font-weight: 600; }
+.care-dock .care-dock-primary { background: #0d6e5a; color: white; }
+@media(min-width: 1024px) { .care-dock { display: none; } }
+@media(max-width: 639px) {
+  .page-hero-glass { border-radius: 1.25rem; }
+  .shell-header { gap: .35rem; padding-inline: .65rem; }
+  .shell-header .btn-icon, .btn-icon-admin { min-width: 44px; min-height: 44px; }
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea { font-size: max(16px, 1em); }
+  .landing-root { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+  .page-container { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+  .page-container > :where(.flex) { flex-wrap: wrap; }
+}
+@media(prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .glass, .glass-panel, .glass-panel-strong, .card-premium, .card-stat, .page-hero-glass, .care-dock { background: var(--card); }
+}
+
+/* Legacy palette utilities resolve to the same semantic dark tokens. */
+html[data-theme="dark"] [class~="text-[#0c1a14]"] { color: var(--foreground); }
+html[data-theme="dark"] [class~="text-[#5a6b62]"] { color: var(--muted); }
+html[data-theme="dark"] [class~="text-[#8a9a92]"] { color: var(--muted-2); }
+html[data-theme="dark"] [class~="text-[#0d6e5a]"] { color: var(--brand); }
+html[data-theme="dark"] [class~="text-[#084c3f]"] { color: var(--brand-deep); }
+html[data-theme="dark"] [class~="bg-white"] { background-color: var(--card); }
+html[data-theme="dark"] [class~="bg-white/95"] { background-color: var(--glass-fill); }
+html[data-theme="dark"] [class~="bg-white/90"] { background-color: var(--glass-fill); }
+html[data-theme="dark"] [class~="bg-white/80"] { background-color: var(--glass-fill); }
+html[data-theme="dark"] [class~="bg-white/70"] { background-color: var(--glass-fill); }
+html[data-theme="dark"] [class~="bg-[#f4f7f4]"] { background-color: var(--background); }
+html[data-theme="dark"] [class~="bg-[#f3f6f4]"] { background-color: var(--background); }
+html[data-theme="dark"] [class~="bg-[#f8faf9]"] { background-color: var(--card-elev); }
+html[data-theme="dark"] [class~="bg-[#f0faf6]"] { background-color: var(--brand-tint); }
+html[data-theme="dark"] [class~="border-[#e3ebe6]"] { border-color: var(--line-2); }
+html[data-theme="dark"] [class~="border-[#e3ebe6]/80"] { border-color: var(--line); }
+html[data-theme="dark"] [class~="text-slate-900"] { color: var(--foreground); }
+html[data-theme="dark"] [class~="text-gray-900"] { color: var(--foreground); }
+html[data-theme="dark"] [class~="text-slate-700"] { color: var(--muted); }
+html[data-theme="dark"] [class~="text-gray-700"] { color: var(--muted); }
+html[data-theme="dark"] [class~="text-slate-600"] { color: var(--muted); }
+html[data-theme="dark"] [class~="text-gray-600"] { color: var(--muted); }
+html[data-theme="dark"] [class~="bg-slate-50"] { background-color: var(--background); }
+html[data-theme="dark"] [class~="bg-gray-50"] { background-color: var(--background); }
+html[data-theme="dark"] [class~="border-slate-200"] { border-color: var(--line-2); }
+html[data-theme="dark"] [class~="border-gray-200"] { border-color: var(--line-2); }
+.care-pathways { background: radial-gradient(ellipse at 10% 20%, var(--canvas-glow), transparent 65%), var(--background); color: var(--foreground); }
+.care-pathway { display: flex; flex-direction: column; min-width: 0; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--glass-edge); background: var(--glass-fill); box-shadow: var(--glass-shadow); backdrop-filter: blur(16px); transition: border-color .2s, transform .2s; }
+.care-pathway:hover { border-color: var(--brand); transform: translateY(-3px); }
+.care-pathway-featured { border-color: color-mix(in srgb, var(--brand) 45%, var(--glass-edge)); background: linear-gradient(130deg, var(--brand-soft), var(--glass-fill)); }
+.care-pathway-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 1rem; color: var(--brand); background: var(--brand-soft); }
+/* Existing photo compositions keep their high-contrast inset content. */
+html[data-theme="light"] :is(#network, #demo) > [aria-hidden] { opacity: .16; }
+html[data-theme="dark"] :is([class~="text-teal-700"], [class~="text-teal-800"], [class~="text-emerald-700"]) { color: var(--brand); }
+.input-premium { background: var(--card); }
+.badge-neutral, .table-premium thead th { background: var(--card-elev); }
+html[data-theme="dark"] [class~="text-[#2d3e35]"] { color: var(--foreground); }
+html[data-theme="dark"] [class~="bg-[#e6f4ef]"] { background-color: var(--brand-soft); }
+html[data-theme="dark"] :is([class~="bg-teal-50"], [class~="bg-teal-50/60"], [class~="bg-emerald-50"]) { background-color: var(--brand-soft); }
+html[data-theme="dark"] :is([class~="bg-[#fafcfb]"], [class~="bg-[#fafbfa]"], [class~="bg-[#f0f4f1]"]) { background-color: var(--card-elev); }
+html[data-theme="dark"] :is([class~="border-teal-900/10"], [class~="border-teal-900/15"], [class~="border-teal-800/10"]) { border-color: var(--line-2); }

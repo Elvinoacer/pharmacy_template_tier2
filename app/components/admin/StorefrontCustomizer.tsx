@@ -243,7 +243,7 @@ function Field({
           className="input-admin"
         />
       )}
-      {hint && <span className="mt-1 block text-[11px] leading-relaxed admin-muted">{hint}</span>}
+      {hint && <span className="mt-1 block text-xs leading-relaxed admin-muted">{hint}</span>}
     </label>
   );
 }
@@ -286,7 +286,7 @@ function DocField({
           className="input-admin"
         />
       )}
-      {hint && <span className="mt-1 block text-[11px] leading-relaxed admin-muted">{hint}</span>}
+      {hint && <span className="mt-1 block text-xs leading-relaxed admin-muted">{hint}</span>}
     </label>
   );
 }
@@ -357,7 +357,7 @@ function CloneOrResetBar({
     <div className="flex flex-wrap items-center gap-2">
       {!isOverridden && (
         <>
-          <span className="rounded-full bg-teal-900/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-700">
+          <span className="rounded-full bg-teal-900/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-teal-700">
             Template default
           </span>
           <button type="button" onClick={onClone} className="rounded-full bg-teal-600 px-3 py-1 text-xs font-semibold text-white hover:bg-teal-700">
@@ -1054,7 +1054,7 @@ export default function StorefrontCustomizer({
               addLabel="Add insurer"
               max={14}
             />
-            <p className="mt-2 text-[11px] admin-muted">
+            <p className="mt-2 text-xs admin-muted">
               {listsEqual(Array.isArray(doc.insurance) ? doc.insurance : [], STOREFRONT_TEMPLATE.insurance)
                 ? "Matches the template list."
                 : Array.isArray(doc.insurance)

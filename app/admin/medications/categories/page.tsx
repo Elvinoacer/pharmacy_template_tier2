@@ -34,8 +34,8 @@ export default async function MedicationCategoriesPage() {
   return (
     <AdminShell
       user={user}
-      title="Medication categories"
-      subtitle="Create, rename, merge, and organize the catalogue taxonomy"
+      title="Medicine categories"
+      subtitle="Organize your catalogue so staff and patients can find the right medicines."
       actions={
         <Link
           href="/admin/medications"

@@ -52,8 +52,8 @@ export default async function AdminStorefrontStudioPage() {
   return (
     <AdminShell
       user={user}
-      title="Storefront studio"
-      subtitle="Your room starts from the network template — personalise any part and every /p/* page updates."
+      title="Website appearance"
+      subtitle="Update your pharmacy’s branding and public website content."
     >
       <StorefrontCustomizer
         slug={slug}

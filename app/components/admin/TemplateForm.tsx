@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { useActionState, useEffect, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { FileText, FolderTree, Type, AlertCircle, Check, Save, Wand2, Trash2, Pencil, X } from "lucide-react";
@@ -24,6 +26,7 @@ export default function TemplateForm({
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   templates?: ExistingTemplate[];
 }) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(action, {} as ActionState);
   const [name, setName] = useState("");
   const [channel, setChannel] = useState("email");
@@ -118,10 +121,10 @@ export default function TemplateForm({
         {editingId && <input type="hidden" name="id" value={editingId} />}
 
         <div>
-          <label className="label-admin">Template name *</label>
+          <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Template name *</label>
           <div className="relative">
             <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input
+            <input id={`${fieldPrefix}-1`}
               name="name"
               required
               value={name}
@@ -134,8 +137,8 @@ export default function TemplateForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label-admin">Channel</label>
-            <select
+            <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Channel</label>
+            <select id={`${fieldPrefix}-2`}
               name="channel"
               className="input-admin"
               value={channel}
@@ -148,10 +151,10 @@ export default function TemplateForm({
             </select>
           </div>
           <div>
-            <label className="label-admin">Category</label>
+            <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Category</label>
             <div className="relative">
               <FolderTree className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input
+              <input id={`${fieldPrefix}-3`}
                 name="category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -162,10 +165,10 @@ export default function TemplateForm({
         </div>
 
         <div>
-          <label className="label-admin">Subject (email only)</label>
+          <label htmlFor={`${fieldPrefix}-4`} className="label-admin">Subject (email only)</label>
           <div className="relative">
             <Type className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input
+            <input id={`${fieldPrefix}-4`}
               name="subject"
               placeholder="Your prescription is ready…"
               value={subject}
@@ -182,7 +185,7 @@ export default function TemplateForm({
               type="button"
               onClick={aiDraft}
               disabled={aiLoading}
-              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-[10px] font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
+              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-xs font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
               title="Let AI draft the body"
             >
               <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
@@ -203,7 +206,7 @@ export default function TemplateForm({
                 key={v}
                 type="button"
                 onClick={() => insertVar(v)}
-                className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-[10px] font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
+                className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
               >
                 {v}
               </button>
@@ -246,7 +249,7 @@ export default function TemplateForm({
               >
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold admin-text">{t.name}</p>
-                  <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] admin-muted">
+                  <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs admin-muted">
                     <span className="capitalize">{t.channel}</span>
                     <span>·</span>
                     <span className="inline-flex items-center gap-0.5">

@@ -101,7 +101,7 @@ export function AdminInboxPanel({
         </button>
       </div>
 
-      <div className="overflow-x-auto scroll-admin">
+      <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin">
         <table className="table-admin">
           <thead>
             <tr>
@@ -134,7 +134,7 @@ export function AdminInboxPanel({
                     className={`transition ${!n.isRead ? "bg-[var(--admin-inset)]/50 font-medium" : ""}`}
                   >
                     <td>
-                      <p className="text-[10px] capitalize admin-soft">{n.type.replace(/_/g, " ")}</p>
+                      <p className="text-xs capitalize admin-soft">{n.type.replace(/_/g, " ")}</p>
                     </td>
                     <td>
                       <p className="flex items-center gap-1.5 text-sm admin-text">
@@ -147,14 +147,14 @@ export function AdminInboxPanel({
                       {href && (
                         <Link
                           href={href}
-                          className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold admin-accent-text hover:underline"
+                          className="mt-1 inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline"
                         >
                           Open <ExternalLink className="h-3 w-3" />
                         </Link>
                       )}
                     </td>
                     <td>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${SEVERITY_COLOR[n.severity] || "bg-slate-500/15 text-slate-600"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${SEVERITY_COLOR[n.severity] || "bg-slate-500/15 text-slate-600"}`}>
                         {n.severity}
                       </span>
                     </td>
@@ -166,7 +166,7 @@ export function AdminInboxPanel({
                         <button
                           type="button"
                           onClick={() => markRead(n.id)}
-                          className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2 py-1 text-[10px] font-medium admin-muted hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                          className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2 py-1 text-xs font-medium admin-muted hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
                         >
                           <CheckCheck className="h-3 w-3" /> Mark read
                         </button>
