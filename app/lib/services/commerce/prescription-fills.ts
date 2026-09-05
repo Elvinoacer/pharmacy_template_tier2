@@ -1,12 +1,10 @@
 import "server-only";
 
-import { prisma } from "@/app/lib/db";
 import type { Prisma } from "@/app/generated/prisma/client";
 import type { TxClient } from "@/app/lib/services/stock";
 import { applyStockChange } from "@/app/lib/services/stock";
 import { recordCommerceEvent } from "@/app/lib/services/commerce/events";
 import { recomputeOrderFinancials } from "@/app/lib/services/commerce/pricing";
-import { markOrderFulfilled } from "@/app/lib/services/commerce/orders";
 
 /**
  * Prescription fill creation (audit §4, §5, §41.A, §68).
@@ -75,8 +73,10 @@ export async function createPrescriptionFill(
   const netAmount = Math.max(0, grossAmount - discount);
   const grossProfit = netAmount - unitCost * qty;
   const currency = "KES";
-  // Billing unit — default to UNIT if not specified (audit §14)
-  const billingUnit = ((med as Record<string, unknown> | null)?.billingUnit as string | undefined) ?? "UNIT";
+  // Keep the database enum as the source of truth so invalid units fail
+  // typecheck instead of being forced through with an unsafe assertion.
+  const billingUnit: Prisma.OrderItemUncheckedCreateInput["billingUnit"] =
+    med?.billingUnit ?? "UNIT";
 
   // 1) Create the Order (commercial transaction for this fill).
   const order = await tx.order.create({
@@ -117,7 +117,7 @@ export async function createPrescriptionFill(
       medicationId: med?.id ?? null,
       name: medName,
       quantity: qty,
-      billingUnit: billingUnit as any,
+      billingUnit,
       unitPrice,
       discountApplied: discount,
       unitCostSnapshot: unitCost,
@@ -140,7 +140,7 @@ export async function createPrescriptionFill(
       refillRequestId: input.refillRequestId ?? null,
       fillNumber: nextFillNumber,
       quantity: qty,
-      billingUnit: billingUnit as any,
+      billingUnit,
       unitPriceSnapshot: unitPrice,
       discountAmount: discount,
       netAmount,
