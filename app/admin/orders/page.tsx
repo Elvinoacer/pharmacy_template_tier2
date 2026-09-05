@@ -4,7 +4,7 @@ import { prisma } from "@/app/lib/db";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { AdminPanel, AdminCard } from "@/app/components/admin/AdminUI";
 import OrderForm from "@/app/components/admin/OrderForm";
-import { OrderSettleActions } from "@/app/components/admin/OrderSettleActions";
+import { OrderSettleActions } from "@/app/components/admin/WaiveOrderForm";
 import { Pagination } from "@/app/components/Pagination";
 import Link from "next/link";
 import { formatDateTime } from "@/app/lib/time";
@@ -221,6 +221,7 @@ export default async function OrdersPage({
                         <Link href={`/admin/orders/${order.id}`} className="inline-flex items-center gap-1 text-xs font-semibold admin-accent-text">
                           Open <ArrowRight className="h-3.5 w-3.5" />
                         </Link>
+                        <OrderSettleActions orderId={order.id} status={order.status} />
                       </td>
                     </tr>
                   );
@@ -231,10 +232,6 @@ export default async function OrdersPage({
         )}
 
         <Pagination currentPage={page} totalItems={total} pageSize={PAGE_SIZE} />
-      </AdminPanel>
-
-      <AdminPanel title="Settlement actions" subtitle="Use explicit payment actions for outstanding orders.">
-        <OrderSettleActions />
       </AdminPanel>
     </AdminShell>
   );
