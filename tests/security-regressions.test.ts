@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 
 try {
@@ -69,5 +70,18 @@ describe("cron authentication", () => {
       else process.env.CRON_SECRET = old;
       Object.defineProperty(process.env, "NODE_ENV", { value: oldNodeEnv, configurable: true });
     }
+  });
+});
+
+describe("guest service booking account isolation", () => {
+  it("never resolves an account from public email or phone fields", () => {
+    const source = readFileSync(
+      new URL("../app/actions/service-booking.ts", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(source, /const customerId = session\?\.customerId \?\? null;/);
+    assert.doesNotMatch(source, /customerProfile\.findFirst/);
+    assert.doesNotMatch(source, /contains:\s*digits\.slice\(-9\)/);
   });
 });
