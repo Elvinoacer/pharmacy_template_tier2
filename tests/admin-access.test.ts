@@ -91,6 +91,16 @@ describe("admin route access", () => {
     assert.equal(canAccessAdminPath(user, "/admin/orders"), true);
   });
 
+  it("does not fall back to another tenant when the selected membership is stale", () => {
+    const user = sessionFor("owner");
+    user.activePharmacyId = "removed-pharmacy";
+
+    assert.equal(canAccessAdminPath(user, "/admin"), false);
+    assert.equal(canAccessAdminPath(user, "/admin/orders"), false);
+    assert.equal(canAccessAdminPath(user, "/admin/settings/location"), false);
+    assert.equal(canAccessAdminPath(user, "/admin/select"), true);
+  });
+
   it("fails closed for undeclared admin surfaces", () => {
     const manager = sessionFor("manager");
     assert.equal(canAccessAdminPath(manager, "/admin/future-undeclared-feature"), false);
