@@ -64,7 +64,13 @@ export async function POST(req: Request) {
     const body = (await req.json()) as CallbackBody;
     const cb = body.Body?.stkCallback;
     const checkoutRequestId = cb?.CheckoutRequestID?.trim();
-    if (!checkoutRequestId || cb?.ResultCode == null) {
+    const resultCode = cb?.ResultCode;
+    if (
+      !cb ||
+      !checkoutRequestId ||
+      typeof resultCode !== "number" ||
+      !Number.isInteger(resultCode)
+    ) {
       return NextResponse.json({ ok: false, error: "invalid_callback" }, { status: 400 });
     }
 
@@ -96,7 +102,7 @@ export async function POST(req: Request) {
       }
 
       try {
-        if (cb.ResultCode === 0) {
+        if (resultCode === 0) {
           const verified = await verifyDarajaCallback({
             pharmacyId: null,
             expectedAmount: Number(billing.amountKes),
@@ -105,7 +111,7 @@ export async function POST(req: Request) {
             callback: {
               checkoutRequestId,
               merchantRequestId: cb.MerchantRequestID,
-              resultCode: cb.ResultCode,
+              resultCode,
               resultDesc: cb.ResultDesc,
               items: cb.CallbackMetadata?.Item ?? [],
             },
@@ -133,7 +139,7 @@ export async function POST(req: Request) {
           const verifiedFailure = await verifyFailureResult({
             pharmacyId: null,
             checkoutRequestId,
-            callbackResultCode: cb.ResultCode,
+            callbackResultCode: resultCode,
           });
           if (!verifiedFailure.ok) {
             await markWebhookProcessed(inbound.event.id, `unverified_failure:${verifiedFailure.error}`);
@@ -146,7 +152,7 @@ export async function POST(req: Request) {
             completeBillingPayment({
               checkoutRequestId,
               merchantRequestId: cb.MerchantRequestID,
-              resultCode: cb.ResultCode,
+              resultCode,
               resultDesc: verifiedFailure.resultDesc || cb.ResultDesc,
             }),
           );
@@ -181,7 +187,7 @@ export async function POST(req: Request) {
     }
 
     try {
-      if (cb.ResultCode === 0) {
+      if (resultCode === 0) {
         const verified = await verifyDarajaCallback({
           pharmacyId: payment.pharmacyId,
           expectedAmount: Number(payment.expectedAmount ?? payment.amount),
@@ -191,7 +197,7 @@ export async function POST(req: Request) {
           callback: {
             checkoutRequestId,
             merchantRequestId: cb.MerchantRequestID,
-            resultCode: cb.ResultCode,
+            resultCode,
             resultDesc: cb.ResultDesc,
             items: cb.CallbackMetadata?.Item ?? [],
           },
@@ -236,7 +242,7 @@ export async function POST(req: Request) {
         const verifiedFailure = await verifyFailureResult({
           pharmacyId: payment.pharmacyId,
           checkoutRequestId,
-          callbackResultCode: cb.ResultCode,
+          callbackResultCode: resultCode,
         });
         if (!verifiedFailure.ok) {
           await markWebhookProcessed(inbound.event.id, `unverified_failure:${verifiedFailure.error}`);
