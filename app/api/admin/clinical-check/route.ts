@@ -37,10 +37,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ ok: true, report });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to perform clinical safety screening.";
     return NextResponse.json(
-      { ok: false, error: err.message || "Failed to perform clinical safety screening." },
-      { status: 400 }
+      { ok: false, error: message },
+      { status: 400 },
     );
   }
 }
