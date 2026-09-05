@@ -73,10 +73,9 @@ export async function createPrescriptionFill(
   const netAmount = Math.max(0, grossAmount - discount);
   const grossProfit = netAmount - unitCost * qty;
   const currency = "KES";
-  // Keep the database enum as the source of truth so invalid units fail
-  // typecheck instead of being forced through with an unsafe assertion.
+  // Prescription is the schema-backed source of truth for the dispensing unit.
   const billingUnit: Prisma.OrderItemUncheckedCreateInput["billingUnit"] =
-    med?.billingUnit ?? "UNIT";
+    rx.billingUnit ?? "UNIT";
 
   // 1) Create the Order (commercial transaction for this fill).
   const order = await tx.order.create({
