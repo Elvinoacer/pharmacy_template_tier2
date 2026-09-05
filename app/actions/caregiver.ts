@@ -13,6 +13,7 @@ import {
   writeAuditLog,
 } from "@/app/lib/auth";
 import { validatePassword } from "@/app/lib/password";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getRequestMeta } from "@/app/lib/request-meta";
 
 export type CaregiverActionState = { error?: string; success?: string };
@@ -46,6 +47,20 @@ export async function acceptCaregiverInviteAction(
   if (invite.acceptedAt) return { error: "This invitation has already been used." };
   if (invite.expiresAt < new Date()) {
     return { error: "This invitation has expired. Ask the patient to resend." };
+  }
+
+  // The invitation is a bearer secret. Once it is known, bound all acceptance
+  // attempts so an exposed link cannot become an unlimited password oracle for
+  // an existing account. Fail closed if the distributed limiter is unavailable.
+  const rate = await checkRateLimitAsync(`caregiver-accept:${invite.id}`, {
+    limit: 8,
+    windowMs: 15 * 60 * 1000,
+    failClosed: true,
+  });
+  if (!rate.allowed) {
+    return {
+      error: `Too many acceptance attempts. Try again in ${rate.retryAfterSeconds}s.`,
+    };
   }
 
   const email = invite.email.toLowerCase().trim();
