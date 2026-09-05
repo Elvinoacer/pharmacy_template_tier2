@@ -1,56 +1,55 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
-import { adminCreateOrderAction } from "@/app/actions/admin";
-import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
-import { Pagination } from "@/app/components/Pagination";
-import { parsePageParam } from "@/app/lib/pagination";
-import { formatDateTime, formatDate } from "@/app/lib/time";
-import { BarChart3, DollarSign, TrendingUp, ShoppingCart, AlertTriangle } from "lucide-react";
+import { AdminPanel, AdminCard } from "@/app/components/admin/AdminUI";
 import OrderForm from "@/app/components/admin/OrderForm";
-import PeriodSelect from "@/app/components/admin/PeriodSelect";
-import { OrderSettleActions } from "@/app/components/admin/WaiveOrderForm";
+import { OrderSettleActions } from "@/app/components/admin/OrderSettleActions";
+import { Pagination } from "@/app/components/Pagination";
+import Link from "next/link";
+import { formatDateTime } from "@/app/lib/time";
+import {
+  ShoppingCart,
+  Receipt,
+  TrendingUp,
+  Clock,
+  CheckCircle2,
+  Banknote,
+  Package,
+  ArrowRight,
+} from "lucide-react";
 
-export const metadata = { title: "Orders & Revenue" };
-
-const PAGE_SIZE = 25;
+export const dynamic = "force-dynamic";
+const PAGE_SIZE = 20;
 
 type OrderRow = {
   id: string;
+  orderNumber: string;
   status: string;
+  paymentStatus: string;
+  fulfillmentStatus: string;
+  total: unknown;
   source: string;
-  total: number;
   createdAt: Date;
-  guestName: string | null;
-  guestPhone: string | null;
-  fulfillment: string;
-  dispatchedAt: Date | null;
-  reason: string | null;
-  dispenserNote: string | null;
-  hasRxItem: boolean;
-  customer: { id: string; fullName: string; phone?: string | null } | null;
-  items: { quantity: number; name: string }[];
-  payments: { providerRef: string | null; status: string }[];
+  customer?: { fullName: string | null } | null;
 };
 
-type MedOption = {
-  id: string;
-  name: string;
-  price: number;
-  stockQty: number;
-  overTheCounter: boolean;
-  prescriptionRequired?: boolean;
+const money = (value: unknown) => Number(value || 0).toLocaleString("en-KE", {
+  style: "currency",
+  currency: "KES",
+  maximumFractionDigits: 0,
+});
+
+const statusMeta: Record<string, { label: string; className: string }> = {
+  pending: { label: "Pending", className: "bg-amber-500/10 text-amber-700 dark:text-amber-400" },
+  confirmed: { label: "Confirmed", className: "bg-blue-500/10 text-blue-700 dark:text-blue-400" },
+  preparing: { label: "Preparing", className: "bg-purple-500/10 text-purple-700 dark:text-purple-400" },
+  ready: { label: "Ready", className: "bg-teal-500/10 text-teal-700 dark:text-teal-400" },
+  completed: { label: "Completed", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" },
+  cancelled: { label: "Cancelled", className: "bg-rose-500/10 text-rose-700 dark:text-rose-400" },
 };
 
-type CustomerOption = {
-  id: string;
-  fullName: string;
-  email: string;
-  phone?: string;
-};
-
-export default async function AdminOrdersPage({
+export default async function OrdersPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string; status?: string; period?: string }>;
@@ -63,7 +62,7 @@ export default async function AdminOrdersPage({
 
   // Compute revenue stats for the selected period.
   const now = new Date();
-  let since = new Date();
+  const since = new Date();
   if (period === "today") since.setHours(0, 0, 0, 0);
   else if (period === "7d") since.setDate(now.getDate() - 7);
   else if (period === "30d") since.setDate(now.getDate() - 30);
@@ -73,13 +72,12 @@ export default async function AdminOrdersPage({
   let allPayments: { amount: unknown; createdAt: Date }[] = [];
   let allOrders: { id: string; total: unknown; status: string; source: string; createdAt: Date }[] = [];
   let recentOrders: OrderRow[] = [];
-  let medications: MedOption[] = [];
-  let customers: CustomerOption[] = [];
   let total = 0;
-  let loadError: string | null = null;
+
+  const page = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
 
   try {
-    const [payments, orders, recent, meds, custs, orderCount] = await Promise.all([
+    [allPayments, allOrders, recentOrders, total] = await Promise.all([
       prisma.payment.findMany({
         where: { status: "completed", createdAt: { gte: since } },
         select: { amount: true, createdAt: true },
@@ -90,329 +88,154 @@ export default async function AdminOrdersPage({
       }),
       prisma.order.findMany({
         where: status ? { status } : undefined,
-        include: {
-          customer: { select: { id: true, fullName: true, phone: true } },
-          items: {
-            include: {
-              medication: {
-                select: { prescriptionRequired: true, overTheCounter: true },
-              },
-            },
-          },
-          payments: { orderBy: { createdAt: "desc" }, take: 1 },
-        },
+        include: { customer: { select: { fullName: true } } },
         orderBy: { createdAt: "desc" },
+        skip: (page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
-      }),
-      prisma.pharmacyInventory.findMany({
-        where: { active: true },
-        include: {
-          medicationMaster: { select: { name: true } },
-        },
-        orderBy: { medicationMaster: { name: "asc" } },
-      }),
-      prisma.customerProfile.findMany({
-        select: { id: true, fullName: true, user: { select: { email: true } }, phone: true },
-        orderBy: { fullName: "asc" },
-        take: 100,
-      }),
+      }) as Promise<OrderRow[]>,
       prisma.order.count({ where: status ? { status } : undefined }),
     ]);
-
-    allPayments = payments;
-    allOrders = orders;
-    total = orderCount;
-    recentOrders = recent.map((o) => ({
-      id: o.id,
-      status: o.status,
-      source: o.source,
-      total: Number(o.total),
-      createdAt: o.createdAt,
-      guestName: o.guestName,
-      guestPhone: o.guestPhone,
-      fulfillment: o.fulfillment,
-      dispatchedAt: o.dispatchedAt,
-      reason: o.reason ?? null,
-      dispenserNote: o.dispenserNote ?? null,
-      hasRxItem: o.items.some(
-        (i) =>
-          i.medication?.prescriptionRequired === true &&
-          i.medication?.overTheCounter !== true,
-      ),
-      customer: o.customer,
-      items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
-      payments: o.payments.map((p) => ({ providerRef: p.providerRef, status: p.status })),
-    }));
-    medications = meds.map((m) => ({
-      id: m.id,
-      name: m.medicationMaster.name,
-      price: Number(m.price),
-      stockQty: m.currentStock,
-      overTheCounter: m.overTheCounter,
-      prescriptionRequired: m.prescriptionRequired,
-    }));
-    customers = custs.map((c) => ({
-      id: c.id,
-      fullName: c.fullName,
-      email: c.user.email,
-      phone: c.phone ?? undefined,
-    }));
-  } catch (err) {
-    console.error("[admin/orders] Failed to load:", err);
-    loadError =
-      "Could not load orders. If this is a fresh deploy, run `npm run db:migrate` against production.";
+  } catch (error) {
+    console.error("[admin/orders] Failed to load orders:", error);
   }
 
-  const totalRevenue = allPayments.reduce((s, p) => s + Number(p.amount), 0);
-  const orderCount = allOrders.length;
-  const paidOrders = allOrders.filter((o) => o.status === "paid").length;
-  const waivedOrders = allOrders.filter((o) => o.status === "waived").length;
-  const avgOrderValue = paidOrders > 0 ? totalRevenue / paidOrders : 0;
-
-  // Daily revenue series for sparkline.
-  const byDay: Record<string, number> = {};
-  for (const p of allPayments) {
-    const day = formatDate(p.createdAt);
-    byDay[day] = (byDay[day] || 0) + Number(p.amount);
-  }
-  const dayKeys = Object.keys(byDay).sort();
-  const maxDay = Math.max(...Object.values(byDay), 1);
-
-  const page = parsePageParam(sp.page, total, PAGE_SIZE);
-  let paged = recentOrders;
-  if (!loadError && page > 1) {
-    try {
-      const extra = await prisma.order.findMany({
-        where: status ? { status } : undefined,
-        include: {
-          customer: { select: { id: true, fullName: true, phone: true } },
-          items: {
-            include: {
-              medication: {
-                select: { prescriptionRequired: true, overTheCounter: true },
-              },
-            },
-          },
-          payments: { orderBy: { createdAt: "desc" }, take: 1 },
-        },
-        orderBy: { createdAt: "desc" },
-        take: PAGE_SIZE,
-        skip: (page - 1) * PAGE_SIZE,
-      });
-      paged = extra.map((o) => ({
-        id: o.id,
-        status: o.status,
-        source: o.source,
-        total: Number(o.total),
-        createdAt: o.createdAt,
-        guestName: o.guestName,
-        guestPhone: o.guestPhone,
-        fulfillment: o.fulfillment,
-        dispatchedAt: o.dispatchedAt,
-        reason: o.reason ?? null,
-        dispenserNote: o.dispenserNote ?? null,
-        hasRxItem: o.items.some(
-          (i) =>
-            i.medication?.prescriptionRequired === true &&
-            i.medication?.overTheCounter !== true,
-        ),
-        customer: o.customer,
-        items: o.items.map((i) => ({ quantity: i.quantity, name: i.name })),
-        payments: o.payments.map((p) => ({ providerRef: p.providerRef, status: p.status })),
-      }));
-    } catch (err) {
-      console.error("[admin/orders] Failed to load page:", err);
-      paged = [];
-    }
-  }
+  const revenue = allPayments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+  const orderValue = allOrders.reduce((sum, order) => sum + Number(order.total || 0), 0);
+  const completedOrders = allOrders.filter((order) => order.status === "completed").length;
+  const avgOrder = completedOrders > 0 ? orderValue / allOrders.length : 0;
+  const pendingOrders = allOrders.filter((order) => !["completed", "cancelled"].includes(order.status)).length;
 
   return (
     <AdminShell
       user={user}
-      title="Sales & orders"
-      subtitle="Record counter sales, manage reservations, and follow payments and deliveries."
+      title="Orders & POS"
+      subtitle="Counter sales, online orders, payments, and fulfilment in one workspace."
       actions={
-        <div className="flex items-center gap-2">
-          <PeriodSelect period={period} status={status} />
-        </div>
+        <Link href="/admin/analytics/sales" className="btn-secondary-admin">
+          <TrendingUp className="h-4 w-4" /> Sales analytics
+        </Link>
       }
     >
-      {loadError && (
-        <div className="admin-alert-error mb-4">
-          <span>{loadError}</span>
-        </div>
-      )}
-
-      {/* Revenue stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total revenue ({period})</p>
-            <DollarSign className="h-3.5 w-3.5 admin-accent-text" />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <AdminCard>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] admin-soft">Revenue</p>
+              <p className="mt-2 text-2xl font-bold admin-text">{money(revenue)}</p>
+            </div>
+            <Banknote className="h-6 w-6 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold admin-text">KES {totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Orders</p>
-            <ShoppingCart className="h-3.5 w-3.5 admin-accent-text" />
+        </AdminCard>
+        <AdminCard>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] admin-soft">Orders</p>
+              <p className="mt-2 text-2xl font-bold admin-text">{allOrders.length}</p>
+            </div>
+            <ShoppingCart className="h-6 w-6 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold admin-text">{orderCount}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Avg order value</p>
-            <TrendingUp className="h-3.5 w-3.5 admin-accent-text" />
+        </AdminCard>
+        <AdminCard>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] admin-soft">Pending</p>
+              <p className="mt-2 text-2xl font-bold admin-text">{pendingOrders}</p>
+            </div>
+            <Clock className="h-6 w-6 text-amber-500" />
           </div>
-          <p className="mt-1 text-2xl font-bold admin-text">KES {avgOrderValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Waived</p>
-            <AlertTriangle className="h-3.5 w-3.5 text-amber-700" />
+        </AdminCard>
+        <AdminCard>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] admin-soft">Avg. order</p>
+              <p className="mt-2 text-2xl font-bold admin-text">{money(avgOrder)}</p>
+            </div>
+            <Receipt className="h-6 w-6 admin-accent-text" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-amber-700">{waivedOrders}</p>
-        </div>
+        </AdminCard>
       </div>
 
-      {/* Revenue sparkline */}
-      {dayKeys.length > 1 && (
-        <div className="mb-6 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide admin-muted">Daily revenue</p>
-          <div className="flex h-20 items-end gap-1">
-            {dayKeys.slice(-30).map((d) => {
-              const v = byDay[d];
-              const h = Math.max(2, Math.round((v / maxDay) * 80));
-              return (
-                <div
-                  key={d}
-                  className="flex-1 rounded-t bg-gradient-to-t from-[#0d6e5a] to-[#2dd4bf]"
-                  style={{ height: `${h}px` }}
-                  title={`${d}: KES ${v.toLocaleString()}`}
-                />
-              );
-            })}
-          </div>
-          <p className="mt-2 text-xs admin-soft">{dayKeys.length} days with sales</p>
+      <AdminPanel title="Record a counter sale" subtitle="Create an OTC or prescription-linked order and collect payment.">
+        <OrderForm />
+      </AdminPanel>
+
+      <AdminPanel title="Recent orders" subtitle={`${total.toLocaleString()} orders in this view`}>
+        <div className="mb-4 flex flex-wrap gap-2">
+          {["", "pending", "confirmed", "preparing", "ready", "completed", "cancelled"].map((value) => {
+            const active = (status || "") === value;
+            return (
+              <Link
+                key={value || "all"}
+                href={value ? `/admin/orders?status=${value}` : "/admin/orders"}
+                className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                  active
+                    ? "bg-[var(--admin-accent)] text-white"
+                    : "bg-[var(--admin-inset)] admin-muted hover:text-[var(--admin-text)]"
+                }`}
+              >
+                {value ? statusMeta[value]?.label || value : "All"}
+              </Link>
+            );
+          })}
         </div>
-      )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Record OTC sale form */}
-        <AdminPanel
-          id="record-sale"
-          title="Record a counter sale"
-          description="Accept cash or M-Pesa. Turn off automatic dispatch if the customer will collect later."
-        >
-          <OrderForm
-            action={adminCreateOrderAction}
-            medications={medications}
-            customers={customers}
-          />
-        </AdminPanel>
-
-        {/* Recent orders */}
-        <AdminPanel title="Recent orders" description={`${total} total`}>
-          {paged.length === 0 ? (
-            <AdminEmptyState
-              icon={BarChart3}
-              title="No orders yet"
-              description="Record your first sale using the form on the left."
-            />
-          ) : (
-            <ul className="space-y-2">
-              {paged.map((o) => {
-                const displayName =
-                  o.customer?.fullName || o.guestName || "Walk-in customer";
-                const isDispatched = Boolean(o.dispatchedAt) || o.status === "fulfilled";
-                return (
-                <li
-                  key={o.id}
-                  className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-semibold admin-text">{displayName}</p>
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${
-                          o.status === "paid" ? "bg-emerald-500/15 text-emerald-700"
-                          : o.status === "waived" ? "bg-amber-500/15 text-amber-700"
-                          : o.status === "fulfilled" ? "bg-blue-500/15 text-blue-700"
-                          : o.status === "cancelled" ? "bg-rose-500/15 text-rose-600"
-                          : "bg-slate-500/15 text-slate-600"
-                        }`}>
-                          {o.status}
+        {recentOrders.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-[var(--admin-border)] p-8 text-center admin-muted">
+            <Package className="mx-auto mb-3 h-8 w-8 opacity-60" />
+            <p className="font-semibold admin-text">No orders found</p>
+            <p className="mt-1 text-sm">Try another status filter or create a counter sale above.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--admin-border)] text-xs uppercase tracking-[0.08em] admin-soft">
+                  <th className="px-3 py-3">Order</th>
+                  <th className="px-3 py-3">Customer</th>
+                  <th className="px-3 py-3">Status</th>
+                  <th className="px-3 py-3">Payment</th>
+                  <th className="px-3 py-3">Total</th>
+                  <th className="px-3 py-3">Created</th>
+                  <th className="px-3 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {recentOrders.map((order) => {
+                  const meta = statusMeta[order.status] || { label: order.status, className: "bg-slate-500/10 admin-muted" };
+                  return (
+                    <tr key={order.id} className="border-b border-[var(--admin-border)] last:border-0">
+                      <td className="px-3 py-3 font-semibold admin-text">{order.orderNumber}</td>
+                      <td className="px-3 py-3 admin-muted">{order.customer?.fullName || "Walk-in"}</td>
+                      <td className="px-3 py-3">
+                        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${meta.className}`}>{meta.label}</span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="inline-flex items-center gap-1.5 text-xs admin-muted">
+                          {order.paymentStatus === "paid" && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />}
+                          {order.paymentStatus}
                         </span>
-                        {isDispatched ? (
-                          <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700">
-                            dispatched
-                          </span>
-                        ) : o.status === "paid" ? (
-                          <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
-                            await dispatch
-                          </span>
-                        ) : null}
-                        <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
-                          {o.source}
-                        </span>
-                        {o.fulfillment && o.fulfillment !== "reserve" && (
-                          <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
-                            {o.fulfillment}
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-0.5 text-xs admin-muted">
-                        {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
-                      </p>
-                      {o.reason && (
-                        <p className="mt-0.5 text-xs text-amber-800/90">
-                          Reason: {o.reason}
-                        </p>
-                      )}
-                      {o.dispenserNote && (
-                        <p className="mt-0.5 text-xs text-emerald-800/90">
-                          Dispenser: {o.dispenserNote}
-                        </p>
-                      )}
-                      <p className="mt-1 text-xs admin-soft">
-                        {formatDateTime(o.createdAt)}
-                        {o.guestPhone && <> · {o.guestPhone}</>}
-                        {o.payments[0] && o.payments[0].providerRef && (
-                          <> · Ref: {o.payments[0].providerRef}</>
-                        )}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold admin-text">KES {o.total.toLocaleString()}</p>
-                      <OrderSettleActions
-                        orderId={o.id}
-                        status={o.status}
-                        guestPhone={o.guestPhone}
-                        defaultPhone={o.customer?.phone || o.guestPhone}
-                        dispatched={isDispatched}
-                        hasRxItem={o.hasRxItem}
-                        existingDispenserNote={o.dispenserNote}
-                        customerReason={o.reason}
-                      />
-                    </div>
-                  </div>
-                </li>
-              );
-              })}
-            </ul>
-          )}
-        </AdminPanel>
-      </div>
+                      </td>
+                      <td className="px-3 py-3 font-semibold admin-text">{money(order.total)}</td>
+                      <td className="px-3 py-3 text-xs admin-muted">{formatDateTime(order.createdAt)}</td>
+                      <td className="px-3 py-3 text-right">
+                        <Link href={`/admin/orders/${order.id}`} className="inline-flex items-center gap-1 text-xs font-semibold admin-accent-text">
+                          Open <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      <Pagination
-        page={page}
-        total={total}
-        pageSize={PAGE_SIZE}
-        basePath="/admin/orders"
-        queryParams={{ status, period }}
-        variant="admin"
-      />
+        <Pagination currentPage={page} totalItems={total} pageSize={PAGE_SIZE} />
+      </AdminPanel>
+
+      <AdminPanel title="Settlement actions" subtitle="Use explicit payment actions for outstanding orders.">
+        <OrderSettleActions />
+      </AdminPanel>
     </AdminShell>
   );
 }
-
