@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUser, requireStaff } from "@/app/lib/auth";
+import { getSessionUser } from "@/app/lib/auth";
+import { requirePermission } from "@/app/lib/platform/policy";
 import { getReceiptData } from "@/app/lib/services/receipt";
 
 export async function GET(req: NextRequest) {
   try {
     const user = await getSessionUser();
-    requireStaff(user);
+    await requirePermission(user, "orders.read");
 
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get("orderId");
