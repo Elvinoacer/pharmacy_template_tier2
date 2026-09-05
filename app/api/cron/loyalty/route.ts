@@ -5,14 +5,9 @@ import { writeAuditLog } from "@/app/lib/auth";
 import { sendDelivery } from "@/app/lib/services/delivery";
 import { dispatchPushToUser } from "@/app/lib/services/push";
 import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
+import { isCronAuthorized } from "@/app/lib/cron-auth";
 
 export const runtime = "nodejs";
-
-function authorized(request: NextRequest) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret) return process.env.NODE_ENV !== "production";
-  return request.headers.get("authorization") === `Bearer ${secret}`;
-}
 
 function tierFor(points: number) {
   return points >= 1000 ? "platinum" : points >= 400 ? "gold" : points >= 150 ? "silver" : "bronze";
@@ -20,7 +15,8 @@ function tierFor(points: number) {
 
 /**
  * Serialize one logical loyalty award using a transaction-scoped PostgreSQL
- * advisory lock. This protects idempotency even when two cron workers overlap.
+ * advisory lock. The lock + exact account/source/idempotency marker makes the
+ * balance increment and ledger insert atomic across retries/overlapping workers.
  */
 async function awardOnce(opts: {
   accountId: string;
@@ -35,11 +31,12 @@ async function awardOnce(opts: {
   return prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${opts.idempotencyKey}))`;
 
+    const marker = `[${opts.idempotencyKey}]`;
     const existing = await tx.loyaltyTransaction.findFirst({
       where: {
         accountId: opts.accountId,
         source: opts.source,
-        description: { contains: opts.idempotencyKey },
+        description: { endsWith: marker },
       },
       select: { id: true },
     });
@@ -47,7 +44,7 @@ async function awardOnce(opts: {
 
     const account = await tx.loyaltyAccount.findUnique({
       where: { id: opts.accountId },
-      select: { points: true, lifetimePoints: true },
+      select: { points: true },
     });
     if (!account) return false;
 
@@ -65,7 +62,7 @@ async function awardOnce(opts: {
         accountId: opts.accountId,
         points: opts.points,
         type: opts.type ?? "earn",
-        description: `${opts.description} [${opts.idempotencyKey}]`,
+        description: `${opts.description} ${marker}`,
         source: opts.source,
       },
     });
@@ -79,9 +76,21 @@ async function processBirthdays(pharmacyId: string, pharmacyName: string): Promi
   const day = today.getDate();
   const year = today.getFullYear();
 
-  // Query loyalty accounts, not customers, so the tenant boundary is explicit.
+  // Filter birthdays in PostgreSQL rather than loading every loyalty member for
+  // every pharmacy into application memory on every daily run.
+  const due = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT la.id
+      FROM loyalty_accounts la
+      JOIN customer_profiles cp ON cp.id = la.customer_id
+     WHERE la.pharmacy_id = ${pharmacyId}::uuid
+       AND cp.date_of_birth IS NOT NULL
+       AND EXTRACT(MONTH FROM cp.date_of_birth) = ${month}
+       AND EXTRACT(DAY FROM cp.date_of_birth) = ${day}
+  `;
+  if (!due.length) return 0;
+
   const accounts = await prisma.loyaltyAccount.findMany({
-    where: { pharmacyId },
+    where: { pharmacyId, id: { in: due.map((r) => r.id) } },
     include: {
       customer: {
         include: {
@@ -94,11 +103,6 @@ async function processBirthdays(pharmacyId: string, pharmacyName: string): Promi
 
   let count = 0;
   for (const account of accounts) {
-    const dob = account.customer.dateOfBirth;
-    if (!dob) continue;
-    const d = new Date(dob);
-    if (d.getMonth() + 1 !== month || d.getDate() !== day) continue;
-
     const bonus = 25;
     const key = `birthday:${pharmacyId}:${account.customerId}:${year}`;
     const awarded = await awardOnce({
@@ -119,14 +123,12 @@ async function processBirthdays(pharmacyId: string, pharmacyName: string): Promi
         subject: `Happy birthday from ${pharmacyName}! 🎂`,
         body: `Hi ${c.fullName},\n\nWishing you a wonderful birthday from all of us at ${pharmacyName}! We've added ${bonus} bonus points to your loyalty account.\n\nStay well,\n${pharmacyName}`,
       }).catch(() => {});
-      if (c.user.id) {
-        await dispatchPushToUser(c.user.id, {
-          title: `Happy birthday from ${pharmacyName}! 🎂`,
-          body: `You earned ${bonus} bonus points. Have a wonderful day!`,
-          url: "/portal/loyalty",
-          data: { tag: "birthday", pharmacyId },
-        }).catch(() => {});
-      }
+      await dispatchPushToUser(c.user.id, {
+        title: `Happy birthday from ${pharmacyName}! 🎂`,
+        body: `You earned ${bonus} bonus points. Have a wonderful day!`,
+        url: "/portal/loyalty",
+        data: { tag: "birthday", pharmacyId },
+      }).catch(() => {});
     }
     count++;
   }
@@ -149,34 +151,31 @@ async function processRefillCompletions(pharmacyId: string): Promise<number> {
       medicineName: true,
     },
   });
+  const customerIds = [...new Set(completed.map((r) => r.customerId).filter((v): v is string => Boolean(v)))];
+  if (!customerIds.length) return 0;
+  const accounts = await prisma.loyaltyAccount.findMany({
+    where: { pharmacyId, customerId: { in: customerIds } },
+    select: { id: true, customerId: true },
+  });
+  const byCustomer = new Map(accounts.map((a) => [a.customerId, a.id]));
 
   let count = 0;
   for (const refill of completed) {
     if (!refill.customerId) continue;
-    const account = await prisma.loyaltyAccount.findUnique({
-      where: {
-        pharmacyId_customerId: {
-          pharmacyId: refill.pharmacyId,
-          customerId: refill.customerId,
-        },
-      },
-      select: { id: true },
-    });
-    if (!account) continue;
+    const accountId = byCustomer.get(refill.customerId);
+    if (!accountId) continue;
 
     const bonus = 10;
     const key = `refill:${refill.pharmacyId}:${refill.id}`;
     if (
       await awardOnce({
-        accountId: account.id,
+        accountId,
         idempotencyKey: key,
         source: "cron:refill_completed",
         description: `Refill completed (${refill.medicineName})`,
         points: bonus,
       })
-    ) {
-      count++;
-    }
+    ) count++;
   }
   return count;
 }
@@ -209,37 +208,32 @@ async function processOrderBonuses(pharmacyId: string): Promise<number> {
       },
     },
   });
+  const customerIds = [...new Set(payments.map((p) => p.order?.customerId).filter((v): v is string => Boolean(v)))];
+  if (!customerIds.length) return 0;
+  const accounts = await prisma.loyaltyAccount.findMany({
+    where: { pharmacyId, customerId: { in: customerIds } },
+    select: { id: true, customerId: true },
+  });
+  const byCustomer = new Map(accounts.map((a) => [a.customerId, a.id]));
 
   let count = 0;
   for (const payment of payments) {
     const order = payment.order;
-    if (!order?.customerId || order.waived) continue;
-    if (order.pharmacyId !== pharmacyId) continue;
-
-    const account = await prisma.loyaltyAccount.findUnique({
-      where: {
-        pharmacyId_customerId: {
-          pharmacyId,
-          customerId: order.customerId,
-        },
-      },
-      select: { id: true },
-    });
-    if (!account) continue;
+    if (!order?.customerId || order.waived || order.pharmacyId !== pharmacyId) continue;
+    const accountId = byCustomer.get(order.customerId);
+    if (!accountId) continue;
 
     const points = Math.max(1, Math.floor(Number(payment.amount) * multiplier));
     const key = `order:${pharmacyId}:${order.id}`;
     if (
       await awardOnce({
-        accountId: account.id,
+        accountId,
         idempotencyKey: key,
         source: "cron:order_paid",
         description: `Order paid (${order.id.slice(0, 8)})`,
         points,
       })
-    ) {
-      count++;
-    }
+    ) count++;
   }
   return count;
 }
@@ -263,7 +257,7 @@ async function processTenant(pharmacyId: string, pharmacyName: string) {
 }
 
 async function runLoyaltyCron(request: NextRequest) {
-  if (!authorized(request)) {
+  if (!isCronAuthorized(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
