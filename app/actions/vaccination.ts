@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/app/lib/auth";
-import { prisma } from "@/app/lib/db";
 import { requirePermission } from "@/app/lib/platform/policy";
 import type { Permission } from "@/app/lib/platform/permissions";
 import type { SessionUser } from "@/app/lib/types";
@@ -99,14 +98,10 @@ export async function bookVaccinationAction(
   }
 
   const session = await getSessionUser().catch(() => null);
-  let customerId: string | null = session?.customerId ?? null;
-  if (!customerId && email) {
-    const byEmail = await prisma.customerProfile.findFirst({
-      where: { user: { email } },
-      select: { id: true },
-    });
-    customerId = byEmail?.id ?? null;
-  }
+  // Publicly supplied contact details identify a guest but do not authenticate
+  // an existing customer. Only an authenticated customer session may attach a
+  // clinical appointment to that customer's longitudinal record.
+  const customerId = session?.customerId ?? null;
 
   try {
     const result = await bookVaccination({
