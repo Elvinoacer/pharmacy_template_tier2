@@ -2,10 +2,6 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { verifySessionClaim, claimIsStaff, isSafeInternalPath } from '@/app/lib/session-claim'
 
-/**
- * Tenant headers are ALWAYS set by this proxy and stripped from inbound
- * requests first — clients can never spoof tenant context or platform bypass.
- */
 const TENANT_HEADERS = ['x-platform-bypass', 'x-pharmacy-id', 'x-pharmacy-slug'] as const
 
 const EXTERNAL_API_PREFIXES = [
@@ -22,8 +18,6 @@ function isExternalApiPath(pathname: string): boolean {
 
 function sameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin')
-  // Unsafe browser API routes must prove same-origin. Machine-to-machine routes
-  // are explicitly listed in EXTERNAL_API_PREFIXES and bypass this check.
   if (!origin) return false
   try {
     const originUrl = new URL(origin)
@@ -43,6 +37,16 @@ export async function proxy(request: NextRequest) {
 
   for (const h of TENANT_HEADERS) requestHeaders.delete(h)
   requestHeaders.set('x-pathname', pathname)
+
+  // Cron credentials are bearer-only. Reject legacy query-string credentials
+  // before any individual cron handler can inspect them, so URL logs/history
+  // can never become an authentication mechanism.
+  if (pathname.startsWith('/api/cron/') && request.nextUrl.searchParams.has('secret')) {
+    return NextResponse.json(
+      { error: 'cron_query_secret_not_allowed' },
+      { status: 400, headers: { 'Cache-Control': 'no-store' } },
+    )
+  }
 
   if (
     pathname.startsWith('/api/') &&
