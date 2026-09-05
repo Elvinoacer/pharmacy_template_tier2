@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useState } from "react";
+import { useActionState, useCallback, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -73,10 +73,6 @@ export default function LocationSettingsForm({
   const [geoBusy, setGeoBusy] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
   const [geoNote, setGeoNote] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (state.success) setGeoNote(state.success);
-  }, [state.success]);
 
   const useMyLocation = useCallback(() => {
     setGeoError(null);
