@@ -30,13 +30,13 @@ export async function POST(req: NextRequest) {
         recipient,
       });
       return NextResponse.json({ ok: true, message: result.message });
-    } else {
-      return NextResponse.json({ ok: false, error: result.error }, { status: 400 });
     }
-  } catch (err: any) {
+    return NextResponse.json({ ok: false, error: result.error }, { status: 400 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to send receipt.";
     return NextResponse.json(
-      { ok: false, error: err.message || "Failed to send receipt." },
-      { status: 500 }
+      { ok: false, error: message },
+      { status: 500 },
     );
   }
 }
