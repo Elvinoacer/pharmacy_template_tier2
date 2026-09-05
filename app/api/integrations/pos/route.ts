@@ -8,31 +8,54 @@ import { runPosSync } from "@/app/lib/platform/pos-sync";
 export const runtime = "nodejs";
 
 const MedicationInput = z.object({
-  sku: z.string().optional(),
-  name: z.string().min(1),
-  slug: z.string().optional(),
-  category: z.string().default("general"),
-  description: z.string().optional(),
-  indications: z.string().optional(),
-  dosage: z.string().optional(),
-  sideEffects: z.string().optional(),
-  contraindications: z.string().optional(),
-  storage: z.string().optional(),
-  price: z.coerce.number().min(0).default(0),
-  stockQty: z.coerce.number().int().min(0).default(0),
-  lowStockThreshold: z.coerce.number().int().min(0).default(10),
-  imageUrl: z.string().optional(),
+  sku: z.string().trim().min(1).max(120).optional(),
+  name: z.string().trim().min(1).max(240),
+  slug: z.string().trim().min(1).max(240).optional(),
+  category: z.string().trim().min(1).max(120).default("general"),
+  description: z.string().max(4000).optional(),
+  indications: z.string().max(4000).optional(),
+  dosage: z.string().max(2000).optional(),
+  sideEffects: z.string().max(4000).optional(),
+  contraindications: z.string().max(4000).optional(),
+  storage: z.string().max(2000).optional(),
+  price: z.coerce.number().finite().min(0).max(100_000_000).default(0),
+  stockQty: z.coerce.number().int().min(0).max(10_000_000).default(0),
+  lowStockThreshold: z.coerce.number().int().min(0).max(10_000_000).default(10),
+  imageUrl: z.string().url().max(2048).optional(),
   overTheCounter: z.boolean().default(false),
   publicListing: z.boolean().default(false),
   prescriptionRequired: z.boolean().default(true),
   active: z.boolean().default(true),
-  version: z.coerce.number().int().optional(),
+  // Optional optimistic platform version returned by the previous integration
+  // snapshot. A mismatch is a conflict rather than a blind overwrite.
+  version: z.coerce.number().int().min(1).optional(),
 });
 
+function fallbackSlug(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
 const Body = z.object({
-  tenant: z.string().optional(),
+  tenant: z.string().uuid().optional(),
   branchId: z.string().uuid().optional(),
   medications: z.array(MedicationInput).min(1).max(200),
+}).superRefine((body, ctx) => {
+  const seen = new Set<string>();
+  for (let i = 0; i < body.medications.length; i++) {
+    const med = body.medications[i];
+    const identity = med.sku
+      ? `sku:${med.sku.toLowerCase()}`
+      : `slug:${(med.slug || fallbackSlug(med.name)).toLowerCase()}`;
+    if (seen.has(identity)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["medications", i],
+        message: `Duplicate POS medication identity: ${identity}`,
+      });
+    } else {
+      seen.add(identity);
+    }
+  }
 });
 
 export async function POST(req: Request) {
@@ -47,7 +70,10 @@ export async function POST(req: Request) {
   try {
     parsed = Body.parse(await req.json());
   } catch (e) {
-    return NextResponse.json({ error: "invalid_body", detail: e instanceof Error ? e.message : undefined }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_body", detail: e instanceof Error ? e.message : undefined },
+      { status: 400 },
+    );
   }
 
   if (parsed.tenant && parsed.tenant !== auth.pharmacyId) {
@@ -69,6 +95,8 @@ export async function POST(req: Request) {
     pendingIdempotencyId = gate.pending?.id ?? null;
   }
 
+  // Large imports are asynchronous so an HTTP/serverless request is never held
+  // open for hundreds of database writes.
   if (parsed.medications.length > 40) {
     const job = await enqueueJob({
       type: "pos.sync",
