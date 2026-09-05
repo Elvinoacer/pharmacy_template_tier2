@@ -293,7 +293,7 @@ async function validatedImage(file: File | Blob, opts?: { privateHealth?: boolea
     throw new Error(`File too large. Max size is ${R2_MAX_BYTES / (1024 * 1024)} MB.`);
   }
 
-  let buffer = Buffer.from(await file.arrayBuffer());
+  let buffer: Buffer = Buffer.from(await file.arrayBuffer());
   const sniffed = sniffImageType(buffer.subarray(0, 32));
   if (!sniffed) throw new Error("File contents are not a supported image format.");
   const normalizedDeclared = declared === "image/jpg" ? "image/jpeg" : declared;
