@@ -10,6 +10,11 @@ type AdminAccessRule = {
   exact?: boolean;
 };
 
+type AdminDynamicAccessRule = {
+  pattern: RegExp;
+  permissions: readonly Permission[];
+};
+
 /**
  * Admin information-architecture policy.
  *
@@ -69,6 +74,12 @@ const ADMIN_ACCESS_RULES: readonly AdminAccessRule[] = [
   { prefix: "/admin/customers", permissions: ["customers.read"] },
 ];
 
+const ADMIN_DYNAMIC_ACCESS_RULES: readonly AdminDynamicAccessRule[] = [
+  // The medication ID route is an edit + inventory-operations workspace, not
+  // a read-only detail view, so it must not inherit the catalogue read grant.
+  { pattern: /^\/admin\/medications\/[^/]+$/, permissions: ["inventory.write"] },
+];
+
 function ruleMatches(rule: AdminAccessRule, pathname: string): boolean {
   if (rule.exact) return pathname === rule.prefix;
   return pathname === rule.prefix || pathname.startsWith(`${rule.prefix}/`);
@@ -90,6 +101,14 @@ export function canAccessAdminPath(user: SessionUser, pathname: string): boolean
   const membership = activeMembership(user);
   if (!membership) return false;
 
+  const granted = membershipPermissions(membership.role, []);
+  const dynamicRule = ADMIN_DYNAMIC_ACCESS_RULES.find((candidate) =>
+    candidate.pattern.test(pathname),
+  );
+  if (dynamicRule) {
+    return dynamicRule.permissions.some((permission) => granted.has(permission));
+  }
+
   const rule = ADMIN_ACCESS_RULES.filter((candidate) =>
     ruleMatches(candidate, pathname),
   ).sort((a, b) => b.prefix.length - a.prefix.length)[0];
@@ -98,6 +117,5 @@ export function canAccessAdminPath(user: SessionUser, pathname: string): boolean
   if (!rule) return false;
   if (!rule.permissions?.length) return true;
 
-  const granted = membershipPermissions(membership.role, []);
   return rule.permissions.some((permission) => granted.has(permission));
 }
