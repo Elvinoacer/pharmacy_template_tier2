@@ -1,8 +1,6 @@
 "use client";
 
-import { useId } from "react";
-
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useId, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { Mail, MessageSquare, MessageCircle, Layout, FileText, Calendar, AlertCircle, Check, Send, Wand2 } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
@@ -30,16 +28,19 @@ export default function AdminMessageForm({
   const [scheduledFor, setScheduledFor] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
-  const current = CHANNELS.find((c) => c.value === channel) || CHANNELS[0];
+  const current = CHANNELS.find((candidate) => candidate.value === channel) || CHANNELS[0];
 
   useEffect(() => {
-    if (state?.success) {
-      toast.success(state.success);
+    if (state?.error) toast.error(state.error);
+    if (!state?.success) return;
+
+    toast.success(state.success);
+    const frame = requestAnimationFrame(() => {
       setBody("");
       setSubject("");
       setScheduledFor("");
-    }
-    if (state?.error) toast.error(state.error);
+    });
+    return () => cancelAnimationFrame(frame);
   }, [state]);
 
   async function aiDraft() {
@@ -77,55 +78,61 @@ export default function AdminMessageForm({
         </div>
       )}
 
-      {/* Channel picker */}
-      <div>
-        <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Channel</label>
+      <fieldset>
+        <legend className="label-admin">Channel</legend>
         <div className="grid grid-cols-4 gap-1.5">
-          {CHANNELS.map((c) => {
-            const Icon = c.icon;
-            const isActive = channel === c.value;
+          {CHANNELS.map((candidate) => {
+            const Icon = candidate.icon;
+            const isActive = channel === candidate.value;
+            const radioId = `${fieldPrefix}-channel-${candidate.value}`;
             return (
-              <button
-                key={c.value}
-                type="button"
-                onClick={() => setChannel(c.value)}
+              <label
+                key={candidate.value}
+                htmlFor={radioId}
                 className={`flex cursor-pointer flex-col items-center gap-1 rounded-lg border px-2 py-2 text-xs font-semibold transition ${
                   isActive
                     ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text"
                     : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-muted hover:border-[var(--admin-accent)] hover:text-[var(--admin-text)]"
                 }`}
               >
-                <input id={`${fieldPrefix}-1`} type="radio" name="channel" value={c.value} checked={isActive} onChange={() => setChannel(c.value)} className="sr-only" />
-                <Icon className="h-4 w-4" />
-                {c.label}
-              </button>
+                <input
+                  id={radioId}
+                  type="radio"
+                  name="channel"
+                  value={candidate.value}
+                  checked={isActive}
+                  onChange={() => setChannel(candidate.value)}
+                  className="sr-only"
+                />
+                <Icon className="h-4 w-4" aria-hidden="true" />
+                {candidate.label}
+              </label>
             );
           })}
         </div>
-      </div>
+      </fieldset>
 
       {current.hasSubject && (
         <div>
-          <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Subject</label>
+          <label htmlFor={`${fieldPrefix}-subject`} className="label-admin">Subject</label>
           <div className="relative">
             <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input id={`${fieldPrefix}-2`}
+            <input
+              id={`${fieldPrefix}-subject`}
               name="subject"
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={(event) => setSubject(event.target.value)}
               placeholder="Subject line"
               className="input-admin pl-9"
             />
           </div>
         </div>
       )}
-      {!current.hasSubject && (
-        <input type="hidden" name="subject" value="" />
-      )}
+      {!current.hasSubject && <input type="hidden" name="subject" value="" />}
 
       <div>
         <div className="flex items-center justify-between">
-          <label className="label-admin">Message *</label>
+          <label htmlFor={`${fieldPrefix}-body`} className="label-admin">Message *</label>
           <button
             type="button"
             onClick={aiDraft}
@@ -137,25 +144,27 @@ export default function AdminMessageForm({
           </button>
         </div>
         <textarea
+          id={`${fieldPrefix}-body`}
           name="body"
           required
           rows={4}
           value={body}
-          onChange={(e) => setBody(e.target.value)}
+          onChange={(event) => setBody(event.target.value)}
           placeholder="Type your message to the customer…"
           className="input-admin resize-y"
         />
       </div>
 
       <div>
-        <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Schedule (optional)</label>
+        <label htmlFor={`${fieldPrefix}-schedule`} className="label-admin">Schedule (optional)</label>
         <div className="relative">
           <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input id={`${fieldPrefix}-3`}
+          <input
+            id={`${fieldPrefix}-schedule`}
             name="scheduledFor"
             type="datetime-local"
             value={scheduledFor}
-            onChange={(e) => setScheduledFor(e.target.value)}
+            onChange={(event) => setScheduledFor(event.target.value)}
             className="input-admin pl-9"
           />
         </div>
