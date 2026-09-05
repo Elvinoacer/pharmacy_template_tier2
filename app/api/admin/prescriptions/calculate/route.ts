@@ -1,25 +1,22 @@
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/app/lib/auth";
+import { requirePermission } from "@/app/lib/platform/policy";
 import {
   calculatePrescriptionQuantity,
   calculatePrescriptionDuration,
   detectDuplicateTherapies,
-  checkRefillEligibility,
 } from "@/app/lib/services/prescription-lifecycle";
 
 export async function POST(req: Request) {
   try {
     const user = await getSessionUser();
-    if (!user || (user.role !== "staff" && user.role !== "pharmacist" && user.role !== "manager")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    await requirePermission(user, "prescriptions.read");
 
     const body = await req.json();
     const action = body.action || "all";
 
-    const results: Record<string, any> = {};
+    const results: Record<string, unknown> = {};
 
-    // 1) Quantity Calculation
     if (action === "quantity" || action === "all") {
       const { unitsPerDose, frequency, timesCount, daysSupply } = body;
       results.quantity = calculatePrescriptionQuantity({
@@ -30,7 +27,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2) Duration Calculation
     if (action === "duration" || action === "all") {
       const { quantity, unitsPerDose, frequency, timesCount, startDate } = body;
       results.duration = calculatePrescriptionDuration({
@@ -42,7 +38,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // 3) Duplicate Therapy Detection
     if ((action === "duplicates" || action === "all") && body.customerId && body.medicineName) {
       results.duplicates = await detectDuplicateTherapies({
         customerId: body.customerId,
@@ -53,11 +48,11 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true, data: results });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("[/api/admin/prescriptions/calculate]", err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Calculation failed." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
