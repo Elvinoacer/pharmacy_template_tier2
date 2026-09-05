@@ -1,7 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
+import { getSessionUser, writeAuditLog } from "@/app/lib/auth";
+import { requirePermission } from "@/app/lib/platform/policy";
+import type { Permission } from "@/app/lib/platform/permissions";
+import type { SessionUser } from "@/app/lib/types";
 import {
   createService,
   updateService,
@@ -33,23 +36,26 @@ function parseOptionalPrice(raw: string): number | null {
   return n;
 }
 
-async function requireStaff() {
-  const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
-    throw new Error("Unauthorized");
+async function requireCapabilities(
+  ...permissions: Permission[]
+): Promise<SessionUser> {
+  const session = await getSessionUser();
+  let actor = session;
+  for (const permission of permissions) {
+    actor = await requirePermission(actor, permission);
   }
-  return user;
+  return actor as SessionUser;
 }
 
 export async function saveServiceAction(
   _prev: AdminServiceState,
   formData: FormData,
 ): Promise<AdminServiceState> {
-  let user;
+  let user: SessionUser;
   try {
-    user = await requireStaff();
+    user = await requireCapabilities("settings.manage");
   } catch {
-    return { error: "You must be signed in as staff." };
+    return { error: "You do not have permission to manage pharmacy services." };
   }
 
   const id = String(formData.get("id") || "").trim();
@@ -132,11 +138,11 @@ export async function deleteServiceAction(
   _prev: AdminServiceState,
   formData: FormData,
 ): Promise<AdminServiceState> {
-  let user;
+  let user: SessionUser;
   try {
-    user = await requireStaff();
+    user = await requireCapabilities("settings.manage");
   } catch {
-    return { error: "You must be signed in as staff." };
+    return { error: "You do not have permission to manage pharmacy services." };
   }
 
   const id = String(formData.get("id") || "").trim();
@@ -172,11 +178,11 @@ export async function recordBookingPaymentAction(
   _prev: BookingAdminState,
   formData: FormData,
 ): Promise<BookingAdminState> {
-  let user;
+  let user: SessionUser;
   try {
-    user = await requireStaff();
+    user = await requireCapabilities("prescriptions.dispense", "payments.collect");
   } catch {
-    return { error: "You must be signed in as staff." };
+    return { error: "You do not have permission to collect payment for clinical bookings." };
   }
 
   const bookingId = String(formData.get("bookingId") || "").trim();
@@ -229,11 +235,11 @@ export async function updateBookingStatusAction(
   _prev: BookingAdminState,
   formData: FormData,
 ): Promise<BookingAdminState> {
-  let user;
+  let user: SessionUser;
   try {
-    user = await requireStaff();
+    user = await requireCapabilities("prescriptions.dispense");
   } catch {
-    return { error: "You must be signed in as staff." };
+    return { error: "You do not have permission to manage clinical bookings." };
   }
 
   const bookingId = String(formData.get("bookingId") || "").trim();
