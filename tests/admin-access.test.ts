@@ -47,6 +47,7 @@ describe("admin route access", () => {
     assert.equal(canAccessAdminPath(user, "/admin/analytics"), false);
     assert.equal(canAccessAdminPath(user, "/admin/settings/location"), false);
     assert.equal(canAccessAdminPath(user, "/admin/campaigns"), false);
+    assert.equal(canAccessAdminPath(user, "/admin/medications/inventory-1"), false);
   });
 
   it("gives pharmacists clinical and reporting access without management access", () => {
@@ -61,6 +62,7 @@ describe("admin route access", () => {
     assert.equal(canAccessAdminPath(user, "/admin/settings/location"), false);
     assert.equal(canAccessAdminPath(user, "/admin/settings/integrations"), false);
     assert.equal(canAccessAdminPath(user, "/admin/campaigns"), false);
+    assert.equal(canAccessAdminPath(user, "/admin/medications/inventory-1"), false);
   });
 
   it("allows manager and owner memberships to reach management surfaces", () => {
@@ -70,6 +72,7 @@ describe("admin route access", () => {
       assert.equal(canAccessAdminPath(user, "/admin/settings/integrations"), true);
       assert.equal(canAccessAdminPath(user, "/admin/campaigns"), true);
       assert.equal(canAccessAdminPath(user, "/admin/services"), true);
+      assert.equal(canAccessAdminPath(user, "/admin/medications/inventory-1"), true);
     }
   });
 
