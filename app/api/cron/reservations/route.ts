@@ -3,17 +3,10 @@ import { NextResponse } from "next/server";
 import { releaseExpiredReservations } from "@/app/lib/services/commerce/reservations";
 import { writeAuditLog } from "@/app/lib/auth";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { isCronAuthorized } from "@/app/lib/cron-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function authorized(request: NextRequest) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret) return process.env.NODE_ENV !== "production";
-  const authHeader = request.headers.get("authorization");
-  const querySecret = request.nextUrl.searchParams.get("secret");
-  return authHeader === `Bearer ${secret}` || querySecret === secret;
-}
 
 /**
  * Reservation expiry cron (audit §10).
@@ -28,7 +21,7 @@ function authorized(request: NextRequest) {
  *     https://…/api/cron/reservations
  */
 export async function POST(request: NextRequest) {
-  if (!authorized(request)) {
+  if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   try {
