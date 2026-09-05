@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ScanBarcode, Camera, CameraOff, Search, Check, AlertCircle, Sparkles, Plus, ArrowRight } from "lucide-react";
@@ -35,6 +35,18 @@ type LookupResult = {
   alreadyStocked?: { id: string; slug: string; currentStock: number } | null;
 };
 
+function subscribeToBarcodeDetector() {
+  return () => {};
+}
+
+function useBarcodeDetectorSupported(): boolean {
+  return useSyncExternalStore(
+    subscribeToBarcodeDetector,
+    () => "BarcodeDetector" in window,
+    () => false,
+  );
+}
+
 /**
  * Phase 3.2 — Barcode / QR scan flow (Decision D16).
  * Uses the browser-native BarcodeDetector API when available, with a manual text input
@@ -46,21 +58,22 @@ export function BarcodeScanFlow() {
   const streamRef = useRef<MediaStream | null>(null);
   const detectorRef = useRef<{ detect: (source: CanvasImageSource) => Promise<Array<{ rawValue: string }>> } | null>(null);
   const rafRef = useRef<number | null>(null);
+  const scanningRef = useRef(false);
 
+  const cameraSupported = useBarcodeDetectorSupported();
   const [cameraActive, setCameraActive] = useState(false);
-  const [cameraSupported, setCameraSupported] = useState(true);
   const [manualBarcode, setManualBarcode] = useState("");
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Feature-detect BarcodeDetector (Chromium-only as of 2024).
-    if (typeof window === "undefined" || !("BarcodeDetector" in window)) {
-      setCameraSupported(false);
-    }
-    return () => stopCamera();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      scanningRef.current = false;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    };
   }, []);
 
   async function startCamera() {
@@ -79,21 +92,25 @@ export function BarcodeScanFlow() {
       detectorRef.current = new window.BarcodeDetector({
         formats: ["ean_13", "ean_8", "code_128", "code_39", "qr_code", "upc_a", "upc_e"],
       });
+      scanningRef.current = true;
       setCameraActive(true);
       setScanning(true);
-      scanLoop();
-    } catch (e) {
-      console.error("[camera]", e);
+      void scanLoop();
+    } catch (error) {
+      console.error("[camera]", error);
       toast.error("Could not start camera. Use the manual entry field below.");
+      scanningRef.current = false;
       setCameraActive(false);
+      setScanning(false);
     }
   }
 
   function stopCamera() {
+    scanningRef.current = false;
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
     setCameraActive(false);
@@ -101,7 +118,7 @@ export function BarcodeScanFlow() {
   }
 
   async function scanLoop() {
-    if (!detectorRef.current || !videoRef.current) return;
+    if (!scanningRef.current || !detectorRef.current || !videoRef.current) return;
     try {
       const codes = await detectorRef.current.detect(videoRef.current);
       if (codes.length > 0 && codes[0].rawValue) {
@@ -114,8 +131,8 @@ export function BarcodeScanFlow() {
     } catch {
       // Detection errors are transient — just try again next frame.
     }
-    if (scanning) {
-      rafRef.current = requestAnimationFrame(scanLoop);
+    if (scanningRef.current) {
+      rafRef.current = requestAnimationFrame(() => void scanLoop());
     }
   }
 
@@ -123,10 +140,10 @@ export function BarcodeScanFlow() {
     setLoading(true);
     setResult(null);
     try {
-      const r = await fetch(`/api/admin/medications/library/lookup?barcode=${encodeURIComponent(barcode)}`);
-      const j: LookupResult = await r.json();
-      setResult(j);
-      if (!j.found) {
+      const response = await fetch(`/api/admin/medications/library/lookup?barcode=${encodeURIComponent(barcode)}`);
+      const lookupResult: LookupResult = await response.json();
+      setResult(lookupResult);
+      if (!lookupResult.found) {
         toast.error(`No medication found for barcode ${barcode}. Try AI Import?`);
       }
     } catch {
@@ -136,16 +153,15 @@ export function BarcodeScanFlow() {
     }
   }
 
-  function onManualSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function onManualSubmit(event: React.FormEvent) {
+    event.preventDefault();
     const code = manualBarcode.trim();
     if (!code) return;
-    lookupBarcode(code);
+    void lookupBarcode(code);
   }
 
   function addToPharmacy() {
     if (!result?.master) return;
-    // Route to the "Add to Pharmacy" flow — POST to the library/add endpoint.
     fetch("/api/admin/medications/library/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -164,13 +180,13 @@ export function BarcodeScanFlow() {
         active: true,
       }),
     })
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.ok) {
+      .then((response) => response.json())
+      .then((payload) => {
+        if (payload.ok) {
           toast.success("Added to your pharmacy inventory. Edit to set price and stock.");
-          router.push(`/admin/medications/${j.inventoryId}`);
+          router.push(`/admin/medications/${payload.inventoryId}`);
         } else {
-          toast.error(j.message || "Could not add to pharmacy.");
+          toast.error(payload.message || "Could not add to pharmacy.");
         }
       })
       .catch(() => toast.error("Network error."));
@@ -178,7 +194,6 @@ export function BarcodeScanFlow() {
 
   return (
     <div className="space-y-6">
-      {/* Camera + manual input */}
       <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-5">
         {!cameraSupported && (
           <div className="mb-4 rounded-lg bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-400">
@@ -221,7 +236,7 @@ export function BarcodeScanFlow() {
             <input
               type="text"
               value={manualBarcode}
-              onChange={(e) => setManualBarcode(e.target.value)}
+              onChange={(event) => setManualBarcode(event.target.value)}
               placeholder="Type or paste a barcode (e.g. 6001234567890)"
               className="input-admin pl-9 font-mono"
               autoFocus
@@ -237,7 +252,6 @@ export function BarcodeScanFlow() {
         </form>
       </div>
 
-      {/* Result */}
       {loading && (
         <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-5 text-center text-sm admin-muted">
           <span className="typing-dot" /> Looking up barcode…
@@ -254,7 +268,7 @@ export function BarcodeScanFlow() {
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link
-              href={`/admin/medications/import/ai`}
+              href="/admin/medications/import/ai"
               className="inline-flex items-center gap-1.5 rounded-full bg-purple-500/10 px-3 py-1.5 text-xs font-semibold text-purple-700 hover:bg-purple-500/20 dark:text-purple-400"
             >
               <Sparkles className="h-3.5 w-3.5" /> AI Import <ArrowRight className="h-3 w-3" />
