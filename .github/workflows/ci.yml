@@ -12,7 +12,7 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aether_ci?sslmode=disable
       DIRECT_URL: postgresql://postgres:postgres@localhost:5432/aether_ci?sslmode=disable
@@ -20,8 +20,9 @@ jobs:
       NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ci-only-actions-key-ci-only-actions-key
       INTEGRATION_SECRET: ci-only-integration-secret-32-characters-minimum
       HEALTH_MEDIA_SIGNING_SECRET: ci-only-health-media-signing-secret
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      REFILL_TRACKING_SECRET: ci-only-refill-tracking-secret-32-characters
+      CRON_SECRET: ci-only-cron-secret-32-characters-minimum
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
       AI_CLINICAL_CONTEXT_ENABLED: "false"
 
     services:
@@ -66,3 +67,58 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      - name: Production browser smoke and Lighthouse budgets
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm start > /tmp/aether-next.log 2>&1 &
+          APP_PID=$!
+          cleanup() { kill "$APP_PID" 2>/dev/null || true; }
+          trap cleanup EXIT
+
+          ready=0
+          for i in $(seq 1 45); do
+            if curl --fail --silent --show-error http://127.0.0.1:3000/login > /tmp/login.html; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            cat /tmp/aether-next.log
+            exit 1
+          fi
+
+          # Browser-facing smoke surfaces: auth, privacy and invalid signed-token
+          # handling must all render from the production server.
+          curl --fail --silent --show-error http://127.0.0.1:3000/register > /tmp/register.html
+          curl --fail --silent --show-error http://127.0.0.1:3000/privacy > /tmp/privacy.html
+          curl --fail --silent --show-error 'http://127.0.0.1:3000/refill/status?token=invalid' > /tmp/refill-status.html
+          grep -q '<html' /tmp/login.html
+          grep -q '<html' /tmp/register.html
+          grep -q '<html' /tmp/privacy.html
+          grep -q 'invalid or expired' /tmp/refill-status.html
+
+          npx --yes lighthouse@12.8.2 http://127.0.0.1:3000/login \
+            --quiet \
+            --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+            --only-categories=performance,accessibility,best-practices \
+            --output=json --output-path=/tmp/lighthouse-login.json
+          node scripts/assert-lighthouse.mjs /tmp/lighthouse-login.json 0.70 0.90 0.90
+
+          npx --yes lighthouse@12.8.2 http://127.0.0.1:3000/register \
+            --quiet \
+            --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+            --only-categories=performance,accessibility,best-practices \
+            --output=json --output-path=/tmp/lighthouse-register.json
+          node scripts/assert-lighthouse.mjs /tmp/lighthouse-register.json 0.70 0.90 0.90
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: /tmp/lighthouse-*.json
+          if-no-files-found: ignore
+          retention-days: 7
