@@ -13,6 +13,7 @@ import { getResolvedPharmacyOrNull } from "./lib/services/pharmacy-settings";
 import { platformBrand, type PublicBrand } from "./lib/brand";
 import { headers } from "next/headers";
 import "./globals.css";
+import "./accessibility-overrides.css";
 import { themeBootstrap } from "./lib/theme-bootstrap";
 import ThemeToggle, { ThemeProvider } from "./components/ThemeProvider";
 
@@ -38,7 +39,10 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f4f7f4" }, { media: "(prefers-color-scheme: dark)", color: "#081410" }],
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f7f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#081410" },
+  ],
   colorScheme: "light dark",
 };
 
@@ -82,10 +86,10 @@ export const metadata: Metadata = {
     images: ["https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/og-preview.jpg"],
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: "/" },
+  // Do not define a root canonical here: nested pages that forget to override
+  // it would otherwise inherit `/`. Indexable pages should own their canonical.
 };
 
-/** Only well-formed hex colours reach CSS custom properties (injection-safe). */
 function safeHex(value: string | null | undefined): string | null {
   if (!value) return null;
   return /^#[0-9a-fA-F]{3,8}$/.test(value.trim()) ? value.trim() : null;
@@ -100,8 +104,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     ? await getResolvedPharmacyOrNull({ slug: tenant.slug }).catch(() => null)
     : null;
 
-  // Tenant accent tints — injected as CSS variables so every glass surface,
-  // button and gradient in the room can lean toward this pharmacy's palette.
   const brandPrimary = safeHex(resolved?.brandPrimary);
   const brandAccent = safeHex(resolved?.brandAccent);
   let tenantStyle: CSSProperties | undefined;
@@ -113,24 +115,57 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   }
 
   const storefrontBrand: PublicBrand | null = resolved
-    ? { name: resolved.name, tagline: resolved.tagline, phone: resolved.phone, phoneHref: resolved.phoneHref, email: resolved.email, addressShort: [resolved.address.street, resolved.address.city].filter(Boolean).join(", ") || "Kenya", addressFull: resolved.address.full || "Kenya", hours: resolved.hours, whatsappHref: resolved.whatsappHref, slug: resolved.slug, logoUrl: resolved.logoUrl }
+    ? {
+        name: resolved.name,
+        tagline: resolved.tagline,
+        phone: resolved.phone,
+        phoneHref: resolved.phoneHref,
+        email: resolved.email,
+        addressShort:
+          [resolved.address.street, resolved.address.city].filter(Boolean).join(", ") || "Kenya",
+        addressFull: resolved.address.full || "Kenya",
+        hours: resolved.hours,
+        whatsappHref: resolved.whatsappHref,
+        slug: resolved.slug,
+        logoUrl: resolved.logoUrl,
+      }
     : null;
 
-  const sessionHint = sessionUser ? { role: sessionUser.role, customerId: sessionUser.customerId, fullName: sessionUser.fullName, platformAdmin: sessionUser.platformAdmin } : null;
+  const sessionHint = sessionUser
+    ? {
+        role: sessionUser.role,
+        customerId: sessionUser.customerId,
+        fullName: sessionUser.fullName,
+        platformAdmin: sessionUser.platformAdmin,
+      }
+    : null;
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}>
-      <head><script dangerouslySetInnerHTML={{ __html: themeBootstrap }} /></head>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
       <body
         className="flex min-h-full flex-col bg-background font-sans"
         data-tenant-theme={tenantStyle ? "true" : undefined}
         style={tenantStyle}
       >
         <ThemeProvider>
-          <div className="global-theme-control"><ThemeToggle /></div>
+          <div className="global-theme-control">
+            <ThemeToggle />
+          </div>
           <AetherCursor />
           <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
-          <AppChrome sessionUser={sessionHint} pharmacySlug={tenant.slug} storefrontBrand={storefrontBrand} platformBrand={platformBrand()}>
+          <AppChrome
+            sessionUser={sessionHint}
+            pharmacySlug={tenant.slug}
+            storefrontBrand={storefrontBrand}
+            platformBrand={platformBrand()}
+          >
             {children}
           </AppChrome>
           <Toaster />
