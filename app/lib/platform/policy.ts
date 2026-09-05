@@ -49,10 +49,20 @@ export async function authorize(input: AuthorizeInput): Promise<SessionUser> {
 
   if (actor.platformAdmin) return actor;
 
-  const tenantId = input.tenantId ?? (await getTenant().catch(() => ({ pharmacyId: null }))).pharmacyId;
-  const membership = tenantId
-    ? actor.memberships.find((m) => m.pharmacyId === tenantId && m.status === "active")
-    : actor.memberships.find((m) => m.status === "active");
+  const contextTenantId = (
+    await getTenant().catch(() => ({ pharmacyId: null as string | null }))
+  ).pharmacyId;
+  const tenantId = input.tenantId ?? contextTenantId ?? actor.activePharmacyId;
+  if (!tenantId) {
+    throw new AuthError("Active pharmacy required", 403);
+  }
+
+  // Permission checks are always tenant-pinned. Never fall back to a different
+  // active membership when the requested/selected pharmacy is unavailable.
+  const membership = actor.memberships.find(
+    (candidate) =>
+      candidate.pharmacyId === tenantId && candidate.status === "active",
+  );
 
   if (!membership) throw new AuthError("No active membership for this pharmacy", 403);
 
