@@ -15,6 +15,7 @@ const ALLOWED_TYPES = new Set([
   "image/webp",
   "image/gif",
 ]);
+const PRIVATE_ALLOWED_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp"]);
 
 const EXT_BY_TYPE: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -25,8 +26,10 @@ const EXT_BY_TYPE: Record<string, string> = {
 };
 
 export const R2_MAX_BYTES = 5 * 1024 * 1024;
+export const PRIVATE_IMAGE_MAX_PIXELS = 20_000_000;
+export const PRIVATE_IMAGE_MAX_DIMENSION = 8_192;
 const PRIVATE_PREFIX = "r2-private://";
-const MEDIA_TOKEN_TTL_SECONDS = 15 * 60;
+const MEDIA_TOKEN_TTL_SECONDS = 5 * 60;
 
 export type R2Config = {
   accountId: string;
@@ -108,48 +111,181 @@ function extensionFor(contentType: string): string {
 }
 
 function sniffImageType(bytes: Uint8Array): string | null {
-  if (
-    bytes.length >= 3 &&
-    bytes[0] === 0xff &&
-    bytes[1] === 0xd8 &&
-    bytes[2] === 0xff
-  ) return "image/jpeg";
-
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+    return "image/jpeg";
+  }
   if (
     bytes.length >= 8 &&
-    bytes[0] === 0x89 &&
-    bytes[1] === 0x50 &&
-    bytes[2] === 0x4e &&
-    bytes[3] === 0x47 &&
-    bytes[4] === 0x0d &&
-    bytes[5] === 0x0a &&
-    bytes[6] === 0x1a &&
-    bytes[7] === 0x0a
+    bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47 &&
+    bytes[4] === 0x0d && bytes[5] === 0x0a && bytes[6] === 0x1a && bytes[7] === 0x0a
   ) return "image/png";
-
-  if (
-    bytes.length >= 6 &&
-    String.fromCharCode(...bytes.slice(0, 6)) === "GIF87a"
-  ) return "image/gif";
-  if (
-    bytes.length >= 6 &&
-    String.fromCharCode(...bytes.slice(0, 6)) === "GIF89a"
-  ) return "image/gif";
-
+  if (bytes.length >= 6 && ["GIF87a", "GIF89a"].includes(String.fromCharCode(...bytes.slice(0, 6)))) {
+    return "image/gif";
+  }
   if (
     bytes.length >= 12 &&
     String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" &&
     String.fromCharCode(...bytes.slice(8, 12)) === "WEBP"
   ) return "image/webp";
-
   return null;
 }
 
-async function validatedImage(file: File | Blob) {
+function jpegDimensions(buf: Buffer): { width: number; height: number } | null {
+  let offset = 2;
+  while (offset + 4 <= buf.length) {
+    if (buf[offset] !== 0xff) { offset++; continue; }
+    const marker = buf[offset + 1];
+    offset += 2;
+    if (marker === 0xd8 || marker === 0xd9) continue;
+    if (marker === 0xda) break;
+    if (offset + 2 > buf.length) break;
+    const len = buf.readUInt16BE(offset);
+    if (len < 2 || offset + len > buf.length) break;
+    if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
+      if (len >= 7) {
+        return { height: buf.readUInt16BE(offset + 3), width: buf.readUInt16BE(offset + 5) };
+      }
+      break;
+    }
+    offset += len;
+  }
+  return null;
+}
+
+function webpDimensions(buf: Buffer): { width: number; height: number } | null {
+  if (buf.length < 30) return null;
+  const chunk = buf.toString("ascii", 12, 16);
+  if (chunk === "VP8X") {
+    const width = 1 + buf.readUIntLE(24, 3);
+    const height = 1 + buf.readUIntLE(27, 3);
+    return { width, height };
+  }
+  if (chunk === "VP8L" && buf.length >= 25 && buf[20] === 0x2f) {
+    const b1 = buf[21], b2 = buf[22], b3 = buf[23], b4 = buf[24];
+    const width = 1 + (((b2 & 0x3f) << 8) | b1);
+    const height = 1 + (((b4 & 0x0f) << 10) | (b3 << 2) | ((b2 & 0xc0) >> 6));
+    return { width, height };
+  }
+  if (chunk === "VP8 " && buf.length >= 30) {
+    for (let i = 20; i + 9 < Math.min(buf.length, 64); i++) {
+      if (buf[i] === 0x9d && buf[i + 1] === 0x01 && buf[i + 2] === 0x2a) {
+        return {
+          width: buf.readUInt16LE(i + 3) & 0x3fff,
+          height: buf.readUInt16LE(i + 5) & 0x3fff,
+        };
+      }
+    }
+  }
+  return null;
+}
+
+function imageDimensions(buf: Buffer, contentType: string): { width: number; height: number } | null {
+  if (contentType === "image/png" && buf.length >= 24) {
+    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  }
+  if (contentType === "image/gif" && buf.length >= 10) {
+    return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
+  }
+  if (contentType === "image/jpeg") return jpegDimensions(buf);
+  if (contentType === "image/webp") return webpDimensions(buf);
+  return null;
+}
+
+function assertSafeDimensions(buf: Buffer, contentType: string) {
+  const dims = imageDimensions(buf, contentType);
+  if (!dims || dims.width <= 0 || dims.height <= 0) {
+    throw new Error("Could not validate image dimensions.");
+  }
+  if (dims.width > PRIVATE_IMAGE_MAX_DIMENSION || dims.height > PRIVATE_IMAGE_MAX_DIMENSION) {
+    throw new Error(`Image dimensions exceed ${PRIVATE_IMAGE_MAX_DIMENSION}px.`);
+  }
+  if (dims.width * dims.height > PRIVATE_IMAGE_MAX_PIXELS) {
+    throw new Error("Image pixel count is too large.");
+  }
+}
+
+function stripJpegMetadata(buf: Buffer): Buffer {
+  if (buf.length < 4 || buf[0] !== 0xff || buf[1] !== 0xd8) return buf;
+  const parts: Buffer[] = [buf.subarray(0, 2)];
+  let offset = 2;
+  while (offset + 4 <= buf.length) {
+    if (buf[offset] !== 0xff) break;
+    const markerStart = offset;
+    const marker = buf[offset + 1];
+    offset += 2;
+    if (marker === 0xda) {
+      parts.push(buf.subarray(markerStart));
+      return Buffer.concat(parts);
+    }
+    if (marker === 0xd9) {
+      parts.push(buf.subarray(markerStart, offset));
+      return Buffer.concat(parts);
+    }
+    if (offset + 2 > buf.length) return buf;
+    const len = buf.readUInt16BE(offset);
+    if (len < 2 || offset + len > buf.length) return buf;
+    const end = offset + len;
+    // APP1=EXIF/XMP, APP13=IPTC, COM=free-form comments. Remove privacy-bearing metadata.
+    if (![0xe1, 0xed, 0xfe].includes(marker)) parts.push(buf.subarray(markerStart, end));
+    offset = end;
+  }
+  return buf;
+}
+
+function stripPngMetadata(buf: Buffer): Buffer {
+  if (buf.length < 8 || buf.toString("hex", 0, 8) !== "89504e470d0a1a0a") return buf;
+  const parts: Buffer[] = [buf.subarray(0, 8)];
+  let offset = 8;
+  const drop = new Set(["tEXt", "zTXt", "iTXt", "eXIf", "tIME"]);
+  while (offset + 12 <= buf.length) {
+    const len = buf.readUInt32BE(offset);
+    const end = offset + 12 + len;
+    if (end > buf.length) return buf;
+    const type = buf.toString("ascii", offset + 4, offset + 8);
+    if (!drop.has(type)) parts.push(buf.subarray(offset, end));
+    offset = end;
+    if (type === "IEND") break;
+  }
+  return Buffer.concat(parts);
+}
+
+function stripWebpMetadata(buf: Buffer): Buffer {
+  if (buf.length < 12 || buf.toString("ascii", 0, 4) !== "RIFF" || buf.toString("ascii", 8, 12) !== "WEBP") return buf;
+  const chunks: Buffer[] = [];
+  let offset = 12;
+  const drop = new Set(["EXIF", "XMP "]);
+  while (offset + 8 <= buf.length) {
+    const type = buf.toString("ascii", offset, offset + 4);
+    const len = buf.readUInt32LE(offset + 4);
+    const padded = len + (len % 2);
+    const end = offset + 8 + padded;
+    if (end > buf.length) return buf;
+    if (!drop.has(type)) chunks.push(buf.subarray(offset, end));
+    offset = end;
+  }
+  const body = Buffer.concat([Buffer.from("WEBP"), ...chunks]);
+  const out = Buffer.alloc(8 + body.length);
+  out.write("RIFF", 0, "ascii");
+  out.writeUInt32LE(body.length, 4);
+  body.copy(out, 8);
+  return out;
+}
+
+function stripPrivateMetadata(buf: Buffer, contentType: string): Buffer {
+  if (contentType === "image/jpeg") return stripJpegMetadata(buf);
+  if (contentType === "image/png") return stripPngMetadata(buf);
+  if (contentType === "image/webp") return stripWebpMetadata(buf);
+  return buf;
+}
+
+async function validatedImage(file: File | Blob, opts?: { privateHealth?: boolean }) {
   const declared = ((file instanceof File ? file.type : "") || file.type || "").toLowerCase();
-  if (!isAllowedImageType(declared)) {
+  const allowed = opts?.privateHealth ? PRIVATE_ALLOWED_TYPES : ALLOWED_TYPES;
+  if (!allowed.has(declared)) {
     throw new Error(
-      `Unsupported file type "${declared || "unknown"}". Allowed: JPEG, PNG, WebP, GIF.`,
+      opts?.privateHealth
+        ? `Unsupported health-media type "${declared || "unknown"}". Allowed: JPEG, PNG, WebP.`
+        : `Unsupported file type "${declared || "unknown"}". Allowed: JPEG, PNG, WebP, GIF.`,
     );
   }
   if (file.size <= 0) throw new Error("Empty file.");
@@ -157,29 +293,22 @@ async function validatedImage(file: File | Blob) {
     throw new Error(`File too large. Max size is ${R2_MAX_BYTES / (1024 * 1024)} MB.`);
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
+  let buffer = Buffer.from(await file.arrayBuffer());
   const sniffed = sniffImageType(buffer.subarray(0, 32));
   if (!sniffed) throw new Error("File contents are not a supported image format.");
   const normalizedDeclared = declared === "image/jpg" ? "image/jpeg" : declared;
   if (sniffed !== normalizedDeclared) {
     throw new Error(`Image content does not match declared type (${declared}).`);
   }
-  return { body: buffer, contentType: sniffed, size: file.size };
+  if (opts?.privateHealth) {
+    assertSafeDimensions(buffer, sniffed);
+    buffer = stripPrivateMetadata(buffer, sniffed);
+  }
+  return { body: buffer, contentType: sniffed, size: buffer.byteLength };
 }
 
-export type UploadResult = {
-  key: string;
-  url: string;
-  contentType: string;
-  size: number;
-};
-
-export type PrivateUploadResult = {
-  key: string;
-  reference: string;
-  contentType: string;
-  size: number;
-};
+export type UploadResult = { key: string; url: string; contentType: string; size: number };
+export type PrivateUploadResult = { key: string; reference: string; contentType: string; size: number };
 
 export async function uploadToR2(
   file: File | Blob,
@@ -191,60 +320,41 @@ export async function uploadToR2(
       "Cloudflare R2 is not configured. Set R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, and R2_PUBLIC_URL.",
     );
   }
-
   const validated = await validatedImage(file);
   const folder = sanitizeFolder(opts?.folder);
   const key = `${folder}/${randomUUID()}.${extensionFor(validated.contentType)}`;
   const s3 = getClient(config);
-
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: config.bucket,
-      Key: key,
-      Body: validated.body,
-      ContentType: validated.contentType,
-      CacheControl: "public, max-age=31536000, immutable",
-    }),
-  );
-
-  return {
-    key,
-    url: `${config.publicUrl}/${key}`,
-    contentType: validated.contentType,
-    size: validated.size,
-  };
+  await s3.send(new PutObjectCommand({
+    Bucket: config.bucket,
+    Key: key,
+    Body: validated.body,
+    ContentType: validated.contentType,
+    CacheControl: "public, max-age=31536000, immutable",
+  }));
+  return { key, url: `${config.publicUrl}/${key}`, contentType: validated.contentType, size: validated.size };
 }
 
-/** Upload sensitive health media into a private bucket. */
+/** Upload sensitive health media into a private bucket after privacy sanitization. */
 export async function uploadPrivateImageToR2(
   file: File | Blob,
   opts?: { folder?: string },
 ): Promise<PrivateUploadResult> {
   const config = getPrivateR2Config();
   if (!config) {
-    throw new Error(
-      "Private R2 storage is not configured. Set R2_PRIVATE_BUCKET_NAME before accepting health-media uploads.",
-    );
+    throw new Error("Private R2 storage is not configured. Set R2_PRIVATE_BUCKET_NAME before accepting health-media uploads.");
   }
-  const validated = await validatedImage(file);
+  const validated = await validatedImage(file, { privateHealth: true });
   const folder = sanitizeFolder(opts?.folder || "health-media");
   const key = `${folder}/${randomUUID()}.${extensionFor(validated.contentType)}`;
   const s3 = getClient(config);
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: config.bucket,
-      Key: key,
-      Body: validated.body,
-      ContentType: validated.contentType,
-      CacheControl: "private, no-store, max-age=0",
-    }),
-  );
-  return {
-    key,
-    reference: `${PRIVATE_PREFIX}${key}`,
-    contentType: validated.contentType,
-    size: validated.size,
-  };
+  await s3.send(new PutObjectCommand({
+    Bucket: config.bucket,
+    Key: key,
+    Body: validated.body,
+    ContentType: validated.contentType,
+    CacheControl: "private, no-store, max-age=0",
+  }));
+  return { key, reference: `${PRIVATE_PREFIX}${key}`, contentType: validated.contentType, size: validated.size };
 }
 
 export function isPrivateR2Reference(value: string): boolean {
@@ -257,10 +367,7 @@ export function privateR2Key(value: string): string | null {
   return key || null;
 }
 
-export async function readPrivateR2Object(referenceOrKey: string): Promise<{
-  body: Buffer;
-  contentType: string;
-} | null> {
+export async function readPrivateR2Object(referenceOrKey: string): Promise<{ body: Buffer; contentType: string } | null> {
   const config = getPrivateR2Config();
   if (!config) return null;
   const key = privateR2Key(referenceOrKey) ?? referenceOrKey.replace(/^\/+/, "");
@@ -269,10 +376,7 @@ export async function readPrivateR2Object(referenceOrKey: string): Promise<{
   const result = await s3.send(new GetObjectCommand({ Bucket: config.bucket, Key: key }));
   if (!result.Body) return null;
   const bytes = await result.Body.transformToByteArray();
-  return {
-    body: Buffer.from(bytes),
-    contentType: result.ContentType || "application/octet-stream",
-  };
+  return { body: Buffer.from(bytes), contentType: result.ContentType || "application/octet-stream" };
 }
 
 export async function privateR2ReferenceToDataUrl(reference: string): Promise<string | null> {
@@ -282,12 +386,14 @@ export async function privateR2ReferenceToDataUrl(reference: string): Promise<st
 }
 
 function mediaTokenSecret(): string {
-  const secret =
-    process.env.HEALTH_MEDIA_SIGNING_SECRET?.trim() ||
-    process.env.AUTH_SECRET?.trim() ||
-    process.env.NEXTAUTH_SECRET?.trim();
-  if (!secret) throw new Error("health_media_signing_secret_missing");
-  return secret;
+  const dedicated = process.env.HEALTH_MEDIA_SIGNING_SECRET?.trim();
+  if (dedicated) return dedicated;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("HEALTH_MEDIA_SIGNING_SECRET is required in production");
+  }
+  const devFallback = process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
+  if (!devFallback) throw new Error("health_media_signing_secret_missing");
+  return devFallback;
 }
 
 function mediaSignature(payload: string): string {
@@ -296,25 +402,29 @@ function mediaSignature(payload: string): string {
 
 export function createPrivateMediaToken(reference: string, ttlSeconds = MEDIA_TOKEN_TTL_SECONDS): string {
   const key = privateR2Key(reference);
-  if (!key) throw new Error("invalid_private_media_reference");
-  const exp = Math.floor(Date.now() / 1000) + Math.max(60, ttlSeconds);
-  const payload = Buffer.from(JSON.stringify({ key, exp }), "utf8").toString("base64url");
+  if (!key || !key.startsWith("symptom-uploads/")) throw new Error("invalid_private_media_reference");
+  const exp = Math.floor(Date.now() / 1000) + Math.min(15 * 60, Math.max(30, ttlSeconds));
+  const payload = Buffer.from(JSON.stringify({ v: 1, key, exp }), "utf8").toString("base64url");
   return `${payload}.${mediaSignature(payload)}`;
 }
 
 export function verifyPrivateMediaToken(token: string): { key: string } | null {
   const [payload, signature] = token.split(".");
   if (!payload || !signature) return null;
-  const expected = mediaSignature(payload);
+  let expected: string;
+  try {
+    expected = mediaSignature(payload);
+  } catch {
+    return null;
+  }
   const a = Buffer.from(signature);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
   try {
-    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as {
-      key?: string;
-      exp?: number;
-    };
-    if (!parsed.key || !parsed.exp || parsed.exp < Math.floor(Date.now() / 1000)) return null;
+    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as { v?: number; key?: string; exp?: number };
+    if (parsed.v !== 1 || !parsed.key?.startsWith("symptom-uploads/") || !parsed.exp || parsed.exp < Math.floor(Date.now() / 1000)) {
+      return null;
+    }
     return { key: parsed.key };
   } catch {
     return null;
@@ -324,17 +434,14 @@ export function verifyPrivateMediaToken(token: string): { key: string } | null {
 export async function deleteFromR2(keyOrUrl: string): Promise<void> {
   const config = getR2Config();
   if (!config) throw new Error("Cloudflare R2 is not configured.");
-
   let key = keyOrUrl.trim();
   if (key.startsWith(config.publicUrl + "/")) {
     key = key.slice(config.publicUrl.length + 1);
   } else if (key.startsWith("http://") || key.startsWith("https://")) {
     return;
   }
-
   key = key.replace(/^\/+/, "");
   if (!key) return;
-
   const s3 = getClient(config);
   await s3.send(new DeleteObjectCommand({ Bucket: config.bucket, Key: key }));
 }
