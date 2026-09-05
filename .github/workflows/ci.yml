@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aether_ci
-      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/aether_ci
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aether_ci?sslmode=disable
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/aether_ci?sslmode=disable
       AUTH_SECRET: ci-only-auth-secret-ci-only-auth-secret
       NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ci-only-actions-key-ci-only-actions-key
       INTEGRATION_SECRET: ci-only-integration-secret-32-characters-minimum
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
