@@ -22,7 +22,9 @@ function isExternalApiPath(pathname: string): boolean {
 
 function sameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin')
-  if (!origin) return true
+  // Unsafe browser API routes must prove same-origin. Machine-to-machine routes
+  // are explicitly listed in EXTERNAL_API_PREFIXES and bypass this check.
+  if (!origin) return false
   try {
     const originUrl = new URL(origin)
     const host =
@@ -35,13 +37,6 @@ function sameOrigin(request: NextRequest): boolean {
   }
 }
 
-/**
- * Authentication gate + multi-tenant resolution.
- *
- * `/p/:slug/...` is rewritten internally to the existing public pages with
- * x-pharmacy-slug set. A pharmacy cookie is intentionally NOT propagated to
- * generic public routes. The URL must explicitly identify the pharmacy.
- */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const requestHeaders = new Headers(request.headers)
@@ -95,9 +90,6 @@ export async function proxy(request: NextRequest) {
   ) {
     requestHeaders.set('x-pharmacy-id', staffPharmacy)
   }
-
-  // Do not derive public tenant context from a remembered pharmacy cookie.
-  // Generic public URLs such as `/health/self-care-guide` are network pages.
 
   const needsAuth =
     pathname.startsWith('/portal') ||
@@ -176,7 +168,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Public pages pass through to enforce explicit `/p/:slug` tenant routing.
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map)$).*)',
   ],
 }
