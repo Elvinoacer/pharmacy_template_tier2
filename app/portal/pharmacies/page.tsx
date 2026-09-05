@@ -125,7 +125,7 @@ export default async function PortalPharmaciesPage() {
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7a8b84]">Join another pharmacy</h2>
         {discover.length === 0 ? (
-          <p className="mt-3 text-sm text-[#5a6b62]">You're already linked to every live pharmacy on the network.</p>
+          <p className="mt-3 text-sm text-[#5a6b62]">You&apos;re already linked to every live pharmacy on the network.</p>
         ) : (
           <ul className="mt-3 grid gap-3 sm:grid-cols-2">
             {discover.map((p) => (
@@ -139,7 +139,7 @@ export default async function PortalPharmaciesPage() {
                 <form action={chooseCustomerPharmacyAction} className="mt-4">
                   <input type="hidden" name="pharmacyId" value={p.id} />
                   <button className="btn-primary h-9 px-3 text-xs" type="submit">
-                    Join & earn welcome points
+                    Join &amp; earn welcome points
                   </button>
                 </form>
               </li>
