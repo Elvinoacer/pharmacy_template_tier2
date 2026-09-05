@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     if (!prescriptionId || !newMedicationId || !reason) {
       return NextResponse.json(
         { ok: false, error: "Prescription ID, Replacement Medication, and Substitution Reason are required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,13 +26,13 @@ export async function POST(req: NextRequest) {
 
     if (result.ok) {
       return NextResponse.json({ ok: true, message: result.message });
-    } else {
-      return NextResponse.json({ ok: false, error: result.error }, { status: 400 });
     }
-  } catch (err: any) {
+    return NextResponse.json({ ok: false, error: result.error }, { status: 400 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to perform substitution.";
     return NextResponse.json(
-      { ok: false, error: err.message || "Failed to perform substitution." },
-      { status: 500 }
+      { ok: false, error: message },
+      { status: 500 },
     );
   }
 }
