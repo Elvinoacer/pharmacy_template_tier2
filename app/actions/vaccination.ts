@@ -1,8 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSessionUser, isStaff } from "@/app/lib/auth";
+import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
+import { requirePermission } from "@/app/lib/platform/policy";
+import type { Permission } from "@/app/lib/platform/permissions";
+import type { SessionUser } from "@/app/lib/types";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import {
   bookVaccination,
@@ -29,12 +32,22 @@ export type VaccinationActionState = {
   counsellingId?: string;
 };
 
-async function staffGuard() {
-  const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
-    return { error: "Unauthorized. Licensed clinical staff permissions required." as const, user: null };
+async function permissionGuard(
+  permission: Permission,
+  error: string,
+): Promise<{ user: SessionUser; error?: never } | { user: null; error: string }> {
+  try {
+    return { user: await requirePermission(await getSessionUser(), permission) };
+  } catch {
+    return { error, user: null };
   }
-  return { user };
+}
+
+async function clinicalGuard() {
+  return permissionGuard(
+    "prescriptions.dispense",
+    "Unauthorized. Licensed clinical staff permissions required.",
+  );
 }
 
 export async function bookVaccinationAction(
@@ -175,9 +188,9 @@ export async function administerVaccinationAction(
   _prev: VaccinationActionState,
   formData: FormData,
 ): Promise<VaccinationActionState> {
-  const guard = await staffGuard();
-  if ("error" in guard && guard.error) return { error: guard.error };
-  const user = guard.user!;
+  const guard = await clinicalGuard();
+  if (guard.error) return { error: guard.error };
+  const user = guard.user;
 
   const vaccineProductId = String(formData.get("vaccineProductId") || "").trim();
   const patientName = String(formData.get("patientName") || "").trim();
@@ -235,8 +248,8 @@ export async function updateAppointmentStatusAction(
   _prev: VaccinationActionState,
   formData: FormData,
 ): Promise<VaccinationActionState> {
-  const guard = await staffGuard();
-  if ("error" in guard && guard.error) return { error: guard.error };
+  const guard = await clinicalGuard();
+  if (guard.error) return { error: guard.error };
   const id = String(formData.get("appointmentId") || "").trim();
   const status = String(formData.get("status") || "").trim();
   if (!id || !status) return { error: "Missing appointment or status." };
@@ -245,7 +258,7 @@ export async function updateAppointmentStatusAction(
       id,
       status,
       String(formData.get("staffNotes") || "").trim() || null,
-      guard.user!.id,
+      guard.user.id,
     );
     revalidatePath("/admin/vaccinations");
     return { success: `Appointment marked ${status.replace(/_/g, " ")}.`, appointmentId: id };
@@ -258,13 +271,13 @@ export async function completeObservationAction(
   _prev: VaccinationActionState,
   formData: FormData,
 ): Promise<VaccinationActionState> {
-  const guard = await staffGuard();
-  if ("error" in guard && guard.error) return { error: guard.error };
+  const guard = await clinicalGuard();
+  if (guard.error) return { error: guard.error };
   const id = String(formData.get("recordId") || "").trim();
   const outcome = String(formData.get("observationOutcome") || "uneventful").trim();
   if (!id) return { error: "Missing record." };
   try {
-    await completeObservation(id, outcome, guard.user!.id);
+    await completeObservation(id, outcome, guard.user.id);
     revalidatePath("/admin/vaccinations");
     return { success: `Observation closed (${outcome}).`, recordId: id };
   } catch (e) {
@@ -276,8 +289,8 @@ export async function recordAefiAction(
   _prev: VaccinationActionState,
   formData: FormData,
 ): Promise<VaccinationActionState> {
-  const guard = await staffGuard();
-  if ("error" in guard && guard.error) return { error: guard.error };
+  const guard = await clinicalGuard();
+  if (guard.error) return { error: guard.error };
   const immunizationId = String(formData.get("immunizationId") || "").trim();
   const symptoms = String(formData.get("symptoms") || "").trim();
   const actionTaken = String(formData.get("actionTaken") || "").trim();
@@ -293,7 +306,7 @@ export async function recordAefiAction(
       actionTaken,
       outcome: String(formData.get("outcome") || "recovering"),
       reportedToAuthority: formData.get("reportedToAuthority") === "on" || formData.get("reportedToAuthority") === "true",
-      reportedById: guard.user!.id,
+      reportedById: guard.user.id,
       notes: String(formData.get("notes") || "").trim() || null,
     });
     revalidatePath("/admin/vaccinations");
@@ -358,8 +371,8 @@ export async function completeCounsellingAction(
   _prev: VaccinationActionState,
   formData: FormData,
 ): Promise<VaccinationActionState> {
-  const guard = await staffGuard();
-  if ("error" in guard && guard.error) return { error: guard.error };
+  const guard = await clinicalGuard();
+  if (guard.error) return { error: guard.error };
   const id = String(formData.get("sessionId") || "").trim();
   if (!id) return { error: "Missing session." };
   try {
@@ -387,8 +400,11 @@ export async function saveCredentialAction(
   _prev: VaccinationActionState,
   formData: FormData,
 ): Promise<VaccinationActionState> {
-  const guard = await staffGuard();
-  if ("error" in guard && guard.error) return { error: guard.error };
+  const guard = await permissionGuard(
+    "settings.manage",
+    "Only pharmacy managers can manage immuniser credentials.",
+  );
+  if (guard.error) return { error: guard.error };
   const userId = String(formData.get("userId") || "").trim();
   const title = String(formData.get("title") || "").trim();
   const issuedBy = String(formData.get("issuedBy") || "").trim();
@@ -415,11 +431,11 @@ export async function savePolicyAction(
   _prev: VaccinationActionState,
   formData: FormData,
 ): Promise<VaccinationActionState> {
-  const guard = await staffGuard();
-  if ("error" in guard && guard.error) return { error: guard.error };
-  if (guard.user!.role !== "manager" && guard.user!.role !== "pharmacist") {
-    return { error: "Only a pharmacist or manager can change immunisation policy." };
-  }
+  const guard = await permissionGuard(
+    "settings.manage",
+    "Only pharmacy managers can change immunisation policy.",
+  );
+  if (guard.error) return { error: guard.error };
   try {
     await updateImmunizationPolicy({
       enabled: formData.get("enabled") === "on" || formData.get("enabled") === "true",
@@ -436,7 +452,7 @@ export async function savePolicyAction(
       publicDisclaimer: String(formData.get("publicDisclaimer") || "") || null,
       coldChainNotes: String(formData.get("coldChainNotes") || "") || null,
       aefiReportingContact: String(formData.get("aefiReportingContact") || "") || null,
-      updatedById: guard.user!.id,
+      updatedById: guard.user.id,
     });
     revalidatePath("/admin/vaccinations");
     revalidatePath("/vaccinations");
@@ -450,8 +466,11 @@ export async function createCampaignAction(
   _prev: VaccinationActionState,
   formData: FormData,
 ): Promise<VaccinationActionState> {
-  const guard = await staffGuard();
-  if ("error" in guard && guard.error) return { error: guard.error };
+  const guard = await permissionGuard(
+    "campaigns.create",
+    "You do not have permission to publish public-health campaigns.",
+  );
+  if (guard.error) return { error: guard.error };
   const title = String(formData.get("title") || "").trim();
   const slug = String(formData.get("slug") || "")
     .trim()
