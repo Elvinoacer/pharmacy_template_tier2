@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import CtaBanner from "../../components/CtaBanner";
 import PageHero from "../../components/PageHero";
 import { ServiceBookingForm } from "../../components/ServiceBookingForm";
-import { platform } from "../../lib/data";
 import {
   getPublicServiceBySlug,
   listPublicServices,
@@ -45,7 +44,7 @@ export default async function ServiceDetailPage({ params }: Props) {
   const session = await getSessionUser().catch(() => null);
   let defaultName = "";
   let defaultPhone = "";
-  let defaultEmail = session?.email || "";
+  const defaultEmail = session?.email || "";
   if (session?.customerId) {
     const profile = await prisma.customerProfile
       .findUnique({
