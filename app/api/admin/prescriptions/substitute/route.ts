@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUser, requireStaff } from "@/app/lib/auth";
+import { getSessionUser } from "@/app/lib/auth";
+import { requirePermission } from "@/app/lib/platform/policy";
 import { substitutePrescription } from "@/app/lib/services/dispensing";
 
 export async function POST(req: NextRequest) {
   try {
     const user = await getSessionUser();
-    requireStaff(user);
+    const actor = await requirePermission(user, "prescriptions.dispense");
 
     const body = await req.json();
     const { prescriptionId, newMedicationId, reason } = body;
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
       prescriptionId,
       newMedicationId,
       reason,
-      actorId: user!.id,
+      actorId: actor.id,
     });
 
     if (result.ok) {
