@@ -184,7 +184,7 @@ export async function administerVaccinationAction(
   formData: FormData,
 ): Promise<VaccinationActionState> {
   const guard = await clinicalGuard();
-  if (guard.error) return { error: guard.error };
+  if (!guard.user) return { error: guard.error };
   const user = guard.user;
 
   const vaccineProductId = String(formData.get("vaccineProductId") || "").trim();
@@ -244,7 +244,7 @@ export async function updateAppointmentStatusAction(
   formData: FormData,
 ): Promise<VaccinationActionState> {
   const guard = await clinicalGuard();
-  if (guard.error) return { error: guard.error };
+  if (!guard.user) return { error: guard.error };
   const id = String(formData.get("appointmentId") || "").trim();
   const status = String(formData.get("status") || "").trim();
   if (!id || !status) return { error: "Missing appointment or status." };
@@ -267,7 +267,7 @@ export async function completeObservationAction(
   formData: FormData,
 ): Promise<VaccinationActionState> {
   const guard = await clinicalGuard();
-  if (guard.error) return { error: guard.error };
+  if (!guard.user) return { error: guard.error };
   const id = String(formData.get("recordId") || "").trim();
   const outcome = String(formData.get("observationOutcome") || "uneventful").trim();
   if (!id) return { error: "Missing record." };
@@ -285,7 +285,7 @@ export async function recordAefiAction(
   formData: FormData,
 ): Promise<VaccinationActionState> {
   const guard = await clinicalGuard();
-  if (guard.error) return { error: guard.error };
+  if (!guard.user) return { error: guard.error };
   const immunizationId = String(formData.get("immunizationId") || "").trim();
   const symptoms = String(formData.get("symptoms") || "").trim();
   const actionTaken = String(formData.get("actionTaken") || "").trim();
@@ -367,7 +367,7 @@ export async function completeCounsellingAction(
   formData: FormData,
 ): Promise<VaccinationActionState> {
   const guard = await clinicalGuard();
-  if (guard.error) return { error: guard.error };
+  if (!guard.user) return { error: guard.error };
   const id = String(formData.get("sessionId") || "").trim();
   if (!id) return { error: "Missing session." };
   try {
@@ -399,7 +399,7 @@ export async function saveCredentialAction(
     "settings.manage",
     "Only pharmacy managers can manage immuniser credentials.",
   );
-  if (guard.error) return { error: guard.error };
+  if (!guard.user) return { error: guard.error };
   const userId = String(formData.get("userId") || "").trim();
   const title = String(formData.get("title") || "").trim();
   const issuedBy = String(formData.get("issuedBy") || "").trim();
@@ -430,7 +430,7 @@ export async function savePolicyAction(
     "settings.manage",
     "Only pharmacy managers can change immunisation policy.",
   );
-  if (guard.error) return { error: guard.error };
+  if (!guard.user) return { error: guard.error };
   try {
     await updateImmunizationPolicy({
       enabled: formData.get("enabled") === "on" || formData.get("enabled") === "true",
@@ -465,7 +465,7 @@ export async function createCampaignAction(
     "campaigns.create",
     "You do not have permission to publish public-health campaigns.",
   );
-  if (guard.error) return { error: guard.error };
+  if (!guard.user) return { error: guard.error };
   const title = String(formData.get("title") || "").trim();
   const slug = String(formData.get("slug") || "")
     .trim()
