@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser } from "@/app/lib/auth";
+import { prisma } from "@/app/lib/db";
 import { getTenant } from "@/app/lib/tenant";
 import { createRefillRequest } from "@/app/lib/services/crm";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { formatMpesaPhone } from "@/app/lib/services/daraja";
+import { createRefillTrackingToken } from "@/app/lib/refill-tracking";
 
 const RefillSchema = z.object({
   fullName: z.string().trim().min(2).max(120),
@@ -22,6 +24,10 @@ function clientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
   return request.headers.get("x-real-ip") || "unknown";
+}
+
+function publicReference(id: string) {
+  return `RF-${id.replaceAll("-", "").slice(0, 10).toUpperCase()}`;
 }
 
 export async function POST(request: Request) {
@@ -99,7 +105,31 @@ export async function POST(request: Request) {
       );
     }
 
-    await createRefillRequest({
+    // A double click, browser retry, or impatient re-submit should not create a
+    // second operational task for staff. Deduplicate the same pharmacy/phone/
+    // medicine within a short window and return the original tracking reference.
+    const duplicateCutoff = new Date(Date.now() - 15 * 60_000);
+    const duplicate = await prisma.refillRequest.findFirst({
+      where: {
+        pharmacyId: tenant.pharmacyId,
+        phone,
+        medicineName: { equals: parsed.data.medicine, mode: "insensitive" },
+        status: { not: "cancelled" },
+        createdAt: { gte: duplicateCutoff },
+      },
+      orderBy: { createdAt: "desc" },
+      select: { id: true },
+    });
+    if (duplicate) {
+      return NextResponse.json({
+        ok: true,
+        duplicate: true,
+        reference: publicReference(duplicate.id),
+        trackingToken: createRefillTrackingToken(duplicate.id, tenant.pharmacyId),
+      });
+    }
+
+    const refill = await createRefillRequest({
       customerId: session?.customerId ?? null,
       medicineName: parsed.data.medicine,
       rxReference: parsed.data.rxReference || undefined,
@@ -113,7 +143,12 @@ export async function POST(request: Request) {
       source: session?.customerId ? "portal" : "website",
     });
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true,
+      duplicate: false,
+      reference: publicReference(refill.id),
+      trackingToken: createRefillTrackingToken(refill.id, tenant.pharmacyId),
+    });
   } catch (err) {
     console.error("[refill]", err);
     if (err instanceof SyntaxError) {
