@@ -7,6 +7,7 @@ import {
   isPrivateR2Reference,
   uploadPrivateImageToR2,
 } from "@/app/lib/r2";
+import { sweepOrphanPrivateSymptomMedia } from "@/app/lib/services/private-media-orphans";
 
 function daysFromEnv(name: string, fallback: number, min = 1, max = 3650): number {
   const raw = Number(process.env[name]);
@@ -53,6 +54,9 @@ export async function runPrivacyRetention(): Promise<{
   mediaMessagesProcessed: number;
   mediaObjectsDeleted: number;
   mediaObjectsMigrated: number;
+  orphanMediaScanned: number;
+  orphanMediaDeleted: number;
+  orphanSweepCapped: boolean;
   mediaErrors: number;
 }> {
   const aiDays = daysFromEnv("AI_CONVERSATION_RETENTION_DAYS", 90, 7);
@@ -60,10 +64,10 @@ export async function runPrivacyRetention(): Promise<{
   const aiCutoff = new Date(Date.now() - aiDays * 24 * 60 * 60 * 1000);
   const mediaCutoff = new Date(Date.now() - mediaDays * 24 * 60 * 60 * 1000);
 
-  // AiMessage rows cascade from AiConversation, keeping deletion atomic at the
-  // conversation boundary rather than leaving detached snippets.
+  // Retain active conversations based on last activity, not their original
+  // creation date. AiMessage rows cascade at the conversation boundary.
   const aiDeleted = await prismaUnscoped.aiConversation.deleteMany({
-    where: { createdAt: { lt: aiCutoff } },
+    where: { updatedAt: { lt: aiCutoff } },
   });
 
   let mediaMessagesProcessed = 0;
@@ -147,11 +151,23 @@ export async function runPrivacyRetention(): Promise<{
     if (rows.length < 100) break;
   }
 
+  // Catch objects whose owning DB rows were already removed by a tenant/DSAR
+  // deletion or an interrupted workflow. The grace period prevents racing a
+  // fresh upload that has not yet been attached to its message row.
+  const orphanSweep = await sweepOrphanPrivateSymptomMedia({
+    graceMs: 60 * 60_000,
+    maxObjects: 10_000,
+  });
+  mediaErrors += orphanSweep.errors;
+
   return {
     aiConversationsDeleted: aiDeleted.count,
     mediaMessagesProcessed,
     mediaObjectsDeleted,
     mediaObjectsMigrated,
+    orphanMediaScanned: orphanSweep.scanned,
+    orphanMediaDeleted: orphanSweep.deleted,
+    orphanSweepCapped: orphanSweep.capped,
     mediaErrors,
   };
 }
