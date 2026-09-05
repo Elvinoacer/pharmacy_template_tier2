@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import type { LoyaltyTxType } from "@/app/generated/prisma/client";
 import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { writeAuditLog } from "@/app/lib/auth";
 import { sendDelivery } from "@/app/lib/services/delivery";
@@ -27,7 +28,7 @@ async function awardOnce(opts: {
   source: string;
   description: string;
   points: number;
-  type?: string;
+  type?: LoyaltyTxType;
 }) {
   if (!Number.isFinite(opts.points) || opts.points <= 0) return false;
 
@@ -63,7 +64,7 @@ async function awardOnce(opts: {
       data: {
         accountId: opts.accountId,
         points: opts.points,
-        type: opts.type || "earn",
+        type: opts.type ?? "earn",
         description: `${opts.description} [${opts.idempotencyKey}]`,
         source: opts.source,
       },
