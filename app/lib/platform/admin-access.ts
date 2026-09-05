@@ -86,17 +86,31 @@ function ruleMatches(rule: AdminAccessRule, pathname: string): boolean {
 }
 
 function activeMembership(user: SessionUser) {
-  return (
-    user.memberships.find(
+  if (user.activePharmacyId) {
+    // An explicitly selected tenant is authoritative. If that membership was
+    // removed or became inactive, fail closed instead of borrowing privileges
+    // from a different pharmacy membership.
+    return user.memberships.find(
       (membership) =>
         membership.status === "active" &&
         membership.pharmacyId === user.activePharmacyId,
-    ) ?? user.memberships.find((membership) => membership.status === "active")
-  );
+    );
+  }
+
+  return user.memberships.find((membership) => membership.status === "active");
+}
+
+function hasAnyActiveMembership(user: SessionUser): boolean {
+  return user.memberships.some((membership) => membership.status === "active");
 }
 
 export function canAccessAdminPath(user: SessionUser, pathname: string): boolean {
   if (user.platformAdmin) return true;
+
+  // Keep the tenant picker reachable when the selected workspace is stale.
+  if (pathname === "/admin/select" || pathname.startsWith("/admin/select/")) {
+    return hasAnyActiveMembership(user);
+  }
 
   const membership = activeMembership(user);
   if (!membership) return false;
