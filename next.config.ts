@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    // An ancestor folder has its own package-lock.json, which Next otherwise
+    // infers as the workspace root — watching it exhausts inotify watches.
+    root: __dirname,
+  },
+  experimental: {
+    // TEMPORARY: dev cache compaction stalls this machine; remove after debugging.
+    turbopackFileSystemCacheForDev: false,
+  },
   images: {
     // Serve remote stock photos as-is so the browser loads them
     // (avoids server-side Unsplash fetch timeouts during image optimization).
