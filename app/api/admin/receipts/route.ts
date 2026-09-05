@@ -20,10 +20,11 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true, receipt });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to load receipt.";
     return NextResponse.json(
-      { ok: false, error: err.message || "Failed to load receipt." },
-      { status: 500 }
+      { ok: false, error: message },
+      { status: 500 },
     );
   }
 }
