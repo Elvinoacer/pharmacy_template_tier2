@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 
 interface ClickRipple {
@@ -21,12 +21,28 @@ const OPERATIONAL_PREFIXES = [
   "/onboard",
 ];
 
+function subscribeToMediaQuery(query: string, onChange: () => void) {
+  const media = window.matchMedia(query);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+
+function useMediaQuery(query: string): boolean {
+  return useSyncExternalStore(
+    (onChange) => subscribeToMediaQuery(query, onChange),
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
+}
+
 export default function AetherCursor() {
   const pathname = usePathname() || "/";
   const operational = OPERATIONAL_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
-  const [mounted, setMounted] = useState(false);
+  const finePointer = useMediaQuery("(pointer: fine)");
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const enabled = !operational && finePointer && !reducedMotion;
   const [isVisible, setIsVisible] = useState(false);
   const [cursorType, setCursorType] = useState<"default" | "interactive" | "text" | "input">("default");
   const [isClicked, setIsClicked] = useState(false);
@@ -41,25 +57,7 @@ export default function AetherCursor() {
   const rippleCount = useRef(0);
 
   useEffect(() => {
-    if (typeof window === "undefined" || operational) {
-      setMounted(false);
-      return;
-    }
-    const finePointer = window.matchMedia("(pointer: fine)");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const evaluate = () => setMounted(finePointer.matches && !reducedMotion.matches);
-    evaluate();
-    finePointer.addEventListener("change", evaluate);
-    reducedMotion.addEventListener("change", evaluate);
-    return () => {
-      finePointer.removeEventListener("change", evaluate);
-      reducedMotion.removeEventListener("change", evaluate);
-    };
-  }, [operational]);
-
-  useEffect(() => {
-    if (!mounted) return;
+    if (!enabled) return;
 
     const lerp = (start: number, end: number, factor: number) =>
       start + (end - start) * factor;
@@ -94,10 +92,10 @@ export default function AetherCursor() {
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [mounted]);
+  }, [enabled]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!enabled) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.current.x = e.clientX;
@@ -161,9 +159,9 @@ export default function AetherCursor() {
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
     };
-  }, [mounted]);
+  }, [enabled]);
 
-  if (!mounted || operational) return null;
+  if (!enabled) return null;
 
   return (
     <div
