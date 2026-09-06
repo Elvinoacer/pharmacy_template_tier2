@@ -24,7 +24,7 @@ export default async function PortalCaregiversPage() {
     `,
   ]);
 
-  const nowMs = Number(clockRows[0]?.nowMs ?? 0n);
+  const nowMs = Number(clockRows[0]?.nowMs ?? 0);
   const caregiverRows = caregivers.map((caregiver) => ({
     ...caregiver,
     // 60s resend cooldown measured from the database clock so rendering stays deterministic.
