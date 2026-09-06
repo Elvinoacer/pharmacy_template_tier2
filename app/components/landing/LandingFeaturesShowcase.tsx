@@ -51,7 +51,6 @@ export default function LandingFeaturesShowcase() {
   return (
     <section className="relative bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600">
             Platform Features
@@ -66,12 +65,11 @@ export default function LandingFeaturesShowcase() {
             </span>
           </h2>
           <p className="mt-4 text-base text-slate-600 leading-relaxed">
-            Built on Kenya's most trusted pharmacy infrastructure. Every feature crafted to save time, 
+            Built on Kenya&apos;s most trusted pharmacy infrastructure. Every feature crafted to save time,
             reduce costs, and improve health outcomes for patients nationwide.
           </p>
         </div>
 
-        {/* Features Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature) => {
             const Icon = feature.icon;
@@ -80,20 +78,17 @@ export default function LandingFeaturesShowcase() {
                 key={feature.title}
                 className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                {/* Gradient background on hover */}
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${feature.bgGradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
                 />
 
                 <div className="relative z-10">
-                  {/* Icon with gradient */}
                   <div
                     className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.color} shadow-lg shadow-slate-200/50`}
                   >
                     <Icon className="h-7 w-7 text-white" />
                   </div>
 
-                  {/* Content */}
                   <h3 className="mt-5 text-lg font-semibold text-slate-900">
                     {feature.title}
                   </h3>
@@ -101,7 +96,6 @@ export default function LandingFeaturesShowcase() {
                     {feature.description}
                   </p>
 
-                  {/* Subtle arrow indicator */}
                   <div className="mt-5 flex items-center gap-2 text-xs font-semibold text-slate-400 group-hover:text-slate-600 transition-colors">
                     <span>Learn more</span>
                     <svg
@@ -124,7 +118,6 @@ export default function LandingFeaturesShowcase() {
           })}
         </div>
 
-        {/* Bottom CTA */}
         <div className="mt-16 text-center">
           <p className="text-sm text-slate-500">
             Ready to experience the future of pharmacy care?{" "}

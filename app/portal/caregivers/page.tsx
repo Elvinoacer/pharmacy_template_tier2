@@ -14,20 +14,28 @@ export default async function PortalCaregiversPage() {
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
 
-  const caregivers = await prisma.caregiver.findMany({
-    where: { customerId: user.customerId },
-    orderBy: { createdAt: "desc" },
-  });
+  const [caregivers, clockRows] = await Promise.all([
+    prisma.caregiver.findMany({
+      where: { customerId: user.customerId },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.$queryRaw<Array<{ nowMs: bigint }>>`
+      SELECT (EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000)::bigint AS "nowMs"
+    `,
+  ]);
 
-  const now = Date.now();
+  const nowMs = Number(clockRows[0]?.nowMs ?? 0);
   const caregiverRows = caregivers.map((caregiver) => ({
     ...caregiver,
-    // 60s resend cooldown measured from the actual last invite timestamp.
+    // 60s resend cooldown measured from the database clock so rendering stays deterministic.
     cooldownRemainingSeconds: caregiver.lastInviteSentAt
-      ? Math.max(0, 60 - Math.floor((now - new Date(caregiver.lastInviteSentAt).getTime()) / 1000))
+      ? Math.max(
+          0,
+          60 - Math.floor((nowMs - new Date(caregiver.lastInviteSentAt).getTime()) / 1000),
+        )
       : 0,
   }));
-  const active = caregivers.filter((c) => c.status === "active");
+  const active = caregivers.filter((caregiver) => caregiver.status === "active");
 
   return (
     <PortalShell
@@ -56,7 +64,7 @@ export default async function PortalCaregiversPage() {
             <div className="card-premium p-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-[#5a6b62]">Can request refills</p>
               <p className="mt-1 text-2xl font-bold text-[#0d6e5a]">
-                {active.filter((c) => c.canRequestRefills).length}
+                {active.filter((caregiver) => caregiver.canRequestRefills).length}
               </p>
             </div>
           </div>

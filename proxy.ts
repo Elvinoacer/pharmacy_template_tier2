@@ -2,10 +2,6 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { verifySessionClaim, claimIsStaff, isSafeInternalPath } from '@/app/lib/session-claim'
 
-/**
- * Tenant headers are ALWAYS set by this proxy and stripped from inbound
- * requests first — clients can never spoof tenant context or platform bypass.
- */
 const TENANT_HEADERS = ['x-platform-bypass', 'x-pharmacy-id', 'x-pharmacy-slug'] as const
 
 const EXTERNAL_API_PREFIXES = [
@@ -22,7 +18,7 @@ function isExternalApiPath(pathname: string): boolean {
 
 function sameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin')
-  if (!origin) return true
+  if (!origin) return false
   try {
     const originUrl = new URL(origin)
     const host =
@@ -35,19 +31,22 @@ function sameOrigin(request: NextRequest): boolean {
   }
 }
 
-/**
- * Authentication gate + multi-tenant resolution.
- *
- * `/p/:slug/...` is rewritten internally to the existing public pages with
- * x-pharmacy-slug set. A pharmacy cookie is intentionally NOT propagated to
- * generic public routes. The URL must explicitly identify the pharmacy.
- */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const requestHeaders = new Headers(request.headers)
 
   for (const h of TENANT_HEADERS) requestHeaders.delete(h)
   requestHeaders.set('x-pathname', pathname)
+
+  // Cron credentials are bearer-only. Reject legacy query-string credentials
+  // before any individual cron handler can inspect them, so URL logs/history
+  // can never become an authentication mechanism.
+  if (pathname.startsWith('/api/cron/') && request.nextUrl.searchParams.has('secret')) {
+    return NextResponse.json(
+      { error: 'cron_query_secret_not_allowed' },
+      { status: 400, headers: { 'Cache-Control': 'no-store' } },
+    )
+  }
 
   if (
     pathname.startsWith('/api/') &&
@@ -95,9 +94,6 @@ export async function proxy(request: NextRequest) {
   ) {
     requestHeaders.set('x-pharmacy-id', staffPharmacy)
   }
-
-  // Do not derive public tenant context from a remembered pharmacy cookie.
-  // Generic public URLs such as `/health/self-care-guide` are network pages.
 
   const needsAuth =
     pathname.startsWith('/portal') ||
@@ -176,7 +172,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Public pages pass through to enforce explicit `/p/:slug` tenant routing.
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map)$).*)',
   ],
 }

@@ -175,7 +175,7 @@ export default async function CaregiverNewRefillPage({
           <div className="card-premium p-5">
             <p className="mb-1 text-sm font-semibold text-[#0c1a14]">Refill details</p>
             <p className="mb-4 text-xs text-[#5a6b62]">
-              Select a prescription on file — medicine details are locked to the patient's record.
+              Select a prescription on file — medicine details are locked to the patient&apos;s record.
             </p>
             <CaregiverRefillForm
               customerId={patient.id}

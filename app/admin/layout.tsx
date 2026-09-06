@@ -1,11 +1,12 @@
 import "./admin.css";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { getSessionUser, isStaff } from "@/app/lib/auth";
+import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { exitImpersonationAction } from "@/app/actions/platform";
+import { canAccessAdminPath } from "@/app/lib/platform/admin-access";
 import { AlertTriangle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -26,12 +27,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/login?next=/admin");
   }
   if (!user) redirect("/login?next=/admin");
-  if (!isStaff(user.role) && !user.platformAdmin) {
-    if (user.role === "caregiver") redirect("/caregiver");
-    redirect("/portal");
-  }
+
   if (user.memberships.length === 0 && !user.platformAdmin) {
+    if (user.role === "caregiver") redirect("/caregiver");
+    if (user.role === "customer") redirect("/portal");
     redirect("/onboard");
+  }
+
+  const requestHeaders = await headers();
+  const pathname = requestHeaders.get("x-pathname") || "/admin";
+  if (!canAccessAdminPath(user, pathname)) {
+    redirect("/admin");
   }
 
   // Impersonation banner — platform admin viewing a tenant via support view.

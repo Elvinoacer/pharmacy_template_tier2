@@ -7,17 +7,20 @@ import { prisma } from "@/app/lib/db";
 import {
   AuthError,
   createSession,
+  getSessionUser,
   hashPassword,
+  verifyPassword,
   writeAuditLog,
 } from "@/app/lib/auth";
 import { validatePassword } from "@/app/lib/password";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getRequestMeta } from "@/app/lib/request-meta";
 
 export type CaregiverActionState = { error?: string; success?: string };
 
 /**
- * Accept a caregiver invitation: create (or link) a caregiver-role user,
- * mark the invite accepted, and link caregiverUserId on the Caregiver row.
+ * Accept a caregiver invitation: create a caregiver account or link the
+ * relationship to an existing account without changing that account's role.
  */
 export async function acceptCaregiverInviteAction(
   _prev: CaregiverActionState,
@@ -29,8 +32,6 @@ export async function acceptCaregiverInviteAction(
   const phone = String(formData.get("phone") || "").trim();
 
   if (!token) return { error: "Missing invitation token." };
-  const passwordError = validatePassword(password);
-  if (passwordError) return { error: passwordError };
 
   const tokenHash = createHash("sha256").update(token).digest("hex");
   const invite = await prisma.caregiverInvite.findUnique({
@@ -44,25 +45,67 @@ export async function acceptCaregiverInviteAction(
 
   if (!invite) return { error: "Invalid invitation link." };
   if (invite.acceptedAt) return { error: "This invitation has already been used." };
-  if (invite.expiresAt < new Date()) return { error: "This invitation has expired. Ask the patient to resend." };
+  if (invite.expiresAt < new Date()) {
+    return { error: "This invitation has expired. Ask the patient to resend." };
+  }
+
+  // The invitation is a bearer secret. Once it is known, bound all acceptance
+  // attempts so an exposed link cannot become an unlimited password oracle for
+  // an existing account. Fail closed if the distributed limiter is unavailable.
+  const rate = await checkRateLimitAsync(`caregiver-accept:${invite.id}`, {
+    limit: 8,
+    windowMs: 15 * 60 * 1000,
+    failClosed: true,
+  });
+  if (!rate.allowed) {
+    return {
+      error: `Too many acceptance attempts. Try again in ${rate.retryAfterSeconds}s.`,
+    };
+  }
 
   const email = invite.email.toLowerCase().trim();
   const name = fullName || invite.caregiver.caregiverName;
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, passwordHash: true },
+  });
+
+  // A caregiver invitation proves possession of the invitation, not ownership
+  // of an existing application account. Never turn it into a privileged login
+  // token. Existing users must already be signed in as that account or verify
+  // its password. OAuth-only users must sign in with their provider first.
+  if (existingUser) {
+    const currentSession = await getSessionUser().catch(() => null);
+    const alreadyAuthenticated = currentSession?.id === existingUser.id;
+    let passwordVerified = false;
+
+    if (!alreadyAuthenticated && existingUser.passwordHash && password) {
+      passwordVerified = await verifyPassword(password, existingUser.passwordHash);
+    }
+
+    if (!alreadyAuthenticated && !passwordVerified) {
+      return {
+        error: existingUser.passwordHash
+          ? "This email already has an account. Enter that account's current password to accept the caregiver invitation."
+          : "This email already has an account. Sign in with its existing sign-in method, then open the caregiver invitation again.",
+      };
+    }
+  } else {
+    const passwordError = validatePassword(password);
+    if (passwordError) return { error: passwordError };
+  }
 
   try {
     const userId = await prisma.$transaction(async (tx) => {
       let user = await tx.user.findUnique({ where: { email } });
 
       if (user) {
-        // Existing account — upgrade/ensure caregiver role and set password if missing.
-        const passwordHash = await hashPassword(password);
+        // Preserve the account's existing global role and credentials. The
+        // caregiver relationship itself grants caregiver access, allowing one
+        // account to remain a customer/staff member and a caregiver.
         user = await tx.user.update({
           where: { id: user.id },
-          data: {
-            role: "caregiver",
-            passwordHash: user.passwordHash || passwordHash,
-            emailVerified: true,
-          },
+          data: { emailVerified: true },
         });
       } else {
         const passwordHash = await hashPassword(password);
@@ -82,7 +125,7 @@ export async function acceptCaregiverInviteAction(
         where: { userId: user.id },
       });
       if (!existingProfile) {
-        await tx.customerProfile.create({
+        const profile = await tx.customerProfile.create({
           data: {
             userId: user.id,
             fullName: name,
@@ -91,7 +134,7 @@ export async function acceptCaregiverInviteAction(
           },
         });
         await tx.customerPreference.create({
-          data: { customerId: (await tx.customerProfile.findUniqueOrThrow({ where: { userId: user.id } })).id },
+          data: { customerId: profile.id },
         });
       }
 
@@ -117,6 +160,7 @@ export async function acceptCaregiverInviteAction(
     await createSession(userId, { ip: meta.ip, userAgent: meta.userAgent });
     await writeAuditLog(userId, "caregiver_invite_accepted", "caregiver", invite.caregiverId, {
       patientId: invite.caregiver.customer.id,
+      linkedExistingAccount: Boolean(existingUser),
     });
 
     revalidatePath("/caregiver");

@@ -1,8 +1,6 @@
 "use client";
 
-import { useId } from "react";
-
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useId, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { FileText, FolderTree, Type, AlertCircle, Check, Save, Wand2, Trash2, Pencil, X } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
@@ -37,17 +35,20 @@ export default function TemplateForm({
   const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (state?.success) {
-      toast.success(state.success);
-      if (!editingId) {
-        setName("");
-        setChannel("email");
-        setCategory("general");
-        setSubject("");
-        setBody("");
-      }
-    }
     if (state?.error) toast.error(state.error);
+    if (!state?.success) return;
+
+    toast.success(state.success);
+    if (editingId) return;
+
+    const frame = requestAnimationFrame(() => {
+      setName("");
+      setChannel("email");
+      setCategory("general");
+      setSubject("");
+      setBody("");
+    });
+    return () => cancelAnimationFrame(frame);
   }, [state, editingId]);
 
   async function aiDraft() {
@@ -65,15 +66,15 @@ export default function TemplateForm({
     }
   }
 
-  async function deleteTemplate(id: string, tName: string) {
-    if (!confirm(`Delete template "${tName}"?`)) return;
+  async function deleteTemplate(id: string, templateName: string) {
+    if (!confirm(`Delete template "${templateName}"?`)) return;
     try {
-      const r = await fetch("/api/admin/templates/delete", {
+      const response = await fetch("/api/admin/templates/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      if (!r.ok) throw new Error();
+      if (!response.ok) throw new Error();
       toast.success("Template deleted.");
       window.location.reload();
     } catch {
@@ -81,14 +82,14 @@ export default function TemplateForm({
     }
   }
 
-  function startEdit(t: ExistingTemplate) {
-    setEditingId(t.id);
-    setName(t.name);
-    setChannel(t.channel);
-    setCategory(t.category);
-    setSubject(t.subject || "");
-    setBody(t.body);
-    toast.info(`Editing "${t.name}" — update fields and submit.`);
+  function startEdit(template: ExistingTemplate) {
+    setEditingId(template.id);
+    setName(template.name);
+    setChannel(template.channel);
+    setCategory(template.category);
+    setSubject(template.subject || "");
+    setBody(template.body);
+    toast.info(`Editing "${template.name}" — update fields and submit.`);
   }
 
   function cancelEdit() {
@@ -100,8 +101,8 @@ export default function TemplateForm({
     setBody("");
   }
 
-  function insertVar(v: string) {
-    setBody((b) => b + (b && !b.endsWith(" ") ? " " : "") + v);
+  function insertVar(variable: string) {
+    setBody((current) => current + (current && !current.endsWith(" ") ? " " : "") + variable);
   }
 
   return (
@@ -121,14 +122,15 @@ export default function TemplateForm({
         {editingId && <input type="hidden" name="id" value={editingId} />}
 
         <div>
-          <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Template name *</label>
+          <label htmlFor={`${fieldPrefix}-name`} className="label-admin">Template name *</label>
           <div className="relative">
             <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input id={`${fieldPrefix}-1`}
+            <input
+              id={`${fieldPrefix}-name`}
               name="name"
               required
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
               placeholder="e.g. Refill ready for pickup"
               className="input-admin pl-9"
             />
@@ -137,12 +139,13 @@ export default function TemplateForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Channel</label>
-            <select id={`${fieldPrefix}-2`}
+            <label htmlFor={`${fieldPrefix}-channel`} className="label-admin">Channel</label>
+            <select
+              id={`${fieldPrefix}-channel`}
               name="channel"
               className="input-admin"
               value={channel}
-              onChange={(e) => setChannel(e.target.value)}
+              onChange={(event) => setChannel(event.target.value)}
             >
               <option value="email">Email</option>
               <option value="sms">SMS</option>
@@ -151,13 +154,14 @@ export default function TemplateForm({
             </select>
           </div>
           <div>
-            <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Category</label>
+            <label htmlFor={`${fieldPrefix}-category`} className="label-admin">Category</label>
             <div className="relative">
               <FolderTree className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-              <input id={`${fieldPrefix}-3`}
+              <input
+                id={`${fieldPrefix}-category`}
                 name="category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(event) => setCategory(event.target.value)}
                 className="input-admin pl-9"
               />
             </div>
@@ -165,14 +169,15 @@ export default function TemplateForm({
         </div>
 
         <div>
-          <label htmlFor={`${fieldPrefix}-4`} className="label-admin">Subject (email only)</label>
+          <label htmlFor={`${fieldPrefix}-subject`} className="label-admin">Subject (email only)</label>
           <div className="relative">
             <Type className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input id={`${fieldPrefix}-4`}
+            <input
+              id={`${fieldPrefix}-subject`}
               name="subject"
               placeholder="Your prescription is ready…"
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={(event) => setSubject(event.target.value)}
               className="input-admin pl-9"
             />
           </div>
@@ -180,7 +185,7 @@ export default function TemplateForm({
 
         <div>
           <div className="flex items-center justify-between">
-            <label className="label-admin">Body *</label>
+            <label htmlFor={`${fieldPrefix}-body`} className="label-admin">Body *</label>
             <button
               type="button"
               onClick={aiDraft}
@@ -192,34 +197,31 @@ export default function TemplateForm({
             </button>
           </div>
           <textarea
+            id={`${fieldPrefix}-body`}
             name="body"
             required
             rows={5}
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={(event) => setBody(event.target.value)}
             placeholder="Hi {{name}}, your prescription {{medicine}} is ready for pickup at {{branch}}."
             className="input-admin resize-y"
           />
           <div className="mt-1.5 flex flex-wrap gap-1">
-            {VARS.map((v) => (
+            {VARS.map((variable) => (
               <button
-                key={v}
+                key={variable}
                 type="button"
-                onClick={() => insertVar(v)}
+                onClick={() => insertVar(variable)}
                 className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
               >
-                {v}
+                {variable}
               </button>
             ))}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="submit"
-            disabled={pending}
-            className="btn-admin flex-1 !rounded-xl py-2.5 disabled:opacity-50"
-          >
+          <button type="submit" disabled={pending} className="btn-admin flex-1 !rounded-xl py-2.5 disabled:opacity-50">
             {pending ? (
               <><span className="typing-dot" /> Saving…</>
             ) : (
@@ -242,37 +244,34 @@ export default function TemplateForm({
         <div className="border-t border-[var(--admin-border)] pt-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide admin-soft">Manage templates</p>
           <ul className="space-y-2">
-            {templates.map((t) => (
-              <li
-                key={t.id}
-                className="flex items-start gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
-              >
+            {templates.map((template) => (
+              <li key={template.id} className="flex items-start gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold admin-text">{t.name}</p>
+                  <p className="font-semibold admin-text">{template.name}</p>
                   <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs admin-muted">
-                    <span className="capitalize">{t.channel}</span>
+                    <span className="capitalize">{template.channel}</span>
                     <span>·</span>
-                    <span className="inline-flex items-center gap-0.5">
-                      <FolderTree className="h-2.5 w-2.5" /> {t.category}
-                    </span>
+                    <span className="inline-flex items-center gap-0.5"><FolderTree className="h-2.5 w-2.5" /> {template.category}</span>
                   </div>
-                  {t.subject && <p className="mt-1 text-sm font-medium admin-text">{t.subject}</p>}
-                  <p className="mt-1 line-clamp-2 text-xs admin-muted">{t.body}</p>
+                  {template.subject && <p className="mt-1 text-sm font-medium admin-text">{template.subject}</p>}
+                  <p className="mt-1 line-clamp-2 text-xs admin-muted">{template.body}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => startEdit(t)}
+                    onClick={() => startEdit(template)}
                     className="rounded-full p-1 admin-soft transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
                     title="Edit"
+                    aria-label={`Edit ${template.name}`}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     type="button"
-                    onClick={() => deleteTemplate(t.id, t.name)}
+                    onClick={() => deleteTemplate(template.id, template.name)}
                     className="rounded-full p-1 admin-soft transition hover:bg-rose-500/10 hover:text-rose-600"
                     title="Delete"
+                    aria-label={`Delete ${template.name}`}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>

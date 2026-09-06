@@ -1,171 +1,196 @@
 import type { NextRequest } from "next/server";
-import { prisma } from "@/app/lib/db";
+import type { LoyaltyTxType } from "@/app/generated/prisma/client";
+import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { writeAuditLog } from "@/app/lib/auth";
 import { sendDelivery } from "@/app/lib/services/delivery";
 import { dispatchPushToUser } from "@/app/lib/services/push";
-import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
+import { isCronAuthorized } from "@/app/lib/cron-auth";
 
 export const runtime = "nodejs";
 
-function authorized(request: NextRequest) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret) return process.env.NODE_ENV !== "production";
-  const authHeader = request.headers.get("authorization");
-  const querySecret = request.nextUrl.searchParams.get("secret");
-  return authHeader === `Bearer ${secret}` || querySecret === secret;
+function tierFor(points: number) {
+  return points >= 1000 ? "platinum" : points >= 400 ? "gold" : points >= 150 ? "silver" : "bronze";
 }
 
 /**
- * Daily cron — runs at 06:00 in the project timezone. Three jobs:
- *
- * 1. Birthday bonus: any customer whose DOB == today gets +25 points and a greeting.
- * 2. Refill completion: any refill collected in the last 24h credits +10 points.
- * 3. Order bonus: any order paid in the last 24h credits 1 point per KES 100 spent
- *    (or local currency — multiplier configurable).
- *
- * Configure: `0 6 * * * curl -H "Authorization: Bearer $CRON_SECRET" https://…/api/cron/loyalty`
+ * Serialize one logical loyalty award using a transaction-scoped PostgreSQL
+ * advisory lock. The lock + exact account/source/idempotency marker makes the
+ * balance increment and ledger insert atomic across retries/overlapping workers.
  */
+async function awardOnce(opts: {
+  accountId: string;
+  idempotencyKey: string;
+  source: string;
+  description: string;
+  points: number;
+  type?: LoyaltyTxType;
+}) {
+  if (!Number.isFinite(opts.points) || opts.points <= 0) return false;
 
-async function processBirthdays(): Promise<number> {
-  const today = new Date();
-  const month = today.getMonth() + 1; // 1-12
-  const day = today.getDate();
-  // Postgres date_part for month and day.
-  const customers = await prisma.customerProfile.findMany({
-    where: {
-      dateOfBirth: { not: null },
-      // Approximate match using raw SQL — Prisma doesn't support month/day extraction.
-    },
-    include: {
-      user: { select: { id: true, email: true } },
-      loyaltyAccounts: { take: 1 },
-      preferences: true,
-    },
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${opts.idempotencyKey}))`;
+
+    const marker = `[${opts.idempotencyKey}]`;
+    const existing = await tx.loyaltyTransaction.findFirst({
+      where: {
+        accountId: opts.accountId,
+        source: opts.source,
+        description: { endsWith: marker },
+      },
+      select: { id: true },
+    });
+    if (existing) return false;
+
+    const account = await tx.loyaltyAccount.findUnique({
+      where: { id: opts.accountId },
+      select: { points: true },
+    });
+    if (!account) return false;
+
+    const nextPoints = account.points + opts.points;
+    await tx.loyaltyAccount.update({
+      where: { id: opts.accountId },
+      data: {
+        points: { increment: opts.points },
+        lifetimePoints: { increment: opts.points },
+        tier: tierFor(nextPoints),
+      },
+    });
+    await tx.loyaltyTransaction.create({
+      data: {
+        accountId: opts.accountId,
+        points: opts.points,
+        type: opts.type ?? "earn",
+        description: `${opts.description} ${marker}`,
+        source: opts.source,
+      },
+    });
+    return true;
   });
-  // Filter in TS for those whose DOB month/day matches today.
-  const birthdayCustomers = customers.filter((c) => {
-    if (!c.dateOfBirth) return false;
-    const dob = new Date(c.dateOfBirth);
-    return dob.getMonth() + 1 === month && dob.getDate() === day;
+}
+
+async function processBirthdays(pharmacyId: string, pharmacyName: string): Promise<number> {
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+  const year = today.getFullYear();
+
+  // Filter birthdays in PostgreSQL rather than loading every loyalty member for
+  // every pharmacy into application memory on every daily run.
+  const due = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT la.id
+      FROM loyalty_accounts la
+      JOIN customer_profiles cp ON cp.id = la.customer_id
+     WHERE la.pharmacy_id = ${pharmacyId}::uuid
+       AND cp.date_of_birth IS NOT NULL
+       AND EXTRACT(MONTH FROM cp.date_of_birth) = ${month}
+       AND EXTRACT(DAY FROM cp.date_of_birth) = ${day}
+  `;
+  if (!due.length) return 0;
+
+  const accounts = await prisma.loyaltyAccount.findMany({
+    where: { pharmacyId, id: { in: due.map((r) => r.id) } },
+    include: {
+      customer: {
+        include: {
+          user: { select: { id: true, email: true } },
+          preferences: true,
+        },
+      },
+    },
   });
 
   let count = 0;
-  for (const c of birthdayCustomers) {
-    const account = c.loyaltyAccounts?.[0];
-    if (!account) continue;
-    // Check if we already credited birthday bonus this year.
-    const startOfYear = new Date(today.getFullYear(), 0, 1);
-    const existing = await prisma.loyaltyTransaction.findFirst({
-      where: {
-        accountId: account.id,
-        type: "bonus",
-        description: { contains: "Birthday" },
-        createdAt: { gte: startOfYear },
-      },
-    });
-    if (existing) continue;
-
+  for (const account of accounts) {
     const bonus = 25;
-    const newPoints = account.points + bonus;
-    const newLifetime = account.lifetimePoints + bonus;
-    await prisma.$transaction([
-      prisma.loyaltyAccount.update({
-        where: { id: account.id },
-        data: {
-          points: newPoints,
-          lifetimePoints: newLifetime,
-          tier: newPoints >= 1000 ? "platinum" : newPoints >= 400 ? "gold" : newPoints >= 150 ? "silver" : "bronze",
-        },
-      }),
-      prisma.loyaltyTransaction.create({
-        data: {
-          accountId: account.id,
-          points: bonus,
-          type: "bonus",
-          description: "Birthday bonus",
-          source: "cron:birthday",
-        },
-      }),
-    ]);
+    const key = `birthday:${pharmacyId}:${account.customerId}:${year}`;
+    const awarded = await awardOnce({
+      accountId: account.id,
+      idempotencyKey: key,
+      source: "cron:birthday",
+      description: "Birthday bonus",
+      points: bonus,
+      type: "bonus",
+    });
+    if (!awarded) continue;
 
-    // Send a birthday greeting if customer has consented to birthday messages.
+    const c = account.customer;
     if (c.preferences?.birthdayMessages !== false && c.user?.email) {
       await sendDelivery({
         channel: "email",
         recipient: { email: c.user.email, phone: c.phone },
-        subject: "Happy birthday from Aether Pharmacy! 🎂",
-        body: `Hi ${c.fullName},\n\nWishing you a wonderful birthday from all of us at Aether Pharmacy! We've added **${bonus} bonus points** to your loyalty account as a small gift.\n\nStay well,\nThe Aether Pharmacy Team`,
+        subject: `Happy birthday from ${pharmacyName}! 🎂`,
+        body: `Hi ${c.fullName},\n\nWishing you a wonderful birthday from all of us at ${pharmacyName}! We've added ${bonus} bonus points to your loyalty account.\n\nStay well,\n${pharmacyName}`,
       }).catch(() => {});
-      if (c.user.id) {
-        await dispatchPushToUser(c.user.id, {
-          title: "Happy birthday! 🎂",
-          body: `You earned ${bonus} bonus points. Have a wonderful day!`,
-          url: "/portal/loyalty",
-          data: { tag: "birthday" },
-        }).catch(() => {});
-      }
+      await dispatchPushToUser(c.user.id, {
+        title: `Happy birthday from ${pharmacyName}! 🎂`,
+        body: `You earned ${bonus} bonus points. Have a wonderful day!`,
+        url: "/portal/loyalty",
+        data: { tag: "birthday", pharmacyId },
+      }).catch(() => {});
     }
     count++;
   }
   return count;
 }
 
-async function processRefillCompletions(): Promise<number> {
-  const since = new Date();
-  since.setHours(since.getHours() - 24);
+async function processRefillCompletions(pharmacyId: string): Promise<number> {
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const completed = await prisma.refillRequest.findMany({
-    where: { status: "collected", statusUpdatedAt: { gte: since } },
-    include: { customer: { include: { loyaltyAccounts: { take: 1 } } } },
+    where: {
+      pharmacyId,
+      status: "collected",
+      statusUpdatedAt: { gte: since },
+      customerId: { not: null },
+    },
+    select: {
+      id: true,
+      pharmacyId: true,
+      customerId: true,
+      medicineName: true,
+    },
   });
+  const customerIds = [...new Set(completed.map((r) => r.customerId).filter((v): v is string => Boolean(v)))];
+  if (!customerIds.length) return 0;
+  const accounts = await prisma.loyaltyAccount.findMany({
+    where: { pharmacyId, customerId: { in: customerIds } },
+    select: { id: true, customerId: true },
+  });
+  const byCustomer = new Map(accounts.map((a) => [a.customerId, a.id]));
+
   let count = 0;
-  for (const r of completed) {
-    if (!r.customer?.loyaltyAccounts?.[0]) continue;
-    // Check we haven't already credited for this refill.
-    const existing = await prisma.loyaltyTransaction.findFirst({
-      where: {
-        accountId: r.customer.loyaltyAccounts?.[0].id,
-        source: "cron:refill_completed",
-        description: { contains: r.id },
-      },
-    });
-    if (existing) continue;
+  for (const refill of completed) {
+    if (!refill.customerId) continue;
+    const accountId = byCustomer.get(refill.customerId);
+    if (!accountId) continue;
+
     const bonus = 10;
-    const newPoints = r.customer.loyaltyAccounts?.[0].points + bonus;
-    await prisma.$transaction([
-      prisma.loyaltyAccount.update({
-        where: { id: r.customer.loyaltyAccounts?.[0].id },
-        data: {
-          points: newPoints,
-          lifetimePoints: r.customer.loyaltyAccounts?.[0].lifetimePoints + bonus,
-          tier: newPoints >= 1000 ? "platinum" : newPoints >= 400 ? "gold" : newPoints >= 150 ? "silver" : "bronze",
-        },
-      }),
-      prisma.loyaltyTransaction.create({
-        data: {
-          accountId: r.customer.loyaltyAccounts?.[0].id,
-          points: bonus,
-          type: "earn",
-          description: `Refill completed (${r.medicineName}, ${r.id.slice(0, 8)})`,
-          source: "cron:refill_completed",
-        },
-      }),
-    ]);
-    count++;
+    const key = `refill:${refill.pharmacyId}:${refill.id}`;
+    if (
+      await awardOnce({
+        accountId,
+        idempotencyKey: key,
+        source: "cron:refill_completed",
+        description: `Refill completed (${refill.medicineName})`,
+        points: bonus,
+      })
+    ) count++;
   }
   return count;
 }
 
-async function processOrderBonuses(): Promise<number> {
-  const since = new Date();
-  since.setHours(since.getHours() - 24);
+async function processOrderBonuses(pharmacyId: string): Promise<number> {
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const integration = await prisma.pharmacyIntegration.findUnique({
+    where: { pharmacyId },
+    select: { loyaltySpendMultiplier: true },
+  });
+  const multiplier = Number(integration?.loyaltySpendMultiplier ?? 0.01);
 
-  // ── Commerce ledger path (audit §23, §62) ──
-  // Drive loyalty from *completed payments*, not order.status='paid'/'updatedAt'.
-  // A successfully paid counter order can later become "fulfilled" — the old
-  // logic would miss those. The new logic uses Payment.status='completed'
-  // joined via Order.customer → LoyaltyAccount.
   const payments = await prisma.payment.findMany({
     where: {
+      pharmacyId,
       status: "completed",
       OR: [
         { paidAt: { gte: since } },
@@ -176,76 +201,115 @@ async function processOrderBonuses(): Promise<number> {
       order: {
         select: {
           id: true,
+          pharmacyId: true,
           customerId: true,
-          status: true,
           waived: true,
-          customer: { include: { loyaltyAccounts: { take: 1 } } },
         },
       },
     },
   });
+  const customerIds = [...new Set(payments.map((p) => p.order?.customerId).filter((v): v is string => Boolean(v)))];
+  if (!customerIds.length) return 0;
+  const accounts = await prisma.loyaltyAccount.findMany({
+    where: { pharmacyId, customerId: { in: customerIds } },
+    select: { id: true, customerId: true },
+  });
+  const byCustomer = new Map(accounts.map((a) => [a.customerId, a.id]));
 
   let count = 0;
-  for (const p of payments) {
-    if (!p.order?.customer?.loyaltyAccounts?.[0]) continue;
-    if (p.order.waived) continue; // waived orders do not earn points
-    const accountId = p.order.customer.loyaltyAccounts?.[0].id;
-    const existing = await prisma.loyaltyTransaction.findFirst({
-      where: {
+  for (const payment of payments) {
+    const order = payment.order;
+    if (!order?.customerId || order.waived || order.pharmacyId !== pharmacyId) continue;
+    const accountId = byCustomer.get(order.customerId);
+    if (!accountId) continue;
+
+    const points = Math.max(1, Math.floor(Number(payment.amount) * multiplier));
+    const key = `order:${pharmacyId}:${order.id}`;
+    if (
+      await awardOnce({
         accountId,
+        idempotencyKey: key,
         source: "cron:order_paid",
-        description: { contains: p.order.id },
-      },
-    });
-    if (existing) continue;
-    const multiplier = Number(process.env.LOYALTY_SPEND_MULTIPLIER || "0.01");
-    const points = Math.max(1, Math.floor(Number(p.amount) * multiplier));
-    const newPoints = p.order.customer.loyaltyAccounts?.[0].points + points;
-    await prisma.$transaction([
-      prisma.loyaltyAccount.update({
-        where: { id: accountId },
-        data: {
-          points: newPoints,
-          lifetimePoints: p.order.customer.loyaltyAccounts?.[0].lifetimePoints + points,
-          tier: newPoints >= 1000 ? "platinum" : newPoints >= 400 ? "gold" : newPoints >= 150 ? "silver" : "bronze",
-        },
-      }),
-      prisma.loyaltyTransaction.create({
-        data: {
-          accountId,
-          points,
-          type: "earn",
-          description: `Order paid (${p.order.id.slice(0, 8)})`,
-          source: "cron:order_paid",
-        },
-      }),
-    ]);
-    count++;
+        description: `Order paid (${order.id.slice(0, 8)})`,
+        points,
+      })
+    ) count++;
   }
   return count;
 }
 
-export async function GET(request: NextRequest) {
-  return withPlatformBypass(async () => runLoyaltyCron(request));
+async function processTenant(pharmacyId: string, pharmacyName: string) {
+  return withPharmacy(pharmacyId, async () => {
+    const [birthdays, refills, orders] = await Promise.all([
+      processBirthdays(pharmacyId, pharmacyName),
+      processRefillCompletions(pharmacyId),
+      processOrderBonuses(pharmacyId),
+    ]);
+
+    await writeAuditLog(null, "cron_loyalty_processed", "loyalty_account", undefined, {
+      pharmacyId,
+      birthdays,
+      refills,
+      orders,
+    });
+    return { pharmacyId, birthdays, refills, orders };
+  });
 }
 
 async function runLoyaltyCron(request: NextRequest) {
-  if (!authorized(request)) {
+  if (!isCronAuthorized(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const [birthdays, refills, orders] = await Promise.all([
-    processBirthdays(),
-    processRefillCompletions(),
-    processOrderBonuses(),
-  ]);
-  await writeAuditLog(null, "cron_loyalty_processed", "loyalty_account", undefined, {
-    birthdays,
-    refills,
-    orders,
-  });
-  return Response.json({ birthdays, refills, orders });
+
+  // Global bypass is used only to enumerate tenants. Business writes run under
+  // explicit tenant context below, reducing the blast radius of missing filters.
+  const pharmacies = await withPlatformBypass(() =>
+    prismaUnscoped.pharmacy.findMany({
+      select: { id: true, name: true },
+      orderBy: { createdAt: "asc" },
+    }),
+  );
+
+  const results: Array<{
+    pharmacyId: string;
+    birthdays: number;
+    refills: number;
+    orders: number;
+    error?: string;
+  }> = [];
+
+  for (const pharmacy of pharmacies) {
+    try {
+      results.push(await processTenant(pharmacy.id, pharmacy.name));
+    } catch (err) {
+      console.error("[cron loyalty] tenant failed", pharmacy.id, err);
+      results.push({
+        pharmacyId: pharmacy.id,
+        birthdays: 0,
+        refills: 0,
+        orders: 0,
+        error: err instanceof Error ? err.message : "tenant_failed",
+      });
+    }
+  }
+
+  const totals = results.reduce(
+    (acc, row) => ({
+      birthdays: acc.birthdays + row.birthdays,
+      refills: acc.refills + row.refills,
+      orders: acc.orders + row.orders,
+      failedTenants: acc.failedTenants + (row.error ? 1 : 0),
+    }),
+    { birthdays: 0, refills: 0, orders: 0, failedTenants: 0 },
+  );
+
+  return Response.json({ ...totals, tenants: results.length, results });
+}
+
+export async function GET(request: NextRequest) {
+  return runLoyaltyCron(request);
 }
 
 export async function POST(request: NextRequest) {
-  return GET(request);
+  return runLoyaltyCron(request);
 }

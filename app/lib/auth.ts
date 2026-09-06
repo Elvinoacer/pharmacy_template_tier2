@@ -6,15 +6,14 @@ import { cookies } from "next/headers";
 import { prisma } from "@/app/lib/db";
 import type { SessionUser, UserRole } from "@/app/lib/types";
 import { STAFF_ROLES } from "@/app/lib/types";
-import { UserRole as PrismaUserRole } from "@/app/generated/prisma/client";
+import { UserRole as PrismaUserRole, type Prisma } from "@/app/generated/prisma/client";
 import { addTimelineEvent, writeAuditLog } from "@/app/lib/timeline";
 import {
   SESSION_CLAIM_COOKIE,
   signSessionClaim,
 } from "@/app/lib/session-claim";
 import { parseLocalDateInput } from "@/app/lib/time";
-import { prismaUnscoped } from "@/app/lib/db";
-import { STAFF_PHARMACY_COOKIE, PUBLIC_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
+import { STAFF_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 import { getTenant } from "@/app/lib/tenant";
 
 export { addTimelineEvent, writeAuditLog };
@@ -242,6 +241,19 @@ export function requireStaff(user: SessionUser | null): SessionUser {
   if (!user || (!isStaff(user.role) && !user.platformAdmin)) {
     throw new AuthError("Staff access required", 403);
   }
+  if (user.platformAdmin) return user;
+
+  const membership = user.activePharmacyId
+    ? user.memberships.find(
+        (candidate) =>
+          candidate.status === "active" &&
+          candidate.pharmacyId === user.activePharmacyId,
+      )
+    : user.memberships.find((candidate) => candidate.status === "active");
+
+  if (!membership) {
+    throw new AuthError("Active pharmacy membership required", 403);
+  }
   return user;
 }
 
@@ -368,14 +380,7 @@ export async function registerCustomer(input: {
 }
 
 async function provisionCustomerAtPharmacy(
-  tx: {
-    customerPharmacy: { upsert: Function };
-    loyaltyAccount: { create: Function };
-    loyaltyTransaction: { create: Function };
-    timelineEvent: { create: Function };
-    segment: { findFirst: Function };
-    customerSegment: { create: Function };
-  },
+  tx: Prisma.TransactionClient,
   opts: {
     profileId: string;
     userId: string;

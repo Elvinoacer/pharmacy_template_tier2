@@ -45,10 +45,14 @@ export function CustomerPicker({
   const ref = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Controlled value is authoritative. A cached customer from a previous value
+  // is never rendered while the new record is being resolved.
+  const displayedSelection = value && selected?.id === value ? selected : null;
+
   // Click-outside to close.
   useEffect(() => {
-    const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+    const onDoc = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
         setOpen(false);
       }
     };
@@ -64,13 +68,13 @@ export function CustomerPicker({
       setLoading(true);
       try {
         const url = `/api/customers/search?q=${encodeURIComponent(query)}`;
-        const r = await fetch(url, { cache: "no-store" });
-        if (!r.ok) {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) {
           setOptions([]);
           return;
         }
-        const j = (await r.json()) as { customers?: CustomerOption[] };
-        setOptions(j.customers ?? []);
+        const payload = (await response.json()) as { customers?: CustomerOption[] };
+        setOptions(payload.customers ?? []);
       } catch {
         setOptions([]);
       } finally {
@@ -84,23 +88,21 @@ export function CustomerPicker({
 
   // Resolve the currently-selected customer's display name when value is set externally.
   useEffect(() => {
-    if (!value) {
-      setSelected(null);
-      return;
-    }
-    // Fetch the customer record by ID (one-off).
+    if (!value || selected?.id === value) return;
+
     let cancelled = false;
     fetch(`/api/customers/search?id=${encodeURIComponent(value)}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j: { customer?: CustomerOption } | null) => {
-        if (!cancelled && j?.customer) setSelected(j.customer);
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload: { customer?: CustomerOption } | null) => {
+        if (!cancelled && payload?.customer?.id === value) {
+          setSelected(payload.customer);
+        }
       })
-      .catch(() => {})
-      .finally(() => {});
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, [value]);
+  }, [selected?.id, value]);
 
   const inputCls =
     variant === "admin"
@@ -112,7 +114,7 @@ export function CustomerPicker({
       <input type="hidden" name={name} value={value || ""} required={required} />
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen((current) => !current)}
         className={`${inputCls} w-full cursor-pointer text-left`}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -122,13 +124,13 @@ export function CustomerPicker({
             variant === "admin" ? "admin-soft" : "text-[#8a9a92]"
           }`}
         />
-        <span className={selected ? "" : variant === "admin" ? "admin-soft" : "text-[#8a9a92]"}>
-          {selected ? (
+        <span className={displayedSelection ? "" : variant === "admin" ? "admin-soft" : "text-[#8a9a92]"}>
+          {displayedSelection ? (
             <>
-              <strong>{selected.fullName}</strong>
-              <span className="ml-1 text-xs opacity-70">· {selected.email}</span>
-              {typeof selected.points === "number" && (
-                <span className="ml-1 text-xs opacity-70">· {selected.points} pts</span>
+              <strong>{displayedSelection.fullName}</strong>
+              <span className="ml-1 text-xs opacity-70">· {displayedSelection.email}</span>
+              {typeof displayedSelection.points === "number" && (
+                <span className="ml-1 text-xs opacity-70">· {displayedSelection.points} pts</span>
               )}
             </>
           ) : (
@@ -154,7 +156,7 @@ export function CustomerPicker({
             <input
               autoFocus
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(event) => setQuery(event.target.value)}
               placeholder="Type to search…"
               className={`w-full rounded-lg border px-3 py-1.5 text-sm outline-none ${
                 variant === "admin"
@@ -173,29 +175,29 @@ export function CustomerPicker({
               </li>
             )}
             {!loading &&
-              options.map((c) => (
-                <li key={c.id}>
+              options.map((customer) => (
+                <li key={customer.id}>
                   <button
                     type="button"
                     onClick={() => {
-                      setSelected(c);
+                      setSelected(customer);
                       setOpen(false);
-                      onChange?.(c.id);
+                      onChange?.(customer.id);
                     }}
                     className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm transition hover:bg-[var(--admin-hover)] ${
                       variant === "admin" ? "admin-text" : "text-[#0c1a14]"
                     }`}
                   >
                     <span className="min-w-0">
-                      <span className="block truncate font-medium">{c.fullName}</span>
+                      <span className="block truncate font-medium">{customer.fullName}</span>
                       <span className={`block truncate text-[10px] ${variant === "admin" ? "admin-soft" : "text-[#8a9a92]"}`}>
-                        {c.email}
-                        {c.phone ? ` · ${c.phone}` : ""}
+                        {customer.email}
+                        {customer.phone ? ` · ${customer.phone}` : ""}
                       </span>
                     </span>
-                    {typeof c.points === "number" && (
+                    {typeof customer.points === "number" && (
                       <span className="shrink-0 text-[10px] font-semibold opacity-70">
-                        {c.points} pts
+                        {customer.points} pts
                       </span>
                     )}
                   </button>
@@ -205,7 +207,7 @@ export function CustomerPicker({
         </div>
       )}
 
-      {selected && (
+      {displayedSelection && (
         <button
           type="button"
           onClick={() => {

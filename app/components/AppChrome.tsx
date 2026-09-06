@@ -1,17 +1,24 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import AiChatbot from "./AiChatbot";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import NavbarNavigationFix from "./NavbarNavigationFix";
-import { LiveAlertCenter } from "./LiveAlertCenter";
-import QuickPageAssist from "./assist/QuickPageAssist";
-import VerificationStatusModal from "./VerificationStatusModal";
 import type { PortalSessionHint } from "@/app/lib/portal-dest";
 import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/brand";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
 import { platform } from "@/app/lib/data";
+
+const AiChatbot = dynamic(() => import("./AiChatbot"), { ssr: false });
+const LiveAlertCenter = dynamic(
+  () => import("./LiveAlertCenter").then((mod) => mod.LiveAlertCenter),
+  { ssr: false },
+);
+const QuickPageAssist = dynamic(() => import("./assist/QuickPageAssist"), { ssr: false });
+const VerificationStatusModal = dynamic(() => import("./VerificationStatusModal"), {
+  ssr: false,
+});
 
 const BARE_PREFIXES = [
   "/portal",
@@ -41,14 +48,9 @@ export default function AppChrome({
   const pathname = usePathname() || "/";
   const bare = BARE_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
-  if (bare) {
-    return <>{children}</>;
-  }
+  if (bare) return <>{children}</>;
 
   const surface = publicSurface(pathname, pharmacySlug);
-  // A non-platform page with no selected tenant must never inherit Aether's
-  // identity. It remains useful as a generic public template until a tenant
-  // is selected, while the platform landing pages continue to use Aether.
   const brand =
     surface === "storefront"
       ? storefrontBrand ?? unscopedPublicBrand()
@@ -76,12 +78,9 @@ export default function AppChrome({
         <div id="site-footer" className="shrink-0">
           <Footer surface={surface} brand={brand} clearMobileActionBar={hasLandingMobileActionBar} />
         </div>
-        {surface === "storefront" && <AiChatbot />}
-        {surface === "storefront" && <LiveAlertCenter audience="public" />}
-        {/* Non-disruptive wayfinding helper: explains the current page and
-            routes users to what they need (available on every public page). */}
+        {surface === "storefront" ? <AiChatbot /> : null}
+        {surface === "storefront" ? <LiveAlertCenter audience="public" /> : null}
         <QuickPageAssist />
-        {/* One-time modal when a pharmacy owner returns after approve / reject / needs_info */}
         {sessionUser ? <VerificationStatusModal /> : null}
       </div>
     </TenantBrandProvider>

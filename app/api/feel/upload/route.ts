@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import {
-  isR2Configured,
+  isPrivateR2Configured,
   R2_MAX_BYTES,
-  uploadToR2,
+  uploadPrivateImageToR2,
 } from "@/app/lib/r2";
 import { assertSessionAccess } from "@/app/lib/services/symptom-triage";
 
@@ -18,7 +18,9 @@ function clientIp(request: Request): string {
 /**
  * POST /api/feel/upload
  * Multipart: file (image), sessionId, guestKey (for guests)
- * Rate-limited public upload scoped to an existing symptom session.
+ * Sensitive symptom media is stored in a private R2 bucket. The returned
+ * `url` is an internal private reference consumed by the chat API; it is not
+ * a publicly fetchable object URL.
  */
 export async function POST(req: Request) {
   const rl = await checkRateLimitAsync(`feel-upload:${clientIp(req)}`, {
@@ -29,16 +31,16 @@ export async function POST(req: Request) {
   if (!rl.allowed) {
     return NextResponse.json(
       { error: `Too many uploads. Try again in ${rl.retryAfterSeconds}s.` },
-      { status: 429 },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } },
     );
   }
 
-  if (!isR2Configured()) {
+  if (!isPrivateR2Configured()) {
     return NextResponse.json(
       {
-        error: "r2_not_configured",
+        error: "private_storage_not_configured",
         message:
-          "Image uploads are not configured. You can still describe symptoms in text, or contact the pharmacy directly.",
+          "Private health-media storage is not configured. You can still describe symptoms in text or contact the pharmacy directly.",
       },
       { status: 503 },
     );
@@ -84,10 +86,13 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await uploadToR2(file, { folder: "symptom-uploads" });
+    const result = await uploadPrivateImageToR2(file, {
+      folder: `symptom-uploads/${sessionId}`,
+    });
     return NextResponse.json({
       ok: true,
-      url: result.url,
+      // Backward-compatible response property consumed by the current client.
+      url: result.reference,
       key: result.key,
       contentType: result.contentType,
       size: result.size,

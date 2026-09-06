@@ -1,8 +1,6 @@
 "use client";
 
-import { useId } from "react";
-
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { toast } from "@/app/components/Toaster";
 import { Megaphone, FileText, Calendar, AlertCircle, Check, Save, Wand2, Zap } from "lucide-react";
@@ -29,8 +27,11 @@ export default function CampaignForm({
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (state?.success) {
-      toast.success(state.success);
+    if (state?.error) toast.error(state.error);
+    if (!state?.success) return;
+
+    toast.success(state.success);
+    const frame = requestAnimationFrame(() => {
       setBody("");
       setName("");
       setDescription("");
@@ -38,8 +39,8 @@ export default function CampaignForm({
       setScheduledFor("");
       setMode("draft");
       formRef.current?.reset();
-    }
-    if (state?.error) toast.error(state.error);
+    });
+    return () => cancelAnimationFrame(frame);
   }, [state]);
 
   async function aiDraft() {
@@ -71,14 +72,15 @@ export default function CampaignForm({
       )}
 
       <div>
-        <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Campaign name *</label>
+        <label htmlFor={`${fieldPrefix}-name`} className="label-admin">Campaign name *</label>
         <div className="relative">
           <Megaphone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input id={`${fieldPrefix}-1`}
+          <input
+            id={`${fieldPrefix}-name`}
             name="name"
             required
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(event) => setName(event.target.value)}
             placeholder="e.g. Flu season vaccination drive"
             className="input-admin pl-9"
           />
@@ -86,11 +88,12 @@ export default function CampaignForm({
       </div>
 
       <div>
-        <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Description</label>
-        <input id={`${fieldPrefix}-2`}
+        <label htmlFor={`${fieldPrefix}-description`} className="label-admin">Description</label>
+        <input
+          id={`${fieldPrefix}-description`}
           name="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(event) => setDescription(event.target.value)}
           placeholder="Internal notes about this campaign"
           className="input-admin"
         />
@@ -98,8 +101,8 @@ export default function CampaignForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Channel</label>
-          <select id={`${fieldPrefix}-3`} name="channel" className="input-admin" defaultValue="email">
+          <label htmlFor={`${fieldPrefix}-channel`} className="label-admin">Channel</label>
+          <select id={`${fieldPrefix}-channel`} name="channel" className="input-admin" defaultValue="email">
             <option value="email">Email</option>
             <option value="sms">SMS</option>
             <option value="whatsapp">WhatsApp</option>
@@ -107,26 +110,25 @@ export default function CampaignForm({
           </select>
         </div>
         <div>
-          <label htmlFor={`${fieldPrefix}-4`} className="label-admin">Target segment</label>
-          <select id={`${fieldPrefix}-4`} name="segmentId" className="input-admin" defaultValue="">
+          <label htmlFor={`${fieldPrefix}-segment`} className="label-admin">Target segment</label>
+          <select id={`${fieldPrefix}-segment`} name="segmentId" className="input-admin" defaultValue="">
             <option value="">All customers</option>
-            {segments.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
+            {segments.map((segment) => (
+              <option key={segment.id} value={segment.id}>{segment.name}</option>
             ))}
           </select>
         </div>
       </div>
 
       <div>
-        <label htmlFor={`${fieldPrefix}-5`} className="label-admin">Subject (email only)</label>
+        <label htmlFor={`${fieldPrefix}-subject`} className="label-admin">Subject (email only)</label>
         <div className="relative">
           <FileText className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input id={`${fieldPrefix}-5`}
+          <input
+            id={`${fieldPrefix}-subject`}
             name="subject"
             value={subject}
-            onChange={(e) => setSubject(e.target.value)}
+            onChange={(event) => setSubject(event.target.value)}
             placeholder="Your flu shot is waiting…"
             className="input-admin pl-9"
           />
@@ -135,7 +137,7 @@ export default function CampaignForm({
 
       <div>
         <div className="flex items-center justify-between">
-          <label className="label-admin">Message body *</label>
+          <label htmlFor={`${fieldPrefix}-body`} className="label-admin">Message body *</label>
           <button
             type="button"
             onClick={aiDraft}
@@ -147,62 +149,42 @@ export default function CampaignForm({
           </button>
         </div>
         <textarea
+          id={`${fieldPrefix}-body`}
           name="body"
           required
           rows={5}
           value={body}
-          onChange={(e) => setBody(e.target.value)}
+          onChange={(event) => setBody(event.target.value)}
           placeholder="Hi {{name}}, ..."
           className="input-admin resize-y font-mono text-xs"
         />
         <div className="mt-1.5 flex flex-wrap gap-1">
-          {["{{name}}", "{{email}}", "{{tier}}", "{{points}}"].map((v) => (
+          {["{{name}}", "{{email}}", "{{tier}}", "{{points}}"].map((variable) => (
             <button
-              key={v}
+              key={variable}
               type="button"
-              onClick={() => setBody((b) => b + (b && !b.endsWith(" ") ? " " : "") + v)}
+              onClick={() => setBody((current) => current + (current && !current.endsWith(" ") ? " " : "") + variable)}
               className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
             >
-              {v}
+              {variable}
             </button>
           ))}
         </div>
       </div>
 
-      <div>
-        <label className="label-admin">When to send *</label>
+      <fieldset>
+        <legend className="label-admin">When to send *</legend>
         <div className="mb-2 flex flex-wrap items-center gap-2">
           <label className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs">
-            <input
-              type="radio"
-              name="scheduleMode"
-              value="draft"
-              checked={mode === "draft"}
-              onChange={() => setMode("draft")}
-              className="accent-[var(--admin-accent)]"
-            />
+            <input type="radio" name="scheduleMode" value="draft" checked={mode === "draft"} onChange={() => setMode("draft")} className="accent-[var(--admin-accent)]" />
             <Calendar className="h-3 w-3" /> Save as draft
           </label>
           <label className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs">
-            <input
-              type="radio"
-              name="scheduleMode"
-              value="schedule"
-              checked={mode === "schedule"}
-              onChange={() => setMode("schedule")}
-              className="accent-[var(--admin-accent)]"
-            />
+            <input type="radio" name="scheduleMode" value="schedule" checked={mode === "schedule"} onChange={() => setMode("schedule")} className="accent-[var(--admin-accent)]" />
             <Calendar className="h-3 w-3" /> Schedule
           </label>
           <label className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs">
-            <input
-              type="radio"
-              name="scheduleMode"
-              value="now"
-              checked={mode === "now"}
-              onChange={() => setMode("now")}
-              className="accent-[var(--admin-accent)]"
-            />
+            <input type="radio" name="scheduleMode" value="now" checked={mode === "now"} onChange={() => setMode("now")} className="accent-[var(--admin-accent)]" />
             <Zap className="h-3 w-3" /> Send immediately
           </label>
         </div>
@@ -214,34 +196,22 @@ export default function CampaignForm({
               type="datetime-local"
               required
               value={scheduledFor}
-              onChange={(e) => setScheduledFor(e.target.value)}
+              onChange={(event) => setScheduledFor(event.target.value)}
               className="input-admin pl-9"
             />
-            <p className="mt-1 text-xs admin-soft">
-              Cron will auto-launch this campaign at the scheduled local time.
-            </p>
+            <p className="mt-1 text-xs admin-soft">Cron will auto-launch this campaign at the scheduled local time.</p>
           </div>
         )}
         {mode === "now" && (
           <>
             <input type="hidden" name="sendNow" value="true" />
-            <p className="text-xs admin-soft">
-              Campaign will launch immediately on submit. Each recipient gets a personalized message.
-            </p>
+            <p className="text-xs admin-soft">Campaign will launch immediately on submit. Each recipient gets a personalized message.</p>
           </>
         )}
-        {mode === "draft" && (
-          <p className="text-xs admin-soft">
-            Saved as draft — launch later from the campaigns list.
-          </p>
-        )}
-      </div>
+        {mode === "draft" && <p className="text-xs admin-soft">Saved as draft — launch later from the campaigns list.</p>}
+      </fieldset>
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50">
         {pending ? (
           <><span className="typing-dot" /> Saving…</>
         ) : mode === "now" ? (

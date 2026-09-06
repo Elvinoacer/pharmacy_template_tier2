@@ -7,6 +7,13 @@ import { localTodayStr } from "@/app/lib/time";
 
 type DoseAction = "taken" | "skip" | "snooze";
 
+type DoseActionState = {
+  action: DoseAction;
+  medicineName?: string;
+  phase: "submitting" | "done" | "error";
+  message: string;
+};
+
 /**
  * Handles deep links from push notification action buttons, e.g.
  *   /portal/prescriptions?doseAction=taken&prescriptionId=…&scheduledTime=08:00
@@ -18,132 +25,147 @@ type DoseAction = "taken" | "skip" | "snooze";
 export function DoseActionHandler() {
   const router = useRouter();
   const ran = useRef(false);
-  const [state, setState] = useState<{
-    action: DoseAction;
-    medicineName?: string;
-    phase: "submitting" | "done" | "error";
-    message: string;
-  } | null>(null);
+  const [state, setState] = useState<DoseActionState | null>(null);
 
   useEffect(() => {
-    if (ran.current) return;
-    if (typeof window === "undefined") return;
+    if (ran.current || typeof window === "undefined") return;
 
-    const params = new URLSearchParams(window.location.search);
-    const raw = (params.get("doseAction") || "").toLowerCase().trim();
-    const action: DoseAction | null =
-      raw === "taken" || raw === "confirm"
-        ? "taken"
-        : raw === "skip" || raw === "skipped"
-          ? "skip"
-          : raw === "snooze" || raw === "later"
-            ? "snooze"
-            : null;
+    let cancelled = false;
+    let closeTimer: ReturnType<typeof setTimeout> | null = null;
+    const controller = new AbortController();
 
-    if (!action) return;
-    ran.current = true;
+    const frame = requestAnimationFrame(() => {
+      if (cancelled || ran.current) return;
 
-    const prescriptionId = params.get("prescriptionId") || "";
-    const scheduleId = params.get("scheduleId") || "";
-    const scheduledTime = params.get("scheduledTime") || "";
-    const takenOn = params.get("takenOn") || localTodayStr();
-    const reminderId = params.get("reminderId") || "";
-    const medicineName = params.get("medicineName") || "";
+      const params = new URLSearchParams(window.location.search);
+      const raw = (params.get("doseAction") || "").toLowerCase().trim();
+      const action: DoseAction | null =
+        raw === "taken" || raw === "confirm"
+          ? "taken"
+          : raw === "skip" || raw === "skipped"
+            ? "skip"
+            : raw === "snooze" || raw === "later"
+              ? "snooze"
+              : null;
 
-    // Strip query params immediately so refresh doesn't re-fire.
-    const cleanUrl = window.location.pathname;
-    window.history.replaceState({}, "", cleanUrl);
+      if (!action) return;
+      ran.current = true;
 
-    const status = action === "taken" ? "taken" : action === "skip" ? "skipped" : "snooze";
-    const submittingLabel =
-      action === "taken"
-        ? "Logging as taken…"
-        : action === "skip"
-          ? "Marking as skipped…"
-          : "Snoozing reminder…";
+      const prescriptionId = params.get("prescriptionId") || "";
+      const scheduleId = params.get("scheduleId") || "";
+      const scheduledTime = params.get("scheduledTime") || "";
+      const takenOn = params.get("takenOn") || localTodayStr();
+      const reminderId = params.get("reminderId") || "";
+      const medicineName = params.get("medicineName") || "";
 
-    setState({
-      action,
-      medicineName: medicineName || undefined,
-      phase: "submitting",
-      message: submittingLabel,
-    });
+      // Strip query params immediately so refresh doesn't re-fire.
+      window.history.replaceState({}, "", window.location.pathname);
 
-    void (async () => {
-      try {
-        const res = await fetch("/api/portal/adherence", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({
-            prescriptionId: prescriptionId || undefined,
-            status,
-            takenOn,
-            scheduledTime: scheduledTime || null,
-            scheduleId: scheduleId || null,
-            reminderId: reminderId || null,
-            action: action === "snooze" ? "snooze" : undefined,
-          }),
-        });
+      const status = action === "taken" ? "taken" : action === "skip" ? "skipped" : "snooze";
+      const submittingLabel =
+        action === "taken"
+          ? "Logging as taken…"
+          : action === "skip"
+            ? "Marking as skipped…"
+            : "Snoozing reminder…";
 
-        if (!res.ok) {
-          const j = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
-          const errMsg =
-            action === "snooze" && res.status === 429
-              ? "Snooze limit reached — please confirm Taken or Skip."
-              : j.message || j.error || "Could not update dose";
+      setState({
+        action,
+        medicineName: medicineName || undefined,
+        phase: "submitting",
+        message: submittingLabel,
+      });
+
+      void (async () => {
+        try {
+          const res = await fetch("/api/portal/adherence", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({
+              prescriptionId: prescriptionId || undefined,
+              status,
+              takenOn,
+              scheduledTime: scheduledTime || null,
+              scheduleId: scheduleId || null,
+              reminderId: reminderId || null,
+              action: action === "snooze" ? "snooze" : undefined,
+            }),
+            signal: controller.signal,
+          });
+
+          if (cancelled) return;
+          if (!res.ok) {
+            const body = (await res.json().catch(() => ({}))) as {
+              error?: string;
+              message?: string;
+            };
+            const errorMessage =
+              action === "snooze" && res.status === 429
+                ? "Snooze limit reached — please confirm Taken or Skip."
+                : body.message || body.error || "Could not update dose";
+            setState({
+              action,
+              medicineName: medicineName || undefined,
+              phase: "error",
+              message: errorMessage,
+            });
+            return;
+          }
+
+          setState({
+            action,
+            medicineName: medicineName || undefined,
+            phase: "done",
+            message:
+              action === "taken"
+                ? "Dose logged · beautifully done"
+                : action === "skip"
+                  ? "Dose skipped · noted"
+                  : "Snoozed · we'll nudge you in 10 min",
+          });
+          window.dispatchEvent(new Event("aether:attention-refresh"));
+          closeTimer = setTimeout(() => {
+            if (cancelled) return;
+            router.refresh();
+            setState(null);
+          }, 1800);
+        } catch (error) {
+          if (cancelled || (error instanceof DOMException && error.name === "AbortError")) return;
           setState({
             action,
             medicineName: medicineName || undefined,
             phase: "error",
-            message: errMsg,
+            message: "Could not update dose. Try again from Today's doses.",
           });
-          return;
         }
+      })();
+    });
 
-        setState({
-          action,
-          medicineName: medicineName || undefined,
-          phase: "done",
-          message:
-            action === "taken"
-              ? "Dose logged · beautifully done"
-              : action === "skip"
-                ? "Dose skipped · noted"
-                : "Snoozed · we'll nudge you in 10 min",
-        });
-        window.dispatchEvent(new Event("aether:attention-refresh"));
-        // Refresh server components so Today's doses reflects the new log.
-        setTimeout(() => {
-          router.refresh();
-          setState(null);
-        }, 1800);
-      } catch {
-        setState({
-          action,
-          medicineName: medicineName || undefined,
-          phase: "error",
-          message: "Could not update dose. Try again from Today's doses.",
-        });
-      }
-    })();
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      controller.abort();
+      if (closeTimer) clearTimeout(closeTimer);
+    };
   }, [router]);
 
   // Also listen for SW postMessage when a background action succeeds while tab is open.
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
     const onMessage = (event: MessageEvent) => {
-      const data = event.data;
+      const data: unknown = event.data;
       if (!data || typeof data !== "object") return;
-      if (data.type === "aether:dose-logged") {
+      const message = data as { type?: unknown; url?: unknown };
+      if (message.type === "aether:dose-logged") {
         window.dispatchEvent(new Event("aether:attention-refresh"));
         router.refresh();
       }
-      if (data.type === "aether:dose-navigate" && typeof data.url === "string") {
+      if (message.type === "aether:dose-navigate" && typeof message.url === "string") {
         try {
-          const u = new URL(data.url, window.location.origin);
-          if (u.origin === window.location.origin) {
-            window.location.assign(u.pathname + u.search);
+          const url = new URL(message.url, window.location.origin);
+          if (url.origin === window.location.origin) {
+            window.location.assign(url.pathname + url.search);
           }
         } catch {
           /* ignore */

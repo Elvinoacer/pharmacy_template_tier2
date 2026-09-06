@@ -17,7 +17,7 @@ export default async function MetricsPage() {
     byEnrichment,
     recentMasters,
     totalInventory,
-    last30Days,
+    last30DayRows,
   ] = await Promise.all([
     prisma.medicationMaster.count().catch(() => 0),
     prisma.medicationMaster
@@ -30,11 +30,14 @@ export default async function MetricsPage() {
       .findMany({ orderBy: { createdAt: "desc" }, take: 5, select: { id: true, name: true, acquisitionMethod: true, createdAt: true } })
       .catch(() => []),
     prisma.pharmacyInventory.count().catch(() => 0),
-    prisma.medicationMaster
-      .count({ where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } })
-      .catch(() => 0),
+    prisma.$queryRaw<Array<{ count: bigint }>>`
+      SELECT COUNT(*)::bigint AS count
+      FROM "medication_masters"
+      WHERE "created_at" >= CURRENT_TIMESTAMP - INTERVAL '30 days'
+    `.catch(() => []),
   ]);
 
+  const last30Days = Number(last30DayRows[0]?.count ?? 0);
   const methodCounts: Record<string, number> = {};
   for (const m of byMethod) methodCounts[m.acquisitionMethod] = m._count._all;
 
@@ -76,7 +79,6 @@ export default async function MetricsPage() {
       </div>
 
       <div className="mx-auto max-w-5xl space-y-6">
-        {/* Top stats */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Shared Library Size" value={totalMasters} sub="MedicationMaster records" />
           <StatCard label="Pharmacy Inventory" value={totalInventory} sub="PharmacyInventory rows" />
@@ -84,7 +86,6 @@ export default async function MetricsPage() {
           <StatCard label="Reuse Rate" value={`${reuseRate}%`} sub="Library/barcode vs manual entry" highlight={reuseRate >= 50} />
         </div>
 
-        {/* Acquisition method breakdown */}
         <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-6">
           <h2 className="flex items-center gap-2 text-sm font-bold admin-text">
             <TrendingUp className="h-4 w-4 admin-accent-text" /> Acquisition Method Breakdown
@@ -116,7 +117,6 @@ export default async function MetricsPage() {
           </div>
         </div>
 
-        {/* Enrichment status */}
         <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-6">
           <h2 className="text-sm font-bold admin-text">Enrichment Status (Phase 5)</h2>
           <p className="mt-1 text-xs admin-soft">How complete the clinical data is across the shared library.</p>
@@ -143,7 +143,6 @@ export default async function MetricsPage() {
           </div>
         </div>
 
-        {/* Recent additions */}
         <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-6">
           <h2 className="text-sm font-bold admin-text">Recently Added (last 5)</h2>
           <ul className="mt-3 space-y-2">

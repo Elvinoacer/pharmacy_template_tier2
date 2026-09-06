@@ -4,11 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   Smartphone,
-  ShieldCheck,
-  Sparkles,
   HeartHandshake,
-  ArrowRight,
-  CheckCircle2,
   Lock,
   ThermometerSnowflake,
 } from "lucide-react";
@@ -17,7 +13,6 @@ export default function LandingBentoGrid() {
   return (
     <section className="relative px-4 py-16 sm:px-6 sm:py-20 bg-white">
       <div className="mx-auto max-w-7xl">
-        {/* Minimal Section Heading */}
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#0f172a]">
             Platform Infrastructure
@@ -30,9 +25,7 @@ export default function LandingBentoGrid() {
           </h2>
         </div>
 
-        {/* 4 Clean Visual Bento Tiles */}
         <div className="mt-8 grid gap-5 md:grid-cols-12">
-          {/* Tile 1: Universal Patient Card (7 cols) */}
           <div className="group relative md:col-span-7 flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-[#0c131a] p-6 text-white sm:p-8">
             <div className="absolute inset-0 z-0">
               <Image
@@ -61,7 +54,6 @@ export default function LandingBentoGrid() {
                 Allergies and chronic refills sync securely across all network pharmacies.
               </p>
 
-              {/* Minimal Mockup Card */}
               <div className="mt-6 rounded-xl border border-white/15 bg-black/50 p-3.5 backdrop-blur-md">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -85,7 +77,6 @@ export default function LandingBentoGrid() {
             </div>
           </div>
 
-          {/* Tile 2: WhatsApp & M-Pesa (5 cols) */}
           <div className="relative md:col-span-5 flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-[#0f1722] p-6 text-white sm:p-8">
             <div>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
@@ -103,13 +94,12 @@ export default function LandingBentoGrid() {
                 Order over WhatsApp chat. Instant Lipa na M-Pesa STK push.
               </p>
 
-              {/* Minimal Chat Bubble */}
               <div className="mt-6 space-y-2 text-xs">
                 <div className="rounded-lg bg-slate-800 p-2 text-slate-200 text-[11px] max-w-[85%]">
-                  "Refill my prescription slip please."
+                  &ldquo;Refill my prescription slip please.&rdquo;
                 </div>
                 <div className="rounded-lg bg-slate-700 p-2 text-white text-[11px] max-w-[85%] ml-auto">
-                  "Verified! Sending M-Pesa prompt. Delivery in 35m."
+                  &ldquo;Verified! Sending M-Pesa prompt. Delivery in 35m.&rdquo;
                 </div>
               </div>
             </div>
@@ -119,7 +109,6 @@ export default function LandingBentoGrid() {
             </div>
           </div>
 
-          {/* Tile 3: Cold Chain (6 cols) */}
           <div className="relative md:col-span-6 flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-[#f8fafc] p-6">
             <div>
               <div className="flex items-center justify-between">
@@ -139,7 +128,6 @@ export default function LandingBentoGrid() {
             </div>
           </div>
 
-          {/* Tile 4: Caregiver Circle (6 cols) */}
           <div className="relative md:col-span-6 flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-[#f8fafc] p-6">
             <div>
               <div className="flex items-center justify-between">

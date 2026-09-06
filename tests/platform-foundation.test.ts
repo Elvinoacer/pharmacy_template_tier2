@@ -24,6 +24,8 @@ import {
   verifyHmacSha256,
 } from "../app/lib/platform/totp";
 import { ROLE_PERMISSIONS, roleHasPermission } from "../app/lib/platform/permissions";
+import { canAccessAdminPath } from "../app/lib/platform/admin-access";
+import type { SessionUser } from "../app/lib/types";
 import { TENANT_MODELS } from "../app/lib/tenant-models";
 import { ZERO_UUID } from "../app/lib/tenant-context";
 
@@ -52,6 +54,77 @@ describe("RBAC", () => {
     assert.equal(roleHasPermission("staff", "integrations.manage"), false);
     assert.equal(roleHasPermission("staff", "orders.create"), true);
     assert.ok(ROLE_PERMISSIONS.pharmacist.includes("prescriptions.dispense"));
+  });
+
+  it("uses the active pharmacy membership for admin route access", () => {
+    const user: SessionUser = {
+      id: "user-1",
+      email: "staff@example.test",
+      role: "staff",
+      fullName: "Test Staff",
+      customerId: null,
+      platformAdmin: false,
+      platformRole: "none",
+      twoFactorEnabled: false,
+      lastReauthAt: null,
+      activePharmacyId: "pharmacy-owner",
+      memberships: [
+        {
+          id: "membership-staff",
+          pharmacyId: "pharmacy-staff",
+          slug: "staff-pharmacy",
+          name: "Staff Pharmacy",
+          role: "staff",
+          status: "active",
+        },
+        {
+          id: "membership-owner",
+          pharmacyId: "pharmacy-owner",
+          slug: "owner-pharmacy",
+          name: "Owner Pharmacy",
+          role: "owner",
+          status: "active",
+        },
+      ],
+    };
+
+    assert.equal(canAccessAdminPath(user, "/admin/settings/integrations"), true);
+
+    const staffTenant = { ...user, activePharmacyId: "pharmacy-staff" };
+    assert.equal(canAccessAdminPath(staffTenant, "/admin/orders"), true);
+    assert.equal(canAccessAdminPath(staffTenant, "/admin/settings/integrations"), false);
+    assert.equal(canAccessAdminPath(staffTenant, "/admin/prescriptions"), false);
+  });
+
+  it("fails closed for undeclared admin routes while platform admins bypass", () => {
+    const user: SessionUser = {
+      id: "user-2",
+      email: "manager@example.test",
+      role: "manager",
+      fullName: null,
+      customerId: null,
+      platformAdmin: false,
+      platformRole: "none",
+      twoFactorEnabled: false,
+      lastReauthAt: null,
+      activePharmacyId: "pharmacy-1",
+      memberships: [
+        {
+          id: "membership-1",
+          pharmacyId: "pharmacy-1",
+          slug: "one",
+          name: "One Pharmacy",
+          role: "manager",
+          status: "active",
+        },
+      ],
+    };
+
+    assert.equal(canAccessAdminPath(user, "/admin/future-unmapped-screen"), false);
+    assert.equal(
+      canAccessAdminPath({ ...user, platformAdmin: true }, "/admin/future-unmapped-screen"),
+      true,
+    );
   });
 });
 

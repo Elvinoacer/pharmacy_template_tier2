@@ -19,6 +19,13 @@ type StatusPayload = {
   error?: string;
 };
 
+type StkPayload = {
+  ok?: boolean;
+  error?: string;
+  message?: string;
+  paymentId?: string;
+};
+
 /**
  * Shared M-Pesa STK UX: send push → long-poll status (webhook + Daraja query) → retry.
  * Used by portal customers, guests, and admin counter sales.
@@ -65,7 +72,6 @@ export function MpesaStkPanel({
   const pollStatus = useCallback(
     async (pid: string, p: string) => {
       attemptsRef.current += 1;
-      // Every 3rd tick, also query Daraja (heavier); otherwise local only.
       const queryProvider = attemptsRef.current % 3 === 0;
       const qs = new URLSearchParams({
         paymentId: pid,
@@ -73,34 +79,34 @@ export function MpesaStkPanel({
       });
       if (guestMode || staffMode) qs.set("phone", p);
       try {
-        const r = await fetch(`/api/payments/daraja/status?${qs.toString()}`, {
+        const response = await fetch(`/api/payments/daraja/status?${qs.toString()}`, {
           cache: "no-store",
         });
-        const j = (await r.json()) as StatusPayload;
-        if (!r.ok) return;
+        const payload = (await response.json()) as StatusPayload;
+        if (!response.ok) return;
 
-        if (j.settled || j.paymentStatus === "completed") {
+        if (payload.settled || payload.paymentStatus === "completed") {
           stopPoll();
           setPhase("success");
-          setReceipt(j.mpesaReceipt ?? null);
+          setReceipt(payload.mpesaReceipt ?? null);
           setMessage(
-            j.dispatched
+            payload.dispatched
               ? "Payment confirmed — marked dispatched."
               : "Payment confirmed. Order reserved until collection.",
           );
           onSuccess?.({
             paymentId: pid,
-            orderStatus: j.orderStatus || "paid",
-            receipt: j.mpesaReceipt,
+            orderStatus: payload.orderStatus || "paid",
+            receipt: payload.mpesaReceipt,
           });
           toast.success("M-Pesa payment confirmed");
           return;
         }
 
-        if (j.paymentStatus === "failed") {
+        if (payload.paymentStatus === "failed") {
           stopPoll();
           setPhase("failed");
-          setMessage(j.failureReason || "Payment failed or was cancelled on the phone.");
+          setMessage(payload.failureReason || "Payment failed or was cancelled on the phone.");
         }
       } catch {
         /* keep polling */
@@ -114,7 +120,6 @@ export function MpesaStkPanel({
       stopPoll();
       attemptsRef.current = 0;
       setPhase("waiting");
-      // Immediate check, then every 3s up to ~2 min.
       void pollStatus(pid, p);
       let ticks = 0;
       pollRef.current = setInterval(() => {
@@ -141,46 +146,51 @@ export function MpesaStkPanel({
       setMessage("");
       setReceipt(null);
       try {
-        const r = await fetch("/api/payments/daraja/stk", {
+        const response = await fetch("/api/payments/daraja/stk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             orderId,
             phone: phone.trim(),
-            // Allow retry after client timeout / failed attempt (staff or guest).
             forceRetry: Boolean(forceRetry),
           }),
         });
-        const j = await r.json().catch(() => ({}));
-        if (!r.ok || j.ok === false) {
-          if (j.error === "daraja_not_configured") {
+        const payload = (await response.json().catch(() => ({}))) as StkPayload;
+        if (!response.ok || payload.ok === false) {
+          if (payload.error === "daraja_not_configured") {
             setPhase("failed");
-            setMessage(j.message || "M-Pesa is not configured on this environment.");
+            setMessage(payload.message || "M-Pesa is not configured on this environment.");
             toast.info("M-Pesa not configured — use cash/mark paid.");
             return;
           }
-          if (j.error === "pending_payment_exists" && j.paymentId) {
-            setPaymentId(j.paymentId);
-            setMessage(j.message || "Payment already in progress on the phone.");
-            startPoll(j.paymentId, phone.trim());
+          if (payload.error === "pending_payment_exists" && payload.paymentId) {
+            setPaymentId(payload.paymentId);
+            setMessage(payload.message || "Payment already in progress on the phone.");
+            startPoll(payload.paymentId, phone.trim());
             return;
           }
           setPhase("failed");
-          setMessage(j.message || j.error || "Could not start M-Pesa payment.");
-          toast.error(j.message || "STK push failed");
+          setMessage(payload.message || payload.error || "Could not start M-Pesa payment.");
+          toast.error(payload.message || "STK push failed");
           return;
         }
-        setPaymentId(j.paymentId);
-        setMessage(j.message || "STK push sent — enter PIN on the phone.");
+        if (!payload.paymentId) {
+          setPhase("failed");
+          setMessage("M-Pesa did not return a payment reference.");
+          toast.error("STK push failed");
+          return;
+        }
+        setPaymentId(payload.paymentId);
+        setMessage(payload.message || "STK push sent — enter PIN on the phone.");
         toast.success("STK push sent");
-        startPoll(j.paymentId, phone.trim());
+        startPoll(payload.paymentId, phone.trim());
       } catch {
         setPhase("failed");
         setMessage("Network error starting payment.");
         toast.error("Network error starting payment.");
       }
     },
-    [orderId, phone, staffMode, startPoll],
+    [orderId, phone, startPoll],
   );
 
   useEffect(() => {
@@ -193,7 +203,8 @@ export function MpesaStkPanel({
   }, []);
 
   useEffect(() => {
-    setPhone(defaultPhone);
+    const frame = requestAnimationFrame(() => setPhone(defaultPhone));
+    return () => cancelAnimationFrame(frame);
   }, [defaultPhone]);
 
   if (phase === "success") {
@@ -213,7 +224,7 @@ export function MpesaStkPanel({
             )}
           </div>
           {onClose && (
-            <button type="button" onClick={onClose} className="text-emerald-700 hover:text-emerald-900">
+            <button type="button" onClick={onClose} className="text-emerald-700 hover:text-emerald-900" aria-label="Close payment status">
               <X className="h-4 w-4" />
             </button>
           )}
@@ -232,16 +243,18 @@ export function MpesaStkPanel({
           {staffMode ? "Counter M-Pesa" : "Pay with M-Pesa"}
         </p>
         {onClose && phase === "idle" && (
-          <button type="button" onClick={onClose} className="text-[#5a6b62]">
+          <button type="button" onClick={onClose} className="text-[#5a6b62]" aria-label="Close M-Pesa panel">
             <X className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
 
+      <label className="sr-only" htmlFor={`mpesa-phone-${orderId}`}>M-Pesa phone number</label>
       <input
+        id={`mpesa-phone-${orderId}`}
         type="tel"
         value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+        onChange={(event) => setPhone(event.target.value)}
         placeholder="07XX XXX XXX"
         disabled={phase === "sending" || phase === "waiting"}
         className="w-full rounded-lg border border-[#e3ebe6] px-2.5 py-1.5 text-xs disabled:opacity-60"

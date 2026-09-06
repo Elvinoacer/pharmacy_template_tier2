@@ -11,6 +11,12 @@ import { getSessionUser } from "@/app/lib/auth";
 import { dispatchPushToStaff, dispatchPushToUser } from "@/app/lib/services/push";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
 import { getResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
+import {
+  createPrivateMediaToken,
+  isPrivateR2Reference,
+  privateR2Key,
+  privateR2ReferenceToDataUrl,
+} from "@/app/lib/r2";
 import type {
   SymptomFeeling,
   SymptomSessionStatus,
@@ -207,10 +213,9 @@ export async function createSymptomSession(input: {
   const chief = input.chiefComplaint?.trim() || null;
 
   const catMeta = SYMPTOM_CATEGORIES.find((c) => c.id === category);
-  const welcome =
-    catMeta
-      ? `Thanks for sharing. You selected **${catMeta.label}**. I'll ask a few short questions to understand what you're feeling — this is not a medical diagnosis.\n\nTo start: how long have you been feeling this way, and how bad is it on a scale of 1–10?`
-      : `Hi — I'm here to help you describe how you feel in a structured way, then suggest general next steps for mild issues. I'm not a doctor and I don't diagnose.\n\nWhat's bothering you most right now, and how long has it been going on?`;
+  const welcome = catMeta
+    ? `Thanks for sharing. You selected **${catMeta.label}**. I'll ask a few short questions to understand what you're feeling — this is not a medical diagnosis.\n\nTo start: how long have you been feeling this way, and how bad is it on a scale of 1–10?`
+    : `Hi — I'm here to help you describe how you feel in a structured way, then suggest general next steps for mild issues. I'm not a doctor and I don't diagnose.\n\nWhat's bothering you most right now, and how long has it been going on?`;
 
   const created = await prisma.symptomSession.create({
     data: {
@@ -258,10 +263,10 @@ export async function getSymptomSessionDetail(sessionId: string) {
   });
 }
 
-function buildUserContent(
+async function buildUserContent(
   text: string,
   imageUrls: string[],
-): string | ChatCompletionContentPart[] {
+): Promise<string | ChatCompletionContentPart[]> {
   const trimmed = text.trim();
   if (!imageUrls.length) return trimmed || "(no text)";
 
@@ -274,11 +279,14 @@ function buildUserContent(
       text: "The visitor shared image(s) related to how they feel. Please review carefully and ask clarifying questions. Do not diagnose from photos alone.",
     });
   }
-  for (const url of imageUrls.slice(0, 4)) {
-    parts.push({
-      type: "image_url",
-      image_url: { url },
-    });
+
+  for (const reference of imageUrls.slice(0, 4)) {
+    let url: string | null = reference;
+    if (isPrivateR2Reference(reference)) {
+      url = await privateR2ReferenceToDataUrl(reference);
+    }
+    if (!url) continue;
+    parts.push({ type: "image_url", image_url: { url } });
   }
   return parts;
 }
@@ -350,13 +358,20 @@ export async function sendSymptomMessage(input: {
 
   const session = access.session!;
   const text = (input.content || "").trim().slice(0, 4000);
-  const imageUrls = (input.imageUrls || []).filter(Boolean).slice(0, 4);
+  const expectedPrefix = `symptom-uploads/${session.id}/`;
+  const imageUrls = (input.imageUrls || [])
+    .filter(Boolean)
+    .filter((reference) => {
+      if (!isPrivateR2Reference(reference)) return false;
+      const key = privateR2Key(reference);
+      return Boolean(key?.startsWith(expectedPrefix));
+    })
+    .slice(0, 4);
 
   if (!text && imageUrls.length === 0) {
     return { error: "empty" as const };
   }
 
-  // After escalation, AI does not give clinical advice — only acknowledge and wait for staff.
   if (session.status === "escalated" || session.status === "closed") {
     const userMsg = await prisma.symptomMessage.create({
       data: {
@@ -437,7 +452,6 @@ export async function sendSymptomMessage(input: {
     };
   }
 
-  // Load history for AI
   const history = await prisma.symptomMessage.findMany({
     where: { sessionId: session.id },
     orderBy: { createdAt: "asc" },
@@ -448,23 +462,18 @@ export async function sendSymptomMessage(input: {
   const groq = client();
   const hasImages = imageUrls.length > 0 || history.some((m) => m.imageUrls?.length);
 
-  const messages: ChatCompletionMessageParam[] = [
-    { role: "system", content: systemPrompt },
-  ];
+  const messages: ChatCompletionMessageParam[] = [{ role: "system", content: systemPrompt }];
 
   for (const m of history) {
     if (m.role === "user") {
       messages.push({
         role: "user",
-        content: buildUserContent(m.content, m.imageUrls || []),
+        content: await buildUserContent(m.content, m.imageUrls || []),
       });
     } else if (m.role === "assistant" || m.role === "staff") {
       messages.push({
         role: "assistant",
-        content:
-          m.role === "staff"
-            ? `[Pharmacist reply]: ${m.content}`
-            : m.content,
+        content: m.role === "staff" ? `[Pharmacist reply]: ${m.content}` : m.content,
       });
     } else if (m.role === "system") {
       messages.push({ role: "system", content: m.content });
@@ -485,25 +494,15 @@ export async function sendSymptomMessage(input: {
       "I had trouble forming a reply. Please try again, or ask to speak with a pharmacist.";
   } catch (err) {
     console.error("[symptom chat]", err);
-    // Fallback: if vision model fails, retry text-only with image URLs listed.
     try {
       const textOnly: ChatCompletionMessageParam[] = [
         { role: "system", content: systemPrompt },
         ...history.map((m) => {
           if (m.role === "user") {
-            const imgNote =
-              m.imageUrls?.length > 0
-                ? `\n[Attached images: ${m.imageUrls.join(", ")}]`
-                : "";
-            return {
-              role: "user" as const,
-              content: `${m.content}${imgNote}`,
-            };
+            const imgNote = m.imageUrls?.length > 0 ? `\n[${m.imageUrls.length} image(s) attached]` : "";
+            return { role: "user" as const, content: `${m.content}${imgNote}` };
           }
-          return {
-            role: "assistant" as const,
-            content: m.content,
-          };
+          return { role: "assistant" as const, content: m.content };
         }),
       ];
       const completion = await groq.chat.completions.create({
@@ -522,7 +521,6 @@ export async function sendSymptomMessage(input: {
     }
   }
 
-  // Soft escalate if model itself signals handoff
   const lowerAssistant = assistantText.toLowerCase();
   const modelWantsEscalation =
     lowerAssistant.includes("speak to a pharmacist") &&
@@ -532,11 +530,7 @@ export async function sendSymptomMessage(input: {
       lowerAssistant.includes("can't advise"));
 
   const assistantMsg = await prisma.symptomMessage.create({
-    data: {
-      sessionId: session.id,
-      role: "assistant",
-      content: assistantText,
-    },
+    data: { sessionId: session.id, role: "assistant", content: assistantText },
   });
 
   const summaryBits = await generateRollingSummary(
@@ -625,17 +619,13 @@ export async function escalateSymptomSession(input: {
     return {
       error: null,
       alreadyEscalated: true as const,
-      ticket: {
-        conversationId: session.conversationId,
-        // Legacy field only — How do you feel never creates Contact enquiries.
-        enquiryId: session.enquiryId,
-      },
+      ticket: { conversationId: session.conversationId, enquiryId: session.enquiryId },
     };
   }
 
   const transcript = session.messages
     .map((m) => {
-      const imgs = m.imageUrls?.length ? ` [images: ${m.imageUrls.join(", ")}]` : "";
+      const imgs = m.imageUrls?.length ? ` [${m.imageUrls.length} image(s) attached]` : "";
       return `${m.role.toUpperCase()}: ${m.content}${imgs}`;
     })
     .join("\n\n");
@@ -652,8 +642,6 @@ export async function escalateSymptomSession(input: {
     .filter(Boolean)
     .join("\n");
 
-  // CRM conversation only — NEVER create an Enquiry (those come from /contact).
-  // How do you feel is its own life-critical queue at /admin/feel.
   const conversation = await prisma.conversation.create({
     data: {
       customerId: session.customerId ?? undefined,
@@ -684,10 +672,7 @@ export async function escalateSymptomSession(input: {
       sessionId: session.id,
       role: "system",
       content: `Escalated to pharmacy staff (${input.reason}). Pharmacist queue ticket opened — this is not a contact-page enquiry.`,
-      metadata: {
-        kind: "escalation",
-        conversationId: conversation.id,
-      },
+      metadata: { kind: "escalation", conversationId: conversation.id },
     },
   });
 
@@ -698,7 +683,6 @@ export async function escalateSymptomSession(input: {
       escalatedAt: new Date(),
       escalatedReason: input.reason.slice(0, 200),
       conversationId: conversation.id,
-      // Do not set enquiryId — Contact enquiries are a separate product path.
       lastMessageAt: new Date(),
       messageCount: { increment: 1 },
     },
@@ -711,14 +695,8 @@ export async function escalateSymptomSession(input: {
         userId: session.userId ?? undefined,
         eventType: "symptom_escalation",
         title: "How do you feel — pharmacist requested",
-        description: (session.provisionalLabel || session.chiefComplaint || input.reason).slice(
-          0,
-          200,
-        ),
-        metadata: {
-          symptomSessionId: session.id,
-          conversationId: conversation.id,
-        },
+        description: (session.provisionalLabel || session.chiefComplaint || input.reason).slice(0, 200),
+        metadata: { symptomSessionId: session.id, conversationId: conversation.id },
       },
     }).catch(() => undefined);
   }
@@ -726,10 +704,7 @@ export async function escalateSymptomSession(input: {
   await recordAdminNotification({
     type: "symptom_escalation",
     title: "URGENT: How do you feel — needs pharmacist",
-    body: (session.provisionalLabel || session.chiefComplaint || "Visitor requested help").slice(
-      0,
-      180,
-    ),
+    body: (session.provisionalLabel || session.chiefComplaint || "Visitor requested help").slice(0, 180),
     severity: "critical",
     relatedType: "symptom_session",
     relatedId: session.id,
@@ -737,10 +712,7 @@ export async function escalateSymptomSession(input: {
 
   await dispatchPushToStaff({
     title: "URGENT: Symptom needs pharmacist",
-    body: (session.provisionalLabel || session.chiefComplaint || "A visitor needs pharmacist review.").slice(
-      0,
-      140,
-    ),
+    body: (session.provisionalLabel || session.chiefComplaint || "A visitor needs pharmacist review.").slice(0, 140),
     url: `/admin/feel/${session.id}`,
     data: {
       tag: "symptom-escalation",
@@ -753,10 +725,7 @@ export async function escalateSymptomSession(input: {
     error: null,
     alreadyEscalated: false as const,
     session: updated,
-    ticket: {
-      conversationId: conversation.id,
-      enquiryId: null as string | null,
-    },
+    ticket: { conversationId: conversation.id, enquiryId: null as string | null },
   };
 }
 
@@ -801,13 +770,8 @@ export async function recordSymptomCheckIn(input: {
   });
 
   let status: SymptomSessionStatus = session.status;
-  if (input.feeling === "better" && session.status !== "escalated") {
-    status = "monitoring";
-  }
-  if (input.feeling === "worse" && session.status !== "escalated") {
-    // Keep monitoring but flag urgently for staff (push + critical inbox below).
-    status = "monitoring";
-  }
+  if (input.feeling === "better" && session.status !== "escalated") status = "monitoring";
+  if (input.feeling === "worse" && session.status !== "escalated") status = "monitoring";
 
   await prisma.symptomSession.update({
     where: { id: session.id },
@@ -830,7 +794,6 @@ export async function recordSymptomCheckIn(input: {
     ).slice(0, 180);
     const who = session.customerId ? "A customer" : "A visitor";
 
-    // Critical in-app admin inbox (bell + /admin/inbox)
     await recordAdminNotification({
       type: "symptom_checkin",
       title: "URGENT: Feeling worse",
@@ -840,7 +803,6 @@ export async function recordSymptomCheckIn(input: {
       relatedId: session.id,
     });
 
-    // Background + foreground push to every staff device that enabled notifications
     await dispatchPushToStaff({
       title: "URGENT: Feeling worse",
       body: `${who} feels worse: ${label}`.slice(0, 140),
@@ -853,7 +815,6 @@ export async function recordSymptomCheckIn(input: {
       },
     }).catch(() => undefined);
 
-    // Offer escalation path via assistant message
     const offer = await prisma.symptomMessage.create({
       data: {
         sessionId: session.id,
@@ -892,11 +853,6 @@ export async function recordSymptomCheckIn(input: {
   return { error: null, checkIn, systemNote, shouldOfferEscalation: false as const };
 }
 
-/**
- * Mark How-do-you-feel admin alerts for a session as read.
- * Called when staff open the thread or resolve it so the sidebar badge clears
- * and room opens for new urgent alerts.
- */
 export async function acknowledgeSymptomSessionForStaff(input: {
   sessionId: string;
   staffUserId?: string;
@@ -913,7 +869,6 @@ export async function acknowledgeSymptomSessionForStaff(input: {
     })
     .catch(() => undefined);
 
-  // Also match rows that only set relatedType without a typed filter miss.
   await prisma.adminNotification
     .updateMany({
       where: {
@@ -935,10 +890,6 @@ export async function acknowledgeSymptomSessionForStaff(input: {
   }
 }
 
-/**
- * Resolve a symptom session (optionally with a final staff note).
- * Clears urgent admin alerts so the badge frees room for new cases.
- */
 export async function resolveSymptomSession(input: {
   sessionId: string;
   staffUserId: string;
@@ -961,28 +912,25 @@ export async function resolveSymptomSession(input: {
   if (!session) return { error: "not_found" as const };
   if (session.status === "closed") return { error: "closed" as const };
 
-  let msg = null;
-  if (text) {
-    msg = await prisma.symptomMessage.create({
-      data: {
-        sessionId: session.id,
-        role: "staff",
-        content: text,
-        senderId: input.staffUserId,
-        metadata: { kind: "staff_resolve" },
-      },
-    });
-  } else {
-    msg = await prisma.symptomMessage.create({
-      data: {
-        sessionId: session.id,
-        role: "system",
-        content: "Case marked resolved by pharmacy staff.",
-        senderId: input.staffUserId,
-        metadata: { kind: "staff_resolve" },
-      },
-    });
-  }
+  const msg = text
+    ? await prisma.symptomMessage.create({
+        data: {
+          sessionId: session.id,
+          role: "staff",
+          content: text,
+          senderId: input.staffUserId,
+          metadata: { kind: "staff_resolve" },
+        },
+      })
+    : await prisma.symptomMessage.create({
+        data: {
+          sessionId: session.id,
+          role: "system",
+          content: "Case marked resolved by pharmacy staff.",
+          senderId: input.staffUserId,
+          metadata: { kind: "staff_resolve" },
+        },
+      });
 
   await prisma.symptomSession.update({
     where: { id: session.id },
@@ -1075,7 +1023,6 @@ export async function staffReplyToSymptomSession(input: {
 }) {
   const text = input.content.trim().slice(0, 5000);
 
-  // Resolve-only path (no reply text required) — frees the urgent badge.
   if (!text && input.markResolved) {
     return resolveSymptomSession({
       sessionId: input.sessionId,
@@ -1118,7 +1065,6 @@ export async function staffReplyToSymptomSession(input: {
     },
   });
 
-  // Mirror into CRM conversation if present
   if (session.conversationId) {
     await prisma.message.create({
       data: {
@@ -1143,20 +1089,16 @@ export async function staffReplyToSymptomSession(input: {
     }).catch(() => undefined);
   }
 
-  // Staff engaged — clear urgent alerts so the badge only shows new unseen work.
   await acknowledgeSymptomSessionForStaff({
     sessionId: session.id,
     staffUserId: input.staffUserId,
   });
 
-  // Notify the customer (in-app + push). Guests rely on live polling + toast on the feel page.
   const preview = text.length > 140 ? `${text.slice(0, 137)}…` : text;
   const notifTitle = input.markResolved
     ? "Pharmacist closed your check-in"
     : "Pharmacist replied to your check-in";
-  const notifBody = input.markResolved
-    ? `Your pharmacist left a final note: ${preview}`
-    : preview;
+  const notifBody = input.markResolved ? `Your pharmacist left a final note: ${preview}` : preview;
   const feelUrl = session.customerId || session.userId ? "/portal/feel" : "/how-do-you-feel";
 
   if (session.customerId) {
@@ -1196,6 +1138,16 @@ export async function staffReplyToSymptomSession(input: {
   return { error: null, message: msg };
 }
 
+function presentImageReference(reference: string): string {
+  if (!isPrivateR2Reference(reference)) return reference;
+  try {
+    const token = createPrivateMediaToken(reference);
+    return `/api/feel/media?token=${encodeURIComponent(token)}`;
+  } catch {
+    return "";
+  }
+}
+
 export function serializeSession(
   session: NonNullable<Awaited<ReturnType<typeof getSymptomSessionDetail>>>,
 ) {
@@ -1233,7 +1185,7 @@ export function serializeSession(
       id: m.id,
       role: m.role,
       content: m.content,
-      imageUrls: m.imageUrls,
+      imageUrls: m.imageUrls.map(presentImageReference).filter(Boolean),
       senderId: m.senderId,
       metadata: m.metadata,
       createdAt: m.createdAt.toISOString(),

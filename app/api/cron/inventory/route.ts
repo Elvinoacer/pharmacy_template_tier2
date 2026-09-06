@@ -2,17 +2,10 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { runInventoryHealthScan } from "@/app/lib/services/stock";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { isCronAuthorized } from "@/app/lib/cron-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function authorized(request: NextRequest) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret) return process.env.NODE_ENV !== "production";
-  const authHeader = request.headers.get("authorization");
-  const querySecret = request.nextUrl.searchParams.get("secret");
-  return authHeader === `Bearer ${secret}` || querySecret === secret;
-}
 
 /**
  * Inventory health cron — low stock, out of stock, expiring/expired lots.
@@ -21,7 +14,7 @@ function authorized(request: NextRequest) {
  * curl -X POST -H "Authorization: Bearer $CRON_SECRET" https://…/api/cron/inventory
  */
 export async function POST(request: NextRequest) {
-  if (!authorized(request)) {
+  if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

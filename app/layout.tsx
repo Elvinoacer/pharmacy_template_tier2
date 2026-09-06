@@ -1,33 +1,34 @@
 import type { Metadata, Viewport } from "next";
 import type { CSSProperties } from "react";
 import { DM_Sans, Fraunces, JetBrains_Mono } from "next/font/google";
+import { cookies, headers } from "next/headers";
 import AppChrome from "./components/AppChrome";
 import { Toaster } from "./components/Toaster";
 import JsonLd from "./components/JsonLd";
 import AetherCursor from "./components/AetherCursor";
-import { getSessionUser } from "./lib/auth";
 import { platform } from "./lib/data";
 import { ensureEnvConfigured } from "./lib/ensure-env";
-import { getTenant } from "./lib/tenant";
 import { getResolvedPharmacyOrNull } from "./lib/services/pharmacy-settings";
 import { platformBrand, type PublicBrand } from "./lib/brand";
-import { headers } from "next/headers";
+import { SESSION_CLAIM_COOKIE, verifySessionClaim } from "./lib/session-claim";
 import "./globals.css";
+import "./accessibility-overrides.css";
+import "./performance-overrides.css";
 import { themeBootstrap } from "./lib/theme-bootstrap";
 import ThemeToggle, { ThemeProvider } from "./components/ThemeProvider";
 
 ensureEnvConfigured();
 
+// DM Sans and Fraunces are variable fonts. Loading the variable range avoids
+// shipping separate files for every declared weight.
 const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 const fraunces = Fraunces({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
 });
 
@@ -38,7 +39,10 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f4f7f4" }, { media: "(prefers-color-scheme: dark)", color: "#081410" }],
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f7f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#081410" },
+  ],
   colorScheme: "light dark",
 };
 
@@ -82,26 +86,27 @@ export const metadata: Metadata = {
     images: ["https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/og-preview.jpg"],
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: "/" },
+  // Nested indexable pages own their canonical URL. A root canonical would be
+  // inherited by routes that forget to override it.
 };
 
-/** Only well-formed hex colours reach CSS custom properties (injection-safe). */
 function safeHex(value: string | null | undefined): string | null {
   if (!value) return null;
   return /^#[0-9a-fA-F]{3,8}$/.test(value.trim()) ? value.trim() : null;
 }
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const sessionUser = await getSessionUser().catch(() => null);
-  const tenant = await getTenant().catch(() => ({ slug: null as string | null }));
+  // The proxy supplies the storefront slug in a trusted internal header. Do
+  // not resolve a generic tenant or a DB-backed session in the root layout:
+  // doing so makes every anonymous public route dynamic and database-bound.
   const hdrs = await headers().catch(() => null);
-  const onStorefrontRewrite = Boolean(hdrs?.get("x-pharmacy-slug"));
-  const resolved = tenant.slug
-    ? await getResolvedPharmacyOrNull({ slug: tenant.slug }).catch(() => null)
+  const storefrontSlug = hdrs?.get("x-pharmacy-slug")?.trim().toLowerCase() || null;
+  const onStorefrontRewrite = Boolean(storefrontSlug);
+
+  const resolved = storefrontSlug
+    ? await getResolvedPharmacyOrNull({ slug: storefrontSlug }).catch(() => null)
     : null;
 
-  // Tenant accent tints — injected as CSS variables so every glass surface,
-  // button and gradient in the room can lean toward this pharmacy's palette.
   const brandPrimary = safeHex(resolved?.brandPrimary);
   const brandAccent = safeHex(resolved?.brandAccent);
   let tenantStyle: CSSProperties | undefined;
@@ -113,24 +118,71 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   }
 
   const storefrontBrand: PublicBrand | null = resolved
-    ? { name: resolved.name, tagline: resolved.tagline, phone: resolved.phone, phoneHref: resolved.phoneHref, email: resolved.email, addressShort: [resolved.address.street, resolved.address.city].filter(Boolean).join(", ") || "Kenya", addressFull: resolved.address.full || "Kenya", hours: resolved.hours, whatsappHref: resolved.whatsappHref, slug: resolved.slug, logoUrl: resolved.logoUrl }
+    ? {
+        name: resolved.name,
+        tagline: resolved.tagline,
+        phone: resolved.phone,
+        phoneHref: resolved.phoneHref,
+        email: resolved.email,
+        addressShort:
+          [resolved.address.street, resolved.address.city].filter(Boolean).join(", ") || "Kenya",
+        addressFull: resolved.address.full || "Kenya",
+        hours: resolved.hours,
+        whatsappHref: resolved.whatsappHref,
+        slug: resolved.slug,
+        logoUrl: resolved.logoUrl,
+      }
     : null;
 
-  const sessionHint = sessionUser ? { role: sessionUser.role, customerId: sessionUser.customerId, fullName: sessionUser.fullName, platformAdmin: sessionUser.platformAdmin } : null;
+  // Public chrome only needs a routing hint (customer/admin/caregiver), not a
+  // fresh database session. The signed short-lived claim is already validated
+  // by the same AUTH_SECRET used by the proxy; sensitive pages still perform
+  // full DB-backed authorization in their own layouts/actions.
+  let sessionHint: {
+    role: string;
+    customerId: string | null;
+    platformAdmin: boolean;
+  } | null = null;
+  try {
+    const jar = await cookies();
+    const claim = await verifySessionClaim(jar.get(SESSION_CLAIM_COOKIE)?.value);
+    if (claim) {
+      sessionHint = {
+        role: claim.role,
+        customerId: claim.customerId,
+        platformAdmin: claim.platformAdmin,
+      };
+    }
+  } catch {
+    sessionHint = null;
+  }
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}>
-      <head><script dangerouslySetInnerHTML={{ __html: themeBootstrap }} /></head>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
       <body
         className="flex min-h-full flex-col bg-background font-sans"
         data-tenant-theme={tenantStyle ? "true" : undefined}
         style={tenantStyle}
       >
         <ThemeProvider>
-          <div className="global-theme-control"><ThemeToggle /></div>
+          <div className="global-theme-control">
+            <ThemeToggle />
+          </div>
           <AetherCursor />
           <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
-          <AppChrome sessionUser={sessionHint} pharmacySlug={tenant.slug} storefrontBrand={storefrontBrand} platformBrand={platformBrand()}>
+          <AppChrome
+            sessionUser={sessionHint}
+            pharmacySlug={storefrontSlug}
+            storefrontBrand={storefrontBrand}
+            platformBrand={platformBrand()}
+          >
             {children}
           </AppChrome>
           <Toaster />

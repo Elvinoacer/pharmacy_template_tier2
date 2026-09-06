@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import {
   bookServiceAction,
   type ServiceBookingState,
@@ -41,6 +41,7 @@ export function ServiceBookingForm({
   defaultPhone = "",
   defaultEmail = "",
 }: Props) {
+  const fieldPrefix = useId();
   const [state, formAction, pending] = useActionState(
     bookServiceAction,
     {} as ServiceBookingState,
@@ -57,27 +58,42 @@ export function ServiceBookingForm({
     if (state?.error) toast.error(state.error);
   }, [state]);
 
-  // Soft-enable push once so the customer can get booking updates.
+  // Soft-enable push once so the customer can get booking updates. Browser
+  // capability and Notification.permission are external state, so defer the
+  // synchronization until after paint instead of cascading state in the effect.
   useEffect(() => {
     if (askedRef.current) return;
     askedRef.current = true;
-    if (!isPushSupported()) {
-      setPushStatus("unsupported");
-      return;
-    }
-    if (Notification.permission === "granted") {
+
+    let cancelled = false;
+    const frame = requestAnimationFrame(() => {
+      if (cancelled) return;
+      if (!isPushSupported()) {
+        setPushStatus("unsupported");
+        return;
+      }
+      if (Notification.permission !== "granted") return;
+
       setPushStatus("requesting");
-      requestFcmToken()
-        .then((t) => {
-          if (t) {
-            setPushToken(t);
+      void requestFcmToken()
+        .then((token) => {
+          if (cancelled) return;
+          if (token) {
+            setPushToken(token);
             setPushStatus("on");
           } else {
             setPushStatus("idle");
           }
         })
-        .catch(() => setPushStatus("idle"));
-    }
+        .catch(() => {
+          if (!cancelled) setPushStatus("idle");
+        });
+    });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
   async function enablePush() {
@@ -87,8 +103,8 @@ export function ServiceBookingForm({
     }
     setPushStatus("requesting");
     try {
-      const perm = await Notification.requestPermission();
-      if (perm !== "granted") {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
         setPushStatus("denied");
         return;
       }
@@ -96,7 +112,7 @@ export function ServiceBookingForm({
       if (token) {
         setPushToken(token);
         setPushStatus("on");
-        toast.success("You'll get a notification when your booking updates.");
+        toast.success("You’ll get a notification when your booking updates.");
       } else {
         setPushStatus("idle");
       }
@@ -192,10 +208,11 @@ export function ServiceBookingForm({
       <input type="hidden" name="pushToken" value={pushToken} />
 
       <div>
-        <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
+        <label htmlFor={`${fieldPrefix}-name`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
           <User className="h-3.5 w-3.5 text-teal-700" /> Full name *
         </label>
         <input
+          id={`${fieldPrefix}-name`}
           name="fullName"
           required
           defaultValue={defaultName}
@@ -205,11 +222,12 @@ export function ServiceBookingForm({
       </div>
 
       <div>
-        <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
+        <label htmlFor={`${fieldPrefix}-phone`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
           <Phone className="h-3.5 w-3.5 text-teal-700" /> Phone *{" "}
           <span className="font-normal text-[#5a6b62]">(required for confirmation)</span>
         </label>
         <input
+          id={`${fieldPrefix}-phone`}
           name="phone"
           type="tel"
           required
@@ -219,17 +237,18 @@ export function ServiceBookingForm({
         />
         <p className="mt-1 text-[11px] text-[#5a6b62]">
           {requiresPayment
-            ? "We'll STK-push M-Pesa to this number to confirm your booking."
-            : "We'll call or WhatsApp this number about your visit."}
+            ? "We’ll STK-push M-Pesa to this number to confirm your booking."
+            : "We’ll call or WhatsApp this number about your visit."}
         </p>
       </div>
 
       <div>
-        <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
+        <label htmlFor={`${fieldPrefix}-email`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
           <Mail className="h-3.5 w-3.5 text-teal-700" /> Email{" "}
           <span className="font-normal text-[#5a6b62]">(optional)</span>
         </label>
         <input
+          id={`${fieldPrefix}-email`}
           name="email"
           type="email"
           defaultValue={defaultEmail}
@@ -240,20 +259,22 @@ export function ServiceBookingForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
+          <label htmlFor={`${fieldPrefix}-date`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
             <Calendar className="h-3.5 w-3.5 text-teal-700" /> Preferred date
           </label>
           <input
+            id={`${fieldPrefix}-date`}
             name="preferredDate"
             type="date"
             className="w-full rounded-xl border border-[#d7e3dc] bg-white px-3.5 py-2.5 text-sm outline-none ring-teal-700/20 focus:ring-2"
           />
         </div>
         <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
+          <label htmlFor={`${fieldPrefix}-time`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
             <Clock className="h-3.5 w-3.5 text-teal-700" /> Preferred time
           </label>
           <input
+            id={`${fieldPrefix}-time`}
             name="preferredTime"
             type="text"
             placeholder="e.g. Morning, 2pm"
@@ -263,11 +284,12 @@ export function ServiceBookingForm({
       </div>
 
       <div>
-        <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
+        <label htmlFor={`${fieldPrefix}-notes`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
           <MessageSquare className="h-3.5 w-3.5 text-teal-700" /> Notes{" "}
           <span className="font-normal text-[#5a6b62]">(optional)</span>
         </label>
         <textarea
+          id={`${fieldPrefix}-notes`}
           name="notes"
           rows={3}
           placeholder="Anything we should know before your visit…"
@@ -275,7 +297,6 @@ export function ServiceBookingForm({
         />
       </div>
 
-      {/* Price / free callout */}
       <div
         className={`rounded-xl border px-3.5 py-3 text-sm ${
           requiresPayment
@@ -295,7 +316,6 @@ export function ServiceBookingForm({
         )}
       </div>
 
-      {/* Push opt-in */}
       {pushStatus !== "on" && pushStatus !== "unsupported" && (
         <button
           type="button"
@@ -312,7 +332,7 @@ export function ServiceBookingForm({
       )}
       {pushStatus === "on" && (
         <p className="flex items-center gap-1.5 text-xs text-emerald-700">
-          <Bell className="h-3.5 w-3.5" /> Push updates on — we'll notify you about this booking
+          <Bell className="h-3.5 w-3.5" /> Push updates on — we’ll notify you about this booking
         </p>
       )}
 

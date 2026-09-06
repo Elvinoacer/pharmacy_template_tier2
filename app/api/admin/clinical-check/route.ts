@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUser, requireStaff } from "@/app/lib/auth";
+import { getSessionUser } from "@/app/lib/auth";
+import { requirePermission } from "@/app/lib/platform/policy";
 import { screenClinicalSafety } from "@/app/lib/services/clinical-safety";
 
 export async function POST(req: NextRequest) {
   try {
     const user = await getSessionUser();
-    requireStaff(user);
+    await requirePermission(user, "prescriptions.read");
 
     const body = await req.json();
     const {
@@ -37,10 +38,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ ok: true, report });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to perform clinical safety screening.";
     return NextResponse.json(
-      { ok: false, error: err.message || "Failed to perform clinical safety screening." },
-      { status: 400 }
+      { ok: false, error: message },
+      { status: 400 },
     );
   }
 }

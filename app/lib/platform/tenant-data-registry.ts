@@ -182,6 +182,9 @@ export function verificationPolicies(retainLegal: boolean): TenantModelPolicy[] 
 }
 
 type CountResult = { model: string; exportKey: string; remaining: number };
+type CountDelegate = {
+  count(args: { where: { pharmacyId: string } }): Promise<number>;
+};
 
 /**
  * Exhaustive post-deletion scan against the registry.
@@ -195,7 +198,9 @@ export async function verifyTenantDeletion(
   const remaining: CountResult[] = [];
 
   for (const policy of policies) {
-    const delegate = (prismaUnscoped as Record<string, any>)[policy.model];
+    const delegate = (
+      prismaUnscoped as unknown as Record<string, CountDelegate | undefined>
+    )[policy.model];
     if (!delegate || typeof delegate.count !== "function") {
       // Model not present on client — skip rather than fail open.
       continue;

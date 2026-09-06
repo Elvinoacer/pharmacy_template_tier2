@@ -61,7 +61,6 @@ export default async function AdminOrdersPage({
   const status = sp.status || undefined;
   const period = sp.period || "30d";
 
-  // Compute revenue stats for the selected period.
   const now = new Date();
   let since = new Date();
   if (period === "today") since.setHours(0, 0, 0, 0);
@@ -169,7 +168,6 @@ export default async function AdminOrdersPage({
   const waivedOrders = allOrders.filter((o) => o.status === "waived").length;
   const avgOrderValue = paidOrders > 0 ? totalRevenue / paidOrders : 0;
 
-  // Daily revenue series for sparkline.
   const byDay: Record<string, number> = {};
   for (const p of allPayments) {
     const day = formatDate(p.createdAt);
@@ -243,7 +241,6 @@ export default async function AdminOrdersPage({
         </div>
       )}
 
-      {/* Revenue stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="admin-stat p-4">
           <div className="flex items-center justify-between">
@@ -275,7 +272,6 @@ export default async function AdminOrdersPage({
         </div>
       </div>
 
-      {/* Revenue sparkline */}
       {dayKeys.length > 1 && (
         <div className="mb-6 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide admin-muted">Daily revenue</p>
@@ -298,7 +294,6 @@ export default async function AdminOrdersPage({
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Record OTC sale form */}
         <AdminPanel
           id="record-sale"
           title="Record a counter sale"
@@ -311,7 +306,6 @@ export default async function AdminOrdersPage({
           />
         </AdminPanel>
 
-        {/* Recent orders */}
         <AdminPanel title="Recent orders" description={`${total} total`}>
           {paged.length === 0 ? (
             <AdminEmptyState
@@ -326,78 +320,78 @@ export default async function AdminOrdersPage({
                   o.customer?.fullName || o.guestName || "Walk-in customer";
                 const isDispatched = Boolean(o.dispatchedAt) || o.status === "fulfilled";
                 return (
-                <li
-                  key={o.id}
-                  className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-semibold admin-text">{displayName}</p>
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${
-                          o.status === "paid" ? "bg-emerald-500/15 text-emerald-700"
-                          : o.status === "waived" ? "bg-amber-500/15 text-amber-700"
-                          : o.status === "fulfilled" ? "bg-blue-500/15 text-blue-700"
-                          : o.status === "cancelled" ? "bg-rose-500/15 text-rose-600"
-                          : "bg-slate-500/15 text-slate-600"
-                        }`}>
-                          {o.status}
-                        </span>
-                        {isDispatched ? (
-                          <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700">
-                            dispatched
+                  <li
+                    key={o.id}
+                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="font-semibold admin-text">{displayName}</p>
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${
+                            o.status === "paid" ? "bg-emerald-500/15 text-emerald-700"
+                            : o.status === "waived" ? "bg-amber-500/15 text-amber-700"
+                            : o.status === "fulfilled" ? "bg-blue-500/15 text-blue-700"
+                            : o.status === "cancelled" ? "bg-rose-500/15 text-rose-600"
+                            : "bg-slate-500/15 text-slate-600"
+                          }`}>
+                            {o.status}
                           </span>
-                        ) : o.status === "paid" ? (
-                          <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
-                            await dispatch
-                          </span>
-                        ) : null}
-                        <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
-                          {o.source}
-                        </span>
-                        {o.fulfillment && o.fulfillment !== "reserve" && (
+                          {isDispatched ? (
+                            <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                              dispatched
+                            </span>
+                          ) : o.status === "paid" ? (
+                            <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                              await dispatch
+                            </span>
+                          ) : null}
                           <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
-                            {o.fulfillment}
+                            {o.source}
                           </span>
+                          {o.fulfillment && o.fulfillment !== "reserve" && (
+                            <span className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs admin-muted">
+                              {o.fulfillment}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-0.5 text-xs admin-muted">
+                          {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
+                        </p>
+                        {o.reason && (
+                          <p className="mt-0.5 text-xs text-amber-800/90">
+                            Reason: {o.reason}
+                          </p>
                         )}
+                        {o.dispenserNote && (
+                          <p className="mt-0.5 text-xs text-emerald-800/90">
+                            Dispenser: {o.dispenserNote}
+                          </p>
+                        )}
+                        <p className="mt-1 text-xs admin-soft">
+                          {formatDateTime(o.createdAt)}
+                          {o.guestPhone && <> · {o.guestPhone}</>}
+                          {o.payments[0] && o.payments[0].providerRef && (
+                            <> · Ref: {o.payments[0].providerRef}</>
+                          )}
+                        </p>
                       </div>
-                      <p className="mt-0.5 text-xs admin-muted">
-                        {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
-                      </p>
-                      {o.reason && (
-                        <p className="mt-0.5 text-xs text-amber-800/90">
-                          Reason: {o.reason}
-                        </p>
-                      )}
-                      {o.dispenserNote && (
-                        <p className="mt-0.5 text-xs text-emerald-800/90">
-                          Dispenser: {o.dispenserNote}
-                        </p>
-                      )}
-                      <p className="mt-1 text-xs admin-soft">
-                        {formatDateTime(o.createdAt)}
-                        {o.guestPhone && <> · {o.guestPhone}</>}
-                        {o.payments[0] && o.payments[0].providerRef && (
-                          <> · Ref: {o.payments[0].providerRef}</>
-                        )}
-                      </p>
+                      <div className="text-right">
+                        <p className="font-bold admin-text">KES {o.total.toLocaleString()}</p>
+                        <OrderSettleActions
+                          orderId={o.id}
+                          status={o.status}
+                          guestPhone={o.guestPhone}
+                          defaultPhone={o.customer?.phone || o.guestPhone}
+                          dispatched={isDispatched}
+                          hasRxItem={o.hasRxItem}
+                          existingDispenserNote={o.dispenserNote}
+                          customerReason={o.reason}
+                        />
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold admin-text">KES {o.total.toLocaleString()}</p>
-                      <OrderSettleActions
-                        orderId={o.id}
-                        status={o.status}
-                        guestPhone={o.guestPhone}
-                        defaultPhone={o.customer?.phone || o.guestPhone}
-                        dispatched={isDispatched}
-                        hasRxItem={o.hasRxItem}
-                        existingDispenserNote={o.dispenserNote}
-                        customerReason={o.reason}
-                      />
-                    </div>
-                  </div>
-                </li>
-              );
+                  </li>
+                );
               })}
             </ul>
           )}
@@ -415,4 +409,3 @@ export default async function AdminOrdersPage({
     </AdminShell>
   );
 }
-

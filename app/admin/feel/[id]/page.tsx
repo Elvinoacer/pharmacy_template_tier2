@@ -7,9 +7,19 @@ import AdminFeelSessionClient, {
   type AdminFeelSession,
 } from "@/app/components/admin/AdminFeelSessionClient";
 import { acknowledgeSymptomSessionForStaff } from "@/app/lib/services/symptom-triage";
+import { createPrivateMediaToken, isPrivateR2Reference } from "@/app/lib/r2";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = { title: "Symptom session" };
+
+function presentImage(reference: string): string {
+  if (!isPrivateR2Reference(reference)) return reference;
+  try {
+    return `/api/feel/media?token=${encodeURIComponent(createPrivateMediaToken(reference))}`;
+  } catch {
+    return "";
+  }
+}
 
 export default async function AdminFeelSessionPage({
   params,
@@ -38,7 +48,6 @@ export default async function AdminFeelSessionPage({
 
   if (!session) notFound();
 
-  // First paint: clear urgent alerts for this thread.
   await acknowledgeSymptomSessionForStaff({
     sessionId: session.id,
     staffUserId: user.id,
@@ -71,7 +80,7 @@ export default async function AdminFeelSessionPage({
       id: m.id,
       role: m.role,
       content: m.content,
-      imageUrls: m.imageUrls,
+      imageUrls: m.imageUrls.map(presentImage).filter(Boolean),
       createdAt: m.createdAt.toISOString(),
     })),
     checkIns: session.checkIns.map((c) => ({

@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSessionUser, isStaff } from "@/app/lib/auth";
+import { Prisma } from "@/app/generated/prisma/client";
+import { getSessionUser } from "@/app/lib/auth";
+import { requirePermission } from "@/app/lib/platform/policy";
 import {
   recordHealthScreening,
   createClinicalReferral,
@@ -17,19 +19,27 @@ export type ScreeningActionState = {
   referralCode?: string;
 };
 
+async function clinicalStaff() {
+  return requirePermission(await getSessionUser(), "prescriptions.dispense");
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
 export async function recordScreeningAction(
   _prev: ScreeningActionState,
   formData: FormData,
 ): Promise<ScreeningActionState> {
-  const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
+  let user;
+  try {
+    user = await clinicalStaff();
+  } catch {
     return { error: "Unauthorized. Licensed clinical staff permissions required." };
   }
 
   const patientName = String(formData.get("patientName") || "").trim();
-  if (!patientName) {
-    return { error: "Patient name is required." };
-  }
+  if (!patientName) return { error: "Patient name is required." };
 
   const customerIdRaw = String(formData.get("customerId") || "").trim();
   const customerId = customerIdRaw && customerIdRaw !== "walkin" ? customerIdRaw : null;
@@ -40,7 +50,6 @@ export async function recordScreeningAction(
   const patientAge = patientAgeRaw ? parseInt(patientAgeRaw, 10) : null;
   const patientGender = String(formData.get("patientGender") || "").trim() || null;
 
-  // Vitals
   const systolicBpRaw = String(formData.get("systolicBp") || "").trim();
   const systolicBp = systolicBpRaw ? parseInt(systolicBpRaw, 10) : null;
   const diastolicBpRaw = String(formData.get("diastolicBp") || "").trim();
@@ -68,21 +77,23 @@ export async function recordScreeningAction(
   const poctType = String(formData.get("poctType") || "").trim() || null;
   const poctResult = String(formData.get("poctResult") || "").trim() || null;
 
-  let poctValues: Record<string, any> = {};
+  let poctValues: Prisma.InputJsonObject = {};
   const poctValuesJson = String(formData.get("poctValuesJson") || "").trim();
   if (poctValuesJson) {
     try {
-      poctValues = JSON.parse(poctValuesJson);
+      const parsed: unknown = JSON.parse(poctValuesJson);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        poctValues = parsed as Prisma.InputJsonObject;
+      }
     } catch {
-      // ignore
+      return { error: "Point-of-care test values are not valid JSON." };
     }
   }
 
   const notes = String(formData.get("notes") || "").trim() || null;
   const equipmentUsed = String(formData.get("equipmentUsed") || "").trim() || null;
-
   const requiresReferral = formData.get("requiresReferral") === "true";
-  const referralUrgency = (String(formData.get("referralUrgency") || "routine") as ReferralUrgency);
+  const referralUrgency = String(formData.get("referralUrgency") || "routine") as ReferralUrgency;
 
   try {
     const record = await recordHealthScreening({
@@ -114,15 +125,13 @@ export async function recordScreeningAction(
       referralUrgency: requiresReferral ? referralUrgency : null,
     });
 
-    // Check if immediate referral slip was also requested
     let referralCode: string | undefined;
-    const issueReferralNow = formData.get("issueReferralNow") === "true";
-    if (issueReferralNow) {
-      const destinationType = (String(formData.get("referralDestinationType") || "clinic") as ReferralDestination);
+    if (formData.get("issueReferralNow") === "true") {
+      const destinationType = String(formData.get("referralDestinationType") || "clinic") as ReferralDestination;
       const facilityName = String(formData.get("referralFacilityName") || "Outpatient Health Clinic").trim();
       const facilityContact = String(formData.get("referralFacilityContact") || "").trim() || null;
       const specialistType = String(formData.get("referralSpecialistType") || "").trim() || null;
-      const urgency = (String(formData.get("referralUrgency") || "routine") as ReferralUrgency);
+      const urgency = String(formData.get("referralUrgency") || "routine") as ReferralUrgency;
       const reason = String(formData.get("referralReason") || "Out of range vital parameters requiring clinical workup").trim();
       const clinicalSummary = String(formData.get("referralClinicalSummary") || notes || "Preliminary health screening findings attached.").trim();
       const recommendations = String(formData.get("referralRecommendations") || "").trim() || null;
@@ -150,9 +159,7 @@ export async function recordScreeningAction(
 
     revalidatePath("/admin/screenings");
     revalidatePath("/portal/screenings");
-    if (customerId) {
-      revalidatePath(`/admin/customers/${customerId}`);
-    }
+    if (customerId) revalidatePath(`/admin/customers/${customerId}`);
 
     return {
       success: referralCode
@@ -161,9 +168,9 @@ export async function recordScreeningAction(
       recordId: record.id,
       referralCode,
     };
-  } catch (err: any) {
-    console.error("[recordScreeningAction]", err);
-    return { error: err.message || "Failed to record health screening." };
+  } catch (error: unknown) {
+    console.error("[recordScreeningAction]", error);
+    return { error: errorMessage(error, "Failed to record health screening.") };
   }
 }
 
@@ -171,21 +178,23 @@ export async function issueReferralAction(
   _prev: ScreeningActionState,
   formData: FormData,
 ): Promise<ScreeningActionState> {
-  const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
+  let user;
+  try {
+    user = await clinicalStaff();
+  } catch {
     return { error: "Unauthorized. Licensed clinical staff permissions required." };
   }
 
   const patientName = String(formData.get("patientName") || "").trim();
   if (!patientName) return { error: "Patient name is required." };
 
-  const destinationType = (String(formData.get("destinationType") || "clinic") as ReferralDestination);
+  const destinationType = String(formData.get("destinationType") || "clinic") as ReferralDestination;
   const facilityName = String(formData.get("facilityName") || "").trim();
   if (!facilityName) return { error: "Facility name is required." };
 
   const facilityContact = String(formData.get("facilityContact") || "").trim() || null;
   const specialistType = String(formData.get("specialistType") || "").trim() || null;
-  const urgency = (String(formData.get("urgency") || "routine") as ReferralUrgency);
+  const urgency = String(formData.get("urgency") || "routine") as ReferralUrgency;
   const reason = String(formData.get("reason") || "").trim();
   if (!reason) return { error: "Reason for referral is required." };
 
@@ -193,11 +202,8 @@ export async function issueReferralAction(
   if (!clinicalSummary) return { error: "Clinical findings summary is required." };
 
   const recommendations = String(formData.get("pharmacistRecommendations") || "").trim() || null;
-
-  const screeningIdRaw = String(formData.get("screeningId") || "").trim();
-  const screeningId = screeningIdRaw || null;
-  const customerIdRaw = String(formData.get("customerId") || "").trim();
-  const customerId = customerIdRaw || null;
+  const screeningId = String(formData.get("screeningId") || "").trim() || null;
+  const customerId = String(formData.get("customerId") || "").trim() || null;
   const patientPhone = String(formData.get("patientPhone") || "").trim() || null;
   const patientEmail = String(formData.get("patientEmail") || "").trim() || null;
   const patientGender = String(formData.get("patientGender") || "").trim() || null;
@@ -224,24 +230,25 @@ export async function issueReferralAction(
 
     revalidatePath("/admin/screenings");
     revalidatePath("/portal/screenings");
-    if (customerId) {
-      revalidatePath(`/admin/customers/${customerId}`);
-    }
+    if (customerId) revalidatePath(`/admin/customers/${customerId}`);
 
     return {
       success: `Clinical Referral Slip (${ref.referenceCode}) generated successfully.`,
       referralCode: ref.referenceCode,
       recordId: ref.id,
     };
-  } catch (err: any) {
-    console.error("[issueReferralAction]", err);
-    return { error: err.message || "Failed to generate clinical referral slip." };
+  } catch (error: unknown) {
+    console.error("[issueReferralAction]", error);
+    return { error: errorMessage(error, "Failed to generate clinical referral slip.") };
   }
 }
 
 export async function updateReferralStatusAction(formData: FormData) {
-  const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) return;
+  try {
+    await clinicalStaff();
+  } catch {
+    return;
+  }
 
   const id = String(formData.get("id") || "").trim();
   const status = String(formData.get("status") || "completed").trim();
@@ -250,7 +257,7 @@ export async function updateReferralStatusAction(formData: FormData) {
   await prisma.clinicalReferral.update({
     where: { id },
     data: { status },
-  }).catch(() => {});
+  });
 
   revalidatePath("/admin/screenings");
   revalidatePath("/portal/screenings");

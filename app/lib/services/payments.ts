@@ -89,13 +89,11 @@ export async function canInitiatePayment(opts: {
     return { allowed: true, order };
   }
 
-  // Guest pay: phone must match guestPhone AND a short-lived access token is preferred.
   const phone = opts.phone ? phoneLast9(opts.phone) : "";
   if (phone && order.guestPhone && phoneLast9(order.guestPhone) === phone) {
     return { allowed: true, order };
   }
   if (phone && order.source === "website") {
-    // Allow if phone appears in notes (legacy guest orders) or prior payments.
     const notes = order.notes || "";
     if (notes.includes(phone) || notes.replace(/\D/g, "").includes(phone)) {
       return { allowed: true, order };
@@ -120,16 +118,10 @@ async function loadOrder(orderId: string) {
   });
 }
 
-/**
- * Start (or retry) an M-Pesa STK push for an order.
- * Creates a new Payment row per attempt so history stays clear; reuses pending
- * only when still inside the in-flight window.
- */
 export async function initiateStkPayment(opts: {
   orderId: string;
   phone: string;
   initiatedById?: string | null;
-  /** Force a new attempt even if a recent pending exists (staff retry after timeout). */
   forceRetry?: boolean;
 }): Promise<InitiateStkResult> {
   const order = await loadOrder(opts.orderId);
@@ -168,7 +160,6 @@ export async function initiateStkPayment(opts: {
     };
   }
 
-  // Rate-limit retries per order.
   const since = new Date(Date.now() - 60 * 60 * 1000);
   const recentAttempts = await prisma.payment.count({
     where: {
@@ -209,7 +200,6 @@ export async function initiateStkPayment(opts: {
         attemptCount: existingPending.attemptCount,
       };
     }
-    // Stale or forced retry — close out prior pending so a clean STK can proceed.
     if (opts.forceRetry || age >= STK_PENDING_WINDOW_MS) {
       await prisma.payment
         .update({
@@ -281,7 +271,6 @@ export async function initiateStkPayment(opts: {
     },
   });
 
-  // Persist guest phone on order for later guest pay / contact.
   if (!order.guestPhone) {
     await prisma.order
       .update({
@@ -310,9 +299,10 @@ export async function initiateStkPayment(opts: {
     return {
       ok: false,
       error: "stk_failed",
-      message: push.error === "invalid_phone"
-        ? "Invalid M-Pesa phone number."
-        : `Could not send STK push: ${push.error}`,
+      message:
+        push.error === "invalid_phone"
+          ? "Invalid M-Pesa phone number."
+          : `Could not send STK push: ${push.error}`,
       paymentId: payment.id,
       statusCode: 502,
     };
@@ -323,7 +313,6 @@ export async function initiateStkPayment(opts: {
     data: {
       checkoutRequestId: push.checkoutRequestId,
       merchantRequestId: push.merchantRequestId || null,
-      // Keep providerRef as checkout id until receipt arrives (legacy readers).
       providerRef: push.checkoutRequestId,
     },
   });
@@ -339,11 +328,11 @@ export async function initiateStkPayment(opts: {
 }
 
 /**
- * Apply a successful M-Pesa result to payment + order.
- * Idempotent: safe if webhook and poll both fire.
- * 
- * This function now delegates to the authoritative markOrderPaid() service
- * to ensure financial consistency across the commerce ledger (audit §68).
+ * Apply a verified successful M-Pesa result to payment + order.
+ *
+ * This is deliberately strict: provider amount and receipt are mandatory.
+ * A status-poll response alone is not enough settlement evidence because the
+ * STK query response does not reliably carry the original paid amount/receipt.
  */
 export async function completeDarajaPayment(opts: {
   paymentId: string;
@@ -357,17 +346,6 @@ export async function completeDarajaPayment(opts: {
   });
   if (!payment) throw new Error("payment_not_found");
 
-  const expected = Number(payment.expectedAmount ?? payment.amount);
-  if (opts.providerAmount != null && Number.isFinite(opts.providerAmount) && Math.abs(opts.providerAmount - expected) > 0.009) {
-    await prisma.payment.update({
-      where: { id: payment.id },
-      data: {
-        reconciliationNotes: `amount_mismatch expected=${expected} provider=${opts.providerAmount}`,
-      },
-    });
-    throw new Error("payment_amount_mismatch");
-  }
-
   if (payment.status === "completed") {
     return {
       orderId: payment.orderId,
@@ -376,28 +354,52 @@ export async function completeDarajaPayment(opts: {
     };
   }
 
-  const order = payment.order;
-  const shouldAutoDispatch =
-    order.fulfillment === "immediate" && !order.dispatchedAt;
+  const receipt = opts.mpesaReceipt?.trim();
+  if (!receipt) {
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: { reconciliationNotes: "settlement_rejected:missing_mpesa_receipt" },
+    });
+    throw new Error("payment_receipt_required");
+  }
 
-  // Import the authoritative settlement service
+  const providerAmount = Number(opts.providerAmount);
+  if (!Number.isFinite(providerAmount) || providerAmount <= 0) {
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: { reconciliationNotes: "settlement_rejected:missing_or_invalid_provider_amount" },
+    });
+    throw new Error("payment_provider_amount_required");
+  }
+
+  const expected = Number(payment.expectedAmount ?? payment.amount);
+  if (Math.abs(providerAmount - expected) > 0.009) {
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        reconciliationNotes: `amount_mismatch expected=${expected} provider=${providerAmount}`,
+      },
+    });
+    throw new Error("payment_amount_mismatch");
+  }
+
+  const order = payment.order;
+  const shouldAutoDispatch = order.fulfillment === "immediate" && !order.dispatchedAt;
   const { markOrderPaid, markOrderFulfilled } = await import("@/app/lib/services/commerce/orders");
 
   await prisma.$transaction(async (tx) => {
-    // Update payment to completed
     await tx.payment.update({
       where: { id: payment.id },
       data: {
         status: "completed",
-        providerRef: opts.mpesaReceipt || payment.providerRef,
+        providerRef: receipt,
         failureReason: null,
         paidAt: new Date(),
         reconciledAt: new Date(),
-        reconciliationNotes: opts.resultDesc ?? payment.reconciliationNotes,
+        reconciliationNotes: opts.resultDesc ?? "Verified with Daraja",
       },
     });
 
-    // Collapse any other pending Daraja attempts for this order.
     await tx.payment.updateMany({
       where: {
         orderId: payment.orderId,
@@ -411,15 +413,13 @@ export async function completeDarajaPayment(opts: {
       },
     });
 
-    // Use the authoritative markOrderPaid() to update order financials
     await markOrderPaid(tx, {
       orderId: payment.orderId,
       actorId: payment.initiatedById ?? null,
-      amount: Number(payment.amount),
-      currency: "KES",
+      amount: providerAmount,
+      currency: payment.currency || "KES",
     });
 
-    // If auto-dispatch is enabled, also mark as fulfilled
     if (shouldAutoDispatch) {
       await markOrderFulfilled(tx, {
         orderId: payment.orderId,
@@ -429,7 +429,6 @@ export async function completeDarajaPayment(opts: {
     }
   });
 
-  // Soft notify staff for remote reservations that still need handoff.
   if (!shouldAutoDispatch) {
     try {
       const { recordAdminNotification } = await import(
@@ -448,7 +447,6 @@ export async function completeDarajaPayment(opts: {
     }
   }
 
-  // If this order settles a pharmacy service booking, confirm it + notify customer.
   try {
     const {
       confirmServiceBookingPayment,
@@ -457,7 +455,7 @@ export async function completeDarajaPayment(opts: {
     const confirmed = await confirmServiceBookingPayment({
       orderId: payment.orderId,
       paidVia: "daraja",
-      paymentRef: opts.mpesaReceipt || null,
+      paymentRef: receipt,
     });
     if (confirmed && !confirmed.alreadyDone) {
       const booking = await prisma.serviceBooking.findUnique({
@@ -507,21 +505,19 @@ export type PaymentStatusView = {
   failureReason: string | null;
   checkoutRequestId: string | null;
   phone: string | null;
-  /** true when UI should keep polling */
   pending: boolean;
-  /** true when order is paid or fulfilled */
   settled: boolean;
   dispatched: boolean;
 };
 
 /**
- * Resolve current payment status. If still pending and we have a checkout id,
- * optionally query Daraja (long-poll fallback).
+ * Resolve current payment status. Provider polling is only a fallback signal.
+ * It may confirm a failure, but it never upgrades an order to paid without the
+ * independently reconciled amount + receipt supplied through the callback path.
  */
 export async function resolvePaymentStatus(opts: {
   paymentId?: string;
   orderId?: string;
-  /** Hit Daraja query API when local status is still pending */
   queryProvider?: boolean;
 }): Promise<PaymentStatusView | null> {
   let payment = opts.paymentId
@@ -539,7 +535,6 @@ export async function resolvePaymentStatus(opts: {
 
   if (!payment) return null;
 
-  // Long-poll / webhook miss: ask Daraja.
   if (
     opts.queryProvider &&
     payment.status === "pending" &&
@@ -550,22 +545,18 @@ export async function resolvePaymentStatus(opts: {
     const q = await stkQuery(payment.checkoutRequestId, creds);
     if (q.ok) {
       if (q.resultCode === "0") {
-        // Success without receipt in query response — complete without receipt.
-        await completeDarajaPayment({
-          paymentId: payment.id,
-          mpesaReceipt: payment.providerRef?.startsWith("ws")
-            ? null
-            : payment.providerRef,
-          resultDesc: q.resultDesc,
+        await prisma.payment.update({
+          where: { id: payment.id },
+          data: {
+            reconciliationNotes:
+              "provider_reports_success: awaiting verified callback amount and receipt",
+          },
         });
         payment = await prisma.payment.findUnique({
           where: { id: payment.id },
           include: { order: true },
         });
-      } else if (
-        // Still processing codes vary; only fail definitive customer cancels / timeouts.
-        ["1032", "1037", "1", "2001", "1001"].includes(q.resultCode)
-      ) {
+      } else if (["1032", "1037", "1", "2001", "1001"].includes(q.resultCode)) {
         await failDarajaPayment({
           paymentId: payment.id,
           reason: q.resultDesc || `STK result ${q.resultCode}`,
@@ -575,7 +566,6 @@ export async function resolvePaymentStatus(opts: {
           include: { order: true },
         });
       }
-      // else: still waiting (e.g. 4999) — leave pending
     }
   }
 
@@ -593,8 +583,7 @@ export async function resolvePaymentStatus(opts: {
     orderId: payment.orderId,
     paymentStatus: payment.status,
     orderStatus,
-    mpesaReceipt:
-      payment.status === "completed" ? payment.providerRef : null,
+    mpesaReceipt: payment.status === "completed" ? payment.providerRef : null,
     failureReason: payment.failureReason,
     checkoutRequestId: payment.checkoutRequestId,
     phone: payment.phone,
@@ -604,7 +593,6 @@ export async function resolvePaymentStatus(opts: {
   };
 }
 
-/** Mark order as handed over (remote reservation → customer collected). */
 export async function dispatchOrder(opts: {
   orderId: string;
   actorId: string;
@@ -613,7 +601,7 @@ export async function dispatchOrder(opts: {
   if (!order) return { ok: false, error: "Order not found." };
   if (order.status === "cancelled") return { ok: false, error: "Order is cancelled." };
   if (order.dispatchedAt && order.status === "fulfilled") {
-    return { ok: true }; // idempotent
+    return { ok: true };
   }
   if (order.status === "pending") {
     return {
@@ -633,7 +621,6 @@ export async function dispatchOrder(opts: {
   return { ok: true };
 }
 
-/** Undo auto-dispatch (e.g. counter sale that should wait for packing). */
 export async function undispatchOrder(opts: {
   orderId: string;
   actorId: string;
@@ -642,7 +629,6 @@ export async function undispatchOrder(opts: {
   if (!order) return { ok: false, error: "Order not found." };
   if (!order.dispatchedAt) return { ok: true };
 
-  // Only revert fulfilled → paid; keep waived/cancelled intact.
   const nextStatus =
     order.status === "fulfilled"
       ? order.waived
@@ -656,7 +642,6 @@ export async function undispatchOrder(opts: {
       status: nextStatus === "fulfilled" ? "paid" : nextStatus,
       dispatchedAt: null,
       dispatchedById: null,
-      // Flip fulfillment so future payment callbacks don't auto-dispatch again.
       fulfillment: order.fulfillment === "immediate" ? "reserve" : order.fulfillment,
     },
   });

@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSessionUser, requireStaff, writeAuditLog, AuthError } from "@/app/lib/auth";
+import { getSessionUser, writeAuditLog, AuthError } from "@/app/lib/auth";
+import { requirePermission } from "@/app/lib/platform/policy";
 import { prismaUnscoped } from "@/app/lib/db";
 import { getTenant } from "@/app/lib/tenant";
 
@@ -38,32 +39,14 @@ export async function savePharmacyLocationAction(
   formData: FormData,
 ): Promise<LocationActionState> {
   try {
-    const user = await getSessionUser();
-    requireStaff(user);
+    const user = await requirePermission(await getSessionUser(), "settings.manage");
 
-    // Prefer tenant context; fall back to the owner's active membership so
-    // post-verification setup works even if the staff cookie is missing.
-    let pharmacyId: string | null = null;
-    try {
-      const tenant = await getTenant();
-      pharmacyId = tenant.pharmacyId;
-    } catch {
-      pharmacyId = null;
-    }
-    if (!pharmacyId) {
-      pharmacyId = user!.activePharmacyId || user!.memberships[0]?.pharmacyId || null;
-    }
+    // Resolve only the request tenant or the validated active tenant. Never
+    // borrow a different membership when the selected workspace is stale.
+    const tenant = await getTenant().catch(() => ({ pharmacyId: null as string | null }));
+    const pharmacyId = tenant.pharmacyId ?? user.activePharmacyId;
     if (!pharmacyId) {
       return { error: "No pharmacy selected. Open setup from your approved application first." };
-    }
-
-    const allowed =
-      user!.platformAdmin ||
-      user!.memberships.some(
-        (m) => m.pharmacyId === pharmacyId && m.status === "active",
-      );
-    if (!allowed) {
-      return { error: "You do not have access to update this pharmacy." };
     }
 
     const latitude = parseCoord(formData.get("latitude"));
@@ -112,7 +95,7 @@ export async function savePharmacyLocationAction(
         placeId: String(formData.get("placeId") || "").trim() || null,
         mapsEmbedUrl: String(formData.get("mapsEmbedUrl") || "").trim() || null,
         hours: hours as object,
-        updatedById: user!.id,
+        updatedById: user.id,
       },
       update: {
         displayName,
@@ -130,7 +113,7 @@ export async function savePharmacyLocationAction(
         placeId: String(formData.get("placeId") || "").trim() || null,
         mapsEmbedUrl: String(formData.get("mapsEmbedUrl") || "").trim() || null,
         hours: hours as object,
-        updatedById: user!.id,
+        updatedById: user.id,
       },
     });
 
@@ -149,7 +132,7 @@ export async function savePharmacyLocationAction(
       },
     });
 
-    await writeAuditLog(user!.id, "pharmacy_location_updated", "pharmacy_settings", pharmacyId, {
+    await writeAuditLog(user.id, "pharmacy_location_updated", "pharmacy_settings", pharmacyId, {
       latitude,
       longitude,
     });

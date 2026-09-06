@@ -25,6 +25,7 @@ export type PosMedication = {
   publicListing: boolean;
   prescriptionRequired: boolean;
   active: boolean;
+  /** Optional optimistic concurrency token from the last platform snapshot. */
   version?: number;
 };
 
@@ -46,6 +47,68 @@ async function setJobProgress(jobId: string | undefined, progress: number, resul
     data: { progress, ...(result ? { result: result as object } : {}) },
   }).catch(() => {});
 }
+
+function normalizedSlug(m: PosMedication) {
+  return (
+    m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+  );
+}
+
+/**
+ * Conflict creation is serialized per inventory row. Two workers can detect the
+ * same mismatch at once, but only one open logical conflict is persisted.
+ */
+async function recordConflict(opts: {
+  pharmacyId: string;
+  inventoryId: string;
+  jobId?: string;
+  sku?: string;
+  platformStock: number;
+  posStock: number;
+  platformVersion: number;
+  posVersion?: number;
+}) {
+  return prismaUnscoped.$transaction(async (tx) => {
+    const lockKey = `pos-conflict:${opts.pharmacyId}:${opts.inventoryId}`;
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`;
+
+    const existing = await tx.inventorySyncConflict.findFirst({
+      where: {
+        pharmacyId: opts.pharmacyId,
+        inventoryId: opts.inventoryId,
+        status: "open",
+        platformStock: opts.platformStock,
+        posStock: opts.posStock,
+        platformVersion: opts.platformVersion,
+        posVersion: opts.posVersion ?? null,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    if (existing) return { conflict: existing, created: false };
+
+    const conflict = await tx.inventorySyncConflict.create({
+      data: {
+        pharmacyId: opts.pharmacyId,
+        inventoryId: opts.inventoryId,
+        jobId: opts.jobId ?? null,
+        sku: opts.sku ?? null,
+        platformStock: opts.platformStock,
+        posStock: opts.posStock,
+        platformVersion: opts.platformVersion,
+        posVersion: opts.posVersion ?? null,
+        status: "open",
+      },
+    });
+    return { conflict, created: true };
+  });
+}
+
+type RowOutcome = {
+  kind: "created" | "updated" | "conflict" | "skipped";
+  lowStock: boolean;
+  stockResult?: Awaited<ReturnType<typeof import("@/app/lib/services/stock")["setAbsoluteStock"]>> | null;
+  conflictCreated?: boolean;
+};
 
 export async function runPosSync(
   pharmacyId: string,
@@ -72,60 +135,133 @@ export async function runPosSync(
 
     await setJobProgress(opts?.jobId, 0, { recordsReceived: medications.length });
 
-    for (let i = 0; i < medications.length; i++) {
-      const m = medications[i];
-      const slug = m.slug || m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      const existing = m.sku
-        ? await prismaUnscoped.pharmacyInventory.findFirst({ where: { pharmacyId, sku: m.sku } })
-        : await prismaUnscoped.pharmacyInventory.findFirst({ where: { pharmacyId, slug } });
+    // Remove the read-side N+1: resolve every inventory row and candidate master
+    // needed by this payload in two bounded queries before processing writes.
+    const slugs = [...new Set(medications.map(normalizedSlug))];
+    const skus = [...new Set(medications.map((m) => m.sku?.trim()).filter((v): v is string => Boolean(v)))];
+    const existingRows = await prismaUnscoped.pharmacyInventory.findMany({
+      where: {
+        pharmacyId,
+        OR: [
+          ...(skus.length ? [{ sku: { in: skus } }] : []),
+          { slug: { in: slugs } },
+        ],
+      },
+    });
+    const bySku = new Map(existingRows.filter((r) => r.sku).map((r) => [r.sku as string, r]));
+    const bySlug = new Map(existingRows.map((r) => [r.slug, r]));
 
+    const masters = await prismaUnscoped.medicationMaster.findMany({
+      where: { slug: { in: slugs } },
+      orderBy: { createdAt: "asc" },
+    });
+    const masterBySlug = new Map(masters.map((m) => [m.slug, m]));
+
+    // A stock difference is a normal synchronization event. It becomes a
+    // conflict only when the platform also had a non-POS stock movement after
+    // the previous POS sync, or the optional optimistic version is stale.
+    const syncedRows = existingRows.filter((r) => r.syncedAt);
+    const latestLocalMovement = new Map<string, Date>();
+    if (syncedRows.length) {
+      const earliestSync = new Date(Math.min(...syncedRows.map((r) => r.syncedAt!.getTime())));
+      const movements = await prismaUnscoped.stockMovement.findMany({
+        where: {
+          pharmacyInventoryId: { in: syncedRows.map((r) => r.id) },
+          reason: { not: "pos_sync" },
+          createdAt: { gt: earliestSync },
+        },
+        select: { pharmacyInventoryId: true, createdAt: true },
+        orderBy: { createdAt: "desc" },
+      });
+      for (const movement of movements) {
+        if (!latestLocalMovement.has(movement.pharmacyInventoryId)) {
+          latestLocalMovement.set(movement.pharmacyInventoryId, movement.createdAt);
+        }
+      }
+    }
+
+    const seen = new Set<string>();
+
+    const processMedication = async (m: PosMedication): Promise<RowOutcome> => {
+      const slug = normalizedSlug(m);
+      const identity = m.sku?.trim() ? `sku:${m.sku.trim()}` : `slug:${slug}`;
+      if (seen.has(identity)) return { kind: "skipped", lowStock: false };
+      seen.add(identity);
+
+      const existing = (m.sku?.trim() ? bySku.get(m.sku.trim()) : undefined) ?? bySlug.get(slug);
       if (existing) {
-        const versionConflict = m.version != null && existing.version > m.version;
-        const stockConflict = existing.currentStock !== m.stockQty;
-        if (versionConflict || stockConflict) {
-          await prismaUnscoped.inventorySyncConflict.create({
-            data: {
-              pharmacyId,
-              inventoryId: existing.id,
-              jobId: opts?.jobId ?? null,
-              sku: m.sku ?? null,
-              platformStock: existing.currentStock,
-              posStock: m.stockQty,
-              platformVersion: existing.version,
-              posVersion: m.version ?? null,
-              status: "open",
-            },
+        const latestLocal = latestLocalMovement.get(existing.id);
+        const localStockChanged = Boolean(
+          existing.syncedAt && latestLocal && latestLocal.getTime() > existing.syncedAt.getTime(),
+        );
+        const stockDiffers = existing.currentStock !== m.stockQty;
+        const versionConflict = m.version != null && existing.version !== m.version;
+
+        if (versionConflict || (stockDiffers && localStockChanged)) {
+          const recorded = await recordConflict({
+            pharmacyId,
+            inventoryId: existing.id,
+            jobId: opts?.jobId,
+            sku: m.sku,
+            platformStock: existing.currentStock,
+            posStock: m.stockQty,
+            platformVersion: existing.version,
+            posVersion: m.version,
           });
-          conflictCount++;
+          return {
+            kind: "conflict",
+            lowStock: false,
+            conflictCreated: recorded.created,
+          };
         }
-        if (versionConflict) {
-          skipped++;
-          continue;
-        }
+
         const stockResult = await prismaUnscoped.$transaction(async (tx) => {
           await tx.pharmacyInventory.update({
             where: { id: existing.id },
             data: {
               price: m.price,
               lowStockThreshold: m.lowStockThreshold,
-              syncedAt: new Date(),
-              version: { increment: 1 },
+              overTheCounter: m.overTheCounter,
+              publicListing: m.publicListing,
+              prescriptionRequired: m.prescriptionRequired,
+              active: m.active,
               branchId: branchId ?? existing.branchId,
+              version: { increment: 1 },
             },
           });
-          return setAbsoluteStock(tx, {
+          const result = await setAbsoluteStock(tx, {
             inventoryId: existing.id,
             newStock: m.stockQty,
             reason: "pos_sync",
-            notes: "POS absolute stock sync",
+            notes: "POS authoritative stock snapshot",
             relatedType: "pos_sync",
           });
+          // Write syncedAt last so it is an explicit baseline after all POS
+          // mutations in this transaction.
+          await tx.pharmacyInventory.update({
+            where: { id: existing.id },
+            data: { syncedAt: new Date() },
+          });
+          return result;
         });
-        stockResults.push(stockResult);
-        updated++;
-      } else {
-        await prismaUnscoped.$transaction(async (tx) => {
-          const master = await tx.medicationMaster.create({
+        return { kind: "updated", lowStock: m.stockQty <= m.lowStockThreshold, stockResult };
+      }
+
+      const createdRow = await prismaUnscoped.$transaction(async (tx) => {
+        let master = masterBySlug.get(slug) ?? null;
+        if (!master) {
+          master = await tx.medicationMaster.findFirst({
+            where: {
+              OR: [
+                { slug },
+                { name: { equals: m.name, mode: "insensitive" } },
+              ],
+            },
+            orderBy: { createdAt: "asc" },
+          });
+        }
+        if (!master) {
+          master = await tx.medicationMaster.create({
             data: {
               name: m.name,
               slug,
@@ -143,49 +279,77 @@ export async function runPosSync(
               enrichmentScore: 30,
             },
           });
-          const inv = await tx.pharmacyInventory.create({
-            data: {
-              pharmacyId,
-              medicationMasterId: master.id,
-              slug,
-              sku: m.sku || null,
-              price: m.price,
-              currentStock: 0,
-              lowStockThreshold: m.lowStockThreshold,
-              overTheCounter: m.overTheCounter,
-              publicListing: m.publicListing,
-              prescriptionRequired: m.prescriptionRequired,
-              active: m.active,
-              syncedAt: new Date(),
-              branchId: branchId ?? null,
-            },
+        }
+        masterBySlug.set(slug, master);
+
+        const inv = await tx.pharmacyInventory.create({
+          data: {
+            pharmacyId,
+            medicationMasterId: master.id,
+            slug,
+            sku: m.sku?.trim() || null,
+            price: m.price,
+            currentStock: 0,
+            lowStockThreshold: m.lowStockThreshold,
+            overTheCounter: m.overTheCounter,
+            publicListing: m.publicListing,
+            prescriptionRequired: m.prescriptionRequired,
+            active: m.active,
+            branchId: branchId ?? null,
+          },
+        });
+        let stockResult: StockResult | null = null;
+        if (m.stockQty > 0) {
+          stockResult = await applyStockChange(tx, {
+            inventoryId: inv.id,
+            quantityDelta: m.stockQty,
+            reason: "pos_sync",
+            notes: "POS opening stock",
+            relatedType: "pos_sync",
+            skipLots: true,
           });
-          if (m.stockQty > 0) {
-            const stockResult = await applyStockChange(tx, {
-              inventoryId: inv.id,
-              quantityDelta: m.stockQty,
-              reason: "pos_sync",
-              notes: "POS opening stock",
-              relatedType: "pos_sync",
-              skipLots: true,
-            });
-            stockResults.push(stockResult);
-          }
+        }
+        const final = await tx.pharmacyInventory.update({
+          where: { id: inv.id },
+          data: { syncedAt: new Date() },
         });
-        created++;
+        return { inventory: final, stockResult };
+      });
+      bySlug.set(slug, createdRow.inventory);
+      if (createdRow.inventory.sku) bySku.set(createdRow.inventory.sku, createdRow.inventory);
+      return {
+        kind: "created",
+        lowStock: m.stockQty <= m.lowStockThreshold,
+        stockResult: createdRow.stockResult,
+      };
+    };
+
+    // Small payloads execute inline, while the route already queues >40 rows.
+    // Within this worker use bounded concurrency rather than one transaction per
+    // row in a fully serial loop.
+    const CHUNK = 8;
+    for (let start = 0; start < medications.length; start += CHUNK) {
+      const chunk = medications.slice(start, start + CHUNK);
+      const outcomes = await Promise.all(chunk.map(processMedication));
+      for (const outcome of outcomes) {
+        if (outcome.kind === "created") { created++; upserted++; }
+        else if (outcome.kind === "updated") { updated++; upserted++; }
+        else if (outcome.kind === "conflict") {
+          skipped++;
+          if (outcome.conflictCreated) conflictCount++;
+        } else skipped++;
+        if (outcome.lowStock) lowStockAlerts++;
+        if (outcome.stockResult) stockResults.push(outcome.stockResult);
       }
-      upserted++;
-      if (m.stockQty <= m.lowStockThreshold) lowStockAlerts++;
-      const pct = Math.min(99, Math.round(((i + 1) / total) * 100));
-      if ((i + 1) % 10 === 0 || i === medications.length - 1) {
-        await setJobProgress(opts?.jobId, pct, {
-          recordsReceived: medications.length,
-          recordsUpdated: updated,
-          recordsCreated: created,
-          conflicts: conflictCount,
-          skipped,
-        });
-      }
+      const processed = Math.min(start + chunk.length, medications.length);
+      const pct = Math.min(99, Math.round((processed / total) * 100));
+      await setJobProgress(opts?.jobId, pct, {
+        recordsReceived: medications.length,
+        recordsUpdated: updated,
+        recordsCreated: created,
+        conflicts: conflictCount,
+        skipped,
+      });
     }
 
     await notifyStockThresholds(stockResults);
@@ -193,7 +357,7 @@ export async function runPosSync(
       await recordAdminNotification({
         type: "stock_low",
         title: `${lowStockAlerts} medications are low on stock`,
-        body: `${lowStockAlerts} of ${upserted} synced medications are at or below their low-stock threshold.`,
+        body: `${lowStockAlerts} successfully synced POS rows are at or below their low-stock threshold.`,
         severity: "warning",
         relatedType: "medication",
       });
@@ -231,9 +395,12 @@ export async function resolveInventoryConflict(
     if (!currentInventory) throw new Error("inventory_item_not_found");
 
     const expectedVersion = opts?.expectedVersion ?? row.platformVersion;
-    if (!opts?.force && currentInventory.version !== expectedVersion) {
+    if (
+      !opts?.force &&
+      (currentInventory.version !== expectedVersion || currentInventory.currentStock !== row.platformStock)
+    ) {
       throw new Error(
-        `CONFLICT_VERSION_MISMATCH: Inventory version has changed from ${expectedVersion} to ${currentInventory.version} since conflict was detected. Refresh conflict details before resolving.`,
+        "CONFLICT_STATE_CHANGED: Inventory changed after this conflict was detected. Refresh conflict details before resolving.",
       );
     }
 
@@ -255,16 +422,24 @@ export async function resolveInventoryConflict(
         });
       });
     } else if (action === "accept_platform") {
+      // Choosing platform acknowledges the local value as the new reconciliation
+      // baseline so the exact same historical local movement does not reopen the
+      // conflict on the next pull.
       await prismaUnscoped.pharmacyInventory.update({
         where: { id: row.inventoryId },
-        data: { version: { increment: 1 } },
+        data: { version: { increment: 1 }, syncedAt: new Date() },
       });
     }
 
     return prismaUnscoped.inventorySyncConflict.update({
       where: { id: row.id },
       data: {
-        status: action === "accept_pos" ? "accepted_pos" : action === "accept_platform" ? "accepted_platform" : "ignored",
+        status:
+          action === "accept_pos"
+            ? "accepted_pos"
+            : action === "accept_platform"
+              ? "accepted_platform"
+              : "ignored",
         resolvedAt: new Date(),
         resolvedById: actorId ?? null,
       },

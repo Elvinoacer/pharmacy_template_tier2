@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUser, requireStaff } from "@/app/lib/auth";
+import { getSessionUser } from "@/app/lib/auth";
+import { requirePermission } from "@/app/lib/platform/policy";
 import { getReceiptData } from "@/app/lib/services/receipt";
 
 export async function GET(req: NextRequest) {
   try {
     const user = await getSessionUser();
-    requireStaff(user);
+    await requirePermission(user, "orders.read");
 
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get("orderId");
@@ -20,10 +21,11 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true, receipt });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to load receipt.";
     return NextResponse.json(
-      { ok: false, error: err.message || "Failed to load receipt." },
-      { status: 500 }
+      { ok: false, error: message },
+      { status: 500 },
     );
   }
 }

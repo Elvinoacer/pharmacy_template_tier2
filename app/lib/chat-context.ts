@@ -1,13 +1,6 @@
 import "server-only";
 
-import {
-  articles,
-  categories,
-  faqs,
-  pharmacy,
-  services,
-  team,
-} from "./data";
+import { articles, categories, faqs, services } from "./data";
 import { SUGGESTED_PROMPTS } from "./suggested-prompts";
 import type { SessionUser } from "@/app/lib/types";
 import { getActiveCaregiverLinks } from "@/app/lib/services/caregiver-permissions";
@@ -18,22 +11,25 @@ import {
 } from "@/app/lib/services/ai-knowledge-lookup";
 import { prisma } from "@/app/lib/db";
 import { toLocalDateInputValue } from "@/app/lib/time";
+import { getResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
 
 export { SUGGESTED_PROMPTS };
 
 /**
- * Compact always-on context for the AI assistant.
- * Does NOT dump the full knowledge base or medication catalogue —
- * those are retrieved per-query (relevant snippets + tools).
+ * Tenant-aware public context. Static site content remains a fallback for
+ * generic services/FAQs, but identity/contact/hours always come from the
+ * resolved storefront tenant when one exists.
  */
 export async function buildPharmacyContext(userQuery?: string): Promise<string> {
-  const hours = pharmacy.hours.map((h) => `${h.day}: ${h.time}`).join("; ");
+  const pharmacy = await getResolvedPharmacy();
+  const hours = pharmacy.hours.length
+    ? pharmacy.hours.map((h) => `${h.day}: ${h.time}`).join("; ")
+    : "Hours not published — contact the pharmacy to confirm";
   const serviceList = services.map((s) => `- ${s.title}: ${s.short}`).join("\n");
   const faqList = faqs
     .slice(0, 12)
     .map((f) => `Q: ${f.question}\nA: ${f.answer}`)
     .join("\n\n");
-  const teamList = team.map((t) => `${t.name} (${t.role})`).join("; ");
   const cats = categories.map((c) => c.title).join(", ");
   const articleTitles = articles.map((a) => a.title).join("; ");
 
@@ -43,30 +39,37 @@ export async function buildPharmacyContext(userQuery?: string): Promise<string> 
       const snippets = await findRelevantKnowledge(userQuery, 4);
       relevantKb = formatKnowledgeForPrompt(snippets);
     } catch {
-      // DB may be unavailable; fall back to static context only
+      // DB/knowledge lookup failure must not cause invented operational facts.
     }
   }
 
+  const identityWarning = pharmacy.unresolved
+    ? "No pharmacy tenant is currently selected. Do not claim a specific address, phone, stock level, opening time, insurance policy, or service availability. Ask the visitor to choose a pharmacy first."
+    : "Use only the pharmacy facts below for identity/contact/hours. Never substitute network/default pharmacy details.";
+
   return `
-You are Aether Care Assistant, the friendly AI helper for ${pharmacy.name}.
+You are Aether Care Assistant, the customer helper for ${pharmacy.unresolved ? "the Aether pharmacy network" : pharmacy.name}.
 
-## Pharmacy facts (use these; do not invent different hours, address, or phone)
-- Name: ${pharmacy.name}
-- Tagline: ${pharmacy.tagline}
-- Description: ${pharmacy.description}
-- Address: ${pharmacy.address.full}
-- Phone: ${pharmacy.phone}
-- Email: ${pharmacy.email}
-- WhatsApp: available at the same number
+## Tenant identity rule
+${identityWarning}
+
+## Pharmacy facts
+- Name: ${pharmacy.unresolved ? "Not selected" : pharmacy.name}
+- Tagline: ${pharmacy.tagline || "—"}
+- Description: ${pharmacy.description || "—"}
+- Address: ${pharmacy.unresolved ? "Not selected" : pharmacy.address.full || "Not published"}
+- Phone: ${pharmacy.unresolved ? "Not selected" : pharmacy.phone || "Not published"}
+- Email: ${pharmacy.unresolved ? "Not selected" : pharmacy.email || "Not published"}
+- WhatsApp: ${pharmacy.unresolved ? "Not selected" : pharmacy.whatsapp || "Not published"}
 - Hours: ${hours}
-- Insurance accepted: ${pharmacy.insurance.join(", ")}
-- Certifications: ${pharmacy.certifications.join(", ")}
-- Team: ${teamList}
+- Insurance accepted: ${pharmacy.insurance.length ? pharmacy.insurance.join(", ") : "Not published"}
+- Certifications: ${pharmacy.certifications.length ? pharmacy.certifications.join(", ") : "Not published"}
 
-## Services
+## Generic service catalogue
+These are network/template capabilities, not proof that every tenant offers each service. Confirm live tenant-specific availability before stating that a service is offered.
 ${serviceList}
 
-## Medicine categories (browse at /medicines — use tools for live stock)
+## Medicine categories
 ${cats}
 
 ## Sample FAQs
@@ -77,133 +80,150 @@ ${articleTitles}
 ${relevantKb}
 
 ## How do you feel?
-For mild everyday symptom questions (headache, stomach upset, cold, mild rash), gently point visitors to the guided check-in at /how-do-you-feel — structured questions, optional photos, check-ins over time, and pharmacist handoff. Still apply safety rules: emergencies → emergency services; personal clinical decisions → pharmacist.
+For mild everyday symptom questions, guide visitors to /how-do-you-feel. Emergencies require emergency services; personal clinical decisions require a pharmacist.
 
-## Tools (use when needed — never invent stock or policies)
-You have tools that query live, public-safe data only:
-1. search_medications — when the customer asks if a product/drug is available, in stock, listed, or its price.
-2. get_medication — when you already have a product slug and need a single public listing.
-3. search_knowledge — when you need an approved policy/detail not already in this prompt.
-4. get_medication_counselling — when the customer asks how to take a medicine, missed dose guidance, food interactions, device usage (inhaler, spacer, eye drops, glucometer, insulin), storage, side effects, or when to return to a doctor.
+## Tools
+1. search_medications — live public catalogue/availability questions.
+2. get_medication — one public listing by slug.
+3. search_knowledge — approved operational/policy detail.
+4. get_medication_counselling — educational medicine-use/counselling information.
 
-Security rules for tools:
-- Only public catalogue rows are returned. If a tool returns no results, say so and offer /medicines, /order, /contact — do NOT invent availability.
-- Availability is coarse: in_stock, low_stock, or out_of_stock. Never invent pack counts.
-- Tool data is operational (stock/price/listing) and educational counselling. Never modify prescribed dosages or diagnose serious illness.
-- Never reveal internal fields (supplier, shelf, purchase price, full inventory, other customers).
+Security rules:
+- Never invent stock, pack counts, policy, contact details or tenant service availability.
+- Never reveal supplier, shelf, purchase price, internal inventory, CRM or another customer's data.
+- Never diagnose, prescribe, change a prescription dose or interpret lab results.
+- If a clinical decision is needed, escalate to a pharmacist.
 
-## Website & portal actions you can suggest
-- Digital Medication Counselling Hub: /health/counselling
-- Browse public medicines: /medicines
-- Request a refill (guest): /refill
-- Customer portal (signed-in refills, caregivers, loyalty, counselling): /portal
-- Caregiver portal (manage medications for a family member): /caregiver
-- Place / enquire about an order: /order
-- Create account: /register
-- Sign in: /login
-- Delivery enquiry: /delivery
-- Contact form: /contact
-- Services: /services
-- FAQ: /faq
-- Health library: /health
-- Careers: /careers
+## Useful pages
+- /health/counselling
+- /medicines
+- /refill
+- /portal
+- /caregiver
+- /order
+- /register
+- /login
+- /delivery
+- /contact
+- /services
+- /faq
+- /health
 
-## Behaviour rules
-1. Be warm, clear, and concise (2–4 short paragraphs max unless the user asks for detail).
-2. Answer questions about hours, location, services, refills, delivery, insurance, and general wellness using the facts and relevant approved knowledge above.
-3. You are NOT a doctor. Never diagnose, prescribe, recommend specific medication for a symptom, modify prescriptions, interpret lab results, or make clinical decisions.
-4. Emergencies (chest pain, severe allergic reaction, overdose, trouble breathing): tell them to call emergency services immediately.
-5. For refills: guide guests to /refill or signed-in customers to /portal/refills/new. Caregivers should use /caregiver/refills/new. You cannot submit clinical forms yourself.
-6. If uncertain or the question is clinical, escalate: say a pharmacist will follow up and offer phone ${pharmacy.phone}, WhatsApp, or /contact.
-7. Use plain language. Light emoji is fine sparingly.
-8. When helpful, mention the relevant page path (e.g. /portal, /refill, /medicines/slug).
-9. Only use approved knowledge, pharmacy facts, and tool results — do not invent policies or stock.
-10. If the caller is a caregiver, you may answer questions about patients linked to them (medications, adherence, refill status). You may NOT reveal information about other customers, the pharmacy's CRM, loyalty, segmentation, or admin operations.
-11. For product availability questions, call search_medications before answering. Quote tool results honestly; link to the product path when present.
+## Behaviour
+1. Be clear and concise.
+2. Use the selected tenant's facts only.
+3. Emergencies: direct to emergency services immediately.
+4. For refills: /refill, /portal/refills/new, or /caregiver/refills/new as appropriate.
+5. If the pharmacy is unresolved, ask the user to select a pharmacy before giving operational facts.
+6. For product availability, use search_medications before answering.
+7. Caregiver data, when enabled, is strictly limited to authorised linked patients and the minimum data needed for the current question.
 `.trim();
 }
 
+function caregiverClinicalAiEnabled(): boolean {
+  // Privacy-first default: detailed clinical context never leaves the app unless
+  // an operator has explicitly enabled this processing relationship.
+  return process.env.AI_CLINICAL_CONTEXT_ENABLED?.trim().toLowerCase() === "true";
+}
+
+function queryNeeds(query: string | undefined, terms: string[]) {
+  const q = (query || "").toLowerCase();
+  return terms.some((term) => q.includes(term));
+}
+
 /**
- * Build a caregiver-scoped context with the patient data the caregiver is
- * authorised to see: active prescriptions, recent adherence stats, open
- * refill requests, and today's scheduled doses. This is appended to the
- * base pharmacy context when the caller is an active caregiver.
- *
- * The AI must ONLY answer questions about patients listed here. Questions
- * about other customers, the pharmacy's broader customer base, or admin
- * operations must be refused with an offer to escalate.
+ * Build minimum-necessary caregiver context. Detailed clinical data is
+ * disabled by default and must be explicitly enabled by deployment policy.
+ * Even when enabled, only categories relevant to the current query are read.
  */
-export async function buildCaregiverPatientContext(user: SessionUser): Promise<string> {
+export async function buildCaregiverPatientContext(
+  user: SessionUser,
+  userQuery?: string,
+): Promise<string> {
   const links = await getActiveCaregiverLinks(user.id);
   if (links.length === 0) return "";
 
+  if (!caregiverClinicalAiEnabled()) {
+    return `
+## Caregiver privacy boundary
+The signed-in user is an authorised caregiver for ${links.length} linked patient${links.length === 1 ? "" : "s"}. Detailed patient medications, adherence, dose logs and refill history are intentionally not sent to the external AI provider in this deployment. For patient-specific clinical information, direct the caregiver to the caregiver portal or a pharmacist. Never infer or invent patient details.
+`.trim();
+  }
+
+  const needsMedication = queryNeeds(userQuery, ["medicine", "medication", "prescription", "dose", "dosage", "schedule"]);
+  const needsRefill = queryNeeds(userQuery, ["refill", "pickup", "ready", "collect"]);
+  const needsAdherence = queryNeeds(userQuery, ["adherence", "taken", "missed", "late", "dose log", "streak"]);
+
+  // If the question is not about linked-patient clinical data, disclose only
+  // the existence of authorised links—not patient names or health records.
+  if (!needsMedication && !needsRefill && !needsAdherence) {
+    return `
+## Caregiver context
+The signed-in user has ${links.length} authorised caregiver link${links.length === 1 ? "" : "s"}. No patient clinical data was included because the current question does not require it. Do not infer patient details.
+`.trim();
+  }
+
   const sections = await Promise.all(
-    links.map(async (link) => {
-      const [rxs, refills, stats, recentDoseLogs] = await Promise.all([
-        prisma.prescription.findMany({
-          where: { customerId: link.customerId, status: "active" },
-          select: {
-            id: true,
-            medicineName: true,
-            dosage: true,
-            schedule: true,
-            refillsRemaining: true,
-            nextRefillDue: true,
-          },
-          orderBy: { medicineName: "asc" },
-        }),
-        prisma.refillRequest.findMany({
-          where: {
-            customerId: link.customerId,
-            status: { in: ["submitted", "under_review", "approved", "preparing", "ready_for_pickup"] },
-          },
-          select: { id: true, medicineName: true, status: true, createdAt: true },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-        }),
-        getAdherenceStatsForCustomer(link.customerId, 14),
-        prisma.doseLog.findMany({
-          where: {
-            customerId: link.customerId,
-            scheduledDate: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-          },
-          include: { prescription: { select: { medicineName: true } } },
-          orderBy: { scheduledDate: "desc" },
-          take: 14,
-        }),
+    links.map(async (link, index) => {
+      const label = `Linked patient ${index + 1}`;
+      const [rxs, refills, stats] = await Promise.all([
+        needsMedication
+          ? prisma.prescription.findMany({
+              where: { customerId: link.customerId, status: "active" },
+              select: {
+                medicineName: true,
+                dosage: true,
+                schedule: true,
+                refillsRemaining: true,
+                nextRefillDue: true,
+              },
+              orderBy: { medicineName: "asc" },
+              take: 20,
+            })
+          : Promise.resolve([]),
+        needsRefill
+          ? prisma.refillRequest.findMany({
+              where: {
+                customerId: link.customerId,
+                status: { in: ["submitted", "under_review", "approved", "preparing", "ready_for_pickup"] },
+              },
+              select: { medicineName: true, status: true, createdAt: true },
+              orderBy: { createdAt: "desc" },
+              take: 5,
+            })
+          : Promise.resolve([]),
+        needsAdherence
+          ? getAdherenceStatsForCustomer(link.customerId, 14)
+          : Promise.resolve(null),
       ]);
 
-      const meds = rxs.map((r) =>
-        `- ${r.medicineName} | dosage: ${r.dosage || "—"} | schedule: ${r.schedule || "—"} | refills: ${r.refillsRemaining ?? 0} | next refill: ${r.nextRefillDue ? toLocalDateInputValue(r.nextRefillDue) : "—"}`,
-      ).join("\n");
+      const blocks: string[] = [
+        `### ${label} (relationship: ${link.relationship || "caregiver"})`,
+        `Permissions: ${link.canRequestRefills ? "refills allowed" : "refills not allowed"}; ${link.canLogAdherence ? "adherence logging allowed" : "adherence logging not allowed"}`,
+      ];
 
-      const openRefills = refills.map((r) =>
-        `- ${r.medicineName}: ${r.status.replace(/_/g, " ")} (submitted ${toLocalDateInputValue(r.createdAt)})`,
-      ).join("\n");
-
-      const recentDoses = recentDoseLogs.map((d) =>
-        `- ${d.prescription.medicineName} on ${toLocalDateInputValue(d.scheduledDate)}${d.scheduledTime ? ` ${d.scheduledTime}` : ""}: ${d.status} (by ${d.recordedBy})`,
-      ).join("\n");
-
-      return `### Patient: ${link.customer.fullName} (relationship: ${link.relationship || "caregiver"})
-Permissions: ${link.canRequestRefills ? "can request refills" : "no refill requests"} · ${link.canLogAdherence ? "can log adherence" : "no adherence logging"} · ${link.canReceivePickupNotifications ? "receives pickup alerts" : "no pickup alerts"}
-
-Active medications:
-${meds || "— none —"}
-
-Open refill requests:
-${openRefills || "— none —"}
-
-14-day adherence: ${stats.adherenceRate}% (taken ${stats.takenCount}, missed ${stats.missedCount}, late ${stats.lateCount}, streak ${stats.currentStreakDays}d)
-
-Recent dose logs (last 7 days):
-${recentDoses || "— none —"}`;
+      if (needsMedication) {
+        blocks.push(
+          `Active medications:\n${rxs.length ? rxs.map((r) => `- ${r.medicineName} | dosage: ${r.dosage || "—"} | schedule: ${r.schedule || "—"} | refills: ${r.refillsRemaining ?? 0} | next refill: ${r.nextRefillDue ? toLocalDateInputValue(r.nextRefillDue) : "—"}`).join("\n") : "— none —"}`,
+        );
+      }
+      if (needsRefill) {
+        blocks.push(
+          `Open refills:\n${refills.length ? refills.map((r) => `- ${r.medicineName}: ${r.status.replace(/_/g, " ")} (${toLocalDateInputValue(r.createdAt)})`).join("\n") : "— none —"}`,
+        );
+      }
+      if (needsAdherence && stats) {
+        blocks.push(
+          `14-day adherence summary: ${stats.adherenceRate}% (taken ${stats.takenCount}, missed ${stats.missedCount}, late ${stats.lateCount}, streak ${stats.currentStreakDays}d)`,
+        );
+      }
+      return blocks.join("\n\n");
     }),
   );
 
   return `
-## Caregiver context — authorised patients only
-You are speaking to a caregiver (${user.email}). You may ONLY discuss the patients listed below. If asked about any other customer, the pharmacy's broader customer base, CRM notes, loyalty, campaigns, or admin operations, refuse and offer to escalate to staff.
+## Caregiver context — minimum necessary, authorised links only
+Patient names, emails, phone numbers and raw dose-log histories are omitted. Use only the linked-patient data below and only to answer the current question. Never disclose CRM, loyalty, campaigns, unrelated patients or admin operations.
 
 ${sections.join("\n\n")}
 `.trim();

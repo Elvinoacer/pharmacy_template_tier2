@@ -49,7 +49,7 @@ export default async function PosConflictsPage() {
           String(c.platformStock),
           String(c.posStock),
           (
-            <form action={resolvePosConflictAction} className="flex flex-wrap gap-2">
+            <form key={c.id} action={resolvePosConflictAction} className="flex flex-wrap gap-2">
               <input type="hidden" name="conflictId" value={c.id} />
               <button name="action" value="accept_pos" className="rounded-lg border border-white/20 px-2 py-1 text-xs hover:bg-white/10">
                 Accept POS
