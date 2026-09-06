@@ -126,7 +126,7 @@ export default function Footer({
 
   return (
     <footer
-      className={`relative overflow-hidden bg-[#030907] px-4 pt-10 text-white sm:px-6 sm:pt-14 lg:px-8 ${
+      className={`relative overflow-hidden bg-[#030907] px-3 pt-8 text-white sm:px-6 sm:pt-14 lg:px-8 ${
         clearMobileActionBar
           ? "pb-[calc(env(safe-area-inset-bottom)+7.5rem)] lg:pb-16"
           : "pb-12 sm:pb-16"
@@ -141,11 +141,10 @@ export default function Footer({
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Large Rounded Frosted Card Container (Matches landing_page_designs/footer.png) */}
-        <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-b from-[#051610]/85 via-[#030e0a]/92 to-[#020806] p-7 shadow-[0_25px_60px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl sm:p-10 lg:p-12">
-          
+        <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-b from-[#051610]/85 via-[#030e0a]/92 to-[#020806] p-4 shadow-[0_25px_60px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl sm:rounded-[2.5rem] sm:p-10 lg:p-12">
           {/* Subtle dotted Kenya silhouette overlay */}
           <div
-            className="pointer-events-none absolute left-12 top-6 h-64 w-64 opacity-15"
+            className="pointer-events-none absolute left-4 top-4 h-56 w-56 opacity-15 sm:left-12 sm:top-6 sm:h-64 sm:w-64"
             aria-hidden
             style={{
               backgroundImage:
@@ -155,43 +154,42 @@ export default function Footer({
           />
 
           {/* Top Section: 5 Grid Columns */}
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
-            
+          <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-12 lg:gap-8">
             {/* Column 1: Brand Logo, Description, Social Icons & Directory Link Card */}
-            <div className="sm:col-span-2 lg:col-span-4 xl:col-span-3">
+            <div className="min-w-0 sm:col-span-2 lg:col-span-4 xl:col-span-3">
               {/* Brand Logo & Title */}
-              <Link href={storefront ? `/p/${slug}` : "/"} className="flex items-center gap-3">
+              <Link href={storefront ? `/p/${slug}` : "/"} className="flex min-w-0 items-center gap-3">
                 <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-emerald-400/40 bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] shadow-md shadow-emerald-950/40">
                   <BrandMark size={22} />
                 </span>
-                <span className="flex flex-col leading-tight">
+                <span className="flex min-w-0 flex-col leading-tight">
                   <span
-                    className="text-2xl font-bold tracking-tight text-white sm:text-3xl"
+                    className="break-words text-2xl font-bold tracking-tight text-white sm:text-3xl"
                     style={{ fontFamily: "var(--font-display), serif" }}
                   >
                     {displayName}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#2dd4bf]">
+                  <span className="break-words text-[10px] font-bold uppercase tracking-[0.25em] text-[#2dd4bf]">
                     {displaySubtitle}
                   </span>
                 </span>
               </Link>
 
               {/* Tagline */}
-              <p className="mt-4 max-w-[280px] text-xs leading-relaxed text-slate-300 sm:text-sm">
+              <p className="mt-4 max-w-none text-xs leading-relaxed text-slate-300 sm:max-w-[280px] sm:text-sm">
                 {tagline}
               </p>
 
               {/* Trusted Badge */}
-              <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3.5 py-1.5 text-xs text-slate-200 backdrop-blur-md">
-                <ShieldCheck className="h-4 w-4 text-[#fde047]" />
+              <div className="mt-4 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3.5 py-1.5 text-xs text-slate-200 backdrop-blur-md">
+                <ShieldCheck className="h-4 w-4 shrink-0 text-[#fde047]" />
                 <span>
                   Trusted by <strong className="text-[#fde047]">10,000+</strong> Kenyans
                 </span>
               </div>
 
               {/* Social Icons Row */}
-              <div className="mt-5 flex items-center gap-2.5">
+              <div className="mt-5 flex flex-wrap items-center gap-2.5">
                 {/* Facebook */}
                 <a
                   href="https://facebook.com"
@@ -240,25 +238,25 @@ export default function Footer({
               {/* Pharmacy Network Banner Card */}
               <Link
                 href="/pharmacies"
-                className="group mt-6 flex items-center justify-between rounded-2xl border border-emerald-500/30 bg-emerald-950/40 p-3.5 shadow-sm backdrop-blur-md transition-all hover:border-emerald-400/60 hover:bg-emerald-950/60"
+                className="group mt-6 flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-950/40 p-3 shadow-sm backdrop-blur-md transition-all hover:border-emerald-400/60 hover:bg-emerald-950/60 sm:p-3.5"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-900/60 text-emerald-400 shadow-sm">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-white">200+ licensed pharmacies</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">across Kenya</p>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold leading-snug text-white sm:text-xs">200+ licensed pharmacies</p>
+                    <p className="mt-0.5 text-[10px] text-slate-400 sm:text-[11px]">across Kenya</p>
                   </div>
                 </div>
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 transition-all group-hover:bg-yellow-500 group-hover:text-black">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 transition-all group-hover:bg-yellow-500 group-hover:text-black sm:h-9 sm:w-9">
                   <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
             </div>
 
             {/* Column 2: EXPLORE */}
-            <div className="lg:col-span-2 xl:col-span-2">
+            <div className="min-w-0 lg:col-span-2 xl:col-span-2">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#2dd4bf]">
                 Explore
               </p>
@@ -273,11 +271,11 @@ export default function Footer({
                         href={withBase(item.href)}
                         className="group flex items-center justify-between rounded-xl py-1 text-xs text-slate-300 transition-all hover:text-white"
                       >
-                        <span className="flex items-center gap-2">
-                          <Icon className="h-3.5 w-3.5 text-slate-500 transition-colors group-hover:text-emerald-400" />
-                          <span>{item.label}</span>
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Icon className="h-3.5 w-3.5 shrink-0 text-slate-500 transition-colors group-hover:text-emerald-400" />
+                          <span className="break-words">{item.label}</span>
                         </span>
-                        <ChevronRight className="h-3.5 w-3.5 text-slate-500 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+                        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-500 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
                       </Link>
                     </li>
                   );
@@ -286,7 +284,7 @@ export default function Footer({
             </div>
 
             {/* Column 3: GET STARTED */}
-            <div className="lg:col-span-2 xl:col-span-2">
+            <div className="min-w-0 lg:col-span-2 xl:col-span-2">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#2dd4bf]">
                 Get Started
               </p>
@@ -301,11 +299,11 @@ export default function Footer({
                         href={withBase(item.href)}
                         className="group flex items-center justify-between rounded-xl py-1 text-xs text-slate-300 transition-all hover:text-white"
                       >
-                        <span className="flex items-center gap-2">
-                          <Icon className="h-3.5 w-3.5 text-slate-500 transition-colors group-hover:text-emerald-400" />
-                          <span>{item.label}</span>
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Icon className="h-3.5 w-3.5 shrink-0 text-slate-500 transition-colors group-hover:text-emerald-400" />
+                          <span className="break-words">{item.label}</span>
                         </span>
-                        <ChevronRight className="h-3.5 w-3.5 text-slate-500 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+                        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-500 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
                       </Link>
                     </li>
                   );
@@ -314,7 +312,7 @@ export default function Footer({
             </div>
 
             {/* Column 4: NETWORK */}
-            <div className="lg:col-span-2 xl:col-span-2">
+            <div className="min-w-0 lg:col-span-2 xl:col-span-2">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#2dd4bf]">
                 Network
               </p>
@@ -323,7 +321,7 @@ export default function Footer({
               <ul className="mt-4 space-y-3.5 text-xs text-slate-300">
                 <li className="flex items-start gap-2.5">
                   <Globe className="mt-0.5 h-4 w-4 shrink-0 text-[#2dd4bf]" />
-                  <span>{address}</span>
+                  <span className="min-w-0 break-words">{address}</span>
                 </li>
                 <li>
                   <a
@@ -331,23 +329,23 @@ export default function Footer({
                     className="flex items-center gap-2.5 transition hover:text-white"
                   >
                     <Phone className="h-4 w-4 shrink-0 text-[#2dd4bf]" />
-                    <span className="font-medium">{phone}</span>
+                    <span className="min-w-0 break-words font-medium">{phone}</span>
                   </a>
                 </li>
                 <li>
                   <a
                     href={`mailto:${email}`}
-                    className="flex items-center gap-2.5 break-all transition hover:text-white"
+                    className="flex min-w-0 items-center gap-2.5 transition hover:text-white"
                   >
                     <Mail className="h-4 w-4 shrink-0 text-[#2dd4bf]" />
-                    <span className="font-medium">{email}</span>
+                    <span className="min-w-0 break-all font-medium">{email}</span>
                   </a>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#2dd4bf]" />
                   <div>
                     <p>Mon – Sat: 8AM – 8PM</p>
-                    <p className="text-[11px] font-medium text-[#2dd4bf] mt-0.5">
+                    <p className="mt-0.5 text-[11px] font-medium text-[#2dd4bf]">
                       We&apos;re here to help
                     </p>
                   </div>
@@ -356,8 +354,8 @@ export default function Footer({
             </div>
 
             {/* Column 5: STAY IN THE LOOP Newsletter Card */}
-            <div className="sm:col-span-2 lg:col-span-4 xl:col-span-3">
-              <div className="rounded-3xl border border-white/10 bg-black/40 p-5 shadow-xl backdrop-blur-xl sm:p-6">
+            <div className="min-w-0 sm:col-span-2 lg:col-span-4 xl:col-span-3">
+              <div className="rounded-3xl border border-white/10 bg-black/40 p-4 shadow-xl backdrop-blur-xl sm:p-6">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#2dd4bf]">
                   Stay in the loop
                 </p>
@@ -368,7 +366,7 @@ export default function Footer({
                 {subscribed ? (
                   <div className="mt-4 rounded-2xl border border-emerald-500/30 bg-emerald-950/60 p-4 text-center">
                     <p className="text-xs font-bold text-emerald-300">Thank you for subscribing!</p>
-                    <p className="text-[10px] text-slate-400 mt-1">We will keep you updated.</p>
+                    <p className="mt-1 text-[10px] text-slate-400">We will keep you updated.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubscribe} className="mt-4 space-y-3">
@@ -400,73 +398,70 @@ export default function Footer({
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* Middle 4-Pillar Proof Bar */}
-          <div className="mt-12 rounded-2xl border border-white/10 bg-black/30 p-4 shadow-lg backdrop-blur-md sm:p-5">
+          <div className="mt-10 rounded-2xl border border-white/10 bg-black/30 p-3 shadow-lg backdrop-blur-md sm:mt-12 sm:p-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-white/10">
-              
               {/* Pillar 1: Quality Assured */}
-              <div className="flex items-center gap-3.5 lg:px-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-emerald-400 shadow-sm">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-3.5 lg:px-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-emerald-400 shadow-sm sm:h-11 sm:w-11">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs font-bold text-white sm:text-sm">Quality Assured</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="mt-0.5 text-[11px] text-slate-400">
                     Verified pharmacies you can trust
                   </p>
                 </div>
               </div>
 
               {/* Pillar 2: Fast & Reliable */}
-              <div className="flex items-center gap-3.5 lg:px-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-emerald-400 shadow-sm">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-3.5 lg:px-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-emerald-400 shadow-sm sm:h-11 sm:w-11">
                   <Truck className="h-5 w-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs font-bold text-white sm:text-sm">Fast & Reliable</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="mt-0.5 text-[11px] text-slate-400">
                     Quick service and doorstep delivery
                   </p>
                 </div>
               </div>
 
               {/* Pillar 3: 24/7 Support */}
-              <div className="flex items-center gap-3.5 lg:px-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-emerald-400 shadow-sm">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-3.5 lg:px-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-emerald-400 shadow-sm sm:h-11 sm:w-11">
                   <Headphones className="h-5 w-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs font-bold text-white sm:text-sm">24/7 Support</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="mt-0.5 text-[11px] text-slate-400">
                     Our team is always here to help
                   </p>
                 </div>
               </div>
 
               {/* Pillar 4: Secure & Private */}
-              <div className="flex items-center gap-3.5 lg:px-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-emerald-400 shadow-sm">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-3.5 lg:px-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-emerald-400 shadow-sm sm:h-11 sm:w-11">
                   <Lock className="h-5 w-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs font-bold text-white sm:text-sm">Secure & Private</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="mt-0.5 text-[11px] text-slate-400">
                     Your health data is protected
                   </p>
                 </div>
               </div>
-
             </div>
           </div>
 
           {/* Bottom Sub-Footer Bar */}
-          <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-slate-400 sm:flex-row">
+          <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-center text-xs text-slate-400 sm:flex-row sm:text-left">
             <p>© {new Date().getFullYear()} Aether Pharmacy Network. All rights reserved.</p>
 
-            <div className="flex items-center gap-1.5 text-xs text-slate-300">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-300 sm:justify-start">
               <Heart className="h-3.5 w-3.5 text-emerald-400 fill-emerald-400/30" />
               <span>
                 Proudly serving communities across{" "}
@@ -474,7 +469,7 @@ export default function Footer({
               </span>
             </div>
 
-            <div className="flex items-center gap-5 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-slate-400 sm:justify-end">
               <Link href="/privacy" className="transition hover:text-white">
                 Privacy Policy
               </Link>
@@ -487,7 +482,6 @@ export default function Footer({
               </span>
             </div>
           </div>
-
         </div>
       </div>
     </footer>
