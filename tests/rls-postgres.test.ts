@@ -97,7 +97,7 @@ describe("PostgreSQL RLS GUC", { skip: !hasDb }, () => {
       );
     } finally {
       process.env.STRICT_RLS = prevStrict;
-      process.env.NODE_ENV = prevEnv;
+      Object.assign(process.env, { NODE_ENV: prevEnv });
     }
   });
 

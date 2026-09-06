@@ -222,7 +222,17 @@ export async function getSessionUserByToken(token: string): Promise<SessionUser 
   }
   if (session.user.status !== "active") return null;
 
-  return toSessionUser(session.user);
+  return { ...await toSessionUser(session.user), mfaVerifiedAt: session.mfaVerifiedAt };
+}
+
+export async function markSessionMfaVerified(userId: string): Promise<void> {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (!token) throw new AuthError("Please sign in again", 401);
+  const result = await prisma.session.updateMany({
+    where: { tokenHash: hashToken(token), userId, revokedAt: null, expiresAt: { gt: new Date() } },
+    data: { mfaVerifiedAt: new Date() },
+  });
+  if (result.count !== 1) throw new AuthError("Please sign in again", 401);
 }
 
 export async function getSessionUser(): Promise<SessionUser | null> {
@@ -241,7 +251,7 @@ export function requireStaff(user: SessionUser | null): SessionUser {
   if (!user || (!isStaff(user.role) && !user.platformAdmin)) {
     throw new AuthError("Staff access required", 403);
   }
-  if (user.platformAdmin) return user;
+  if (user.platformAdmin) return requirePlatformAdmin(user);
 
   const membership = user.activePharmacyId
     ? user.memberships.find(
@@ -276,7 +286,7 @@ export async function assertCanMutateTenant(): Promise<void> {
 export async function requireManager(user: SessionUser | null): Promise<SessionUser> {
   if (!user) throw new AuthError("Manager access required", 403);
   await assertCanMutateTenant();
-  if (user.platformAdmin) return user;
+  if (user.platformAdmin) return requirePlatformAdmin(user);
 
   const qualifies = (role: string) => role === "owner" || role === "manager";
   let tenantId: string | null = null;
@@ -310,6 +320,7 @@ export function requirePlatformAdmin(user: SessionUser | null): SessionUser {
   if (!user || !user.platformAdmin) {
     throw new AuthError("Platform admin access required", 403);
   }
+  if (!user.twoFactorEnabled || !user.mfaVerifiedAt) throw new AuthError("MFA_REQUIRED", 401);
   return user;
 }
 

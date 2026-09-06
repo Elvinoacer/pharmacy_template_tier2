@@ -26,6 +26,7 @@ export type SessionUser = {
   platformAdmin: boolean;
   platformRole: string;
   twoFactorEnabled: boolean;
+  mfaVerifiedAt?: Date | null;
   lastReauthAt: Date | null;
   memberships: StaffMembership[];
   activePharmacyId: string | null;

@@ -5,8 +5,8 @@ import { prisma } from '@/app/lib/db';
 import {
   createSession,
   registerGoogleCustomer,
-  writeAuditLog,
 } from '@/app/lib/auth';
+import { recordAudit } from "@/app/lib/platform/audit";
 import { appBaseUrl, getRequestMeta } from '@/app/lib/env';
 import { resolvePostLoginPath } from '@/app/lib/session-claim';
 
@@ -33,6 +33,8 @@ export async function GET(request: Request) {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   const cookieStore = await cookies();
+  const next = cookieStore.get('google_oauth_next')?.value;
+  cookieStore.delete('google_oauth_next');
   const savedState = cookieStore.get('google_oauth_state')?.value;
   // Always delete — state is single-use.
   cookieStore.delete('google_oauth_state');
@@ -132,7 +134,7 @@ export async function GET(request: Request) {
     }
 
     try {
-      await writeAuditLog(user.id, auditAction, 'user', user.id, { provider: 'google' });
+      await recordAudit({ actorId: user.id, action: auditAction, resource: 'user', resourceId: user.id, details: { provider: 'google' } });
     } catch (error) {
       console.error('[google oauth callback] audit log failed', error);
     }
@@ -141,7 +143,7 @@ export async function GET(request: Request) {
       role: user.role,
       customerId: user.profile?.id ?? null,
       platformAdmin: user.platformAdmin === true,
-    });
+    }, next);
     return NextResponse.redirect(new URL(target, origin));
   } catch (error) {
     console.error('[google oauth callback]', error);

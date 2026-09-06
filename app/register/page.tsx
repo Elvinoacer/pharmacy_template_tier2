@@ -6,7 +6,8 @@ import { resolvePostLoginPath } from "@/app/lib/session-claim";
 
 export const metadata = { title: "Create account" };
 
-export default async function RegisterPage() {
+export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+  const { next } = await searchParams;
   const session = await getSessionUser().catch(() => null);
   if (session) {
     redirect(
@@ -14,13 +15,13 @@ export default async function RegisterPage() {
         role: session.role,
         customerId: session.customerId,
         platformAdmin: session.platformAdmin,
-      }),
+      }, next),
     );
   }
 
   return (
     <div className="register-contrast-tune">
-      <RegisterPanel action={registerAction} />
+      <RegisterPanel action={registerAction} next={next} />
       <style>{`
         /* Small contrast lift for the register design; intentionally restrained. */
         .register-contrast-tune .border-white\\/35 { border-color: rgba(255,255,255,.48) !important; }

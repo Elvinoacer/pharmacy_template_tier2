@@ -1,5 +1,8 @@
 "use server";
 
+import { getTenant } from "@/app/lib/tenant";
+import { recordAudit } from "@/app/lib/platform/audit";
+import { resolvePostLoginPath } from "@/app/lib/session-claim";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -86,6 +89,23 @@ export async function cancelRefillAction(formData: FormData) {
   revalidatePath("/portal/refills");
 }
 
+/** Minimal first-run profile setup; preserve all existing health and address data. */
+export async function completeOnboardingAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const user = await getSessionUser();
+  if (!user?.customerId) return { error: "Please sign in again to continue." };
+  const fullName = String(formData.get("fullName") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  if (!fullName || fullName.length > 120) return { error: "Enter your name using up to 120 characters." };
+  if (phone && !/^[+()0-9 .-]{7,30}$/.test(phone)) return { error: "Enter a valid phone number, or leave it blank for now." };
+  const profile = await prisma.customerProfile.findUnique({ where: { id: user.customerId }, select: { onboardingCompletedAt: true } });
+  if (!profile) return { error: "We could not find your profile. Please sign in again." };
+  await prisma.customerProfile.update({ where: { id: user.customerId }, data: { fullName, phone: phone || null, onboardingCompletedAt: profile.onboardingCompletedAt ?? new Date() } });
+  await recordAudit({ actorId: user.id, action: "onboarding_completed", resource: "customer_profile", resourceId: user.customerId });
+  revalidatePath("/portal", "layout");
+  const next = String(formData.get("next") || "/portal");
+  redirect(resolvePostLoginPath(user, next.split(/[?#]/)[0] === "/portal/onboarding" ? null : next));
+}
+
 export async function updateProfileAction(
   _prev: ActionState,
   formData: FormData,
@@ -93,6 +113,8 @@ export async function updateProfileAction(
   const user = await getSessionUser();
   if (!user?.customerId) return { error: "Please sign in." };
 
+  const fullName = String(formData.get("fullName") || "").trim();
+  if (!fullName) return { error: "Please enter your name." };
   const dobRaw = String(formData.get("dateOfBirth") || "").trim();
   // Validate birthday — reject future dates.
   if (dobRaw && isFuture(dobRaw)) {
@@ -140,8 +162,9 @@ export async function updateProfileAction(
     },
   });
 
-  // If we just completed onboarding, add a timeline event.
-  if (wasOnboarding) {
+  // The identity is network-wide; a CRM timeline belongs to a selected pharmacy.
+  const profileTenant = await getTenant();
+  if (wasOnboarding && profileTenant.pharmacyId) {
     await addTimelineEvent(
       user.customerId,
       user.id,
@@ -153,9 +176,10 @@ export async function updateProfileAction(
     );
   }
 
-  await writeAuditLog(user.id, "profile_updated", "customer_profile", user.customerId);
+  await recordAudit({ actorId: user.id, action: "profile_updated", resource: "customer_profile", resourceId: user.customerId });
   revalidatePath("/portal/profile");
   revalidatePath("/portal");
+  if (wasOnboarding) redirect(resolvePostLoginPath(user, String(formData.get("next") || "/portal")));
   return { success: "Profile saved successfully." };
 }
 

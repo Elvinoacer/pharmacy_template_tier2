@@ -59,7 +59,7 @@ export default async function AdminDashboardPage() {
         </div>
       }
     >
-      <AdminToday refills={a.activeRefills} enquiries={a.openEnquiries} escalations={a.aiEscalations} />
+      <AdminToday user={user} refills={a.activeRefills} enquiries={a.openEnquiries} escalations={a.aiEscalations} />
       <h2 className="mb-4 text-lg font-semibold admin-text">Stock to check</h2>
       {/* Inventory health strip */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

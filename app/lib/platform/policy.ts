@@ -47,7 +47,7 @@ export async function authorize(input: AuthorizeInput): Promise<SessionUser> {
     throw new AuthError("This support session is read-only", 403);
   }
 
-  if (actor.platformAdmin) return actor;
+  if (actor.platformAdmin) return requirePlatformAdmin(actor);
 
   const contextTenantId = (
     await getTenant().catch(() => ({ pharmacyId: null as string | null }))
@@ -140,7 +140,7 @@ export async function requireStepUp(user: SessionUser, maxAgeMs = STEP_UP_MS): P
   if ((row.platformAdmin || user.platformAdmin) && !row.twoFactorEnabled && !user.twoFactorEnabled) {
     throw new AuthError("MFA_REQUIRED", 401);
   }
-  const at = row.lastReauthAt ?? user.lastReauthAt;
+  const at = user.mfaVerifiedAt;
   if (!at || Date.now() - at.getTime() > maxAgeMs) {
     throw new AuthError("STEP_UP_REQUIRED", 401);
   }

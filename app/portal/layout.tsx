@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/portal");
+  if (user.platformAdmin && !user.customerId) redirect("/platform");
   if (isStaff(user.role) && !user.customerId) redirect("/admin");
 
   if (user.role === "caregiver" && !user.customerId) {

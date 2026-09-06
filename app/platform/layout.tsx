@@ -14,9 +14,19 @@ export default async function PlatformLayout({ children }: { children: React.Rea
   if (!user.platformAdmin) redirect("/admin");
   const h = await headers();
   const path = h.get("x-pathname") || h.get("x-invoke-path") || "";
-  const onSecurity = path.includes("/platform/security");
-  if (!user.twoFactorEnabled && !onSecurity) {
+  const onSecurity = path === "/platform/security";
+  if ((!user.twoFactorEnabled || !user.mfaVerifiedAt) && !onSecurity) {
     redirect("/platform/security?mfa=required");
+  }
+
+  if (!user.twoFactorEnabled || !user.mfaVerifiedAt) {
+    return <main className="min-h-dvh bg-[#06110f] px-4 py-10 text-white">
+      <div className="mx-auto max-w-2xl">
+        <Link href="/" className="mb-8 inline-flex min-h-11 items-center text-sm text-teal-100 hover:underline">← Back to marketplace</Link>
+        {children}
+        <form action={logoutAction} className="mt-8"><button className="min-h-11 text-sm text-teal-100 underline">Sign out</button></form>
+      </div>
+    </main>;
   }
 
   return (

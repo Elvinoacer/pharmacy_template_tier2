@@ -27,6 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/login?next=/admin");
   }
   if (!user) redirect("/login?next=/admin");
+  if (user.platformAdmin && (!user.twoFactorEnabled || !user.mfaVerifiedAt)) redirect("/platform/security?mfa=required");
 
   if (user.memberships.length === 0 && !user.platformAdmin) {
     if (user.role === "caregiver") redirect("/caregiver");

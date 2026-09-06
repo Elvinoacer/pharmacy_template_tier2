@@ -21,6 +21,7 @@ import { platform } from "@/app/lib/data";
 import { evaluatePassword, PASSWORD_RULES } from "@/app/lib/password";
 
 type Props = {
+  next?: string;
   action: (prev: AuthActionState, formData: FormData) => Promise<AuthActionState>;
 };
 
@@ -74,7 +75,7 @@ function AppleMark() {
   );
 }
 
-export default function RegisterPanel({ action }: Props) {
+export default function RegisterPanel({ action, next }: Props) {
   const [state, formAction, pending] = useActionState(action, {} as AuthActionState);
   const [csrfToken, setCsrfToken] = useState("");
   const [csrfError, setCsrfError] = useState<string | null>(null);
@@ -244,6 +245,7 @@ export default function RegisterPanel({ action }: Props) {
               )}
 
               <form action={formAction} className="mt-6 flex flex-col gap-5 min-[1280px]:mt-5 min-[1280px]:gap-4">
+                <input type="hidden" name="next" value={next || ""} />
                 <input type="hidden" name="csrfToken" value={csrfToken} />
                 <input type="hidden" name="fullName" value={fullName} />
                 <input type="hidden" name="dateOfBirth" value="" />
@@ -347,7 +349,7 @@ export default function RegisterPanel({ action }: Props) {
 
                 <div className="grid grid-cols-2 gap-3">
                   <a
-                    href="/api/auth/google"
+                    href={next ? `/api/auth/google?next=${encodeURIComponent(next)}` : "/api/auth/google"}
                     className="flex h-[55px] items-center justify-center gap-3 rounded-[13px] border border-white/15 bg-white/[0.025] text-[16px] font-medium text-white transition hover:bg-white/[0.06] min-[1280px]:h-[52px] min-[1280px]:text-[15px]"
                   >
                     <GoogleMark />
@@ -364,7 +366,7 @@ export default function RegisterPanel({ action }: Props) {
 
                 <div className="pt-3 text-center text-[14px] text-white/65 min-[1280px]:pt-2">
                   Already have an account?{" "}
-                  <Link href="/login" className="font-medium text-lime-300 hover:text-lime-200 hover:underline">Sign in</Link>
+                  <Link href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"} className="font-medium text-lime-300 hover:text-lime-200 hover:underline">Sign in</Link>
                 </div>
               </form>
             </section>

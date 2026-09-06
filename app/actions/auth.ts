@@ -15,8 +15,8 @@ import {
   registerCustomer,
   resetPasswordWithToken,
   createSession,
-  writeAuditLog,
 } from "@/app/lib/auth";
+import { recordAudit } from "@/app/lib/platform/audit";
 import { validatePassword } from "@/app/lib/password";
 import { resolvePostLoginPath } from "@/app/lib/session-claim";
 
@@ -86,7 +86,7 @@ export async function registerAction(
     if (verification.status === "failed") {
       console.error("[email verification delivery]", verification.error);
     }
-    await writeAuditLog(userId, "register", "user", userId);
+    await recordAudit({ actorId: userId, action: "register", resource: "user", resourceId: userId });
   } catch (e) {
     if (isRedirectError(e)) throw e;
     if (e instanceof AuthError) return { error: e.message };
@@ -96,7 +96,7 @@ export async function registerAction(
 
   // redirect() MUST be outside try/catch — it throws a NEXT_REDIRECT error
   // that Next.js handles at the action boundary. If caught, the redirect is lost.
-  redirect("/portal");
+  redirect(resolvePostLoginPath({ role: "customer", customerId: userId }, String(formData.get("next") || "")));
 }
 
 export async function loginAction(
@@ -142,7 +142,7 @@ export async function loginAction(
   let postLoginPath: string | null = null;
   try {
     const user = await loginWithPassword(email, password);
-    await writeAuditLog(user.id, "login", "user", user.id);
+    await recordAudit({ actorId: user.id, action: "login", resource: "user", resourceId: user.id });
     postLoginPath = resolvePostLoginPath(
       { role: user.role, customerId: user.customerId, platformAdmin: user.platformAdmin },
       next || null,

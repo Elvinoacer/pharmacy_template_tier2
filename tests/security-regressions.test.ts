@@ -56,7 +56,7 @@ describe("cron authentication", () => {
     const old = process.env.CRON_SECRET;
     const oldNodeEnv = process.env.NODE_ENV;
     process.env.CRON_SECRET = "test-cron-secret";
-    Object.defineProperty(process.env, "NODE_ENV", { value: "production", configurable: true });
+    Object.assign(process.env, { NODE_ENV: "production" });
     try {
       const queryOnly = new Request("https://example.test/api/cron/job?secret=test-cron-secret");
       assert.equal(isCronAuthorized(queryOnly), false);
@@ -68,7 +68,8 @@ describe("cron authentication", () => {
     } finally {
       if (old === undefined) delete process.env.CRON_SECRET;
       else process.env.CRON_SECRET = old;
-      Object.defineProperty(process.env, "NODE_ENV", { value: oldNodeEnv, configurable: true });
+      if (oldNodeEnv === undefined) Reflect.deleteProperty(process.env, "NODE_ENV");
+      else Object.assign(process.env, { NODE_ENV: oldNodeEnv });
     }
   });
 });

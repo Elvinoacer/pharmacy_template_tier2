@@ -1,4 +1,5 @@
 import "server-only";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -22,6 +23,7 @@ export async function requireOnboarded(): Promise<void> {
   });
 
   if (!profile?.onboardingCompletedAt) {
-    redirect("/portal/onboarding");
+    const next = (await headers()).get("x-return-path") || "/portal";
+    redirect(`/portal/onboarding?next=${encodeURIComponent(next)}`);
   }
 }

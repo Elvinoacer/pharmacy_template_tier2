@@ -2,7 +2,7 @@ import "server-only";
 
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma, prismaUnscoped } from "@/app/lib/db";
-import { peekTenant } from "@/app/lib/tenant-context";
+import { peekTenant, withPlatformBypass } from "@/app/lib/tenant-context";
 import { getRequestMeta } from "@/app/lib/env";
 
 const UUID_RE =
@@ -56,13 +56,9 @@ async function write(input: AuditInput, required: boolean) {
     if (pharmacyId) {
       await client.auditLog.create({ data: { ...data, pharmacyId } });
     } else {
-      // Platform-level events still need a pharmacy row historically; skip tenant default.
-      await prismaUnscoped.auditLog.create({
-        data: {
-          ...data,
-          pharmacyId: "00000000-0000-0000-0000-000000000000",
-        },
-      });
+      await withPlatformBypass(async () => prismaUnscoped.auditLog.create({
+        data: { ...data, pharmacyId: null },
+      }));
     }
   } catch (err) {
     if (required) throw err;

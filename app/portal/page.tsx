@@ -1,3 +1,4 @@
+import PortalNextSteps from "@/app/components/portal/PortalNextSteps";
 import { formatDateTime, formatDate } from "@/app/lib/time";
 import Link from "next/link";
 import { getSessionUser } from "@/app/lib/auth";
@@ -42,19 +43,12 @@ export default async function PortalDashboardPage() {
       title={`Hello, ${firstName}`}
       subtitle="Here's a snapshot of your prescriptions, refills, and rewards."
       actions={
-        <Link href="/portal/refills/new" className="btn-primary">
-          <Plus className="h-4 w-4" /> Request refill
+        <Link href={tenant.pharmacyId ? "/portal/refills/new" : "/portal/pharmacies"} className="btn-primary">
+          <Plus className="h-4 w-4" /> {tenant.pharmacyId ? "Request refill" : "Choose a pharmacy"}
         </Link>
       }
     >
-      {!tenant.pharmacyId && (
-        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          Pick a pharmacy to load prescriptions, loyalty, and messages for that store.{" "}
-          <Link href="/portal/pharmacies" className="font-semibold underline">
-            My pharmacies
-          </Link>
-        </div>
-      )}
+      <PortalNextSteps hasPharmacy={Boolean(tenant.pharmacyId)} readyForPickup={readyForPickup} />
       {/* Stat cards */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
@@ -108,7 +102,8 @@ export default async function PortalDashboardPage() {
             <EmptyState
               icon={FileText}
               title="No prescriptions on file"
-              description="When your doctor sends a prescription to Aether, it'll appear here."
+              description="Upload a prescription or ask your pharmacy to add one. You can follow its review here."
+              action={<Link href={tenant.pharmacyId ? "/portal/prescriptions" : "/portal/pharmacies"} className="btn-primary !py-2 text-sm">{tenant.pharmacyId ? "Add a prescription" : "Choose a pharmacy"}</Link>}
             />
           ) : (
             <ul className="space-y-2.5">

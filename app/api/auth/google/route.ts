@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { OAuth2Client } from 'google-auth-library';
 import { cookies } from 'next/headers';
 import { randomBytes } from 'crypto';
+import { isSafeInternalPath } from '@/app/lib/session-claim';
 import { appBaseUrl } from '@/app/lib/env';
 
 export const runtime = 'nodejs';
@@ -10,10 +11,11 @@ export async function GET(request: Request) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
-    return NextResponse.json(
-      { error: "Google OAuth is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET." },
-      { status: 500 },
-    );
+    const fallback = new URL('/login', request.url);
+    fallback.searchParams.set('error', 'Google sign-in is unavailable. Please use your email and password.');
+    const next = new URL(request.url).searchParams.get('next');
+    if (isSafeInternalPath(next)) fallback.searchParams.set('next', next);
+    return NextResponse.redirect(fallback);
   }
 
   const origin = appBaseUrl(request);
@@ -30,6 +32,11 @@ export async function GET(request: Request) {
     sameSite: 'lax',
     maxAge: 60 * 10, // 10 minutes
     path: '/',
+  });
+
+  const next = new URL(request.url).searchParams.get('next');
+  cookieStore.set('google_oauth_next', isSafeInternalPath(next) ? next : '', {
+    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 600, path: '/',
   });
 
   const authorizeUrl = client.generateAuthUrl({

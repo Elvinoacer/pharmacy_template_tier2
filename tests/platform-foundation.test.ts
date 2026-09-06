@@ -196,3 +196,42 @@ describe("platform observability", () => {
     assert.ok(snap.pos);
   });
 });
+
+// Role routing must preserve a task without bouncing a signed-in user between portals.
+describe("sign-in destinations", () => {
+  it("preserves customer tasks and rejects external destinations", async () => {
+    const { resolvePostLoginPath } = await import("../app/lib/session-claim");
+    const customer = { role: "customer", customerId: "customer-1" };
+    assert.equal(resolvePostLoginPath(customer, "/portal/refills/new?medicine=Test"), "/portal/refills/new?medicine=Test");
+    for (const next of ["https://example.com", "//example.com", "/\\example.com", "/login?next=/portal", "/register"]) {
+      assert.equal(resolvePostLoginPath(customer, next), "/portal");
+    }
+    assert.equal(resolvePostLoginPath(customer, "/platform"), "/portal");
+    assert.equal(resolvePostLoginPath(customer, "/admin/orders"), "/portal");
+  });
+
+  it("routes staff, caregivers, and platform admins to a workspace they can open", async () => {
+    const { resolvePostLoginPath } = await import("../app/lib/session-claim");
+    assert.equal(resolvePostLoginPath({ role: "pharmacist" }), "/admin");
+    assert.equal(resolvePostLoginPath({ role: "pharmacist" }, "/portal"), "/admin");
+    assert.equal(resolvePostLoginPath({ role: "caregiver" }, "/portal"), "/caregiver");
+    assert.equal(resolvePostLoginPath({ role: "manager", platformAdmin: true }, "/portal"), "/platform");
+    assert.equal(resolvePostLoginPath({ role: "manager", platformAdmin: true }, "/platform/applications"), "/platform/applications");
+  });
+});
+
+describe("platform MFA access", () => {
+  it("requires verification of this session, not just enrollment or another device", async () => {
+    const { requirePlatformAdmin } = await import("../app/lib/auth");
+    const admin: SessionUser = {
+      id: "admin-1", email: "admin@example.test", role: "manager", fullName: null,
+      customerId: null, platformAdmin: true, platformRole: "super_admin",
+      twoFactorEnabled: false, lastReauthAt: new Date(), memberships: [], activePharmacyId: null,
+    };
+    assert.throws(() => requirePlatformAdmin(admin), /MFA_REQUIRED/);
+    assert.throws(() => requirePlatformAdmin({ ...admin, twoFactorEnabled: true }), /MFA_REQUIRED/);
+    const verified = { ...admin, twoFactorEnabled: true, mfaVerifiedAt: new Date() };
+    assert.equal(requirePlatformAdmin(verified), verified);
+    assert.throws(() => requirePlatformAdmin({ ...verified, platformAdmin: false }), /Platform admin access required/);
+  });
+});

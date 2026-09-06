@@ -1,5 +1,6 @@
 import { prismaUnscoped } from "@/app/lib/db";
-import { getSessionUser } from "@/app/lib/auth";
+import { redirect } from "next/navigation";
+import { getSessionUser, requirePlatformAdmin } from "@/app/lib/auth";
 import { PlatformPage, PlatformTable } from "@/app/platform/_components/PlatformPage";
 import { startMfaEnrollmentAction } from "@/app/actions/mfa";
 import { revokeDeviceAction, revokeSessionAction } from "@/app/actions/platform";
@@ -10,6 +11,16 @@ export const dynamic = "force-dynamic";
 
 export default async function SecurityPage() {
   const me = await getSessionUser();
+  if (!me?.platformAdmin) redirect("/login?next=/platform");
+  if (!me.twoFactorEnabled || !me.mfaVerifiedAt) {
+    return <PlatformPage title={me.twoFactorEnabled ? "Verify your sign-in" : "Secure your admin account"} description="Complete this step to open platform administration.">
+      <div className="rounded-2xl border border-teal-200/20 p-5">
+        <p className="text-sm text-teal-100">{me.email}</p>
+        <MfaEnrollForm startAction={startMfaEnrollmentAction} enabled={me.twoFactorEnabled} />
+      </div>
+    </PlatformPage>;
+  }
+  requirePlatformAdmin(me);
   const [sessions, devices, support, admins] = await Promise.all([
     prismaUnscoped.session.findMany({
       where: { revokedAt: null, expiresAt: { gt: new Date() } },
@@ -23,13 +34,13 @@ export default async function SecurityPage() {
   ]);
 
   return (
-    <PlatformPage title="Security" description="MFA, sessions, devices and support access. Platform admins should enroll TOTP.">
+    <PlatformPage title="Security" description="Manage two-step verification, signed-in devices, and support access.">
       <div className="mb-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-        <h2 className="text-lg font-semibold">Your MFA</h2>
+        <h2 className="text-lg font-semibold">Two-step verification</h2>
         <p className="mt-1 text-sm text-teal-100/70">
-          {me?.email} — enroll an authenticator app. Super-admins should treat this as mandatory.
+          {me.email} — your authenticator protects this account.
         </p>
-        <MfaEnrollForm startAction={startMfaEnrollmentAction} />
+        <MfaEnrollForm startAction={startMfaEnrollmentAction} enabled verified />
       </div>
 
       <h2 className="mb-3 text-lg font-semibold">Platform admins</h2>

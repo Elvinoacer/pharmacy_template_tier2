@@ -33,7 +33,7 @@ export default async function LoginPage({
       <AuthForm
         action={loginAction}
         title="Welcome back"
-        subtitle="Sign in to open your customer portal, caregiver workspace, or staff CRM — based on your account."
+        subtitle="One sign-in for your care, your pharmacy, or platform administration. We’ll open the right workspace for you."
         submitLabel="Sign in"
         hiddenFields={next ? { next } : undefined}
         showGoogleAuth
@@ -41,13 +41,14 @@ export default async function LoginPage({
         highlights={[
           "Customers land in the patient portal",
           "Caregivers open the caregiver workspace",
-          "Pharmacists & staff open the admin CRM",
+          "Pharmacists & staff manage their pharmacy",
+          "Platform admins manage the network",
         ]}
         footer={
           <>
             <p>
               No account?{" "}
-              <Link href="/register" className="font-semibold text-[#0d6e5a] hover:underline">
+              <Link href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"} className="font-semibold text-[#0d6e5a] hover:underline">
                 Create one
               </Link>
             </p>

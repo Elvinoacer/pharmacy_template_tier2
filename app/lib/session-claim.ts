@@ -62,7 +62,7 @@ export function claimIsStaff(role: string): boolean {
 }
 
 export function isSafeInternalPath(path: string | null | undefined): path is string {
-  return Boolean(path && path.startsWith("/") && !path.startsWith("//") && !path.includes("\\"));
+  return Boolean(path && path.startsWith("/") && !path.startsWith("//") && !path.includes("\\") && !/[\u0000-\u0020\u007f]/.test(path));
 }
 
 /**
@@ -79,10 +79,14 @@ export function resolvePostLoginPath(
 ): string {
   const staff = claimIsStaff(user.role);
   const isCaregiverRole = user.role === "caregiver";
-  const safeNext = isSafeInternalPath(next) ? next : null;
+  const candidate = isSafeInternalPath(next) ? next : null;
+  const pathname = candidate?.split(/[?#]/)[0];
+  const safeNext = pathname && !["/login", "/register", "/forgot-password", "/reset-password"].includes(pathname) ? candidate : null;
   const platformAdmin = user.platformAdmin === true;
 
   if (safeNext) {
+    if (safeNext.startsWith("/portal") && platformAdmin && !user.customerId) return "/platform";
+    if (safeNext.startsWith("/caregiver") && !isCaregiverRole && !user.customerId) return platformAdmin ? "/platform" : staff ? "/admin" : "/portal";
     if (safeNext.startsWith("/platform") && !platformAdmin) {
       return staff ? "/admin" : isCaregiverRole ? "/caregiver" : user.customerId ? "/portal" : "/login";
     }

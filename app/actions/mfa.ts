@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getSessionUser } from "@/app/lib/auth";
+import { revalidatePath } from "next/cache";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
+import { getSessionUser, markSessionMfaVerified } from "@/app/lib/auth";
 import { confirmMfa, enrollMfa, verifyUserMfa } from "@/app/lib/platform/mfa";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
 
@@ -16,6 +18,8 @@ export type MfaState = {
 export async function startMfaEnrollmentAction(): Promise<MfaState> {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  if (user.twoFactorEnabled) return { error: "Two-step verification is already enabled. Use your existing authenticator." };
+  if (!await allowMfaAttempt(user.id)) return { error: "Too many attempts. Please wait a few minutes and try again." };
   const enrolled = await enrollMfa(user.id, user.email);
   return { secret: enrolled.secret, otpauth: enrolled.otpauth, recoveryCodes: enrolled.recoveryCodes };
 }
@@ -23,6 +27,7 @@ export async function startMfaEnrollmentAction(): Promise<MfaState> {
 export async function confirmMfaAction(_prev: MfaState, formData: FormData): Promise<MfaState> {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  if (!await allowMfaAttempt(user.id)) return { error: "Too many attempts. Please wait a few minutes and try again." };
   const code = String(formData.get("code") || "");
   const ok = await confirmMfa(user.id, code);
   if (!ok) return { error: "Invalid authenticator code." };
@@ -32,14 +37,24 @@ export async function confirmMfaAction(_prev: MfaState, formData: FormData): Pro
     resource: "user",
     resourceId: user.id,
   });
-  return { success: "Two-factor authentication is now enabled." };
+  await markSessionMfaVerified(user.id);
+  revalidatePath("/platform", "layout");
+  return { success: "Two-step verification is enabled. Your admin account is ready." };
 }
 
 export async function verifyStepUpAction(_prev: MfaState, formData: FormData): Promise<MfaState> {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  if (!await allowMfaAttempt(user.id)) return { error: "Too many attempts. Please wait a few minutes and try again." };
   const code = String(formData.get("code") || "");
   const ok = await verifyUserMfa(user.id, code);
   if (!ok) return { error: "Invalid code." };
-  return { success: "Reauthenticated." };
+  await markSessionMfaVerified(user.id);
+  revalidatePath("/platform", "layout");
+  return { success: "Verified. You can continue to your workspace." };
+}
+
+async function allowMfaAttempt(userId: string): Promise<boolean> {
+  const result = await checkRateLimitAsync(`mfa:${userId}`, { limit: 10, windowMs: 5 * 60 * 1000, failClosed: true });
+  return result.allowed;
 }

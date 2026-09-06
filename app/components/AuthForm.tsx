@@ -224,7 +224,7 @@ export default function AuthForm({
                 </div>
               </div>
               <a
-                href="/api/auth/google"
+                href={hiddenFields?.next ? `/api/auth/google?next=${encodeURIComponent(hiddenFields.next)}` : "/api/auth/google"}
                 className="flex w-full items-center justify-center gap-3 rounded-2xl border border-teal-900/10 bg-white px-4 py-3 text-sm font-semibold text-[#0c1a14] shadow-sm transition hover:bg-teal-50"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>

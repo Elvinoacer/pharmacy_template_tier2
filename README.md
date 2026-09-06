@@ -46,11 +46,12 @@ cp .env.example .env.local   # or use existing .env / .env.local
 npm run db:generate
 npm run db:migrate           # prisma migrate deploy
 npm run db:test              # verify DATABASE_URL (+ optional HOSTADDR)
-npm run db:seed
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+For role-specific navigation and safe admin provisioning, see [Everyday user flows](docs/USER_FLOWS.md). The demo seed (`npm run db:seed`) truncates existing data; use it only on a disposable demo database. Use `npm run db:seed:admin` to add one platform admin without resetting pharmacy data.
 
 ### Environment
 

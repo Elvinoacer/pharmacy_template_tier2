@@ -37,6 +37,7 @@ export async function proxy(request: NextRequest) {
 
   for (const h of TENANT_HEADERS) requestHeaders.delete(h)
   requestHeaders.set('x-pathname', pathname)
+  requestHeaders.set('x-return-path', pathname + request.nextUrl.search)
 
   // Cron credentials are bearer-only. Reject legacy query-string credentials
   // before any individual cron handler can inspect them, so URL logs/history
@@ -113,7 +114,7 @@ export async function proxy(request: NextRequest) {
   const sessionCookie = request.cookies.get('aether_session')?.value
 
   if (!claimCookie && !sessionCookie) {
-    const loginUrl = new URL(`/login?next=${encodeURIComponent(pathname)}`, request.url)
+    const loginUrl = new URL(`/login?next=${encodeURIComponent(pathname + request.nextUrl.search)}`, request.url)
     return NextResponse.redirect(loginUrl)
   }
 
@@ -135,7 +136,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (!role) {
-    const loginUrl = new URL(`/login?next=${encodeURIComponent(pathname)}`, request.url)
+    const loginUrl = new URL(`/login?next=${encodeURIComponent(pathname + request.nextUrl.search)}`, request.url)
     return NextResponse.redirect(loginUrl)
   }
 
