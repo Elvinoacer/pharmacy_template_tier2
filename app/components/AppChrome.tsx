@@ -9,6 +9,7 @@ import type { PortalSessionHint } from "@/app/lib/portal-dest";
 import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/brand";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
 import { platform } from "@/app/lib/data";
+import publicChromeStyles from "./landing/PublicChromeTheme.module.css";
 
 const AiChatbot = dynamic(() => import("./AiChatbot"), { ssr: false });
 const LiveAlertCenter = dynamic(
@@ -55,7 +56,8 @@ export default function AppChrome({
     surface === "storefront"
       ? storefrontBrand ?? unscopedPublicBrand()
       : platformBrand;
-  const hasLandingMobileActionBar = pathname === "/";
+  const isLandingPage = pathname === "/";
+  const hasLandingMobileActionBar = isLandingPage;
 
   return (
     <TenantBrandProvider
@@ -65,7 +67,11 @@ export default function AppChrome({
         slug: brand.slug,
       }}
     >
-      <div className="mesh-bg relative flex min-h-screen flex-col">
+      <div
+        className={`mesh-bg relative flex min-h-screen flex-col ${publicChromeStyles.publicChrome} ${
+          isLandingPage ? publicChromeStyles.landingChrome : ""
+        }`}
+      >
         <NavbarNavigationFix />
         <Navbar
           sessionUser={sessionUser}
