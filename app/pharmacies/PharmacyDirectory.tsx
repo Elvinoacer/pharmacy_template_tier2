@@ -186,11 +186,11 @@ export default function PharmacyDirectory({
   const activeFilterCount = [city, county, category, delivery ? "delivery" : ""].filter(Boolean).length;
 
   return (
-    <div id="directory" className="scroll-mt-28">
-      <div className="glass-panel rounded-[28px] border border-teal-900/10 p-3 shadow-sm sm:p-4">
+    <div id="directory" className="scroll-mt-28 text-[var(--foreground)]">
+      <div className="glass-panel rounded-[28px] border border-[var(--line)] p-3 shadow-sm sm:p-4">
         <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center">
           <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a9a92]" aria-hidden />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-2)]" aria-hidden />
             <input
               ref={searchInputRef}
               type="search"
@@ -202,7 +202,7 @@ export default function PharmacyDirectory({
               }}
               placeholder="Search pharmacy, medicine, service or area"
               aria-label="Search pharmacies"
-              className="h-[50px] w-full rounded-2xl border border-transparent bg-[#f3f7f4] pl-11 pr-10 text-sm text-[#0c1a14] outline-none transition placeholder:text-[#8a9a92] focus:border-[#0d6e5a]/20 focus:bg-white focus:ring-4 focus:ring-[#0d6e5a]/5"
+              className="h-[50px] w-full rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] pl-11 pr-10 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-4 focus:ring-teal-500/10"
             />
             {query && (
               <button
@@ -212,7 +212,7 @@ export default function PharmacyDirectory({
                   syncUrl({ q: "" });
                 }}
                 aria-label="Clear search"
-                className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[#5a6b62] transition hover:bg-[#e6f4ef]"
+                className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[var(--muted)] transition hover:bg-[var(--brand-soft)] hover:text-[var(--foreground)]"
               >
                 <X className="h-4 w-4" aria-hidden />
               </button>
@@ -234,7 +234,7 @@ export default function PharmacyDirectory({
               type="button"
               onClick={() => setShowFilters((value) => !value)}
               aria-expanded={showFilters}
-              className="inline-flex h-[46px] items-center justify-center gap-2 rounded-2xl border border-teal-900/15 bg-white/70 px-4 text-xs font-bold text-[#084c3f] transition hover:bg-[#f0faf6] lg:hidden"
+              className="inline-flex h-[46px] items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)] lg:hidden"
             >
               <SlidersHorizontal className="h-4 w-4" aria-hidden />
               Filters
@@ -246,7 +246,7 @@ export default function PharmacyDirectory({
         </div>
 
         <div
-          className={`${showFilters ? "grid" : "hidden"} mt-3 gap-2.5 border-t border-teal-900/5 pt-3 sm:grid-cols-2 lg:grid lg:grid-cols-4`}
+          className={`${showFilters ? "grid" : "hidden"} mt-3 gap-2.5 border-t border-[var(--line)] pt-3 sm:grid-cols-2 lg:grid lg:grid-cols-4`}
         >
           <Select
             value={city}
@@ -289,7 +289,7 @@ export default function PharmacyDirectory({
             className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-semibold transition ${
               delivery
                 ? "border-[#0d6e5a] bg-[#0d6e5a] text-white"
-                : "border-teal-900/15 bg-white text-[#084c3f] hover:bg-[#f0faf6]"
+                : "border-[var(--line-2)] bg-[var(--card)] text-[var(--brand-deep)] hover:bg-[var(--brand-tint)]"
             }`}
           >
             <Truck className="h-4 w-4" aria-hidden /> Delivery available
@@ -297,14 +297,14 @@ export default function PharmacyDirectory({
         </div>
 
         {(activeFilterCount > 0 || position || locationState === "denied") && (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-teal-900/5 pt-3">
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--line)] pt-3">
             {position && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-700">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1.5 text-[10px] font-bold text-emerald-500">
                 <Navigation className="h-3 w-3" aria-hidden /> Distance enabled
               </span>
             )}
             {locationState === "denied" && (
-              <span className="rounded-full bg-amber-50 px-2.5 py-1.5 text-[10px] font-semibold text-amber-700">
+              <span className="rounded-full bg-amber-500/10 px-2.5 py-1.5 text-[10px] font-semibold text-amber-500">
                 Location unavailable
               </span>
             )}
@@ -318,7 +318,7 @@ export default function PharmacyDirectory({
             )}
             {delivery && <FilterChip label="Delivery" onRemove={() => { setDelivery(false); syncUrl({ delivery: false }); }} />}
             {activeFilterCount > 0 && (
-              <button type="button" onClick={reset} className="ml-auto px-1 text-[10px] font-bold text-teal-800 hover:underline">
+              <button type="button" onClick={reset} className="ml-auto px-1 text-[10px] font-bold text-[var(--brand)] hover:underline">
                 Clear filters
               </button>
             )}
@@ -328,20 +328,20 @@ export default function PharmacyDirectory({
 
       <div className="mt-6 flex items-end justify-between gap-3 sm:mt-7">
         <div className="min-w-0">
-          <p className="text-base font-bold tracking-tight text-[#0c1a14]">
+          <p className="text-base font-bold tracking-tight text-[var(--foreground)]">
             {sorted.length} {sorted.length === 1 ? "pharmacy" : "pharmacies"}
           </p>
-          <p className="mt-0.5 truncate text-[11px] text-[#6b7a72]">
+          <p className="mt-0.5 truncate text-[11px] text-[var(--muted)]">
             {query ? `Results for “${query}”` : "Verified public listings on the network"}
           </p>
         </div>
 
-        <label className="flex shrink-0 items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[#8a9a92]">
+        <label className="flex shrink-0 items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--muted-2)]">
           <span className="hidden sm:inline">Sort</span>
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value as typeof sort)}
-            className="h-10 rounded-xl border border-teal-900/15 bg-white px-3 text-[11px] font-semibold normal-case tracking-normal text-[#0c1a14] outline-none focus:border-[#0d6e5a]/40"
+            className="h-10 rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-3 text-[11px] font-semibold normal-case tracking-normal text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
           >
             <option value="featured">Recommended</option>
             <option value="near" disabled={!position}>Nearest{position ? "" : " · enable location"}</option>
@@ -351,7 +351,7 @@ export default function PharmacyDirectory({
       </div>
 
       {query && sorted.some((pharmacy) => pharmacy.hasSearchedMedicine) && (
-        <div className="mt-4 flex items-center gap-3 rounded-2xl border border-teal-900/10 bg-[#084c3f] px-3.5 py-3 text-white shadow-sm sm:px-4">
+        <div className="mt-4 flex items-center gap-3 rounded-2xl border border-teal-400/20 bg-[#084c3f] px-3.5 py-3 text-white shadow-sm sm:px-4">
           <PackageCheck className="h-4 w-4 shrink-0" aria-hidden />
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-bold">Public stock matches found</p>
@@ -362,12 +362,12 @@ export default function PharmacyDirectory({
       )}
 
       {sorted.length === 0 ? (
-        <div className="mt-5 rounded-[28px] border border-dashed border-teal-900/20 bg-white/70 p-7 text-center sm:p-12">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f0faf6] text-[#0d6e5a]">
+        <div className="mt-5 rounded-[28px] border border-dashed border-[var(--line-2)] bg-[var(--glass-fill)] p-7 text-center sm:p-12">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-[var(--brand)]">
             <PackageCheck className="h-5 w-5" aria-hidden />
           </div>
-          <h2 className="mt-4 text-base font-bold text-[#0c1a14]">No matching pharmacies yet</h2>
-          <p className="mx-auto mt-1.5 max-w-md text-xs leading-5 text-[#5a6b62]">
+          <h2 className="mt-4 text-base font-bold text-[var(--foreground)]">No matching pharmacies yet</h2>
+          <p className="mx-auto mt-1.5 max-w-md text-xs leading-5 text-[var(--muted)]">
             Try a broader area or medicine name, or remove one of the active filters.
           </p>
           <button
@@ -393,7 +393,7 @@ export default function PharmacyDirectory({
       )}
 
       <div className="mt-7 text-center sm:hidden">
-        <Link href="/for-pharmacies" className="text-xs font-bold text-teal-800 hover:underline">
+        <Link href="/for-pharmacies" className="text-xs font-bold text-[var(--brand)] hover:underline">
           Own a pharmacy? Join the network →
         </Link>
       </div>
@@ -420,7 +420,7 @@ function Select({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         aria-label={label}
-        className="h-11 w-full appearance-none rounded-xl border border-teal-900/15 bg-white px-3 pr-9 text-xs font-medium text-[#0c1a14] outline-none transition focus:border-[#0d6e5a]/40"
+        className="h-11 w-full appearance-none rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-3 pr-9 text-xs font-medium text-[var(--foreground)] outline-none transition focus:border-[var(--brand)]"
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
@@ -429,7 +429,7 @@ function Select({
           </option>
         ))}
       </select>
-      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8a9a92]" aria-hidden />
+      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--muted-2)]" aria-hidden />
     </div>
   );
 }
@@ -440,7 +440,7 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
       type="button"
       onClick={onRemove}
       aria-label={`Remove filter ${label}`}
-      className="inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-2.5 py-1.5 text-[10px] font-semibold text-[#084c3f] transition hover:bg-[#d0ece2]"
+      className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
     >
       {label}
       <X className="h-3 w-3" aria-hidden />
@@ -476,7 +476,7 @@ function PharmacyCard({
   ];
 
   return (
-    <article className="group flex min-w-0 flex-col overflow-hidden rounded-[26px] border border-teal-900/10 bg-white/85 shadow-[0_4px_20px_rgba(8,76,63,0.06)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(8,76,63,0.12)]">
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-[26px] border border-[var(--line)] bg-[var(--card)] shadow-[var(--glass-shadow)] transition duration-300 hover:-translate-y-0.5 hover:border-[var(--line-2)]">
       <div className="relative h-40 overflow-hidden bg-[#084c3f] sm:h-44">
         <Image
           src={cover}
@@ -512,11 +512,11 @@ function PharmacyCard({
 
       <div className="flex flex-1 flex-col p-4">
         <div className="flex min-w-0 items-start justify-between gap-2.5">
-          <p className="line-clamp-2 min-h-9 flex-1 text-[11px] leading-[18px] text-[#5a6b62]">
+          <p className="line-clamp-2 min-h-9 flex-1 text-[11px] leading-[18px] text-[var(--muted)]">
             {pharmacy.tagline || pharmacy.description || "Active pharmacy on the network."}
           </p>
           {distance != null && (
-            <span className="shrink-0 rounded-full bg-[#e6f4ef] px-2 py-1 text-[9px] font-bold text-[#084c3f]">
+            <span className="shrink-0 rounded-full bg-[var(--brand-soft)] px-2 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
               {distance < 1 ? `${Math.round(distance * 1000)} m` : `${distance.toFixed(1)} km`}
             </span>
           )}
@@ -528,7 +528,9 @@ function PharmacyCard({
               <span
                 key={`${tag.tone}-${tag.label}`}
                 className={`max-w-[145px] truncate rounded-full px-2.5 py-1 text-[9px] font-semibold ${
-                  tag.tone === "teal" ? "bg-[#f0faf6] text-[#084c3f]" : "bg-amber-50 text-amber-800"
+                  tag.tone === "teal"
+                    ? "bg-[var(--brand-tint)] text-[var(--brand-deep)]"
+                    : "bg-amber-500/10 text-amber-500"
                 }`}
               >
                 {tag.label}
@@ -537,26 +539,26 @@ function PharmacyCard({
           </div>
         )}
 
-        <div className="mt-3 grid grid-cols-2 divide-x divide-[#e3ebe6] rounded-2xl border border-[#e7eee9] bg-[#f8faf8] py-2.5">
+        <div className="mt-3 grid grid-cols-2 divide-x divide-[var(--line)] rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] py-2.5">
           <div className="px-3">
-            <p className="text-[9px] font-semibold uppercase tracking-wider text-[#8a9a92]">Public stock</p>
-            <p className="mt-0.5 text-sm font-bold text-[#0c1a14]">{pharmacy.stockCount}</p>
+            <p className="text-[9px] font-semibold uppercase tracking-wider text-[var(--muted-2)]">Public stock</p>
+            <p className="mt-0.5 text-sm font-bold text-[var(--foreground)]">{pharmacy.stockCount}</p>
           </div>
           <div className="px-3">
-            <p className="text-[9px] font-semibold uppercase tracking-wider text-[#8a9a92]">OTC in stock</p>
-            <p className="mt-0.5 text-sm font-bold text-[#0c1a14]">{pharmacy.otcCount}</p>
+            <p className="text-[9px] font-semibold uppercase tracking-wider text-[var(--muted-2)]">OTC in stock</p>
+            <p className="mt-0.5 text-sm font-bold text-[var(--foreground)]">{pharmacy.otcCount}</p>
           </div>
         </div>
 
         {(pharmacy.hasDelivery || pharmacy.hasSearchedMedicine) && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {pharmacy.hasDelivery && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[9px] font-bold text-emerald-500">
                 <Truck className="h-3 w-3" aria-hidden /> Delivery
               </span>
             )}
             {pharmacy.hasSearchedMedicine && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-[9px] font-bold text-blue-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-1 text-[9px] font-bold text-blue-500">
                 <PackageCheck className="h-3 w-3" aria-hidden /> {pharmacy.searchedMedicineCount} stock match
                 {pharmacy.searchedMedicineCount === 1 ? "" : "es"}
               </span>
@@ -576,7 +578,7 @@ function PharmacyCard({
               <a
                 href={phoneHref}
                 aria-label={`Call ${pharmacy.name}`}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-teal-900/15 text-[#084c3f] transition hover:bg-[#f0faf6]"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
               >
                 <PhoneCall className="h-4 w-4" aria-hidden />
               </a>
@@ -587,7 +589,7 @@ function PharmacyCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`WhatsApp ${pharmacy.name}`}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-teal-900/15 text-[#084c3f] transition hover:bg-[#f0faf6]"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--line-2)] text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
               >
                 <MessageCircle className="h-4 w-4" aria-hidden />
               </a>
@@ -597,13 +599,13 @@ function PharmacyCard({
           <div className="mt-2 grid grid-cols-2 gap-2">
             <Link
               href={`/p/${pharmacy.slug}/refill`}
-              className="rounded-xl border border-teal-900/15 py-2 text-center text-[10px] font-bold text-[#084c3f] transition hover:bg-[#f0faf6]"
+              className="rounded-xl border border-[var(--line-2)] py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
             >
               Request refill
             </Link>
             <Link
               href={medicineHref}
-              className="rounded-xl border border-teal-900/15 py-2 text-center text-[10px] font-bold text-[#084c3f] transition hover:bg-[#f0faf6]"
+              className="rounded-xl border border-[var(--line-2)] py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
             >
               Browse medicines
             </Link>
