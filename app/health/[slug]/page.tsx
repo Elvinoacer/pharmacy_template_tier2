@@ -76,7 +76,9 @@ export default async function ArticlePage({ params }: Props) {
 
           <div className={styles.articleCopy}>
             {article.content.map((para, i) => (
-              <p key={i}>{para}</p>
+              <p key={i} style={{ color: "var(--foreground)" }}>
+                {para}
+              </p>
             ))}
           </div>
 
