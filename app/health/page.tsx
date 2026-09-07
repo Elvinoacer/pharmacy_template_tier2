@@ -4,6 +4,7 @@ import Link from "next/link";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
 import { articles, platform } from "../lib/data";
+import styles from "./HealthSurface.module.css";
 
 export const metadata: Metadata = {
   title: "Health Library",
@@ -15,56 +16,46 @@ export default function HealthLibraryPage() {
   const categories = Array.from(new Set(articles.map((a) => a.category)));
 
   return (
-    <div>
-      <PageHero
-        eyebrow="Health library"
-        title="Clear health information you can use"
-        description="Articles written and reviewed with community pharmacy practice in mind. For personal medical advice, speak with our pharmacists or your clinician."
-        crumbs={[{ label: "Health Library" }]}
-      />
+    <div className={styles.healthSurface}>
+      <div className={styles.heroWrap}>
+        <PageHero
+          eyebrow="Health library"
+          title="Clear health information you can use"
+          description="Articles written and reviewed with community pharmacy practice in mind. For personal medical advice, speak with our pharmacists or your clinician."
+          crumbs={[{ label: "Health Library" }]}
+        />
+      </div>
 
-      <section className="px-4 pb-6 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-wrap gap-2">
+      <section className={styles.categorySection} aria-label="Health topics">
+        <div className={styles.categoryRow}>
           {categories.map((c) => (
-            <span
-              key={c}
-              className="rounded-full border border-teal-900/10 bg-white px-3.5 py-1.5 text-xs font-semibold text-[#084c3f]"
-            >
+            <span key={c} className={styles.categoryChip}>
               {c}
             </span>
           ))}
         </div>
       </section>
 
-      <section className="px-4 pb-16 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <section className={styles.articleSection}>
+        <div className={styles.articleGrid}>
           {articles.map((a) => (
-            <Link
-              key={a.slug}
-              href={`/health/${a.slug}`}
-              className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-white/60 bg-white shadow-sm"
-            >
-              <div className="relative h-48 overflow-hidden">
+            <Link key={a.slug} href={`/health/${a.slug}`} className={styles.articleCard}>
+              <div className={styles.articleImage}>
                 <Image
                   src={a.image}
                   alt=""
                   fill
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover"
+                  sizes="(max-width: 639px) 108px, (max-width: 1023px) 50vw, 33vw"
                 />
               </div>
-              <div className="flex flex-1 flex-col p-5">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
+              <div className={styles.articleBody}>
+                <p className={styles.articleMeta}>
                   {a.category} · {a.readTime} · {a.date}
                 </p>
-                <h2
-                  className="mt-2 text-lg font-semibold text-[#0c1a14]"
-                  style={{ fontFamily: "var(--font-display), serif" }}
-                >
-                  {a.title}
-                </h2>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-[#5a6b62]">{a.excerpt}</p>
-                <span className="mt-4 text-sm font-semibold text-teal-800">Read article →</span>
+                <h2 className={styles.articleTitle}>{a.title}</h2>
+                <p className={styles.articleExcerpt}>{a.excerpt}</p>
+                <span className={styles.articleLink}>Read article →</span>
               </div>
             </Link>
           ))}
