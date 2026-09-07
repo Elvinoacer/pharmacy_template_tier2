@@ -5,6 +5,7 @@ import AuthForm, { AuthField } from "@/app/components/AuthForm";
 import PasswordField from "@/app/components/PasswordField";
 import { getSessionUser } from "@/app/lib/auth";
 import { resolvePostLoginPath } from "@/app/lib/session-claim";
+import styles from "./LoginSurface.module.css";
 
 export const metadata = { title: "Sign in" };
 
@@ -29,7 +30,7 @@ export default async function LoginPage({
   }
 
   return (
-    <div className="mesh-bg flex min-h-screen items-center justify-center px-4 py-10 sm:py-14">
+    <div className={styles.loginSurface}>
       <AuthForm
         action={loginAction}
         title="Welcome back"
