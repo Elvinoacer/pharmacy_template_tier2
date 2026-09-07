@@ -13,6 +13,7 @@ import CareDemoMobilePolish from "./components/landing/CareDemoMobilePolish";
 import LandingMobileDensityPolish from "./components/landing/LandingMobileDensityPolish";
 import CareNearYouInputPolish from "./components/landing/CareNearYouInputPolish";
 import HeroSearchInputPolish from "./components/landing/HeroSearchInputPolish";
+import styles from "./components/landing/LandingTheme.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -34,10 +35,18 @@ export default async function MarketplacePage() {
       <HeroSearchInputPolish />
       <LandingMobileDensityPolish />
       <TravelLabHero pharmacyCount={featuredPharmacies.length || 0} initialQuery="" />
-      <CarePathways />
-      <TravelLabNetwork pharmacies={featuredPharmacies} />
-      <LandingCareDemo />
-      <TravelLabContact />
+      <div className={`${styles.adaptiveSection} ${styles.carePathwaysSection}`}>
+        <CarePathways />
+      </div>
+      <div className={`${styles.adaptiveSection} ${styles.networkSection}`}>
+        <TravelLabNetwork pharmacies={featuredPharmacies} />
+      </div>
+      <div className={styles.adaptiveSection}>
+        <LandingCareDemo />
+      </div>
+      <div className={`${styles.adaptiveSection} ${styles.contactSection}`}>
+        <TravelLabContact />
+      </div>
       <LandingMobileActionBar />
     </div>
   );

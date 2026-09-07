@@ -1,0 +1,167 @@
+.adaptiveSection {
+  background: var(--background);
+  color: var(--foreground);
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+.adaptiveSection :global(section) {
+  color: var(--foreground);
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+/*
+ * Landing sections already inherit the public theme tokens, but a number of
+ * presentation cards still use fixed dark glass utilities. Normalize those
+ * utilities inside the non-hero landing sections so light/dark switching is
+ * coherent without changing the intentionally cinematic dark hero.
+ */
+.adaptiveSection :global([class~="bg-black/25"]),
+.adaptiveSection :global([class~="bg-black/30"]),
+.adaptiveSection :global([class~="bg-black/40"]),
+.adaptiveSection :global([class~="bg-black/50"]),
+.adaptiveSection :global([class~="bg-white/[0.02]"]),
+.adaptiveSection :global([class~="bg-white/[0.04]"]),
+.adaptiveSection :global([class~="bg-white/[0.05]"]),
+.adaptiveSection :global([class~="bg-white/[0.06]"]),
+.adaptiveSection :global([class~="bg-white/[0.08]"]),
+.adaptiveSection :global([class~="bg-white/5"]),
+.adaptiveSection :global([class~="bg-white/10"]) {
+  background-color: var(--glass-fill) !important;
+  border-color: var(--line-2) !important;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease,
+    box-shadow 300ms ease, transform 200ms ease;
+}
+
+.adaptiveSection :global([class~="bg-black/60"]),
+.adaptiveSection :global([class~="bg-black/70"]),
+.adaptiveSection :global([class~="bg-black/90"]),
+.adaptiveSection :global([class~="bg-[#05130d]/95"]),
+.adaptiveSection :global([class~="bg-[#121912]/95"]) {
+  background-color: var(--card-elev) !important;
+  border-color: var(--line-2) !important;
+  box-shadow: var(--shadow);
+  transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease,
+    box-shadow 300ms ease, transform 200ms ease;
+}
+
+.adaptiveSection :global([class~="bg-[#0e2a1e]"]),
+.adaptiveSection :global([class~="bg-emerald-950/40"]),
+.adaptiveSection :global([class~="bg-emerald-950/60"]),
+.adaptiveSection :global([class~="bg-emerald-950/80"]) {
+  background-color: var(--brand-soft) !important;
+  border-color: color-mix(in srgb, var(--brand) 28%, var(--line-2)) !important;
+  transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease;
+}
+
+.adaptiveSection :global([class~="border-white/[0.08]"]),
+.adaptiveSection :global([class~="border-white/10"]),
+.adaptiveSection :global([class~="border-white/15"]),
+.adaptiveSection :global([class~="border-white/20"]) {
+  border-color: var(--line-2) !important;
+}
+
+.adaptiveSection :global([class~="text-white"]),
+.adaptiveSection :global([class~="text-slate-200"]) {
+  color: var(--foreground) !important;
+}
+
+.adaptiveSection :global([class~="text-slate-300"]),
+.adaptiveSection :global([class~="text-slate-400"]),
+.adaptiveSection :global([class~="text-slate-500"]) {
+  color: var(--muted) !important;
+}
+
+.adaptiveSection :global([class~="text-emerald-200"]),
+.adaptiveSection :global([class~="text-emerald-300"]),
+.adaptiveSection :global([class~="text-emerald-400"]),
+.adaptiveSection :global([class~="text-emerald-100/80"]) {
+  color: var(--brand) !important;
+}
+
+.adaptiveSection :global([class~="placeholder:text-slate-400"])::placeholder {
+  color: var(--muted) !important;
+}
+
+.adaptiveSection :global([class~="hover:bg-black/50"]):hover,
+.adaptiveSection :global([class~="hover:bg-black/60"]):hover,
+.adaptiveSection :global([class~="hover:bg-black/70"]):hover,
+.adaptiveSection :global([class~="hover:bg-black/90"]):hover,
+.adaptiveSection :global([class~="hover:bg-white/[0.05]"]):hover,
+.adaptiveSection :global([class~="hover:bg-white/[0.06]"]):hover,
+.adaptiveSection :global([class~="hover:bg-white/[0.08]"]):hover {
+  background-color: var(--card-elev) !important;
+}
+
+.adaptiveSection :global([class~="hover:text-white"]):hover {
+  color: var(--foreground) !important;
+}
+
+.adaptiveSection :global([class~="hover:border-white/20"]):hover,
+.adaptiveSection :global([class~="hover:border-white/30"]):hover {
+  border-color: var(--line-2) !important;
+}
+
+@media (min-width: 640px) {
+  .adaptiveSection :global([class~="sm:divide-white/10"]) > :not(:last-child) {
+    border-color: var(--line) !important;
+  }
+}
+
+.carePathwaysSection :global(.care-pathway) {
+  transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease,
+    box-shadow 300ms ease, transform 200ms ease;
+}
+
+/* Keep copy and glass inside the pharmacy image itself high-contrast. */
+.networkSection :global([class~="bg-slate-900"]) :global([class~="text-white"]) {
+  color: #ffffff !important;
+}
+
+.networkSection :global([class~="bg-slate-900"]) :global([class~="text-slate-300"]),
+.networkSection :global([class~="bg-slate-900"]) :global([class~="text-slate-400"]) {
+  color: #cbd5e1 !important;
+}
+
+.networkSection :global([class~="bg-slate-900"]) :global([class~="bg-black/60"]) {
+  background-color: rgb(0 0 0 / 0.6) !important;
+}
+
+.networkSection :global([class~="bg-slate-900"]) :global([class~="bg-black/70"]) {
+  background-color: rgb(0 0 0 / 0.7) !important;
+}
+
+.networkSection :global([class~="bg-slate-900"]) :global([class~="border-white/10"]) {
+  border-color: rgb(255 255 255 / 0.1) !important;
+}
+
+/* The final CTA used a permanently dark gradient. Make the shell thematic;
+   the gold brand accents and decorative orbit remain unchanged. */
+.contactSection :global([class~="bg-gradient-to-br"]) {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--card-elev) 92%, var(--brand-soft) 8%),
+    var(--glass-fill),
+    var(--card)
+  ) !important;
+  border-color: var(--line-2) !important;
+  box-shadow: var(--shadow-lg) !important;
+  transition: background-color 300ms ease, background-image 300ms ease,
+    border-color 300ms ease, color 300ms ease, box-shadow 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adaptiveSection,
+  .adaptiveSection :global(section),
+  .adaptiveSection :global([class~="bg-black/25"]),
+  .adaptiveSection :global([class~="bg-black/30"]),
+  .adaptiveSection :global([class~="bg-black/40"]),
+  .adaptiveSection :global([class~="bg-black/50"]),
+  .adaptiveSection :global([class~="bg-black/60"]),
+  .adaptiveSection :global([class~="bg-black/70"]),
+  .adaptiveSection :global([class~="bg-black/90"]),
+  .carePathwaysSection :global(.care-pathway),
+  .contactSection :global([class~="bg-gradient-to-br"]) {
+    transition-duration: 0.01ms !important;
+  }
+}
