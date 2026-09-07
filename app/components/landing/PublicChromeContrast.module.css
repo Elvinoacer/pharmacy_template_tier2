@@ -1,0 +1,58 @@
+/* Focused contrast guards for the landing Navbar's dark-hero branch.
+   These sit after the broad light-surface conversion and protect controls
+   whose brand backgrounds intentionally remain dark. */
+
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="bg-black/85"]) {
+  background-color: var(--card-elev) !important;
+  border-color: var(--line-2) !important;
+  color: var(--foreground) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="text-slate-300"]),
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="text-slate-400"]),
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="text-slate-500"]) {
+  color: var(--muted) !important;
+}
+
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="bg-emerald-950"]),
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="bg-emerald-950/80"]) {
+  background-color: var(--brand-soft) !important;
+  border-color: color-mix(in srgb, var(--brand) 24%, var(--line-2)) !important;
+}
+
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="text-emerald-300"]),
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="text-emerald-400"]) {
+  color: var(--brand) !important;
+}
+
+/* The Join / Find primary actions keep their deep green gradient, so their
+   label must stay white even though ordinary landing-header copy becomes dark. */
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="bg-gradient-to-r"][class~="text-white"]) {
+  color: #ffffff !important;
+}
+
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="bg-gradient-to-r"] [class~="text-teal-200"]) {
+  color: #ccfbf1 !important;
+}
+
+/* Avoid white-on-light hover states left over from the dark-hero navigation. */
+:global(html[data-theme="light"]) .landingContrast
+  :global(header [class~="group-hover:text-white"]) {
+  color: var(--muted) !important;
+}
+
+:global(html[data-theme="light"]) .landingContrast
+  :global(.travel-lab-hero [class~="group-hover:text-white"]) {
+  color: var(--muted) !important;
+}
