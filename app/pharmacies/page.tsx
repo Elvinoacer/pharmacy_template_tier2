@@ -43,7 +43,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
   ]);
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden text-[var(--foreground)]">
       <section className="relative px-4 pb-7 pt-24 sm:px-6 sm:pb-10 sm:pt-32">
         <div className="hero-glow -left-24 top-8 opacity-50" />
         <div className="hero-glow -right-36 top-24 opacity-30" />
@@ -51,18 +51,18 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
         <div className="page-hero-glass relative mx-auto max-w-7xl overflow-hidden">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,.85fr)] lg:items-end lg:gap-12">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-teal-900/10 bg-white/75 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#084c3f] shadow-sm backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--line-2)] bg-[var(--glass-fill)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand-deep)] shadow-sm backdrop-blur">
                 <Sparkles className="h-3 w-3" aria-hidden /> {platform.name} pharmacy directory
               </div>
 
               <h1
-                className="mt-5 max-w-2xl text-3xl font-semibold leading-[1.05] tracking-[-0.035em] text-[#0c1a14] sm:text-5xl lg:text-[3.5rem]"
+                className="mt-5 max-w-2xl text-3xl font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--foreground)] sm:text-5xl lg:text-[3.5rem]"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
                 Find care nearby, without guessing.
               </h1>
 
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-[#5a6b62] sm:text-base sm:leading-7">
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--muted)] sm:text-base sm:leading-7">
                 Search verified pharmacies by location, services and public medicine stock. Compare the essentials,
                 then go straight to the pharmacy storefront that fits what you need.
               </p>
@@ -76,7 +76,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
                 </Link>
                 <Link
                   href="/for-pharmacies"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-teal-900/15 bg-white/65 px-5 text-sm font-semibold text-[#084c3f] transition hover:bg-white"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--glass-fill)] px-5 text-sm font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
                 >
                   <Store className="h-4 w-4" aria-hidden /> List your pharmacy
                 </Link>
@@ -106,8 +106,8 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
 
       <section className="px-4 pb-20 sm:px-6 sm:pb-24">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-5 flex items-center gap-2 text-[11px] font-semibold text-[#5a6b62] sm:mb-6">
-            <MapPinned className="h-4 w-4 text-[#0d6e5a]" aria-hidden />
+          <div className="mb-5 flex items-center gap-2 text-[11px] font-semibold text-[var(--muted)] sm:mb-6">
+            <MapPinned className="h-4 w-4 text-[var(--brand)]" aria-hidden />
             Search the live public network directory
           </div>
 
@@ -134,13 +134,13 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
 
 function HeroFeature({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-teal-900/10 bg-white/65 p-3.5 shadow-sm backdrop-blur sm:block lg:flex">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a] sm:mb-2 lg:mb-0">
+    <div className="flex items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--glass-fill)] p-3.5 shadow-sm backdrop-blur sm:block lg:flex">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)] sm:mb-2 lg:mb-0">
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-bold text-[#0c1a14]">{title}</p>
-        <p className="mt-0.5 text-[10px] leading-4 text-[#6b7a72]">{text}</p>
+        <p className="text-xs font-bold text-[var(--foreground)]">{title}</p>
+        <p className="mt-0.5 text-[10px] leading-4 text-[var(--muted)]">{text}</p>
       </div>
     </div>
   );
