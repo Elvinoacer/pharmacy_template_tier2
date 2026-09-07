@@ -10,6 +10,7 @@ import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
 import { platform } from "@/app/lib/data";
 import publicChromeStyles from "./landing/PublicChromeTheme.module.css";
+import contrastStyles from "./landing/PublicChromeContrast.module.css";
 
 const AiChatbot = dynamic(() => import("./AiChatbot"), { ssr: false });
 const LiveAlertCenter = dynamic(
@@ -69,7 +70,9 @@ export default function AppChrome({
     >
       <div
         className={`mesh-bg relative flex min-h-screen flex-col ${publicChromeStyles.publicChrome} ${
-          isLandingPage ? publicChromeStyles.landingChrome : ""
+          isLandingPage
+            ? `${publicChromeStyles.landingChrome} ${contrastStyles.landingContrast}`
+            : ""
         }`}
       >
         <NavbarNavigationFix />
