@@ -4,10 +4,16 @@
  * Mobile-only refinement for the hero metrics capsule below TravelLabHero.
  * On phones, the four metrics become compact inset tiles with smaller type,
  * icons, and gaps. Tablet/desktop keeps the existing horizontal metrics bar.
+ * Theme overrides below keep the same composition while switching surfaces,
+ * text and dividers cleanly between light and dark mode.
  */
 export default function HeroMetricsMobilePolish() {
   return (
     <style jsx global>{`
+      .travel-lab-hero > .relative.z-10 > div.mt-12.w-full {
+        transition: background-color .3s ease, border-color .3s ease, box-shadow .3s ease, color .3s ease;
+      }
+
       @media (max-width: 639px) {
         .travel-lab-hero > .relative.z-10 > div.mt-12.w-full {
           margin-top: 24px !important;
@@ -33,6 +39,7 @@ export default function HeroMetricsMobilePolish() {
           border-radius: 14px;
           background: linear-gradient(145deg, rgba(8, 30, 22, 0.58), rgba(0, 0, 0, 0.2));
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+          transition: background-color .3s ease, border-color .3s ease, box-shadow .3s ease;
         }
 
         .travel-lab-hero > .relative.z-10 > div.mt-12.w-full > div.grid > div > div:first-child {
@@ -109,6 +116,50 @@ export default function HeroMetricsMobilePolish() {
         .travel-lab-hero > .relative.z-10 > div.mt-12.w-full > div.grid > div > div:last-child > p:last-child {
           font-size: 9px !important;
           line-height: 1.18 !important;
+        }
+      }
+
+      /* Light mode: use the same public design tokens as the rest of the landing
+         page instead of leaving this capsule on its hard-coded dark glass. */
+      html[data-theme="light"] .travel-lab-hero > .relative.z-10 > div.mt-12.w-full {
+        background: color-mix(in srgb, var(--glass-fill) 94%, transparent) !important;
+        border-color: var(--line-2) !important;
+        box-shadow: var(--shadow-md) !important;
+      }
+
+      html[data-theme="light"] .travel-lab-hero > .relative.z-10 > div.mt-12.w-full > div.grid > div > div:first-child {
+        background: var(--brand-soft) !important;
+        border-color: color-mix(in srgb, var(--brand) 28%, var(--line-2)) !important;
+        color: var(--brand) !important;
+        box-shadow: none !important;
+      }
+
+      html[data-theme="light"] .travel-lab-hero > .relative.z-10 > div.mt-12.w-full > div.grid > div > div:last-child > p:first-child {
+        color: var(--foreground) !important;
+      }
+
+      html[data-theme="light"] .travel-lab-hero > .relative.z-10 > div.mt-12.w-full > div.grid > div > div:last-child > p:last-child {
+        color: var(--muted) !important;
+      }
+
+      @media (max-width: 639px) {
+        html[data-theme="light"] .travel-lab-hero > .relative.z-10 > div.mt-12.w-full > div.grid > div {
+          border-color: var(--line) !important;
+          background: color-mix(in srgb, var(--card-elev) 92%, var(--brand-soft) 8%) !important;
+          box-shadow: var(--shadow-sm) !important;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        html[data-theme="light"] .travel-lab-hero > .relative.z-10 > div.mt-12.w-full > div.grid > div + div {
+          border-color: var(--line) !important;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .travel-lab-hero > .relative.z-10 > div.mt-12.w-full,
+        .travel-lab-hero > .relative.z-10 > div.mt-12.w-full > div.grid > div {
+          transition-duration: .01ms !important;
         }
       }
     `}</style>
