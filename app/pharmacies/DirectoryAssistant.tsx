@@ -29,8 +29,6 @@ export default function DirectoryAssistant() {
 
     if (valueOverride) setQuery(value);
     setLoading(true);
-    setAnswer("");
-    setResults([]);
 
     try {
       const response = await fetch("/api/directory-ai", {
@@ -44,6 +42,7 @@ export default function DirectoryAssistant() {
       setResults(Array.isArray(data.results) ? data.results : []);
     } catch (error) {
       setAnswer(error instanceof Error ? error.message : "I couldn't search the directory right now.");
+      setResults([]);
     } finally {
       setLoading(false);
     }
@@ -51,25 +50,14 @@ export default function DirectoryAssistant() {
 
   return (
     <section
-      className="relative isolate overflow-hidden rounded-[28px] border border-[var(--line-2)] bg-[var(--card)] p-4 text-[var(--foreground)] shadow-[var(--glass-shadow)] sm:p-5 lg:p-6"
-      style={{ contain: "paint" }}
+      aria-busy={loading}
+      className="relative rounded-[28px] border border-[var(--line-2)] p-4 text-[var(--foreground)] shadow-[var(--glass-shadow)] sm:p-5 lg:p-6"
+      style={{
+        background:
+          "radial-gradient(circle at 92% 8%, rgba(45, 212, 191, 0.10), transparent 34%), radial-gradient(circle at 22% 100%, rgba(201, 162, 39, 0.08), transparent 30%), var(--card)",
+      }}
     >
-      {/*
-        Keep the ambient depth without CSS filter/backdrop-filter. Large blurred
-        layers can corrupt compositing on some Android GPUs, especially inside
-        clipped rounded containers. Plain radial gradients render in the normal
-        paint pipeline and are much more reliable on mobile.
-      */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        aria-hidden
-        style={{
-          background:
-            "radial-gradient(circle at 92% 8%, rgba(45, 212, 191, 0.10), transparent 34%), radial-gradient(circle at 22% 100%, rgba(201, 162, 39, 0.08), transparent 30%)",
-        }}
-      />
-
-      <div className="relative grid gap-5 lg:grid-cols-[minmax(240px,.65fr)_minmax(0,1.35fr)] lg:items-center lg:gap-8">
+      <div className="grid gap-5 lg:grid-cols-[minmax(240px,.65fr)_minmax(0,1.35fr)] lg:items-center lg:gap-8">
         <div>
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--brand-soft)] ring-1 ring-[var(--line)]">
@@ -98,16 +86,16 @@ export default function DirectoryAssistant() {
                 }}
                 placeholder="Who has Panadol near Westlands?"
                 aria-label="Ask Aether about pharmacies"
-                className="h-12 w-full rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] pl-10 pr-3 text-xs text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)]"
+                className="h-12 w-full rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] pl-10 pr-3 text-xs text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)]"
               />
             </div>
             <button
               onClick={() => void ask()}
               disabled={loading || query.trim().length < 2}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#0d6e5a] px-5 text-xs font-bold text-white transition hover:bg-[#084c3f] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#0d6e5a] px-5 text-xs font-bold text-white transition-colors hover:bg-[#084c3f] disabled:cursor-not-allowed disabled:opacity-50 sm:w-[132px] sm:px-3"
             >
               {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <Sparkles className="h-3.5 w-3.5" aria-hidden />}
-              {loading ? "Searching" : "Ask Aether"}
+              <span>{loading ? "Searching" : "Ask Aether"}</span>
             </button>
           </div>
 
@@ -118,7 +106,7 @@ export default function DirectoryAssistant() {
                 type="button"
                 onClick={() => void ask(example)}
                 disabled={loading}
-                className="shrink-0 rounded-full border border-[var(--line)] bg-[var(--brand-tint)] px-3 py-1.5 text-[10px] font-semibold text-[var(--muted)] transition hover:bg-[var(--brand-soft)] hover:text-[var(--foreground)] disabled:opacity-50"
+                className="shrink-0 rounded-full border border-[var(--line)] bg-[var(--brand-tint)] px-3 py-1.5 text-[10px] font-semibold text-[var(--muted)] transition-colors hover:bg-[var(--brand-soft)] hover:text-[var(--foreground)] disabled:opacity-50"
               >
                 {example}
               </button>
@@ -140,7 +128,7 @@ export default function DirectoryAssistant() {
               <Link
                 key={result.slug}
                 href={`/p/${result.slug}`}
-                className="group flex min-w-0 items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] px-3 py-2.5 text-left transition hover:border-[var(--line-2)] hover:bg-[var(--brand-tint)]"
+                className="group flex min-w-0 items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] px-3 py-2.5 text-left transition-colors hover:border-[var(--line-2)] hover:bg-[var(--brand-tint)]"
               >
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[11px] font-bold text-[var(--foreground)]">{result.name}</span>
@@ -153,7 +141,7 @@ export default function DirectoryAssistant() {
                         : ""}
                   </span>
                 </span>
-                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--muted-2)] transition group-hover:translate-x-0.5 group-hover:text-[var(--brand)]" aria-hidden />
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--muted-2)] transition-colors group-hover:text-[var(--brand)]" aria-hidden />
               </Link>
             ))}
           </div>
