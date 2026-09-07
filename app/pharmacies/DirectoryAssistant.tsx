@@ -50,9 +50,24 @@ export default function DirectoryAssistant() {
   }
 
   return (
-    <section className="relative overflow-hidden rounded-[28px] border border-[var(--line-2)] bg-[var(--card)] p-4 text-[var(--foreground)] shadow-[var(--glass-shadow)] sm:p-5 lg:p-6">
-      <div className="pointer-events-none absolute -right-14 -top-20 h-48 w-48 rounded-full bg-teal-400/10 blur-3xl" aria-hidden />
-      <div className="pointer-events-none absolute -bottom-20 left-1/4 h-40 w-40 rounded-full bg-amber-300/10 blur-3xl" aria-hidden />
+    <section
+      className="relative isolate overflow-hidden rounded-[28px] border border-[var(--line-2)] bg-[var(--card)] p-4 text-[var(--foreground)] shadow-[var(--glass-shadow)] sm:p-5 lg:p-6"
+      style={{ contain: "paint" }}
+    >
+      {/*
+        Keep the ambient depth without CSS filter/backdrop-filter. Large blurred
+        layers can corrupt compositing on some Android GPUs, especially inside
+        clipped rounded containers. Plain radial gradients render in the normal
+        paint pipeline and are much more reliable on mobile.
+      */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(circle at 92% 8%, rgba(45, 212, 191, 0.10), transparent 34%), radial-gradient(circle at 22% 100%, rgba(201, 162, 39, 0.08), transparent 30%)",
+        }}
+      />
 
       <div className="relative grid gap-5 lg:grid-cols-[minmax(240px,.65fr)_minmax(0,1.35fr)] lg:items-center lg:gap-8">
         <div>
