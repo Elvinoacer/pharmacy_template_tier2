@@ -1,0 +1,310 @@
+.loginSurface {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 100vh;
+  min-height: 100svh;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 2.5rem 1rem;
+  background:
+    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--brand) 12%, transparent) 0, transparent 26rem),
+    radial-gradient(circle at 88% 18%, color-mix(in srgb, #38bdf8 8%, transparent) 0, transparent 24rem),
+    radial-gradient(circle at 72% 86%, color-mix(in srgb, #d4af37 7%, transparent) 0, transparent 22rem),
+    linear-gradient(155deg, color-mix(in srgb, var(--background) 97%, white 3%), var(--background));
+  color: var(--foreground);
+}
+
+.loginSurface::before,
+.loginSurface::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 9999px;
+  filter: blur(86px);
+}
+
+.loginSurface::before {
+  top: 6%;
+  left: -8rem;
+  width: 24rem;
+  height: 24rem;
+  background: color-mix(in srgb, var(--brand) 15%, transparent);
+  opacity: .82;
+}
+
+.loginSurface::after {
+  right: -7rem;
+  bottom: 4%;
+  width: 22rem;
+  height: 22rem;
+  background: color-mix(in srgb, #38bdf8 10%, transparent);
+  opacity: .72;
+}
+
+.loginSurface > div {
+  position: relative;
+  z-index: 1;
+  border-color: var(--glass-edge) !important;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--glass-fill) 94%, transparent), color-mix(in srgb, var(--card) 90%, transparent)) !important;
+  box-shadow:
+    0 26px 80px color-mix(in srgb, var(--foreground) 11%, transparent),
+    0 0 52px color-mix(in srgb, var(--brand) 7%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 68%, transparent) !important;
+}
+
+.loginSurface > div::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(115deg, color-mix(in srgb, white 12%, transparent), transparent 22%, transparent 72%, color-mix(in srgb, var(--brand) 5%, transparent));
+}
+
+.loginSurface > div > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Form-side fixed utility colours should follow the app theme on this page. */
+.loginSurface > div > div:last-child {
+  color: var(--foreground);
+}
+
+.loginSurface > div > div:last-child :global(.text-[#0c1a14]) {
+  color: var(--foreground) !important;
+}
+
+.loginSurface > div > div:last-child :global(.text-[#5a6b62]) {
+  color: var(--muted) !important;
+}
+
+.loginSurface > div > div:last-child :global(.text-[#0d6e5a]),
+.loginSurface > div > div:last-child :global(.text-[#084c3f]) {
+  color: var(--brand) !important;
+}
+
+.loginSurface > div > div:last-child :global(.bg-white),
+.loginSurface > div > div:last-child :global(.bg-white\/80) {
+  background-color: color-mix(in srgb, var(--card) 92%, transparent) !important;
+}
+
+.loginSurface > div > div:last-child :global(.border-teal-900\/10) {
+  border-color: var(--line-2) !important;
+}
+
+.loginSurface > div > div:last-child input:not([type="hidden"]) {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--card) 92%, transparent) !important;
+  border-color: var(--line-2) !important;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+}
+
+.loginSurface > div > div:last-child input:not([type="hidden"])::placeholder {
+  color: var(--muted-2);
+}
+
+.loginSurface > div > div:last-child input:not([type="hidden"]):focus {
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--line-2)) !important;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--brand) 12%, transparent),
+    0 9px 28px color-mix(in srgb, var(--brand) 7%, transparent);
+}
+
+:global(html[data-theme="dark"]) .loginSurface {
+  background:
+    radial-gradient(circle at 10% 7%, rgba(16, 185, 129, .22) 0, rgba(16, 185, 129, .07) 16rem, transparent 32rem),
+    radial-gradient(circle at 92% 14%, rgba(56, 189, 248, .14) 0, rgba(56, 189, 248, .035) 16rem, transparent 30rem),
+    radial-gradient(circle at 78% 82%, rgba(201, 162, 39, .11) 0, transparent 24rem),
+    radial-gradient(circle at 35% 92%, rgba(99, 102, 241, .07) 0, transparent 22rem),
+    linear-gradient(160deg, #050b09 0%, #07130f 46%, #050c0a 100%);
+}
+
+:global(html[data-theme="dark"]) .loginSurface::before {
+  background: rgba(45, 212, 191, .13);
+  opacity: .9;
+}
+
+:global(html[data-theme="dark"]) .loginSurface::after {
+  background: rgba(59, 130, 246, .09);
+  opacity: .78;
+}
+
+:global(html[data-theme="dark"]) .loginSurface > div {
+  border-color: rgba(147, 233, 194, .14) !important;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(52, 211, 153, .08), transparent 28%),
+    radial-gradient(circle at 92% 100%, rgba(56, 189, 248, .055), transparent 28%),
+    linear-gradient(145deg, rgba(13, 34, 27, .88), rgba(7, 22, 17, .82)) !important;
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, .38),
+    0 0 60px rgba(16, 185, 129, .07),
+    inset 0 1px 0 rgba(255, 255, 255, .055) !important;
+}
+
+:global(html[data-theme="dark"]) .loginSurface > div > aside {
+  background:
+    radial-gradient(circle at 18% 14%, rgba(45, 212, 191, .24), transparent 28%),
+    radial-gradient(circle at 85% 82%, rgba(201, 162, 39, .14), transparent 32%),
+    linear-gradient(155deg, #063b31 0%, #075344 48%, #0a4a46 100%) !important;
+}
+
+@media (max-width: 639px) {
+  .loginSurface {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding:
+      max(.7rem, env(safe-area-inset-top))
+      .6rem
+      max(.85rem, env(safe-area-inset-bottom));
+  }
+
+  .loginSurface::before {
+    top: -5rem;
+    left: -8rem;
+    width: 18rem;
+    height: 18rem;
+    filter: blur(72px);
+  }
+
+  .loginSurface::after {
+    right: -8rem;
+    bottom: -3rem;
+    width: 18rem;
+    height: 18rem;
+    filter: blur(72px);
+  }
+
+  .loginSurface > div {
+    width: 100%;
+    margin: auto 0;
+    border-radius: 1.35rem !important;
+    box-shadow:
+      0 18px 54px color-mix(in srgb, var(--foreground) 12%, transparent),
+      0 0 34px color-mix(in srgb, var(--brand) 7%, transparent),
+      inset 0 1px 0 color-mix(in srgb, white 48%, transparent) !important;
+  }
+
+  .loginSurface > div > div:last-child {
+    min-height: auto;
+    padding: .9rem .9rem 1rem !important;
+  }
+
+  /* Back link */
+  .loginSurface > div > div:last-child > a:first-child {
+    margin-bottom: .7rem !important;
+    min-height: 2rem;
+    font-size: .68rem !important;
+  }
+
+  /* Mobile brand + title block */
+  .loginSurface > div > div:last-child > div:first-of-type {
+    margin-bottom: .95rem !important;
+  }
+
+  .loginSurface > div > div:last-child > div:first-of-type > a span:first-child {
+    width: 2.15rem !important;
+    height: 2.15rem !important;
+    border-radius: .7rem !important;
+  }
+
+  .loginSurface > div > div:last-child > div:first-of-type > a span:last-child {
+    font-size: 1rem !important;
+  }
+
+  .loginSurface > div > div:last-child h1 {
+    margin-top: .72rem !important;
+    font-size: 1.55rem !important;
+    line-height: 1.05 !important;
+    letter-spacing: -.025em;
+  }
+
+  .loginSurface > div > div:last-child h1 + p {
+    margin-top: .42rem !important;
+    max-width: 34rem;
+    font-size: .72rem !important;
+    line-height: 1.48 !important;
+  }
+
+  .loginSurface form {
+    display: grid;
+    gap: .72rem !important;
+  }
+
+  .loginSurface form label > span,
+  .loginSurface form > div > label {
+    margin-bottom: .32rem !important;
+    font-size: .7rem !important;
+  }
+
+  .loginSurface input:not([type="hidden"]) {
+    min-height: 2.85rem;
+    border-radius: .85rem !important;
+    padding: .68rem .8rem !important;
+    font-size: .78rem !important;
+  }
+
+  .loginSurface input[type="password"],
+  .loginSurface input[type="text"][name="password"] {
+    padding-right: 2.85rem !important;
+  }
+
+  .loginSurface form button[type="submit"] {
+    min-height: 2.85rem;
+    border-radius: .9rem !important;
+    padding-block: .68rem !important;
+    font-size: .78rem !important;
+    box-shadow: 0 10px 26px color-mix(in srgb, var(--brand) 22%, transparent);
+  }
+
+  .loginSurface form > a {
+    min-height: 2.75rem;
+    border-radius: .85rem !important;
+    padding: .68rem .8rem !important;
+    font-size: .74rem !important;
+  }
+
+  .loginSurface form :global(.text-sm) {
+    font-size: .72rem !important;
+  }
+
+  .loginSurface > div > div:last-child > div:last-child {
+    margin-top: .9rem !important;
+    font-size: .7rem !important;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 359px) {
+  .loginSurface {
+    padding-left: .45rem;
+    padding-right: .45rem;
+  }
+
+  .loginSurface > div > div:last-child {
+    padding: .78rem !important;
+  }
+
+  .loginSurface > div > div:last-child h1 {
+    font-size: 1.42rem !important;
+  }
+
+  .loginSurface > div > div:last-child h1 + p {
+    font-size: .68rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loginSurface *,
+  .loginSurface *::before,
+  .loginSurface *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+}
