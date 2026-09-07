@@ -8,6 +8,7 @@ import TravelLabContact from "./components/landing/TravelLabContact";
 import LandingMobileActionBar from "./components/landing/LandingMobileActionBar";
 import LandingMobilePolish from "./components/landing/LandingMobilePolish";
 import HeroFeatureCardMobilePolish from "./components/landing/HeroFeatureCardMobilePolish";
+import HeroMetricsMobilePolish from "./components/landing/HeroMetricsMobilePolish";
 import CareNearYouInputPolish from "./components/landing/CareNearYouInputPolish";
 import HeroSearchInputPolish from "./components/landing/HeroSearchInputPolish";
 
@@ -25,6 +26,7 @@ export default async function MarketplacePage() {
     <div className="landing-root min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-16 lg:pb-0">
       <LandingMobilePolish />
       <HeroFeatureCardMobilePolish />
+      <HeroMetricsMobilePolish />
       <CareNearYouInputPolish />
       <HeroSearchInputPolish />
       <TravelLabHero pharmacyCount={featuredPharmacies.length || 0} initialQuery="" />
