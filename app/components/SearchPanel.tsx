@@ -61,6 +61,8 @@ function search(corpus: SearchCorpus, base: string, q: string): SearchResults {
   };
 }
 
+const suggestions = ["refill", "vaccination", "delivery", "blood pressure"];
+
 export default function SearchPanel({
   base,
   corpus,
@@ -75,8 +77,8 @@ export default function SearchPanel({
   const [query, setQuery] = useState(initialQuery);
   const [touched, setTouched] = useState(false);
   const results = useMemo(
-    () => (touched ? search(corpus, base, query) : initial),
-    [corpus, base, query, touched, initial],
+    () => (touched || initialQuery.trim() ? search(corpus, base, query) : initial),
+    [corpus, base, query, touched, initial, initialQuery],
   );
   const faqHits = useMemo(
     () =>
@@ -94,7 +96,7 @@ export default function SearchPanel({
     faqHits.length;
 
   return (
-    <div>
+    <div className="min-w-0">
       <form
         action={`${base}/search`}
         method="GET"
@@ -102,36 +104,39 @@ export default function SearchPanel({
           e.preventDefault();
           setTouched(true);
         }}
+        className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-3 shadow-sm sm:rounded-3xl sm:p-4"
       >
-        <div className="relative">
-          <svg
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#5a6b62]"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="M20 20l-3-3" strokeLinecap="round" />
-          </svg>
-          <input
-            type="search"
-            name="q"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setTouched(true);
-            }}
-            placeholder="Search medicines, services, vaccines, articles…"
-            className="w-full rounded-2xl border border-teal-900/10 bg-white py-4 pl-12 pr-28 text-base shadow-sm outline-none focus:border-teal-600/40 focus:ring-2 focus:ring-teal-500/20"
-            aria-label="Search this pharmacy"
-          />
+        <div className="flex min-w-0 flex-col gap-2.5 sm:flex-row sm:items-center">
+          <div className="relative min-w-0 flex-1">
+            <svg
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted)]"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-3-3" strokeLinecap="round" />
+            </svg>
+            <input
+              type="search"
+              name="q"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setTouched(true);
+              }}
+              placeholder="Search medicines, services, vaccines…"
+              className="min-h-12 w-full min-w-0 rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] py-3 pl-10 pr-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
+              aria-label="Search this pharmacy"
+            />
+          </div>
           <button
             type="submit"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-[#0d6e5a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#084c3f]"
+            className="inline-flex min-h-12 w-full shrink-0 items-center justify-center rounded-xl bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] sm:w-auto"
           >
             Search
           </button>
@@ -139,62 +144,89 @@ export default function SearchPanel({
       </form>
 
       {!query.trim() && (
-        <p className="mt-6 text-sm text-[#5a6b62]">
-          Try “refill”, “vaccination”, “delivery”, “blood pressure”, or a medicine name — results come
-          from this pharmacy&apos;s live catalogue.
-        </p>
+        <div className="mt-4 sm:mt-5">
+          <p className="text-xs leading-5 text-[var(--muted)]">Popular searches</p>
+          <div className="mt-2 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {suggestions.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onClick={() => {
+                  setQuery(suggestion);
+                  setTouched(true);
+                }}
+                className="min-h-9 shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold capitalize text-[var(--foreground)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+          <p className="mt-3 text-xs leading-5 text-[var(--muted-2)]">
+            Results come from this pharmacy&apos;s live catalogue plus network health information.
+          </p>
+        </div>
       )}
 
       {query.trim() && (
-        <p className="mt-6 text-sm text-[#5a6b62]" role="status" aria-live="polite">
-          {total === 0 ? "No results for" : `${total} result${total === 1 ? "" : "s"} for`}{" "}
-          <span className="font-semibold text-[#0c1a14]">“{query}”</span>
-        </p>
+        <div className="mt-5 flex min-w-0 items-center justify-between gap-3 rounded-xl border border-[var(--line)] bg-[var(--card-elev)] px-3.5 py-3 sm:mt-6 sm:px-4">
+          <p className="min-w-0 text-sm text-[var(--muted)]" role="status" aria-live="polite">
+            {total === 0 ? "No results for" : `${total} result${total === 1 ? "" : "s"} for`}{" "}
+            <span className="break-words font-semibold text-[var(--foreground)]">“{query}”</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setTouched(true);
+            }}
+            className="shrink-0 text-xs font-semibold text-[var(--brand)] hover:underline"
+          >
+            Clear
+          </button>
+        </div>
       )}
 
-      {query.trim() && total === 0 && (
-        <SearchAssistFallback query={query} base={base} />
-      )}
+      {query.trim() && total === 0 && <SearchAssistFallback query={query} base={base} />}
 
       {(query.trim() || !touched) && total > 0 && (
-        <div className="mt-8 space-y-10">
+        <div className="mt-7 space-y-8 sm:mt-8 sm:space-y-10">
           {results.medicines.length > 0 && (
-            <ResultGroup title="Medicines">
+            <ResultGroup title="Medicines" count={results.medicines.length}>
               {results.medicines.map((m) => (
                 <ResultCard key={m.slug} href={m.href} title={m.title} body={m.body} meta={m.meta} />
               ))}
             </ResultGroup>
           )}
           {results.services.length > 0 && (
-            <ResultGroup title="Services">
+            <ResultGroup title="Services" count={results.services.length}>
               {results.services.map((s) => (
                 <ResultCard key={s.slug} href={s.href} title={s.title} body={s.body} />
               ))}
             </ResultGroup>
           )}
           {results.vaccines.length > 0 && (
-            <ResultGroup title="Vaccines">
+            <ResultGroup title="Vaccines" count={results.vaccines.length}>
               {results.vaccines.map((v) => (
                 <ResultCard key={v.slug} href={v.href} title={v.title} body={v.body} meta={v.meta} />
               ))}
             </ResultGroup>
           )}
           {results.categories.length > 0 && (
-            <ResultGroup title="Medicine categories">
+            <ResultGroup title="Medicine categories" count={results.categories.length}>
               {results.categories.map((c) => (
                 <ResultCard key={c.slug} href={c.href} title={c.title} body={c.body} />
               ))}
             </ResultGroup>
           )}
           {results.articles.length > 0 && (
-            <ResultGroup title="Health articles">
+            <ResultGroup title="Health articles" count={results.articles.length}>
               {results.articles.map((a) => (
                 <ResultCard key={a.slug} href={a.href} title={a.title} body={a.body} meta={a.meta} />
               ))}
             </ResultGroup>
           )}
           {faqHits.length > 0 && (
-            <ResultGroup title="FAQs">
+            <ResultGroup title="FAQs" count={faqHits.length}>
               {faqHits.map((f) => (
                 <ResultCard
                   key={f.question}
@@ -212,11 +244,18 @@ export default function SearchPanel({
   );
 }
 
-function ResultGroup({ title, children }: { title: string; children: React.ReactNode }) {
+function ResultGroup({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
   return (
-    <section>
-      <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-teal-700">{title}</h2>
-      <div className="mt-3 space-y-3">{children}</div>
+    <section className="min-w-0">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-[0.18em]">
+          {title}
+        </h2>
+        <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--brand)]">
+          {count}
+        </span>
+      </div>
+      <div className="mt-3 grid gap-2.5 sm:gap-3">{children}</div>
     </section>
   );
 }
@@ -235,18 +274,23 @@ function ResultCard({
   return (
     <Link
       href={href}
-      className="card-lift block rounded-2xl border border-white/70 bg-white/90 p-5 shadow-sm transition hover:border-teal-700/15"
+      className="group block min-w-0 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-5"
     >
-      {meta && (
-        <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">{meta}</p>
-      )}
-      <p
-        className="mt-1 text-base font-semibold text-[#0c1a14]"
-        style={{ fontFamily: "var(--font-display), serif" }}
-      >
-        {title}
-      </p>
-      <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-[#5a6b62]">{body}</p>
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          {meta && <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">{meta}</p>}
+          <p
+            className={`${meta ? "mt-1" : ""} break-words text-[15px] font-semibold leading-5 text-[var(--foreground)] sm:text-base`}
+            style={{ fontFamily: "var(--font-display), serif" }}
+          >
+            {title}
+          </p>
+          {body && <p className="mt-1.5 line-clamp-2 text-[13px] leading-5 text-[var(--muted)] sm:text-sm sm:leading-relaxed">{body}</p>}
+        </div>
+        <span className="mt-1 shrink-0 text-lg leading-none text-[var(--muted-2)] transition group-hover:translate-x-0.5 group-hover:text-[var(--brand)]" aria-hidden>
+          →
+        </span>
+      </div>
     </Link>
   );
 }
