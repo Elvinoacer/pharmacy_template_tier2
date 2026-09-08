@@ -17,12 +17,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about" },
 };
 
+const pageShell =
+  "overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300";
+
 const adaptiveCard =
-  "rounded-3xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition-colors duration-300";
+  "rounded-[1.35rem] border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition-colors duration-300 sm:rounded-3xl";
 
 function NetworkAbout() {
   return (
-    <div className="bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
+    <div className={pageShell}>
       <PageHero
         eyebrow="About the network"
         title="A country of pharmacies. One promise of care."
@@ -30,30 +33,30 @@ function NetworkAbout() {
         crumbs={[{ label: "About" }]}
       />
 
-      <section className="px-4 pb-16 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
+      <section className="px-3 pb-10 sm:px-6 sm:pb-16">
+        <div className="mx-auto grid max-w-6xl gap-6 sm:gap-8 lg:grid-cols-2 lg:items-center lg:gap-10">
           <Reveal>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl ring-1 ring-[var(--line-2)]">
+            <div className="relative aspect-[16/11] overflow-hidden rounded-[1.4rem] shadow-lg ring-1 ring-[var(--line-2)] sm:aspect-[4/3] sm:rounded-[2rem] sm:shadow-xl">
               <Image
                 src="https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"
                 alt="Neighbourhood pharmacy interior"
                 fill
                 className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                sizes="(max-width: 640px) calc(100vw - 24px), (max-width: 1024px) calc(100vw - 48px), 50vw"
                 priority
               />
             </div>
           </Reveal>
           <Reveal delay={80}>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand)]">Our story</p>
+            <div className="min-w-0 px-1 sm:px-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs sm:tracking-[0.2em]">Our story</p>
               <h2
-                className="mt-2 text-2xl font-semibold text-[var(--foreground)] sm:text-3xl"
+                className="mt-2 break-words text-[1.65rem] font-semibold leading-[1.08] tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl sm:leading-tight"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
                 Built so Kenya can find a pharmacist — and pharmacies can still be themselves.
               </h2>
-              <div className="mt-4 space-y-4 text-sm leading-relaxed text-[var(--muted)] sm:text-base">
+              <div className="mt-4 space-y-3 text-[13.5px] leading-6 text-[var(--muted)] sm:space-y-4 sm:text-base sm:leading-relaxed">
                 <p>
                   Aether started from a simple observation: families already have a neighbourhood pharmacy they
                   trust, but the internet still pretends there is only one shop in the country.
@@ -73,21 +76,21 @@ function NetworkAbout() {
         </div>
       </section>
 
-      <section className="px-4 py-8 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-2">
-          <div className={`${adaptiveCard} p-8`}>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand)]">Mission</p>
+      <section className="px-3 py-5 sm:px-6 sm:py-8">
+        <div className="mx-auto grid max-w-6xl gap-3 sm:gap-5 md:grid-cols-2">
+          <div className={`${adaptiveCard} p-5 sm:p-8`}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs sm:tracking-[0.2em]">Mission</p>
             <p
-              className="mt-3 text-xl font-semibold text-[var(--foreground)]"
+              className="mt-2.5 text-[1.08rem] font-semibold leading-snug text-[var(--foreground)] sm:mt-3 sm:text-xl"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               Make safe, understandable pharmacy care easy to reach — without erasing the shop that provides it.
             </p>
           </div>
-          <div className={`${adaptiveCard} p-8`}>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand)]">Vision</p>
+          <div className={`${adaptiveCard} p-5 sm:p-8`}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs sm:tracking-[0.2em]">Vision</p>
             <p
-              className="mt-3 text-xl font-semibold text-[var(--foreground)]"
+              className="mt-2.5 text-[1.08rem] font-semibold leading-snug text-[var(--foreground)] sm:mt-3 sm:text-xl"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               A Kenya where every neighbourhood pharmacy can be found, trusted, and chosen — on its own terms.
@@ -96,29 +99,33 @@ function NetworkAbout() {
         </div>
       </section>
 
-      <section className="px-4 py-16 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-3">
+      <section className="px-3 py-10 sm:px-6 sm:py-16">
+        <div className="mx-auto grid max-w-6xl gap-3 sm:gap-5 md:grid-cols-3">
           {[
             { icon: ShieldCheck, title: "Verified first", body: "PPB premises review before a pharmacy appears on the marketplace." },
             { icon: Building2, title: "Tenant isolation", body: "Inventory, refills, loyalty, and messages never cross shop boundaries." },
             { icon: HeartPulse, title: "One patient identity", body: "Your login works across the network. Clinical records stay with the pharmacy that earned them." },
           ].map((c) => (
-            <div key={c.title} className={`${adaptiveCard} p-6`}>
-              <c.icon className="h-6 w-6 text-[var(--brand)]" />
-              <h3 className="mt-4 text-lg font-semibold text-[var(--foreground)]">{c.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{c.body}</p>
+            <div key={c.title} className={`${adaptiveCard} flex items-start gap-3 p-4 sm:p-5 md:block md:p-6`}>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] sm:h-11 sm:w-11">
+                <c.icon className="h-5 w-5 text-[var(--brand)] sm:h-6 sm:w-6" />
+              </span>
+              <div className="min-w-0">
+                <h3 className="text-[15px] font-semibold leading-tight text-[var(--foreground)] md:mt-4 md:text-lg">{c.title}</h3>
+                <p className="mt-1.5 text-[12.5px] leading-5 text-[var(--muted)] sm:text-sm sm:leading-relaxed">{c.body}</p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="px-4 pb-20 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-3">
-          <Link href="/#pharmacies" className="btn-primary">
+      <section className="px-3 pb-14 sm:px-6 sm:pb-20">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-center">
+          <Link href="/#pharmacies" className="btn-primary w-full justify-center sm:w-auto">
             Find a pharmacy
             <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link href="/for-pharmacies" className="btn-ghost">
+          <Link href="/for-pharmacies" className="btn-ghost w-full justify-center sm:w-auto">
             Join as a pharmacy
           </Link>
         </div>
@@ -142,7 +149,7 @@ export default async function AboutPage() {
     `${pharmacy.name} is an independent pharmacy on the Aether network — careful dispensing, personal attention, and a counter that still looks up when you walk in.`;
 
   return (
-    <div className="bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
+    <div className={pageShell}>
       <PageHero
         eyebrow="About us"
         title={pharmacy.name}
@@ -150,30 +157,30 @@ export default async function AboutPage() {
         crumbs={[{ label: "About" }]}
       />
 
-      <section className="px-4 pb-16 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
+      <section className="px-3 pb-10 sm:px-6 sm:pb-16">
+        <div className="mx-auto grid max-w-6xl gap-6 sm:gap-8 lg:grid-cols-2 lg:items-center lg:gap-10">
           <Reveal>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl ring-1 ring-[var(--line-2)]">
+            <div className="relative aspect-[16/11] overflow-hidden rounded-[1.4rem] shadow-lg ring-1 ring-[var(--line-2)] sm:aspect-[4/3] sm:rounded-[2rem] sm:shadow-xl">
               <Image
                 src={pharmacy.coverImageUrl || "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp"}
                 alt={`${pharmacy.name} interior`}
                 fill
                 className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                sizes="(max-width: 640px) calc(100vw - 24px), (max-width: 1024px) calc(100vw - 48px), 50vw"
                 priority
               />
             </div>
           </Reveal>
           <Reveal delay={80}>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand)]">Our story</p>
+            <div className="min-w-0 px-1 sm:px-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs sm:tracking-[0.2em]">Our story</p>
               <h2
-                className="mt-2 text-2xl font-semibold text-[var(--foreground)] sm:text-3xl"
+                className="mt-2 break-words text-[1.65rem] font-semibold leading-[1.08] tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl sm:leading-tight"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
                 {content.about.storyHeading}
               </h2>
-              <div className="mt-4 space-y-4 text-sm leading-relaxed text-[var(--muted)] sm:text-base">
+              <div className="mt-4 space-y-3 break-words text-[13.5px] leading-6 text-[var(--muted)] sm:space-y-4 sm:text-base sm:leading-relaxed">
                 <p>{aboutCopy}</p>
                 {pharmacy.address.full && <p>Find us at {pharmacy.address.full}.</p>}
                 <p>{content.about.closingNote}</p>
@@ -183,12 +190,12 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="px-4 py-8 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="px-3 py-5 sm:px-6 sm:py-8">
+        <div className="mx-auto grid max-w-6xl gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
           {values.map((v) => (
-            <div key={v.title} className={`${adaptiveCard} p-6`}>
-              <h3 className="font-semibold text-[var(--foreground)]">{v.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{v.description}</p>
+            <div key={v.title} className={`${adaptiveCard} min-w-0 p-5 sm:p-6`}>
+              <h3 className="break-words text-[15px] font-semibold leading-tight text-[var(--foreground)] sm:text-base">{v.title}</h3>
+              <p className="mt-2 break-words text-[12.5px] leading-5 text-[var(--muted)] sm:text-sm sm:leading-relaxed">{v.description}</p>
             </div>
           ))}
         </div>
@@ -198,31 +205,39 @@ export default async function AboutPage() {
           the Storefront Studio (/admin/settings/storefront) — real rooms no
           longer inherit another pharmacy's staff photos by hard-coding. */}
       {content.about.showTeam && content.team.length > 0 && (
-        <section className="px-4 py-12 sm:px-6">
+        <section className="px-3 py-10 sm:px-6 sm:py-12">
           <div className="mx-auto max-w-6xl">
             <h2
-              className="text-2xl font-semibold text-[var(--foreground)]"
+              className="text-[1.65rem] font-semibold leading-tight text-[var(--foreground)] sm:text-2xl"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               The people at the counter
             </h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-6 lg:grid-cols-4">
               {content.team.map((m) => (
                 <article
                   key={m.id}
-                  className="glass-tile-strong overflow-hidden rounded-3xl border border-[var(--line-2)] bg-[var(--card)] transition-colors duration-300"
+                  className="glass-tile-strong min-w-0 overflow-hidden rounded-[1.25rem] border border-[var(--line-2)] bg-[var(--card)] transition-colors duration-300 sm:rounded-3xl"
                 >
                   {m.photo && (
                     <div className="relative aspect-[4/5]">
-                      <Image src={m.photo} alt={m.name} fill className="object-cover" sizes="240px" />
+                      <Image
+                        src={m.photo}
+                        alt={m.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 46vw, (max-width: 1024px) 50vw, 240px"
+                      />
                     </div>
                   )}
-                  <div className="p-4">
-                    <p className="font-semibold text-[var(--foreground)]">{m.name}</p>
-                    <p className="text-xs font-medium text-[var(--brand)]">{m.role}</p>
-                    {m.bio && <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{m.bio}</p>}
+                  <div className="min-w-0 p-3 sm:p-4">
+                    <p className="break-words text-sm font-semibold leading-tight text-[var(--foreground)] sm:text-base">{m.name}</p>
+                    <p className="mt-1 break-words text-[10px] font-medium leading-tight text-[var(--brand)] sm:text-xs">{m.role}</p>
+                    {m.bio && <p className="mt-2 hidden text-sm leading-relaxed text-[var(--muted)] sm:block">{m.bio}</p>}
                     {m.qualifications && (
-                      <p className="mt-2 text-xs font-medium text-[var(--brand)]">{m.qualifications}</p>
+                      <p className="mt-2 break-words text-[10px] font-medium leading-tight text-[var(--brand)] sm:text-xs">
+                        {m.qualifications}
+                      </p>
                     )}
                   </div>
                 </article>
@@ -233,31 +248,44 @@ export default async function AboutPage() {
       )}
 
       {content.sections.insuranceStrip && content.certifications.length > 0 && (
-        <section className="px-4 pb-8 sm:px-6">
+        <section className="px-3 pb-8 sm:px-6">
           <div className="mx-auto max-w-6xl">
-            <div className="glass-panel flex flex-wrap items-center gap-x-6 gap-y-3 rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-5 transition-colors duration-300 sm:p-6">
-              <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
+            <div className="glass-panel flex flex-col items-start gap-3 rounded-[1.35rem] border border-[var(--line-2)] bg-[var(--card)] p-4 transition-colors duration-300 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-3 sm:rounded-3xl sm:p-6">
+              <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-[0.18em]">
                 <ShieldCheck className="h-4 w-4" aria-hidden /> Credentials
               </span>
-              {content.certifications.map((c) => (
-                <span key={c} className="text-sm font-medium text-[var(--foreground)]">
-                  {c}
-                </span>
-              ))}
+              <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+                {content.certifications.map((c) => (
+                  <span
+                    key={c}
+                    className="max-w-full break-words rounded-full border border-[var(--line-2)] bg-[var(--card-elev)] px-3 py-1.5 text-[11px] font-medium leading-tight text-[var(--foreground)] sm:text-sm"
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
       )}
 
       {content.about.showGallery && content.gallery.length > 0 && (
-        <section className="px-4 pb-8 sm:px-6">
-          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 sm:grid-cols-3">
-            {content.gallery.slice(0, 6).map((g) => (
+        <section className="px-3 pb-8 sm:px-6">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
+            {content.gallery.slice(0, 6).map((g, index) => (
               <div
                 key={g.src}
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-inset ring-[var(--line-2)]"
+                className={`relative overflow-hidden rounded-[1rem] ring-1 ring-inset ring-[var(--line-2)] sm:rounded-2xl ${
+                  index === 0 ? "col-span-2 aspect-[16/9] sm:col-span-1 sm:aspect-[4/3]" : "aspect-[4/3]"
+                }`}
               >
-                <Image src={g.src} alt={g.alt} fill className="object-cover" sizes="33vw" />
+                <Image
+                  src={g.src}
+                  alt={g.alt}
+                  fill
+                  className="object-cover"
+                  sizes={index === 0 ? "(max-width: 640px) calc(100vw - 24px), 33vw" : "(max-width: 640px) 46vw, 33vw"}
+                />
               </div>
             ))}
           </div>
