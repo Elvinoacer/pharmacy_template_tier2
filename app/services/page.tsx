@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
 import { platform } from "../lib/data";
@@ -24,7 +25,7 @@ export default async function ServicesPage() {
   const services = await listPublicServices().catch(() => []);
 
   return (
-    <div>
+    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Services"
         title="Care services tailored to real life"
@@ -32,56 +33,65 @@ export default async function ServicesPage() {
         crumbs={[{ label: "Services" }]}
       />
 
-      <section className="px-4 pb-16 sm:px-6">
+      <section className="px-3 pb-14 sm:px-6 sm:pb-16">
         {services.length === 0 ? (
-          <div className="mx-auto max-w-6xl rounded-3xl border border-[#e3ebe6] bg-white px-6 py-14 text-center shadow-sm">
-            <p className="text-sm font-semibold text-[#0c1a14]">Services coming soon</p>
-            <p className="mt-2 text-sm text-[#5a6b62]">
+          <div className="mx-auto max-w-6xl rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-4 py-10 text-center shadow-sm sm:rounded-3xl sm:px-6 sm:py-14">
+            <p className="text-base font-semibold text-[var(--foreground)]">Services coming soon</p>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">
               Call or message us and we&apos;ll point you in the right direction.
             </p>
-            <Link href="/contact" className="btn-primary mt-5 inline-flex text-sm">
+            <Link href="/contact" className="btn-primary mt-5 inline-flex min-h-11 w-full items-center justify-center text-sm sm:w-auto">
               Contact us
             </Link>
           </div>
         ) : (
-          <div className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto grid w-full max-w-6xl gap-3.5 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
             {services.map((s) => (
               <Link
                 key={s.slug}
                 href={`/services/${s.slug}`}
-                className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-white/60 bg-white shadow-[0_16px_50px_rgba(8,40,32,0.08)]"
+                className="group flex min-w-0 h-full flex-col overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:rounded-3xl"
               >
-                <div className="relative h-48 overflow-hidden bg-[#eef5f1]">
+                <div className="relative h-40 overflow-hidden bg-[var(--card-elev)] sm:h-44 lg:h-48">
                   {s.imageUrl ? (
                     <Image
                       src={s.imageUrl}
                       alt={s.title}
                       fill
-                      className="object-cover transition duration-700 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-5xl opacity-40">
+                    <div className="flex h-full items-center justify-center text-5xl opacity-40" aria-hidden="true">
                       🏥
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
                   {s.price != null && (
-                    <span className="absolute bottom-3 left-3 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-teal-900 shadow-sm">
+                    <span className="absolute bottom-3 left-3 rounded-full bg-black/65 px-2.5 py-1 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm sm:text-xs">
                       KES {formatPrice(s.price)}
                     </span>
                   )}
                 </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <h2
-                    className="text-xl font-semibold text-[#0c1a14]"
-                    style={{ fontFamily: "var(--font-display), serif" }}
-                  >
-                    {s.title}
-                  </h2>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-[#5a6b62]">{s.short}</p>
-                  <span className="mt-4 text-sm font-semibold text-teal-800">
-                    {s.bookable ? "View details & book →" : "View details →"}
+
+                <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5 lg:p-6">
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <h2
+                      className="min-w-0 text-lg font-semibold leading-tight text-[var(--foreground)] sm:text-xl"
+                      style={{ fontFamily: "var(--font-display), serif" }}
+                    >
+                      {s.title}
+                    </h2>
+                    {s.bookable && (
+                      <span className="shrink-0 rounded-full bg-[var(--brand-soft)] px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[var(--brand)] sm:text-[10px]">
+                        Bookable
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-2 flex-1 text-[13px] leading-5 text-[var(--muted)] sm:text-sm sm:leading-relaxed">{s.short}</p>
+                  <span className="mt-4 inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-[var(--brand)]">
+                    {s.bookable ? "View details & book" : "View details"}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                   </span>
                 </div>
               </Link>
