@@ -52,7 +52,6 @@ export default function SearchAssistFallback({
     [base],
   );
 
-  // Auto-run once per distinct query
   useEffect(() => {
     const q = query.trim();
     if (q.length < 2 || q === lastQueryRef.current) return;
@@ -60,42 +59,39 @@ export default function SearchAssistFallback({
   }, [query, askAssist]);
 
   return (
-    <div className="mt-8 rounded-3xl border border-emerald-600/15 bg-gradient-to-b from-[#f2fbf7] to-white p-5 sm:p-6">
-      <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-sm">
+    <div className="mt-6 min-w-0 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:mt-8 sm:rounded-3xl sm:p-6">
+      <div className="flex min-w-0 items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand)] text-white shadow-sm">
           <Sparkles className="h-4 w-4" aria-hidden />
         </span>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-[#0c1a14]">
-            No keyword match — let&apos;s find where you actually need to go
+        <div className="min-w-0 flex-1">
+          <p className="break-words text-sm font-semibold leading-5 text-[var(--foreground)]">
+            No keyword match — let Aether interpret what you need
           </p>
-          <p className="mt-0.5 text-xs leading-relaxed text-[#5a6b62]">
-            The quick assistant reads your request and points you to the right page: a refill, a
-            pharmacy with stock, a service, or health guidance.
+          <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+            It can point you toward a refill, stock search, pharmacy service, or relevant health information.
           </p>
         </div>
       </div>
 
-      <div className="mt-4">
-        {loading && <AssistSkeleton theme="light" />}
+      <div className="mt-4 min-w-0">
+        {loading && <AssistSkeleton theme="adaptive" />}
         {!loading && result && (
-          <AssistResultCards result={result} theme="light" onFollowup={(q) => void askAssist(q)} />
+          <AssistResultCards result={result} theme="adaptive" onFollowup={(q) => void askAssist(q)} />
         )}
         {!loading && !result && failed && (
-          <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800" role="alert">
-            Quick assist is unavailable right now. Try browsing the medicines catalogue or the
-            pharmacy directory instead.
+          <p className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3 py-2.5 text-xs font-medium leading-5 text-[var(--muted)]" role="alert">
+            Quick assist is unavailable right now. Try the medicines catalogue or pharmacy directory instead.
           </p>
         )}
         {!loading && !result && !failed && (
-          <p className="text-xs text-[#5a6b62]">Reading your request…</p>
+          <p className="text-xs text-[var(--muted)]">Reading your request…</p>
         )}
       </div>
 
-      {/* Rephrase */}
       {!loading && (
         <form
-          className="mt-4 flex gap-2"
+          className="mt-4 flex min-w-0 flex-col gap-2.5 sm:flex-row"
           onSubmit={(e) => {
             e.preventDefault();
             void askAssist(rephrase);
@@ -105,14 +101,14 @@ export default function SearchAssistFallback({
             type="text"
             value={rephrase}
             onChange={(e) => setRephrase(e.target.value)}
-            placeholder="Or describe what you need differently…"
+            placeholder="Describe what you need differently…"
             aria-label="Describe what you need"
-            className="min-w-0 flex-1 rounded-xl border border-teal-900/15 bg-white px-3.5 py-2.5 text-sm text-[#0c1a14] outline-none placeholder:text-[#5a6b62]/60 focus:border-emerald-600/40 focus:ring-2 focus:ring-emerald-500/15"
+            className="min-h-12 min-w-0 flex-1 rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-base text-[var(--foreground)] outline-none placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
           />
           <button
             type="submit"
             disabled={rephrase.trim().length < 2}
-            className="shrink-0 rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition enabled:hover:shadow-md disabled:opacity-40"
+            className="min-h-12 w-full shrink-0 rounded-xl bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition enabled:hover:opacity-90 disabled:opacity-40 sm:w-auto"
           >
             Try again
           </button>
