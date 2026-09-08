@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import ContactForm from "../components/ContactForm";
 import PageHero from "../components/PageHero";
 import ChoosePharmacy from "@/app/components/ChoosePharmacy";
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
 
 const cardClass =
   "rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition-colors duration-300 sm:rounded-3xl";
+
+const actionCardClass =
+  "group flex min-w-0 items-start gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3.5 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-4";
 
 export default async function ContactPage() {
   const pharmacy = await getResolvedPharmacyOrNull();
@@ -37,51 +41,79 @@ export default async function ContactPage() {
               >
                 Visit &amp; call
               </h2>
-              <ul className="mt-4 space-y-4 text-sm">
+              <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Tap any option below to take action.</p>
+
+              <ul className="mt-4 grid gap-2.5 text-sm">
                 <li className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Address</p>
-                  <p className="mt-1 break-words leading-6 text-[var(--foreground)]">{pharmacy.address.full}</p>
                   <a
                     href={pharmacy.mapsDirections}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 font-semibold text-[var(--brand)] hover:underline"
+                    className={actionCardClass}
+                    aria-label={`Get directions to ${pharmacy.name}`}
                   >
-                    Get directions →
-                  </a>
-                  {pharmacy.latitude != null && pharmacy.longitude != null && (
-                    <p className="mt-1 break-all text-[11px] text-[var(--muted-2)]">
-                      Pin: {pharmacy.latitude.toFixed(5)}, {pharmacy.longitude.toFixed(5)}
-                    </p>
-                  )}
-                </li>
-                <li className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Phone</p>
-                  <a
-                    href={pharmacy.phoneHref}
-                    className="mt-1 block break-words font-semibold text-[var(--foreground)] hover:text-[var(--brand)]"
-                  >
-                    {pharmacy.phone}
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+                      <MapPin className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Address</span>
+                      <span className="mt-1 block break-words font-semibold leading-5 text-[var(--foreground)]">{pharmacy.address.full}</span>
+                      <span className="mt-1 block text-xs font-semibold text-[var(--brand)]">Get directions →</span>
+                      {pharmacy.latitude != null && pharmacy.longitude != null && (
+                        <span className="mt-1 block break-all text-[10px] text-[var(--muted-2)]">
+                          Pin: {pharmacy.latitude.toFixed(5)}, {pharmacy.longitude.toFixed(5)}
+                        </span>
+                      )}
+                    </span>
                   </a>
                 </li>
+
                 <li className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">WhatsApp</p>
+                  <a href={pharmacy.phoneHref} className={actionCardClass} aria-label={`Call ${pharmacy.name} at ${pharmacy.phone}`}>
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+                      <Phone className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Phone</span>
+                      <span className="mt-1 block break-words font-semibold text-[var(--foreground)]">{pharmacy.phone}</span>
+                      <span className="mt-1 block text-xs font-semibold text-[var(--brand)]">Tap to call →</span>
+                    </span>
+                  </a>
+                </li>
+
+                <li className="min-w-0">
                   <a
                     href={pharmacy.whatsappHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 block font-semibold text-[var(--foreground)] hover:text-[var(--brand)]"
+                    className={actionCardClass}
+                    aria-label={`Message ${pharmacy.name} on WhatsApp`}
                   >
-                    Message us on WhatsApp
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+                      <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">WhatsApp</span>
+                      <span className="mt-1 block font-semibold text-[var(--foreground)]">Message us on WhatsApp</span>
+                      <span className="mt-1 block text-xs font-semibold text-[var(--brand)]">Open WhatsApp →</span>
+                    </span>
                   </a>
                 </li>
+
                 <li className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Email</p>
                   <a
                     href={`mailto:${pharmacy.email}`}
-                    className="mt-1 block break-all font-semibold text-[var(--foreground)] hover:text-[var(--brand)]"
+                    className={actionCardClass}
+                    aria-label={`Email ${pharmacy.name} at ${pharmacy.email}`}
                   >
-                    {pharmacy.email}
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+                      <Mail className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Email</span>
+                      <span className="mt-1 block break-all font-semibold text-[var(--foreground)]">{pharmacy.email}</span>
+                      <span className="mt-1 block text-xs font-semibold text-[var(--brand)]">Send email →</span>
+                    </span>
                   </a>
                 </li>
               </ul>
@@ -113,17 +145,17 @@ export default async function ContactPage() {
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
               />
-              <div className="flex flex-col gap-3 border-t border-[var(--line)] bg-[var(--card)] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-xs text-[var(--muted)]">Find us on the map</p>
-                <a
-                  href={pharmacy.mapsDirections}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-full bg-[var(--brand)] px-4 py-2 text-xs font-semibold text-white shadow-sm transition-opacity hover:opacity-90 sm:w-auto"
-                >
+              <a
+                href={pharmacy.mapsDirections}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-14 items-center justify-between gap-3 border-t border-[var(--line)] bg-[var(--card)] px-4 py-3.5 transition hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)]"
+              >
+                <span className="text-xs text-[var(--muted)]">Find us on the map</span>
+                <span className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-[var(--brand)] px-4 py-2 text-xs font-semibold text-white shadow-sm">
                   Get directions
-                </a>
-              </div>
+                </span>
+              </a>
             </div>
           </div>
 
