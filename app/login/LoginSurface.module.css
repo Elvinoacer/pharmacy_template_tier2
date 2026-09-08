@@ -77,16 +77,16 @@
   color: var(--foreground);
 }
 
-.loginSurface > div > div:last-child :global(.text-[#0c1a14]) {
+.loginSurface > div > div:last-child [class~="text-[#0c1a14]"] {
   color: var(--foreground) !important;
 }
 
-.loginSurface > div > div:last-child :global(.text-[#5a6b62]) {
+.loginSurface > div > div:last-child [class~="text-[#5a6b62]"] {
   color: var(--muted) !important;
 }
 
-.loginSurface > div > div:last-child :global(.text-[#0d6e5a]),
-.loginSurface > div > div:last-child :global(.text-[#084c3f]) {
+.loginSurface > div > div:last-child [class~="text-[#0d6e5a]"],
+.loginSurface > div > div:last-child [class~="text-[#084c3f]"] {
   color: var(--brand) !important;
 }
 
