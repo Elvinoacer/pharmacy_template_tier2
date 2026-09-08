@@ -11,12 +11,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
+const cardClass =
+  "rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition-colors duration-300 sm:rounded-3xl";
+
 export default async function ContactPage() {
   const pharmacy = await getResolvedPharmacyOrNull();
   if (!pharmacy) return <ChoosePharmacy next="/contact" />;
 
   return (
-    <div>
+    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Contact"
         title="We would love to hear from you"
@@ -24,59 +27,59 @@ export default async function ContactPage() {
         crumbs={[{ label: "Contact" }]}
       />
 
-      <section className="px-4 pb-20 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="space-y-5">
-            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm">
+      <section className="px-3 pb-16 sm:px-6 sm:pb-20">
+        <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 xl:gap-10">
+          <div className="min-w-0 space-y-4 sm:space-y-5">
+            <div className={`${cardClass} p-4 sm:p-6`}>
               <h2
-                className="text-lg font-semibold text-[#0c1a14]"
+                className="text-lg font-semibold text-[var(--foreground)]"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
-                Visit & call
+                Visit &amp; call
               </h2>
               <ul className="mt-4 space-y-4 text-sm">
-                <li>
-                  <p className="text-xs font-bold uppercase tracking-wider text-teal-700">Address</p>
-                  <p className="mt-1 text-[#0c1a14]">{pharmacy.address.full}</p>
+                <li className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Address</p>
+                  <p className="mt-1 break-words leading-6 text-[var(--foreground)]">{pharmacy.address.full}</p>
                   <a
                     href={pharmacy.mapsDirections}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 font-semibold text-teal-800 hover:underline"
+                    className="mt-1 inline-flex items-center gap-1 font-semibold text-[var(--brand)] hover:underline"
                   >
                     Get directions →
                   </a>
                   {pharmacy.latitude != null && pharmacy.longitude != null && (
-                    <p className="mt-1 text-[11px] text-[#8a9a92]">
+                    <p className="mt-1 break-all text-[11px] text-[var(--muted-2)]">
                       Pin: {pharmacy.latitude.toFixed(5)}, {pharmacy.longitude.toFixed(5)}
                     </p>
                   )}
                 </li>
-                <li>
-                  <p className="text-xs font-bold uppercase tracking-wider text-teal-700">Phone</p>
+                <li className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Phone</p>
                   <a
                     href={pharmacy.phoneHref}
-                    className="mt-1 block font-semibold text-[#0c1a14] hover:text-teal-800"
+                    className="mt-1 block break-words font-semibold text-[var(--foreground)] hover:text-[var(--brand)]"
                   >
                     {pharmacy.phone}
                   </a>
                 </li>
-                <li>
-                  <p className="text-xs font-bold uppercase tracking-wider text-teal-700">WhatsApp</p>
+                <li className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">WhatsApp</p>
                   <a
                     href={pharmacy.whatsappHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 block font-semibold text-[#0c1a14] hover:text-teal-800"
+                    className="mt-1 block font-semibold text-[var(--foreground)] hover:text-[var(--brand)]"
                   >
                     Message us on WhatsApp
                   </a>
                 </li>
-                <li>
-                  <p className="text-xs font-bold uppercase tracking-wider text-teal-700">Email</p>
+                <li className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-wider">Email</p>
                   <a
                     href={`mailto:${pharmacy.email}`}
-                    className="mt-1 block font-semibold text-[#0c1a14] hover:text-teal-800"
+                    className="mt-1 block break-all font-semibold text-[var(--foreground)] hover:text-[var(--brand)]"
                   >
                     {pharmacy.email}
                   </a>
@@ -84,39 +87,39 @@ export default async function ContactPage() {
               </ul>
             </div>
 
-            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm">
+            <div className={`${cardClass} p-4 sm:p-6`}>
               <h2
-                className="text-lg font-semibold text-[#0c1a14]"
+                className="text-lg font-semibold text-[var(--foreground)]"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
                 Opening hours
               </h2>
-              <ul className="mt-4 space-y-2">
+              <ul className="mt-4 divide-y divide-[var(--line)]">
                 {pharmacy.hours.map((h) => (
-                  <li key={h.day} className="flex justify-between gap-3 text-sm">
-                    <span className="text-[#5a6b62]">{h.day}</span>
-                    <span className="font-semibold text-[#0c1a14]">{h.time}</span>
+                  <li key={h.day} className="flex min-w-0 items-start justify-between gap-4 py-2.5 text-sm first:pt-0 last:pb-0">
+                    <span className="min-w-0 text-[var(--muted)]">{h.day}</span>
+                    <span className="shrink-0 text-right font-semibold text-[var(--foreground)]">{h.time}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="overflow-hidden rounded-3xl border border-white/70 shadow-sm">
+            <div className={`${cardClass} overflow-hidden`}>
               <iframe
                 title={`${pharmacy.name} location map`}
                 src={pharmacy.mapsEmbed}
-                className="h-64 w-full border-0 bg-teal-50"
+                className="h-56 w-full border-0 bg-[var(--brand-tint)] sm:h-64"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
               />
-              <div className="flex items-center justify-between gap-3 border-t border-teal-900/5 bg-white/95 px-4 py-3">
-                <p className="text-xs text-[#5a6b62]">Find us on the map</p>
+              <div className="flex flex-col gap-3 border-t border-[var(--line)] bg-[var(--card)] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs text-[var(--muted)]">Find us on the map</p>
                 <a
                   href={pharmacy.mapsDirections}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-teal-600 to-teal-900 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:opacity-95"
+                  className="inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-full bg-[var(--brand)] px-4 py-2 text-xs font-semibold text-white shadow-sm transition-opacity hover:opacity-90 sm:w-auto"
                 >
                   Get directions
                 </a>
@@ -124,22 +127,22 @@ export default async function ContactPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm sm:p-8">
+          <div className={`${cardClass} min-w-0 p-4 sm:p-6 lg:p-8`}>
             <h2
-              className="text-xl font-semibold text-[#0c1a14]"
+              className="text-xl font-semibold text-[var(--foreground)] sm:text-2xl"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
               Send a message
             </h2>
-            <p className="mt-2 text-sm text-[#5a6b62]">
+            <p className="mt-2 text-[13px] leading-6 text-[var(--muted)] sm:text-sm">
               We typically respond within one business day. Fields marked * are required. For mild
               everyday symptoms you can also try our{" "}
-              <a href={`/p/${pharmacy.slug}/how-do-you-feel`} className="font-semibold text-teal-800 hover:underline">
+              <a href={`/p/${pharmacy.slug}/how-do-you-feel`} className="font-semibold text-[var(--brand)] hover:underline">
                 How do you feel?
               </a>{" "}
               guided check-in.
             </p>
-            <div className="relative mt-6">
+            <div className="relative mt-5 min-w-0 sm:mt-6">
               <ContactForm />
             </div>
           </div>
