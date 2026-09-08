@@ -189,15 +189,17 @@ export default function QuickPageAssist() {
         onClick={() => (open ? close() : openPanel())}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={open ? "Close page help" : "Open page help"}
-        title="Page help (Shift + /)"
-        className="quick-assist-fab group fixed bottom-24 left-3 z-[55] flex min-h-11 items-center gap-2 rounded-full border border-emerald-300/25 bg-[#04130e]/80 px-3 pr-4 text-white shadow-[0_12px_34px_rgba(0,0,0,0.42)] backdrop-blur-2xl transition hover:border-emerald-300/50 hover:bg-[#071c15]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 sm:left-5 sm:bottom-6"
+        aria-label={open ? "Close Aether assistant" : "Open Aether AI assistant"}
+        title="Aether AI assistant"
+        className="group fixed bottom-24 right-4 z-[55] flex h-12 w-12 items-center justify-center rounded-full border border-[var(--line-2)] bg-[var(--card)] text-[var(--brand)] shadow-[0_8px_24px_rgba(0,0,0,0.16)] transition-[transform,background-color,border-color] duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-[var(--card-elev)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:bottom-6 sm:right-6"
       >
-        <span className="relative flex h-6 w-6 items-center justify-center">
-          <LifeBuoy className="h-5 w-5 text-emerald-300" aria-hidden="true" />
-          <span className="quick-assist-ping absolute inset-0 rounded-full" aria-hidden="true" />
+        <LifeBuoy className="h-5 w-5" aria-hidden="true" />
+        <span
+          className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-[var(--line-2)] bg-[var(--background)] px-1 text-[8px] font-extrabold leading-none text-[var(--brand)] shadow-sm"
+          aria-hidden="true"
+        >
+          AI
         </span>
-        <span className="text-xs font-semibold tracking-wide">Page help</span>
       </button>
 
       {open && (
