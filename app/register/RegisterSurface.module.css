@@ -1,0 +1,397 @@
+.registerSurface {
+  min-height: 100%;
+}
+
+/*
+ * Register is intentionally more cinematic than the rest of the public site,
+ * but every functional surface still follows the global Aether theme tokens.
+ * The background artwork remains visible in both themes while the foreground
+ * glass, typography and controls adapt for contrast.
+ */
+
+:global(html[data-theme="light"]) .registerSurface :global(.reg-bg) {
+  color: var(--foreground);
+}
+
+:global(html[data-theme="light"]) .registerSurface :global(.reg-bg) > div:first-child {
+  background:
+    linear-gradient(
+      115deg,
+      rgba(244, 250, 246, .88),
+      rgba(236, 247, 240, .66) 52%,
+      rgba(225, 241, 230, .76)
+    ) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface :global(.reg-bg) > :global(.z-10) {
+  border-color: color-mix(in srgb, var(--brand) 18%, var(--line-2)) !important;
+  background:
+    linear-gradient(
+      140deg,
+      color-mix(in srgb, var(--glass-fill) 76%, transparent),
+      color-mix(in srgb, var(--card) 58%, transparent)
+    ) !important;
+  box-shadow:
+    0 30px 85px -38px color-mix(in srgb, var(--foreground) 24%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, .62) !important;
+}
+
+/* Translate dark-only Tailwind utility colours into the public theme tokens. */
+:global(html[data-theme="light"]) .registerSurface [class*="text-white"] {
+  color: var(--foreground) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface [class*="text-lime-2"],
+:global(html[data-theme="light"]) .registerSurface [class*="text-lime-3"] {
+  color: var(--brand-deep) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface [class*="border-white"] {
+  border-color: var(--line-2) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface [class*="bg-black"] {
+  background-color: color-mix(in srgb, var(--glass-fill) 80%, transparent) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface [class*="bg-white"] {
+  background-color: color-mix(in srgb, var(--card) 72%, transparent) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface aside > div:nth-of-type(3) > div {
+  border-color: color-mix(in srgb, var(--brand) 18%, var(--line-2)) !important;
+  background: color-mix(in srgb, var(--glass-fill) 82%, transparent) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5);
+}
+
+:global(html[data-theme="light"]) .registerSurface section {
+  border-color: color-mix(in srgb, var(--brand) 18%, var(--line-2)) !important;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--glass-fill) 96%, transparent),
+      color-mix(in srgb, var(--card) 92%, var(--brand-soft) 8%)
+    ) !important;
+  box-shadow:
+    0 24px 62px color-mix(in srgb, var(--foreground) 12%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, .72) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface section > div:first-child {
+  border-color: color-mix(in srgb, var(--brand) 18%, var(--line-2)) !important;
+  background: color-mix(in srgb, var(--brand-soft) 72%, transparent) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface input:not([type="hidden"]):not([type="checkbox"]) {
+  color: var(--foreground) !important;
+  border-color: var(--line-2) !important;
+  background: color-mix(in srgb, var(--card) 92%, transparent) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .62);
+}
+
+:global(html[data-theme="light"]) .registerSurface input:not([type="hidden"]):not([type="checkbox"])::placeholder {
+  color: var(--muted-2) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface input:not([type="hidden"]):not([type="checkbox"]):focus {
+  border-color: color-mix(in srgb, var(--brand) 58%, var(--line-2)) !important;
+  background: var(--card) !important;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--brand) 12%, transparent),
+    0 10px 28px color-mix(in srgb, var(--brand) 7%, transparent);
+}
+
+:global(html[data-theme="light"]) .registerSurface input[type="checkbox"] {
+  border-color: var(--line-2) !important;
+  background-color: color-mix(in srgb, var(--card) 92%, transparent) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface input[type="checkbox"]:checked {
+  border-color: var(--brand) !important;
+  background-color: var(--brand) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface form > button[type="submit"] {
+  color: #fff !important;
+  border-color: color-mix(in srgb, white 30%, transparent) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface form > div:nth-last-of-type(2) > a,
+:global(html[data-theme="light"]) .registerSurface form > div:nth-last-of-type(2) > button {
+  color: var(--foreground) !important;
+  border-color: var(--line-2) !important;
+  background: color-mix(in srgb, var(--card) 88%, transparent) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface form > div:nth-last-of-type(2) > a:hover,
+:global(html[data-theme="light"]) .registerSurface form > div:nth-last-of-type(2) > button:hover {
+  background: var(--card-elev) !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface [role="alert"] {
+  border-color: rgba(190, 18, 60, .2) !important;
+  background: rgba(244, 63, 94, .08) !important;
+  color: #9f1239 !important;
+}
+
+:global(html[data-theme="light"]) .registerSurface [role="status"] {
+  border-color: color-mix(in srgb, var(--brand) 24%, var(--line-2)) !important;
+  background: color-mix(in srgb, var(--brand-soft) 72%, transparent) !important;
+  color: var(--brand-deep) !important;
+}
+
+/* Keep the original dark composition, with a restrained contrast lift. */
+:global(html[data-theme="dark"]) .registerSurface :global(.border-white\/35) {
+  border-color: rgba(255, 255, 255, .48) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface :global(.border-white\/25) {
+  border-color: rgba(255, 255, 255, .34) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface :global(.border-white\/15) {
+  border-color: rgba(255, 255, 255, .22) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface :global(.text-white\/70) {
+  color: rgba(255, 255, 255, .78) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface :global(.text-white\/65) {
+  color: rgba(255, 255, 255, .72) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface :global(.text-white\/60) {
+  color: rgba(255, 255, 255, .70) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface :global(.text-white\/55) {
+  color: rgba(255, 255, 255, .63) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface :global(.text-white\/40) {
+  color: rgba(255, 255, 255, .50) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface input::placeholder {
+  color: rgba(255, 255, 255, .42) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface input:not([type="checkbox"]) {
+  background-color: rgba(2, 18, 10, .24) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface section {
+  background: linear-gradient(145deg, rgba(255, 255, 255, .16), rgba(19, 55, 36, .38)) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface section :global(.bg-lime-400\/5) {
+  background-color: rgba(163, 230, 53, .08) !important;
+}
+
+:global(html[data-theme="dark"]) .registerSurface button:not(:disabled):not([type="button"]),
+:global(html[data-theme="dark"]) .registerSurface a[href^="/api/auth/google"] {
+  filter: saturate(1.04);
+}
+
+/* Mobile: use the phone viewport rather than desktop gutters/min-heights. */
+@media (max-width: 767px) {
+  .registerSurface :global(.reg-bg) {
+    min-height: 100dvh !important;
+    padding: max(12px, env(safe-area-inset-top)) 0 max(22px, env(safe-area-inset-bottom)) !important;
+    overflow-x: hidden !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) {
+    width: calc(100% - 24px) !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    border-radius: 20px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div {
+    min-height: 0 !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside {
+    min-height: 0 !important;
+    padding: 22px 20px 20px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:first-of-type {
+    margin-top: 26px !important;
+    gap: 10px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:first-of-type > span:first-child {
+    width: 100% !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:first-of-type > div {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(2) {
+    margin-top: 34px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(2) h2 {
+    max-width: 100% !important;
+    font-size: clamp(38px, 11vw, 48px) !important;
+    line-height: .94 !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(2) p {
+    margin-top: 18px !important;
+    max-width: 100% !important;
+    font-size: 13px !important;
+    line-height: 1.55 !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(3) {
+    margin-top: 24px !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(3) > div {
+    min-height: 104px !important;
+    padding: 10px !important;
+    border-radius: 15px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(3) > div > span {
+    width: 34px !important;
+    height: 34px !important;
+    margin-bottom: 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(3) > div > span svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(3) h3 {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(3) p {
+    display: none !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(4) {
+    display: none !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > div:last-child {
+    min-height: 0 !important;
+    padding: 18px 18px 20px !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > div:last-child > section {
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 19px !important;
+    padding: 20px 18px 18px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > div:last-child > section > div:first-child {
+    margin-bottom: 15px !important;
+    padding: 9px 12px !important;
+    text-align: center !important;
+    justify-content: center !important;
+    line-height: 1.35 !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > div:last-child h1 {
+    font-size: 25px !important;
+    line-height: 1.05 !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > div:last-child p {
+    font-size: 12px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > div:last-child form {
+    margin-top: 18px !important;
+    gap: 14px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) input:not([type="checkbox"]) {
+    height: 56px !important;
+    min-height: 56px !important;
+    font-size: 13px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) label > span:first-child {
+    margin-bottom: 6px !important;
+    font-size: 10px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) :global(.text-white\/65) {
+    font-size: 12px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) form > button[type="submit"] {
+    height: 54px !important;
+    min-height: 54px !important;
+    font-size: 16px !important;
+    gap: 12px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) form > div:last-of-type a,
+  .registerSurface :global(.reg-bg) > :global(.z-10) form > div:last-of-type button {
+    min-height: 52px !important;
+    height: 52px !important;
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .registerSurface :global(.reg-bg) > :global(.z-10) {
+    width: calc(100% - 16px) !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(3) > div {
+    min-height: 96px !important;
+    padding: 8px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > aside > div:nth-of-type(3) h3 {
+    font-size: 9px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > div:last-child {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .registerSurface :global(.reg-bg) > :global(.z-10) > div > div:last-child > section {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .registerSurface *,
+  .registerSurface *::before,
+  .registerSurface *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+}
