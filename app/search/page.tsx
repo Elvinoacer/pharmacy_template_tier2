@@ -25,9 +25,6 @@ export default async function SearchPage({ searchParams }: Props) {
   const base = `/p/${pharmacy.slug}`;
   const { q } = await searchParams;
 
-  // Live tenant catalogue + network editorial content. Queries are
-  // tenant-scoped by the Prisma extension, so only this pharmacy's rows
-  // are searched.
   const [services, vaccines, medicines, categories] = await Promise.all([
     listPublicServices().catch(() => []),
     listPublicVaccines().catch(() => []),
@@ -83,16 +80,16 @@ export default async function SearchPage({ searchParams }: Props) {
   };
 
   return (
-    <div>
+    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Search"
         title={`Search ${pharmacy.name}`}
-        description="This pharmacy's medicines, services and vaccines, plus network health articles and FAQs."
+        description="Search this pharmacy's medicines, services and vaccines, plus network health articles and FAQs."
         crumbs={[{ label: "Search" }]}
       />
 
-      <section className="px-4 pb-20 sm:px-6">
-        <div className="mx-auto max-w-3xl">
+      <section className="px-3 pb-16 sm:px-6 sm:pb-20">
+        <div className="mx-auto w-full max-w-3xl min-w-0">
           <SearchPanel base={base} corpus={corpus} initial={initial} initialQuery={q || ""} />
         </div>
       </section>
