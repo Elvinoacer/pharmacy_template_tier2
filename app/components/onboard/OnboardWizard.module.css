@@ -112,6 +112,19 @@
   border-color: color-mix(in srgb, var(--brand) 30%, var(--line-2)) !important;
 }
 
+:global(html[data-theme="dark"]) .onboardPage [class*="bg-emerald-50"] {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .onboardPage [class*="text-emerald-700"],
+:global(html[data-theme="dark"]) .onboardPage [class*="text-emerald-800"] {
+  color: #a7f3d0 !important;
+}
+
+:global(html[data-theme="dark"]) .onboardPage [class*="border-emerald-200"] {
+  border-color: rgba(52, 211, 153, 0.28) !important;
+}
+
 :global(html[data-theme="dark"]) .onboardPage [class*="bg-rose-50"] {
   background-color: rgba(127, 29, 29, 0.18) !important;
 }
