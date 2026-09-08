@@ -33,6 +33,11 @@ type Props = {
   defaultEmail?: string;
 };
 
+const labelClass =
+  "mb-1.5 flex min-w-0 flex-wrap items-center gap-1.5 text-xs font-semibold text-[var(--foreground)]";
+const fieldClass =
+  "w-full min-w-0 rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[var(--brand-soft)] sm:text-sm";
+
 export function ServiceBookingForm({
   serviceId,
   serviceTitle,
@@ -121,15 +126,12 @@ export function ServiceBookingForm({
     }
   }
 
-  // Success states
   if (state?.success && state.bookingId) {
     return (
-      <div className="space-y-4">
+      <div className="min-w-0 space-y-4">
         <div
-          className={`rounded-2xl border p-6 text-center ${
-            state.requiresPayment
-              ? "border-amber-200 bg-amber-50/80"
-              : "border-emerald-200 bg-emerald-50/80"
+          className={`rounded-2xl border bg-[var(--card-elev)] p-4 text-center sm:p-6 ${
+            state.requiresPayment ? "border-amber-500/35" : "border-emerald-500/35"
           }`}
         >
           <div
@@ -138,36 +140,35 @@ export function ServiceBookingForm({
             }`}
           >
             {state.requiresPayment ? (
-              <Smartphone className="h-6 w-6" />
+              <Smartphone className="h-6 w-6" aria-hidden="true" />
             ) : (
-              <Check className="h-6 w-6" />
+              <Check className="h-6 w-6" aria-hidden="true" />
             )}
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-[#0c1a14]">
+          <h3 className="mt-4 text-lg font-semibold text-[var(--foreground)]">
             {state.requiresPayment ? "Almost there — pay to confirm" : "Booking received"}
           </h3>
-          <p className="mt-2 text-sm text-[#5a6b62]">{state.success}</p>
-          <p className="mt-3 font-mono text-sm font-bold text-teal-800">
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{state.success}</p>
+          <p className="mt-3 break-all font-mono text-sm font-bold text-[var(--brand)]">
             Ref: {state.bookingId.slice(0, 8).toUpperCase()}
           </p>
           {state.amount != null && state.amount > 0 && (
-            <p className="mt-1 text-sm font-semibold text-[#0c1a14]">
+            <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">
               KES {state.amount.toLocaleString()}
             </p>
           )}
         </div>
 
         {state.requiresPayment && state.orderId && (
-          <div className="rounded-2xl border border-[#e3ebe6] bg-white p-5">
-            <h4 className="flex items-center gap-2 text-sm font-semibold text-[#0c1a14]">
-              <ShieldCheck className="h-4 w-4 text-[#0d6e5a]" />
+          <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 sm:p-5">
+            <h4 className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
+              <ShieldCheck className="h-4 w-4 text-[var(--brand)]" aria-hidden="true" />
               Confirm with M-Pesa
             </h4>
-            <p className="mt-1 text-xs text-[#5a6b62]">
-              Your slot is held only after payment succeeds. Use the same phone you entered
-              on the form.
+            <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+              Your slot is held only after payment succeeds. Use the same phone you entered on the form.
             </p>
-            <div className="mt-3">
+            <div className="mt-3 min-w-0">
               <MpesaPayButton
                 orderId={state.orderId}
                 defaultPhone={state.phone || defaultPhone}
@@ -178,24 +179,23 @@ export function ServiceBookingForm({
         )}
 
         {!state.requiresPayment && (
-          <p className="rounded-2xl border border-teal-100 bg-[#f0faf6] p-4 text-sm text-[#5a6b62]">
+          <p className="rounded-2xl border border-[var(--line-2)] bg-[var(--brand-tint)] p-4 text-sm leading-6 text-[var(--muted)]">
             No payment is required for this service. Our team will contact you on{" "}
-            <strong className="text-[#0c1a14]">{state.phone || defaultPhone}</strong> to
-            finalise timing.
+            <strong className="break-words text-[var(--foreground)]">{state.phone || defaultPhone}</strong> to finalise timing.
           </p>
         )}
 
         {pushStatus === "on" ? (
-          <p className="flex items-center justify-center gap-1.5 text-xs text-emerald-700">
-            <Bell className="h-3.5 w-3.5" /> Push updates enabled for this booking
+          <p className="flex items-center justify-center gap-1.5 text-xs text-[var(--brand)]">
+            <Bell className="h-3.5 w-3.5" aria-hidden="true" /> Push updates enabled for this booking
           </p>
         ) : pushStatus !== "unsupported" && pushStatus !== "denied" ? (
           <button
             type="button"
             onClick={enablePush}
-            className="mx-auto flex items-center gap-1.5 text-xs font-semibold text-teal-800 hover:underline"
+            className="mx-auto flex min-h-10 items-center gap-1.5 text-xs font-semibold text-[var(--brand)] hover:underline"
           >
-            <Bell className="h-3.5 w-3.5" /> Enable push updates
+            <Bell className="h-3.5 w-3.5" aria-hidden="true" /> Enable push updates
           </button>
         ) : null}
       </div>
@@ -203,113 +203,108 @@ export function ServiceBookingForm({
   }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="min-w-0 space-y-4">
       <input type="hidden" name="serviceId" value={serviceId} />
       <input type="hidden" name="pushToken" value={pushToken} />
 
-      <div>
-        <label htmlFor={`${fieldPrefix}-name`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
-          <User className="h-3.5 w-3.5 text-teal-700" /> Full name *
+      <div className="min-w-0">
+        <label htmlFor={`${fieldPrefix}-name`} className={labelClass}>
+          <User className="h-3.5 w-3.5 text-[var(--brand)]" aria-hidden="true" /> Full name *
         </label>
         <input
           id={`${fieldPrefix}-name`}
           name="fullName"
           required
+          autoComplete="name"
           defaultValue={defaultName}
           placeholder="Jane Wanjiku"
-          className="w-full rounded-xl border border-[#d7e3dc] bg-white px-3.5 py-2.5 text-sm outline-none ring-teal-700/20 focus:ring-2"
+          className={fieldClass}
         />
       </div>
 
-      <div>
-        <label htmlFor={`${fieldPrefix}-phone`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
-          <Phone className="h-3.5 w-3.5 text-teal-700" /> Phone *{" "}
-          <span className="font-normal text-[#5a6b62]">(required for confirmation)</span>
+      <div className="min-w-0">
+        <label htmlFor={`${fieldPrefix}-phone`} className={labelClass}>
+          <Phone className="h-3.5 w-3.5 text-[var(--brand)]" aria-hidden="true" /> Phone *{" "}
+          <span className="font-normal text-[var(--muted)]">(required for confirmation)</span>
         </label>
         <input
           id={`${fieldPrefix}-phone`}
           name="phone"
           type="tel"
           required
+          autoComplete="tel"
           defaultValue={defaultPhone}
-          placeholder="07XX XXX XXX"
-          className="w-full rounded-xl border border-[#d7e3dc] bg-white px-3.5 py-2.5 text-sm outline-none ring-teal-700/20 focus:ring-2"
+          placeholder="+254 700 000 000"
+          className={fieldClass}
         />
-        <p className="mt-1 text-[11px] text-[#5a6b62]">
+        <p className="mt-1 text-[11px] leading-4 text-[var(--muted)]">
           {requiresPayment
             ? "We’ll STK-push M-Pesa to this number to confirm your booking."
             : "We’ll call or WhatsApp this number about your visit."}
         </p>
       </div>
 
-      <div>
-        <label htmlFor={`${fieldPrefix}-email`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
-          <Mail className="h-3.5 w-3.5 text-teal-700" /> Email{" "}
-          <span className="font-normal text-[#5a6b62]">(optional)</span>
+      <div className="min-w-0">
+        <label htmlFor={`${fieldPrefix}-email`} className={labelClass}>
+          <Mail className="h-3.5 w-3.5 text-[var(--brand)]" aria-hidden="true" /> Email{" "}
+          <span className="font-normal text-[var(--muted)]">(optional)</span>
         </label>
         <input
           id={`${fieldPrefix}-email`}
           name="email"
           type="email"
+          autoComplete="email"
           defaultValue={defaultEmail}
           placeholder="you@example.com"
-          className="w-full rounded-xl border border-[#d7e3dc] bg-white px-3.5 py-2.5 text-sm outline-none ring-teal-700/20 focus:ring-2"
+          className={fieldClass}
         />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div>
-          <label htmlFor={`${fieldPrefix}-date`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
-            <Calendar className="h-3.5 w-3.5 text-teal-700" /> Preferred date
+      <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+        <div className="min-w-0">
+          <label htmlFor={`${fieldPrefix}-date`} className={labelClass}>
+            <Calendar className="h-3.5 w-3.5 text-[var(--brand)]" aria-hidden="true" /> Preferred date
           </label>
           <input
             id={`${fieldPrefix}-date`}
             name="preferredDate"
             type="date"
-            className="w-full rounded-xl border border-[#d7e3dc] bg-white px-3.5 py-2.5 text-sm outline-none ring-teal-700/20 focus:ring-2"
+            className={fieldClass}
           />
         </div>
-        <div>
-          <label htmlFor={`${fieldPrefix}-time`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
-            <Clock className="h-3.5 w-3.5 text-teal-700" /> Preferred time
+        <div className="min-w-0">
+          <label htmlFor={`${fieldPrefix}-time`} className={labelClass}>
+            <Clock className="h-3.5 w-3.5 text-[var(--brand)]" aria-hidden="true" /> Preferred time
           </label>
           <input
             id={`${fieldPrefix}-time`}
             name="preferredTime"
             type="text"
             placeholder="e.g. Morning, 2pm"
-            className="w-full rounded-xl border border-[#d7e3dc] bg-white px-3.5 py-2.5 text-sm outline-none ring-teal-700/20 focus:ring-2"
+            className={fieldClass}
           />
         </div>
       </div>
 
-      <div>
-        <label htmlFor={`${fieldPrefix}-notes`} className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[#0c1a14]">
-          <MessageSquare className="h-3.5 w-3.5 text-teal-700" /> Notes{" "}
-          <span className="font-normal text-[#5a6b62]">(optional)</span>
+      <div className="min-w-0">
+        <label htmlFor={`${fieldPrefix}-notes`} className={labelClass}>
+          <MessageSquare className="h-3.5 w-3.5 text-[var(--brand)]" aria-hidden="true" /> Notes{" "}
+          <span className="font-normal text-[var(--muted)]">(optional)</span>
         </label>
         <textarea
           id={`${fieldPrefix}-notes`}
           name="notes"
           rows={3}
           placeholder="Anything we should know before your visit…"
-          className="w-full resize-y rounded-xl border border-[#d7e3dc] bg-white px-3.5 py-2.5 text-sm outline-none ring-teal-700/20 focus:ring-2"
+          className={`${fieldClass} resize-y`}
         />
       </div>
 
-      <div
-        className={`rounded-xl border px-3.5 py-3 text-sm ${
-          requiresPayment
-            ? "border-teal-200 bg-teal-50/70 text-[#0c1a14]"
-            : "border-[#e3ebe6] bg-[#f7faf8] text-[#5a6b62]"
-        }`}
-      >
+      <div className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-sm text-[var(--muted)]">
         {requiresPayment ? (
           <>
-            <span className="font-semibold">KES {price!.toLocaleString()}</span>
-            <span className="ml-1.5 text-xs">
-              — payment confirms your {serviceTitle} booking
-            </span>
+            <span className="font-semibold text-[var(--foreground)]">KES {price!.toLocaleString()}</span>
+            <span className="ml-1.5 text-xs leading-5">— payment confirms your {serviceTitle} booking</span>
           </>
         ) : (
           <>No fixed fee listed — book freely and settle any charges in person if needed.</>
@@ -320,9 +315,9 @@ export function ServiceBookingForm({
         <button
           type="button"
           onClick={enablePush}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-teal-300/60 bg-white px-3 py-2.5 text-xs font-semibold text-teal-800 transition hover:bg-teal-50"
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--line-2)] bg-[var(--card-elev)] px-3 py-2.5 text-xs font-semibold text-[var(--brand)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
         >
-          <Bell className="h-3.5 w-3.5" />
+          <Bell className="h-3.5 w-3.5" aria-hidden="true" />
           {pushStatus === "requesting"
             ? "Enabling notifications…"
             : pushStatus === "denied"
@@ -331,13 +326,13 @@ export function ServiceBookingForm({
         </button>
       )}
       {pushStatus === "on" && (
-        <p className="flex items-center gap-1.5 text-xs text-emerald-700">
-          <Bell className="h-3.5 w-3.5" /> Push updates on — we’ll notify you about this booking
+        <p className="flex items-center gap-1.5 text-xs leading-5 text-[var(--brand)]">
+          <Bell className="h-3.5 w-3.5" aria-hidden="true" /> Push updates on — we’ll notify you about this booking
         </p>
       )}
 
       {state?.error && (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-xl border border-rose-500/30 bg-[var(--card-elev)] px-3 py-2.5 text-sm leading-5 text-rose-500" role="alert">
           {state.error}
         </p>
       )}
@@ -345,12 +340,12 @@ export function ServiceBookingForm({
       <button
         type="submit"
         disabled={pending}
-        className="btn-primary flex w-full items-center justify-center gap-2 !py-3 text-sm disabled:opacity-60"
+        className="btn-primary flex min-h-12 w-full items-center justify-center gap-2 !py-3 text-sm disabled:opacity-60"
       >
         {pending ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
         ) : (
-          <Send className="h-4 w-4" />
+          <Send className="h-4 w-4" aria-hidden="true" />
         )}
         {requiresPayment ? "Request & pay to confirm" : "Submit booking"}
       </button>
