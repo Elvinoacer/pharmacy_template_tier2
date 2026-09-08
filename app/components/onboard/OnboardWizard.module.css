@@ -1,12 +1,26 @@
-/* Mobile-first polish for the pharmacy onboarding wizard. */
-.onboardForm {
+/* Mobile-first, theme-adaptive polish for pharmacy onboarding. */
+.onboardPage {
   min-width: 0;
+  background:
+    radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--brand-soft) 42%, transparent), transparent 34rem),
+    var(--background);
 }
 
-.onboardForm :global(.input-admin) {
+.onboardForm {
+  min-width: 0;
+  color: var(--foreground);
+  border-color: var(--line-2) !important;
+  background: color-mix(in srgb, var(--card) 96%, transparent) !important;
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--foreground) 8%, transparent) !important;
+}
+
+.onboardPage :global(.input-admin) {
   min-height: 48px;
   width: 100%;
   min-width: 0;
+  border-color: var(--line-2) !important;
+  background: var(--card-elev) !important;
+  color: var(--foreground) !important;
   font-size: 1rem;
   line-height: 1.4;
   padding: 0.75rem 0.875rem;
@@ -14,54 +28,159 @@
   appearance: none;
 }
 
-.onboardForm :global(textarea.input-admin) {
+.onboardPage :global(.input-admin)::placeholder {
+  color: var(--muted-2) !important;
+  opacity: 1;
+}
+
+.onboardPage :global(.input-admin):focus {
+  border-color: color-mix(in srgb, var(--brand) 62%, var(--line-2)) !important;
+  background: var(--card) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent) !important;
+}
+
+.onboardPage :global(textarea.input-admin) {
   min-height: 120px;
   resize: vertical;
 }
 
-.onboardForm :global(.btn-primary),
-.onboardForm :global(.btn-ghost) {
+.onboardPage :global(.btn-primary),
+.onboardPage :global(.btn-ghost) {
   min-height: 48px;
   touch-action: manipulation;
 }
 
-.onboardForm :global(.btn-primary):focus-visible,
-.onboardForm :global(.btn-ghost):focus-visible,
-.onboardForm :global(.input-admin):focus-visible {
-  outline: 3px solid rgba(13, 110, 90, 0.22);
+.onboardPage :global(.btn-ghost) {
+  border-color: var(--line-2) !important;
+  background: var(--card-elev) !important;
+  color: var(--foreground) !important;
+}
+
+.onboardPage :global(.btn-primary):focus-visible,
+.onboardPage :global(.btn-ghost):focus-visible,
+.onboardPage :global(.input-admin):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand) 22%, transparent);
   outline-offset: 2px;
 }
 
-.onboardForm :global(.input-admin):disabled,
-.onboardForm :global(button:disabled) {
+.onboardPage :global(.input-admin):disabled,
+.onboardPage :global(button:disabled) {
   cursor: not-allowed;
 }
 
+/* Translate legacy light-only utility colours inside the wizard into public theme tokens. */
+.onboardPage [class*="text-[#0c1a14]"] {
+  color: var(--foreground) !important;
+}
+
+.onboardPage [class*="text-[#5a6b62]"],
+.onboardPage [class*="text-[#7a8b84]"] {
+  color: var(--muted) !important;
+}
+
+.onboardPage [class*="text-[#0d6e5a]"],
+.onboardPage [class*="text-[#084c3f]"] {
+  color: var(--brand) !important;
+}
+
+.onboardPage [class*="bg-white"] {
+  background-color: var(--card) !important;
+}
+
+.onboardPage [class*="bg-slate-100"],
+.onboardPage [class*="bg-slate-50"] {
+  background-color: var(--card-elev) !important;
+}
+
+.onboardPage [class*="bg-teal-50"] {
+  background-color: var(--brand-tint) !important;
+}
+
+.onboardPage [class*="border-teal-900"],
+.onboardPage [class*="border-[#dcebe5]"] {
+  border-color: var(--line-2) !important;
+}
+
+.onboardPage code {
+  background: var(--card-elev) !important;
+  color: var(--foreground) !important;
+}
+
+/* Status panels should remain readable in both themes. */
+:global(html[data-theme="dark"]) .onboardPage [class*="from-emerald-50"] {
+  background: color-mix(in srgb, var(--card) 90%, var(--brand-soft) 10%) !important;
+  border-color: color-mix(in srgb, var(--brand) 30%, var(--line-2)) !important;
+}
+
+:global(html[data-theme="dark"]) .onboardPage [class*="bg-rose-50"] {
+  background-color: rgba(127, 29, 29, 0.18) !important;
+}
+
+:global(html[data-theme="dark"]) .onboardPage [class*="text-rose-950"],
+:global(html[data-theme="dark"]) .onboardPage [class*="text-rose-800"],
+:global(html[data-theme="dark"]) .onboardPage [class*="text-rose-700"] {
+  color: #fecdd3 !important;
+}
+
+:global(html[data-theme="dark"]) .onboardPage [class*="border-rose-200"] {
+  border-color: rgba(251, 113, 133, 0.3) !important;
+}
+
 @media (max-width: 639px) {
+  .onboardPage {
+    background:
+      radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--brand-soft) 34%, transparent), transparent 22rem),
+      var(--background);
+  }
+
   .onboardForm {
     overflow: hidden;
+    border-radius: 20px !important;
+    padding: 16px !important;
   }
 
-  .onboardForm :global(.input-admin) {
-    /* 16px avoids mobile browser zoom while keeping fields comfortably readable. */
+  .onboardPage :global(.input-admin) {
+    /* 16px prevents browser zoom while keeping fields comfortable to edit. */
+    min-height: 50px;
     font-size: 16px;
+    border-radius: 12px;
   }
 
-  .onboardForm :global(.btn-primary),
-  .onboardForm :global(.btn-ghost) {
+  .onboardPage :global(textarea.input-admin) {
+    min-height: 112px;
+  }
+
+  .onboardPage :global(.btn-primary),
+  .onboardPage :global(.btn-ghost) {
     width: 100%;
+    min-height: 50px;
+  }
+
+  .onboardForm form {
+    min-width: 0;
+  }
+
+  .onboardForm label,
+  .onboardForm p,
+  .onboardForm div {
+    min-width: 0;
+  }
+
+  .onboardForm [class*="tracking-[0.2em]"] {
+    letter-spacing: 0.14em !important;
   }
 }
 
 @media (min-width: 640px) {
-  .onboardForm :global(.input-admin) {
+  .onboardPage :global(.input-admin) {
     font-size: 0.9375rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .onboardForm :global(.input-admin),
-  .onboardForm :global(button) {
-    transition: none;
+  .onboardPage :global(.input-admin),
+  .onboardPage :global(button) {
+    transition: none !important;
+    animation: none !important;
   }
 }
