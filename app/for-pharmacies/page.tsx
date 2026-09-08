@@ -123,29 +123,38 @@ export default function ForPharmaciesPage() {
             </ul>
           </div>
 
-          <aside className="min-w-0 rounded-[1.35rem] border border-[var(--line-2)] bg-[var(--brand-deep)] p-5 text-white shadow-md sm:rounded-3xl sm:p-8">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 sm:h-11 sm:w-11">
-              <Shield className="h-5 w-5 text-teal-100 sm:h-6 sm:w-6" aria-hidden />
-            </span>
-            <p
-              className="mt-4 text-[1.05rem] font-semibold leading-snug sm:text-lg"
-              style={{ fontFamily: "var(--font-display), serif" }}
-            >
-              Verification is the gate
-            </p>
-            <p className="mt-2 text-[12.5px] leading-5 text-white/80 sm:text-sm sm:leading-relaxed">
+          <aside
+            className="min-w-0 overflow-hidden rounded-[1.1rem] border border-white/10 p-4 text-white shadow-md sm:rounded-3xl sm:p-7"
+            style={{
+              background:
+                "linear-gradient(145deg, #084c3f 0%, #073a32 58%, #062f29 100%)",
+            }}
+          >
+            <div className="flex min-w-0 items-center gap-3 sm:block">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[0.8rem] bg-white/10 sm:h-11 sm:w-11 sm:rounded-xl">
+                <Shield className="h-[18px] w-[18px] text-teal-100 sm:h-6 sm:w-6" aria-hidden />
+              </span>
+              <p
+                className="min-w-0 break-words text-[15px] font-semibold leading-tight sm:mt-4 sm:text-lg sm:leading-snug"
+                style={{ fontFamily: "var(--font-display), serif" }}
+              >
+                Verification is the gate
+              </p>
+            </div>
+
+            <p className="mt-3 text-[11.5px] leading-[1.6] text-white/80 sm:mt-2 sm:text-sm sm:leading-relaxed">
               Draft applications are invisible to patients. Super-admins review licence
               documents, flag duplicates, and only then can you go live. Suspended
               pharmacies drop off the marketplace immediately.
             </p>
 
-            <div className="mt-5 grid gap-2.5 sm:mt-6">
-              <div className="flex min-w-0 items-start gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-100 sm:text-xs sm:tracking-wide">
-                <ClipboardList className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            <div className="mt-4 grid gap-2 sm:mt-6 sm:gap-2.5">
+              <div className="flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2 text-[10.5px] font-semibold leading-4 text-teal-100 sm:items-start sm:rounded-2xl sm:px-3 sm:py-2.5 sm:text-xs sm:uppercase sm:tracking-wide">
+                <ClipboardList className="h-3.5 w-3.5 shrink-0 sm:mt-0.5 sm:h-4 sm:w-4" aria-hidden />
                 <span className="min-w-0 break-words">Typical review: 1–2 business days</span>
               </div>
-              <div className="flex min-w-0 items-start gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-200 sm:text-xs sm:tracking-wide">
-                <Sparkles className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+              <div className="flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2 text-[10.5px] font-semibold leading-4 text-amber-200 sm:items-start sm:rounded-2xl sm:px-3 sm:py-2.5 sm:text-xs sm:uppercase sm:tracking-wide">
+                <Sparkles className="h-3.5 w-3.5 shrink-0 sm:mt-0.5 sm:h-4 sm:w-4" aria-hidden />
                 <span className="min-w-0 break-words">Setup wizard after approval</span>
               </div>
             </div>
