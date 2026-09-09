@@ -2,7 +2,12 @@ import "server-only";
 
 import { cookies, headers } from "next/headers";
 import { cache } from "react";
-import { prismaUnscoped } from "@/app/lib/db/prisma";
+import {
+  findNetworkPharmacyById,
+  findNetworkPharmacyBySlug,
+  listNetworkMarketplacePharmacies,
+  type NetworkPublicPharmacy,
+} from "@/app/lib/db/network-pharmacy";
 import { DEFAULT_PHARMACY_ID, DEFAULT_PHARMACY_SLUG } from "@/app/lib/tenant-models";
 import {
   failClosedId,
@@ -26,90 +31,30 @@ export {
 };
 export type { TenantStore };
 
-export type PublicPharmacy = {
-  id: string;
-  slug: string;
-  name: string;
-  tagline: string | null;
-  description: string | null;
-  status: string;
-  listed: boolean;
-  featured: boolean;
-  email: string | null;
-  phone: string | null;
-  whatsapp: string | null;
-  city: string | null;
-  county: string | null;
-  country: string;
-  latitude: number | null;
-  longitude: number | null;
-  logoUrl: string | null;
-  coverImageUrl: string | null;
-  setupCompletedAt: Date | null;
-};
-
-const PHARMACY_SELECT = {
-  id: true,
-  slug: true,
-  name: true,
-  tagline: true,
-  description: true,
-  status: true,
-  listed: true,
-  featured: true,
-  email: true,
-  phone: true,
-  whatsapp: true,
-  city: true,
-  county: true,
-  country: true,
-  latitude: true,
-  longitude: true,
-  logoUrl: true,
-  coverImageUrl: true,
-  setupCompletedAt: true,
-} as const;
+export type PublicPharmacy = NetworkPublicPharmacy;
 
 /**
  * Pharmacy identity is network-level data used to establish the tenant itself.
- * These reads must not ask the RLS pool to resolve the tenant again, otherwise
- * the call chain becomes getTenant -> pharmacy lookup -> resolveRlsScope ->
- * getTenant and can wait on its own in-flight promise until the serverless
- * function times out.
- *
- * Use the tenant-context helper rather than a bare `tenantAls.run()`. The helper
- * binds both native AsyncLocalStorage and the async-resource fallback used by
- * Prisma/pg boundaries, so the RLS wrapper continues to see platform bypass
- * while the network-level pharmacy lookup is in flight.
+ * It must never be resolved through the tenant RLS pool: that creates the
+ * circular chain getTenant -> pharmacy lookup -> resolveRlsScope -> getTenant.
+ * The dedicated read-only network helper talks only to `pharmacies` and has no
+ * dependency on tenant context.
  */
-function networkPharmacyLookup<T>(fn: () => Promise<T>): Promise<T> {
-  return withPlatformBypass(fn);
-}
-
 export async function findPharmacyBySlug(slug: string): Promise<PublicPharmacy | null> {
   const normalized = slug.trim().toLowerCase();
   if (!normalized) return null;
   try {
-    return await networkPharmacyLookup(() =>
-      prismaUnscoped.pharmacy.findUnique({
-        where: { slug: normalized },
-        select: PHARMACY_SELECT,
-      }),
-    );
+    return await findNetworkPharmacyBySlug(normalized);
   } catch {
     return null;
   }
 }
 
 export async function findPharmacyById(id: string): Promise<PublicPharmacy | null> {
-  if (!id) return null;
+  const normalized = id.trim();
+  if (!normalized) return null;
   try {
-    return await networkPharmacyLookup(() =>
-      prismaUnscoped.pharmacy.findUnique({
-        where: { id },
-        select: PHARMACY_SELECT,
-      }),
-    );
+    return await findNetworkPharmacyById(normalized);
   } catch {
     return null;
   }
@@ -121,28 +66,7 @@ export async function listMarketplacePharmacies(opts?: {
   county?: string;
 }): Promise<PublicPharmacy[]> {
   try {
-    return await networkPharmacyLookup(() =>
-      prismaUnscoped.pharmacy.findMany({
-        where: {
-          status: "active",
-          listed: true,
-          ...(opts?.city ? { city: { equals: opts.city, mode: "insensitive" } } : {}),
-          ...(opts?.county ? { county: { equals: opts.county, mode: "insensitive" } } : {}),
-          ...(opts?.q
-            ? {
-                OR: [
-                  { name: { contains: opts.q, mode: "insensitive" } },
-                  { tagline: { contains: opts.q, mode: "insensitive" } },
-                  { city: { contains: opts.q, mode: "insensitive" } },
-                  { county: { contains: opts.q, mode: "insensitive" } },
-                ],
-              }
-            : {}),
-        },
-        orderBy: [{ featured: "desc" }, { name: "asc" }],
-        select: PHARMACY_SELECT,
-      }),
-    );
+    return await listNetworkMarketplacePharmacies(opts);
   } catch {
     return [];
   }
@@ -183,7 +107,7 @@ export const getTenant = cache(async (): Promise<TenantStore> => {
       }
     }
   } catch {
-    // No request context (build, seed).
+    // No request context (build, seed) or network tenant lookup unavailable.
   }
 
   try {
