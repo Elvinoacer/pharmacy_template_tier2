@@ -1,0 +1,250 @@
+.surface {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  overflow-x: clip;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.surface :global(*) {
+  box-sizing: border-box;
+}
+
+.surface :global(main),
+.surface :global(section),
+.surface :global(article),
+.surface :global(aside),
+.surface :global(form),
+.surface :global(.grid),
+.surface :global(.flex) {
+  min-width: 0;
+}
+
+/* Convert hard-coded light palette utilities used by these public routes to the
+   shared Aether theme tokens. The selectors are intentionally scoped to this
+   wrapper so admin/portal surfaces remain untouched. */
+.surface :global([class~="bg-white"]),
+.surface :global([class~="bg-white/70"]),
+.surface :global([class~="bg-white/80"]),
+.surface :global([class~="bg-white/90"]),
+.surface :global([class~="bg-slate-50"]),
+.surface :global([class~="bg-[#f4f7f4]"]),
+.surface :global([class~="bg-[#f0faf6]"]),
+.surface :global([class~="bg-[#e6f4ef]"]) {
+  background-color: var(--card) !important;
+}
+
+.surface :global([class~="text-slate-950"]),
+.surface :global([class~="text-slate-900"]),
+.surface :global([class~="text-slate-800"]),
+.surface :global([class~="text-[#0c1a14]"]) {
+  color: var(--foreground) !important;
+}
+
+.surface :global([class~="text-slate-600"]),
+.surface :global([class~="text-slate-500"]),
+.surface :global([class~="text-[#5a6b62]"]) {
+  color: var(--muted) !important;
+}
+
+.surface :global([class~="text-[#0d6e5a]"]),
+.surface :global([class~="text-[#084c3f]"]),
+.surface :global([class~="text-[#0b5c4b]"]) {
+  color: var(--brand) !important;
+}
+
+.surface :global([class~="border-slate-200"]),
+.surface :global([class~="border-[#e3ebe6]"]),
+.surface :global([class~="border-teal-900/10"]) {
+  border-color: var(--line-2) !important;
+}
+
+.surface :global(input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])),
+.surface :global(select),
+.surface :global(textarea) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  color: var(--foreground) !important;
+  border-color: var(--line-2) !important;
+  background: var(--card) !important;
+}
+
+.surface :global(input::placeholder),
+.surface :global(textarea::placeholder) {
+  color: var(--muted-2) !important;
+  opacity: 1;
+}
+
+.surface :global(input:focus),
+.surface :global(select:focus),
+.surface :global(textarea:focus) {
+  border-color: color-mix(in srgb, var(--brand) 58%, var(--line-2)) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 13%, transparent);
+}
+
+.surface :global(.btn-primary),
+.surface :global(.btn-ghost) {
+  min-height: 44px;
+  max-width: 100%;
+  justify-content: center;
+}
+
+.surface :global(.btn-ghost) {
+  border-color: var(--line-2) !important;
+}
+
+.surface :global(code) {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.surface :global(img) {
+  max-width: 100%;
+}
+
+/* Status surfaces retain their semantic colours while avoiding light-only
+   backgrounds in dark mode. */
+:global(html[data-theme="dark"]) .surface :global([class~="bg-rose-50"]) {
+  background-color: rgba(244, 63, 94, 0.11) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="border-rose-200"]) {
+  border-color: rgba(251, 113, 133, 0.28) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-rose-700"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-rose-800"]) {
+  color: #fda4af !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="bg-teal-50"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-emerald-50"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-teal-100"]) {
+  background-color: color-mix(in srgb, var(--brand) 16%, var(--card)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-teal-900"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-teal-800"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-teal-700"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-emerald-700"]) {
+  color: #5eead4 !important;
+}
+
+/* Auth routes: the shared AuthForm still carries a few fixed utility colours.
+   Normalize those without flattening the branded left-hand panel. */
+.surface[data-flow="login"] :global([class~="bg-white/80"]),
+.surface[data-flow="forgot-password"] :global([class~="bg-white/80"]),
+.surface[data-flow="reset-password"] :global([class~="bg-white/80"]) {
+  background-color: color-mix(in srgb, var(--card) 88%, transparent) !important;
+}
+
+.surface[data-flow="login"] :global(form > a),
+.surface[data-flow="forgot-password"] :global(form > a),
+.surface[data-flow="reset-password"] :global(form > a) {
+  color: var(--foreground) !important;
+  border-color: var(--line-2) !important;
+  background: var(--card) !important;
+}
+
+/* Storefront contains a larger amount of legacy light-first utility styling.
+   Keep imagery/brand gradients intact while mapping functional content surfaces
+   and copy to theme tokens. */
+.surface[data-flow="storefront"] :global(.glass-tile) {
+  color: var(--foreground);
+  border-color: var(--line-2) !important;
+  background: color-mix(in srgb, var(--card) 84%, transparent) !important;
+}
+
+:global(html[data-theme="dark"]) .surface[data-flow="storefront"] :global(.hero-badge) {
+  color: #99f6e4 !important;
+  border-color: rgba(94, 234, 212, 0.18) !important;
+  background: rgba(8, 34, 28, 0.78) !important;
+}
+
+:global(html[data-theme="dark"]) .surface[data-flow="storefront"] :global([class~="ring-white/25"]),
+:global(html[data-theme="dark"]) .surface[data-flow="storefront"] :global([class~="border-white/70"]) {
+  --tw-ring-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--line-2) !important;
+}
+
+@media (max-width: 767px) {
+  .surface {
+    overflow-x: hidden;
+  }
+
+  .surface :global(main),
+  .surface :global(section),
+  .surface :global(article),
+  .surface :global(aside),
+  .surface :global(form) {
+    max-width: 100%;
+  }
+
+  .surface :global(input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])),
+  .surface :global(select),
+  .surface :global(textarea) {
+    font-size: 16px !important;
+  }
+
+  .surface :global([class~="rounded-3xl"]) {
+    border-radius: 1.25rem !important;
+  }
+
+  .surface :global([class~="p-8"]) {
+    padding: 1.25rem !important;
+  }
+
+  .surface :global([class~="gap-10"]) {
+    gap: 1.5rem !important;
+  }
+
+  .surface :global([class~="py-20"]) {
+    padding-top: 3.5rem !important;
+    padding-bottom: 3.5rem !important;
+  }
+
+  .surface :global([class~="py-16"]) {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  .surface[data-flow="storefront"] :global(h1),
+  .surface[data-flow="order"] :global(h1) {
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+}
+
+@media (max-width: 479px) {
+  .surface :global(.btn-primary),
+  .surface :global(.btn-ghost) {
+    width: 100%;
+  }
+
+  .surface :global([class~="px-5"]),
+  .surface :global([class~="px-4"]) {
+    padding-left: 0.875rem !important;
+    padding-right: 0.875rem !important;
+  }
+
+  .surface[data-flow="refill-status"] :global(dl) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .surface[data-flow="caregiver-accept"] :global(section) {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface *,
+  .surface *::before,
+  .surface *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
