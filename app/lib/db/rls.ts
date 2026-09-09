@@ -41,6 +41,20 @@ export async function resolveRlsScope(): Promise<RlsScope> {
 
 export const RLS_RUNTIME_ROLE = "aether_runtime";
 
+type RawQuery = (sql: string, values?: unknown[]) => Promise<unknown>;
+
+async function setRlsContext(
+  query: RawQuery,
+  scope: RlsScope,
+  isLocal = false,
+): Promise<void> {
+  const guc = rlsGucValues(scope);
+  await query(
+    "SELECT set_config('app.platform_bypass', $1, $3), set_config('app.pharmacy_id', $2, $3)",
+    [guc.platformBypass, guc.pharmacyId, isLocal],
+  );
+}
+
 export async function applyRlsGuc(
   client: { query: (sql: string, values?: unknown[]) => Promise<unknown> },
   scope: RlsScope,
@@ -57,43 +71,77 @@ export async function applyRlsGuc(
     }
     // Only in non-strict local development environments without the migration applied can this fall back.
   }
-  const guc = rlsGucValues(scope);
-  await client.query(
-    "SELECT set_config('app.platform_bypass', $1, $3), set_config('app.pharmacy_id', $2, $3)",
-    [guc.platformBypass, guc.pharmacyId, isLocal],
-  );
+  await setRlsContext(client.query.bind(client) as RawQuery, scope, isLocal);
 }
 
 /**
- * Pool that sets app.pharmacy_id / app.platform_bypass on every checkout and
- * every pool.query so FORCE ROW LEVEL SECURITY sees the request tenant.
+ * Runtime pool with fail-closed RLS context.
+ *
+ * Important: context is installed exactly once immediately before the caller's
+ * SQL. The previous implementation applied RLS during checkout through the
+ * already-wrapped `client.query`, which recursively applied RLS again. A single
+ * application query could therefore generate several SET ROLE/set_config
+ * round-trips before the real SQL even started. On a remote/serverless database
+ * that multiplies latency and can exhaust the function timeout on pages that
+ * perform several scoped reads (for example medicines/services).
+ *
+ * `SET ROLE` is connection state, so it is established once per physical
+ * PoolClient. The tenant GUCs are request state and are refreshed before every
+ * real query using the raw pg query function, avoiding wrapper recursion.
  */
 const WRAPPED_SYMBOL = Symbol("rls_wrapped");
+const ROLE_READY_SYMBOL = Symbol("rls_role_ready");
+
+type RlsPoolClient = PoolClient & {
+  [WRAPPED_SYMBOL]?: boolean;
+  [ROLE_READY_SYMBOL]?: Promise<void>;
+};
 
 export function createRlsPool(config: PoolConfig): Pool {
   const pool = new pg.Pool(config);
   const origConnect = pool.connect.bind(pool) as () => Promise<PoolClient>;
 
-  const wrapClient = (client: PoolClient & { [WRAPPED_SYMBOL]?: boolean }): PoolClient => {
+  const wrapClient = (client: RlsPoolClient): PoolClient => {
     if (client[WRAPPED_SYMBOL]) return client;
     client[WRAPPED_SYMBOL] = true;
-    const origClientQuery = client.query.bind(client);
-    let applying = false;
+
+    const origClientQuery = client.query.bind(client) as (...args: unknown[]) => Promise<unknown>;
+    const rawQuery = origClientQuery as RawQuery;
+
+    const ensureRuntimeRole = async () => {
+      if (!client[ROLE_READY_SYMBOL]) {
+        client[ROLE_READY_SYMBOL] = (async () => {
+          try {
+            await rawQuery(`SET ROLE ${RLS_RUNTIME_ROLE}`);
+          } catch (err) {
+            if (isRlsStrict()) {
+              const msg = err instanceof Error ? err.message : String(err);
+              throw new Error(
+                `FATAL: Failed to establish RLS runtime role '${RLS_RUNTIME_ROLE}'. Database operation aborted: ${msg}`,
+              );
+            }
+          }
+        })().catch((err) => {
+          delete client[ROLE_READY_SYMBOL];
+          throw err;
+        });
+      }
+      await client[ROLE_READY_SYMBOL];
+    };
 
     client.query = ((...args: unknown[]) => {
       const last = args[args.length - 1];
-      const cb = typeof last === "function" ? (args.pop() as (err: unknown, result?: unknown) => void) : undefined;
+      const cb =
+        typeof last === "function"
+          ? (args.pop() as (err: unknown, result?: unknown) => void)
+          : undefined;
+
       const execute = async () => {
-        if (!applying) {
-          applying = true;
-          try {
-            await applyRlsGuc({ query: origClientQuery as (sql: string, values?: unknown[]) => Promise<unknown> }, await resolveRlsScope());
-          } finally {
-            applying = false;
-          }
-        }
-        return await (origClientQuery as (...a: unknown[]) => Promise<unknown>)(...args);
+        await ensureRuntimeRole();
+        await setRlsContext(rawQuery, await resolveRlsScope());
+        return origClientQuery(...args);
       };
+
       if (cb) {
         execute().then((res) => cb(null, res), (err) => cb(err));
         return undefined;
@@ -104,12 +152,13 @@ export function createRlsPool(config: PoolConfig): Pool {
     return client;
   };
 
-  const connectWithGuc = async (): Promise<PoolClient> => {
-    const client = await origConnect();
+  const connectWithRls = async (): Promise<PoolClient> => {
+    const client = (await origConnect()) as RlsPoolClient;
     try {
-      wrapClient(client);
-      await applyRlsGuc(client, await resolveRlsScope());
-      return client;
+      // Do not run SQL here. The first real query applies the current request
+      // scope using the raw query function. This prevents checkout-time
+      // recursion and avoids applying a stale scope to an idle connection.
+      return wrapClient(client);
     } catch (err) {
       client.release();
       throw err;
@@ -118,20 +167,24 @@ export function createRlsPool(config: PoolConfig): Pool {
 
   pool.connect = ((cb?: (err: Error | undefined, client?: PoolClient) => void) => {
     if (typeof cb === "function") {
-      connectWithGuc().then(
+      connectWithRls().then(
         (client) => cb(undefined, client),
         (err: Error) => cb(err),
       );
       return undefined as unknown as Promise<PoolClient>;
     }
-    return connectWithGuc();
+    return connectWithRls();
   }) as Pool["connect"];
 
   pool.query = ((...args: unknown[]) => {
     const last = args[args.length - 1];
-    const cb = typeof last === "function" ? (args.pop() as (err: unknown, result?: unknown) => void) : undefined;
+    const cb =
+      typeof last === "function"
+        ? (args.pop() as (err: unknown, result?: unknown) => void)
+        : undefined;
+
     const run = async () => {
-      const client = await origConnect();
+      const client = (await origConnect()) as RlsPoolClient;
       try {
         wrapClient(client);
         return await client.query(...(args as [string, unknown[]]));
@@ -139,6 +192,7 @@ export function createRlsPool(config: PoolConfig): Pool {
         client.release();
       }
     };
+
     if (cb) {
       run().then((result) => cb(null, result), (err) => cb(err));
       return undefined;

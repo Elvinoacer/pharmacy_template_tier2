@@ -5,7 +5,10 @@ import {
   getStorefrontView,
   type StorefrontView,
 } from "@/app/lib/services/storefront-content";
-import type { ResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
+import {
+  getResolvedPharmacyOrNull,
+  type ResolvedPharmacy,
+} from "@/app/lib/services/pharmacy-settings";
 
 /**
  * Server helper + visual gate for shop-action pages.
@@ -21,11 +24,17 @@ export function loadStorefrontView(): Promise<StorefrontView> {
   return getStorefrontView();
 }
 
-/** Legacy helper: tenant or null (network context behaves as before). */
-export async function loadStorefront(): Promise<ResolvedPharmacy | null> {
-  const view = await getStorefrontView();
-  if (view.status !== "active") return null;
-  return view.resolved;
+/**
+ * Lightweight tenant resolver for transactional/catalogue pages.
+ *
+ * These pages only need the resolved pharmacy identity/settings before they
+ * query their own domain data. Building the entire storefront document here
+ * caused an unnecessary second PharmacySettings read plus template merge on
+ * every medicines/services/refill/etc request. Keep the richer
+ * `getStorefrontView()` path for pages that actually render storefront content.
+ */
+export function loadStorefront(): Promise<ResolvedPharmacy | null> {
+  return getResolvedPharmacyOrNull();
 }
 
 export default async function StorefrontGate({
