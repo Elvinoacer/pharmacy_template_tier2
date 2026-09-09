@@ -1,0 +1,197 @@
+.surface {
+  min-width: 0;
+  overflow-x: clip;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.surface :global(section),
+.surface :global(.max-w-6xl),
+.surface :global(.grid),
+.surface :global(.flex),
+.surface :global(.card-lift) {
+  min-width: 0;
+}
+
+.surface :global(.card-lift) {
+  border-color: var(--line-2);
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+.surface :global(.card-lift:hover) {
+  border-color: color-mix(in srgb, var(--brand) 42%, var(--line-2));
+}
+
+.surface :global(input),
+.surface :global(select),
+.surface :global(textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--line-2) !important;
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+}
+
+.surface :global(input::placeholder),
+.surface :global(textarea::placeholder) {
+  color: var(--muted-2);
+}
+
+.surface :global(.btn-ghost) {
+  border-color: var(--line-2) !important;
+  background: var(--glass-fill) !important;
+  color: var(--brand-deep) !important;
+}
+
+.surface :global(.btn-ghost:hover) {
+  background: var(--card-elev) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#2c3e35]"]) {
+  color: var(--foreground) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#eef5f1]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#f4f9f6]"]) {
+  background-color: var(--card-elev) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="border-[#d2dfd8]"]) {
+  border-color: var(--line-2) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-[#f0faf6]"]) {
+  background-image: linear-gradient(135deg, var(--brand-tint), var(--card), var(--brand-tint)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-emerald-50"]) {
+  background-image: linear-gradient(135deg, rgba(16, 185, 129, .16), var(--card), rgba(16, 185, 129, .08)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-rose-50"]) {
+  background-image: linear-gradient(135deg, rgba(244, 63, 94, .16), var(--card), rgba(244, 63, 94, .08)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-amber-50"]) {
+  background-image: linear-gradient(135deg, rgba(245, 158, 11, .15), var(--card), rgba(245, 158, 11, .07)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-teal-50"]) {
+  background-image: linear-gradient(135deg, rgba(45, 212, 191, .14), var(--card), rgba(45, 212, 191, .06)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-emerald-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-emerald-100) {
+  background-color: rgba(16, 185, 129, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-amber-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-amber-100) {
+  background-color: rgba(245, 158, 11, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-rose-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-rose-100) {
+  background-color: rgba(244, 63, 94, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.bg-purple-50),
+:global(html[data-theme="dark"]) .surface :global(.bg-purple-100) {
+  background-color: rgba(168, 85, 247, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-emerald-800),
+:global(html[data-theme="dark"]) .surface :global(.text-emerald-900),
+:global(html[data-theme="dark"]) .surface :global(.text-emerald-950) {
+  color: #b9f6d5 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-amber-800),
+:global(html[data-theme="dark"]) .surface :global(.text-amber-900),
+:global(html[data-theme="dark"]) .surface :global(.text-amber-950) {
+  color: #fde68a !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-rose-700),
+:global(html[data-theme="dark"]) .surface :global(.text-rose-800),
+:global(html[data-theme="dark"]) .surface :global(.text-rose-900),
+:global(html[data-theme="dark"]) .surface :global(.text-rose-950) {
+  color: #fecdd3 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-purple-700),
+:global(html[data-theme="dark"]) .surface :global(.text-purple-900) {
+  color: #e9d5ff !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-emerald-200),
+:global(html[data-theme="dark"]) .surface :global(.border-emerald-300) {
+  border-color: rgba(52, 211, 153, .34) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-amber-200),
+:global(html[data-theme="dark"]) .surface :global(.border-amber-300) {
+  border-color: rgba(251, 191, 36, .34) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-rose-200),
+:global(html[data-theme="dark"]) .surface :global(.border-rose-300) {
+  border-color: rgba(251, 113, 133, .36) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-purple-300) {
+  border-color: rgba(216, 180, 254, .34) !important;
+}
+
+@media (max-width: 639px) {
+  .surface :global(section) {
+    padding-inline: .85rem;
+  }
+
+  .surface :global(form) {
+    display: grid !important;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch !important;
+  }
+
+  .surface :global(form > *) {
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  .surface :global(.btn-primary),
+  .surface :global(.btn-ghost) {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .surface :global([class~="rounded-[2rem]"]) {
+    border-radius: 1.35rem !important;
+  }
+
+  .surface :global(.card-lift) {
+    border-radius: 1.25rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .surface :global(.px-4) {
+    padding-inline: .7rem !important;
+  }
+
+  .surface :global(.p-6) {
+    padding: 1rem !important;
+  }
+
+  .surface :global(.p-5) {
+    padding: .9rem !important;
+  }
+
+  .surface :global(.text-3xl) {
+    font-size: 1.65rem !important;
+    line-height: 1.15 !important;
+  }
+}

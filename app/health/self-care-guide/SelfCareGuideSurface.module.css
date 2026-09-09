@@ -1,0 +1,176 @@
+.surface {
+  min-width: 0;
+  overflow-x: clip;
+  color: var(--foreground);
+}
+
+.surface :global(section),
+.surface :global(.max-w-6xl),
+.surface :global(.grid),
+.surface :global(.flex) {
+  min-width: 0;
+}
+
+.surface :global(button),
+.surface :global(a),
+.surface :global(input),
+.surface :global(select),
+.surface :global(textarea) {
+  min-width: 0;
+}
+
+.surface :global(input),
+.surface :global(select),
+.surface :global(textarea) {
+  max-width: 100%;
+  border-color: var(--line-2) !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+}
+
+.surface :global(input::placeholder),
+.surface :global(textarea::placeholder) {
+  color: var(--muted-2);
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#0c1a14]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#2c3e35]"]) {
+  color: var(--foreground) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#5a6b62]"]) {
+  color: var(--muted) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#8a9a92]"]) {
+  color: var(--muted-2) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#f4f7f4]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#f8faf9]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#f0faf6]"]) {
+  background-color: var(--card-elev) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="border-[#d2dfd8]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="border-[#e3ebe6]"]) {
+  border-color: var(--line-2) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-emerald-50"]) {
+  background-image: linear-gradient(135deg, rgba(16, 185, 129, .16), var(--card), rgba(16, 185, 129, .08)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-amber-50"]) {
+  background-image: linear-gradient(135deg, rgba(245, 158, 11, .16), var(--card), rgba(245, 158, 11, .08)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-rose-50"]) {
+  background-image: linear-gradient(135deg, rgba(244, 63, 94, .17), var(--card), rgba(244, 63, 94, .08)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-emerald-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-emerald-50),
+:global(html[data-theme="dark"]) .surface :global(.bg-emerald-100) {
+  background-color: rgba(16, 185, 129, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-amber-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-amber-50),
+:global(html[data-theme="dark"]) .surface :global(.bg-amber-100) {
+  background-color: rgba(245, 158, 11, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-rose-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-rose-50),
+:global(html[data-theme="dark"]) .surface :global(.bg-rose-100) {
+  background-color: rgba(244, 63, 94, .14) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-emerald-800),
+:global(html[data-theme="dark"]) .surface :global(.text-emerald-900),
+:global(html[data-theme="dark"]) .surface :global(.text-emerald-950) {
+  color: #b9f6d5 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-amber-800),
+:global(html[data-theme="dark"]) .surface :global(.text-amber-900),
+:global(html[data-theme="dark"]) .surface :global(.text-amber-950) {
+  color: #fde68a !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-rose-700),
+:global(html[data-theme="dark"]) .surface :global(.text-rose-800),
+:global(html[data-theme="dark"]) .surface :global(.text-rose-900),
+:global(html[data-theme="dark"]) .surface :global(.text-rose-950) {
+  color: #fecdd3 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-emerald-200),
+:global(html[data-theme="dark"]) .surface :global(.border-emerald-300) {
+  border-color: rgba(52, 211, 153, .34) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-amber-200),
+:global(html[data-theme="dark"]) .surface :global(.border-amber-300) {
+  border-color: rgba(251, 191, 36, .34) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-rose-200),
+:global(html[data-theme="dark"]) .surface :global(.border-rose-300) {
+  border-color: rgba(251, 113, 133, .36) !important;
+}
+
+@media (max-width: 639px) {
+  .surface :global(section) {
+    padding-inline: .85rem;
+  }
+
+  .surface :global(button),
+  .surface :global(a) {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .surface :global(.btn-primary),
+  .surface :global(.btn-ghost) {
+    width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .surface :global([class~="rounded-3xl"]) {
+    border-radius: 1.25rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .surface :global(.grid-cols-3) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .surface :global(.grid-cols-2) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .surface :global(.p-8) {
+    padding: 1rem !important;
+  }
+
+  .surface :global(.p-6) {
+    padding: 1rem !important;
+  }
+
+  .surface :global(.p-5) {
+    padding: .9rem !important;
+  }
+
+  .surface :global(.px-5) {
+    padding-inline: .85rem !important;
+  }
+
+  .surface :global(.text-3xl) {
+    font-size: 1.7rem !important;
+    line-height: 1.15 !important;
+  }
+}

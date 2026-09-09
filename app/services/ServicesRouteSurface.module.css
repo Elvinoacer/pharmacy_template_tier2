@@ -1,0 +1,69 @@
+.surface {
+  min-width: 0;
+  overflow-x: clip;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.surface :global(section),
+.surface :global(form),
+.surface :global(input),
+.surface :global(select),
+.surface :global(textarea),
+.surface :global(button),
+.surface :global(a) {
+  min-width: 0;
+}
+
+.surface :global(input),
+.surface :global(select),
+.surface :global(textarea) {
+  max-width: 100%;
+  border-color: var(--line-2) !important;
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+}
+
+.surface :global(input::placeholder),
+.surface :global(textarea::placeholder) {
+  color: var(--muted-2);
+}
+
+:global(html[data-theme="dark"]) .surface :global(.bg-white),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-white/"]) {
+  background-color: var(--card) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#0c1a14]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#2c3e35]"]) {
+  color: var(--foreground) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#5a6b62]"]) {
+  color: var(--muted) !important;
+}
+
+@media (max-width: 639px) {
+  .surface :global(form) {
+    width: 100%;
+  }
+
+  .surface :global(form > *) {
+    max-width: 100%;
+  }
+
+  .surface :global(button),
+  .surface :global(a) {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 420px) {
+  .surface :global(form [class*="grid-cols-"]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .surface :global([class*="rounded-3xl"]) {
+    border-radius: 1.2rem;
+  }
+}
