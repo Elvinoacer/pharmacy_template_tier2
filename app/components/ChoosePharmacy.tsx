@@ -29,9 +29,19 @@ function preservedDestination(next: string, returnPath: string | null) {
   if (!returnPath || !returnPath.startsWith("/") || returnPath.startsWith("//") || returnPath.startsWith("/p/")) {
     return next;
   }
-  const currentPath = returnPath.split("?")[0];
+
+  const [currentPath, rawQuery = ""] = returnPath.split("?", 2);
   const expectedPath = next.split("?")[0];
-  return currentPath === expectedPath ? returnPath : next;
+  if (currentPath !== expectedPath) return next;
+
+  const params = new URLSearchParams(rawQuery);
+  // This flag exists only to reopen the chooser. Carrying it into the
+  // selected tenant URL would immediately reopen the chooser on pages such as
+  // /refill, so remove it while preserving real user intent (q, category,
+  // medicationId, page, etc.).
+  params.delete("changePharmacy");
+  const query = params.toString();
+  return query ? `${currentPath}?${query}` : currentPath;
 }
 
 export default async function ChoosePharmacy({
