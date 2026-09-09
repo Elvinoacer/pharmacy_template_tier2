@@ -1,0 +1,211 @@
+.surface {
+  position: relative;
+  min-width: 0;
+  overflow-x: clip;
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at 8% 6%, rgba(13, 110, 90, 0.08), transparent 24rem),
+    radial-gradient(circle at 92% 18%, rgba(45, 212, 191, 0.06), transparent 22rem),
+    var(--background);
+}
+
+.surface,
+.surface * {
+  box-sizing: border-box;
+}
+
+.surface :global(input),
+.surface :global(select),
+.surface :global(textarea),
+.surface :global(button),
+.surface :global(a) {
+  min-width: 0;
+}
+
+.surface :global(input),
+.surface :global(select),
+.surface :global(textarea) {
+  color: var(--foreground);
+}
+
+.surface :global(input::placeholder),
+.surface :global(textarea::placeholder) {
+  color: var(--muted-2);
+  opacity: 1;
+}
+
+.surface :global(button),
+.surface :global(a),
+.surface :global(label),
+.surface :global(p),
+.surface :global(h1),
+.surface :global(h2),
+.surface :global(h3),
+.surface :global(h4) {
+  overflow-wrap: anywhere;
+}
+
+:global(html[data-theme="dark"]) .surface {
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at 8% 6%, rgba(45, 212, 191, 0.09), transparent 24rem),
+    radial-gradient(circle at 92% 18%, rgba(99, 102, 241, 0.06), transparent 22rem),
+    #07110f;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="bg-white"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-white/"]) {
+  background-color: #101a17 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-[#f7faf8]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-[#f8faf9]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-[#fbfdfb]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-[#eef5f1]"]) {
+  background-color: #0c1714 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="border-[#cfe0d8]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-[#d2dfd8]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-[#e3ebe6]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-white/60"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-gray-100"]),
+:global(html[data-theme="dark"]) .surface :global([class*="border-gray-200"]) {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="text-[#0c1a14]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-[#2c3e35]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-[#4a5b52]"]) {
+  color: #f1f5f9 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="text-[#5a6b62]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-[#8a9a92]"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-gray-500"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-gray-600"]) {
+  color: #a8b5af !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-gray-100"]) {
+  background-color: rgba(148, 163, 184, 0.09) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-teal-50"]) {
+  background-color: rgba(20, 184, 166, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-emerald-50"]) {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-amber-50"]) {
+  background-color: rgba(245, 158, 11, 0.13) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-purple-50"]) {
+  background-color: rgba(168, 85, 247, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-indigo-50"]) {
+  background-color: rgba(99, 102, 241, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="bg-rose-50"]) {
+  background-color: rgba(244, 63, 94, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="text-teal-950"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-teal-900"]) {
+  color: #ccfbf1 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="text-emerald-950"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-emerald-900"]) {
+  color: #d1fae5 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="text-amber-950"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-amber-900"]) {
+  color: #fef3c7 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="text-purple-950"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-purple-900"]) {
+  color: #f3e8ff !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="text-indigo-950"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-indigo-900"]) {
+  color: #e0e7ff !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="text-rose-950"]),
+:global(html[data-theme="dark"]) .surface :global([class*="text-rose-900"]) {
+  color: #ffe4e6 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-teal-50"][class*="via-white"]),
+:global(html[data-theme="dark"]) .surface :global([class*="from-emerald-50"][class*="via-white"]) {
+  background-image: linear-gradient(135deg, rgba(20, 184, 166, 0.13), #101a17 50%, rgba(16, 185, 129, 0.09)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-purple-50"]) {
+  background-image: linear-gradient(135deg, rgba(168, 85, 247, 0.14), #101a17 58%, rgba(168, 85, 247, 0.07)) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(input),
+:global(html[data-theme="dark"]) .surface :global(select),
+:global(html[data-theme="dark"]) .surface :global(textarea) {
+  border-color: rgba(148, 163, 184, 0.22) !important;
+  background-color: #0b1512 !important;
+  color: #f1f5f9 !important;
+  caret-color: #5eead4;
+}
+
+:global(html[data-theme="dark"]) .surface :global(option) {
+  background: #0b1512;
+  color: #f1f5f9;
+}
+
+:global(html[data-theme="dark"]) .surface :global(input:focus),
+:global(html[data-theme="dark"]) .surface :global(select:focus),
+:global(html[data-theme="dark"]) .surface :global(textarea:focus) {
+  border-color: rgba(45, 212, 191, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.12);
+}
+
+@media (max-width: 640px) {
+  .surface {
+    overflow-x: hidden;
+  }
+
+  .surface :global(input),
+  .surface :global(select),
+  .surface :global(textarea) {
+    font-size: 16px !important;
+  }
+
+  .surface :global([class*="rounded-3xl"]) {
+    border-radius: 1.25rem;
+  }
+
+  .surface :global([class*="max-h-[640px]"]) {
+    max-height: min(56dvh, 560px);
+  }
+
+  .surface :global([class*="sticky"]) {
+    position: static;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface *,
+  .surface *::before,
+  .surface *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
