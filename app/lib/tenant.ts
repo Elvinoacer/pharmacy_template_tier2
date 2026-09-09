@@ -75,14 +75,15 @@ const PHARMACY_SELECT = {
  * These reads must not ask the RLS pool to resolve the tenant again, otherwise
  * the call chain becomes getTenant -> pharmacy lookup -> resolveRlsScope ->
  * getTenant and can wait on its own in-flight promise until the serverless
- * function times out. A short-lived ALS bypass breaks that cycle without
- * leaking bypass state outside the lookup.
+ * function times out.
+ *
+ * Use the tenant-context helper rather than a bare `tenantAls.run()`. The helper
+ * binds both native AsyncLocalStorage and the async-resource fallback used by
+ * Prisma/pg boundaries, so the RLS wrapper continues to see platform bypass
+ * while the network-level pharmacy lookup is in flight.
  */
 function networkPharmacyLookup<T>(fn: () => Promise<T>): Promise<T> {
-  return tenantAls.run(
-    { pharmacyId: null, slug: null, bypass: true },
-    fn,
-  );
+  return withPlatformBypass(fn);
 }
 
 export async function findPharmacyBySlug(slug: string): Promise<PublicPharmacy | null> {
