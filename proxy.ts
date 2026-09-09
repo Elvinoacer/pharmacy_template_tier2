@@ -95,9 +95,43 @@ export async function proxy(request: NextRequest) {
       'portal', 'admin', 'platform', 'onboard', 'api', '_next',
     ])
     if (!reserved.has(firstSeg)) {
-      const dest = restPath === '/' ? '/storefront' : restPath
+      // The storefront root still renders through an internal rewrite so its
+      // canonical /p/{slug} address remains stable.
+      if (restPath === '/') {
+        const url = request.nextUrl.clone()
+        url.pathname = '/storefront'
+        requestHeaders.set('x-pharmacy-slug', slug)
+        const res = NextResponse.rewrite(url, { request: { headers: requestHeaders } })
+        res.cookies.set('aether_pharmacy', slug, {
+          path: '/',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 30,
+        })
+        return res
+      }
+
+      // Sub-pages use a two-request handoff: first persist the selected
+      // pharmacy, then redirect to the real destination. This is intentionally
+      // a redirect rather than a rewrite so the destination render starts with
+      // the pharmacy cookie already present. It prevents the UI from changing
+      // URL while remaining stuck on the chooser/loading state.
+      if (request.method === 'GET' || request.method === 'HEAD') {
+        const destination = request.nextUrl.clone()
+        destination.pathname = restPath
+        destination.searchParams.delete('changePharmacy')
+        const res = NextResponse.redirect(destination, 303)
+        res.cookies.set('aether_pharmacy', slug, {
+          path: '/',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 30,
+        })
+        res.headers.set('Cache-Control', 'no-store')
+        return res
+      }
+
+      // Preserve the existing rewrite behaviour for non-navigation requests.
       const url = request.nextUrl.clone()
-      url.pathname = dest
+      url.pathname = restPath
       requestHeaders.set('x-pharmacy-slug', slug)
       const res = NextResponse.rewrite(url, { request: { headers: requestHeaders } })
       res.cookies.set('aether_pharmacy', slug, {
