@@ -8,7 +8,7 @@ import MissedDoseCalculator from "@/app/components/health/MissedDoseCalculator";
 import DeviceDosageViewer from "@/app/components/health/DeviceDosageViewer";
 import { getMedicationCounsellingBySlug } from "@/app/lib/services/medication-counselling-db";
 import { platform } from "@/app/lib/data";
-import { ArrowLeft, PhoneCall, ShieldCheck, Pill } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -44,31 +44,28 @@ export default async function MedicationCounsellingSlugPage({ params }: Props) {
         ]}
       />
 
-      <div className="px-4 pb-16 sm:px-6">
-        <div className="mx-auto max-w-5xl space-y-10">
-          <div className="flex items-center justify-between">
+      <div className="px-3 pb-14 sm:px-6 sm:pb-16">
+        <div className="mx-auto max-w-5xl space-y-8 sm:space-y-10">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Link
               href="/health/counselling"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-800 hover:underline"
+              className="inline-flex min-h-10 w-full items-center gap-1.5 rounded-xl border border-teal-900/10 bg-white px-3 py-2 text-xs font-bold text-teal-800 transition hover:bg-teal-50 sm:min-h-0 sm:w-auto sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:hover:bg-transparent sm:hover:underline"
             >
-              <ArrowLeft className="h-4 w-4" /> Back to Counselling Hub
+              <ArrowLeft className="h-4 w-4 shrink-0" /> Back to Counselling Hub
             </Link>
 
             <Link
               href={`/medicines/${profile.medicineKey}`}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-800 hover:underline"
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-teal-900/10 bg-white px-3 py-2 text-center text-xs font-bold text-teal-800 transition hover:bg-teal-50 sm:min-h-0 sm:w-auto sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-left sm:hover:bg-transparent sm:hover:underline"
             >
               View Catalogue Stock &amp; Refills →
             </Link>
           </div>
 
-          {/* Render Full Digital Counselling Leaflet */}
           <DigitalCounsellingCard counselling={profile} />
 
-          {/* Missed Dose Assistant specific to this medicine */}
           <MissedDoseCalculator />
 
-          {/* Technique Viewer if special form or device */}
           {(profile.specialDosageForm || profile.device) && (
             <div>
               <div className="mb-4">
