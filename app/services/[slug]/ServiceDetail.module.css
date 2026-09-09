@@ -1,0 +1,701 @@
+.page {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 12% 6%, color-mix(in srgb, var(--brand-soft) 64%, transparent), transparent 26rem),
+    radial-gradient(circle at 92% 28%, color-mix(in srgb, var(--accent-soft) 30%, transparent), transparent 22rem),
+    var(--background);
+  color: var(--foreground);
+}
+
+.hero {
+  position: relative;
+  padding: 6.5rem 0 2.5rem;
+}
+
+.container {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+}
+
+.breadcrumb {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: .5rem;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.breadcrumb a {
+  color: var(--brand);
+  transition: color 180ms ease;
+}
+
+.breadcrumb a:hover {
+  color: var(--brand-deep);
+}
+
+.breadcrumb span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heroGrid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.heroCopy {
+  min-width: 0;
+  align-self: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 2rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: .35rem .7rem;
+  background: color-mix(in srgb, var(--card) 86%, transparent);
+  color: var(--brand-deep);
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(14px);
+}
+
+.title {
+  margin-top: 1rem;
+  max-width: 13ch;
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.2rem, 8vw, 4.9rem);
+  font-weight: 650;
+  line-height: .98;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+
+.summary {
+  margin-top: 1rem;
+  max-width: 42rem;
+  color: var(--muted);
+  font-size: .96rem;
+  line-height: 1.75;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin-top: 1.1rem;
+}
+
+.metaPill {
+  display: inline-flex;
+  align-items: center;
+  gap: .42rem;
+  min-height: 2.25rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .45rem .75rem;
+  background: var(--card);
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.metaPill svg {
+  color: var(--brand);
+}
+
+.heroActions {
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+  margin-top: 1.25rem;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border-radius: .95rem;
+  padding: .75rem 1rem;
+  font-size: .82rem;
+  font-weight: 800;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.primaryAction {
+  background: linear-gradient(135deg, #0d6e5a, #084c3f);
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(8, 76, 63, .2);
+}
+
+.secondaryAction {
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  color: var(--brand-deep);
+}
+
+.primaryAction:hover,
+.secondaryAction:hover {
+  transform: translateY(-1px);
+}
+
+.secondaryAction:hover {
+  border-color: color-mix(in srgb, var(--brand) 48%, var(--line-2));
+  background: var(--card-elev);
+}
+
+.mediaFrame {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 11;
+  border: 1px solid var(--line);
+  border-radius: 1.55rem;
+  background: var(--card-elev);
+  box-shadow: var(--shadow-lg);
+}
+
+.heroImage {
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(.2,.75,.2,1);
+}
+
+.mediaFrame:hover .heroImage {
+  transform: scale(1.025);
+}
+
+.mediaShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 48%, rgba(2, 12, 9, .42));
+  pointer-events: none;
+}
+
+.mediaBadge {
+  position: absolute;
+  left: .85rem;
+  bottom: .85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  border: 1px solid rgba(255,255,255,.26);
+  border-radius: 999px;
+  padding: .42rem .7rem;
+  background: rgba(3, 18, 13, .68);
+  color: #fff;
+  font-size: .66rem;
+  font-weight: 800;
+  backdrop-filter: blur(12px);
+}
+
+.bodySection {
+  padding: .5rem 0 4rem;
+}
+
+.contentGrid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.mainColumn,
+.aside {
+  min-width: 0;
+}
+
+.sectionCard,
+.bookingCard,
+.contactCard,
+.detailCard,
+.relatedCard,
+.talkCard {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card) 96%, transparent);
+  box-shadow: var(--shadow-sm);
+}
+
+.sectionCard {
+  border-radius: 1.4rem;
+  padding: 1.15rem;
+}
+
+.sectionLabel {
+  color: var(--brand);
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.sectionTitle {
+  margin-top: .35rem;
+  font-family: var(--font-display), serif;
+  font-size: 1.45rem;
+  font-weight: 650;
+  letter-spacing: -.025em;
+}
+
+.description {
+  margin-top: .8rem;
+  color: var(--muted);
+  font-size: .91rem;
+  line-height: 1.75;
+}
+
+.benefitsSection {
+  margin-top: 1rem;
+}
+
+.benefitsGrid {
+  display: grid;
+  gap: .65rem;
+  margin-top: .8rem;
+}
+
+.benefitItem {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: .65rem;
+  border: 1px solid var(--line);
+  border-radius: .95rem;
+  padding: .78rem;
+  background: var(--card-elev);
+  color: var(--foreground);
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.checkIcon {
+  display: grid;
+  width: 1.4rem;
+  height: 1.4rem;
+  flex: 0 0 1.4rem;
+  place-items: center;
+  margin-top: .05rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.detailsGrid {
+  display: grid;
+  gap: .7rem;
+  margin-top: 1rem;
+}
+
+.detailCard {
+  border-radius: 1rem;
+  padding: .95rem;
+}
+
+.detailCardHeader {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--brand);
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.detailCard p:last-child {
+  margin-top: .55rem;
+  color: var(--muted);
+  font-size: .82rem;
+  line-height: 1.55;
+}
+
+.priceValue {
+  display: block;
+  margin-top: .45rem;
+  color: var(--foreground) !important;
+  font-family: var(--font-display), serif;
+  font-size: 1.35rem !important;
+  font-weight: 700;
+}
+
+.aside {
+  height: fit-content;
+}
+
+.bookingCard,
+.contactCard {
+  border-radius: 1.4rem;
+  padding: 1rem;
+}
+
+.bookingHeader,
+.contactHeader {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .8rem;
+}
+
+.bookingHeader h2,
+.contactHeader h2 {
+  font-family: var(--font-display), serif;
+  font-size: 1.3rem;
+  font-weight: 650;
+}
+
+.bookingHeader p,
+.contactHeader p {
+  margin-top: .4rem;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.55;
+}
+
+.bookingPill {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: .35rem;
+  border-radius: 999px;
+  padding: .38rem .6rem;
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font-size: .6rem;
+  font-weight: 800;
+}
+
+.formWrap {
+  min-width: 0;
+  margin-top: 1rem;
+}
+
+.contactActions {
+  display: grid;
+  gap: .55rem;
+  margin-top: .9rem;
+}
+
+.contactAction {
+  display: flex;
+  min-width: 0;
+  min-height: 3rem;
+  align-items: center;
+  gap: .7rem;
+  border: 1px solid var(--line);
+  border-radius: .9rem;
+  padding: .7rem .8rem;
+  background: var(--card-elev);
+  color: var(--foreground);
+  font-size: .8rem;
+  font-weight: 700;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.contactAction:hover {
+  transform: translateY(-1px);
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+
+.contactAction svg {
+  flex: 0 0 auto;
+  color: var(--brand);
+}
+
+.address {
+  align-items: flex-start;
+  color: var(--muted);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.talkCard {
+  margin-top: .7rem;
+  border-radius: 1rem;
+  padding: .85rem .95rem;
+  background: var(--brand-tint);
+  color: var(--muted);
+  font-size: .75rem;
+  line-height: 1.5;
+}
+
+.talkCard a {
+  color: var(--brand);
+  font-weight: 800;
+}
+
+.related {
+  margin-top: 2.3rem;
+}
+
+.relatedHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.relatedHeader h2 {
+  font-family: var(--font-display), serif;
+  font-size: 1.45rem;
+  font-weight: 650;
+}
+
+.relatedHeader a {
+  color: var(--brand);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.relatedGrid {
+  display: grid;
+  gap: .7rem;
+  margin-top: .9rem;
+}
+
+.relatedCard {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+  border-radius: 1rem;
+  padding: .9rem;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.relatedCard:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  background: var(--card-elev);
+  box-shadow: var(--shadow);
+}
+
+.relatedCard strong {
+  display: block;
+  color: var(--foreground);
+  font-size: .84rem;
+}
+
+.relatedCard p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: .25rem;
+  color: var(--muted);
+  font-size: .74rem;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.relatedCard svg {
+  flex: 0 0 auto;
+  color: var(--brand);
+  transition: transform 180ms ease;
+}
+
+.relatedCard:hover svg {
+  transform: translateX(2px);
+}
+
+@media (min-width: 640px) {
+  .container {
+    width: min(100% - 3rem, 72rem);
+  }
+
+  .hero {
+    padding-top: 7.5rem;
+    padding-bottom: 3rem;
+  }
+
+  .heroActions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    width: auto;
+    min-width: 10rem;
+  }
+
+  .mediaFrame {
+    border-radius: 2rem;
+  }
+
+  .sectionCard,
+  .bookingCard,
+  .contactCard {
+    padding: 1.35rem;
+  }
+
+  .benefitsGrid,
+  .detailsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .priceWide {
+    grid-column: 1 / -1;
+  }
+
+  .relatedGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .relatedCard {
+    min-height: 8.5rem;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 900px) {
+  .heroGrid {
+    grid-template-columns: minmax(0, .92fr) minmax(20rem, 1.08fr);
+    align-items: center;
+    gap: 2.2rem;
+  }
+
+  .contentGrid {
+    grid-template-columns: minmax(0, 1.18fr) minmax(19rem, .82fr);
+    align-items: start;
+    gap: 2rem;
+  }
+
+  .aside {
+    position: sticky;
+    top: 7rem;
+  }
+}
+
+@media (min-width: 1180px) {
+  .heroGrid,
+  .contentGrid {
+    gap: 3rem;
+  }
+
+  .sectionCard {
+    padding: 1.55rem;
+  }
+
+  .bookingCard,
+  .contactCard {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .container {
+    width: min(100% - 1.25rem, 72rem);
+  }
+
+  .hero {
+    padding-top: 5.75rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .title {
+    max-width: 100%;
+    font-size: clamp(2rem, 11vw, 3.1rem);
+    line-height: 1.01;
+  }
+
+  .summary {
+    font-size: .88rem;
+    line-height: 1.65;
+  }
+
+  .heroActions > * {
+    width: 100%;
+  }
+
+  .mediaFrame {
+    aspect-ratio: 4 / 3;
+    border-radius: 1.25rem;
+  }
+
+  .bodySection {
+    padding-top: 0;
+    padding-bottom: 3rem;
+  }
+
+  .sectionCard,
+  .bookingCard,
+  .contactCard {
+    border-radius: 1.15rem;
+  }
+
+  .bookingHeader,
+  .contactHeader {
+    gap: .55rem;
+  }
+
+  .bookingPill {
+    padding-inline: .5rem;
+    font-size: .56rem;
+  }
+
+  .relatedHeader {
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .heroCopy,
+  .mediaFrame,
+  .sectionCard,
+  .aside,
+  .related {
+    animation: gentleRise 520ms cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  .mediaFrame { animation-delay: 70ms; }
+  .sectionCard { animation-delay: 90ms; }
+  .aside { animation-delay: 120ms; }
+  .related { animation-delay: 150ms; }
+}
+
+@keyframes gentleRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroImage,
+  .primaryAction,
+  .secondaryAction,
+  .contactAction,
+  .relatedCard,
+  .relatedCard svg {
+    transition: none !important;
+  }
+
+  .mediaFrame:hover .heroImage,
+  .primaryAction:hover,
+  .secondaryAction:hover,
+  .contactAction:hover,
+  .relatedCard:hover,
+  .relatedCard:hover svg {
+    transform: none;
+  }
+}
