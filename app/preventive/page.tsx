@@ -47,7 +47,7 @@ export default async function PreventivePage() {
         description="Pharmacies prevent illness as well as treat it. Book a counselling session, join a campaign, or read pharmacist-reviewed education — always within local professional scope."
         crumbs={[{ label: "Preventive health" }]}
       />
-      <section className="px-4 pb-16 sm:px-6">
+      <section className="px-3 pb-14 sm:px-6 sm:pb-16">
         <div className="mx-auto max-w-6xl">
           <PreventiveHealthHub
             campaigns={campaigns.map((c) => ({
