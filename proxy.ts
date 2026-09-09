@@ -12,8 +12,33 @@ const EXTERNAL_API_PREFIXES = [
   '/api/v1/',
 ] as const
 
+const REMEMBERED_PUBLIC_TENANT_PREFIXES = [
+  '/services',
+  '/medicines',
+  '/refill',
+  '/order',
+  '/search',
+  '/preventive',
+  '/screenings',
+  '/vaccinations',
+  '/delivery',
+  '/faq',
+  '/careers',
+  '/contact',
+] as const
+
 function isExternalApiPath(pathname: string): boolean {
   return EXTERNAL_API_PREFIXES.some((p) => pathname.startsWith(p))
+}
+
+function usesRememberedPublicTenant(pathname: string): boolean {
+  return REMEMBERED_PUBLIC_TENANT_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  )
+}
+
+function validPublicSlug(value: string | undefined): value is string {
+  return Boolean(value && /^[a-z0-9][a-z0-9-]{1,60}$/i.test(value))
 }
 
 function sameOrigin(request: NextRequest): boolean {
@@ -81,6 +106,22 @@ export async function proxy(request: NextRequest) {
         maxAge: 60 * 60 * 24 * 30,
       })
       return res
+    }
+  }
+
+  // Once a visitor explicitly chooses a pharmacy, tenant-dependent public
+  // rooms should keep that context instead of throwing them back into the
+  // chooser on the next navigation. The slug is still validated by tenant
+  // resolution before any scoped data is returned. `changePharmacy=1`
+  // intentionally bypasses the remembered choice so a page can reopen the
+  // chooser without clearing unrelated browser state.
+  if (
+    usesRememberedPublicTenant(pathname) &&
+    request.nextUrl.searchParams.get('changePharmacy') !== '1'
+  ) {
+    const remembered = request.cookies.get('aether_pharmacy')?.value?.trim().toLowerCase()
+    if (validPublicSlug(remembered)) {
+      requestHeaders.set('x-pharmacy-slug', remembered)
     }
   }
 
