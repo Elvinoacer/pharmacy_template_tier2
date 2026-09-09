@@ -30,7 +30,7 @@ export default async function HealthScreeningsPage() {
         ]}
       />
 
-      <section className="px-4 pb-16 sm:px-6">
+      <section className="px-3 pb-14 sm:px-6 sm:pb-16">
         <div className="mx-auto max-w-6xl">
           <HealthScreeningHub />
         </div>
