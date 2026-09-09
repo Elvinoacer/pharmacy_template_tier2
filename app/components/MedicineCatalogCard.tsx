@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import TenantLink from "@/app/components/TenantLink";
 import { formatPrice } from "@/app/lib/format";
 
@@ -33,71 +32,75 @@ export default function MedicineCatalogCard({
   return (
     <TenantLink
       href={`/medicines/${item.slug}`}
-      className="card-lift group flex flex-col justify-between overflow-hidden rounded-3xl glass-panel shadow-xs transition duration-300 hover:border-teal-500/40 hover:shadow-lg"
+      className="card-lift group flex min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--brand)_40%,var(--line-2))] hover:shadow-lg sm:rounded-3xl"
     >
-      <div>
-        <div className="relative h-36 overflow-hidden bg-[#f4f7f4]">
+      <div className="min-w-0">
+        <div className="relative h-32 overflow-hidden bg-[var(--card-elev)] sm:h-36">
           {master.imageUrl ? (
             <Image
               src={master.imageUrl}
               alt={master.name}
               fill
               className="object-cover transition duration-700 group-hover:scale-105"
-              sizes="(max-width: 768px) 50vw, 25vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-4xl opacity-30" aria-hidden>
               💊
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-          
+          <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+
           <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
             {item.overTheCounter && (
-              <span className="rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
+              <span className="rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
                 OTC
               </span>
             )}
             {item.prescriptionRequired && !item.overTheCounter && (
-              <span className="rounded-full bg-amber-500/95 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
+              <span className="rounded-full bg-amber-500/95 px-2.5 py-0.5 text-[10px] font-bold text-slate-950 shadow-sm">
                 Rx
               </span>
             )}
           </div>
 
           {badge && (
-            <span className="absolute bottom-2.5 right-2.5 rounded-full bg-teal-900/90 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs backdrop-blur-xs">
+            <span className="absolute bottom-2.5 right-2.5 rounded-full bg-[var(--brand-deep)]/90 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm backdrop-blur-sm">
               {badge}
             </span>
           )}
         </div>
 
-        <div className="p-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-teal-800">
+        <div className="min-w-0 p-3 sm:p-4">
+          <p className="truncate text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--brand)] sm:text-[10px]">
             {master.category ? master.category.replace(/-/g, " ") : "general"}
           </p>
-          <h3 className="mt-1 text-sm font-bold text-[#0c1a14] group-hover:text-teal-800 transition-colors line-clamp-2">
+          <h3 className="mt-1 line-clamp-2 text-[13px] font-bold leading-snug text-[var(--foreground)] transition-colors group-hover:text-[var(--brand)] sm:text-sm">
             {master.name}
           </h3>
           {master.description && (
-            <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#5a6b62]">
+            <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-[var(--muted)] sm:text-xs">
               {master.description}
             </p>
           )}
         </div>
       </div>
 
-      <div className="border-t border-[var(--line)] p-4 pt-3 bg-[var(--card-elev)]">
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-medium text-[#8a9a92] block">Price</span>
-            <span className="text-sm font-bold text-[#0c1a14]">
+      <div className="border-t border-[var(--line)] bg-[var(--card-elev)] p-3 sm:p-4 sm:pt-3">
+        <div className="flex min-w-0 items-end justify-between gap-2">
+          <div className="min-w-0">
+            <span className="block text-[9px] font-medium text-[var(--muted-2)] sm:text-[10px]">Price</span>
+            <span className="block truncate text-xs font-bold text-[var(--foreground)] sm:text-sm">
               KES {formatPrice(Number(item.price ?? 0))}
             </span>
           </div>
 
-          <div className="text-right">
-            <span className={`inline-flex items-center gap-1 text-[11px] font-semibold ${inStock ? "text-emerald-700" : "text-rose-600"}`}>
+          <div className="shrink-0 text-right">
+            <span
+              className={`inline-flex items-center gap-1 text-[10px] font-semibold sm:text-[11px] ${
+                inStock ? "text-emerald-600" : "text-rose-600"
+              }`}
+            >
               <span className={`h-1.5 w-1.5 rounded-full ${inStock ? "bg-emerald-500" : "bg-rose-500"}`} />
               {inStock ? `${item.currentStock} in stock` : "Out of stock"}
             </span>
@@ -118,7 +121,7 @@ export function MedicineCatalogGrid({
   if (items.length === 0) return null;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {items.map((m) => (
         <MedicineCatalogCard key={m.id} item={m} badge={badges?.[m.id]} />
       ))}
