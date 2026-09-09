@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  CalendarDays,
+  CheckCircle2,
+  HeartPulse,
+  MessageCircle,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import CtaBanner from "../components/CtaBanner";
-import PageHero from "../components/PageHero";
 import { platform } from "../lib/data";
 import { listPublicServices } from "../lib/services/pharmacy-services";
 import { formatPrice } from "../lib/format";
 import ChoosePharmacy from "@/app/components/ChoosePharmacy";
 import { loadStorefront } from "@/app/components/StorefrontGate";
+import ServiceCardLink from "./ServiceCardLink";
+import styles from "./ServicesPage.module.css";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -23,86 +32,213 @@ export default async function ServicesPage() {
   if (!pharmacy) return <ChoosePharmacy next="/services" />;
 
   const services = await listPublicServices().catch(() => []);
+  const bookableCount = services.filter((service) => service.bookable).length;
+  const priced = services
+    .map((service) => service.price)
+    .filter((price): price is number => price != null && Number.isFinite(price));
+  const startingPrice = priced.length > 0 ? Math.min(...priced) : null;
+  const heroServices = services.slice(0, 3);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
-      <PageHero
-        eyebrow="Services"
-        title="Care services tailored to real life"
-        description="From first fills to lifelong chronic care support — browse what we offer and book or walk in when you are ready."
-        crumbs={[{ label: "Services" }]}
-      />
+    <div className={styles.page}>
+      <section className={styles.heroSection}>
+        <div className={`${styles.ambientOrb} ${styles.ambientOrbOne}`} aria-hidden="true" />
+        <div className={`${styles.ambientOrb} ${styles.ambientOrbTwo}`} aria-hidden="true" />
 
-      <section className="px-3 pb-14 sm:px-6 sm:pb-16">
-        {services.length === 0 ? (
-          <div className="mx-auto max-w-6xl rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-4 py-10 text-center shadow-sm sm:rounded-3xl sm:px-6 sm:py-14">
-            <p className="text-base font-semibold text-[var(--foreground)]">Services coming soon</p>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">
-              Call or message us and we&apos;ll point you in the right direction.
-            </p>
-            <Link href="/contact" className="btn-primary mt-5 inline-flex min-h-11 w-full items-center justify-center text-sm sm:w-auto">
-              Contact us
-            </Link>
-          </div>
-        ) : (
-          <div className="mx-auto grid w-full max-w-6xl gap-3.5 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-            {services.map((s) => (
-              <Link
-                key={s.slug}
-                href={`/services/${s.slug}`}
-                className="group flex min-w-0 h-full flex-col overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:rounded-3xl"
-              >
-                <div className="relative h-40 overflow-hidden bg-[var(--card-elev)] sm:h-44 lg:h-48">
-                  {s.imageUrl ? (
-                    <Image
-                      src={s.imageUrl}
-                      alt={s.title}
-                      fill
-                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-5xl opacity-40" aria-hidden="true">
-                      🏥
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
-                  {s.price != null && (
-                    <span className="absolute bottom-3 left-3 rounded-full bg-black/65 px-2.5 py-1 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm sm:text-xs">
-                      KES {formatPrice(s.price)}
-                    </span>
-                  )}
+        <div className={styles.container}>
+          <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
+            <Link href="/">Home</Link>
+            <span aria-hidden="true">/</span>
+            <span>Services</span>
+          </nav>
+
+          <div className={styles.heroGrid}>
+            <div className={styles.heroCopy}>
+              <div className={styles.eyebrow}>
+                <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                Pharmacy care, made easier
+              </div>
+
+              <h1 className={styles.title}>
+                Care that feels
+                <span className={styles.titleAccent}> clear, calm and within reach.</span>
+              </h1>
+
+              <p className={styles.lede}>
+                Explore practical pharmacy services without the guesswork. Understand what each service offers,
+                see whether it can be booked online, and move straight to the next step.
+              </p>
+
+              <div className={styles.heroActions}>
+                <Link href="#service-catalogue" className={styles.primaryCta}>
+                  Explore services
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+                <Link href="/contact" className={styles.secondaryCta}>
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                  Talk to the pharmacy
+                </Link>
+              </div>
+
+              <div className={styles.trustRow} aria-label="Service highlights">
+                <span>
+                  <BadgeCheck className="h-4 w-4" aria-hidden="true" />
+                  Pharmacy-led
+                </span>
+                <span>
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  Clear next steps
+                </span>
+                <span>
+                  <CalendarDays className="h-4 w-4" aria-hidden="true" />
+                  Online booking where available
+                </span>
+              </div>
+            </div>
+
+            <aside className={styles.careNavigator} aria-label="Service navigator">
+              <div className={styles.navigatorHeader}>
+                <div>
+                  <p className={styles.navigatorKicker}>Your care navigator</p>
+                  <h2>Start with what you need</h2>
                 </div>
+                <span className={styles.livePill}>
+                  <span aria-hidden="true" />
+                  Available now
+                </span>
+              </div>
 
-                <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5 lg:p-6">
-                  <div className="flex min-w-0 items-start justify-between gap-3">
-                    <h2
-                      className="min-w-0 text-lg font-semibold leading-tight text-[var(--foreground)] sm:text-xl"
-                      style={{ fontFamily: "var(--font-display), serif" }}
-                    >
-                      {s.title}
-                    </h2>
-                    {s.bookable && (
-                      <span className="shrink-0 rounded-full bg-[var(--brand-soft)] px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[var(--brand)] sm:text-[10px]">
-                        Bookable
-                      </span>
-                    )}
+              <div className={styles.navigatorSteps}>
+                <div className={styles.navigatorStep}>
+                  <span>01</span>
+                  <div>
+                    <strong>Choose</strong>
+                    <p>Open a service that matches your need.</p>
                   </div>
-                  <p className="mt-2 flex-1 text-[13px] leading-5 text-[var(--muted)] sm:text-sm sm:leading-relaxed">{s.short}</p>
-                  <span className="mt-4 inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-[var(--brand)]">
-                    {s.bookable ? "View details & book" : "View details"}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                  </span>
                 </div>
-              </Link>
-            ))}
+                <div className={styles.navigatorStep}>
+                  <span>02</span>
+                  <div>
+                    <strong>Understand</strong>
+                    <p>Review benefits, timing, eligibility and price.</p>
+                  </div>
+                </div>
+                <div className={styles.navigatorStep}>
+                  <span>03</span>
+                  <div>
+                    <strong>Act</strong>
+                    <p>Book online, call, message or visit the pharmacy.</p>
+                  </div>
+                </div>
+              </div>
+
+              {heroServices.length > 0 && (
+                <div className={styles.quickLinks}>
+                  <p>Quick start</p>
+                  <div>
+                    {heroServices.map((service) => (
+                      <Link key={service.slug} href={`/services/${service.slug}`}>
+                        <span>{service.title}</span>
+                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.heroStats}>
+                <div>
+                  <strong>{services.length}</strong>
+                  <span>services</span>
+                </div>
+                <div>
+                  <strong>{bookableCount}</strong>
+                  <span>bookable</span>
+                </div>
+                <div>
+                  <strong>{startingPrice != null ? `KES ${formatPrice(startingPrice)}` : "Ask us"}</strong>
+                  <span>{startingPrice != null ? "from" : "for pricing"}</span>
+                </div>
+              </div>
+            </aside>
           </div>
-        )}
+        </div>
+      </section>
+
+      <section id="service-catalogue" className={styles.catalogueSection}>
+        <div className={styles.container}>
+          <div className={styles.sectionHeading}>
+            <div>
+              <p className={styles.sectionKicker}>Explore care</p>
+              <h2>Find the service that fits your day</h2>
+              <p>
+                Every card opens a dedicated service page with the details and action you need — no dead ends.
+              </p>
+            </div>
+            {services.length > 0 && (
+              <div className={styles.sectionSignal}>
+                <HeartPulse className="h-4 w-4" aria-hidden="true" />
+                <span>
+                  <strong>{services.length}</strong> active service{services.length === 1 ? "" : "s"}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {services.length === 0 ? (
+            <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>
+                <HeartPulse className="h-6 w-6" aria-hidden="true" />
+              </div>
+              <p className={styles.emptyTitle}>Services coming soon</p>
+              <p>
+                Call or message us and we&apos;ll point you in the right direction.
+              </p>
+              <Link href="/contact" className={styles.primaryCta}>
+                Contact us
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          ) : (
+            <div className={styles.serviceGrid}>
+              {services.map((service, index) => (
+                <ServiceCardLink
+                  key={service.slug}
+                  href={`/services/${service.slug}`}
+                  title={service.title}
+                  short={service.short}
+                  imageUrl={service.imageUrl}
+                  bookable={service.bookable}
+                  duration={service.duration}
+                  priceLabel={service.price != null ? `KES ${formatPrice(service.price)}` : null}
+                  benefitCount={service.benefits.length}
+                  featured={index === 0 && services.length > 2}
+                />
+              ))}
+            </div>
+          )}
+
+          {services.length > 0 && (
+            <div className={styles.guidanceStrip}>
+              <div className={styles.guidanceIcon}>
+                <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div>
+                <strong>Not sure where to begin?</strong>
+                <p>Tell us what you need and we can guide you to the most suitable service.</p>
+              </div>
+              <Link href="/contact">
+                Ask for guidance
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          )}
+        </div>
       </section>
 
       <CtaBanner
-        title="Not sure which service you need?"
-        description="Call or message us — a team member will point you in the right direction."
+        title="Need a human answer before you decide?"
+        description="Call or message the pharmacy. We can help you choose the right service and explain what happens next."
         primaryHref="/contact"
         primaryLabel="Ask us"
         secondaryHref="/faq"
