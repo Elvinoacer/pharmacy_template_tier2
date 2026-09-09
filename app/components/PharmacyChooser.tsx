@@ -1,8 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import { ArrowRight, CheckCircle2, LocateFixed, MapPin, Navigation, Search } from "lucide-react";
+import { useMemo, useState, type MouseEvent } from "react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Loader2,
+  LocateFixed,
+  MapPin,
+  Navigation,
+  Search,
+  Store,
+} from "lucide-react";
 
 export type ChooserPharmacy = {
   id: string;
@@ -29,11 +37,42 @@ const km = (aLat: number, aLng: number, bLat: number, bLng: number) => {
   return r * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 };
 
+function destinationLabel(next: string) {
+  const first = next.split("?")[0].split("/").filter(Boolean)[0];
+  const labels: Record<string, string> = {
+    medicines: "medicines",
+    services: "services",
+    refill: "refill",
+    order: "order",
+    search: "search",
+    preventive: "preventive care",
+    screenings: "screenings",
+    vaccinations: "vaccinations",
+    delivery: "delivery",
+    faq: "FAQ",
+    careers: "careers",
+    contact: "contact",
+  };
+  return first ? labels[first] ?? first.replace(/-/g, " ") : "storefront";
+}
+
+function isPlainPrimaryClick(event: MouseEvent<HTMLAnchorElement>) {
+  return (
+    event.button === 0 &&
+    !event.metaKey &&
+    !event.ctrlKey &&
+    !event.shiftKey &&
+    !event.altKey
+  );
+}
+
 export default function PharmacyChooser({ pharmacies, next }: Props) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<"near" | "name">("near");
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [locationState, setLocationState] = useState<"idle" | "loading" | "denied">("idle");
+  const [openingSlug, setOpeningSlug] = useState<string | null>(null);
+  const destination = destinationLabel(next);
 
   function useLocation() {
     if (!navigator.geolocation) return setLocationState("denied");
@@ -72,11 +111,13 @@ export default function PharmacyChooser({ pharmacies, next }: Props) {
       <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm transition-colors duration-300 sm:rounded-[2rem] sm:p-6">
         <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:tracking-[0.2em]">Choose where to go</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:tracking-[0.2em]">Choose where to continue</p>
             <h2 className="mt-2 text-xl font-semibold tracking-tight text-[var(--foreground)] sm:text-3xl" style={{ fontFamily: "var(--font-display), serif" }}>
               Find a pharmacy near you
             </h2>
-            <p className="mt-2 max-w-xl text-[13px] leading-6 text-[var(--muted)] sm:text-sm">You choose the pharmacy. We never decide for you.</p>
+            <p className="mt-2 max-w-xl text-[13px] leading-6 text-[var(--muted)] sm:text-sm">
+              Pick one pharmacy and we’ll take you straight to <strong className="font-semibold text-[var(--foreground)]">{destination}</strong> for that pharmacy.
+            </p>
           </div>
           <button
             type="button"
@@ -126,28 +167,53 @@ export default function PharmacyChooser({ pharmacies, next }: Props) {
         {visible.map((p) => {
           const place = [p.city, p.county].filter(Boolean).join(", ") || p.country;
           const href = next === "/" ? `/p/${p.slug}` : `/p/${p.slug}${next}`;
+          const opening = openingSlug === p.slug;
+          const hasCover = Boolean(p.coverImageUrl);
           return (
-            <Link
+            <a
               key={p.id}
               href={href}
-              className="group min-w-0 overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg sm:rounded-[1.5rem]"
+              aria-busy={opening}
+              onClick={(event) => {
+                if (isPlainPrimaryClick(event)) setOpeningSlug(p.slug);
+              }}
+              className={`group min-w-0 overflow-hidden rounded-2xl border bg-[var(--card)] shadow-sm transition duration-200 sm:rounded-[1.5rem] ${
+                opening
+                  ? "border-[var(--brand)] ring-2 ring-[var(--brand-soft)]"
+                  : "border-[var(--line-2)] hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-lg"
+              }`}
             >
-              <div className="relative h-32 overflow-hidden bg-[var(--card-elev)] sm:h-36">
+              <div className="relative h-36 overflow-hidden bg-[var(--card-elev)] sm:h-40">
                 {p.coverImageUrl ? (
                   <img src={p.coverImageUrl} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                ) : p.logoUrl ? (
+                  <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,var(--brand-soft),var(--card-elev))] p-6">
+                    <div className="absolute -left-8 -top-8 h-28 w-28 rounded-full bg-[var(--brand)] opacity-10 blur-2xl" aria-hidden="true" />
+                    <div className="absolute -bottom-10 -right-8 h-32 w-32 rounded-full bg-[var(--brand)] opacity-10 blur-2xl" aria-hidden="true" />
+                    <img src={p.logoUrl} alt={`${p.name} logo`} className="relative max-h-20 max-w-[70%] rounded-2xl bg-white/90 object-contain p-3 shadow-sm" />
+                  </div>
                 ) : (
-                  <div className="h-full w-full bg-[var(--brand-soft)]" />
+                  <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,var(--brand-soft),var(--card-elev))]">
+                    <div className="text-center">
+                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--line-2)] bg-[var(--card)] text-[var(--brand)] shadow-sm">
+                        <Store className="h-6 w-6" aria-hidden="true" />
+                      </div>
+                      <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Pharmacy profile</p>
+                    </div>
+                  </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3 flex min-w-0 items-end justify-between gap-3 text-white sm:left-4 sm:right-4">
-                  <div className="min-w-0">
+
+                {hasCover && <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" aria-hidden="true" />}
+
+                <div className={`absolute inset-x-3 bottom-3 flex min-w-0 items-end justify-between gap-3 sm:inset-x-4 ${hasCover ? "text-white" : "text-[var(--foreground)]"}`}>
+                  <div className={`min-w-0 ${hasCover ? "" : "rounded-xl bg-[var(--card)]/90 px-2.5 py-2 shadow-sm backdrop-blur"}`}>
                     <h3 className="truncate text-base font-semibold sm:text-lg">{p.name}</h3>
-                    <p className="mt-0.5 flex min-w-0 items-center gap-1 text-[11px] text-white/85">
+                    <p className={`mt-0.5 flex min-w-0 items-center gap-1 text-[11px] ${hasCover ? "text-white/85" : "text-[var(--muted)]"}`}>
                       <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
                       <span className="truncate">{place}</span>
                     </p>
                   </div>
-                  {p.logoUrl && <img src={p.logoUrl} alt="" className="h-9 w-9 shrink-0 rounded-lg bg-white object-contain p-1" />}
+                  {hasCover && p.logoUrl && <img src={p.logoUrl} alt="" className="h-9 w-9 shrink-0 rounded-lg bg-white object-contain p-1" />}
                 </div>
               </div>
 
@@ -163,12 +229,16 @@ export default function PharmacyChooser({ pharmacies, next }: Props) {
                   )}
                 </div>
                 <p className="mt-2 line-clamp-2 min-h-8 text-xs leading-4 text-[var(--muted)]">{p.tagline || `Pharmacy in ${place}`}</p>
-                <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--line)] pt-3 text-sm font-semibold text-[var(--brand)] sm:mt-4">
-                  <span>{next === "/refill" ? "Refill here" : "Choose pharmacy"}</span>
-                  <ArrowRight className="h-4 w-4 shrink-0 transition group-hover:translate-x-1" aria-hidden="true" />
+                <div className="mt-3 flex min-h-10 items-center justify-between gap-3 border-t border-[var(--line)] pt-3 text-sm font-semibold text-[var(--brand)] sm:mt-4">
+                  <span>{opening ? `Opening ${destination}…` : `Continue to ${destination}`}</span>
+                  {opening ? (
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <ArrowRight className="h-4 w-4 shrink-0 transition group-hover:translate-x-1" aria-hidden="true" />
+                  )}
                 </div>
               </div>
-            </Link>
+            </a>
           );
         })}
       </div>
