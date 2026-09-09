@@ -70,14 +70,31 @@ const PHARMACY_SELECT = {
   setupCompletedAt: true,
 } as const;
 
+/**
+ * Pharmacy identity is network-level data used to establish the tenant itself.
+ * These reads must not ask the RLS pool to resolve the tenant again, otherwise
+ * the call chain becomes getTenant -> pharmacy lookup -> resolveRlsScope ->
+ * getTenant and can wait on its own in-flight promise until the serverless
+ * function times out. A short-lived ALS bypass breaks that cycle without
+ * leaking bypass state outside the lookup.
+ */
+function networkPharmacyLookup<T>(fn: () => Promise<T>): Promise<T> {
+  return tenantAls.run(
+    { pharmacyId: null, slug: null, bypass: true },
+    fn,
+  );
+}
+
 export async function findPharmacyBySlug(slug: string): Promise<PublicPharmacy | null> {
   const normalized = slug.trim().toLowerCase();
   if (!normalized) return null;
   try {
-    return await prismaUnscoped.pharmacy.findUnique({
-      where: { slug: normalized },
-      select: PHARMACY_SELECT,
-    });
+    return await networkPharmacyLookup(() =>
+      prismaUnscoped.pharmacy.findUnique({
+        where: { slug: normalized },
+        select: PHARMACY_SELECT,
+      }),
+    );
   } catch {
     return null;
   }
@@ -86,10 +103,12 @@ export async function findPharmacyBySlug(slug: string): Promise<PublicPharmacy |
 export async function findPharmacyById(id: string): Promise<PublicPharmacy | null> {
   if (!id) return null;
   try {
-    return await prismaUnscoped.pharmacy.findUnique({
-      where: { id },
-      select: PHARMACY_SELECT,
-    });
+    return await networkPharmacyLookup(() =>
+      prismaUnscoped.pharmacy.findUnique({
+        where: { id },
+        select: PHARMACY_SELECT,
+      }),
+    );
   } catch {
     return null;
   }
@@ -101,26 +120,28 @@ export async function listMarketplacePharmacies(opts?: {
   county?: string;
 }): Promise<PublicPharmacy[]> {
   try {
-    return await prismaUnscoped.pharmacy.findMany({
-      where: {
-        status: "active",
-        listed: true,
-        ...(opts?.city ? { city: { equals: opts.city, mode: "insensitive" } } : {}),
-        ...(opts?.county ? { county: { equals: opts.county, mode: "insensitive" } } : {}),
-        ...(opts?.q
-          ? {
-              OR: [
-                { name: { contains: opts.q, mode: "insensitive" } },
-                { tagline: { contains: opts.q, mode: "insensitive" } },
-                { city: { contains: opts.q, mode: "insensitive" } },
-                { county: { contains: opts.q, mode: "insensitive" } },
-              ],
-            }
-          : {}),
-      },
-      orderBy: [{ featured: "desc" }, { name: "asc" }],
-      select: PHARMACY_SELECT,
-    });
+    return await networkPharmacyLookup(() =>
+      prismaUnscoped.pharmacy.findMany({
+        where: {
+          status: "active",
+          listed: true,
+          ...(opts?.city ? { city: { equals: opts.city, mode: "insensitive" } } : {}),
+          ...(opts?.county ? { county: { equals: opts.county, mode: "insensitive" } } : {}),
+          ...(opts?.q
+            ? {
+                OR: [
+                  { name: { contains: opts.q, mode: "insensitive" } },
+                  { tagline: { contains: opts.q, mode: "insensitive" } },
+                  { city: { contains: opts.q, mode: "insensitive" } },
+                  { county: { contains: opts.q, mode: "insensitive" } },
+                ],
+              }
+            : {}),
+        },
+        orderBy: [{ featured: "desc" }, { name: "asc" }],
+        select: PHARMACY_SELECT,
+      }),
+    );
   } catch {
     return [];
   }
@@ -130,9 +151,9 @@ export async function listMarketplacePharmacies(opts?: {
  * Per-request tenant. Prefers ALS (cron / explicit withPharmacy), then request
  * headers set by proxy.ts, then staff cookie.
  *
- * Public tenant context is URL-addressed: only x-pharmacy-slug from an
- * explicit `/p/:slug/...` rewrite can select a public pharmacy. A remembered
- * public pharmacy cookie is intentionally ignored for generic public pages.
+ * Public tenant context is URL-addressed: proxy.ts turns an explicit /p/:slug
+ * room, or a previously selected public pharmacy on tenant-dependent routes,
+ * into x-pharmacy-slug. The row is validated here before a tenant is accepted.
  */
 const STAFF_RESOLVABLE_STATUS = new Set(["approved", "active"]);
 const PUBLIC_RESOLVABLE_STATUS = new Set(["active"]);
