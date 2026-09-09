@@ -1,11 +1,10 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  BadgeCheck,
   MapPinned,
   PackageSearch,
+  Pill,
   Search,
-  Sparkles,
   Store,
   Truck,
 } from "lucide-react";
@@ -13,7 +12,6 @@ import { platform } from "@/app/lib/data";
 import { getDirectoryFacets, listPharmacyDirectory } from "@/app/lib/services/pharmacy-directory";
 import PharmacyDirectory from "./PharmacyDirectory";
 import DirectoryAssistant from "./DirectoryAssistant";
-import styles from "./PharmaciesExperience.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -44,146 +42,53 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
     getDirectoryFacets(),
   ]);
 
-  const filtersActive = Boolean(q || city || county || category || delivery);
-  const deliveryCount = pharmacies.filter((pharmacy) => pharmacy.hasDelivery).length;
-  const visibleStockCount = pharmacies.reduce((sum, pharmacy) => sum + Number(pharmacy.stockCount || 0), 0);
-
   return (
-    <div className={`${styles.page} overflow-hidden text-[var(--foreground)]`}>
-      <section className={`${styles.heroSection} relative px-4 pb-5 pt-24 sm:px-6 sm:pb-8 sm:pt-32`}>
-        <div className={`${styles.ambientOrb} ${styles.ambientOrbOne}`} aria-hidden />
-        <div className={`${styles.ambientOrb} ${styles.ambientOrbTwo}`} aria-hidden />
-
-        <div className={`${styles.heroPanel} page-hero-glass relative mx-auto max-w-7xl overflow-hidden`}>
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,.92fr)] lg:items-stretch lg:gap-10">
-            <div className="flex min-w-0 flex-col justify-center">
-              <div className={`${styles.eyebrow} inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]`}>
-                <Sparkles className="h-3 w-3" aria-hidden /> {platform.name} pharmacy directory
-              </div>
-
-              <h1
-                className="mt-5 max-w-3xl text-3xl font-semibold leading-[1.04] tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl lg:text-[3.65rem]"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                Find the right pharmacy with <span className={styles.headlineAccent}>less friction.</span>
-              </h1>
-
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--muted)] sm:text-base sm:leading-7">
-                Search verified pharmacies by location, services and public medicine stock. Compare what matters,
-                then move directly to a storefront, refill request or contact channel.
-              </p>
-
-              <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:items-center">
-                <Link
-                  href="#directory"
-                  className={`${styles.primaryCta} inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-bold`}
-                >
-                  <Search className="h-4 w-4" aria-hidden /> Search the network
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-                <Link
-                  href="/for-pharmacies"
-                  className={`${styles.secondaryCta} inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-semibold`}
-                >
-                  <Store className="h-4 w-4" aria-hidden /> List your pharmacy
-                </Link>
-              </div>
-
-              <div className="mt-6 grid gap-2 sm:grid-cols-3">
-                <HeroFeature
-                  icon={<BadgeCheck className="h-4 w-4" aria-hidden />}
-                  title="Verified listings"
-                  text="Network pharmacies with public profiles"
-                />
-                <HeroFeature
-                  icon={<PackageSearch className="h-4 w-4" aria-hidden />}
-                  title="Stock-aware search"
-                  text="Surface visible medicine availability"
-                />
-                <HeroFeature
-                  icon={<Truck className="h-4 w-4" aria-hidden />}
-                  title="Service filters"
-                  text="Location, category and delivery"
-                />
-              </div>
-            </div>
-
-            <div className={styles.networkCard} aria-label="Live pharmacy directory snapshot">
-              <div className={styles.networkCardHeader}>
-                <div>
-                  <p className={styles.networkKicker}>{filtersActive ? "Current filtered view" : "Live directory snapshot"}</p>
-                  <p className={styles.networkTitle}>Care, mapped around your need.</p>
-                </div>
-                <span className={styles.livePill}>
-                  <span className={styles.liveDot} aria-hidden /> Live
-                </span>
-              </div>
-
-              <div className={styles.signalField} aria-hidden>
-                <span className={`${styles.signalRing} ${styles.signalRingOne}`} />
-                <span className={`${styles.signalRing} ${styles.signalRingTwo}`} />
-                <span className={`${styles.signalRing} ${styles.signalRingThree}`} />
-                <span className={`${styles.signalNode} ${styles.signalNodeOne}`} />
-                <span className={`${styles.signalNode} ${styles.signalNodeTwo}`} />
-                <span className={`${styles.signalNode} ${styles.signalNodeThree}`} />
-                <span className={styles.signalCore}>
-                  <MapPinned className="h-5 w-5" />
-                </span>
-              </div>
-
-              <div className={styles.metricGrid}>
-                <MetricCard value={pharmacies.length} label={filtersActive ? "Current matches" : "Visible pharmacies"} />
-                <MetricCard value={facets.cities.length} label="Cities indexed" />
-                <MetricCard value={deliveryCount} label="Delivery listings" />
-                <MetricCard value={visibleStockCount} label="Public stock items" />
-              </div>
-
-              <div className={styles.networkHint}>
-                <MapPinned className="h-4 w-4 shrink-0" aria-hidden />
-                <span>Enable “Near me” in the directory to sort geocoded pharmacies by distance.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 pb-20 sm:px-6 sm:pb-24">
+    <div className="min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+      <section className="px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-32">
         <div className="mx-auto max-w-7xl">
-          <div className={styles.journeyStrip} aria-label="How to use the pharmacy directory">
-            <JourneyStep number="01" icon={<Search className="h-4 w-4" aria-hidden />} title="Describe the need" text="Search a medicine, service or area." />
-            <JourneyStep number="02" icon={<PackageSearch className="h-4 w-4" aria-hidden />} title="Compare quickly" text="Use stock, delivery and location signals." />
-            <JourneyStep number="03" icon={<ArrowRight className="h-4 w-4" aria-hidden />} title="Act immediately" text="Visit, call, WhatsApp or request a refill." />
-          </div>
-
-          <div className={styles.discoveryGrid}>
-            <aside className={styles.assistantColumn} aria-label="Aether directory assistant">
-              <div className={styles.assistantShell}>
-                <DirectoryAssistant />
-              </div>
-
-              <div className={styles.assistantNote}>
-                <p className={styles.assistantNoteLabel}>Search tip</p>
-                <p>
-                  Try a medicine plus an area, such as <strong>“Panadol near Westlands”</strong>, or ask for delivery in a specific city.
+          <header className="mb-4 sm:mb-5">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs">
+                  <MapPinned className="h-4 w-4" aria-hidden /> Pharmacy finder
+                </p>
+                <h1
+                  className="mt-1.5 text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-3xl lg:text-4xl"
+                  style={{ fontFamily: "var(--font-display), serif" }}
+                >
+                  Find a pharmacy and act immediately.
+                </h1>
+                <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--muted)] sm:text-sm sm:leading-6">
+                  Search by pharmacy, medicine, service or area. Use location, filters and stock signals to choose where to go next.
                 </p>
               </div>
-            </aside>
 
-            <div className={styles.directoryColumn}>
-              <div className={styles.directoryIntro}>
-                <div className="min-w-0">
-                  <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
-                    <MapPinned className="h-4 w-4" aria-hidden /> Live public network
-                  </p>
-                  <h2 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-[var(--foreground)] sm:text-2xl">
-                    Explore pharmacies your way
-                  </h2>
-                  <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--muted)] sm:text-sm">
-                    Search broadly, narrow with filters, or use your location for nearest-first sorting.
-                  </p>
-                </div>
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href="/medicines"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
+                >
+                  <Pill className="h-3.5 w-3.5" aria-hidden /> Browse medicines
+                </Link>
+                <Link
+                  href="/refill"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-3.5 text-xs font-bold text-white shadow-sm transition hover:brightness-95"
+                >
+                  <PackageSearch className="h-3.5 w-3.5" aria-hidden /> Request refill
+                </Link>
               </div>
+            </div>
+          </header>
 
+          <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <QuickAction href="#directory" icon={<Search className="h-4 w-4" aria-hidden />} label="Search directory" />
+            <QuickAction href="/medicines" icon={<PackageSearch className="h-4 w-4" aria-hidden />} label="Check medicine stock" />
+            <QuickAction href="/delivery" icon={<Truck className="h-4 w-4" aria-hidden />} label="Delivery options" />
+            <QuickAction href="/for-pharmacies" icon={<Store className="h-4 w-4" aria-hidden />} label="List a pharmacy" />
+          </div>
+
+          <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start xl:grid-cols-[minmax(0,1fr)_370px]">
+            <main className="min-w-0">
               <PharmacyDirectory
                 pharmacies={pharmacies}
                 cities={facets.cities}
@@ -195,54 +100,51 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
                 initialCategory={category}
                 initialDelivery={delivery}
               />
-            </div>
+            </main>
+
+            <aside className="min-w-0 lg:sticky lg:top-28" aria-label="Optional pharmacy search assistant">
+              <div className="mb-2 flex items-center justify-between gap-3 px-1">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted-2)]">Optional helper</p>
+                  <p className="mt-0.5 text-xs text-[var(--muted)]">Use Aether when ordinary filters are not enough.</p>
+                </div>
+              </div>
+              <DirectoryAssistant />
+            </aside>
           </div>
+
+          <section className="mt-8 border-t border-[var(--line)] pt-5 sm:mt-10" aria-label="More pharmacy actions">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-[var(--foreground)]">Still not finding the right option?</p>
+                <p className="mt-1 text-[11px] leading-5 text-[var(--muted)]">
+                  Broaden the medicine catalogue, request a refill, or contact the pharmacy directly from any listing.
+                </p>
+              </div>
+              <Link
+                href="/contact"
+                className="inline-flex min-h-10 w-fit shrink-0 items-center gap-2 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-bold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
+              >
+                Get help <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+              </Link>
+            </div>
+          </section>
         </div>
       </section>
     </div>
   );
 }
 
-function HeroFeature({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+function QuickAction({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   return (
-    <div className={styles.heroFeature}>
-      <div className={styles.heroFeatureIcon}>{icon}</div>
-      <div className="min-w-0">
-        <p className="text-xs font-bold text-[var(--foreground)]">{title}</p>
-        <p className="mt-0.5 text-[10px] leading-4 text-[var(--muted)]">{text}</p>
-      </div>
-    </div>
-  );
-}
-
-function MetricCard({ value, label }: { value: number; label: string }) {
-  return (
-    <div className={styles.metricCard}>
-      <p className={styles.metricValue}>{value.toLocaleString()}</p>
-      <p className={styles.metricLabel}>{label}</p>
-    </div>
-  );
-}
-
-function JourneyStep({
-  number,
-  icon,
-  title,
-  text,
-}: {
-  number: string;
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className={styles.journeyStep}>
-      <div className={styles.journeyIcon}>{icon}</div>
-      <div className="min-w-0">
-        <p className={styles.journeyNumber}>{number}</p>
-        <p className="text-xs font-bold text-[var(--foreground)] sm:text-sm">{title}</p>
-        <p className="mt-0.5 text-[10px] leading-4 text-[var(--muted)] sm:text-[11px]">{text}</p>
-      </div>
-    </div>
+    <Link
+      href={href}
+      className="group flex min-h-12 min-w-0 items-center gap-2.5 rounded-2xl border border-[var(--line)] bg-[var(--card)] px-3 py-2.5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
+    >
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)] transition group-hover:bg-[var(--brand)] group-hover:text-white">
+        {icon}
+      </span>
+      <span className="min-w-0 text-[11px] font-bold leading-4 text-[var(--foreground)] sm:text-xs">{label}</span>
+    </Link>
   );
 }
