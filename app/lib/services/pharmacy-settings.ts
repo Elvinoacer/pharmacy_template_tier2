@@ -1,8 +1,14 @@
 import "server-only";
 
+import { cache } from "react";
 import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { pharmacy as staticPharmacy, platform } from "@/app/lib/data";
-import { findPharmacyById, findPharmacyBySlug, getTenant } from "@/app/lib/tenant";
+import {
+  findPharmacyById,
+  findPharmacyBySlug,
+  getTenant,
+  withPharmacy,
+} from "@/app/lib/tenant";
 
 export type PharmacyHour = { day: string; time: string };
 
@@ -157,14 +163,14 @@ function fallbackResolved(): ResolvedPharmacy {
   };
 }
 
-/**
- * Resolve pharmacy public profile: tenant Pharmacy + PharmacySettings win over static seed data.
- * Safe to call from server components and route handlers.
- */
-export async function getResolvedPharmacy(opts?: {
+type ResolvePharmacyOpts = {
   slug?: string | null;
   pharmacyId?: string | null;
-}): Promise<ResolvedPharmacy> {
+};
+
+async function resolvePharmacyUncached(
+  opts?: ResolvePharmacyOpts,
+): Promise<ResolvedPharmacy> {
   let pharmacyId = opts?.pharmacyId ?? null;
   let slug = opts?.slug ?? null;
 
@@ -182,11 +188,19 @@ export async function getResolvedPharmacy(opts?: {
 
   let row: Awaited<ReturnType<typeof prismaUnscoped.pharmacySettings.findUnique>> = null;
   try {
-    row = await prismaUnscoped.pharmacySettings.findUnique({
-      where: { pharmacyId: pharmacy.id },
-    });
+    // We already know the verified tenant id. Bind it directly while loading
+    // settings so the RLS pool does not have to resolve the same pharmacy from
+    // request headers again just to establish database context.
+    row = await withPharmacy(
+      pharmacy.id,
+      () =>
+        prismaUnscoped.pharmacySettings.findUnique({
+          where: { pharmacyId: pharmacy.id },
+        }),
+      pharmacy.slug,
+    );
   } catch {
-    // DB may be unavailable during build; fall back to pharmacy row + static.
+    // DB may be unavailable during build/outage — fall back to pharmacy row + static.
   }
 
   const phone = row?.phone?.trim() || pharmacy.phone || platform.phone;
@@ -266,11 +280,26 @@ export async function getResolvedPharmacy(opts?: {
   };
 }
 
+// Layout and page components commonly resolve the same current storefront in
+// one render. Memoize that no-argument path per server render so the root chrome
+// and the actual medicines/services page share one tenant/settings lookup.
+const resolveCurrentPharmacy = cache(() => resolvePharmacyUncached());
+
+/**
+ * Resolve pharmacy public profile: tenant Pharmacy + PharmacySettings win over static seed data.
+ * Safe to call from server components and route handlers.
+ */
+export function getResolvedPharmacy(
+  opts?: ResolvePharmacyOpts,
+): Promise<ResolvedPharmacy> {
+  if (!opts?.slug && !opts?.pharmacyId) return resolveCurrentPharmacy();
+  return resolvePharmacyUncached(opts);
+}
+
 /** Resolve the active tenant shop, or `null` when none is in context. */
-export async function getResolvedPharmacyOrNull(opts?: {
-  slug?: string | null;
-  pharmacyId?: string | null;
-}): Promise<ResolvedPharmacy | null> {
+export async function getResolvedPharmacyOrNull(
+  opts?: ResolvePharmacyOpts,
+): Promise<ResolvedPharmacy | null> {
   const resolved = await getResolvedPharmacy(opts);
   if (resolved.unresolved || !resolved.slug) return null;
   return resolved;

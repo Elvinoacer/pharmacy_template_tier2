@@ -103,8 +103,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const storefrontSlug = hdrs?.get("x-pharmacy-slug")?.trim().toLowerCase() || null;
   const onStorefrontRewrite = Boolean(storefrontSlug);
 
+  // When this is a storefront request, use the same request-memoized resolver
+  // the page will use. Passing a fresh { slug } object here previously caused
+  // the root layout and page to perform separate pharmacy/settings round-trips
+  // for the exact same tenant on every medicines/services request.
   const resolved = storefrontSlug
-    ? await getResolvedPharmacyOrNull({ slug: storefrontSlug }).catch(() => null)
+    ? await getResolvedPharmacyOrNull().catch(() => null)
     : null;
 
   const brandPrimary = safeHex(resolved?.brandPrimary);
