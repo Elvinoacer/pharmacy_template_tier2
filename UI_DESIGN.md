@@ -9,7 +9,7 @@ screens. Cinematic images and inset promotional panels retain their dark contras
 | Priority | Intent | Presentation |
 | --- | --- | --- |
 | P0 | Find a pharmacy and start care | First landing pathway and emphasized mobile dock action |
-| P0 | Complete the current refill, order, or booking | Preserve existing tenant-scoped forms and primary submit actions |
+| P0 | Complete the current refill, order, or booking | Preserve existing tenant-scoped forms and primary submit actions; refill is also available from the shared mobile care dock |
 | P1 | Track existing care | My care shortcut into the authenticated portal |
 | P1 | Search and narrow results | Glass directory search panel, mobile filters, readable result cards |
 | P2 | Learn and prepare questions | Health guides pathway and secondary dock action |
@@ -23,7 +23,8 @@ screens. Cinematic images and inset promotional panels retain their dark contras
 - Device changes and cross-tab preference changes update the interface.
 - Glass panels have a solid fallback; reduced-motion preferences suppress movement.
 - Small-screen form fields use at least 16px text to prevent mobile input zoom.
-- Mobile care navigation reserves bottom safe-area space and remains visible.
+- Mobile care navigation reserves bottom safe-area space, stays hidden near the top and footer, hides while scrolling down or typing, and returns on upward scroll or after scrolling settles.
+- The shared mobile care dock keeps Find pharmacy, Refill, Health guides, and My care consistent across public care routes while legal, acquisition, and account-workspace surfaces stay uncluttered.
 - Pharmacy selection precedes network-level clinical requests.
 - Legacy palette utilities map to semantic dark colors while components migrate to tokens.
 
