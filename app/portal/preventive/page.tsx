@@ -29,31 +29,42 @@ export default async function PortalPreventivePage() {
       title="Preventive counselling"
       subtitle="Travel health, cessation, immunisation education, and other pharmacist counselling sessions."
       actions={
-        <Link href={shopBase ? `${shopBase}/preventive` : "/preventive"} className="btn-primary">
+        <Link
+          href={shopBase ? `${shopBase}/preventive` : "/preventive"}
+          className="btn-primary min-h-11 w-full justify-center sm:w-auto"
+        >
           <HeartPulse className="h-4 w-4" /> Book a session
         </Link>
       }
     >
       {data.counselling.length === 0 ? (
-        <div className="rounded-2xl border border-[#e3ebe6] bg-white p-8 text-sm text-[#5a6b62]">
+        <div className="rounded-2xl border border-[#e3ebe6] bg-white p-5 text-sm leading-relaxed text-[#5a6b62] dark:border-white/10 dark:bg-white/[0.035] dark:text-slate-400 sm:p-8">
           No counselling sessions yet.{" "}
-          <Link href={shopBase ? `${shopBase}/preventive` : "/preventive"} className="font-semibold text-teal-800">
+          <Link
+            href={shopBase ? `${shopBase}/preventive` : "/preventive"}
+            className="font-semibold text-teal-800 underline-offset-4 hover:underline dark:text-teal-300"
+          >
             Request one
           </Link>
           .
         </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="grid min-w-0 gap-3 md:grid-cols-2">
           {data.counselling.map((c) => (
-            <li key={c.id} className="rounded-2xl border border-white/60 bg-white p-5 shadow-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">{c.status}</p>
-              <h2 className="mt-1 font-semibold text-[#0c1a14]">
+            <li
+              key={c.id}
+              className="min-w-0 rounded-2xl border border-[#e3ebe6] bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5"
+            >
+              <p className="break-words text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">{c.status}</p>
+              <h2 className="mt-1 break-words font-semibold text-[#0c1a14] dark:text-slate-100">
                 {COUNSELLING_TOPICS.find((t) => t.slug === c.topic)?.title || c.topic}
               </h2>
-              <p className="mt-1 text-xs text-[#5a6b62]">
+              <p className="mt-1 break-words text-xs leading-relaxed text-[#5a6b62] dark:text-slate-400">
                 {c.preferredDate || new Date(c.createdAt).toLocaleDateString()} · {c.format.replace(/_/g, " ")}
               </p>
-              {c.summary && <p className="mt-3 text-sm leading-relaxed text-[#5a6b62]">{c.summary}</p>}
+              {c.summary && (
+                <p className="mt-3 break-words text-sm leading-relaxed text-[#5a6b62] dark:text-slate-300">{c.summary}</p>
+              )}
             </li>
           ))}
         </ul>
