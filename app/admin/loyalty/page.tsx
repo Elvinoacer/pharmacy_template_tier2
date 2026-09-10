@@ -9,7 +9,19 @@ import LoyaltyForm from "@/app/components/admin/LoyaltyForm";
 import CouponForm from "@/app/components/admin/CouponForm";
 import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
-import { Sparkles, Tag, Gift, Award, TrendingUp, Percent, DollarSign, Clock, Zap, Search, X } from "lucide-react";
+import {
+  Award,
+  Clock,
+  DollarSign,
+  Gift,
+  Percent,
+  Search,
+  Sparkles,
+  Tag,
+  TrendingUp,
+  X,
+  Zap,
+} from "lucide-react";
 import { formatTimeAgo } from "@/app/lib/time";
 import type { Prisma } from "@/app/generated/prisma/client";
 
@@ -18,10 +30,10 @@ export const metadata = { title: "Loyalty" };
 const PAGE_SIZE = 25;
 
 const TIER_COLOR: Record<string, string> = {
-  bronze: "bg-amber-500/15 text-amber-700",
-  silver: "bg-slate-300/15 text-slate-200",
-  gold: "bg-yellow-400/15 text-yellow-300",
-  platinum: "bg-cyan-400/15 text-cyan-700",
+  bronze: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
+  silver: "bg-slate-500/15 text-slate-700 dark:text-slate-300",
+  gold: "bg-yellow-500/15 text-yellow-800 dark:text-yellow-300",
+  platinum: "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300",
 };
 
 export default async function AdminLoyaltyPage({
@@ -89,7 +101,6 @@ export default async function AdminLoyaltyPage({
     }),
   ]);
 
-  // For coupon form collision checks, load just codes (bounded).
   const couponCodes = await prisma.coupon.findMany({
     select: {
       id: true,
@@ -118,251 +129,263 @@ export default async function AdminLoyaltyPage({
     <AdminShell
       user={user}
       title="Loyalty & rewards"
-      subtitle="Manage points, coupons, and earning rules for your patients and customers."
+      subtitle="Operate member balances and coupons first, then review automation rules."
     >
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Active points</p>
-            <Sparkles className="h-3.5 w-3.5 admin-accent-text" />
-          </div>
-          <p className="mt-1 text-2xl font-bold admin-text">{totalPoints.toLocaleString()}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Lifetime points</p>
-            <TrendingUp className="h-3.5 w-3.5 admin-accent-text" />
-          </div>
-          <p className="mt-1 text-2xl font-bold admin-text">{totalLifetime.toLocaleString()}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Active coupons</p>
-            <Tag className="h-3.5 w-3.5 admin-accent-text" />
-          </div>
-          <p className="mt-1 text-2xl font-bold admin-text">{activeCoupons}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Members</p>
-            <Award className="h-3.5 w-3.5 admin-accent-text" />
-          </div>
-          <p className="mt-1 text-2xl font-bold admin-text">{memberCount}</p>
-        </div>
-      </div>
-
-      <AdminPanel
-        title="Automation rules"
-        description="These earning rules are checked daily. Review the active rules before adjusting points."
-        className="mb-6"
-        action={
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-            <Zap className="h-2.5 w-2.5" /> Cron-backed
-          </span>
-        }
-      >
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            { trigger: "birthday", label: "Birthday", points: 25, desc: "Annual birthday bonus if birthdayMessages enabled" },
-            { trigger: "refill_completed", label: "Refill collected", points: 10, desc: "When a refill is marked collected in the last 24h" },
-            { trigger: "order_paid", label: "Order paid", points: 0, multiplier: "1 pt / KES 100", desc: "Paid orders in the last 24h" },
-          ].map((r) => (
-            <div key={r.trigger} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold admin-text">{r.label}</p>
-                <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
-              </div>
-              <p className="mt-0.5 text-xs admin-soft">{r.desc}</p>
-              <p className="mt-2 text-sm font-bold admin-accent-text">
-                {r.points > 0 ? `+${r.points} pts` : r.multiplier}
-              </p>
+      <div className="mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+          <div className="admin-stat min-w-0 p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Active points</p>
+              <Sparkles className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
             </div>
-          ))}
-          {rules.map((r) => (
-            <div key={r.id} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold admin-text">{r.name}</p>
-                <span className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${r.active ? "bg-emerald-500/10 text-emerald-700" : "bg-slate-500/10 text-slate-500"}`}>
-                  {r.active ? "DB rule" : "Inactive"}
+            <p className="mt-1 truncate text-xl font-black tabular-nums admin-text sm:text-2xl">{totalPoints.toLocaleString()}</p>
+          </div>
+          <div className="admin-stat min-w-0 p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Lifetime</p>
+              <TrendingUp className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
+            </div>
+            <p className="mt-1 truncate text-xl font-black tabular-nums admin-text sm:text-2xl">{totalLifetime.toLocaleString()}</p>
+          </div>
+          <div className="admin-stat min-w-0 p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Coupons</p>
+              <Tag className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
+            </div>
+            <p className="mt-1 text-xl font-black tabular-nums admin-text sm:text-2xl">{activeCoupons}</p>
+          </div>
+          <div className="admin-stat min-w-0 p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Members</p>
+              <Award className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
+            </div>
+            <p className="mt-1 text-xl font-black tabular-nums admin-text sm:text-2xl">{memberCount}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <AdminPanel
+            title="Adjust member points"
+            description="Add or remove points from a customer balance."
+            action={
+              recentTx[0] ? (
+                <span className="text-[11px] font-bold uppercase tracking-wide admin-soft">
+                  Last update {formatTimeAgo(recentTx[0].createdAt)}
                 </span>
-              </div>
-              <p className="mt-0.5 text-xs admin-soft">Trigger: {r.trigger}</p>
-              <p className="mt-2 text-sm font-bold admin-accent-text">
-                +{r.points} pts{r.multiplier ? ` · ×${r.multiplier}` : ""}
-              </p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-3 text-xs admin-soft">
-          Schedule via external cron provider (daily 06:00) hitting <code className="md-code">/api/cron/loyalty</code> with secret parameter or header.
-        </p>
-      </AdminPanel>
+              ) : undefined
+            }
+          >
+            <LoyaltyForm action={adminLoyaltyAdjustAction} />
+          </AdminPanel>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+          <AdminPanel
+            title={couponCodes.length > 0 ? "Create or manage coupon" : "Create coupon"}
+            description="Issue a redeemable coupon, update it, or archive it."
+          >
+            <CouponForm
+              action={adminCreateCouponAction}
+              coupons={couponCodes.map((c) => ({
+                id: c.id,
+                code: c.code,
+                description: c.description,
+                discountType: c.discountType,
+                discountValue: String(c.discountValue),
+                pointsCost: c.pointsCost,
+                maxRedemptions: c.maxRedemptions,
+                redemptions: c.redemptions,
+                validFrom: c.validFrom?.toISOString() ?? null,
+                validUntil: c.validUntil?.toISOString() ?? null,
+                active: c.active,
+                updatedAt: c.updatedAt.toISOString(),
+              }))}
+            />
+          </AdminPanel>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <AdminPanel title="Member balances" description={`${accountTotal} matching`}>
+            <form className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:items-center" method="get">
+              <div className="relative min-w-0 flex-1">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+                <input
+                  name="q"
+                  defaultValue={sp.q || ""}
+                  placeholder="Search member or referral code…"
+                  className="input-admin min-h-11 pl-9 pr-3"
+                />
+              </div>
+              {sp.cq && <input type="hidden" name="cq" value={sp.cq} />}
+              <button type="submit" className="btn-admin min-h-11 !rounded-xl px-3" aria-label="Search members">
+                <Search className="h-4 w-4" />
+                <span className="hidden sm:inline">Search</span>
+              </button>
+              {sp.q && (
+                <Link
+                  href={`/admin/loyalty${sp.cq ? `?cq=${encodeURIComponent(sp.cq)}` : ""}`}
+                  className="col-span-2 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:col-auto"
+                >
+                  <X className="h-3.5 w-3.5" /> Clear member search
+                </Link>
+              )}
+            </form>
+
+            {accounts.length === 0 ? (
+              <AdminEmptyState icon={Award} title="No loyalty members found" />
+            ) : (
+              <ul className="space-y-2">
+                {accounts.map((a) => (
+                  <li
+                    key={a.id}
+                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 transition hover:border-[var(--admin-border-2)]"
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="break-words text-sm font-bold admin-text">{a.customer.fullName}</p>
+                        <p className="mt-1 text-xs leading-5 admin-soft">
+                          Lifetime {a.lifetimePoints.toLocaleString()} pts · Referral {a.referralCode}
+                          {a.transactions[0] && <> · Last activity {formatTimeAgo(a.transactions[0].createdAt)}</>}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 sm:justify-end">
+                        <div className="text-left sm:text-right">
+                          <p className="text-lg font-black tabular-nums admin-text">{a.points.toLocaleString()}</p>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide admin-soft">available points</p>
+                        </div>
+                        <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${TIER_COLOR[a.tier] || TIER_COLOR.bronze}`}>
+                          {a.tier}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <Pagination
+              page={page}
+              total={accountTotal}
+              pageSize={PAGE_SIZE}
+              basePath="/admin/loyalty"
+              queryParams={{ q: sp.q, cq: sp.cq, cpage: sp.cpage }}
+              variant="admin"
+            />
+          </AdminPanel>
+
+          <AdminPanel title="Coupons" description={`${couponTotal} matching`}>
+            <form className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:items-center" method="get">
+              <div className="relative min-w-0 flex-1">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+                <input
+                  name="cq"
+                  defaultValue={sp.cq || ""}
+                  placeholder="Search coupon code…"
+                  className="input-admin min-h-11 pl-9 pr-3"
+                />
+              </div>
+              {sp.q && <input type="hidden" name="q" value={sp.q} />}
+              <button type="submit" className="btn-admin min-h-11 !rounded-xl px-3" aria-label="Search coupons">
+                <Search className="h-4 w-4" />
+                <span className="hidden sm:inline">Search</span>
+              </button>
+              {sp.cq && (
+                <Link
+                  href={`/admin/loyalty${sp.q ? `?q=${encodeURIComponent(sp.q)}` : ""}`}
+                  className="col-span-2 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-muted transition hover:text-[var(--admin-text)] sm:col-auto"
+                >
+                  <X className="h-3.5 w-3.5" /> Clear coupon search
+                </Link>
+              )}
+            </form>
+
+            {coupons.length === 0 ? (
+              <AdminEmptyState icon={Gift} title="No coupons found" />
+            ) : (
+              <ul className="space-y-2">
+                {coupons.map((c) => (
+                  <li
+                    key={c.id}
+                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3 transition hover:border-[var(--admin-border-2)]"
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="break-all font-mono text-sm font-black admin-accent-text">{c.code}</span>
+                          <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${c.active ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-slate-500/15 text-slate-600 dark:text-slate-300"}`}>
+                            {c.active ? "active" : "archived"}
+                          </span>
+                        </div>
+                        <p className="mt-1 break-words text-xs leading-5 admin-muted">{c.description || "No description"}</p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs admin-muted sm:min-w-[210px] sm:text-right">
+                        <span className="inline-flex items-center gap-1 sm:justify-end">
+                          {c.discountType === "percent" ? <Percent className="h-3 w-3" /> : <DollarSign className="h-3 w-3" />}
+                          {Number(c.discountValue)}
+                        </span>
+                        <span>{c.pointsCost} pts</span>
+                        <span>{c.redemptions}{c.maxRedemptions ? `/${c.maxRedemptions}` : ""} redeemed</span>
+                        <span className="inline-flex items-center gap-1 sm:justify-end">
+                          <Clock className="h-3 w-3" /> {formatTimeAgo(c.updatedAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <Pagination
+              page={cpage}
+              total={couponTotal}
+              pageSize={PAGE_SIZE}
+              basePath="/admin/loyalty"
+              queryParams={{ q: sp.q, cq: sp.cq, page: sp.page }}
+              pageParam="cpage"
+              variant="admin"
+            />
+          </AdminPanel>
+        </div>
+
         <AdminPanel
-          title="Adjust points"
-          description="Add or remove points from a customer's balance"
+          title="Automation rules"
+          description="Background earning rules. Review these after the member-facing operations above."
           action={
-            recentTx[0] ? (
-              <span className="text-xs uppercase tracking-wide admin-soft">
-                Last update {formatTimeAgo(recentTx[0].createdAt)}
-              </span>
-            ) : undefined
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+              <Zap className="h-3 w-3" /> Cron-backed
+            </span>
           }
         >
-          <LoyaltyForm action={adminLoyaltyAdjustAction} />
-        </AdminPanel>
-
-        <AdminPanel
-          title={couponCodes.length > 0 ? "Create / manage coupon" : "Create coupon"}
-          description="Issue a new redeemable coupon, or edit/archive existing ones"
-        >
-          <CouponForm
-            action={adminCreateCouponAction}
-            coupons={couponCodes.map((c) => ({
-              id: c.id,
-              code: c.code,
-              description: c.description,
-              discountType: c.discountType,
-              discountValue: String(c.discountValue),
-              pointsCost: c.pointsCost,
-              maxRedemptions: c.maxRedemptions,
-              redemptions: c.redemptions,
-              validFrom: c.validFrom?.toISOString() ?? null,
-              validUntil: c.validUntil?.toISOString() ?? null,
-              active: c.active,
-              updatedAt: c.updatedAt.toISOString(),
-            }))}
-          />
-        </AdminPanel>
-
-        <AdminPanel title="Coupons" description={`${couponTotal} matching`}>
-          <form className="mb-3 flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[140px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-3 w-3 -translate-y-1/2 admin-soft" />
-              <input
-                name="cq"
-                defaultValue={sp.cq || ""}
-                placeholder="Search code…"
-                className="w-full rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] py-1.5 pl-8 pr-2 text-xs admin-text focus:border-[var(--admin-accent)] focus:outline-none"
-              />
-            </div>
-            {sp.q && <input type="hidden" name="q" value={sp.q} />}
-            <button type="submit" className="btn-admin-sm"><Search className="h-3 w-3" /></button>
-            {sp.cq && (
-              <Link href={`/admin/loyalty${sp.q ? `?q=${encodeURIComponent(sp.q)}` : ""}`} className="btn-admin-sm !bg-[var(--admin-inset-2)]">
-                <X className="h-3 w-3" />
-              </Link>
-            )}
-          </form>
-          {coupons.length === 0 ? (
-            <AdminEmptyState icon={Gift} title="No coupons yet" />
-          ) : (
-            <ul className="space-y-2">
-              {coupons.map((c) => (
-                <li
-                  key={c.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm font-bold admin-accent-text">{c.code}</span>
-                      <span className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${c.active ? "bg-emerald-500/15 text-emerald-700" : "bg-slate-500/15 text-slate-500"}`}>
-                        {c.active ? "active" : "archived"}
-                      </span>
-                    </div>
-                    <p className="mt-0.5 truncate text-xs admin-muted">
-                      {c.description || "No description"}
-                    </p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs admin-muted">
-                      <span className="inline-flex items-center gap-0.5">
-                        {c.discountType === "percent" ? <Percent className="h-2.5 w-2.5" /> : <DollarSign className="h-2.5 w-2.5" />}
-                        {Number(c.discountValue)}
-                      </span>
-                      <span>·</span>
-                      <span>{c.pointsCost} pts</span>
-                      <span>·</span>
-                      <span>
-                        {c.redemptions}
-                        {c.maxRedemptions ? `/${c.maxRedemptions}` : ""} redeemed
-                      </span>
-                      <span>·</span>
-                      <span className="inline-flex items-center gap-0.5">
-                        <Clock className="h-2.5 w-2.5" /> {formatTimeAgo(c.updatedAt)}
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-          <Pagination
-            page={cpage}
-            total={couponTotal}
-            pageSize={PAGE_SIZE}
-            basePath="/admin/loyalty"
-            queryParams={{ q: sp.q, cq: sp.cq, page: sp.page }}
-            pageParam="cpage"
-            variant="admin"
-          />
-        </AdminPanel>
-
-        <AdminPanel title="Member balances" description={`${accountTotal} matching`}>
-          <form className="mb-3 flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[140px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-3 w-3 -translate-y-1/2 admin-soft" />
-              <input
-                name="q"
-                defaultValue={sp.q || ""}
-                placeholder="Search member…"
-                className="w-full rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] py-1.5 pl-8 pr-2 text-xs admin-text focus:border-[var(--admin-accent)] focus:outline-none"
-              />
-            </div>
-            {sp.cq && <input type="hidden" name="cq" value={sp.cq} />}
-            <button type="submit" className="btn-admin-sm"><Search className="h-3 w-3" /></button>
-            {sp.q && (
-              <Link href={`/admin/loyalty${sp.cq ? `?cq=${encodeURIComponent(sp.cq)}` : ""}`} className="btn-admin-sm !bg-[var(--admin-inset-2)]">
-                <X className="h-3 w-3" />
-              </Link>
-            )}
-          </form>
-          {accounts.length === 0 ? (
-            <AdminEmptyState icon={Award} title="No loyalty members yet" />
-          ) : (
-            <ul className="space-y-1.5">
-              {accounts.map((a) => (
-                <li
-                  key={a.id}
-                  className="flex items-center justify-between gap-2 rounded-lg bg-[var(--admin-inset)] px-3 py-2"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium admin-text">{a.customer.fullName}</p>
-                    <p className="text-xs admin-soft">
-                      Lifetime: {a.lifetimePoints} · Referral: {a.referralCode}
-                      {a.transactions[0] && (
-                        <> · Last: {formatTimeAgo(a.transactions[0].createdAt)}</>
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold admin-text">{a.points}</span>
-                    <span className="text-xs admin-soft">pts</span>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${TIER_COLOR[a.tier]}`}>
-                      {a.tier}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-          <Pagination
-            page={page}
-            total={accountTotal}
-            pageSize={PAGE_SIZE}
-            basePath="/admin/loyalty"
-            queryParams={{ q: sp.q, cq: sp.cq, cpage: sp.cpage }}
-            variant="admin"
-          />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { trigger: "birthday", label: "Birthday", points: 25, desc: "Annual bonus when birthday messages are enabled." },
+              { trigger: "refill_completed", label: "Refill collected", points: 10, desc: "Rewards refills collected in the previous 24 hours." },
+              { trigger: "order_paid", label: "Order paid", points: 0, multiplier: "1 pt / KES 100", desc: "Rewards qualifying paid orders from the previous 24 hours." },
+            ].map((r) => (
+              <div key={r.trigger} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm font-bold admin-text">{r.label}</p>
+                  <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Active</span>
+                </div>
+                <p className="mt-1 text-xs leading-5 admin-soft">{r.desc}</p>
+                <p className="mt-3 text-sm font-black admin-accent-text">{r.points > 0 ? `+${r.points} pts` : r.multiplier}</p>
+              </div>
+            ))}
+            {rules.map((r) => (
+              <div key={r.id} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm font-bold admin-text">{r.name}</p>
+                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${r.active ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-slate-500/10 text-slate-600 dark:text-slate-300"}`}>
+                    {r.active ? "DB rule" : "Inactive"}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-5 admin-soft">Trigger: {r.trigger}</p>
+                <p className="mt-3 text-sm font-black admin-accent-text">+{r.points} pts{r.multiplier ? ` · ×${r.multiplier}` : ""}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 break-words text-xs leading-5 admin-soft">
+            Schedule the daily worker for 06:00 against <code className="md-code break-all">/api/cron/loyalty</code> with the configured secret.
+          </p>
         </AdminPanel>
       </div>
     </AdminShell>
