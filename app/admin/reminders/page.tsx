@@ -69,106 +69,109 @@ export default async function AdminRemindersPage() {
     <AdminShell
       user={user}
       title="Patient reminders"
-      subtitle="Schedule refill, collection, and wellness reminders, then track their delivery."
+      subtitle="Schedule refill, collection, and wellness reminders, then track delivery without losing the urgent work in the noise."
       actions={<ProcessRemindersButton />}
     >
-      {/* Stats */}
-      <div className="mb-6 grid grid-cols-3 gap-3">
-        <div className="admin-stat p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Scheduled</p>
-          <p className="mt-1 text-2xl font-bold text-amber-700">{stats.scheduled}</p>
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="admin-stat min-w-0 p-4">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide admin-muted sm:text-xs">Scheduled</p>
+              <p className="mt-1 text-2xl font-bold admin-text">{stats.scheduled}</p>
+            </div>
+            <span className="admin-icon-well flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+              <CalendarClock className="h-4 w-4 admin-accent-text" />
+            </span>
+          </div>
         </div>
-        <div className="admin-stat p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Sent</p>
-          <p className="mt-1 text-2xl font-bold text-emerald-700">{stats.sent}</p>
+        <div className="admin-stat min-w-0 p-4">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide admin-muted sm:text-xs">Sent</p>
+              <p className="mt-1 text-2xl font-bold admin-text">{stats.sent}</p>
+            </div>
+            <span className="admin-icon-well flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+              <Mail className="h-4 w-4 admin-accent-text" />
+            </span>
+          </div>
         </div>
-        <div className="admin-stat p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Failed</p>
-          <p className="mt-1 text-2xl font-bold text-rose-600">{stats.failed}</p>
+        <div className="admin-stat col-span-2 min-w-0 p-4 sm:col-span-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide admin-muted sm:text-xs">Failed</p>
+              <p className="mt-1 text-2xl font-bold admin-text">{stats.failed}</p>
+            </div>
+            <span className="admin-icon-well flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+              <Bell className="h-4 w-4 admin-accent-text" />
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Honest automation status — only claim what the code actually does */}
       <AdminPanel
-        title="How reminders work"
-        description="Scheduled reminders are checked every five minutes."
+        title="Automation coverage"
+        description="What runs automatically and what still needs an intentional schedule."
         className="mb-6"
         action={
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-            <Zap className="h-2.5 w-2.5" /> Live
+          <span className="inline-flex min-h-8 items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+            <Zap className="h-3 w-3" /> Live
           </span>
         }
       >
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
             <CalendarClock className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Due scheduled reminders</p>
-            <p className="mt-1 text-xs admin-soft">
-              Sends due reminders to patients who have agreed to receive them.
-            </p>
-            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
+            <p className="mt-1 text-xs admin-soft">Sends due reminders to patients who have agreed to receive them.</p>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
           </div>
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
             <Sparkles className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Scheduled campaigns</p>
-            <p className="mt-1 text-xs admin-soft">
-              Starts scheduled campaigns when they are due, respecting each patient’s marketing preferences.
-            </p>
-            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
+            <p className="mt-1 text-xs admin-soft">Starts campaigns when due while respecting patient marketing preferences.</p>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
           </div>
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
             <Mail className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Scheduled staff messages</p>
-            <p className="mt-1 text-xs admin-soft">
-              Sends staff messages at their scheduled time.
-            </p>
-            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
+            <p className="mt-1 text-xs admin-soft">Sends staff messages at their scheduled time.</p>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
           </div>
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
             <HeartPulse className="h-4 w-4 admin-accent-text" />
-            <p className="mt-2 text-sm font-semibold admin-text">Low adherence staff alerts</p>
-            <p className="mt-1 text-xs admin-soft">
-              Alerts staff when adherence falls below 70% over 14 days. Each prescription is flagged at most once a week.
-            </p>
-            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
+            <p className="mt-2 text-sm font-semibold admin-text">Low adherence alerts</p>
+            <p className="mt-1 text-xs admin-soft">Alerts staff when adherence falls below 70% over 14 days, no more than once a week per prescription.</p>
+            <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700">Active</span>
           </div>
-          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3">
+          <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5">
             <Cake className="h-4 w-4 admin-accent-text" />
             <p className="mt-2 text-sm font-semibold admin-text">Birthday greeting + points</p>
-            <p className="mt-1 text-xs admin-soft">
-              Birthday messages and rewards are managed by the loyalty programme.
-            </p>
-            <span className="mt-2 inline-block rounded-full bg-blue-500/10 px-1.5 py-0.5 text-xs font-semibold text-blue-700">Loyalty programme</span>
+            <p className="mt-1 text-xs admin-soft">Birthday messages and rewards are managed by the loyalty programme.</p>
+            <span className="mt-2 inline-block rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold admin-accent-text">Loyalty programme</span>
           </div>
-          <div className="rounded-xl border border-dashed border-[var(--admin-border)] bg-[var(--admin-inset)]/50 p-3 opacity-70">
+          <div className="rounded-xl border border-dashed border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 opacity-80">
             <Pill className="h-4 w-4 admin-soft" />
-            <p className="mt-2 text-sm font-semibold admin-muted">Auto refill / pickup / promo</p>
-            <p className="mt-1 text-xs admin-soft">
-              These reminders need to be scheduled using the form below.
-            </p>
-            <span className="mt-2 inline-block rounded-full bg-slate-500/10 px-1.5 py-0.5 text-xs font-semibold text-slate-500">Not automated</span>
+            <p className="mt-2 text-sm font-semibold admin-text">Refill, pickup & promo</p>
+            <p className="mt-1 text-xs admin-soft">These still need to be scheduled intentionally with the form below.</p>
+            <span className="mt-2 inline-block rounded-full bg-slate-500/10 px-2 py-0.5 text-xs font-semibold admin-muted">Manual schedule</span>
           </div>
         </div>
         <p className="mt-3 text-xs admin-soft">
-          Scheduled reminders are processed every five minutes.
-          Use <strong>Process due now</strong> to run the same jobs immediately.
+          Scheduled reminders are processed every five minutes. Use <strong>Process due now</strong> when you need the same jobs handled immediately.
         </p>
       </AdminPanel>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AdminPanel title="Schedule / send reminder" description="Pick a customer and channel">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <AdminPanel title="Schedule or send" description="Patient, message, channel, and timing in one flow">
           <ReminderForm action={adminCreateReminderAction} />
         </AdminPanel>
 
-        <AdminPanel
-          title="Scheduled & sent"
-          description={`${reminders.length} reminders`}
-        >
+        <AdminPanel title="Delivery timeline" description={`${reminders.length} recent reminders`}>
           {reminders.length === 0 ? (
             <AdminEmptyState
               icon={CalendarClock}
               title="No reminders yet"
-              description="Schedule your first reminder using the form on the left."
+              description="Schedule your first reminder using the form."
             />
           ) : (
             <ul className="space-y-2">
@@ -178,28 +181,28 @@ export default async function AdminRemindersPage() {
                 return (
                   <li
                     key={r.id}
-                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition hover:border-[var(--admin-border-2)]"
+                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition-colors hover:border-[var(--admin-border-2)]"
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-accent-soft)] admin-accent-text">
+                    <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="flex min-w-0 flex-1 items-start gap-2.5">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-accent-soft)] admin-accent-text">
                           <TypeIcon className="h-4 w-4" />
                         </span>
-                        <div className="min-w-0">
-                          <p className="font-semibold admin-text">{r.title}</p>
-                          <p className="text-xs admin-muted">{r.customer.fullName}</p>
-                          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs admin-soft">
-                            <span className="inline-flex items-center gap-0.5 capitalize">
-                              <ChannelIcon className="h-2.5 w-2.5" /> {r.channel}
+                        <div className="min-w-0 flex-1">
+                          <p className="break-words font-semibold admin-text">{r.title}</p>
+                          <p className="truncate text-xs admin-muted">{r.customer.fullName}</p>
+                          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs admin-soft">
+                            <span className="inline-flex items-center gap-1 capitalize">
+                              <ChannelIcon className="h-3 w-3" /> {r.channel}
                             </span>
-                            <span>·</span>
+                            <span aria-hidden="true">·</span>
                             <span className="capitalize">{r.type.replace("_", " ")}</span>
-                            <span>·</span>
+                            <span aria-hidden="true">·</span>
                             <span>{formatDateTime(r.scheduledFor)}</span>
                           </div>
                         </div>
                       </div>
-                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[r.status]}`}>
+                      <span className={`w-fit shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${STATUS_COLOR[r.status]}`}>
                         {r.status}
                       </span>
                     </div>
