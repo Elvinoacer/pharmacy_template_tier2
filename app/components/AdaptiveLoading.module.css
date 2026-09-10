@@ -1,0 +1,234 @@
+.surface {
+  --loading-bg: #f4f7f4;
+  --loading-card: #ffffff;
+  --loading-card-2: #f8faf9;
+  --loading-border: rgba(12, 26, 20, 0.1);
+  --loading-block: #e4ebe7;
+  --loading-block-strong: #d5e0da;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  color: #0c1a14;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 24rem),
+    var(--loading-bg);
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+:global(html[data-theme="dark"]) .surface,
+:global(html[data-admin-theme="dark"]) .surface {
+  --loading-bg: #0b0f14;
+  --loading-card: #161d27;
+  --loading-card-2: #1b2430;
+  --loading-border: rgba(148, 163, 184, 0.16);
+  --loading-block: #273340;
+  --loading-block-strong: #334155;
+  color: #f1f5f9;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 24rem),
+    var(--loading-bg);
+  color-scheme: dark;
+}
+
+:global(html[data-theme="light"]) .surface,
+:global(html[data-admin-theme="light"]) .surface {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .surface {
+    --loading-bg: #0b0f14;
+    --loading-card: #161d27;
+    --loading-card-2: #1b2430;
+    --loading-border: rgba(148, 163, 184, 0.16);
+    --loading-block: #273340;
+    --loading-block-strong: #334155;
+    color: #f1f5f9;
+    background:
+      radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 24rem),
+      var(--loading-bg);
+    color-scheme: dark;
+  }
+}
+
+.wrap {
+  width: min(100%, 80rem);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+  padding-bottom: clamp(2rem, 7vw, 5rem);
+}
+
+.public .wrap {
+  padding-top: clamp(5.75rem, 12vw, 8rem);
+}
+
+.workspace .wrap {
+  padding-top: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.heading {
+  width: min(100%, 44rem);
+}
+
+.skeleton,
+.statCard,
+.card {
+  animation: loadingPulse 1.6s ease-in-out infinite;
+}
+
+.skeleton {
+  border-radius: 0.75rem;
+  background: var(--loading-block);
+}
+
+.eyebrow {
+  width: min(8.5rem, 42vw);
+  height: 0.75rem;
+}
+
+.title {
+  width: min(24rem, 78vw);
+  height: clamp(1.9rem, 7vw, 2.65rem);
+  margin-top: 1rem;
+  background: var(--loading-block-strong);
+}
+
+.copy {
+  width: min(34rem, 92vw);
+  height: 0.9rem;
+  margin-top: 0.85rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: clamp(1.5rem, 5vw, 2.25rem);
+}
+
+.statCard,
+.card {
+  border: 1px solid var(--loading-border);
+  background: var(--loading-card);
+  box-shadow: 0 8px 28px rgba(8, 40, 32, 0.05);
+}
+
+.statCard {
+  min-width: 0;
+  min-height: 5.75rem;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.statLabel {
+  width: 64%;
+  height: 0.65rem;
+}
+
+.statValue {
+  width: 42%;
+  height: 1.35rem;
+  margin-top: 0.75rem;
+  background: var(--loading-block-strong);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.card {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 1.25rem;
+}
+
+.cardMedia {
+  width: 100%;
+  height: clamp(5.5rem, 18vw, 8rem);
+  border-radius: 0;
+  background: var(--loading-card-2);
+}
+
+.cardBody {
+  padding: 1rem;
+}
+
+.cardTitle {
+  width: 62%;
+  height: 0.9rem;
+  background: var(--loading-block-strong);
+}
+
+.cardLine {
+  width: 90%;
+  height: 0.68rem;
+  margin-top: 0.8rem;
+}
+
+.cardLineShort {
+  width: 58%;
+  height: 0.68rem;
+  margin-top: 0.55rem;
+}
+
+@media (min-width: 640px) {
+  .stats {
+    gap: 1rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .wrap {
+    padding-inline: 0.875rem;
+  }
+
+  .public .wrap {
+    padding-top: 5.25rem;
+  }
+
+  .stats {
+    gap: 0.6rem;
+  }
+
+  .statCard {
+    min-height: 5.25rem;
+    padding: 0.8rem;
+  }
+
+  .cardBody {
+    padding: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface,
+  .skeleton,
+  .statCard,
+  .card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.58; }
+}
