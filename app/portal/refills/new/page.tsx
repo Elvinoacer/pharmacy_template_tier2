@@ -33,16 +33,16 @@ export default async function NewRefillPage({
       title="Request a refill"
       subtitle="A pharmacist will review every request before preparing your medication."
     >
-      <div className="grid gap-6 lg:grid-cols-3">
-        <aside className="space-y-3 lg:col-span-1">
+      <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-3">
+        <aside className="order-2 min-w-0 space-y-3 lg:order-1 lg:col-span-1">
           <Panel>
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
                 <Info className="h-5 w-5" />
               </span>
-              <div>
-                <p className="text-sm font-semibold text-[#0c1a14]">Not a clinical approval</p>
-                <p className="mt-0.5 text-xs text-[#5a6b62]">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">Not a clinical approval</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-muted">
                   Submitting this form starts a refill request. A pharmacist must review and approve
                   every prescription before it is prepared.
                 </p>
@@ -52,54 +52,54 @@ export default async function NewRefillPage({
           <Panel title="What happens next">
             <ol className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-[10px] font-bold text-white">1</span>
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Submitted</p>
-                  <p className="text-xs text-[#5a6b62]">Request enters our pharmacist queue</p>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">1</span>
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground">Submitted</p>
+                  <p className="text-xs text-muted">Request enters our pharmacist queue</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-[10px] font-bold text-white">2</span>
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Under review</p>
-                  <p className="text-xs text-[#5a6b62]">Pharmacist verifies the prescription</p>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">2</span>
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground">Under review</p>
+                  <p className="text-xs text-muted">Pharmacist verifies the prescription</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-[10px] font-bold text-white">3</span>
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Preparing</p>
-                  <p className="text-xs text-[#5a6b62]">Medication is being prepared</p>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">3</span>
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground">Preparing</p>
+                  <p className="text-xs text-muted">Medication is being prepared</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0d6e5a] text-[10px] font-bold text-white">4</span>
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Ready for pickup</p>
-                  <p className="text-xs text-[#5a6b62]">You will get a notification when it is ready</p>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">4</span>
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground">Ready for pickup</p>
+                  <p className="text-xs text-muted">You will get a notification when it is ready</p>
                 </div>
               </li>
             </ol>
           </Panel>
           <Panel>
             <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-[#5a6b62]">
-                <Clock className="h-4 w-4 text-[#0d6e5a]" />
-                <span>Average review time: <strong className="text-[#0c1a14]">2 hours</strong></span>
+              <div className="flex items-start gap-2 text-muted">
+                <Clock className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+                <span>Average review time: <strong className="text-foreground">2 hours</strong></span>
               </div>
-              <div className="flex items-center gap-2 text-[#5a6b62]">
-                <Store className="h-4 w-4 text-[#0d6e5a]" />
+              <div className="flex items-start gap-2 text-muted">
+                <Store className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
                 <span>Pickup at any branch</span>
               </div>
-              <div className="flex items-center gap-2 text-[#5a6b62]">
-                <Truck className="h-4 w-4 text-[#0d6e5a]" />
+              <div className="flex items-start gap-2 text-muted">
+                <Truck className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
                 <span>Home delivery available</span>
               </div>
             </div>
           </Panel>
         </aside>
 
-        <div className="lg:col-span-2">
+        <div className="order-1 min-w-0 lg:order-2 lg:col-span-2">
           <Panel
             title="Refill details"
             description={
