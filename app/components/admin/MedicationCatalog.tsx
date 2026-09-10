@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -59,7 +59,6 @@ export type CatalogMed = {
 };
 
 type ViewMode = "table" | "cards";
-const VIEW_KEY = "admin.medications.view";
 
 type Props = {
   rows: CatalogMed[];
@@ -200,42 +199,17 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
   const [view, setView] = useState<ViewMode>("cards");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, startTransition] = useTransition();
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(VIEW_KEY);
-      if (saved === "table" || saved === "cards") {
-        setView(saved);
-      } else if (window.matchMedia("(min-width: 1024px)").matches) {
-        setView("table");
-      }
-    } catch {
-      // Ignore storage/media-query failures and keep the touch-first card default.
-    }
-  }, []);
-
-  useEffect(() => {
-    const ids = new Set(rows.map((r) => r.id));
-    setSelected((prev) => {
-      const next = new Set([...prev].filter((id) => ids.has(id)));
-      return next.size === prev.size ? prev : next;
-    });
-  }, [rows]);
-
-  const allSelected = rows.length > 0 && rows.every((r) => selected.has(r.id));
-  const selectedCount = selected.size;
+  const visibleIds = new Set(rows.map((row) => row.id));
+  const selectedIds = Array.from(selected).filter((id) => visibleIds.has(id));
+  const allSelected = rows.length > 0 && rows.every((row) => selected.has(row.id));
+  const selectedCount = selectedIds.length;
 
   function setViewMode(mode: ViewMode) {
     setView(mode);
-    try {
-      localStorage.setItem(VIEW_KEY, mode);
-    } catch {
-      // Ignore storage failures.
-    }
   }
 
   function toggleAll() {
-    setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)));
+    setSelected(allSelected ? new Set() : new Set(rows.map((row) => row.id)));
   }
 
   function toggleOne(id: string) {
@@ -248,7 +222,7 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
   }
 
   async function runBulk(action: "deactivate" | "activate" | "unpublish" | "publish") {
-    if (selected.size === 0) {
+    if (selectedIds.length === 0) {
       toast.error("Select at least one medication.");
       return;
     }
@@ -258,11 +232,11 @@ export function MedicationCatalog({ rows, deleteAction }: Props) {
         const response = await fetch("/api/admin/medications/bulk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ids: Array.from(selected), action }),
+          body: JSON.stringify({ ids: selectedIds, action }),
         });
         if (!response.ok) throw new Error();
         const payload = (await response.json().catch(() => ({}))) as { message?: string };
-        toast.success(payload.message || `Updated ${selected.size} medication(s).`);
+        toast.success(payload.message || `Updated ${selectedIds.length} medication(s).`);
         window.location.reload();
       } catch {
         toast.error("Bulk update failed.");
