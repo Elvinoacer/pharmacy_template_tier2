@@ -5,24 +5,30 @@
   --loading-border: rgba(12, 26, 20, 0.1);
   --loading-block: #e4ebe7;
   --loading-block-strong: #d5e0da;
+  --loading-shadow: 0 8px 28px rgba(8, 40, 32, 0.05);
   width: 100%;
+  max-width: 100vw;
+  min-width: 0;
   min-height: 100dvh;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: hidden;
   color: #0c1a14;
   background:
     radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 24rem),
     var(--loading-bg);
+  color-scheme: light;
   transition: background-color 180ms ease, color 180ms ease;
 }
 
-:global(html[data-theme="dark"]) .surface,
-:global(html[data-admin-theme="dark"]) .surface {
+/* Public loading states follow the public theme only. */
+:global(html[data-theme="dark"]) .public {
   --loading-bg: #0b0f14;
   --loading-card: #161d27;
   --loading-card-2: #1b2430;
   --loading-border: rgba(148, 163, 184, 0.16);
   --loading-block: #273340;
   --loading-block-strong: #334155;
+  --loading-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
   color: #f1f5f9;
   background:
     radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 24rem),
@@ -30,19 +36,64 @@
   color-scheme: dark;
 }
 
-:global(html[data-theme="light"]) .surface,
-:global(html[data-admin-theme="light"]) .surface {
+:global(html[data-theme="light"]) .public {
+  --loading-bg: #f4f7f4;
+  --loading-card: #ffffff;
+  --loading-card-2: #f8faf9;
+  --loading-border: rgba(12, 26, 20, 0.1);
+  --loading-block: #e4ebe7;
+  --loading-block-strong: #d5e0da;
+  --loading-shadow: 0 8px 28px rgba(8, 40, 32, 0.05);
+  color: #0c1a14;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 24rem),
+    var(--loading-bg);
+  color-scheme: light;
+}
+
+/* Staff workspaces prefer the explicit admin theme, then fall back to the public theme. */
+:global(html[data-admin-theme="dark"]) .workspace,
+:global(html:not([data-admin-theme])[data-theme="dark"]) .workspace {
+  --loading-bg: #0b0f14;
+  --loading-card: #161d27;
+  --loading-card-2: #1b2430;
+  --loading-border: rgba(148, 163, 184, 0.16);
+  --loading-block: #273340;
+  --loading-block-strong: #334155;
+  --loading-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  color: #f1f5f9;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 24rem),
+    var(--loading-bg);
+  color-scheme: dark;
+}
+
+:global(html[data-admin-theme="light"]) .workspace,
+:global(html:not([data-admin-theme])[data-theme="light"]) .workspace {
+  --loading-bg: #f4f7f4;
+  --loading-card: #ffffff;
+  --loading-card-2: #f8faf9;
+  --loading-border: rgba(12, 26, 20, 0.1);
+  --loading-block: #e4ebe7;
+  --loading-block-strong: #d5e0da;
+  --loading-shadow: 0 8px 28px rgba(8, 40, 32, 0.05);
+  color: #0c1a14;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(13, 110, 90, 0.08), transparent 24rem),
+    var(--loading-bg);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme="light"])) .surface {
+  :global(html:not([data-theme])) .public,
+  :global(html:not([data-admin-theme]):not([data-theme])) .workspace {
     --loading-bg: #0b0f14;
     --loading-card: #161d27;
     --loading-card-2: #1b2430;
     --loading-border: rgba(148, 163, 184, 0.16);
     --loading-block: #273340;
     --loading-block-strong: #334155;
+    --loading-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
     color: #f1f5f9;
     background:
       radial-gradient(circle at 8% 8%, rgba(45, 212, 191, 0.07), transparent 24rem),
@@ -53,6 +104,7 @@
 
 .wrap {
   width: min(100%, 80rem);
+  min-width: 0;
   margin-inline: auto;
   padding-inline: clamp(1rem, 3vw, 2rem);
   padding-bottom: clamp(2rem, 7vw, 5rem);
@@ -68,6 +120,7 @@
 
 .heading {
   width: min(100%, 44rem);
+  min-width: 0;
 }
 
 .skeleton,
@@ -77,6 +130,7 @@
 }
 
 .skeleton {
+  max-width: 100%;
   border-radius: 0.75rem;
   background: var(--loading-block);
 }
@@ -110,7 +164,7 @@
 .card {
   border: 1px solid var(--loading-border);
   background: var(--loading-card);
-  box-shadow: 0 8px 28px rgba(8, 40, 32, 0.05);
+  box-shadow: var(--loading-shadow);
 }
 
 .statCard {
@@ -153,6 +207,7 @@
 }
 
 .cardBody {
+  min-width: 0;
   padding: 1rem;
 }
 
@@ -204,6 +259,10 @@
     padding-top: 5.25rem;
   }
 
+  .workspace .wrap {
+    padding-top: 1rem;
+  }
+
   .stats {
     gap: 0.6rem;
   }
@@ -215,6 +274,12 @@
 
   .cardBody {
     padding: 0.875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .stats {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
