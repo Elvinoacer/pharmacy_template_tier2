@@ -30,6 +30,8 @@ import {
   Sparkles,
   Layers,
   Activity,
+  ShoppingBag,
+  WalletCards,
 } from "lucide-react";
 
 export const metadata = { title: "Customer detail" };
@@ -57,44 +59,42 @@ export default async function AdminCustomerDetailPage({
 
   return (
     <AdminShell user={user} title={customer.fullName} subtitle={customer.user.email}>
-      {/* Top — profile snapshot */}
       <div className="mb-6 flex flex-wrap items-start gap-3">
         <Link
           href="/admin/customers"
-          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-inset-2)]"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-inset-2)]"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> All customers
         </Link>
       </div>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-3">
-        {/* Profile card */}
         <AdminPanel title="Profile">
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-lg font-bold text-[var(--admin-btn-fg)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-lg font-bold text-[var(--admin-btn-fg)] shadow-sm">
               {initials || "?"}
             </div>
             <div className="min-w-0">
-              <p className="truncate font-semibold admin-text">{customer.fullName}</p>
-              <p className="truncate text-xs admin-muted">{customer.user.email}</p>
+              <p className="break-words font-semibold admin-text">{customer.fullName}</p>
+              <p className="break-all text-xs admin-muted">{customer.user.email}</p>
             </div>
           </div>
-          <dl className="space-y-2.5 text-sm">
-            <div className="flex items-start gap-2">
+          <dl className="space-y-3 text-sm">
+            <div className="flex items-start gap-2.5">
               <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div className="min-w-0">
                 <p className="text-xs uppercase tracking-wide admin-soft">Email</p>
-                <p className="truncate admin-text">{customer.user.email}</p>
+                <p className="break-all admin-text">{customer.user.email}</p>
               </div>
             </div>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2.5">
               <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs uppercase tracking-wide admin-soft">Phone</p>
-                <p className="admin-text">{customer.phone || "—"}</p>
+                <p className="break-words admin-text">{customer.phone || "—"}</p>
               </div>
             </div>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2.5">
               <Calendar className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
               <div>
                 <p className="text-xs uppercase tracking-wide admin-soft">Date of birth</p>
@@ -103,18 +103,18 @@ export default async function AdminCustomerDetailPage({
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2.5">
               <Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs uppercase tracking-wide admin-soft">Branch</p>
-                <p className="admin-text">{customer.preferredBranch}</p>
+                <p className="break-words admin-text">{customer.preferredBranch}</p>
               </div>
             </div>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2.5">
               <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs uppercase tracking-wide admin-soft">Address</p>
-                <p className="admin-text">
+                <p className="break-words admin-text">
                   {[customer.addressLine1, customer.city, customer.zip].filter(Boolean).join(", ") || "—"}
                 </p>
               </div>
@@ -122,7 +122,6 @@ export default async function AdminCustomerDetailPage({
           </dl>
         </AdminPanel>
 
-        {/* Segments */}
         <AdminPanel
           title="Segments"
           description="Group this customer for campaigns"
@@ -139,17 +138,17 @@ export default async function AdminCustomerDetailPage({
             {customer.segments.map((s) => (
               <span
                 key={s.segmentId}
-                className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2 py-0.5 text-xs font-medium admin-accent-text"
+                className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-accent-soft)] px-2 py-1 text-xs font-medium admin-accent-text"
               >
                 <Layers className="h-2.5 w-2.5" /> {s.segment.name}
               </span>
             ))}
           </div>
-          <form action={adminAssignSegmentAction} className="flex gap-2">
+          <form action={adminAssignSegmentAction} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
             <input type="hidden" name="customerId" value={customer.id} />
             <select
               name="segmentId"
-              className="input-admin flex-1"
+              className="input-admin w-full"
               defaultValue=""
             >
               <option value="">Choose a segment…</option>
@@ -161,29 +160,28 @@ export default async function AdminCustomerDetailPage({
             </select>
             <button
               type="submit"
-              className="inline-flex items-center gap-1 rounded-xl bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)]"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-semibold admin-accent-text transition hover:brightness-105 sm:w-auto"
             >
               <Plus className="h-3.5 w-3.5" /> Add
             </button>
           </form>
         </AdminPanel>
 
-        {/* Loyalty */}
         <AdminPanel title="Loyalty">
           {customer.loyaltyAccount ? (
             <div>
-              <div className="flex items-end justify-between">
+              <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
                   <p className="text-3xl font-bold admin-text">{customer.loyaltyAccount.points}</p>
                   <p className="text-xs uppercase tracking-wide admin-soft">Points balance</p>
                 </div>
-                <span className="rounded-full bg-gradient-to-br from-amber-400 to-amber-600 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-[var(--admin-btn-fg)]">
+                <span className="rounded-full bg-gradient-to-br from-amber-400 to-amber-600 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-slate-950 dark:text-slate-950">
                   {customer.loyaltyAccount.tier}
                 </span>
               </div>
               <div className="mt-3 rounded-xl bg-[var(--admin-inset)] p-3">
                 <p className="text-xs uppercase tracking-wide admin-soft">Referral code</p>
-                <p className="font-mono text-lg font-bold admin-accent-text">{customer.loyaltyAccount.referralCode}</p>
+                <p className="break-all font-mono text-lg font-bold admin-accent-text">{customer.loyaltyAccount.referralCode}</p>
               </div>
               <p className="mt-2 text-xs admin-muted">
                 Lifetime: <strong className="admin-text">{customer.loyaltyAccount.lifetimePoints}</strong> pts
@@ -195,11 +193,15 @@ export default async function AdminCustomerDetailPage({
         </AdminPanel>
       </div>
 
-      {/* Middle — timeline + send message */}
       <div className="mb-6 grid gap-4 lg:grid-cols-2">
+        <AdminPanel title="Send message" description="Email, SMS, WhatsApp or portal" className="order-1 lg:order-2">
+          <AdminMessageForm action={adminSendMessageAction} customerId={customer.id} />
+        </AdminPanel>
+
         <AdminPanel
           title="Customer timeline"
           description="Most recent activity"
+          className="order-2 lg:order-1"
           action={
             <span className="text-xs uppercase tracking-wide admin-soft">
               {customer.timelineEvents.length} events
@@ -209,16 +211,16 @@ export default async function AdminCustomerDetailPage({
           {customer.timelineEvents.length === 0 ? (
             <AdminEmptyState icon={Activity} title="No activity yet" />
           ) : (
-            <ol className="relative max-h-96 space-y-3 overflow-y-auto scroll-admin pl-4">
+            <ol className="relative max-h-96 space-y-3 overflow-y-auto scroll-admin pl-4 pr-1">
               <span className="absolute left-1.5 top-1 bottom-1 w-px bg-[var(--admin-inset-2)]" />
               {customer.timelineEvents.slice(0, 30).map((e) => (
                 <li key={e.id} className="relative">
                   <span className="absolute -left-2.5 top-1 flex h-3 w-3 items-center justify-center rounded-full bg-[var(--admin-accent)] ring-4 ring-[var(--admin-bg)]">
                     <span className="h-1.5 w-1.5 rounded-full bg-[var(--admin-card)]" />
                   </span>
-                  <div className="ml-4">
-                    <p className="text-sm font-semibold admin-text">{e.title}</p>
-                    {e.description && <p className="text-xs admin-muted">{e.description}</p>}
+                  <div className="ml-4 min-w-0">
+                    <p className="break-words text-sm font-semibold admin-text">{e.title}</p>
+                    {e.description && <p className="break-words text-xs leading-5 admin-muted">{e.description}</p>}
                     <p className="mt-0.5 text-xs uppercase tracking-wide admin-soft">
                       {formatDateTime(e.createdAt)}
                     </p>
@@ -228,13 +230,8 @@ export default async function AdminCustomerDetailPage({
             </ol>
           )}
         </AdminPanel>
-
-        <AdminPanel title="Send message" description="Email, SMS, WhatsApp or portal">
-          <AdminMessageForm action={adminSendMessageAction} customerId={customer.id} />
-        </AdminPanel>
       </div>
 
-      {/* Bottom grid */}
       <div className="grid gap-4 lg:grid-cols-3">
         <AdminPanel
           title="Refills"
@@ -242,7 +239,7 @@ export default async function AdminCustomerDetailPage({
           action={
             <Link
               href="/admin/refills"
-              className="text-xs font-semibold admin-accent-text hover:underline"
+              className="inline-flex min-h-10 items-center text-xs font-semibold admin-accent-text hover:underline"
             >
               View all
             </Link>
@@ -323,8 +320,8 @@ export default async function AdminCustomerDetailPage({
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
                       c.status === "active"
-                        ? "bg-emerald-500/15 text-emerald-700"
-                        : "bg-rose-500/15 text-rose-600"
+                        ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                        : "bg-rose-500/15 text-rose-700 dark:text-rose-300"
                     }`}
                   >
                     {c.status}
@@ -389,7 +386,6 @@ export default async function AdminCustomerDetailPage({
           </div>
         </AdminPanel>
 
-        {/* Commerce ledger: lifetime value, outstanding, orders (audit §59) */}
         <CommerceSummaryPanel customerId={customer.id} />
       </div>
     </AdminShell>
@@ -397,9 +393,6 @@ export default async function AdminCustomerDetailPage({
 }
 
 async function CommerceSummaryPanel({ customerId }: { customerId: string }) {
-  // Pull the customer's commerce history directly so the existing getCustomerDetail
-  // signature doesn't need to change (and the timeline of refills/prescriptions
-  // remains compatible with downstream components).
   const orders = await prisma.order.findMany({
     where: { customerId, status: { notIn: ["cancelled"] } },
     select: {
@@ -433,76 +426,129 @@ async function CommerceSummaryPanel({ customerId }: { customerId: string }) {
   return (
     <AdminPanel
       title="Commerce history"
-      description="Lifetime value, outstanding balance, refunds, and recent orders. Mirrors the audit's customer-lifetime-value requirement (§59)."
+      description="Spend, balances, refunds, prescription fills, and recent orders."
       className="lg:col-span-2"
     >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <Stat label="Lifetime spend" value={`KES ${lifetimeSpend.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} />
-        <Stat label="Outstanding" value={`KES ${outstanding.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} accent={outstanding > 0 ? "text-amber-600" : undefined} />
+        <Stat label="Outstanding" value={`KES ${outstanding.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} accent={outstanding > 0 ? "text-amber-700 dark:text-amber-300" : undefined} />
         <Stat label="Refunded" value={`KES ${refunded.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} />
         <Stat label="Avg order value" value={`KES ${avgOrderValue.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`} />
         <Stat label="Orders" value={String(orders.length)} />
         <Stat label="Prescription fills" value={String(fillsCount)} />
-        <Stat label="Refills" value="see refills panel" />
+        <Stat label="Refills" value="See refills" />
         <Stat label="Last purchase" value={lastPurchaseAt ? new Date(lastPurchaseAt).toLocaleDateString() : "—"} />
       </div>
 
-      <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region mt-4 overflow-x-auto">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="text-left admin-muted border-b border-[var(--admin-border)]">
-              <th className="py-2 pr-3">Order</th>
-              <th className="py-2 pr-3">Type</th>
-              <th className="py-2 pr-3">Source</th>
-              <th className="py-2 pr-3">Status</th>
-              <th className="py-2 pr-3">Payment</th>
-              <th className="py-2 pr-3">Fulfillment</th>
-              <th className="py-2 pr-3 text-right">Net</th>
-              <th className="py-2 pr-3 text-right">Paid</th>
-              <th className="py-2 pr-3 text-right">Due</th>
-              <th className="py-2 pr-3">Created</th>
-              <th className="py-2 pr-3">Paid at</th>
-            </tr>
-          </thead>
-          <tbody>
+      {orders.length === 0 ? (
+        <div className="mt-4 rounded-2xl border border-dashed border-[var(--admin-border)] bg-[var(--admin-inset)] p-6 text-center">
+          <ShoppingBag className="mx-auto h-5 w-5 admin-soft" />
+          <p className="mt-2 text-sm font-semibold admin-text">No orders yet</p>
+          <p className="mt-1 text-xs admin-soft">Commerce activity will appear here after the first order.</p>
+        </div>
+      ) : (
+        <>
+          <div className="mt-4 grid gap-3 md:hidden">
             {orders.map((o) => (
-              <tr key={o.id} className="border-b border-[var(--admin-border)]">
-                <td className="py-2 pr-3">
-                  <Link href={`/admin/orders?orderId=${o.id}`} className="admin-text font-medium hover:text-[var(--admin-accent)]">
-                    #{o.id.slice(0, 8)}
-                  </Link>
-                </td>
-                <td className="py-2 pr-3 admin-muted">{o.type ?? "—"}</td>
-                <td className="py-2 pr-3 admin-muted">{o.source}</td>
-                <td className="py-2 pr-3">
-                  <span className="badge">{o.status}</span>
-                </td>
-                <td className="py-2 pr-3 admin-muted">{o.paymentStage ?? "—"}</td>
-                <td className="py-2 pr-3 admin-muted">{o.fulfillmentStage ?? "—"}</td>
-                <td className="py-2 pr-3 text-right admin-text">KES {Number(o.netTotal || o.total || 0).toFixed(0)}</td>
-                <td className="py-2 pr-3 text-right admin-muted">KES {Number(o.amountPaid || 0).toFixed(0)}</td>
-                <td className={`py-2 pr-3 text-right ${Number(o.amountDue || 0) > 0 ? "text-amber-600 font-semibold" : "admin-muted"}`}>
-                  KES {Number(o.amountDue || 0).toFixed(0)}
-                </td>
-                <td className="py-2 pr-3 admin-muted">{new Date(o.createdAt).toLocaleDateString()}</td>
-                <td className="py-2 pr-3 admin-muted">{o.paidAt ? new Date(o.paidAt).toLocaleDateString() : "—"}</td>
-              </tr>
+              <article key={o.id} className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <Link href={`/admin/orders?orderId=${o.id}`} className="inline-flex items-center gap-1.5 font-semibold admin-accent-text hover:underline">
+                      <ShoppingBag className="h-3.5 w-3.5" /> #{o.id.slice(0, 8)}
+                    </Link>
+                    <p className="mt-1 text-xs capitalize admin-muted">{o.type ?? "Order"} · {o.source}</p>
+                  </div>
+                  <span className="badge shrink-0">{o.status}</span>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-xl bg-[var(--admin-card)] p-2.5">
+                    <p className="admin-soft">Net</p>
+                    <p className="mt-0.5 font-semibold admin-text">KES {Number(o.netTotal || o.total || 0).toFixed(0)}</p>
+                  </div>
+                  <div className="rounded-xl bg-[var(--admin-card)] p-2.5">
+                    <p className="admin-soft">Paid</p>
+                    <p className="mt-0.5 font-semibold admin-text">KES {Number(o.amountPaid || 0).toFixed(0)}</p>
+                  </div>
+                  <div className="rounded-xl bg-[var(--admin-card)] p-2.5">
+                    <p className="admin-soft">Due</p>
+                    <p className={`mt-0.5 font-semibold ${Number(o.amountDue || 0) > 0 ? "text-amber-700 dark:text-amber-300" : "admin-text"}`}>
+                      KES {Number(o.amountDue || 0).toFixed(0)}
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-[var(--admin-card)] p-2.5">
+                    <p className="admin-soft">Created</p>
+                    <p className="mt-0.5 font-semibold admin-text">{new Date(o.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-start gap-2 rounded-xl bg-[var(--admin-card)] p-3 text-xs admin-muted">
+                  <WalletCards className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
+                  <div className="min-w-0">
+                    <p>Payment: <span className="admin-text">{o.paymentStage ?? "—"}</span></p>
+                    <p className="mt-1">Fulfillment: <span className="admin-text">{o.fulfillmentStage ?? "—"}</span></p>
+                    <p className="mt-1">Paid at: <span className="admin-text">{o.paidAt ? new Date(o.paidAt).toLocaleDateString() : "—"}</span></p>
+                  </div>
+                </div>
+              </article>
             ))}
-            {orders.length === 0 && (
-              <tr><td colSpan={11} className="py-4 text-center admin-muted">No orders yet.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          </div>
+
+          <div tabIndex={0} role="region" aria-label="Scrollable commerce records" className="admin-table-region mt-4 hidden overflow-x-auto md:block">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-[var(--admin-border)] text-left admin-muted">
+                  <th className="py-2 pr-3">Order</th>
+                  <th className="py-2 pr-3">Type</th>
+                  <th className="py-2 pr-3">Source</th>
+                  <th className="py-2 pr-3">Status</th>
+                  <th className="py-2 pr-3">Payment</th>
+                  <th className="py-2 pr-3">Fulfillment</th>
+                  <th className="py-2 pr-3 text-right">Net</th>
+                  <th className="py-2 pr-3 text-right">Paid</th>
+                  <th className="py-2 pr-3 text-right">Due</th>
+                  <th className="py-2 pr-3">Created</th>
+                  <th className="py-2 pr-3">Paid at</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((o) => (
+                  <tr key={o.id} className="border-b border-[var(--admin-border)]">
+                    <td className="py-2 pr-3">
+                      <Link href={`/admin/orders?orderId=${o.id}`} className="admin-text font-medium hover:text-[var(--admin-accent)]">
+                        #{o.id.slice(0, 8)}
+                      </Link>
+                    </td>
+                    <td className="py-2 pr-3 admin-muted">{o.type ?? "—"}</td>
+                    <td className="py-2 pr-3 admin-muted">{o.source}</td>
+                    <td className="py-2 pr-3">
+                      <span className="badge">{o.status}</span>
+                    </td>
+                    <td className="py-2 pr-3 admin-muted">{o.paymentStage ?? "—"}</td>
+                    <td className="py-2 pr-3 admin-muted">{o.fulfillmentStage ?? "—"}</td>
+                    <td className="py-2 pr-3 text-right admin-text">KES {Number(o.netTotal || o.total || 0).toFixed(0)}</td>
+                    <td className="py-2 pr-3 text-right admin-muted">KES {Number(o.amountPaid || 0).toFixed(0)}</td>
+                    <td className={`py-2 pr-3 text-right ${Number(o.amountDue || 0) > 0 ? "text-amber-700 dark:text-amber-300 font-semibold" : "admin-muted"}`}>
+                      KES {Number(o.amountDue || 0).toFixed(0)}
+                    </td>
+                    <td className="py-2 pr-3 admin-muted">{new Date(o.createdAt).toLocaleDateString()}</td>
+                    <td className="py-2 pr-3 admin-muted">{o.paidAt ? new Date(o.paidAt).toLocaleDateString() : "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </AdminPanel>
   );
 }
 
 function Stat({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
-    <div className="rounded-xl bg-[var(--admin-inset)] p-3">
-      <p className="text-xs uppercase tracking-wide admin-soft">{label}</p>
-      <p className={`mt-1 text-base font-bold ${accent ?? "admin-text"}`}>{value}</p>
+    <div className="min-w-0 rounded-xl bg-[var(--admin-inset)] p-3">
+      <p className="text-[10px] uppercase tracking-wide admin-soft sm:text-xs">{label}</p>
+      <p className={`mt-1 break-words text-sm font-bold sm:text-base ${accent ?? "admin-text"}`}>{value}</p>
     </div>
   );
 }

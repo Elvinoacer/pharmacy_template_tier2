@@ -24,11 +24,11 @@ const CHANNEL_ICON: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-slate-500/15 text-slate-600",
-  scheduled: "bg-amber-500/15 text-amber-700",
-  sending: "bg-blue-500/15 text-blue-700",
-  sent: "bg-emerald-500/15 text-emerald-700",
-  cancelled: "bg-rose-500/15 text-rose-600",
+  draft: "bg-slate-500/15 text-slate-700 dark:text-slate-300",
+  scheduled: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
+  sending: "bg-blue-500/15 text-blue-700 dark:text-blue-300",
+  sent: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  cancelled: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
 };
 
 export default async function AdminCampaignsPage({
@@ -81,49 +81,42 @@ export default async function AdminCampaignsPage({
       title="Campaigns"
       subtitle="Create outreach campaigns and review their audience, schedule, and progress."
     >
-      {/* Stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
           { label: "Total", value: stats.total, color: "admin-text" },
-          { label: "Drafts", value: stats.drafts, color: "text-slate-600" },
-          { label: "Scheduled", value: stats.scheduled, color: "text-amber-700" },
-          { label: "Sent", value: stats.sent, color: "text-emerald-700" },
+          { label: "Drafts", value: stats.drafts, color: "text-slate-700 dark:text-slate-300" },
+          { label: "Scheduled", value: stats.scheduled, color: "text-amber-800 dark:text-amber-300" },
+          { label: "Sent", value: stats.sent, color: "text-emerald-700 dark:text-emerald-300" },
         ].map((s) => (
-          <div key={s.label} className="admin-stat p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">{s.label}</p>
+          <div key={s.label} className="admin-stat min-h-24 p-4 transition-[border-color,box-shadow] duration-200 hover:shadow-sm">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] admin-muted">{s.label}</p>
             <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AdminPanel title="Create campaign" description="Set up a new marketing campaign">
-          <CampaignForm
-            action={adminCreateCampaignAction}
-            segments={segments.map((s) => ({ id: s.id, name: s.name }))}
-          />
-        </AdminPanel>
-
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(320px,0.86fr)_minmax(0,1.14fr)]">
         <AdminPanel
           title="All campaigns"
           description={`${total} matching`}
+          className="order-1 xl:order-2"
         >
-          <form className="mb-4 flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[180px]">
+          <form className="mb-4 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+            <div className="relative min-w-0">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
               <input
                 name="q"
                 defaultValue={sp.q || ""}
                 placeholder="Search campaigns…"
-                className="w-full rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2 pl-9 pr-3 text-xs admin-text placeholder:admin-soft focus:border-[var(--admin-accent)] focus:outline-none"
+                className="w-full rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] py-2.5 pl-9 pr-3 text-sm admin-text placeholder:admin-soft transition focus:border-[var(--admin-accent)] focus:bg-[var(--admin-card)] focus:outline-none"
               />
             </div>
-            <button type="submit" className="btn-admin-sm">
-              <Search className="h-3 w-3" /> Search
+            <button type="submit" className="btn-admin-sm w-full justify-center sm:w-auto">
+              <Search className="h-3.5 w-3.5" /> Search
             </button>
             {sp.q && (
-              <Link href="/admin/campaigns" className="btn-admin-sm !bg-[var(--admin-inset-2)]">
-                <X className="h-3 w-3" /> Clear
+              <Link href="/admin/campaigns" className="btn-admin-sm w-full justify-center !bg-[var(--admin-inset-2)] sm:w-auto">
+                <X className="h-3.5 w-3.5" /> Clear
               </Link>
             )}
           </form>
@@ -143,62 +136,62 @@ export default async function AdminCampaignsPage({
                 return (
                   <li
                     key={c.id}
-                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 transition hover:border-[var(--admin-border-2)]"
+                    className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 transition-[border-color,box-shadow,background-color] duration-200 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-card)] hover:shadow-sm"
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--admin-accent-soft)] admin-accent-text">
-                            <ChannelIcon className="h-3.5 w-3.5" />
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
+                            <ChannelIcon className="h-4 w-4" />
                           </span>
-                          <p className="font-semibold admin-text">{c.name}</p>
-                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[c.status]}`}>
+                          <p className="min-w-0 flex-1 break-words font-semibold admin-text">{c.name}</p>
+                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[c.status]}`}>
                             {c.status}
                           </span>
                         </div>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs admin-muted">
+                        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs admin-muted">
                           <span className="inline-flex items-center gap-1">
-                            <Users className="h-2.5 w-2.5" />
+                            <Users className="h-3 w-3" />
                             {c.segment?.name || "All customers"}
                           </span>
-                          <span>·</span>
+                          <span aria-hidden="true">·</span>
                           <span className="capitalize">{c.channel}</span>
                           {c.scheduledFor && (
                             <>
-                              <span>·</span>
+                              <span aria-hidden="true">·</span>
                               <span className="inline-flex items-center gap-1">
-                                <Calendar className="h-2.5 w-2.5" />
+                                <Calendar className="h-3 w-3" />
                                 {formatDateTime(c.scheduledFor)}
                               </span>
                             </>
                           )}
                         </div>
                         {c.description && (
-                          <p className="mt-1 text-xs admin-muted">{c.description}</p>
+                          <p className="mt-2 text-xs leading-5 admin-muted">{c.description}</p>
                         )}
-                        <p className="mt-1.5 line-clamp-2 text-xs admin-muted">{c.body}</p>
+                        <p className="mt-2 line-clamp-3 text-sm leading-5 admin-text/80">{c.body}</p>
                         {cStats && (
-                          <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                          <div className="mt-3 flex flex-wrap gap-1.5 text-xs">
                             {typeof cStats.sent === "number" && (
-                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Sent: {cStats.sent}</span>
+                              <span className="rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 py-1 admin-muted">Sent {cStats.sent}</span>
                             )}
                             {typeof cStats.delivered === "number" && (
-                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Delivered: {cStats.delivered}</span>
+                              <span className="rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 py-1 admin-muted">Delivered {cStats.delivered}</span>
                             )}
                             {typeof cStats.opened === "number" && (
-                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Opened: {cStats.opened}</span>
+                              <span className="rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 py-1 admin-muted">Opened {cStats.opened}</span>
                             )}
                             {typeof cStats.clicked === "number" && (
-                              <span className="rounded bg-[var(--admin-inset)] px-1.5 py-0.5 admin-muted">Clicked: {cStats.clicked}</span>
+                              <span className="rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2 py-1 admin-muted">Clicked {cStats.clicked}</span>
                             )}
                           </div>
                         )}
                       </div>
                       {canLaunch && (
-                        <form action={adminLaunchCampaignAction}>
+                        <form action={adminLaunchCampaignAction} className="shrink-0">
                           <input type="hidden" name="id" value={c.id} />
-                          <button type="submit" className="btn-admin-sm">
-                            <Rocket className="h-3 w-3" /> Launch
+                          <button type="submit" className="btn-admin-sm w-full justify-center sm:w-auto">
+                            <Rocket className="h-3.5 w-3.5" /> Launch
                           </button>
                         </form>
                       )}
@@ -215,6 +208,17 @@ export default async function AdminCampaignsPage({
             basePath="/admin/campaigns"
             queryParams={queryParams}
             variant="admin"
+          />
+        </AdminPanel>
+
+        <AdminPanel
+          title="Create campaign"
+          description="Build, target and schedule the next outreach"
+          className="order-2 xl:order-1 xl:sticky xl:top-24"
+        >
+          <CampaignForm
+            action={adminCreateCampaignAction}
+            segments={segments.map((s) => ({ id: s.id, name: s.name }))}
           />
         </AdminPanel>
       </div>

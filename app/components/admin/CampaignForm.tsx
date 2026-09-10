@@ -59,7 +59,7 @@ export default function CampaignForm({
   }
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-4">
+    <form ref={formRef} action={formAction} className="space-y-5">
       {state?.error && (
         <div className="admin-alert-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
@@ -136,35 +136,35 @@ export default function CampaignForm({
       </div>
 
       <div>
-        <div className="flex items-center justify-between">
-          <label htmlFor={`${fieldPrefix}-body`} className="label-admin">Message body *</label>
+        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+          <label htmlFor={`${fieldPrefix}-body`} className="label-admin !mb-0">Message body *</label>
           <button
             type="button"
             onClick={aiDraft}
             disabled={aiLoading}
-            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-xs font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-[filter,box-shadow] hover:brightness-110 hover:shadow disabled:cursor-wait disabled:opacity-60"
             title="Let AI draft the body"
           >
-            <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
+            <Wand2 className={`h-3 w-3 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
           </button>
         </div>
         <textarea
           id={`${fieldPrefix}-body`}
           name="body"
           required
-          rows={5}
+          rows={6}
           value={body}
           onChange={(event) => setBody(event.target.value)}
           placeholder="Hi {{name}}, ..."
-          className="input-admin resize-y font-mono text-xs"
+          className="input-admin resize-y font-mono text-xs leading-5"
         />
-        <div className="mt-1.5 flex flex-wrap gap-1">
+        <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Insert personalization variable">
           {["{{name}}", "{{email}}", "{{tier}}", "{{points}}"].map((variable) => (
             <button
               key={variable}
               type="button"
               onClick={() => setBody((current) => current + (current && !current.endsWith(" ") ? " " : "") + variable)}
-              className="rounded-full bg-[var(--admin-inset-2)] px-2 py-0.5 text-xs font-mono admin-accent-text hover:bg-[var(--admin-hover)]"
+              className="min-h-9 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset-2)] px-2.5 py-1 text-xs font-mono admin-accent-text transition hover:bg-[var(--admin-hover)]"
             >
               {variable}
             </button>
@@ -174,23 +174,23 @@ export default function CampaignForm({
 
       <fieldset>
         <legend className="label-admin">When to send *</legend>
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <label className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs">
+        <div className="mb-3 grid gap-2 sm:grid-cols-3">
+          <label className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${mode === "draft" ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text" : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-text hover:border-[var(--admin-border-2)]"}`}>
             <input type="radio" name="scheduleMode" value="draft" checked={mode === "draft"} onChange={() => setMode("draft")} className="accent-[var(--admin-accent)]" />
-            <Calendar className="h-3 w-3" /> Save as draft
+            <Calendar className="h-3.5 w-3.5 shrink-0" /> Save as draft
           </label>
-          <label className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs">
+          <label className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${mode === "schedule" ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text" : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-text hover:border-[var(--admin-border-2)]"}`}>
             <input type="radio" name="scheduleMode" value="schedule" checked={mode === "schedule"} onChange={() => setMode("schedule")} className="accent-[var(--admin-accent)]" />
-            <Calendar className="h-3 w-3" /> Schedule
+            <Calendar className="h-3.5 w-3.5 shrink-0" /> Schedule
           </label>
-          <label className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs">
+          <label className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${mode === "now" ? "border-[var(--admin-accent)] bg-[var(--admin-accent-soft)] admin-accent-text" : "border-[var(--admin-border)] bg-[var(--admin-inset)] admin-text hover:border-[var(--admin-border-2)]"}`}>
             <input type="radio" name="scheduleMode" value="now" checked={mode === "now"} onChange={() => setMode("now")} className="accent-[var(--admin-accent)]" />
-            <Zap className="h-3 w-3" /> Send immediately
+            <Zap className="h-3.5 w-3.5 shrink-0" /> Send immediately
           </label>
         </div>
         {mode === "schedule" && (
           <div className="relative">
-            <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
+            <Calendar className="pointer-events-none absolute left-3 top-[22px] h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
             <input
               name="scheduledFor"
               type="datetime-local"
@@ -199,16 +199,16 @@ export default function CampaignForm({
               onChange={(event) => setScheduledFor(event.target.value)}
               className="input-admin pl-9"
             />
-            <p className="mt-1 text-xs admin-soft">Cron will auto-launch this campaign at the scheduled local time.</p>
+            <p className="mt-1.5 text-xs leading-5 admin-soft">Cron will auto-launch this campaign at the scheduled local time.</p>
           </div>
         )}
         {mode === "now" && (
           <>
             <input type="hidden" name="sendNow" value="true" />
-            <p className="text-xs admin-soft">Campaign will launch immediately on submit. Each recipient gets a personalized message.</p>
+            <p className="text-xs leading-5 admin-soft">Campaign will launch immediately on submit. Each recipient gets a personalized message.</p>
           </>
         )}
-        {mode === "draft" && <p className="text-xs admin-soft">Saved as draft — launch later from the campaigns list.</p>}
+        {mode === "draft" && <p className="text-xs leading-5 admin-soft">Saved as draft — launch later from the campaigns list.</p>}
       </fieldset>
 
       <button type="submit" disabled={pending} className="btn-admin w-full !rounded-xl py-2.5 disabled:opacity-50">

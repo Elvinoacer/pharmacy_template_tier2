@@ -25,24 +25,24 @@ export function EnquiryUpdateForm({
   }, [state]);
 
   return (
-    <form action={formAction} className="mt-3 flex flex-wrap items-end gap-2 border-t border-[var(--admin-border)] pt-3">
+    <form action={formAction} className="mt-4 grid gap-3 border-t border-[var(--admin-border)] pt-4 sm:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)_auto] sm:items-end">
       <input type="hidden" name="id" value={id} />
       {state?.error && (
-        <div className="w-full admin-alert-error">
+        <div className="admin-alert-error sm:col-span-3">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
         </div>
       )}
       {state?.success && (
-        <div className="w-full admin-alert-success">
+        <div className="admin-alert-success sm:col-span-3">
           <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.success}</span>
         </div>
       )}
-      <div>
-        <label className="block text-xs uppercase tracking-wide admin-soft">Status</label>
+      <div className="min-w-0">
+        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide admin-soft">Status</label>
         <select
           name="status"
           defaultValue={status}
-          className="rounded-lg border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2.5 py-1.5 text-xs admin-text focus:border-[var(--admin-accent)] focus:outline-none"
+          className="input-admin w-full capitalize"
         >
           {["new", "in_progress", "resolved", "closed"].map((s) => (
             <option key={s} value={s}>
@@ -51,19 +51,19 @@ export function EnquiryUpdateForm({
           ))}
         </select>
       </div>
-      <div className="flex-1 min-w-[180px]">
-        <label className="block text-xs uppercase tracking-wide admin-soft">Staff notes</label>
+      <div className="min-w-0">
+        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide admin-soft">Staff notes</label>
         <input
           name="staffNotes"
           defaultValue={staffNotes}
           placeholder="Add internal notes…"
-          className="input-admin"
+          className="input-admin w-full"
         />
       </div>
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex items-center gap-1 rounded-lg bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-semibold admin-accent-text transition hover:bg-[var(--admin-accent-soft)] disabled:opacity-50"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent-soft)] px-4 py-2 text-xs font-semibold admin-accent-text transition hover:brightness-105 disabled:opacity-50 sm:w-auto"
       >
         <Save className="h-3.5 w-3.5" /> {pending ? "Saving…" : "Update"}
       </button>
