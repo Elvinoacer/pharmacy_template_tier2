@@ -2,10 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
-import {
-  reviewPharmacyAction,
-  type ReviewActionState,
-} from "@/app/actions/platform";
+import { reviewPharmacyAction, type ReviewActionState } from "@/app/actions/platform";
 
 const initial: ReviewActionState = {};
 
@@ -14,26 +11,26 @@ const decisions = [
     value: "under_review",
     label: "Mark in review",
     className:
-      "border-violet-400/40 bg-violet-400/10 text-violet-50 hover:bg-violet-400/20",
+      "border-violet-200 bg-violet-50 text-violet-800 hover:bg-violet-100 dark:border-violet-400/40 dark:bg-violet-400/10 dark:text-violet-100 dark:hover:bg-violet-400/20",
   },
   {
     value: "needs_info",
     label: "Request info",
     className:
-      "border-amber-400/50 bg-amber-400/10 text-amber-50 hover:bg-amber-400/20",
+      "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-400/50 dark:bg-amber-400/10 dark:text-amber-100 dark:hover:bg-amber-400/20",
     needsNotes: true,
   },
   {
     value: "approve",
     label: "Approve",
     className:
-      "border-emerald-400/60 bg-emerald-400 text-emerald-950 hover:bg-emerald-300 font-semibold",
+      "border-emerald-700 bg-emerald-700 font-semibold text-white hover:bg-emerald-800 dark:border-emerald-400/60 dark:bg-emerald-400 dark:text-emerald-950 dark:hover:bg-emerald-300",
   },
   {
     value: "reject",
     label: "Reject",
     className:
-      "border-rose-400/50 bg-rose-400/10 text-rose-50 hover:bg-rose-400/20",
+      "border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100 dark:border-rose-400/50 dark:bg-rose-400/10 dark:text-rose-100 dark:hover:bg-rose-400/20",
     needsNotes: true,
   },
 ] as const;
@@ -60,55 +57,55 @@ export default function ReviewDecisionForm({
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-teal-100/60">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#718078] dark:text-teal-100/55">
           Current status
         </span>
-        <span className="rounded-full border border-white/20 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-teal-50/90">
+        <span className="rounded-full border border-[#d8e2dc] bg-[#f7faf8] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#405047] dark:border-white/20 dark:bg-white/5 dark:text-teal-50/90">
           {currentStatus.replace(/_/g, " ")}
         </span>
       </div>
 
       <label className="block text-sm">
-        <span className="font-medium text-teal-50/90">Review notes</span>
-        <span className="mt-0.5 block text-xs text-teal-100/55">
+        <span className="font-semibold text-[#26352d] dark:text-teal-50/90">Review notes</span>
+        <span className="mt-1 block text-xs leading-5 text-[#718078] dark:text-teal-100/55">
           Required for reject or request-info. Visible on the onboarding timeline and emailed to the owner.
         </span>
         <textarea
           name="notes"
-          rows={3}
-          className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2.5 text-sm outline-none placeholder:text-teal-100/35 focus:border-teal-300/50"
+          rows={4}
+          className="mt-2 w-full resize-y rounded-xl border border-[#cfdcd4] bg-white px-3 py-2.5 text-sm text-[#17231d] outline-none transition placeholder:text-[#8e9a93] focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 dark:border-white/15 dark:bg-black/25 dark:text-white dark:placeholder:text-teal-100/35 dark:focus:border-teal-300/50 dark:focus:ring-teal-300/10"
           placeholder="e.g. Licence number matches PPB register. Pin confirmed."
           disabled={pending}
         />
       </label>
 
-      {state.error && (
+      {state.error ? (
         <p
-          className="rounded-xl border border-rose-400/40 bg-rose-500/15 px-3 py-2.5 text-sm text-rose-100"
+          className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-800 dark:border-rose-400/40 dark:bg-rose-500/15 dark:text-rose-100"
           role="alert"
         >
           {state.error}
         </p>
-      )}
-      {state.success && (
-        <p className="flex items-start gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-3 py-2.5 text-sm text-emerald-50">
+      ) : null}
+      {state.success ? (
+        <p className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800 dark:border-emerald-400/40 dark:bg-emerald-500/15 dark:text-emerald-50">
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
           <span>{state.success}</span>
         </p>
-      )}
+      ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        {decisions.map((d) => (
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+        {decisions.map((decision) => (
           <button
-            key={d.value}
+            key={decision.value}
             type="submit"
             name="decision"
-            value={d.value}
+            value={decision.value}
             disabled={pending}
-            className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${d.className}`}
+            className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:px-4 sm:text-sm ${decision.className}`}
           >
             {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-            {d.label}
+            {decision.label}
           </button>
         ))}
       </div>

@@ -11,6 +11,7 @@ import {
   FileText,
   Flag,
   KeyRound,
+  Layers3,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -28,6 +29,7 @@ export const PLATFORM_NAV = [
   { href: "/platform/applications", label: "Applications", icon: ClipboardCheck },
   { href: "/platform/pharmacies", label: "Pharmacies", icon: Store },
   { href: "/platform/billing", label: "Billing", icon: CreditCard },
+  { href: "/platform/plans", label: "Plans", icon: Layers3 },
   { href: "/platform/jobs", label: "Background tasks", icon: Activity },
   { href: "/platform/integrations", label: "Integrations", icon: Plug },
   { href: "/platform/webhooks", label: "Webhooks", icon: Webhook },
@@ -41,7 +43,7 @@ export const PLATFORM_NAV = [
 
 const groups = [
   { label: "Daily work", paths: ["/platform", "/platform/applications", "/platform/pharmacies", "/platform/users"] },
-  { label: "Operations", paths: ["/platform/billing", "/platform/jobs", "/platform/notifications", "/platform/integrations", "/platform/webhooks"] },
+  { label: "Operations", paths: ["/platform/billing", "/platform/plans", "/platform/jobs", "/platform/notifications", "/platform/integrations", "/platform/webhooks"] },
   { label: "Security & settings", paths: ["/platform/security", "/platform/audit", "/platform/compliance", "/platform/feature-flags"] },
 ];
 
