@@ -28,61 +28,60 @@ export default async function PortalProfilePage() {
       title="Profile"
       subtitle="Keep your details current so pharmacists and carers can reach you."
     >
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Account summary */}
-        <aside className="space-y-3 lg:col-span-1">
+      <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-3">
+        <aside className="min-w-0 space-y-3 lg:col-span-1">
           <Panel>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-2xl font-bold text-white shadow-lg shadow-teal-900/20">
+            <div className="flex min-w-0 flex-col items-center text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-xl font-bold text-white shadow-lg shadow-teal-900/20 sm:h-20 sm:w-20 sm:text-2xl">
                 {(profile.fullName || "?")
                   .split(/\s+/)
                   .slice(0, 2)
                   .map((s) => s[0]?.toUpperCase())
                   .join("")}
               </div>
-              <p className="mt-3 text-lg font-semibold text-[#0c1a14]">{profile.fullName}</p>
-              <p className="text-xs text-[#5a6b62]">{profile.preferredBranch || "No preferred branch set"}</p>
+              <p className="mt-3 max-w-full break-words text-base font-semibold text-[#0c1a14] dark:text-slate-100 sm:text-lg">{profile.fullName}</p>
+              <p className="mt-0.5 max-w-full break-words text-xs text-[#5a6b62] dark:text-slate-400">{profile.preferredBranch || "No preferred branch set"}</p>
               {profile.preferredCommunication && (
-                <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#e6f4ef] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0d6e5a]">
-                  Prefers {profile.preferredCommunication}
+                <span className="mt-2 inline-flex max-w-full items-center gap-1 rounded-full bg-[#e6f4ef] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#0d6e5a] dark:bg-teal-500/15 dark:text-teal-300">
+                  <span className="truncate">Prefers {profile.preferredCommunication}</span>
                 </span>
               )}
             </div>
           </Panel>
 
           <Panel title="Account">
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2.5">
-                <Mail className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
+            <ul className="min-w-0 space-y-3 text-sm">
+              <li className="flex min-w-0 items-start gap-2.5">
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
                 <div className="min-w-0">
-                  <p className="text-xs text-[#5a6b62]">Email</p>
-                  <p className="truncate font-medium text-[#0c1a14]">{profile.user.email}</p>
+                  <p className="text-xs text-[#5a6b62] dark:text-slate-400">Email</p>
+                  <p className="break-all font-medium text-[#0c1a14] dark:text-slate-100">{profile.user.email}</p>
                   {profile.user.emailVerified ? (
-                    <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700">
+                    <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
                       <ShieldCheck className="h-3 w-3" /> Verified
                     </span>
                   ) : (
-                    <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700">
+                    <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
                       <AlertTriangle className="h-3 w-3" /> Not verified
                     </span>
                   )}
                 </div>
               </li>
               {profile.phone && (
-                <li className="flex items-start gap-2.5">
-                  <Phone className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
-                  <div>
-                    <p className="text-xs text-[#5a6b62]">Phone</p>
-                    <p className="font-medium text-[#0c1a14]">{profile.phone}</p>
+                <li className="flex min-w-0 items-start gap-2.5">
+                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-[#5a6b62] dark:text-slate-400">Phone</p>
+                    <p className="break-words font-medium text-[#0c1a14] dark:text-slate-100">{profile.phone}</p>
                   </div>
                 </li>
               )}
               {(profile.addressLine1 || profile.city) && (
-                <li className="flex items-start gap-2.5">
-                  <MapPin className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
-                  <div>
-                    <p className="text-xs text-[#5a6b62]">Address</p>
-                    <p className="font-medium text-[#0c1a14]">
+                <li className="flex min-w-0 items-start gap-2.5">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-[#5a6b62] dark:text-slate-400">Address</p>
+                    <p className="break-words font-medium leading-relaxed text-[#0c1a14] dark:text-slate-100">
                       {[profile.addressLine1, profile.city, profile.state, profile.zip]
                         .filter(Boolean)
                         .join(", ")}
@@ -91,13 +90,13 @@ export default async function PortalProfilePage() {
                 </li>
               )}
               {profile.emergencyContactName && (
-                <li className="flex items-start gap-2.5">
-                  <Heart className="mt-0.5 h-4 w-4 text-rose-500" />
-                  <div>
-                    <p className="text-xs text-[#5a6b62]">Emergency contact</p>
-                    <p className="font-medium text-[#0c1a14]">{profile.emergencyContactName}</p>
+                <li className="flex min-w-0 items-start gap-2.5">
+                  <Heart className="mt-0.5 h-4 w-4 shrink-0 text-rose-500 dark:text-rose-300" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-[#5a6b62] dark:text-slate-400">Emergency contact</p>
+                    <p className="break-words font-medium text-[#0c1a14] dark:text-slate-100">{profile.emergencyContactName}</p>
                     {profile.emergencyContactPhone && (
-                      <p className="text-xs text-[#5a6b62]">{profile.emergencyContactPhone}</p>
+                      <p className="break-words text-xs text-[#5a6b62] dark:text-slate-400">{profile.emergencyContactPhone}</p>
                     )}
                   </div>
                 </li>
@@ -106,8 +105,7 @@ export default async function PortalProfilePage() {
           </Panel>
         </aside>
 
-        {/* Edit form */}
-        <div className="lg:col-span-2">
+        <div className="min-w-0 lg:col-span-2">
           <Panel
             title="Personal details"
             description="Update your contact information, address, and emergency contact"
