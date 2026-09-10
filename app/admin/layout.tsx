@@ -1,5 +1,6 @@
 import "./admin.css";
 import "./admin-route-ux.css";
+import "../workspace-compat.css";
 import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";

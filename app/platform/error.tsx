@@ -14,16 +14,16 @@ export default function PlatformError({
   }, [error]);
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center bg-slate-950 p-6 text-white">
-      <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/5 p-7 text-center">
-        <h1 className="text-xl font-semibold">Platform workspace could not load</h1>
-        <p className="mt-2 text-sm text-white/70">
+    <div className="flex min-h-[60vh] w-full items-center justify-center bg-[var(--admin-bg)] px-3 py-8 text-[var(--admin-text)] sm:px-6 sm:py-10">
+      <div className="w-full max-w-lg rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-5 text-center shadow-[var(--admin-shadow)] sm:rounded-3xl sm:p-7">
+        <h1 className="text-lg font-semibold leading-tight sm:text-xl">Platform workspace could not load</h1>
+        <p className="mt-2 text-sm leading-6 text-[var(--admin-text-muted)]">
           No changes were submitted from this failed view. Retry the request; if it keeps failing, check platform health and job status.
         </p>
         <button
           type="button"
           onClick={reset}
-          className="mt-5 min-h-11 rounded-xl bg-white px-5 py-2 text-sm font-semibold text-slate-950"
+          className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[var(--admin-accent)] px-5 py-2.5 text-sm font-semibold text-[var(--admin-btn-fg)] transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-card)] sm:w-auto"
         >
           Retry
         </button>

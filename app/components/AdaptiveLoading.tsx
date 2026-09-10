@@ -2,7 +2,7 @@ import styles from "./AdaptiveLoading.module.css";
 
 type AdaptiveLoadingProps = {
   label?: string;
-  variant?: "public" | "workspace";
+  variant?: "public" | "workspace" | "admin";
   cards?: number;
 };
 
@@ -12,10 +12,12 @@ export default function AdaptiveLoading({
   cards = 6,
 }: AdaptiveLoadingProps) {
   const cardCount = Math.max(3, Math.min(cards, 8));
+  const variantClass =
+    variant === "admin" ? styles.admin : variant === "workspace" ? styles.workspace : styles.public;
 
   return (
     <div
-      className={`${styles.surface} ${variant === "workspace" ? styles.workspace : styles.public}`}
+      className={`${styles.surface} ${variantClass}`}
       role="status"
       aria-live="polite"
       aria-busy="true"
