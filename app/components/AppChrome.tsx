@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import NavbarNavigationFix from "./NavbarNavigationFix";
+import MobileCareDock, {
+  shouldShowMobileCareDock,
+} from "./landing/LandingMobileActionBar";
 import type { PortalSessionHint } from "@/app/lib/portal-dest";
 import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/brand";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
@@ -58,7 +61,7 @@ export default function AppChrome({
       ? storefrontBrand ?? unscopedPublicBrand()
       : platformBrand;
   const isLandingPage = pathname === "/";
-  const hasLandingMobileActionBar = isLandingPage;
+  const hasMobileCareDock = shouldShowMobileCareDock(pathname);
 
   return (
     <TenantBrandProvider
@@ -85,11 +88,12 @@ export default function AppChrome({
         <a href="#main-content" className="skip-link">Skip to content</a>
         <main id="main-content" tabIndex={-1} className="min-w-0 flex-1">{children}</main>
         <div id="site-footer" className="shrink-0">
-          <Footer surface={surface} brand={brand} clearMobileActionBar={hasLandingMobileActionBar} />
+          <Footer surface={surface} brand={brand} clearMobileActionBar={hasMobileCareDock} />
         </div>
         {surface === "storefront" ? <AiChatbot /> : null}
         {surface === "storefront" ? <LiveAlertCenter audience="public" /> : null}
         <QuickPageAssist />
+        {!isLandingPage && hasMobileCareDock ? <MobileCareDock /> : null}
         {sessionUser ? <VerificationStatusModal /> : null}
       </div>
     </TenantBrandProvider>
