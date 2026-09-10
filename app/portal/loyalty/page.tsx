@@ -22,9 +22,9 @@ export const metadata = { title: "Loyalty" };
 
 const TIER_META: Record<string, { color: string; bg: string; ring: string; next?: string; min: number }> = {
   bronze: { color: "text-amber-700", bg: "bg-amber-100", ring: "ring-amber-200", next: "silver", min: 150 },
-  silver: { color: "text-slate-700", bg: "bg-slate-200", ring: "ring-slate-300", next: "gold", min: 400 },
-  gold: { color: "text-yellow-700", bg: "bg-yellow-100", ring: "ring-yellow-200", next: "platinum", min: 1000 },
-  platinum: { color: "text-cyan-700", bg: "bg-cyan-100", ring: "ring-cyan-200", min: 0 },
+  silver: { color: "text-[var(--muted)]", bg: "bg-[var(--card-elev)]", ring: "ring-[var(--line-2)]", next: "gold", min: 400 },
+  gold: { color: "text-amber-700", bg: "bg-amber-100", ring: "ring-amber-200", next: "platinum", min: 1000 },
+  platinum: { color: "text-[var(--brand-deep)]", bg: "bg-[var(--brand-soft)]", ring: "ring-[var(--line-2)]", min: 0 },
 };
 
 export default async function PortalLoyaltyPage() {
@@ -59,7 +59,7 @@ export default async function PortalLoyaltyPage() {
       title="Loyalty rewards"
       subtitle={`Points and coupons are per pharmacy${tenant.slug ? " — viewing your balance with your active pharmacy" : ""}. Earn on every refill and redeem for exclusive coupons.`}
     >
-      <div className="mb-6 grid gap-4 sm:grid-cols-3">
+      <div className="mb-5 grid gap-3 sm:mb-6 sm:grid-cols-3 sm:gap-4">
         <StatCard
           label="Points balance"
           value={balance}
@@ -83,18 +83,18 @@ export default async function PortalLoyaltyPage() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         {/* Tier progress */}
         <Panel title="Your tier" description="Climb the tiers for richer rewards">
-          <div className={`mb-4 flex items-center gap-4 rounded-2xl ${tierMeta.bg} ${tierMeta.ring} ring-2 p-5`}>
-            <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow ${tierMeta.color}`}>
-              <Award className="h-7 w-7" />
+          <div className={`mb-4 flex flex-col items-start gap-3 rounded-2xl p-4 ring-2 sm:flex-row sm:items-center sm:gap-4 sm:p-5 ${tierMeta.bg} ${tierMeta.ring}`}>
+            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--card)] shadow sm:h-14 sm:w-14 ${tierMeta.color}`}>
+              <Award className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
             <div className="min-w-0 flex-1">
               <p className={`text-xs font-semibold uppercase tracking-wide ${tierMeta.color}`}>Current tier</p>
-              <p className="text-2xl font-bold capitalize text-[#0c1a14]">{tier}</p>
+              <p className="break-words text-xl font-bold capitalize text-[var(--foreground)] sm:text-2xl">{tier}</p>
               {tierMeta.next && (
-                <p className="mt-0.5 text-xs text-[#5a6b62]">
+                <p className="mt-0.5 text-xs leading-relaxed text-[var(--muted)]">
                   {pointsToNext} more points to reach <strong className="capitalize">{tierMeta.next}</strong>
                 </p>
               )}
@@ -102,11 +102,11 @@ export default async function PortalLoyaltyPage() {
           </div>
           {tierMeta.next && (
             <div>
-              <div className="mb-1.5 flex items-center justify-between text-xs">
-                <span className="font-medium text-[#0c1a14]">{balance} pts</span>
-                <span className="text-[#5a6b62]">{tierMeta.min} pts → {tierMeta.next}</span>
+              <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1 text-xs">
+                <span className="font-medium text-[var(--foreground)]">{balance} pts</span>
+                <span className="text-[var(--muted)]">{tierMeta.min} pts → {tierMeta.next}</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-[#e3ebe6]">
+              <div className="h-2 overflow-hidden rounded-full bg-[var(--card-elev)]">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[#0d6e5a] to-[#2dd4bf] transition-all"
                   style={{ width: `${progressPct}%` }}
@@ -118,16 +118,16 @@ export default async function PortalLoyaltyPage() {
 
         {/* Referral code */}
         <Panel title="Referral code" description="Share with family — you both earn after their first refill">
-          <div className="rounded-2xl border border-dashed border-[#0d6e5a]/30 bg-[#f0faf6] p-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#5a6b62]">Your code</p>
-            <div className="mt-2 flex items-center justify-between gap-2">
-              <p className="font-mono text-3xl font-bold tracking-wider text-[#0d6e5a]">
+          <div className="rounded-2xl border border-dashed border-[var(--line-2)] bg-[var(--brand-tint)] p-4 sm:p-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Your code</p>
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+              <p className="min-w-0 break-all font-mono text-xl font-bold tracking-wider text-[var(--brand-deep)] sm:text-3xl">
                 {account?.referralCode || "—"}
               </p>
               {account?.referralCode && <CopyButton value={account.referralCode} />}
             </div>
-            <p className="mt-3 text-sm text-[#5a6b62]">
-              Earn <strong className="text-[#0d6e5a]">+50 points</strong> for every friend who completes
+            <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+              Earn <strong className="text-[var(--brand-deep)]">+50 points</strong> for every friend who completes
               their first refill using your code.
             </p>
           </div>
@@ -155,19 +155,19 @@ export default async function PortalLoyaltyPage() {
                 return (
                   <li
                     key={c.id}
-                    className="flex flex-col gap-3 rounded-2xl border border-[#e3ebe6] bg-gradient-to-br from-white to-[#fafbfa] p-4 transition hover:border-[#0d6e5a]/30 hover:shadow-md"
+                    className="flex min-w-0 flex-col gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card)] p-3.5 transition hover:border-[#0d6e5a]/30 hover:shadow-md sm:p-4"
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="font-mono text-base font-bold text-[#084c3f]">{c.code}</p>
-                        <p className="mt-0.5 text-xs text-[#5a6b62]">{c.description || "Coupon"}</p>
+                    <div className="flex min-w-0 items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="break-all font-mono text-base font-bold text-[var(--brand-deep)]">{c.code}</p>
+                        <p className="mt-0.5 break-words text-xs leading-relaxed text-[var(--muted)]">{c.description || "Coupon"}</p>
                       </div>
-                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fbf4dd] text-[#a08418]">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-soft)] text-[var(--accent-deep)]">
                         <Gift className="h-5 w-5" />
                       </span>
                     </div>
                     {c.pointsCost > 0 ? (
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="badge badge-accent">
                           <Sparkles className="h-3 w-3" /> {c.pointsCost} pts
                         </span>
@@ -179,7 +179,7 @@ export default async function PortalLoyaltyPage() {
                         />
                       </div>
                     ) : (
-                      <p className="text-xs font-medium text-[#0d6e5a]">Free with any purchase</p>
+                      <p className="text-xs font-medium text-[var(--brand-deep)]">Free with any purchase</p>
                     )}
                   </li>
                 );
@@ -197,11 +197,11 @@ export default async function PortalLoyaltyPage() {
           {!account?.transactions.length ? (
             <EmptyState icon={TrendingUp} title="No transactions yet" />
           ) : (
-            <ul className="divide-y divide-[#e3ebe6]">
+            <ul className="divide-y divide-[var(--line)]">
               {account.transactions.map((t) => {
                 const positive = t.points >= 0;
                 return (
-                  <li key={t.id} className="flex items-center justify-between gap-3 py-3">
+                  <li key={t.id} className="flex min-w-0 items-center justify-between gap-3 py-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <span
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
@@ -211,16 +211,16 @@ export default async function PortalLoyaltyPage() {
                         {positive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                       </span>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-[#0c1a14]">
+                        <p className="break-words text-sm font-semibold text-[var(--foreground)]">
                           {t.description || t.type}
                         </p>
-                        <p className="text-xs capitalize text-[#5a6b62]">
+                        <p className="text-xs capitalize leading-relaxed text-[var(--muted)]">
                           {t.type.replace("_", " ")} · {formatDate(t.createdAt)}
                         </p>
                       </div>
                     </div>
                     <span
-                      className={`font-bold ${positive ? "text-emerald-700" : "text-rose-700"}`}
+                      className={`shrink-0 font-bold ${positive ? "text-emerald-700" : "text-rose-700"}`}
                     >
                       {positive ? "+" : ""}
                       {t.points}
