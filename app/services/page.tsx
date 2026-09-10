@@ -2,42 +2,58 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
-  BadgeCheck,
+  Building2,
   CalendarDays,
-  CheckCircle2,
   HeartPulse,
-  MessageCircle,
-  ShieldCheck,
-  Sparkles,
+  Layers3,
+  Pill,
+  Search,
+  Store,
 } from "lucide-react";
 import CtaBanner from "../components/CtaBanner";
 import { platform } from "../lib/data";
-import { listPublicServices } from "../lib/services/pharmacy-services";
 import { formatPrice } from "../lib/format";
-import ChoosePharmacy from "@/app/components/ChoosePharmacy";
-import { loadStorefront } from "@/app/components/StorefrontGate";
+import { listNetworkServiceListings } from "../lib/services/network-catalog";
 import ServiceCardLink from "./ServiceCardLink";
 import styles from "./ServicesPage.module.css";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: `Explore pharmacy services at ${platform.name}: dispensing, refills, vaccinations, screenings, delivery, and more.`,
+  description: `Browse pharmacy services across ${platform.name}. Compare the pharmacy, price and booking availability before choosing where to continue.`,
   alternates: { canonical: "/services" },
 };
 
 export const dynamic = "force-dynamic";
 
-export default async function ServicesPage() {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/services" />;
+function servicesHref(params: { q?: string; pharmacy?: string }) {
+  const sp = new URLSearchParams();
+  if (params.q) sp.set("q", params.q);
+  if (params.pharmacy) sp.set("pharmacy", params.pharmacy);
+  const query = sp.toString();
+  return query ? `/services?${query}` : "/services";
+}
 
-  const services = await listPublicServices().catch(() => []);
+export default async function ServicesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; pharmacy?: string }>;
+}) {
+  const sp = await searchParams;
+  const q = sp.q?.trim() || undefined;
+  const pharmacySlug = sp.pharmacy?.trim().toLowerCase() || undefined;
+  const { services, selectedPharmacy } = await listNetworkServiceListings({ q, pharmacySlug }).catch(
+    () => ({ services: [], selectedPharmacy: null }),
+  );
+
   const bookableCount = services.filter((service) => service.bookable).length;
   const priced = services
     .map((service) => service.price)
     .filter((price): price is number => price != null && Number.isFinite(price));
   const startingPrice = priced.length > 0 ? Math.min(...priced) : null;
-  const heroServices = services.slice(0, 3);
+  const pharmacyCount = new Set(services.map((service) => service.pharmacy.slug)).size;
+  const location = selectedPharmacy
+    ? [selectedPharmacy.city, selectedPharmacy.county].filter(Boolean).join(", ")
+    : "";
 
   return (
     <div className={styles.page}>
@@ -55,56 +71,55 @@ export default async function ServicesPage() {
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
               <div className={styles.eyebrow}>
-                <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-                Pharmacy care, made easier
+                <Layers3 className="h-3.5 w-3.5" aria-hidden="true" />
+                Aether service marketplace
               </div>
 
               <h1 className={styles.title}>
-                Care that feels
-                <span className={styles.titleAccent}> clear, calm and within reach.</span>
+                Choose the care you need.
+                <span className={styles.titleAccent}> Then choose who provides it.</span>
               </h1>
 
               <p className={styles.lede}>
-                Explore practical pharmacy services without the guesswork. Understand what each service offers,
-                see whether it can be booked online, and move straight to the next step.
+                Browse services across active pharmacies without selecting a pharmacy first. Every service card tells you which pharmacy offers it, where they are, what it costs, and whether you can book online.
               </p>
 
               <div className={styles.heroActions}>
                 <Link href="#service-catalogue" className={styles.primaryCta}>
-                  Explore services
+                  Browse services
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
-                <Link href="/contact" className={styles.secondaryCta}>
-                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                  Talk to the pharmacy
+                <Link href="/pharmacies" className={styles.secondaryCta}>
+                  <Store className="h-4 w-4" aria-hidden="true" />
+                  Shop by pharmacy
                 </Link>
               </div>
 
-              <div className={styles.trustRow} aria-label="Service highlights">
+              <div className={styles.trustRow} aria-label="Marketplace highlights">
                 <span>
-                  <BadgeCheck className="h-4 w-4" aria-hidden="true" />
-                  Pharmacy-led
+                  <HeartPulse className="h-4 w-4" aria-hidden="true" />
+                  Pharmacy-led care
                 </span>
                 <span>
-                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                  Clear next steps
+                  <Building2 className="h-4 w-4" aria-hidden="true" />
+                  Source pharmacy shown
                 </span>
                 <span>
                   <CalendarDays className="h-4 w-4" aria-hidden="true" />
-                  Online booking where available
+                  Book where available
                 </span>
               </div>
             </div>
 
-            <aside className={styles.careNavigator} aria-label="Service navigator">
+            <aside className={styles.careNavigator} aria-label="Service marketplace summary">
               <div className={styles.navigatorHeader}>
                 <div>
-                  <p className={styles.navigatorKicker}>Your care navigator</p>
-                  <h2>Start with what you need</h2>
+                  <p className={styles.navigatorKicker}>Network view</p>
+                  <h2>Compare before you commit</h2>
                 </div>
                 <span className={styles.livePill}>
                   <span aria-hidden="true" />
-                  Available now
+                  Public listings
                 </span>
               </div>
 
@@ -112,52 +127,38 @@ export default async function ServicesPage() {
                 <div className={styles.navigatorStep}>
                   <span>01</span>
                   <div>
-                    <strong>Choose</strong>
-                    <p>Open a service that matches your need.</p>
+                    <strong>Browse</strong>
+                    <p>Start with the service, not a pharmacy gate.</p>
                   </div>
                 </div>
                 <div className={styles.navigatorStep}>
                   <span>02</span>
                   <div>
-                    <strong>Understand</strong>
-                    <p>Review benefits, timing, eligibility and price.</p>
+                    <strong>Compare</strong>
+                    <p>See provider, location, price and booking state.</p>
                   </div>
                 </div>
                 <div className={styles.navigatorStep}>
                   <span>03</span>
                   <div>
-                    <strong>Act</strong>
-                    <p>Book online, call, message or visit the pharmacy.</p>
+                    <strong>Continue</strong>
+                    <p>Open the chosen pharmacy only when you pick a listing.</p>
                   </div>
                 </div>
               </div>
 
-              {heroServices.length > 0 && (
-                <div className={styles.quickLinks}>
-                  <p>Quick start</p>
-                  <div>
-                    {heroServices.map((service) => (
-                      <Link key={service.slug} href={`/services/${service.slug}`}>
-                        <span>{service.title}</span>
-                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <div className={styles.heroStats}>
                 <div>
                   <strong>{services.length}</strong>
-                  <span>services</span>
+                  <span>listings</span>
                 </div>
                 <div>
-                  <strong>{bookableCount}</strong>
-                  <span>bookable</span>
+                  <strong>{pharmacyCount}</strong>
+                  <span>pharmacies</span>
                 </div>
                 <div>
-                  <strong>{startingPrice != null ? `KES ${formatPrice(startingPrice)}` : "Ask us"}</strong>
-                  <span>{startingPrice != null ? "from" : "for pricing"}</span>
+                  <strong>{startingPrice != null ? `KES ${formatPrice(startingPrice)}` : bookableCount}</strong>
+                  <span>{startingPrice != null ? "from" : "bookable"}</span>
                 </div>
               </div>
             </aside>
@@ -165,22 +166,90 @@ export default async function ServicesPage() {
         </div>
       </section>
 
+      <section className="px-4 pb-5 sm:px-6 sm:pb-7">
+        <div className="mx-auto max-w-6xl">
+          <nav aria-label="Marketplace shortcuts" className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
+            <Link href="/medicines" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-3 text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--brand-soft)]">
+              <Pill className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Medicines
+            </Link>
+            <Link href="/services" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] px-3 text-xs font-semibold text-white shadow-sm">
+              <Layers3 className="h-4 w-4" aria-hidden /> Services
+            </Link>
+            <Link href="/pharmacies" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-3 text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--brand-soft)]">
+              <Store className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Pharmacies
+            </Link>
+          </nav>
+        </div>
+      </section>
+
+      {pharmacySlug ? (
+        <section className="px-4 pb-5 sm:px-6 sm:pb-7">
+          <div className="mx-auto max-w-6xl">
+            {selectedPharmacy ? (
+              <div className="flex flex-col gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--brand-tint)] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--card)] text-[var(--brand)] shadow-sm">
+                    <Building2 className="h-5 w-5" aria-hidden />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Services from this pharmacy</p>
+                    <p className="truncate text-sm font-bold text-[var(--foreground)] sm:text-base">{selectedPharmacy.name}</p>
+                    {location ? <p className="mt-0.5 text-xs text-[var(--muted)]">{location}</p> : null}
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Link href={`/p/${selectedPharmacy.slug}`} className="inline-flex min-h-10 items-center rounded-xl bg-[var(--brand)] px-3.5 text-xs font-semibold text-white">
+                    View pharmacy
+                  </Link>
+                  <Link href={servicesHref({ q })} className="inline-flex min-h-10 items-center rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--foreground)]">
+                    Browse all pharmacies
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-[var(--foreground)]">
+                That pharmacy is not currently available in the public marketplace. <Link href={servicesHref({ q })} className="font-semibold text-[var(--brand)] underline underline-offset-4">Browse all service listings</Link>.
+              </div>
+            )}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="px-4 pb-7 sm:px-6 sm:pb-9">
+        <div className="mx-auto max-w-6xl">
+          <form method="GET" action="/services" className="grid gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-3 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:p-4">
+            {selectedPharmacy ? <input type="hidden" name="pharmacy" value={selectedPharmacy.slug} /> : null}
+            <div className="relative min-w-0">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-2)]" aria-hidden />
+              <input
+                type="search"
+                name="q"
+                defaultValue={q || ""}
+                placeholder="Search service, screening, vaccination, counselling…"
+                className="min-h-11 w-full rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] pl-10 pr-4 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
+              />
+            </div>
+            <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[var(--brand)] px-5 text-sm font-semibold text-white shadow-sm transition hover:brightness-95 active:scale-[0.98]">
+              Search services
+            </button>
+          </form>
+        </div>
+      </section>
+
       <section id="service-catalogue" className={styles.catalogueSection}>
         <div className={styles.container}>
           <div className={styles.sectionHeading}>
             <div>
-              <p className={styles.sectionKicker}>Explore care</p>
-              <h2>Find the service that fits your day</h2>
+              <p className={styles.sectionKicker}>{selectedPharmacy ? selectedPharmacy.name : "Across the Aether network"}</p>
+              <h2>{q ? `Services matching “${q}”` : "Browse available pharmacy services"}</h2>
               <p>
-                Every card opens a dedicated service page with the details and action you need — no dead ends.
+                Each card is a real pharmacy listing. Tap one to continue with that specific pharmacy and keep the service context intact.
               </p>
             </div>
             {services.length > 0 && (
               <div className={styles.sectionSignal}>
                 <HeartPulse className="h-4 w-4" aria-hidden="true" />
-                <span>
-                  <strong>{services.length}</strong> active service{services.length === 1 ? "" : "s"}
-                </span>
+                <span><strong>{services.length}</strong> listing{services.length === 1 ? "" : "s"}</span>
               </div>
             )}
           </div>
@@ -190,21 +259,19 @@ export default async function ServicesPage() {
               <div className={styles.emptyIcon}>
                 <HeartPulse className="h-6 w-6" aria-hidden="true" />
               </div>
-              <p className={styles.emptyTitle}>Services coming soon</p>
-              <p>
-                Call or message us and we&apos;ll point you in the right direction.
-              </p>
-              <Link href="/contact" className={styles.primaryCta}>
-                Contact us
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
+              <p className={styles.emptyTitle}>No services matched</p>
+              <p>Try a broader service name or browse pharmacies directly.</p>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <Link href="/services" className={styles.primaryCta}>Browse all services <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+                <Link href="/pharmacies" className="inline-flex min-h-11 items-center rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-semibold text-[var(--foreground)]">Browse pharmacies</Link>
+              </div>
             </div>
           ) : (
             <div className={styles.serviceGrid}>
               {services.map((service, index) => (
                 <ServiceCardLink
-                  key={service.slug}
-                  href={`/services/${service.slug}`}
+                  key={service.id}
+                  href={service.href}
                   title={service.title}
                   short={service.short}
                   imageUrl={service.imageUrl}
@@ -213,6 +280,7 @@ export default async function ServicesPage() {
                   priceLabel={service.price != null ? `KES ${formatPrice(service.price)}` : null}
                   benefitCount={service.benefits.length}
                   featured={index === 0 && services.length > 2}
+                  pharmacy={service.pharmacy}
                 />
               ))}
             </div>
@@ -221,28 +289,25 @@ export default async function ServicesPage() {
           {services.length > 0 && (
             <div className={styles.guidanceStrip}>
               <div className={styles.guidanceIcon}>
-                <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+                <Store className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
-                <strong>Not sure where to begin?</strong>
-                <p>Tell us what you need and we can guide you to the most suitable service.</p>
+                <strong>Want to start with a pharmacy instead?</strong>
+                <p>Browse the dedicated directory by location, delivery, services or medicine availability.</p>
               </div>
-              <Link href="/contact">
-                Ask for guidance
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
+              <Link href="/pharmacies">Shop by pharmacy <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
             </div>
           )}
         </div>
       </section>
 
       <CtaBanner
-        title="Need a human answer before you decide?"
-        description="Call or message the pharmacy. We can help you choose the right service and explain what happens next."
-        primaryHref="/contact"
-        primaryLabel="Ask us"
-        secondaryHref="/faq"
-        secondaryLabel="Read FAQ"
+        title="Browse the network your way"
+        description="Start with a medicine, a service, or a pharmacy. Aether only asks you to commit to a pharmacy when the next action actually belongs to one."
+        primaryHref="/medicines"
+        primaryLabel="Browse medicines"
+        secondaryHref="/pharmacies"
+        secondaryLabel="Browse pharmacies"
       />
     </div>
   );

@@ -8,13 +8,14 @@ screens. Cinematic images and inset promotional panels retain their dark contras
 
 | Priority | Intent | Presentation |
 | --- | --- | --- |
-| P0 | Find a pharmacy and start care | First landing pathway and emphasized mobile dock action |
-| P0 | Complete the current refill, order, or booking | Preserve existing tenant-scoped forms and primary submit actions; refill is also available from the shared mobile care dock |
+| P0 | Browse medicines, services, or pharmacies | Dedicated network catalogues; no pharmacy gate before discovery |
+| P0 | Complete the current refill, order, or booking | Tenant-scoped forms begin only after a pharmacy/listing has been chosen |
+| P1 | Compare providers | Every network medicine/service listing identifies its source pharmacy and location |
 | P1 | Track existing care | My care shortcut into the authenticated portal |
-| P1 | Search and narrow results | Glass directory search panel, mobile filters, readable result cards |
-| P2 | Learn and prepare questions | Health guides pathway and secondary dock action |
+| P1 | Search and narrow results | Network catalogue search, pharmacy directory filters, readable result cards |
+| P2 | Learn and prepare questions | Health guides remain a dedicated discovery pathway |
 | P2 | Appearance preferences | Accessible theme controls in shared navigation |
-| P3 | Pharmacy acquisition | Desktop navigation and existing mobile menu; avoids crowding mobile care actions |
+| P3 | Pharmacy acquisition | Desktop/mobile menu only; does not compete with patient discovery actions |
 
 ## Shared behavior
 
@@ -23,9 +24,13 @@ screens. Cinematic images and inset promotional panels retain their dark contras
 - Device changes and cross-tab preference changes update the interface.
 - Glass panels have a solid fallback; reduced-motion preferences suppress movement.
 - Small-screen form fields use at least 16px text to prevent mobile input zoom.
+- The landing page remains impression/brand space; persistent discovery navigation starts on dedicated care pages, not on `/`.
 - Mobile care navigation reserves bottom safe-area space, stays hidden near the top and footer, hides while scrolling down or typing, and returns on upward scroll or after scrolling settles.
-- The shared mobile care dock keeps Find pharmacy, Refill, Health guides, and My care consistent across public care routes while legal, acquisition, and account-workspace surfaces stay uncluttered.
-- Pharmacy selection precedes network-level clinical requests.
+- The shared mobile dock exposes Pharmacies, Medicines, Services, Health, and My care. Transactional actions such as refill/order stay contextual instead of consuming a permanent tab.
+- `/medicines` and `/services` are network-first marketplaces. A remembered pharmacy never silently narrows those roots.
+- A pharmacy can still be intentionally selected with the catalogue `pharmacy` filter or from `/pharmacies`.
+- Medicine/service cards link to an explicit `/p/{slug}/...` destination so the chosen item establishes the pharmacy context before a pharmacy-owned detail or transaction runs.
+- Tenant selection is required at the action boundary, not at the discovery boundary.
 - Legacy palette utilities map to semantic dark colors while components migrate to tokens.
 
 ## Verification scope

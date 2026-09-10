@@ -8,7 +8,9 @@ import {
   CalendarCheck2,
   Check,
   Clock3,
+  MapPin,
   Sparkles,
+  Store,
 } from "lucide-react";
 import styles from "./ServicesPage.module.css";
 
@@ -22,6 +24,11 @@ type Props = {
   priceLabel: string | null;
   benefitCount: number;
   featured?: boolean;
+  pharmacy?: {
+    name: string;
+    city?: string | null;
+    county?: string | null;
+  } | null;
 };
 
 export default function ServiceCardLink({
@@ -34,8 +41,12 @@ export default function ServiceCardLink({
   priceLabel,
   benefitCount,
   featured = false,
+  pharmacy = null,
 }: Props) {
   const [opening, setOpening] = useState(false);
+  const location = pharmacy
+    ? [pharmacy.city, pharmacy.county].filter(Boolean).join(", ")
+    : "";
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (
@@ -54,10 +65,8 @@ export default function ServiceCardLink({
       href={href}
       onClick={handleClick}
       aria-busy={opening}
-      aria-label={`Open ${title}`}
-      className={`${styles.serviceCard} ${featured ? styles.featuredCard : ""} ${
-        opening ? styles.cardOpening : ""
-      }`}
+      aria-label={pharmacy ? `Open ${title} at ${pharmacy.name}` : `Open ${title}`}
+      className={`${styles.serviceCard} ${featured ? styles.featuredCard : ""} ${opening ? styles.cardOpening : ""}`}
     >
       <div className={styles.cardMedia}>
         {imageUrl ? (
@@ -96,6 +105,27 @@ export default function ServiceCardLink({
           <h3>{title}</h3>
           <p className={styles.cardDescription}>{short}</p>
         </div>
+
+        {pharmacy && (
+          <div className="rounded-xl border border-[var(--line)] bg-[var(--brand-tint)]/65 px-3 py-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--card)] text-[var(--brand)] shadow-sm">
+                <Store className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-[11px] font-bold text-[var(--foreground)] sm:text-xs">
+                  {pharmacy.name}
+                </span>
+                {location && (
+                  <span className="mt-0.5 flex min-w-0 items-center gap-1 text-[10px] text-[var(--muted)]">
+                    <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    <span className="truncate">{location}</span>
+                  </span>
+                )}
+              </span>
+            </div>
+          </div>
+        )}
 
         <div className={styles.cardMeta}>
           {duration && (
