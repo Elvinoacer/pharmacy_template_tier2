@@ -6,6 +6,7 @@ import { PortalPharmaciesProvider } from "@/app/components/portal/PortalPharmaci
 import { getResolvedPharmacyOrNull } from "@/app/lib/services/pharmacy-settings";
 import { platform } from "@/app/lib/data";
 import styles from "./PortalAdaptiveSurface.module.css";
+import responsiveStyles from "./PortalSurface.module.css";
 
 // Portal is always request-time (session cookie + profile checks).
 export const dynamic = "force-dynamic";
@@ -59,7 +60,7 @@ export default async function PortalLayout({ children }: { children: React.React
       }}
     >
       <PortalPharmaciesProvider pharmacies={pharmacies}>
-        <div className={styles.surface}>{children}</div>
+        <div className={`${styles.surface} ${responsiveStyles.surface}`}>{children}</div>
       </PortalPharmaciesProvider>
     </TenantBrandProvider>
   );
