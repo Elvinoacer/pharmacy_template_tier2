@@ -105,16 +105,16 @@ export default async function PortalCounsellingPage() {
       title="Medication Counselling"
       subtitle="12-pillar digital patient counselling leaflets and safety protocols for your active medications."
       actions={
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
           <Link
             href={shopBase ? `${shopBase}/services/medication-counselling` : "/services/medication-counselling"}
-            className="btn-primary inline-flex items-center gap-1.5 text-xs"
+            className="btn-primary inline-flex w-full items-center justify-center gap-1.5 text-xs sm:w-auto"
           >
             <PhoneCall className="h-4 w-4" /> Book Pharmacist Consult
           </Link>
           <Link
             href={shopBase ? `${shopBase}/health/counselling` : "/health/counselling"}
-            className="btn-ghost inline-flex items-center gap-1.5 text-xs bg-white"
+            className="btn-ghost inline-flex w-full items-center justify-center gap-1.5 bg-white text-xs sm:w-auto"
           >
             <BookOpen className="h-4 w-4" /> Full Public Hub
           </Link>
@@ -123,16 +123,16 @@ export default async function PortalCounsellingPage() {
     >
       <div className="space-y-8">
         {/* Top Info Banner */}
-        <div className="rounded-2xl border border-teal-200 bg-gradient-to-r from-teal-50 via-white to-emerald-50 p-4 sm:p-5 shadow-xs">
+        <div className="rounded-2xl border border-teal-200 bg-gradient-to-r from-teal-50 via-white to-emerald-50 p-4 shadow-xs sm:p-5">
           <div className="flex items-start gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-700 text-white shadow-xs">
               <ShieldCheck className="h-5 w-5" />
             </span>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <h3 className="text-sm font-bold text-teal-950">
                 Your Digital Medication Counselling Leaflets
               </h3>
-              <p className="mt-1 text-xs text-teal-900 leading-relaxed">
+              <p className="mt-1 text-xs leading-relaxed text-teal-900">
                 Below are the official 12-pillar clinical counselling guides for your current active prescriptions. Review dosage administration, food interactions, missed-dose instructions, and when to seek medical attention.
               </p>
             </div>
@@ -151,22 +151,22 @@ export default async function PortalCounsellingPage() {
         ) : (
           <div className="space-y-8">
             {prescriptionProfiles.map(({ prescriptionId, medicineName, dosage, schedule, counselling }) => (
-              <div key={prescriptionId} className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-700 text-xs font-bold text-white">
+              <div key={prescriptionId} className="min-w-0 space-y-3">
+                <div className="flex min-w-0 flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-700 text-xs font-bold text-white">
                       💊
                     </span>
-                    <h3 className="font-bold text-[#0c1a14] text-base">{medicineName}</h3>
+                    <h3 className="min-w-0 break-words text-base font-bold text-[#0c1a14]">{medicineName}</h3>
                     {dosage && (
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+                      <span className="max-w-full break-words rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
                         {dosage}
                       </span>
                     )}
                   </div>
                   <Link
-                    href={`/portal/prescriptions`}
-                    className="text-xs font-bold text-teal-800 hover:underline"
+                    href="/portal/prescriptions"
+                    className="inline-flex w-fit shrink-0 text-xs font-bold text-teal-800 hover:underline"
                   >
                     View Dose Tracker →
                   </Link>
