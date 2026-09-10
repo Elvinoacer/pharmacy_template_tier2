@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { adminKnowledgeAction } from "@/app/actions/admin";
-import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
+import { AdminPanel } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import KnowledgeForm from "@/app/components/admin/KnowledgeForm";
-import { BookOpen, Brain, FolderTree, CheckCircle2, FileText, Star } from "lucide-react";
+import { Brain, CheckCircle2, FileText, FolderTree, ShieldCheck } from "lucide-react";
 
 export const metadata = { title: "AI Knowledge" };
 
@@ -28,113 +28,88 @@ export default async function AdminKnowledgePage() {
     <AdminShell
       user={user}
       title="Assistant knowledge"
-      subtitle="Maintain approved articles that support the assistant’s responses."
+      subtitle="Curate the approved information the assistant may use when answering customer questions."
     >
-      {/* Stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total articles</p>
-            <FileText className="h-3.5 w-3.5 admin-accent-text" />
+      <div className="mx-auto w-full max-w-6xl space-y-5 sm:space-y-6">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+          <div className="admin-stat min-w-0 p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Articles</p>
+              <FileText className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
+            </div>
+            <p className="mt-1 text-xl font-black tabular-nums admin-text sm:text-2xl">{stats.total}</p>
           </div>
-          <p className="mt-1 text-2xl font-bold admin-text">{stats.total}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Approved</p>
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" />
+          <div className="admin-stat min-w-0 p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Approved</p>
+              <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-300" />
+            </div>
+            <p className="mt-1 text-xl font-black tabular-nums text-emerald-700 dark:text-emerald-300 sm:text-2xl">{stats.approved}</p>
           </div>
-          <p className="mt-1 text-2xl font-bold text-emerald-700">{stats.approved}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Drafts</p>
-            <FileText className="h-3.5 w-3.5 text-amber-700" />
+          <div className="admin-stat min-w-0 p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Drafts</p>
+              <FileText className="h-3.5 w-3.5 shrink-0 text-amber-700 dark:text-amber-300" />
+            </div>
+            <p className="mt-1 text-xl font-black tabular-nums text-amber-700 dark:text-amber-300 sm:text-2xl">{stats.drafts}</p>
           </div>
-          <p className="mt-1 text-2xl font-bold text-amber-700">{stats.drafts}</p>
-        </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Categories</p>
-            <FolderTree className="h-3.5 w-3.5 admin-accent-text" />
+          <div className="admin-stat min-w-0 p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[11px] font-bold uppercase tracking-wide admin-muted sm:text-xs">Categories</p>
+              <FolderTree className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
+            </div>
+            <p className="mt-1 text-xl font-black tabular-nums admin-text sm:text-2xl">{stats.categories}</p>
           </div>
-          <p className="mt-1 text-2xl font-bold admin-text">{stats.categories}</p>
         </div>
-      </div>
 
-      <div className="mb-4 flex items-start gap-3 rounded-xl border border-[var(--admin-accent)]/20 bg-[var(--admin-accent)]/[0.04] p-4">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
-          <Brain className="h-5 w-5" />
-        </span>
-        <div>
-          <p className="text-sm font-semibold admin-text">How AI knowledge works</p>
-          <p className="mt-0.5 text-xs admin-muted">
-            The assistant only receives approved articles that match the customer&apos;s question (not the
-            full library). Public medicine stock is looked up separately via secure tools. Mark articles
-            as approved to make them searchable.
-          </p>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.42fr)] lg:items-start">
+          <AdminPanel
+            title="Knowledge workspace"
+            description="Create new guidance or select an existing article below the form to edit it."
+          >
+            <KnowledgeForm
+              action={adminKnowledgeAction}
+              articles={articles.map((a) => ({
+                id: a.id,
+                title: a.title,
+                category: a.category,
+                content: a.content,
+                priority: a.priority,
+                isApproved: a.isApproved,
+              }))}
+            />
+          </AdminPanel>
+
+          <aside className="space-y-3 lg:sticky lg:top-4">
+            <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-4 shadow-sm sm:p-5">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
+                  <Brain className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold admin-text">What reaches the assistant?</p>
+                  <p className="mt-1 text-sm leading-6 admin-muted">
+                    Only approved articles relevant to the customer&apos;s question are retrieved. The complete knowledge library is never dumped into the model context.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 sm:p-5">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+                  <ShieldCheck className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-sm font-bold text-emerald-800 dark:text-emerald-200">Approval is the publishing gate</p>
+                  <p className="mt-1 text-sm leading-6 text-emerald-800/80 dark:text-emerald-200/80">
+                    Keep uncertain or unfinished material as a draft. Approve it only when the wording is safe and ready to support customer-facing answers.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AdminPanel title="Add / edit article" description="Create or edit a knowledge article">
-          <KnowledgeForm
-            action={adminKnowledgeAction}
-            articles={articles.map((a) => ({
-              id: a.id,
-              title: a.title,
-              category: a.category,
-              content: a.content,
-              priority: a.priority,
-              isApproved: a.isApproved,
-            }))}
-          />
-        </AdminPanel>
-
-        <AdminPanel
-          title="Knowledge library"
-          description={`${articles.length} article${articles.length === 1 ? "" : "s"}`}
-        >
-          {articles.length === 0 ? (
-            <AdminEmptyState icon={BookOpen} title="No articles yet" description="Add your first article using the form on the left." />
-          ) : (
-            <ul className="space-y-2">
-              {articles.map((a) => (
-                <li
-                  key={a.id}
-                  className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition hover:border-[var(--admin-border-2)]"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold admin-text">{a.title}</p>
-                        {a.isApproved ? (
-                          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-                            <CheckCircle2 className="h-2.5 w-2.5" /> approved
-                          </span>
-                        ) : (
-                          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-700">
-                            draft
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-0.5 text-xs admin-muted">
-                        <FolderTree className="mr-1 inline h-2.5 w-2.5" />
-                        {a.category}
-                        {a.priority > 0 && (
-                          <span className="ml-2 inline-flex items-center gap-0.5">
-                            <Star className="h-2.5 w-2.5" /> p{a.priority}
-                          </span>
-                        )}
-                      </p>
-                      <p className="mt-1.5 line-clamp-3 text-sm admin-text/75">{a.content}</p>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </AdminPanel>
       </div>
     </AdminShell>
   );
