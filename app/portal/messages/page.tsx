@@ -111,7 +111,7 @@ export default async function PortalMessagesPage({
       title="Messages & notifications"
       subtitle="Conversations with your pharmacy team and recent activity."
     >
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-2">
         {/* Conversations */}
         <Panel
           title="Conversations"
@@ -124,25 +124,25 @@ export default async function PortalMessagesPage({
               description="When a pharmacist messages you, the thread will appear here."
             />
           ) : (
-            <div className="space-y-4">
+            <div className="min-w-0 space-y-3 sm:space-y-4">
               {conversations.map((c) => {
                 const ChannelIcon = channelIcon[c.channel] || MessageSquare;
                 return (
                   <div
                     key={c.id}
-                    className="rounded-xl border border-[#e3ebe6] bg-white p-4 transition hover:border-[#0d6e5a]/30"
+                    className="min-w-0 rounded-xl border border-[var(--line)] bg-[var(--card)] p-3 transition hover:border-[#0d6e5a]/30 sm:p-4"
                   >
-                    <div className="mb-3 flex items-center justify-between gap-2">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e6f4ef] text-[#0d6e5a]">
+                    <div className="mb-3 flex min-w-0 flex-wrap items-center justify-between gap-2">
+                      <div className="flex min-w-0 flex-1 items-center gap-2">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[var(--brand-deep)]">
                           <ChannelIcon className="h-4 w-4" />
                         </span>
-                        <p className="truncate text-sm font-semibold text-[#0c1a14]">
+                        <p className="min-w-0 break-words text-sm font-semibold text-[var(--foreground)]">
                           {c.subject || c.channel}
                         </p>
                       </div>
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                           c.status === "open"
                             ? "bg-emerald-100 text-emerald-700"
                             : c.status === "pending"
@@ -155,23 +155,23 @@ export default async function PortalMessagesPage({
                         {c.status}
                       </span>
                     </div>
-                    <ul className="space-y-2">
+                    <ul className="min-w-0 space-y-2">
                       {c.messages.map((m) => {
                         const outbound = m.direction === "outbound";
                         return (
                           <li
                             key={m.id}
-                            className={`rounded-xl px-3 py-2 text-sm ${
+                            className={`min-w-0 rounded-xl px-3 py-2 text-sm ${
                               outbound
-                                ? "ml-8 bg-[#e6f4ef] text-[#084c3f]"
-                                : "mr-8 bg-[#f4f7f4] text-[#0c1a14]"
+                                ? "bg-[var(--brand-soft)] text-[var(--brand-deep)] sm:ml-8"
+                                : "bg-[var(--card-elev)] text-[var(--foreground)] sm:mr-8"
                             }`}
                           >
-                            <p className="mb-0.5 flex items-center justify-between gap-2 text-[10px] uppercase tracking-wide text-[#8a9a92]">
+                            <p className="mb-1 flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] uppercase tracking-wide text-[var(--muted-2)]">
                               <span>{m.senderType}</span>
-                              <span>{formatDateTime(m.createdAt)}</span>
+                              <span className="normal-case tracking-normal">{formatDateTime(m.createdAt)}</span>
                             </p>
-                            <p className="whitespace-pre-wrap">{m.body}</p>
+                            <p className="whitespace-pre-wrap break-words leading-relaxed">{m.body}</p>
                           </li>
                         );
                       })}
