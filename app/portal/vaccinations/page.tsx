@@ -30,8 +30,11 @@ export default async function PortalVaccinationsPage() {
       title="Vaccinations & prevention"
       subtitle="Your digital immunisation card, upcoming bookings, and preventive counselling sessions."
       actions={
-        <Link href={shopBase ? `${shopBase}/vaccinations/book` : "/vaccinations/book"} className="btn-primary">
-          <Syringe className="h-4 w-4" /> Book a vaccine
+        <Link
+          href={shopBase ? `${shopBase}/vaccinations/book` : "/vaccinations/book"}
+          className="btn-primary min-h-11 w-full sm:w-auto"
+        >
+          <Syringe className="h-4 w-4 shrink-0" /> Book a vaccine
         </Link>
       }
     >
