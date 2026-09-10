@@ -25,18 +25,18 @@ export function AdminCard({
             : "from-[var(--admin-accent)] to-[var(--admin-accent-2)] text-[var(--admin-btn-fg)]";
 
   return (
-    <div className="admin-stat">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold admin-muted">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight admin-text">{value}</p>
-          {hint && <p className="mt-1 text-sm admin-soft">{hint}</p>}
+    <div className="admin-stat group h-full overflow-hidden transition-[border-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:shadow-md">
+      <div className="flex h-full items-start justify-between gap-2.5 sm:gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold leading-4 admin-muted sm:text-xs">{label}</p>
+          <p className="mt-1.5 break-words text-xl font-bold leading-tight tracking-tight admin-text sm:mt-2 sm:text-3xl">{value}</p>
+          {hint && <p className="mt-1 break-words text-xs leading-5 admin-soft sm:text-sm">{hint}</p>}
         </div>
         {icon && (
-          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${accentClass} shadow-md`}>
+          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${accentClass} shadow-sm transition-transform duration-200 group-hover:scale-[1.04] sm:h-10 sm:w-10 sm:shadow-md`}>
             {(() => {
               const Icon = icon;
-              return <Icon className="h-5 w-5" />;
+              return <Icon className="h-4 w-4 sm:h-5 sm:w-5" />;
             })()}
           </span>
         )}
@@ -61,17 +61,17 @@ export function AdminPanel({
   id?: string;
 }) {
   return (
-    <section id={id} className={`admin-card p-5 sm:p-6 ${className}`}>
+    <section id={id} className={`admin-card min-w-0 overflow-hidden p-4 sm:p-6 ${className}`}>
       {(title || action) && (
-        <div className="admin-panel-heading flex flex-wrap items-start justify-between gap-3">
-          <div>
-            {title && <h2 className="text-sm font-semibold admin-text">{title}</h2>}
-            {description && <p className="mt-0.5 text-sm admin-muted">{description}</p>}
+        <div className="admin-panel-heading flex min-w-0 flex-col items-start justify-between gap-3 sm:flex-row">
+          <div className="min-w-0 flex-1">
+            {title && <h2 className="break-words text-sm font-semibold admin-text">{title}</h2>}
+            {description && <p className="mt-0.5 break-words text-sm admin-muted">{description}</p>}
           </div>
-          {action}
+          {action && <div className="w-full shrink-0 sm:w-auto">{action}</div>}
         </div>
       )}
-      {children}
+      <div className="min-w-0">{children}</div>
     </section>
   );
 }
@@ -106,12 +106,12 @@ export function AdminEmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="admin-empty">
-      <span className="admin-icon-well flex h-12 w-12">
+    <div className="admin-empty px-3 py-6 text-center sm:px-6 sm:py-8">
+      <span className="admin-icon-well mx-auto flex h-12 w-12">
         <Icon className="h-6 w-6" />
       </span>
       <p className="mt-3 text-sm font-semibold admin-text">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-sm admin-muted">{description}</p>}
+      {description && <p className="mx-auto mt-1 max-w-sm text-sm admin-muted">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
