@@ -29,7 +29,8 @@ export default async function PaymentsAnalyticsPage({
   const [metrics, aging] = await Promise.all([computePaymentMetrics(range), computeOutstandingAging()]);
 
   return (
-    <AnalyticsShell user={user}
+    <AnalyticsShell
+      user={user}
       title="Payments & balances"
       description="Review payment results, collections, and outstanding balances."
       period={period}
@@ -41,61 +42,105 @@ export default async function PaymentsAnalyticsPage({
         <AdminCard label="Failed" value={formatNumber(metrics.failed)} hint={`Failure rate ${formatPct(metrics.failureRate)}`} icon={AlertTriangle} accent="danger" />
         <AdminCard label="Pending" value={formatNumber(metrics.pending)} icon={RefreshCw} accent="neutral" />
       </StatGrid>
+
       <StatGrid>
-        <AdminCard label="Outstanding" value={formatKES(metrics.outstanding)} icon={AlertTriangle} accent="danger" />
+        <AdminCard label="Outstanding" value={formatKES(metrics.outstanding)} hint="Open order balances" icon={AlertTriangle} accent="danger" />
         <AdminCard label="Refunds" value={formatKES(metrics.refundsTotal)} icon={Scale} accent="neutral" />
         <AdminCard label="Avg Attempts / Order" value={metrics.averageAttemptsPerOrder.toFixed(1)} icon={Activity} accent="neutral" />
       </StatGrid>
 
-      <AdminPanel title="Collected by Provider">
-        <div className="space-y-1.5 text-xs">
-          {Object.entries(metrics.collectedByProvider).map(([prov, amt]) => (
-            <div key={prov} className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] px-3 py-2">
-              <span className="admin-muted uppercase">{prov}</span>
-              <strong className="admin-text">{formatKES(amt)}</strong>
-            </div>
-          ))}
-          {Object.keys(metrics.collectedByProvider).length === 0 && <p className="admin-muted">No completed payments in this period.</p>}
-        </div>
-      </AdminPanel>
+      <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+        <AdminPanel title="Collected by Provider" description="Completed collections grouped by payment channel.">
+          <div className="space-y-2 text-xs">
+            {Object.entries(metrics.collectedByProvider).map(([prov, amt]) => (
+              <MetricRow key={prov} label={prov.toUpperCase()} value={formatKES(amt)} />
+            ))}
+            {Object.keys(metrics.collectedByProvider).length === 0 && (
+              <p className="rounded-xl border border-dashed border-[var(--admin-border)] bg-[var(--admin-inset)] px-4 py-6 text-center admin-muted">
+                No completed payments in this period.
+              </p>
+            )}
+          </div>
+        </AdminPanel>
 
-      <AdminPanel title="Outstanding Aging" description="Who owes the pharmacy money, broken down by order age.">
-        <p className="text-2xl font-bold admin-text">{formatKES(aging.total)}</p>
-        <div className="mt-4 space-y-2 text-xs">
-          {aging.buckets.map((b) => (
-            <div key={b.label} className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] px-3 py-2">
-              <span className="admin-muted">{b.label}</span>
-              <span className="admin-text"><strong>{formatKES(b.amount)}</strong> · {b.count} orders</span>
-            </div>
-          ))}
-        </div>
-      </AdminPanel>
+        <AdminPanel title="Outstanding Aging" description="Open balances grouped by how long they have remained unpaid.">
+          <div className="mb-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 sm:p-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] admin-muted">Total outstanding</p>
+            <p className="mt-1 break-words text-2xl font-bold tracking-tight admin-text sm:text-3xl">{formatKES(aging.total)}</p>
+          </div>
+          <div className="space-y-2 text-xs">
+            {aging.buckets.map((b) => (
+              <MetricRow key={b.label} label={b.label} value={formatKES(b.amount)} meta={`${b.count} orders`} />
+            ))}
+          </div>
+        </AdminPanel>
+      </div>
 
-      <AdminPanel title="Top Outstanding Customers">
-        <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
-          <table className="w-full text-xs">
+      <AdminPanel
+        title="Top Outstanding Customers"
+        description="Prioritize follow-up by balance size and age."
+      >
+        <div className="space-y-2 md:hidden">
+          {aging.topCustomers.map((c) => (
+            <article
+              key={c.customerId}
+              className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-4 transition-[border-color,background-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-hover)] hover:shadow-sm motion-reduce:transition-none"
+            >
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold admin-text">{c.customerName}</p>
+                  <p className="mt-1 text-xs admin-muted">Oldest balance · {c.oldestDays} days</p>
+                </div>
+                <span className="shrink-0 rounded-full border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-[11px] font-semibold admin-muted">
+                  Due
+                </span>
+              </div>
+              <p className="mt-4 break-words text-xl font-bold tracking-tight admin-text">{formatKES(c.amount)}</p>
+            </article>
+          ))}
+          {aging.topCustomers.length === 0 && (
+            <p className="rounded-xl border border-dashed border-[var(--admin-border)] px-4 py-8 text-center text-sm admin-muted">
+              No outstanding balances.
+            </p>
+          )}
+        </div>
+
+        <div tabIndex={0} role="region" aria-label="Outstanding customer records" className="admin-table-region hidden overflow-x-auto md:block">
+          <table className="w-full min-w-[620px] text-xs">
             <thead>
-              <tr className="text-left admin-muted border-b border-[var(--admin-border)]">
-                <th className="py-2 pr-4">Customer</th>
-                <th className="py-2 pr-4 text-right">Outstanding</th>
-                <th className="py-2 pr-4 text-right">Oldest (days)</th>
+              <tr className="border-b border-[var(--admin-border)] text-left admin-muted">
+                <th>Customer</th>
+                <th className="text-right">Outstanding</th>
+                <th className="text-right">Oldest (days)</th>
               </tr>
             </thead>
             <tbody>
               {aging.topCustomers.map((c) => (
-                <tr key={c.customerId} className="border-b border-[var(--admin-border)]">
-                  <td className="py-2 pr-4 admin-text">{c.customerName}</td>
-                  <td className="py-2 pr-4 text-right admin-text font-semibold">{formatKES(c.amount)}</td>
-                  <td className="py-2 pr-4 text-right admin-muted">{c.oldestDays}</td>
+                <tr key={c.customerId} className="border-b border-[var(--admin-border)] transition-colors duration-150 hover:bg-[var(--admin-hover)] motion-reduce:transition-none">
+                  <td className="admin-text">{c.customerName}</td>
+                  <td className="text-right font-semibold admin-text">{formatKES(c.amount)}</td>
+                  <td className="text-right admin-muted">{c.oldestDays}</td>
                 </tr>
               ))}
               {aging.topCustomers.length === 0 && (
-                <tr><td colSpan={3} className="py-4 text-center admin-muted">No outstanding balances.</td></tr>
+                <tr><td colSpan={3} className="py-6 text-center admin-muted">No outstanding balances.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </AdminPanel>
     </AnalyticsShell>
+  );
+}
+
+function MetricRow({ label, value, meta }: { label: string; value: string; meta?: string }) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3.5 py-3 transition-[border-color,background-color] duration-200 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-hover)] motion-reduce:transition-none sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <span className="break-words font-medium admin-muted">{label}</span>
+      <span className="min-w-0 sm:text-right">
+        <strong className="block break-words text-sm admin-text">{value}</strong>
+        {meta && <small className="mt-0.5 block text-[11px] admin-muted">{meta}</small>}
+      </span>
+    </div>
   );
 }
