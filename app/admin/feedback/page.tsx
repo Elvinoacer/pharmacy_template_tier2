@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Clock,
   CheckCircle2,
+  Inbox,
 } from "lucide-react";
 
 export const metadata = { title: "Feedback" };
@@ -26,10 +27,13 @@ const TYPE_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  new: "bg-rose-500/15 text-rose-600",
-  reviewed: "bg-amber-500/15 text-amber-700",
-  responded: "bg-emerald-500/15 text-emerald-700",
-  archived: "bg-slate-500/15 text-slate-600",
+  new: "bg-rose-500/12 text-rose-700 ring-1 ring-inset ring-rose-500/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20",
+  reviewed:
+    "bg-amber-500/12 text-amber-800 ring-1 ring-inset ring-amber-500/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20",
+  responded:
+    "bg-emerald-500/12 text-emerald-800 ring-1 ring-inset ring-emerald-500/20 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20",
+  archived:
+    "bg-slate-500/10 text-slate-600 ring-1 ring-inset ring-slate-500/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20",
 };
 
 export default async function AdminFeedbackPage() {
@@ -38,12 +42,13 @@ export default async function AdminFeedbackPage() {
 
   const items = await prisma.feedback.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
 
+  const rated = items.filter((f) => f.rating);
   const stats = {
     total: items.length,
     new: items.filter((f) => f.status === "new").length,
     responded: items.filter((f) => f.status === "responded").length,
-    avgRating: items.filter((f) => f.rating).length
-      ? (items.filter((f) => f.rating).reduce((s, f) => s + (f.rating || 0), 0) / items.filter((f) => f.rating).length).toFixed(1)
+    avgRating: rated.length
+      ? (rated.reduce((sum, f) => sum + (f.rating || 0), 0) / rated.length).toFixed(1)
       : "—",
   };
 
@@ -51,87 +56,101 @@ export default async function AdminFeedbackPage() {
     <AdminShell
       user={user}
       title="Patient feedback"
-      subtitle={`${items.length} feedback ${items.length === 1 ? "entry" : "entries"} from customers`}
+      subtitle="Review what customers are saying, prioritise unresolved feedback, and respond without losing context."
     >
-      {/* Stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="admin-stat p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total</p>
-          <p className="mt-1 text-2xl font-bold admin-text">{stats.total}</p>
+      <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:gap-3 lg:grid-cols-4">
+        <div className="admin-stat p-3.5 sm:p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] admin-muted sm:text-xs">Total</p>
+          <p className="mt-1 text-xl font-bold admin-text sm:text-2xl">{stats.total}</p>
         </div>
-        <div className="admin-stat p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">New</p>
-          <p className="mt-1 text-2xl font-bold text-rose-600">{stats.new}</p>
+        <div className="admin-stat p-3.5 sm:p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-700 dark:text-rose-300 sm:text-xs">New</p>
+          <p className="mt-1 text-xl font-bold text-rose-700 dark:text-rose-300 sm:text-2xl">{stats.new}</p>
         </div>
-        <div className="admin-stat p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Responded</p>
-          <p className="mt-1 text-2xl font-bold text-emerald-700">{stats.responded}</p>
+        <div className="admin-stat p-3.5 sm:p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300 sm:text-xs">Responded</p>
+          <p className="mt-1 text-xl font-bold text-emerald-700 dark:text-emerald-300 sm:text-2xl">{stats.responded}</p>
         </div>
-        <div className="admin-stat p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Avg rating</p>
-          <p className="mt-1 text-2xl font-bold text-amber-700">{stats.avgRating}</p>
+        <div className="admin-stat p-3.5 sm:p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-800 dark:text-amber-300 sm:text-xs">Avg rating</p>
+          <p className="mt-1 text-xl font-bold text-amber-800 dark:text-amber-300 sm:text-2xl">{stats.avgRating}</p>
         </div>
       </div>
 
       {items.length === 0 ? (
         <AdminPanel>
           <AdminEmptyState
-            icon={MessageSquare}
+            icon={Inbox}
             title="No feedback yet"
-            description="Customer feedback from the portal will land here."
+            description="Customer feedback from the portal will appear here as soon as someone submits it."
           />
         </AdminPanel>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {items.map((f) => {
             const Icon = TYPE_ICON[f.type] || MessageSquare;
+            const subject = f.title || f.name || "Anonymous feedback";
             return (
-              <AdminPanel key={f.id}>
-                <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
-                    <Icon className="h-5 w-5" />
+              <AdminPanel key={f.id} className="transition-[border-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:shadow-sm">
+                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text sm:h-10 sm:w-10">
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   </span>
+
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold admin-text">{f.title || f.name || "Anonymous"}</p>
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_COLOR[f.status]}`}>
-                        {f.status}
-                      </span>
-                      <span className="rounded-full bg-[var(--admin-inset)] px-2 py-0.5 text-xs capitalize admin-muted">
-                        {f.type}
-                      </span>
+                    <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="break-words text-sm font-semibold leading-5 admin-text sm:text-base">{subject}</p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                          <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${STATUS_COLOR[f.status] || STATUS_COLOR.archived}`}>
+                            {f.status}
+                          </span>
+                          <span className="rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[11px] font-semibold capitalize admin-muted ring-1 ring-inset ring-[var(--admin-border)]">
+                            {f.type}
+                          </span>
+                        </div>
+                      </div>
+
                       {f.rating ? (
-                        <span className="inline-flex items-center gap-0.5 text-amber-700">
+                        <span className="inline-flex shrink-0 items-center gap-0.5 self-start rounded-full bg-amber-500/10 px-2 py-1 text-amber-700 dark:text-amber-300">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}
-                              className={`h-3 w-3 ${i < f.rating! ? "fill-amber-400 text-amber-500" : "text-slate-500"}`}
+                              className={`h-3.5 w-3.5 ${
+                                i < f.rating!
+                                  ? "fill-amber-400 text-amber-500 dark:fill-amber-300 dark:text-amber-300"
+                                  : "text-slate-300 dark:text-slate-600"
+                              }`}
                             />
                           ))}
                         </span>
                       ) : null}
                     </div>
-                    <p className="mt-2 text-sm admin-text">{f.body}</p>
-                    <p className="mt-1 flex items-center gap-1 text-xs uppercase tracking-wide admin-soft">
-                      <Clock className="h-2.5 w-2.5" />
-                      {formatDateTime(f.createdAt)}
-                      {f.email && <span className="ml-2 normal-case admin-muted">· {f.email}</span>}
-                    </p>
+
+                    <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 admin-text">{f.body}</p>
+
+                    <div className="mt-2 flex flex-col gap-1 text-[11px] admin-soft sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3 sm:text-xs">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock className="h-3 w-3" />
+                        {formatDateTime(f.createdAt)}
+                      </span>
+                      {f.email && (
+                        <span className="break-all normal-case admin-muted sm:break-normal">{f.email}</span>
+                      )}
+                    </div>
 
                     {f.staffResponse && (
-                      <div className="mt-3 flex items-start gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-2 text-sm">
-                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
-                            Staff response
-                          </p>
-                          <p className="mt-0.5 admin-text">{f.staffResponse}</p>
+                      <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-2.5 dark:border-emerald-400/20 dark:bg-emerald-400/[0.07] sm:px-4 sm:py-3">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Staff response</p>
+                          <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-5 admin-text">{f.staffResponse}</p>
                         </div>
                       </div>
                     )}
 
                     {f.status !== "responded" && (
-                      <div className="mt-3 border-t border-[var(--admin-border)] pt-3">
+                      <div className="mt-4 border-t border-[var(--admin-border)] pt-4">
                         <FeedbackRespondForm
                           action={adminFeedbackRespondAction}
                           id={f.id}

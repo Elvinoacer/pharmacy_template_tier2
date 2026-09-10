@@ -9,6 +9,7 @@ import AdminFeelSessionClient, {
 import { acknowledgeSymptomSessionForStaff } from "@/app/lib/services/symptom-triage";
 import { createPrivateMediaToken, isPrivateR2Reference } from "@/app/lib/r2";
 import { ArrowLeft } from "lucide-react";
+import styles from "./page.module.css";
 
 export const metadata = { title: "Symptom session" };
 
@@ -100,14 +101,16 @@ export default async function AdminFeelSessionPage({
       actions={
         <Link
           href="/admin/feel"
-          className="inline-flex items-center gap-1.5 rounded-xl border admin-border px-3 py-1.5 text-xs font-semibold admin-text hover:bg-[var(--admin-inset)]"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border admin-border px-3 py-2 text-xs font-semibold admin-text transition hover:bg-[var(--admin-inset)] sm:w-auto sm:justify-start"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          Inbox
+          Back to triage
         </Link>
       }
     >
-      <AdminFeelSessionClient initial={initial} />
+      <div className={styles.detail}>
+        <AdminFeelSessionClient initial={initial} />
+      </div>
     </AdminShell>
   );
 }

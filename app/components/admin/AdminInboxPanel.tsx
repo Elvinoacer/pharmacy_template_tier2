@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Pagination } from "@/app/components/Pagination";
 import { toast } from "@/app/components/Toaster";
-import { Inbox, CheckCheck, ExternalLink } from "lucide-react";
+import { Inbox, CheckCheck, ExternalLink, BellRing, Clock3 } from "lucide-react";
 import { formatDateTime } from "@/app/lib/time";
 
 export type AdminNotifRow = {
@@ -13,7 +13,7 @@ export type AdminNotifRow = {
   body: string;
   severity: string;
   isRead: boolean;
-  createdAt: string; // ISO
+  createdAt: string;
   relatedType?: string | null;
   relatedId?: string | null;
 };
@@ -33,10 +33,19 @@ function relatedHref(n: AdminNotifRow): string | null {
 }
 
 const SEVERITY_COLOR: Record<string, string> = {
-  info: "bg-blue-500/15 text-blue-700",
-  warning: "bg-amber-500/15 text-amber-700",
-  critical: "bg-rose-500/15 text-rose-600",
+  info: "bg-blue-500/12 text-blue-700 ring-1 ring-inset ring-blue-500/20 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/20",
+  warning:
+    "bg-amber-500/12 text-amber-800 ring-1 ring-inset ring-amber-500/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20",
+  critical:
+    "bg-rose-500/12 text-rose-700 ring-1 ring-inset ring-rose-500/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20",
 };
+
+function severityClass(severity: string) {
+  return (
+    SEVERITY_COLOR[severity] ||
+    "bg-slate-500/10 text-slate-600 ring-1 ring-inset ring-slate-500/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20"
+  );
+}
 
 export function AdminInboxPanel({
   initial,
@@ -88,97 +97,155 @@ export function AdminInboxPanel({
     }
   };
 
+  const unread = initial.filter((n) => !n.isRead).length;
+
   return (
     <div className="space-y-4">
-      {/* Actions */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 text-xs admin-muted">
+          <BellRing className="h-3.5 w-3.5 admin-accent-text" />
+          <span>{unread} unread on this page</span>
+        </div>
         <button
           type="button"
           onClick={markAllRead}
-          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]"
+          disabled={initial.length === 0 || unread === 0}
+          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-3 py-2 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] disabled:opacity-50 sm:w-auto"
         >
-          <CheckCheck className="h-3 w-3" /> Mark all read
+          <CheckCheck className="h-3.5 w-3.5" /> Mark all read
         </button>
       </div>
 
-      <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto scroll-admin">
-        <table className="table-admin">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Message</th>
-              <th>Severity</th>
-              <th>When</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {initial.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-8 text-center">
-                  <div className="admin-empty">
-                    <span className="admin-icon-well flex h-12 w-12">
-                      <Inbox className="h-6 w-6" />
+      {initial.length === 0 ? (
+        <div className="admin-empty rounded-2xl border border-dashed border-[var(--admin-border)] px-4 py-8 text-center">
+          <span className="admin-icon-well mx-auto flex h-12 w-12">
+            <Inbox className="h-6 w-6" />
+          </span>
+          <p className="mt-3 text-sm font-semibold admin-text">Your inbox is clear</p>
+          <p className="mt-1 text-xs admin-muted">No admin notifications need attention.</p>
+        </div>
+      ) : (
+        <>
+          <div className="space-y-2 md:hidden">
+            {initial.map((n) => {
+              const href = relatedHref(n);
+              return (
+                <article
+                  key={n.id}
+                  className={`rounded-2xl border p-3.5 transition-[border-color,background-color,box-shadow] ${
+                    n.isRead
+                      ? "border-[var(--admin-border)] bg-[var(--admin-card)]"
+                      : "border-[var(--admin-border-2)] bg-[var(--admin-inset)] shadow-sm"
+                  }`}
+                >
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] admin-soft">
+                          {n.type.replace(/_/g, " ")}
+                        </span>
+                        {!n.isRead && <span className="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-300" />}
+                      </div>
+                      <h3 className="mt-1.5 break-words text-sm font-semibold leading-5 admin-text">{n.title}</h3>
+                    </div>
+                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold capitalize ${severityClass(n.severity)}`}>
+                      {n.severity}
                     </span>
-                    <p className="mt-3 text-sm font-semibold admin-text">Your inbox is clear</p>
-                    <p className="mt-1 text-xs admin-muted">No new admin notifications.</p>
                   </div>
-                </td>
-              </tr>
-            ) : (
-              initial.map((n) => {
-                const href = relatedHref(n);
-                return (
-                  <tr
-                    key={n.id}
-                    className={`transition ${!n.isRead ? "bg-[var(--admin-inset)]/50 font-medium" : ""}`}
-                  >
-                    <td>
-                      <p className="text-xs capitalize admin-soft">{n.type.replace(/_/g, " ")}</p>
-                    </td>
-                    <td>
-                      <p className="flex items-center gap-1.5 text-sm admin-text">
-                        <span className="truncate max-w-[280px]">{n.title}</span>
-                        {!n.isRead && (
-                          <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
+
+                  <p className="mt-2 break-words text-xs leading-5 admin-muted">{n.body}</p>
+
+                  <div className="mt-3 flex items-center gap-1.5 text-[11px] admin-soft">
+                    <Clock3 className="h-3 w-3" />
+                    {formatDateTime(n.createdAt)}
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {href && (
+                      <Link
+                        href={href}
+                        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-semibold admin-accent-text"
+                      >
+                        Open item <ExternalLink className="h-3.5 w-3.5" />
+                      </Link>
+                    )}
+                    {!n.isRead && (
+                      <button
+                        type="button"
+                        onClick={() => markRead(n.id)}
+                        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] px-3 py-2 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                      >
+                        <CheckCheck className="h-3.5 w-3.5" /> Mark read
+                      </button>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <div tabIndex={0} role="region" aria-label="Inbox records" className="admin-table-region hidden overflow-x-auto scroll-admin md:block">
+            <table className="table-admin">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Message</th>
+                  <th>Severity</th>
+                  <th>When</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {initial.map((n) => {
+                  const href = relatedHref(n);
+                  return (
+                    <tr
+                      key={n.id}
+                      className={`transition ${!n.isRead ? "bg-[var(--admin-inset)]/50 font-medium" : ""}`}
+                    >
+                      <td>
+                        <p className="text-xs capitalize admin-soft">{n.type.replace(/_/g, " ")}</p>
+                      </td>
+                      <td>
+                        <p className="flex items-center gap-1.5 text-sm admin-text">
+                          <span className="max-w-[320px] truncate">{n.title}</span>
+                          {!n.isRead && <span className="inline-block h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-300" />}
+                        </p>
+                        <p className="max-w-[320px] truncate text-xs admin-muted">{n.body}</p>
+                        {href && (
+                          <Link
+                            href={href}
+                            className="mt-1 inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline"
+                          >
+                            Open <ExternalLink className="h-3 w-3" />
+                          </Link>
                         )}
-                      </p>
-                      <p className="truncate text-xs admin-muted max-w-[280px]">{n.body}</p>
-                      {href && (
-                        <Link
-                          href={href}
-                          className="mt-1 inline-flex items-center gap-1 text-xs font-semibold admin-accent-text hover:underline"
-                        >
-                          Open <ExternalLink className="h-3 w-3" />
-                        </Link>
-                      )}
-                    </td>
-                    <td>
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${SEVERITY_COLOR[n.severity] || "bg-slate-500/15 text-slate-600"}`}>
-                        {n.severity}
-                      </span>
-                    </td>
-                    <td className="text-xs admin-muted">
-                      {formatDateTime(n.createdAt)}
-                    </td>
-                    <td className="text-right">
-                      {!n.isRead && (
-                        <button
-                          type="button"
-                          onClick={() => markRead(n.id)}
-                          className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2 py-1 text-xs font-medium admin-muted hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
-                        >
-                          <CheckCheck className="h-3 w-3" /> Mark read
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                      </td>
+                      <td>
+                        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${severityClass(n.severity)}`}>
+                          {n.severity}
+                        </span>
+                      </td>
+                      <td className="text-xs admin-muted">{formatDateTime(n.createdAt)}</td>
+                      <td className="text-right">
+                        {!n.isRead && (
+                          <button
+                            type="button"
+                            onClick={() => markRead(n.id)}
+                            className="inline-flex items-center gap-1 rounded-full bg-[var(--admin-inset)] px-2.5 py-1.5 text-xs font-medium admin-muted hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+                          >
+                            <CheckCheck className="h-3 w-3" /> Mark read
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       <Pagination
         page={page}
