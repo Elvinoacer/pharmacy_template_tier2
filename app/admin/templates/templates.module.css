@@ -1,0 +1,121 @@
+.page {
+  min-width: 0;
+}
+
+.editorPanel,
+.libraryPanel {
+  min-width: 0;
+}
+
+.editorPanel :global(.input-admin) {
+  min-height: 46px;
+  border-color: var(--admin-border);
+  background: var(--admin-inset);
+  color: var(--admin-text);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.editorPanel :global(textarea.input-admin) {
+  min-height: 128px;
+}
+
+.editorPanel :global(.input-admin:focus) {
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 3px var(--admin-accent-soft);
+}
+
+.editorPanel :global(select.input-admin option) {
+  background: var(--admin-surface);
+  color: var(--admin-text);
+}
+
+.editorPanel :global(button),
+.libraryPanel :global(li) {
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.editorPanel :global(button:active) {
+  transform: scale(0.98);
+}
+
+.libraryPanel :global(li:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
+}
+
+@media (min-width: 1024px) {
+  .libraryPanel {
+    align-self: start;
+  }
+}
+
+@media (max-width: 639px) {
+  .page :global(.admin-stat) {
+    min-height: 94px;
+    padding: 0.85rem !important;
+  }
+
+  .page :global(.admin-stat p.text-2xl) {
+    font-size: 1.35rem;
+    line-height: 1.75rem;
+  }
+
+  .editorPanel,
+  .libraryPanel {
+    border-radius: 1rem;
+  }
+
+  .editorPanel :global(.grid.sm\:grid-cols-2) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+
+  .editorPanel :global(form > .flex.items-center.gap-2) {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .editorPanel :global(form > .flex.items-center.gap-2 > button) {
+    width: 100%;
+    min-height: 46px;
+    justify-content: center;
+  }
+
+  .editorPanel :global(ul li) {
+    gap: 0.65rem;
+    padding: 0.8rem;
+  }
+
+  .editorPanel :global(ul li > .flex.shrink-0) {
+    gap: 0.35rem;
+  }
+
+  .editorPanel :global(ul li button[aria-label]) {
+    display: inline-flex;
+    min-height: 40px;
+    min-width: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--admin-border);
+    border-radius: 0.75rem;
+    background: var(--admin-inset-2);
+  }
+
+  .libraryPanel :global(li) {
+    padding: 0.85rem !important;
+  }
+
+  .libraryPanel :global(li p) {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
