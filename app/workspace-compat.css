@@ -1,0 +1,234 @@
+/*
+ * Staff workspace compatibility guard.
+ *
+ * The admin/platform shells use explicit data-admin-theme tokens, while a few
+ * older route components still carry Tailwind dark: utilities and fixed light
+ * palette classes. These rules make the selected in-app theme authoritative
+ * and provide a final mobile overflow/touch safety net for merged routes.
+ */
+
+.shell-grid-admin {
+  min-width: 0;
+  max-width: 100%;
+  --workspace-rose-text: #be123c;
+  --workspace-amber-text: #92400e;
+  --workspace-emerald-text: #047857;
+  --workspace-blue-text: #1d4ed8;
+  --workspace-slate-text: #475569;
+}
+
+html[data-admin-theme="dark"] .shell-grid-admin,
+.shell-grid-admin[data-theme="dark"] {
+  --workspace-rose-text: #fda4af;
+  --workspace-amber-text: #fcd34d;
+  --workspace-emerald-text: #6ee7b7;
+  --workspace-blue-text: #93c5fd;
+  --workspace-slate-text: #cbd5e1;
+}
+
+.shell-grid-admin main,
+.shell-grid-admin section,
+.shell-grid-admin article,
+.shell-grid-admin form,
+.shell-grid-admin fieldset,
+.shell-grid-admin nav,
+.shell-grid-admin header,
+.shell-grid-admin footer,
+.shell-grid-admin [class*="grid"] > *,
+.shell-grid-admin [class*="flex"] > * {
+  min-width: 0;
+}
+
+.shell-grid-admin img,
+.shell-grid-admin video,
+.shell-grid-admin canvas,
+.shell-grid-admin iframe {
+  max-width: 100%;
+}
+
+.shell-grid-admin .admin-table-region,
+.platform-shell .overflow-x-auto,
+.platform-shell [role="region"] {
+  max-width: 100%;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Legacy light surfaces resolve through the current admin theme tokens. */
+.shell-grid-admin [class~="bg-white"],
+.shell-grid-admin [class~="bg-white/95"],
+.shell-grid-admin [class~="bg-white/90"],
+.shell-grid-admin [class~="bg-white/80"],
+.shell-grid-admin [class~="bg-white/75"],
+.shell-grid-admin [class~="bg-white/70"],
+.shell-grid-admin [class~="bg-white/60"] {
+  background-color: var(--admin-card) !important;
+}
+
+.shell-grid-admin [class~="bg-[#fbfdfc]"],
+.shell-grid-admin [class~="bg-[#fafbfa]"],
+.shell-grid-admin [class~="bg-[#f8faf9]"],
+.shell-grid-admin [class~="bg-[#f7faf8]"] {
+  background-color: var(--admin-card-2) !important;
+}
+
+.shell-grid-admin [class~="bg-[#f4f7f4]"],
+.shell-grid-admin [class~="bg-[#f3f6f4]"] {
+  background-color: var(--admin-bg) !important;
+}
+
+.shell-grid-admin [class~="bg-teal-50"],
+.shell-grid-admin [class~="bg-teal-100"] {
+  background-color: var(--admin-accent-soft) !important;
+}
+
+.shell-grid-admin [class~="bg-emerald-50"],
+.shell-grid-admin [class~="bg-emerald-100"],
+.shell-grid-admin [class~="bg-emerald-500/10"],
+.shell-grid-admin [class~="bg-emerald-500/12"],
+.shell-grid-admin [class~="bg-emerald-500/15"] {
+  background-color: var(--admin-success-soft) !important;
+}
+
+.shell-grid-admin [class~="bg-rose-50"],
+.shell-grid-admin [class~="bg-rose-100"],
+.shell-grid-admin [class~="bg-rose-500/10"],
+.shell-grid-admin [class~="bg-rose-500/12"],
+.shell-grid-admin [class~="bg-rose-500/15"] {
+  background-color: var(--admin-danger-soft) !important;
+}
+
+.shell-grid-admin [class~="bg-amber-50"],
+.shell-grid-admin [class~="bg-amber-100"],
+.shell-grid-admin [class~="bg-amber-500/10"],
+.shell-grid-admin [class~="bg-amber-500/12"],
+.shell-grid-admin [class~="bg-amber-500/15"] {
+  background-color: var(--admin-gold-soft) !important;
+}
+
+.shell-grid-admin [class~="bg-blue-50"],
+.shell-grid-admin [class~="bg-blue-100"],
+.shell-grid-admin [class~="bg-blue-500/10"],
+.shell-grid-admin [class~="bg-blue-500/12"],
+.shell-grid-admin [class~="bg-blue-500/15"] {
+  background-color: color-mix(in srgb, #3b82f6 12%, transparent) !important;
+}
+
+/* Legacy fixed borders and copy colors map to semantic workspace tokens. */
+.shell-grid-admin [class~="border-[#cfdcd4]"],
+.shell-grid-admin [class~="border-[#dce7e1]"],
+.shell-grid-admin [class~="border-[#e3ebe6]"],
+.shell-grid-admin [class~="border-[#edf2ef]"] {
+  border-color: var(--admin-border) !important;
+}
+
+.shell-grid-admin [class~="text-[#0c1a14]"],
+.shell-grid-admin [class~="text-[#132019]"],
+.shell-grid-admin [class~="text-[#17231d]"],
+.shell-grid-admin [class~="text-[#35453c]"] {
+  color: var(--admin-text) !important;
+}
+
+.shell-grid-admin [class~="text-[#5a6b62]"],
+.shell-grid-admin [class~="text-[#68776e]"],
+.shell-grid-admin [class~="text-[#718078]"],
+.shell-grid-admin [class~="text-[#75837a]"],
+.shell-grid-admin [class~="text-[#7d8b83]"] {
+  color: var(--admin-text-muted) !important;
+}
+
+.shell-grid-admin [class~="text-[#89958e]"],
+.shell-grid-admin [class~="text-[#8a9a92]"] {
+  color: var(--admin-text-soft) !important;
+}
+
+.shell-grid-admin [class~="text-[#0d6e5a]"],
+.shell-grid-admin [class~="text-teal-700"],
+.shell-grid-admin [class~="text-teal-800"] {
+  color: var(--admin-accent-text) !important;
+}
+
+/* Semantic statuses follow the selected staff theme, not OS dark mode. */
+.shell-grid-admin [class~="text-rose-700"],
+.shell-grid-admin [class~="text-rose-800"] {
+  color: var(--workspace-rose-text) !important;
+}
+
+.shell-grid-admin [class~="text-amber-700"],
+.shell-grid-admin [class~="text-amber-800"],
+.shell-grid-admin [class~="text-orange-700"] {
+  color: var(--workspace-amber-text) !important;
+}
+
+.shell-grid-admin [class~="text-emerald-700"],
+.shell-grid-admin [class~="text-emerald-800"] {
+  color: var(--workspace-emerald-text) !important;
+}
+
+.shell-grid-admin [class~="text-blue-700"],
+.shell-grid-admin [class~="text-blue-800"] {
+  color: var(--workspace-blue-text) !important;
+}
+
+.shell-grid-admin [class~="text-slate-500"],
+.shell-grid-admin [class~="text-slate-600"],
+.shell-grid-admin [class~="text-slate-700"] {
+  color: var(--workspace-slate-text) !important;
+}
+
+.shell-grid-admin input,
+.shell-grid-admin select,
+.shell-grid-admin textarea {
+  max-width: 100%;
+  background-color: var(--admin-input-bg);
+  border-color: var(--admin-border-2);
+  color: var(--admin-text);
+}
+
+.shell-grid-admin input::placeholder,
+.shell-grid-admin textarea::placeholder {
+  color: var(--admin-text-soft);
+}
+
+@media (max-width: 639px) {
+  .shell-grid-admin {
+    width: 100%;
+    overflow-x: clip;
+  }
+
+  .shell-grid-admin main,
+  .shell-grid-admin section,
+  .shell-grid-admin article,
+  .shell-grid-admin form,
+  .shell-grid-admin fieldset {
+    max-width: 100%;
+  }
+
+  .shell-grid-admin input:not([type="checkbox"]):not([type="radio"]),
+  .shell-grid-admin select,
+  .shell-grid-admin textarea {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .shell-grid-admin button,
+  .shell-grid-admin [role="button"] {
+    max-width: 100%;
+    touch-action: manipulation;
+  }
+
+  .shell-grid-admin .admin-table-region,
+  .platform-shell .overflow-x-auto,
+  .platform-shell [role="region"] {
+    margin-inline: -0.125rem;
+    padding-inline: 0.125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell-grid-admin *,
+  .shell-grid-admin *::before,
+  .shell-grid-admin *::after {
+    scroll-behavior: auto !important;
+  }
+}
