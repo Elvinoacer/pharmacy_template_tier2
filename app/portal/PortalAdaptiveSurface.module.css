@@ -1,0 +1,322 @@
+.surface {
+  min-width: 0;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+.surface :global(.shell-grid),
+.surface :global(.shell-main),
+.surface :global(.page-container),
+.surface :global(.card-premium),
+.surface :global(.card-stat),
+.surface :global(form),
+.surface :global(table) {
+  min-width: 0;
+}
+
+.surface :global(.grid) > *,
+.surface :global(.flex) > * {
+  min-width: 0;
+}
+
+.surface :global(.overflow-x-auto) {
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Portal-scoped dark tokens. These intentionally live on the portal wrapper so
+   legacy fixed palette utilities inside older portal views inherit a coherent
+   dark surface without changing public/admin visual systems. */
+:global(html[data-theme="dark"]) .surface {
+  --background: #07110e;
+  --foreground: #edf8f3;
+  --muted: #a7b8b0;
+  --muted-2: #7f958b;
+  --card: #0f1c18;
+  --card-elev: #13231e;
+  --brand: #2dd4bf;
+  --brand-deep: #99f6e4;
+  --brand-soft: rgba(45, 212, 191, 0.12);
+  --brand-tint: rgba(45, 212, 191, 0.07);
+  --surface: rgba(15, 28, 24, 0.84);
+  --line: rgba(148, 163, 184, 0.14);
+  --line-2: rgba(148, 163, 184, 0.22);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28), 0 6px 18px rgba(0, 0, 0, 0.16);
+  --shadow: 0 8px 26px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 16px 42px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.38);
+  --shadow-xl: 0 32px 80px rgba(0, 0, 0, 0.44);
+  color-scheme: dark;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.shell-grid) {
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.shell-sidebar),
+:global(html[data-theme="dark"]) .surface :global(.shell-header),
+:global(html[data-theme="dark"]) .surface :global(.sidebar-drawer) {
+  background-color: color-mix(in srgb, var(--card) 96%, transparent) !important;
+  border-color: var(--line) !important;
+  color: var(--foreground) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.shell-header) {
+  box-shadow: 0 1px 0 var(--line);
+}
+
+:global(html[data-theme="dark"]) .surface :global(.card-premium),
+:global(html[data-theme="dark"]) .surface :global(.card-stat) {
+  background: var(--card) !important;
+  border-color: var(--line) !important;
+  color: var(--foreground) !important;
+}
+
+/* Legacy light surfaces still used by refills, screenings, sync and vaccines. */
+:global(html[data-theme="dark"]) .surface :global(.bg-white),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-white/80"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-white/90"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-white/95"]) {
+  background-color: var(--card) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#f4f7f4]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#fafcfb]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#f2f7f4]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#f0f9f6]"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-gray-50),
+:global(html[data-theme="dark"]) .surface :global(.bg-gray-100) {
+  background-color: var(--card-elev) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="bg-[#e6f4ef]"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-teal-50),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-teal-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-teal-100),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-teal-100/"]) {
+  background-color: rgba(45, 212, 191, 0.11) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.bg-emerald-50),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-emerald-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-emerald-100) {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.bg-amber-50),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-amber-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-amber-100) {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.bg-rose-50),
+:global(html[data-theme="dark"]) .surface :global([class*="bg-rose-50/"]),
+:global(html[data-theme="dark"]) .surface :global(.bg-rose-100) {
+  background-color: rgba(244, 63, 94, 0.12) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class*="from-teal-50"]) {
+  background-image: linear-gradient(135deg, rgba(45, 212, 191, 0.14), var(--card), rgba(16, 185, 129, 0.08)) !important;
+}
+
+/* Legacy foreground utilities. */
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#0c1a14]"]),
+:global(html[data-theme="dark"]) .surface :global(.text-gray-800),
+:global(html[data-theme="dark"]) .surface :global(.text-gray-900) {
+  color: var(--foreground) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#5a6b62]"]),
+:global(html[data-theme="dark"]) .surface :global(.text-gray-500),
+:global(html[data-theme="dark"]) .surface :global(.text-gray-600),
+:global(html[data-theme="dark"]) .surface :global(.text-gray-700) {
+  color: var(--muted) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#8a9a92]"]) {
+  color: var(--muted-2) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#0d6e5a]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="text-[#084c3f]"]),
+:global(html[data-theme="dark"]) .surface :global(.text-teal-600),
+:global(html[data-theme="dark"]) .surface :global(.text-teal-700),
+:global(html[data-theme="dark"]) .surface :global(.text-teal-800),
+:global(html[data-theme="dark"]) .surface :global(.text-teal-900),
+:global(html[data-theme="dark"]) .surface :global(.text-teal-950) {
+  color: var(--brand-deep) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-emerald-700),
+:global(html[data-theme="dark"]) .surface :global(.text-emerald-800) {
+  color: #6ee7b7 !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-amber-700),
+:global(html[data-theme="dark"]) .surface :global(.text-amber-800),
+:global(html[data-theme="dark"]) .surface :global(.text-amber-900) {
+  color: #fcd34d !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.text-rose-600),
+:global(html[data-theme="dark"]) .surface :global(.text-rose-700),
+:global(html[data-theme="dark"]) .surface :global(.text-rose-800) {
+  color: #fda4af !important;
+}
+
+/* Hairline borders need enough contrast on charcoal cards. */
+:global(html[data-theme="dark"]) .surface :global([class~="border-[#e3ebe6]"]),
+:global(html[data-theme="dark"]) .surface :global([class~="border-[#d0ece3]"]),
+:global(html[data-theme="dark"]) .surface :global(.border-gray-100),
+:global(html[data-theme="dark"]) .surface :global(.border-gray-200),
+:global(html[data-theme="dark"]) .surface :global([class~="border-white/60"]) {
+  border-color: var(--line) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-teal-200),
+:global(html[data-theme="dark"]) .surface :global([class*="border-teal-200/"]) {
+  border-color: rgba(45, 212, 191, 0.26) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-emerald-200) {
+  border-color: rgba(16, 185, 129, 0.28) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-amber-200),
+:global(html[data-theme="dark"]) .surface :global(.border-amber-300) {
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.border-rose-200),
+:global(html[data-theme="dark"]) .surface :global(.border-rose-300) {
+  border-color: rgba(244, 63, 94, 0.3) !important;
+}
+
+:global(html[data-theme="dark"]) .surface :global(.input-premium),
+:global(html[data-theme="dark"]) .surface :global(select),
+:global(html[data-theme="dark"]) .surface :global(input),
+:global(html[data-theme="dark"]) .surface :global(textarea) {
+  background-color: var(--card-elev);
+  border-color: var(--line-2);
+  color: var(--foreground);
+}
+
+:global(html[data-theme="dark"]) .surface :global(input::placeholder),
+:global(html[data-theme="dark"]) .surface :global(textarea::placeholder) {
+  color: var(--muted-2);
+}
+
+:global(html[data-theme="dark"]) .surface :global(select option) {
+  background: var(--card-elev);
+  color: var(--foreground);
+}
+
+:global(html[data-theme="dark"]) .surface :global(.btn-ghost) {
+  background: var(--card-elev);
+  color: var(--brand-deep);
+  border-color: var(--line-2);
+}
+
+:global(html[data-theme="dark"]) .surface :global(.btn-icon:hover),
+:global(html[data-theme="dark"]) .surface :global(.nav-link-portal:hover) {
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+
+/* Mobile ergonomics: tighter canvas, larger touch targets, no clipped controls. */
+@media (max-width: 639px) {
+  .surface :global(.page-container) {
+    width: 100%;
+    padding: 1rem 0.8rem 4rem;
+  }
+
+  .surface :global(.shell-header) {
+    gap: 0.35rem !important;
+    padding-inline: 0.65rem !important;
+  }
+
+  .surface :global(.shell-header) > * {
+    min-width: 0;
+  }
+
+  .surface :global(.sidebar-drawer) {
+    width: min(88vw, 320px);
+  }
+
+  .surface :global(.card-premium) {
+    border-radius: 16px;
+    padding: 1rem !important;
+  }
+
+  .surface :global(.card-stat) {
+    border-radius: 16px;
+    padding: 0.95rem !important;
+  }
+
+  .surface :global(.btn-primary),
+  .surface :global(.btn-ghost),
+  .surface :global(.input-premium),
+  .surface :global(button),
+  .surface :global(select),
+  .surface :global(input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])) {
+    min-height: 44px;
+  }
+
+  .surface :global(.btn-primary),
+  .surface :global(.btn-ghost) {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .surface :global(.overflow-x-auto) {
+    margin-inline: -0.15rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .surface :global(table) {
+    font-size: 0.75rem;
+  }
+
+  .surface :global(th),
+  .surface :global(td) {
+    padding-inline: 0.75rem !important;
+  }
+
+  .surface :global(.rounded-3xl) {
+    border-radius: 1rem;
+  }
+
+  .surface :global(.space-y-8) {
+    row-gap: 1.25rem;
+  }
+
+  .surface :global(pre),
+  .surface :global(code) {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 359px) {
+  .surface :global(.page-container) {
+    padding-inline: 0.6rem;
+  }
+
+  .surface :global(.grid-cols-2) {
+    gap: 0.45rem;
+  }
+}
+
+@media print {
+  .surface :global(#immunization-certificate) {
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+
+  .surface :global(#immunization-certificate) * {
+    color: #000 !important;
+  }
+}
