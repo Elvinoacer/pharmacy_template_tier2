@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { HeartPulse, RefreshCcw, Search, UserRound } from "lucide-react";
+import { HeartPulse, Layers3, Pill, Store, UserRound } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -22,7 +22,8 @@ const CARE_DOCK_PREFIXES = [
 ] as const;
 
 export function shouldShowMobileCareDock(pathname: string): boolean {
-  if (!pathname || pathname === "/") return true;
+  // The landing page is brand/impression space. Discovery gets dedicated pages.
+  if (!pathname || pathname === "/") return false;
   if (/^\/p\/[a-z0-9][a-z0-9-]{1,60}(\/|$)/i.test(pathname)) return true;
   return CARE_DOCK_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
@@ -31,25 +32,40 @@ export function shouldShowMobileCareDock(pathname: string): boolean {
 
 const ACTIONS = [
   {
-    key: "pharmacy",
+    key: "pharmacies",
     href: "/pharmacies",
-    label: "Find pharmacy",
-    icon: Search,
+    label: "Pharmacies",
+    icon: Store,
     active: (pathname: string) =>
       pathname === "/pharmacies" || pathname.startsWith("/pharmacies/"),
   },
   {
-    key: "refill",
-    href: "/refill",
-    label: "Refill",
-    icon: RefreshCcw,
+    key: "medicines",
+    href: "/medicines",
+    label: "Medicines",
+    icon: Pill,
     active: (pathname: string) =>
-      pathname === "/refill" || pathname.startsWith("/refill/"),
+      pathname === "/medicines" || pathname.startsWith("/medicines/"),
+  },
+  {
+    key: "services",
+    href: "/services",
+    label: "Services",
+    icon: Layers3,
+    active: (pathname: string) =>
+      pathname === "/services" ||
+      pathname.startsWith("/services/") ||
+      pathname === "/vaccinations" ||
+      pathname.startsWith("/vaccinations/") ||
+      pathname === "/screenings" ||
+      pathname.startsWith("/screenings/") ||
+      pathname === "/preventive" ||
+      pathname.startsWith("/preventive/"),
   },
   {
     key: "health",
     href: "/health",
-    label: "Health guides",
+    label: "Health",
     icon: HeartPulse,
     active: (pathname: string) =>
       pathname === "/health" || pathname.startsWith("/health/"),
@@ -76,11 +92,11 @@ function keyboardIsOpenOnFormControl(): boolean {
 }
 
 /**
- * Shared public mobile care navigation.
+ * Shared mobile discovery/navigation dock for public care surfaces.
  *
- * It stays out of the hero, hides while the user is actively scrolling down,
- * returns when scrolling up or after scroll settles, disappears near the footer,
- * and gets out of the way while a mobile form control is focused.
+ * Discovery is network-first: pharmacy, medicine and service browsing are peers.
+ * Transactional actions such as refill/order stay inside the page or selected
+ * pharmacy journey instead of consuming a permanent global tab.
  */
 export default function LandingMobileActionBar() {
   const pathname = usePathname() || "/";
@@ -97,7 +113,7 @@ export default function LandingMobileActionBar() {
       return;
     }
 
-    const revealAfter = pathname === "/" ? 300 : 150;
+    const revealAfter = 120;
     lastScrollY.current = window.scrollY;
 
     const clearIdleTimer = () => {
@@ -112,9 +128,7 @@ export default function LandingMobileActionBar() {
       !footerNear.current &&
       !keyboardIsOpenOnFormControl();
 
-    const settleVisible = () => {
-      setVisible(canShow());
-    };
+    const settleVisible = () => setVisible(canShow());
 
     const evaluateScroll = () => {
       const currentY = window.scrollY;
@@ -124,10 +138,8 @@ export default function LandingMobileActionBar() {
       if (!canShow()) {
         setVisible(false);
       } else if (delta < -5) {
-        // Scrolling up means the user is looking for navigation again.
         setVisible(true);
       } else if (delta > 9) {
-        // Preserve reading space while content is moving beneath the thumb.
         setVisible(false);
       }
 
@@ -187,9 +199,9 @@ export default function LandingMobileActionBar() {
 
   return (
     <nav
-      aria-label="Quick care actions"
+      aria-label="Browse Aether"
       aria-hidden={!visible}
-      className={`fixed inset-x-2 z-50 grid grid-cols-4 gap-1 rounded-[1.35rem] border border-[var(--line-2)] bg-[var(--card)] p-1.5 shadow-[0_18px_50px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none lg:hidden ${
+      className={`fixed inset-x-2 z-50 grid grid-cols-5 gap-0.5 rounded-[1.35rem] border border-[var(--line-2)] bg-[var(--card)] p-1.5 shadow-[0_18px_50px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none lg:hidden ${
         visible
           ? "pointer-events-auto translate-y-0 opacity-100"
           : "pointer-events-none translate-y-[calc(100%+1rem)] opacity-0"
@@ -199,8 +211,6 @@ export default function LandingMobileActionBar() {
       {ACTIONS.map((action) => {
         const Icon = action.icon;
         const active = action.active(pathname);
-        const featured = pathname === "/" && action.key === "pharmacy";
-        const emphasized = active || featured;
 
         return (
           <Link
@@ -208,19 +218,16 @@ export default function LandingMobileActionBar() {
             href={action.href}
             aria-current={active ? "page" : undefined}
             tabIndex={visible ? undefined : -1}
-            className={`group relative flex min-h-[3.65rem] min-w-0 flex-col items-center justify-center gap-1 rounded-[1rem] px-1.5 py-1.5 text-center text-[10px] font-semibold leading-tight transition-[transform,background-color,color,box-shadow] duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)] ${
-              emphasized
+            className={`group relative flex min-h-[3.55rem] min-w-0 flex-col items-center justify-center gap-1 rounded-[0.95rem] px-1 py-1.5 text-center text-[9px] font-semibold leading-tight transition-[transform,background-color,color,box-shadow] duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)] sm:text-[10px] ${
+              active
                 ? "bg-[var(--brand)] text-white shadow-sm"
                 : "text-[var(--muted)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-deep)]"
             }`}
           >
-            <Icon className="h-[1.15rem] w-[1.15rem] shrink-0" strokeWidth={2.2} aria-hidden="true" />
-            <span className="line-clamp-2 max-w-full">{action.label}</span>
+            <Icon className="h-[1.1rem] w-[1.1rem] shrink-0" strokeWidth={2.2} aria-hidden="true" />
+            <span className="line-clamp-1 max-w-full">{action.label}</span>
             {active ? (
-              <span
-                className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-white/80"
-                aria-hidden="true"
-              />
+              <span className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-white/80" aria-hidden="true" />
             ) : null}
           </Link>
         );
