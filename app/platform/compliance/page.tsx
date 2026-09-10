@@ -18,7 +18,6 @@ export default async function CompliancePage() {
     prismaUnscoped.dataDeletionRequest
       .findMany({
         take: 30,
-        orderBy: { requestedAt: "desc" },
         include: { pharmacy: { select: { name: true } } },
       })
       .catch(() => []),
