@@ -11,6 +11,7 @@ export default function MedicinesFilterBar({
   /** @deprecated use categoryOptions */
   dbCategorySlugs,
   trailing,
+  preserveParams,
 }: {
   q?: string;
   category?: string;
@@ -18,6 +19,8 @@ export default function MedicinesFilterBar({
   dbCategorySlugs?: string[];
   /** Optional action after Search (e.g. photo search button). */
   trailing?: ReactNode;
+  /** Extra GET params that should survive search/category changes (e.g. pharmacy). */
+  preserveParams?: Record<string, string | undefined>;
 }) {
   const router = useRouter();
   const medicinesHref = useTenantHref("/medicines");
@@ -30,29 +33,39 @@ export default function MedicinesFilterBar({
           name: slug.replace(/-/g, " "),
         }));
 
+  const appendPreserved = (params: URLSearchParams) => {
+    for (const [key, value] of Object.entries(preserveParams || {})) {
+      if (value) params.set(key, value);
+    }
+  };
+
   function onCategoryChange(v: string) {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     if (v && v !== "all") params.set("category", v);
+    appendPreserved(params);
     const qs = params.toString();
     router.push(qs ? `${medicinesHref}?${qs}` : medicinesHref);
   }
 
   return (
     <form className="flex flex-wrap items-center gap-2" action={medicinesHref} method="GET">
+      {Object.entries(preserveParams || {}).map(([key, value]) =>
+        value ? <input key={key} type="hidden" name={key} value={value} /> : null,
+      )}
       <div className="relative min-w-[200px] flex-1">
         <input
           name="q"
           defaultValue={q || ""}
-          placeholder="Search medications by name or description…"
-          className="w-full rounded-full border border-[#e3ebe6] bg-white py-2.5 pl-4 pr-4 text-sm text-[#0c1a14] shadow-sm outline-none focus:border-[#0d6e5a]/40 focus:ring-2 focus:ring-[#0d6e5a]/20"
+          placeholder="Search medicine, generic or brand…"
+          className="min-h-11 w-full rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 text-sm text-[var(--foreground)] shadow-sm outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
         />
       </div>
       <select
         name="category"
         defaultValue={category || "all"}
         onChange={(e) => onCategoryChange(e.target.value)}
-        className="rounded-full border border-[#e3ebe6] bg-white py-2.5 pl-4 pr-8 text-sm text-[#0c1a14] capitalize"
+        className="min-h-11 rounded-full border border-[var(--line-2)] bg-[var(--card)] py-2.5 pl-4 pr-8 text-sm capitalize text-[var(--foreground)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
       >
         <option value="all">All categories</option>
         {options.map((c) => (
@@ -63,7 +76,7 @@ export default function MedicinesFilterBar({
       </select>
       <button
         type="submit"
-        className="inline-flex items-center gap-1.5 rounded-full bg-[#0d6e5a] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#084c3f]"
+        className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[var(--brand)] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:brightness-95 active:scale-[0.98]"
       >
         Search
       </button>
