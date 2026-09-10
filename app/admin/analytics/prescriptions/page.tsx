@@ -28,42 +28,47 @@ export default async function PrescriptionsAnalyticsPage({
   const metrics = await computePrescriptionSummary(range);
 
   return (
-    <AnalyticsShell user={user}
+    <AnalyticsShell
+      user={user}
       title="Prescription report"
-      description="Review prescription fills, billing, and outstanding balances."
+      description="Track prescription workload, fill progress, collections, and profitability."
       period={period}
       basePath="/admin/analytics/prescriptions"
     >
       <StatGrid>
-        <AdminCard label="Total Prescriptions" value={formatNumber(metrics.totalPrescriptions)} hint={`${metrics.active} active`} icon={Pill} accent="neutral" />
-        <AdminCard label="Fills (period)" value={formatNumber(metrics.fillsTotal)} hint={`${metrics.fillsDispatched} dispatched · ${metrics.fillsCollected} collected`} icon={Package} accent="info" />
-        <AdminCard label="Total Billed" value={formatKES(metrics.totalBilled)} icon={Wallet} accent="accent" />
-        <AdminCard label="Collected" value={formatKES(metrics.totalCollected)} icon={Wallet} accent="info" />
+        <AdminCard label="Total Prescriptions" value={formatNumber(metrics.totalPrescriptions)} hint={`${formatNumber(metrics.active)} active`} icon={Pill} accent="neutral" />
+        <AdminCard label="Fills (period)" value={formatNumber(metrics.fillsTotal)} hint={`${formatNumber(metrics.fillsPending)} pending`} icon={Package} accent="info" />
+        <AdminCard label="Collected" value={formatKES(metrics.totalCollected)} hint={`${formatNumber(metrics.fillsCollected)} fills collected`} icon={Wallet} accent="info" />
+        <AdminCard label="Outstanding" value={formatKES(metrics.totalOutstanding)} hint="Open prescription balances" icon={AlertTriangle} accent="danger" />
       </StatGrid>
+
+      <AdminPanel
+        title="Fill flow"
+        description="See where prescription fills are sitting in the fulfilment journey."
+      >
+        <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+          <FillStage label="Pending" value={formatNumber(metrics.fillsPending)} />
+          <FillStage label="Dispatched" value={formatNumber(metrics.fillsDispatched)} />
+          <FillStage label="Collected" value={formatNumber(metrics.fillsCollected)} />
+          <FillStage label="Avg fill value" value={formatKES(metrics.averageFillValue)} />
+        </div>
+      </AdminPanel>
+
       <StatGrid>
-        <AdminCard label="Outstanding" value={formatKES(metrics.totalOutstanding)} icon={AlertTriangle} accent="danger" />
+        <AdminCard label="Total Billed" value={formatKES(metrics.totalBilled)} icon={Wallet} accent="accent" />
         <AdminCard label="Refunded" value={formatKES(metrics.totalRefunded)} icon={AlertTriangle} accent="neutral" />
         <AdminCard label="COGS" value={formatKES(metrics.cogsTotal)} icon={Package} accent="neutral" />
         <AdminCard label="Gross Profit" value={formatKES(metrics.grossProfit)} icon={TrendingUp} accent="accent" />
       </StatGrid>
-
-      <AdminPanel title="Fill status breakdown">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-xs">
-          <Stat label="Pending" value={metrics.fillsPending} />
-          <Stat label="Dispatched" value={metrics.fillsDispatched} />
-          <Stat label="Collected" value={metrics.fillsCollected} />
-          <Stat label="Avg fill value" value={formatKES(metrics.averageFillValue)} />
-        </div>
-      </AdminPanel>
     </AnalyticsShell>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string | number }) {
+function FillStage({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-[var(--admin-border)] px-3 py-2">
-      <p className="text-xs uppercase tracking-wider admin-muted">{label}</p>
-      <p className="mt-0.5 font-semibold admin-text">{value}</p>
+    <div className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition-[border-color,background-color,box-shadow] duration-200 hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-hover)] hover:shadow-sm motion-reduce:transition-none sm:p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] admin-muted sm:text-[11px]">{label}</p>
+      <p className="mt-2 break-words text-xl font-bold tracking-tight admin-text sm:text-2xl">{value}</p>
     </div>
   );
 }
