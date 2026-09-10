@@ -45,6 +45,8 @@ export function LibrarySearchFlow() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!query.trim()) {
+      // Clearing stale search results when the search box is emptied.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResults([]);
       return;
     }
