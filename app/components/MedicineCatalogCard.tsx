@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { MapPin, Store } from "lucide-react";
 import TenantLink from "@/app/components/TenantLink";
 import { formatPrice } from "@/app/lib/format";
 
@@ -6,10 +7,19 @@ import { formatPrice } from "@/app/lib/format";
 export type MedicineCatalogItem = {
   id: string;
   slug: string;
+  /** Explicit pharmacy-aware destination for network catalogue cards. */
+  href?: string;
   price: number;
   currentStock: number;
   overTheCounter: boolean;
   prescriptionRequired: boolean;
+  pharmacy?: {
+    slug: string;
+    name: string;
+    city?: string | null;
+    county?: string | null;
+    logoUrl?: string | null;
+  } | null;
   medicationMaster: {
     name: string;
     description: string | null;
@@ -28,10 +38,13 @@ export default function MedicineCatalogCard({
 }) {
   const master = item.medicationMaster;
   const inStock = (item.currentStock ?? 0) > 0;
+  const pharmacyLocation = item.pharmacy
+    ? [item.pharmacy.city, item.pharmacy.county].filter(Boolean).join(", ")
+    : "";
 
   return (
     <TenantLink
-      href={`/medicines/${item.slug}`}
+      href={item.href || `/medicines/${item.slug}`}
       className="card-lift group flex min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--brand)_40%,var(--line-2))] hover:shadow-lg sm:rounded-3xl"
     >
       <div className="min-w-0">
@@ -82,6 +95,27 @@ export default function MedicineCatalogCard({
             <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-[var(--muted)] sm:text-xs">
               {master.description}
             </p>
+          )}
+
+          {item.pharmacy && (
+            <div className="mt-3 rounded-xl border border-[var(--line)] bg-[var(--brand-tint)]/60 px-2.5 py-2 sm:px-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--card)] text-[var(--brand)] shadow-sm">
+                  <Store className="h-3.5 w-3.5" aria-hidden="true" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-[10px] font-bold text-[var(--foreground)] sm:text-[11px]">
+                    {item.pharmacy.name}
+                  </span>
+                  {pharmacyLocation && (
+                    <span className="mt-0.5 flex min-w-0 items-center gap-1 text-[9px] text-[var(--muted)] sm:text-[10px]">
+                      <MapPin className="h-2.5 w-2.5 shrink-0" aria-hidden="true" />
+                      <span className="truncate">{pharmacyLocation}</span>
+                    </span>
+                  )}
+                </span>
+              </div>
+            </div>
           )}
         </div>
       </div>
