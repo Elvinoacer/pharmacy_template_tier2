@@ -1,4 +1,5 @@
 import "./admin.css";
+import "./admin-route-ux.css";
 import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -8,6 +9,7 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { exitImpersonationAction } from "@/app/actions/platform";
 import { canAccessAdminPath } from "@/app/lib/platform/admin-access";
 import { AlertTriangle } from "lucide-react";
+import { AdminRouteUxBoundary } from "./AdminRouteUxBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -86,7 +88,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
         </div>
       )}
-      {children}
+      <AdminRouteUxBoundary>{children}</AdminRouteUxBoundary>
     </>
   );
 }

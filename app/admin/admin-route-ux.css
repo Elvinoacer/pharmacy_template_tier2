@@ -1,0 +1,719 @@
+/*
+ * Focused responsive treatment for the highest-density Rx/order workflows.
+ * Scope is applied by AdminRouteUxBoundary so unrelated admin routes keep their
+ * existing layout. Everything is driven by the shared admin theme tokens.
+ */
+.admin-route-ux {
+  display: contents;
+}
+
+.admin-route-ux[data-admin-ux-page] .admin-page-body {
+  min-width: 0;
+}
+
+.admin-route-ux[data-admin-ux-page] .admin-page-body :is(section, article, li, form, fieldset, table, tbody, tr, td) {
+  min-width: 0;
+}
+
+.admin-route-ux[data-admin-ux-page] .admin-page-body :is(input, select, textarea) {
+  max-width: 100%;
+}
+
+.admin-route-ux[data-admin-ux-page] .admin-page-body :is(button, a) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.admin-route-ux[data-admin-ux-page] .admin-table-region {
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+/* Theme bridge for status utilities that were authored with light-mode text. */
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-emerald-700"] {
+  color: #6ee7b7;
+}
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-blue-700"] {
+  color: #93c5fd;
+}
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-amber-700"],
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-amber-800"],
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-amber-900"] {
+  color: #fcd34d;
+}
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-rose-600"],
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-rose-700"],
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-rose-800"] {
+  color: #fda4af;
+}
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-slate-600"],
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class*="text-slate-700"] {
+  color: #cbd5e1;
+}
+html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] [class~="bg-white/80"] {
+  background: color-mix(in srgb, var(--admin-card) 88%, transparent);
+  border-color: var(--admin-border);
+}
+
+/* Subtle depth without making operational screens feel animated. */
+@media (min-width: 768px) and (hover: hover) {
+  .admin-route-ux[data-admin-ux-page] .admin-page-body :is(.admin-card, .admin-stat, li.rounded-xl, li.rounded-2xl) {
+    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-body :is(.admin-card, .admin-stat, li.rounded-xl, li.rounded-2xl):hover {
+    border-color: var(--admin-border-2);
+    box-shadow: 0 10px 28px rgba(15, 35, 29, 0.08);
+  }
+
+  html[data-theme="dark"] .admin-route-ux[data-admin-ux-page] .admin-page-body :is(.admin-card, .admin-stat, li.rounded-xl, li.rounded-2xl):hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.26);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .admin-route-ux[data-admin-ux-page] .admin-page-body > * {
+    animation: admin-route-ux-enter 220ms cubic-bezier(.2, .8, .2, 1) both;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-body > *:nth-child(2) { animation-delay: 24ms; }
+  .admin-route-ux[data-admin-ux-page] .admin-page-body > *:nth-child(3) { animation-delay: 42ms; }
+}
+
+@keyframes admin-route-ux-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ───────────────────────────── Shared tablet/mobile shell ───────────────────────────── */
+@media (max-width: 767px) {
+  .admin-route-ux[data-admin-ux-page] .admin-workspace-content {
+    padding: 18px 12px calc(30px + env(safe-area-inset-bottom));
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-heading {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-heading h1 {
+    font-size: clamp(22px, 7vw, 28px);
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-description {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-actions > div {
+    width: 100%;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-actions > :is(a, button),
+  .admin-route-ux[data-admin-ux-page] .admin-page-actions > div > :is(a, button) {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-context-nav {
+    margin: 0 -2px 18px;
+    padding: 4px;
+    gap: 4px;
+    scroll-snap-type: x proximity;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-context-nav a {
+    min-height: 40px;
+    padding: 8px 11px;
+    scroll-snap-align: start;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-body > * + * {
+    margin-top: 16px;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-workspace .admin-card {
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-workspace .admin-panel-heading {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    gap: 8px;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-workspace .admin-panel-heading h2 {
+    font-size: 15px;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-workspace .admin-panel-heading p {
+    margin-top: 3px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .admin-route-ux[data-admin-ux-page] [class*="min-w-[240px]"] {
+    min-width: 0 !important;
+    width: 100%;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-table-region {
+    margin-inline: -2px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-route-ux[data-admin-ux-page] .admin-workspace-content {
+    padding-inline: 10px;
+  }
+
+  .admin-route-ux[data-admin-ux-page] .admin-page-actions :is(select, .input-admin) {
+    width: 100% !important;
+  }
+}
+
+/* ───────────────────────────────── Orders ───────────────────────────────── */
+[data-admin-ux-page="orders"] .admin-stat {
+  background: linear-gradient(145deg, var(--admin-card), color-mix(in srgb, var(--admin-inset) 62%, var(--admin-card)));
+}
+
+[data-admin-ux-page="orders"] .admin-page-body ul.space-y-2 > li {
+  background: linear-gradient(145deg, var(--admin-inset), color-mix(in srgb, var(--admin-card) 72%, var(--admin-inset)));
+}
+
+@media (max-width: 767px) {
+  [data-admin-ux-page="orders"] .admin-stat {
+    min-height: 104px;
+    padding: 12px !important;
+    border-radius: 15px !important;
+  }
+
+  [data-admin-ux-page="orders"] .admin-stat p.text-2xl {
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+
+  [data-admin-ux-page="orders"] .admin-stat p.text-xs {
+    font-size: 10px;
+    line-height: 1.35;
+    letter-spacing: .035em;
+  }
+
+  /* Recent operational work comes before the longer counter-sale form on phones. */
+  [data-admin-ux-page="orders"] .admin-page-body > div[class~="lg:grid-cols-2"] {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  [data-admin-ux-page="orders"] .admin-page-body > div[class~="lg:grid-cols-2"] > :first-child {
+    order: 2;
+  }
+
+  [data-admin-ux-page="orders"] .admin-page-body > div[class~="lg:grid-cols-2"] > :nth-child(2) {
+    order: 1;
+  }
+
+  [data-admin-ux-page="orders"] .admin-page-body > div.rounded-2xl {
+    overflow-x: auto;
+  }
+
+  [data-admin-ux-page="orders"] .admin-page-body > div.rounded-2xl > .flex.h-20 {
+    min-width: 360px;
+  }
+
+  [data-admin-ux-page="orders"] ul.space-y-2 > li {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  [data-admin-ux-page="orders"] ul.space-y-2 > li > .flex.items-start.justify-between {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  [data-admin-ux-page="orders"] ul.space-y-2 > li > .flex.items-start.justify-between > .text-right {
+    width: 100%;
+    padding-top: 10px;
+    border-top: 1px solid var(--admin-border);
+    text-align: left;
+  }
+
+  [data-admin-ux-page="orders"] ul.space-y-2 > li > .flex.items-start.justify-between > .text-right > p {
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+
+  [data-admin-ux-page="orders"] ul.space-y-2 > li .flex.flex-wrap.items-center.gap-2 {
+    gap: 5px;
+  }
+
+  [data-admin-ux-page="orders"] ul.space-y-2 > li span.rounded-full {
+    font-size: 10px;
+  }
+}
+
+/* ───────────────────────────── Prescription queue ───────────────────────────── */
+[data-admin-ux-page="prescriptions"] .admin-page-body > div.rounded-2xl {
+  background: linear-gradient(155deg, var(--admin-card), color-mix(in srgb, var(--admin-inset) 42%, var(--admin-card)));
+}
+
+@media (max-width: 767px) {
+  [data-admin-ux-page="prescriptions"] .admin-page-body > div:first-of-type {
+    gap: 8px;
+  }
+
+  [data-admin-ux-page="prescriptions"] .admin-page-body > div:first-of-type > * {
+    min-height: 102px;
+    padding: 12px;
+    border-radius: 15px;
+  }
+
+  /* Lifecycle and intake filters are swipeable rails rather than tall chip walls. */
+  [data-admin-ux-page="prescriptions"] .admin-page-body > div.rounded-2xl > .flex.flex-wrap.items-center.gap-2:not(.justify-between),
+  [data-admin-ux-page="prescriptions"] .admin-page-body > div.rounded-2xl > .flex.flex-wrap.items-center.gap-1\.5 {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding: 2px 0 5px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  [data-admin-ux-page="prescriptions"] .admin-page-body > div.rounded-2xl > .flex.flex-wrap.items-center.gap-2:not(.justify-between) > *,
+  [data-admin-ux-page="prescriptions"] .admin-page-body > div.rounded-2xl > .flex.flex-wrap.items-center.gap-1\.5 > * {
+    flex: 0 0 auto;
+    min-height: 40px;
+    scroll-snap-align: start;
+  }
+
+  [data-admin-ux-page="prescriptions"] .admin-page-body > form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  [data-admin-ux-page="prescriptions"] .admin-page-body > form > .relative {
+    min-width: 0 !important;
+  }
+
+  [data-admin-ux-page="prescriptions"] .admin-page-body > form > button {
+    min-height: 44px;
+    padding-inline: 16px;
+  }
+
+  /* Nine-column clinical ledger becomes a labelled two-column card. */
+  [data-admin-ux-page="prescriptions"] .admin-table-region {
+    overflow: visible;
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody {
+    display: grid;
+    gap: 10px;
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    background: var(--admin-card);
+    box-shadow: inset 3px 0 var(--admin-accent);
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 10px 11px !important;
+    border-bottom: 1px solid var(--admin-border);
+    text-align: left !important;
+    overflow-wrap: anywhere;
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(1),
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(2),
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(9) {
+    grid-column: 1 / -1;
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td::before {
+    display: block;
+    margin-bottom: 1px;
+    color: var(--admin-text-soft);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(1)::before { content: "Patient"; }
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(2)::before { content: "Medication & stock"; }
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(3)::before { content: "Prescriber"; }
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(4)::before { content: "Intake"; }
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(5)::before { content: "Dose & supply"; }
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(6)::before { content: "Refills"; }
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(7)::before { content: "Lifecycle"; }
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(8)::before { content: "Clinical"; }
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(9)::before { content: "Next action"; }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(9) {
+    border-bottom: 0;
+    background: color-mix(in srgb, var(--admin-accent-soft) 45%, var(--admin-card));
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td:nth-child(9) a {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 430px) {
+  [data-admin-ux-page="prescriptions"] .admin-page-body > form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody tr {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-admin-ux-page="prescriptions"] table.table-admin tbody td {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* ───────────────────────────── New prescription ───────────────────────────── */
+[data-admin-ux-page="prescription-new"] form > section {
+  scroll-margin-top: calc(var(--admin-header-h) + 16px);
+}
+
+@media (max-width: 767px) {
+  [data-admin-ux-page="prescription-new"] .admin-card > .min-w-0 > form {
+    display: grid;
+    gap: 12px;
+  }
+
+  [data-admin-ux-page="prescription-new"] form > section {
+    padding: 12px;
+    border-radius: 16px;
+    background: linear-gradient(155deg, var(--admin-card), color-mix(in srgb, var(--admin-inset) 42%, var(--admin-card)));
+  }
+
+  [data-admin-ux-page="prescription-new"] form > section > div:first-child {
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+  }
+
+  [data-admin-ux-page="prescription-new"] form > section > div:first-child > div:first-child {
+    min-width: 0;
+  }
+
+  [data-admin-ux-page="prescription-new"] form [class*="!w-[7.5rem]"] {
+    width: 7rem !important;
+  }
+
+  [data-admin-ux-page="prescription-new"] form .rounded-2xl.bg-\[var\(--admin-inset\)\] {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  [data-admin-ux-page="prescription-new"] form :is(button, a) {
+    min-height: 40px;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  [data-admin-ux-page="prescription-new"] form [class*="lg:grid-cols-4"],
+  [data-admin-ux-page="prescription-new"] form [class*="lg:grid-cols-3"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 479px) {
+  [data-admin-ux-page="prescription-new"] form [class*="grid-cols-2"],
+  [data-admin-ux-page="prescription-new"] form [class*="grid-cols-3"],
+  [data-admin-ux-page="prescription-new"] form [class*="grid-cols-4"],
+  [data-admin-ux-page="prescription-new"] form [class*="lg:grid-cols-"],
+  [data-admin-ux-page="prescription-new"] form [class*="sm:grid-cols-"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  [data-admin-ux-page="prescription-new"] form > section > div:first-child {
+    align-items: stretch;
+  }
+
+  [data-admin-ux-page="prescription-new"] form > section > div:first-child > :last-child:is(button, a) {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ───────────────────────────── Prescription detail ───────────────────────────── */
+@media (max-width: 1023px) {
+  /* Put regimen + Rx metadata before long analytics on smaller screens. */
+  [data-admin-ux-page="prescription-detail"] .admin-page-body > div[class~="lg:grid-cols-3"] {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  [data-admin-ux-page="prescription-detail"] .admin-page-body > div[class~="lg:grid-cols-3"] > :first-child {
+    order: 2;
+  }
+
+  [data-admin-ux-page="prescription-detail"] .admin-page-body > div[class~="lg:grid-cols-3"] > :last-child {
+    order: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-admin-ux-page="prescription-detail"] .admin-page-body > div:first-child {
+    padding: 10px;
+    border-radius: 16px;
+    background: linear-gradient(145deg, var(--admin-inset), color-mix(in srgb, var(--admin-card) 70%, var(--admin-inset)));
+  }
+
+  [data-admin-ux-page="prescription-detail"] .admin-page-body > div:first-child > div {
+    width: 100%;
+  }
+
+  [data-admin-ux-page="prescription-detail"] .admin-page-body > div:first-child > div > :is(a, button, form) {
+    max-width: 100%;
+  }
+
+  [data-admin-ux-page="prescription-detail"] .admin-page-body > div:first-child :is(a, button) {
+    min-height: 40px;
+  }
+
+  [data-admin-ux-page="prescription-detail"] .admin-table-region {
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+  }
+
+  [data-admin-ux-page="prescription-detail"] .admin-table-region table {
+    scroll-snap-align: start;
+  }
+
+  [data-admin-ux-page="prescription-detail"] ul.space-y-2 > li {
+    align-items: flex-start;
+    padding: 11px 12px;
+    border-radius: 14px;
+  }
+
+  [data-admin-ux-page="prescription-detail"] dl .flex.items-center.justify-between {
+    align-items: flex-start;
+  }
+}
+
+html[data-theme="dark"] [data-admin-ux-page="prescription-detail"] [class~="bg-emerald-100"] {
+  background: rgba(16, 185, 129, .16);
+  color: #a7f3d0;
+}
+html[data-theme="dark"] [data-admin-ux-page="prescription-detail"] [class~="bg-amber-100"] {
+  background: rgba(245, 158, 11, .17);
+  color: #fde68a;
+}
+html[data-theme="dark"] [data-admin-ux-page="prescription-detail"] [class~="bg-rose-100"] {
+  background: rgba(244, 63, 94, .16);
+  color: #fecdd3;
+}
+html[data-theme="dark"] [data-admin-ux-page="prescription-detail"] [class~="bg-blue-100"] {
+  background: rgba(59, 130, 246, .17);
+  color: #bfdbfe;
+}
+html[data-theme="dark"] [data-admin-ux-page="prescription-detail"] [class~="bg-slate-100"] {
+  background: rgba(148, 163, 184, .16);
+  color: #e2e8f0;
+}
+
+/* ───────────────────────────────── Refills ───────────────────────────────── */
+[data-admin-ux-page="refills"] .admin-page-body > .space-y-6 > div:first-child > button {
+  background-image: linear-gradient(150deg, var(--admin-card), color-mix(in srgb, var(--admin-inset) 50%, var(--admin-card)));
+}
+
+@media (max-width: 767px) {
+  [data-admin-ux-page="refills"] .admin-page-body > .space-y-6 {
+    gap: 14px;
+  }
+
+  [data-admin-ux-page="refills"] .admin-page-body > .space-y-6 > div:first-child {
+    gap: 8px;
+  }
+
+  [data-admin-ux-page="refills"] .admin-page-body > .space-y-6 > div:first-child > button {
+    min-height: 112px;
+    padding: 12px;
+    border-radius: 15px;
+  }
+
+  /* Keep tabs one-line and swipeable; primary create action stays obvious below. */
+  [data-admin-ux-page="refills"] .admin-page-body > .space-y-6 > div:nth-child(2) {
+    align-items: stretch;
+    gap: 10px;
+    padding-bottom: 10px;
+  }
+
+  [data-admin-ux-page="refills"] .admin-page-body > .space-y-6 > div:nth-child(2) > div:first-child {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    gap: 7px;
+    padding-bottom: 3px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  [data-admin-ux-page="refills"] .admin-page-body > .space-y-6 > div:nth-child(2) > div:first-child > button {
+    flex: 0 0 auto;
+    min-height: 42px;
+    scroll-snap-align: start;
+  }
+
+  [data-admin-ux-page="refills"] .admin-page-body > .space-y-6 > div:nth-child(2) > button:last-child {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  [data-admin-ux-page="refills"] .space-y-4 > div:first-child[class*="flex"] {
+    gap: 8px;
+  }
+
+  [data-admin-ux-page="refills"] .space-y-4 > div:first-child[class*="flex"] > div:first-child {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 3px;
+    scroll-snap-type: x proximity;
+  }
+
+  [data-admin-ux-page="refills"] .space-y-4 > div:first-child[class*="flex"] > div:first-child > button {
+    flex: 0 0 auto;
+    min-height: 40px;
+    scroll-snap-align: start;
+  }
+
+  /* Active queue is six columns; turn only that ledger into labelled cards. */
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody {
+    display: grid;
+    gap: 10px;
+    padding: 8px;
+  }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 15px;
+    background: var(--admin-card);
+    box-shadow: inset 3px 0 var(--admin-accent);
+  }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px 11px !important;
+    border-bottom: 1px solid var(--admin-border);
+    text-align: left !important;
+    overflow-wrap: anywhere;
+  }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(1),
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(2),
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(6) {
+    grid-column: 1 / -1;
+  }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td::before {
+    color: var(--admin-text-soft);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(1)::before { content: "Patient"; }
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(2)::before { content: "Medicine"; }
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(3)::before { content: "Source"; }
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(4)::before { content: "Requested"; }
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(5)::before { content: "Status"; }
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(6)::before { content: "Pharmacist action"; }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td:nth-child(6) {
+    border-bottom: 0;
+    background: color-mix(in srgb, var(--admin-accent-soft) 45%, var(--admin-card));
+  }
+
+  /* Other refill ledgers remain data tables, but get deliberate scroll behaviour. */
+  [data-admin-ux-page="refills"] .admin-table-region table:not(.table-admin:has(thead th:nth-child(6):last-child)) {
+    min-width: 720px;
+  }
+
+  [data-admin-ux-page="refills"] .admin-table-region table:not(.table-admin:has(thead th:nth-child(6):last-child)) :is(th, td) {
+    padding-block: 10px;
+    padding-inline: 11px;
+  }
+}
+
+@media (max-width: 430px) {
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody tr {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-admin-ux-page="refills"] table.table-admin:has(thead th:nth-child(6):last-child) tbody td {
+    grid-column: 1 / -1 !important;
+  }
+}
