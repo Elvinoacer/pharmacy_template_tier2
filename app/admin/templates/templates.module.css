@@ -10,7 +10,7 @@
 .editorPanel :global(.input-admin) {
   min-height: 46px;
   border-color: var(--admin-border);
-  background: var(--admin-inset);
+  background: var(--admin-input-bg);
   color: var(--admin-text);
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
@@ -25,7 +25,7 @@
 }
 
 .editorPanel :global(select.input-admin option) {
-  background: var(--admin-surface);
+  background: var(--admin-panel);
   color: var(--admin-text);
 }
 
@@ -65,8 +65,8 @@
     border-radius: 1rem;
   }
 
-  .editorPanel :global(.grid.sm\:grid-cols-2) {
-    grid-template-columns: minmax(0, 1fr);
+  .editorPanel :global(form .grid) {
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 0.85rem;
   }
 
