@@ -26,16 +26,16 @@ export default async function PortalPreferencesPage() {
       title="Communication preferences"
       subtitle="Choose how and when you'd like to hear from us."
     >
-      <div className="grid gap-6 lg:grid-cols-3">
-        <aside className="space-y-3 lg:col-span-1">
+      <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-3">
+        <aside className="min-w-0 space-y-3 lg:col-span-1">
           <Panel>
-            <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a] dark:bg-teal-500/15 dark:text-teal-300">
                 <Settings className="h-5 w-5" />
               </span>
-              <div>
-                <p className="text-sm font-semibold text-[#0c1a14]">Stay in control</p>
-                <p className="mt-0.5 text-xs text-[#5a6b62]">
+              <div className="min-w-0">
+                <p className="break-words text-sm font-semibold text-[#0c1a14] dark:text-slate-100">Stay in control</p>
+                <p className="mt-0.5 break-words text-xs leading-relaxed text-[#5a6b62] dark:text-slate-400">
                   You can change these settings any time. We will never contact you on a channel you have turned off.
                 </p>
               </div>
@@ -43,51 +43,23 @@ export default async function PortalPreferencesPage() {
           </Panel>
           <Panel>
             <div className="space-y-3 text-sm">
-              <div className="flex items-start gap-2.5">
-                <Smartphone className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Browser push</p>
-                  <p className="text-xs text-[#5a6b62]">Register this device for alerts</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <Bell className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Channel toggles</p>
-                  <p className="text-xs text-[#5a6b62]">Email, SMS, WhatsApp</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <MessageSquare className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Marketing consent</p>
-                  <p className="text-xs text-[#5a6b62]">Promotional content only</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <Heart className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Refill reminders</p>
-                  <p className="text-xs text-[#5a6b62]">Pickup & due-date alerts</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <Cake className="mt-0.5 h-4 w-4 text-[#0d6e5a]" />
-                <div>
-                  <p className="font-medium text-[#0c1a14]">Birthday messages</p>
-                  <p className="text-xs text-[#5a6b62]">Annual personalised greeting</p>
-                </div>
-              </div>
+              <PreferenceSummary icon={Smartphone} title="Browser push" description="Register this device for alerts" />
+              <PreferenceSummary icon={Bell} title="Channel toggles" description="Email, SMS, WhatsApp" />
+              <PreferenceSummary icon={MessageSquare} title="Marketing consent" description="Promotional content only" />
+              <PreferenceSummary icon={Heart} title="Refill reminders" description="Pickup & due-date alerts" />
+              <PreferenceSummary icon={Cake} title="Birthday messages" description="Annual personalised greeting" />
             </div>
           </Panel>
         </aside>
 
-        <div className="space-y-6 lg:col-span-2">
+        <div className="min-w-0 space-y-4 sm:space-y-6 lg:col-span-2">
           <Panel
             title="Device push notifications"
             description="This is separate from email/SMS — it registers this browser for Firebase Cloud Messaging."
           >
-            <PushEnablePanel audience="portal" />
+            <div className="min-w-0 overflow-hidden">
+              <PushEnablePanel audience="portal" />
+            </div>
           </Panel>
 
           <Panel
@@ -109,5 +81,25 @@ export default async function PortalPreferencesPage() {
         </div>
       </div>
     </PortalShell>
+  );
+}
+
+function PreferenceSummary({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex min-w-0 items-start gap-2.5">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#0d6e5a] dark:text-teal-300" />
+      <div className="min-w-0">
+        <p className="break-words font-medium text-[#0c1a14] dark:text-slate-100">{title}</p>
+        <p className="break-words text-xs leading-relaxed text-[#5a6b62] dark:text-slate-400">{description}</p>
+      </div>
+    </div>
   );
 }
