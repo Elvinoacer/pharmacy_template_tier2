@@ -5,7 +5,7 @@ import { PortalShell } from "@/app/components/portal/PortalShell";
 import { calculateRefillSyncPlan } from "@/app/lib/services/refill-sync";
 import { RefillSyncView } from "@/app/components/portal/RefillSyncView";
 import Link from "next/link";
-import { Calendar, Pill, FileText } from "lucide-react";
+import { Calendar, FileText } from "lucide-react";
 
 export const metadata = { title: "Refill Synchronization (Med Sync)" };
 
@@ -19,16 +19,16 @@ export default async function PortalRefillSyncPage() {
     // No syncable prescriptions in context (e.g. no pharmacy chosen yet).
     return (
       <PortalShell user={user} title="Refill Synchronization">
-        <div className="rounded-3xl border border-dashed border-teal-900/20 bg-white/80 p-10 text-center">
-          <Calendar className="mx-auto h-8 w-8 text-[#0d6e5a]" aria-hidden />
-          <h2 className="mt-4 text-lg font-semibold text-[#0c1a14]">No sync plan yet</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-[#5a6b62]">
+        <div className="rounded-3xl border border-dashed border-[var(--line-2)] bg-card p-5 text-center sm:p-8 md:p-10">
+          <Calendar className="mx-auto h-8 w-8 text-brand" aria-hidden />
+          <h2 className="mt-4 text-lg font-semibold text-foreground">No sync plan yet</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted">
             Med sync aligns your recurring prescriptions to one pickup date. Once a pharmacy you use
             has active recurring prescriptions for you, your plan appears here.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <Link href="/portal/pharmacies" className="btn-primary btn-primary-sm">My pharmacies</Link>
-            <Link href="/portal/prescriptions" className="btn-ghost btn-ghost-sm">View prescriptions</Link>
+          <div className="mx-auto mt-6 flex w-full max-w-sm flex-col gap-2 sm:flex-row sm:justify-center">
+            <Link href="/portal/pharmacies" className="btn-primary btn-primary-sm w-full sm:w-auto">My pharmacies</Link>
+            <Link href="/portal/prescriptions" className="btn-ghost btn-ghost-sm w-full sm:w-auto">View prescriptions</Link>
           </div>
         </div>
       </PortalShell>
@@ -41,19 +41,19 @@ export default async function PortalRefillSyncPage() {
       title="Refill Synchronization"
       subtitle="Align all your recurring chronic medications to a single monthly pickup or delivery date."
       actions={
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <Link
             href="/portal/calendar"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-xs font-semibold text-[#0d6e5a] hover:bg-[#f2f7f4] shadow-2xs transition"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-card px-3 py-2 text-xs font-semibold text-brand shadow-2xs transition hover:bg-brand-tint sm:w-auto"
           >
-            <Calendar className="h-3.5 w-3.5" />
+            <Calendar className="h-3.5 w-3.5 shrink-0" />
             <span>Med Calendar</span>
           </Link>
           <Link
             href="/portal/prescriptions"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-xs font-semibold text-[#5a6b62] hover:bg-[#f2f7f4] shadow-2xs transition"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-card px-3 py-2 text-xs font-semibold text-muted shadow-2xs transition hover:bg-brand-tint hover:text-brand sm:w-auto"
           >
-            <FileText className="h-3.5 w-3.5" />
+            <FileText className="h-3.5 w-3.5 shrink-0" />
             <span>Prescriptions</span>
           </Link>
         </div>
