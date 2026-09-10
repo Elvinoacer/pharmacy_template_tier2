@@ -51,30 +51,30 @@ export default async function PortalNewOrderPage({
       title="Order OTC medication"
       subtitle="Purchase over-the-counter items online. Pay with M-Pesa or collect and pay in store."
       actions={
-        <Link href="/medicines" className="btn-ghost !py-2 text-xs">
+        <Link href="/medicines" className="btn-ghost w-full justify-center !py-2 text-xs sm:w-auto">
           <ArrowLeft className="h-3.5 w-3.5" /> Catalogue
         </Link>
       }
     >
-      <div className="grid gap-6 lg:grid-cols-3">
-        <aside className="lg:col-span-1">
+      <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-3">
+        <aside className="order-2 min-w-0 lg:order-1 lg:col-span-1">
           <Panel>
-            <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand-deep)]">
                 <ShoppingCart className="h-5 w-5" />
               </span>
-              <div>
-                <p className="text-sm font-semibold text-[#0c1a14]">OTC only</p>
-                <p className="mt-0.5 text-xs text-[#5a6b62]">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-[var(--foreground)]">OTC only</p>
+                <p className="mt-0.5 break-words text-xs leading-relaxed text-[var(--muted)]">
                   Prescription medicines must be requested as a refill. Only over-the-counter
                   products can be ordered here.
                 </p>
               </div>
             </div>
             {med && (
-              <div className="mt-4 rounded-xl bg-[#f4f7f4] p-3 text-sm">
-                <p className="font-semibold text-[#0c1a14]">{med.medicationMaster.name}</p>
-                <p className="mt-1 text-xs text-[#5a6b62]">
+              <div className="mt-4 min-w-0 rounded-xl bg-[var(--card-elev)] p-3 text-sm">
+                <p className="break-words font-semibold text-[var(--foreground)]">{med.medicationMaster.name}</p>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
                   {formatPrice(Number(med.price))} · {med.currentStock} in stock
                 </p>
               </div>
@@ -82,7 +82,7 @@ export default async function PortalNewOrderPage({
           </Panel>
         </aside>
 
-        <div className="lg:col-span-2">
+        <div className="order-1 min-w-0 lg:order-2 lg:col-span-2">
           <Panel title="Place order" description="Select a product, quantity, and optional coupon">
             <PortalOrderForm
               medications={otcMeds.map((m) => ({
