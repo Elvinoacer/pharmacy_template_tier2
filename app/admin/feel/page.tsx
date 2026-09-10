@@ -8,6 +8,7 @@ import { formatDateTime } from "@/app/lib/time";
 import {
   Activity,
   AlertCircle,
+  ChevronRight,
   HeartPulse,
   MessageSquare,
   Sparkles,
@@ -17,11 +18,16 @@ import {
 export const metadata = { title: "How do you feel inbox" };
 
 const STATUS_STYLE: Record<string, string> = {
-  active: "bg-teal-500/15 text-teal-800",
-  monitoring: "bg-blue-500/15 text-blue-800",
-  escalated: "bg-amber-500/15 text-amber-900",
-  resolved: "bg-emerald-500/15 text-emerald-800",
-  closed: "bg-slate-500/15 text-slate-600",
+  active:
+    "bg-teal-500/12 text-teal-800 ring-1 ring-inset ring-teal-500/20 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-400/20",
+  monitoring:
+    "bg-blue-500/12 text-blue-800 ring-1 ring-inset ring-blue-500/20 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/20",
+  escalated:
+    "bg-amber-500/12 text-amber-900 ring-1 ring-inset ring-amber-500/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20",
+  resolved:
+    "bg-emerald-500/12 text-emerald-800 ring-1 ring-inset ring-emerald-500/20 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20",
+  closed:
+    "bg-slate-500/10 text-slate-600 ring-1 ring-inset ring-slate-500/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20",
 };
 
 export default async function AdminFeelInboxPage({
@@ -56,7 +62,6 @@ export default async function AdminFeelInboxPage({
     }),
   ]);
 
-  // Prioritize: feeling worse first, then escalated, then open
   const sorted = [...sessions].sort((a, b) => {
     const rank = (s: (typeof sessions)[number]) => {
       if (s.feelingTrend === "worse" && s.status !== "resolved" && s.status !== "closed") return 0;
@@ -75,144 +80,160 @@ export default async function AdminFeelInboxPage({
     <AdminShell
       user={user}
       title="Symptom check-ins"
-      subtitle="Review patient symptoms and pharmacist handoffs. Start with urgent check-ins."
+      subtitle="Triage worsening and escalated cases first, then work through active monitoring sessions."
     >
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="admin-stat p-4 ring-1 ring-rose-500/30">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide text-rose-700">
+      <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:gap-3 lg:grid-cols-4">
+        <div className="admin-stat border-rose-500/25 bg-rose-500/[0.04] p-3.5 dark:border-rose-400/20 dark:bg-rose-400/[0.04] sm:p-4">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-700 dark:text-rose-300 sm:text-xs">
               Feeling worse
             </p>
-            <AlertCircle className="h-3.5 w-3.5 text-rose-600" />
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-300" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-rose-700">{worseCount}</p>
+          <p className="mt-1 text-xl font-bold text-rose-700 dark:text-rose-300 sm:text-2xl">{worseCount}</p>
+          <p className="mt-1 text-[11px] leading-4 admin-soft">Review these first</p>
         </div>
-        <div className="admin-stat p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">
+        <div className="admin-stat p-3.5 sm:p-4">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-800 dark:text-amber-300 sm:text-xs">
               Needs pharmacist
             </p>
-            <AlertCircle className="h-3.5 w-3.5 text-amber-700" />
+            <AlertCircle className="h-4 w-4 shrink-0 text-amber-700 dark:text-amber-300" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-amber-700">{escalatedCount}</p>
+          <p className="mt-1 text-xl font-bold text-amber-800 dark:text-amber-300 sm:text-2xl">{escalatedCount}</p>
+          <p className="mt-1 text-[11px] leading-4 admin-soft">Escalated cases</p>
         </div>
         {(["active", "monitoring"] as const).map((s) => (
-          <div key={s} className="admin-stat p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide admin-muted">{s}</p>
-            <p className="mt-1 text-2xl font-bold admin-text">{byStatus[s] || 0}</p>
+          <div key={s} className="admin-stat p-3.5 sm:p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] admin-muted sm:text-xs">{s}</p>
+            <p className="mt-1 text-xl font-bold admin-text sm:text-2xl">{byStatus[s] || 0}</p>
+            <p className="mt-1 text-[11px] leading-4 admin-soft">Open follow-up</p>
           </div>
         ))}
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        <Link
-          href="/admin/feel"
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-            !statusFilter ? "bg-teal-600 text-white" : "admin-chip"
-          }`}
-        >
-          All
-        </Link>
-        {(["escalated", "active", "monitoring", "resolved", "closed"] as const).map((s) => (
+      <div className="-mx-1 mb-4 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]">
+        <div className="flex min-w-max items-center gap-2">
           <Link
-            key={s}
-            href={`/admin/feel?status=${s}`}
-            className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-              statusFilter === s ? "bg-teal-600 text-white" : "admin-chip"
+            href="/admin/feel"
+            className={`min-h-10 rounded-full px-3.5 py-2 text-xs font-semibold transition ${
+              !statusFilter ? "bg-teal-700 text-white shadow-sm dark:bg-teal-500 dark:text-slate-950" : "admin-chip"
             }`}
           >
-            {s} ({byStatus[s] || 0})
+            All
           </Link>
-        ))}
+          {(["escalated", "active", "monitoring", "resolved", "closed"] as const).map((s) => (
+            <Link
+              key={s}
+              href={`/admin/feel?status=${s}`}
+              className={`min-h-10 rounded-full px-3.5 py-2 text-xs font-semibold capitalize transition ${
+                statusFilter === s
+                  ? "bg-teal-700 text-white shadow-sm dark:bg-teal-500 dark:text-slate-950"
+                  : "admin-chip"
+              }`}
+            >
+              {s} ({byStatus[s] || 0})
+            </Link>
+          ))}
+        </div>
       </div>
 
       <AdminPanel
-        title="Triage sessions"
-        description="This queue is only for How do you feel — Contact page enquiries stay under Enquiries. Open a thread for the full transcript, images, and staff reply."
+        title="Triage queue"
+        description="Sorted by clinical attention: worsening first, then escalated, then active monitoring. Open a case for the full transcript, images, and staff reply."
       >
         {sorted.length === 0 ? (
           <AdminEmptyState
             icon={HeartPulse}
-            title="No check-ins yet"
-            description="When visitors use How do you feel, sessions appear here with AI summaries."
+            title="No check-ins in this view"
+            description="New How do you feel sessions will appear here with their latest symptoms and AI summary."
           />
         ) : (
-          <ul className="divide-y admin-border">
+          <ul className="-mx-1 divide-y admin-border sm:mx-0">
             {sorted.map((s) => {
               const last = s.messages[0];
               const isWorse =
                 s.feelingTrend === "worse" &&
                 s.status !== "resolved" &&
                 s.status !== "closed";
+
               return (
-                <li key={s.id}>
+                <li key={s.id} className="py-1.5 first:pt-0 last:pb-0 sm:py-0">
                   <Link
                     href={`/admin/feel/${s.id}`}
-                    className={`flex flex-col gap-2 px-1 py-4 transition hover:bg-[var(--admin-inset)] sm:flex-row sm:items-center sm:justify-between ${
-                      isWorse ? "rounded-xl bg-rose-500/5 ring-1 ring-rose-500/20" : ""
+                    className={`group flex min-w-0 flex-col gap-3 rounded-xl px-2.5 py-3.5 transition-[background-color,border-color,box-shadow] hover:bg-[var(--admin-inset)] sm:flex-row sm:items-center sm:justify-between sm:rounded-none sm:px-1 sm:py-4 ${
+                      isWorse
+                        ? "border border-rose-500/20 bg-rose-500/[0.05] shadow-sm dark:border-rose-400/20 dark:bg-rose-400/[0.04] sm:my-1 sm:rounded-xl sm:px-3"
+                        : "border border-transparent"
                     }`}
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                         <span
-                          className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
+                          className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] sm:text-[11px] ${
                             STATUS_STYLE[s.status] || STATUS_STYLE.active
                           }`}
                         >
                           {s.status}
                         </span>
                         {isWorse && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-2 py-0.5 text-xs font-bold uppercase text-rose-700">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.06em] text-rose-700 ring-1 ring-inset ring-rose-500/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20 sm:text-[11px]">
                             <AlertCircle className="h-3 w-3" />
                             feeling worse
                           </span>
                         )}
                         {s.severity && (
-                          <span className="text-xs font-semibold uppercase admin-muted">
+                          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] admin-muted sm:text-[11px]">
                             {s.severity}
                           </span>
                         )}
                         {s.feelingTrend && !isWorse && (
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold admin-muted">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold admin-muted sm:text-[11px]">
                             <Activity className="h-3 w-3" />
                             felt {s.feelingTrend}
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 truncate font-semibold admin-text">
+
+                      <p className="mt-2 line-clamp-2 text-sm font-semibold leading-5 admin-text sm:truncate sm:text-[15px]">
                         {s.provisionalLabel || s.chiefComplaint || s.category || "Symptom check-in"}
                       </p>
-                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs admin-muted">
-                        <span className="inline-flex items-center gap-1">
-                          <User className="h-3 w-3" />
-                          {s.customer?.fullName || "Guest"}
+
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] admin-muted sm:text-xs">
+                        <span className="inline-flex min-w-0 items-center gap-1">
+                          <User className="h-3 w-3 shrink-0" />
+                          <span className="max-w-40 truncate sm:max-w-none">{s.customer?.fullName || "Guest"}</span>
                         </span>
-                        <span>·</span>
+                        <span aria-hidden="true">·</span>
                         <span>{s.messageCount} messages</span>
                         {s.lastMessageAt && (
                           <>
-                            <span>·</span>
+                            <span aria-hidden="true">·</span>
                             <span>{formatDateTime(s.lastMessageAt)}</span>
                           </>
                         )}
-                      </p>
+                      </div>
+
                       {s.aiSummary && (
-                        <p className="mt-1.5 line-clamp-2 text-xs admin-soft">
+                        <p className="mt-2 line-clamp-2 text-xs leading-5 admin-soft">
                           <Sparkles className="mr-1 inline h-3 w-3 admin-accent-text" />
                           {s.aiSummary}
                         </p>
                       )}
+
                       {last && (
-                        <p className="mt-1 flex items-start gap-1 text-xs admin-muted">
+                        <p className="mt-1.5 flex min-w-0 items-start gap-1.5 text-xs admin-muted">
                           <MessageSquare className="mt-0.5 h-3 w-3 shrink-0" />
-                          <span className="line-clamp-1">
+                          <span className="line-clamp-1 min-w-0">
                             {last.role}: {last.content}
                           </span>
                         </p>
                       )}
                     </div>
-                    <span className="shrink-0 text-xs font-semibold admin-accent-text">
-                      Open →
+
+                    <span className="inline-flex min-h-10 shrink-0 items-center justify-between gap-2 self-stretch rounded-lg bg-[var(--admin-inset)] px-3 text-xs font-semibold admin-accent-text sm:min-h-0 sm:self-auto sm:bg-transparent sm:px-0">
+                      Open case
+                      <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                     </span>
                   </Link>
                 </li>

@@ -15,6 +15,7 @@ import {
   listPublicVaccines,
 } from "@/app/lib/services/vaccination-service";
 import { Syringe, AlertTriangle, CalendarCheck, ShieldCheck } from "lucide-react";
+import styles from "./vaccinations.module.css";
 
 export const metadata = { title: "Vaccination & Preventive Services | Admin" };
 export const dynamic = "force-dynamic";
@@ -66,7 +67,7 @@ export default async function AdminVaccinationsPage() {
       title="Vaccination clinic"
       subtitle="Manage clinic requests, record vaccinations, and review follow-up information."
     >
-      <div className="mb-6 grid gap-3 sm:grid-cols-4">
+      <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:grid-cols-4 sm:gap-3">
         <AdminCard label="Open clinic queue" value={openQueue} hint="Requested / screened / scheduled" icon={CalendarCheck} accent="info" />
         <AdminCard label="Doses on record" value={records.length} hint="Administered certificates" icon={Syringe} accent="accent" />
         <AdminCard label="Serious AEFI" value={aefiOpen} hint="Severe or life-threatening" icon={AlertTriangle} accent="danger" />
@@ -78,123 +79,140 @@ export default async function AdminVaccinationsPage() {
           accent={policy.enabled ? "accent" : "neutral"}
         />
       </div>
-      <AdminVaccinationCenter
-        vaccines={vaccines.map((v) => ({
-          id: v.id,
-          slug: v.slug,
-          name: v.name,
-          antigen: v.antigen,
-          route: v.route,
-          siteOptions: v.siteOptions,
-          doseMl: v.doseMl != null ? Number(v.doseMl) : null,
-          visVersion: v.visVersion,
-          pharmacyAdministered: v.pharmacyAdministered,
-          priceKes: v.priceKes != null ? Number(v.priceKes) : null,
-        }))}
-        appointments={appointments.map((a) => ({
-          id: a.id,
-          status: a.status,
-          source: a.source,
-          patientName: a.patientName,
-          patientPhone: a.patientPhone,
-          patientEmail: a.patientEmail,
-          patientDob: a.patientDob ? a.patientDob.toISOString() : null,
-          preferredDate: a.preferredDate,
-          preferredTime: a.preferredTime,
-          createdAt: a.createdAt.toISOString(),
-          notes: a.notes,
-          staffNotes: a.staffNotes,
-          vaccine: {
-            id: a.vaccine.id,
-            slug: a.vaccine.slug,
-            name: a.vaccine.name,
-            route: a.vaccine.route,
-            siteOptions: a.vaccine.siteOptions,
-            doseMl: a.vaccine.doseMl != null ? Number(a.vaccine.doseMl) : null,
-            visVersion: a.vaccine.visVersion,
-          },
-          customer: a.customer,
-          screening: a.screening
-            ? { outcome: a.screening.outcome, outcomeReason: a.screening.outcomeReason }
-            : null,
-          record: a.record,
-        }))}
-        records={records.map((r) => ({
-          id: r.id,
-          certificateCode: r.certificateCode,
-          patientName: r.patientName,
-          patientPhone: r.patientPhone,
-          doseNumber: r.doseNumber,
-          lotNumber: r.lotNumber,
-          site: r.site,
-          route: r.route,
-          administeredAt: r.administeredAt.toISOString(),
-          observationMinutes: r.observationMinutes,
-          observationOutcome: r.observationOutcome,
-          nextDueDate: r.nextDueDate ? r.nextDueDate.toISOString() : null,
-          status: r.status,
-          vaccine: r.vaccine,
-          administeredBy: r.administeredBy,
-          customer: r.customer,
-          aefiReports: r.aefiReports.map((x) => ({ id: x.id, severity: x.severity })),
-        }))}
-        aefi={aefi.map((r) => ({
-          id: r.id,
-          severity: r.severity,
-          symptoms: r.symptoms,
-          actionTaken: r.actionTaken,
-          outcome: r.outcome,
-          reportedToAuthority: r.reportedToAuthority,
-          onsetAt: r.onsetAt.toISOString(),
-          immunization: { vaccine: r.immunization.vaccine, patientName: undefined },
-        }))}
-        counselling={counselling.map((s) => ({
-          id: s.id,
-          topic: s.topic,
-          status: s.status,
-          patientName: s.patientName,
-          patientPhone: s.patientPhone,
-          preferredDate: s.preferredDate,
-          summary: s.summary,
-          createdAt: s.createdAt.toISOString(),
-        }))}
-        campaigns={campaigns.map((c) => ({
-          id: c.id,
-          slug: c.slug,
-          title: c.title,
-          theme: c.theme,
-          short: c.short,
-          startDate: c.startDate.toISOString(),
-          endDate: c.endDate ? c.endDate.toISOString() : null,
-          targetDoses: c.targetDoses,
-          dosesAdministered: c.dosesAdministered,
-          active: c.active,
-        }))}
-        credentials={credentials.map((c) => ({
-          id: c.id,
-          title: c.title,
-          credentialType: c.credentialType,
-          issuedBy: c.issuedBy,
-          expiresAt: c.expiresAt ? c.expiresAt.toISOString() : null,
-          user: c.user,
-        }))}
-        policy={{
-          enabled: policy.enabled,
-          jurisdiction: policy.jurisdiction,
-          authorizingBody: policy.authorizingBody,
-          authorizingRegulation: policy.authorizingRegulation,
-          supervisingPharmacistRequired: policy.supervisingPharmacistRequired,
-          observationMinutesDefault: policy.observationMinutesDefault,
-          visRequired: policy.visRequired,
-          walkInAccepted: policy.walkInAccepted,
-          paediatricOnSite: policy.paediatricOnSite,
-          publicDisclaimer: policy.publicDisclaimer,
-          coldChainNotes: policy.coldChainNotes,
-          aefiReportingContact: policy.aefiReportingContact,
-        }}
-        customers={customers}
-        staff={staff}
-      />
+
+      {aefiOpen > 0 && (
+        <div className="mb-4 flex items-start gap-3 rounded-2xl border border-rose-500/25 bg-rose-500/10 p-3.5 text-sm sm:p-4">
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-300">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+          <div className="min-w-0">
+            <p className="font-semibold admin-text">Clinical priority</p>
+            <p className="mt-0.5 text-xs leading-5 admin-muted sm:text-sm">
+              {aefiOpen} serious AEFI report{aefiOpen === 1 ? " requires" : "s require"} review. Open the AEFI tab before routine clinic work.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.clinicWorkspace}>
+        <AdminVaccinationCenter
+          vaccines={vaccines.map((v) => ({
+            id: v.id,
+            slug: v.slug,
+            name: v.name,
+            antigen: v.antigen,
+            route: v.route,
+            siteOptions: v.siteOptions,
+            doseMl: v.doseMl != null ? Number(v.doseMl) : null,
+            visVersion: v.visVersion,
+            pharmacyAdministered: v.pharmacyAdministered,
+            priceKes: v.priceKes != null ? Number(v.priceKes) : null,
+          }))}
+          appointments={appointments.map((a) => ({
+            id: a.id,
+            status: a.status,
+            source: a.source,
+            patientName: a.patientName,
+            patientPhone: a.patientPhone,
+            patientEmail: a.patientEmail,
+            patientDob: a.patientDob ? a.patientDob.toISOString() : null,
+            preferredDate: a.preferredDate,
+            preferredTime: a.preferredTime,
+            createdAt: a.createdAt.toISOString(),
+            notes: a.notes,
+            staffNotes: a.staffNotes,
+            vaccine: {
+              id: a.vaccine.id,
+              slug: a.vaccine.slug,
+              name: a.vaccine.name,
+              route: a.vaccine.route,
+              siteOptions: a.vaccine.siteOptions,
+              doseMl: a.vaccine.doseMl != null ? Number(a.vaccine.doseMl) : null,
+              visVersion: a.vaccine.visVersion,
+            },
+            customer: a.customer,
+            screening: a.screening
+              ? { outcome: a.screening.outcome, outcomeReason: a.screening.outcomeReason }
+              : null,
+            record: a.record,
+          }))}
+          records={records.map((r) => ({
+            id: r.id,
+            certificateCode: r.certificateCode,
+            patientName: r.patientName,
+            patientPhone: r.patientPhone,
+            doseNumber: r.doseNumber,
+            lotNumber: r.lotNumber,
+            site: r.site,
+            route: r.route,
+            administeredAt: r.administeredAt.toISOString(),
+            observationMinutes: r.observationMinutes,
+            observationOutcome: r.observationOutcome,
+            nextDueDate: r.nextDueDate ? r.nextDueDate.toISOString() : null,
+            status: r.status,
+            vaccine: r.vaccine,
+            administeredBy: r.administeredBy,
+            customer: r.customer,
+            aefiReports: r.aefiReports.map((x) => ({ id: x.id, severity: x.severity })),
+          }))}
+          aefi={aefi.map((r) => ({
+            id: r.id,
+            severity: r.severity,
+            symptoms: r.symptoms,
+            actionTaken: r.actionTaken,
+            outcome: r.outcome,
+            reportedToAuthority: r.reportedToAuthority,
+            onsetAt: r.onsetAt.toISOString(),
+            immunization: { vaccine: r.immunization.vaccine, patientName: undefined },
+          }))}
+          counselling={counselling.map((s) => ({
+            id: s.id,
+            topic: s.topic,
+            status: s.status,
+            patientName: s.patientName,
+            patientPhone: s.patientPhone,
+            preferredDate: s.preferredDate,
+            summary: s.summary,
+            createdAt: s.createdAt.toISOString(),
+          }))}
+          campaigns={campaigns.map((c) => ({
+            id: c.id,
+            slug: c.slug,
+            title: c.title,
+            theme: c.theme,
+            short: c.short,
+            startDate: c.startDate.toISOString(),
+            endDate: c.endDate ? c.endDate.toISOString() : null,
+            targetDoses: c.targetDoses,
+            dosesAdministered: c.dosesAdministered,
+            active: c.active,
+          }))}
+          credentials={credentials.map((c) => ({
+            id: c.id,
+            title: c.title,
+            credentialType: c.credentialType,
+            issuedBy: c.issuedBy,
+            expiresAt: c.expiresAt ? c.expiresAt.toISOString() : null,
+            user: c.user,
+          }))}
+          policy={{
+            enabled: policy.enabled,
+            jurisdiction: policy.jurisdiction,
+            authorizingBody: policy.authorizingBody,
+            authorizingRegulation: policy.authorizingRegulation,
+            supervisingPharmacistRequired: policy.supervisingPharmacistRequired,
+            observationMinutesDefault: policy.observationMinutesDefault,
+            visRequired: policy.visRequired,
+            walkInAccepted: policy.walkInAccepted,
+            paediatricOnSite: policy.paediatricOnSite,
+            publicDisclaimer: policy.publicDisclaimer,
+            coldChainNotes: policy.coldChainNotes,
+            aefiReportingContact: policy.aefiReportingContact,
+          }}
+          customers={customers}
+          staff={staff}
+        />
+      </div>
     </AdminShell>
   );
 }

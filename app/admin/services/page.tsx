@@ -52,13 +52,13 @@ export default async function AdminServicesPage() {
     <AdminShell
       user={user}
       title="Pharmacy services"
-      subtitle="Manage available services, prices, and online booking options."
+      subtitle="Keep the service catalogue operational: availability, pricing, visibility, and bookings in one workspace."
       actions={
         <Link
           href="/admin/services/bookings"
-          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--admin-inset)] px-3 py-1.5 text-xs font-semibold admin-accent-text"
+          className="btn-admin-secondary inline-flex w-full items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold sm:w-auto"
         >
-          <CalendarCheck className="h-3.5 w-3.5" /> Bookings
+          <CalendarCheck className="h-3.5 w-3.5" /> Review bookings
         </Link>
       }
     >
@@ -68,22 +68,16 @@ export default async function AdminServicesPage() {
         </div>
       )}
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-4">
+      <div className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
         <AdminCard label="Services" value={rows.length} hint={`${active} active`} icon={Sparkles} accent="accent" />
-        <AdminCard label="Priced" value={priced} hint="Require pay to confirm" icon={Banknote} accent="info" />
-        <AdminCard label="Bookings" value={bookings} hint="All time" icon={CalendarCheck} accent="neutral" />
-        <AdminCard
-          label="Public"
-          value={active}
-          hint="Visible on website"
-          icon={Eye}
-          accent="accent"
-        />
+        <AdminCard label="Priced" value={priced} hint="Payment required" icon={Banknote} accent="info" />
+        <AdminCard label="Bookings" value={bookings} hint="All recorded" icon={CalendarCheck} accent="neutral" />
+        <AdminCard label="Public" value={active} hint="Visible online" icon={Eye} accent="accent" />
       </div>
 
       <AdminPanel
         title="Service catalogue"
-        description="Leave price blank for free/enquiry bookings. Set a price to require M-Pesa (or counter payment) before confirmation."
+        description="Search first, then edit visibility, booking rules, price, and public service details."
       >
         <ServiceManager initial={rows} />
       </AdminPanel>

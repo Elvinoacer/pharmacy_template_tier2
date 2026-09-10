@@ -21,7 +21,6 @@ export default async function AdminInboxPage({
   }
 
   const sp = await searchParams;
-
   const total = await prisma.adminNotification.count();
   const page = parsePageParam(sp.page, total, PAGE_SIZE);
 
@@ -49,23 +48,21 @@ export default async function AdminInboxPage({
     <AdminShell
       user={user}
       title="Attention inbox"
-      subtitle="Review operational alerts, enquiries, and escalations that need a response."
+      subtitle="A single operational queue for alerts, escalations, enquiries, refill activity, and stock events that may need action."
     >
-      <div className="grid gap-6">
-        <AdminPanel
-          title="Inbox"
-          description={`${total} items · showing ${notifications.length}`}
-        >
-          <AdminInboxPanel
-            initial={notifications}
-            total={total}
-            page={page}
-            pageSize={PAGE_SIZE}
-            basePath="/admin/inbox"
-            queryParams={queryParams}
-          />
-        </AdminPanel>
-      </div>
+      <AdminPanel
+        title="Needs attention"
+        description={`${total} total notification${total === 1 ? "" : "s"} · showing ${notifications.length} on this page`}
+      >
+        <AdminInboxPanel
+          initial={notifications}
+          total={total}
+          page={page}
+          pageSize={PAGE_SIZE}
+          basePath="/admin/inbox"
+          queryParams={queryParams}
+        />
+      </AdminPanel>
     </AdminShell>
   );
 }

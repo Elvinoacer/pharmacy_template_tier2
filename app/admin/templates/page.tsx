@@ -6,6 +6,7 @@ import { AdminPanel, AdminEmptyState } from "@/app/components/admin/AdminUI";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import TemplateForm from "@/app/components/admin/TemplateForm";
 import { FileText, Mail, MessageSquare, MessageCircle, Layout, FolderTree } from "lucide-react";
+import styles from "./templates.module.css";
 
 export const metadata = { title: "Templates" };
 
@@ -34,81 +35,95 @@ export default async function AdminTemplatesPage() {
       title="Message templates"
       subtitle="Create reusable messages for email, SMS, WhatsApp, and the portal."
     >
-      {/* Stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
-        <div className="admin-stat p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total</p>
-          <p className="mt-1 text-2xl font-bold admin-text">{templates.length}</p>
-        </div>
-        {["email", "sms", "whatsapp", "portal"].map((ch) => {
-          const Icon = CHANNEL_ICON[ch] || FileText;
-          return (
-            <div key={ch} className="admin-stat p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-wide admin-muted">{ch}</p>
-                <Icon className="h-3 w-3 admin-accent-text" />
-              </div>
-              <p className="mt-1 text-2xl font-bold admin-text">{byChannel[ch] || 0}</p>
+      <div className={styles.page}>
+        <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-6 sm:grid-cols-5 sm:gap-3">
+          <div className="admin-stat p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold uppercase tracking-wide admin-muted">Total</p>
+              <FileText className="h-3.5 w-3.5 admin-accent-text" />
             </div>
-          );
-        })}
-      </div>
+            <p className="mt-1 text-2xl font-bold admin-text">{templates.length}</p>
+          </div>
+          {["email", "sms", "whatsapp", "portal"].map((ch) => {
+            const Icon = CHANNEL_ICON[ch] || FileText;
+            return (
+              <div key={ch} className="admin-stat p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="truncate text-xs font-semibold uppercase tracking-wide admin-muted">{ch}</p>
+                  <Icon className="h-3.5 w-3.5 shrink-0 admin-accent-text" />
+                </div>
+                <p className="mt-1 text-2xl font-bold admin-text">{byChannel[ch] || 0}</p>
+              </div>
+            );
+          })}
+        </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AdminPanel title="Create / manage template" description="Add or edit a reusable message template">
-          <TemplateForm
-            action={adminCreateTemplateAction}
-            templates={templates.map((t) => ({
-              id: t.id,
-              name: t.name,
-              channel: t.channel,
-              subject: t.subject,
-              body: t.body,
-              category: t.category,
-            }))}
-          />
-        </AdminPanel>
+        <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:gap-6">
+          <AdminPanel
+            title="Create / manage template"
+            description="Draft, edit, personalise, and save reusable communication copy."
+            className={styles.editorPanel}
+          >
+            <TemplateForm
+              action={adminCreateTemplateAction}
+              templates={templates.map((t) => ({
+                id: t.id,
+                name: t.name,
+                channel: t.channel,
+                subject: t.subject,
+                body: t.body,
+                category: t.category,
+              }))}
+            />
+          </AdminPanel>
 
-        <AdminPanel
-          title="Library"
-          description={`${templates.length} template${templates.length === 1 ? "" : "s"}`}
-        >
-          {templates.length === 0 ? (
-            <AdminEmptyState icon={FileText} title="No templates yet" description="Create your first template using the form on the left." />
-          ) : (
-            <ul className="space-y-2">
-              {templates.map((t) => {
-                const Icon = CHANNEL_ICON[t.channel] || FileText;
-                return (
-                  <li
-                    key={t.id}
-                    className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5 transition hover:border-[var(--admin-border-2)]"
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-accent-soft)] admin-accent-text">
-                        <Icon className="h-4 w-4" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold admin-text">{t.name}</p>
-                        <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs admin-muted">
-                          <span className="capitalize">{t.channel}</span>
-                          <span>·</span>
-                          <span className="inline-flex items-center gap-0.5">
-                            <FolderTree className="h-2.5 w-2.5" /> {t.category}
-                          </span>
+          <AdminPanel
+            title="Template library"
+            description={`${templates.length} template${templates.length === 1 ? "" : "s"} ready for staff workflows`}
+            className={styles.libraryPanel}
+          >
+            {templates.length === 0 ? (
+              <AdminEmptyState
+                icon={FileText}
+                title="No templates yet"
+                description="Create your first template to standardise recurring customer communication."
+              />
+            ) : (
+              <ul className="space-y-2.5">
+                {templates.map((t) => {
+                  const Icon = CHANNEL_ICON[t.channel] || FileText;
+                  return (
+                    <li
+                      key={t.id}
+                      className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] p-3.5"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-accent-soft)] admin-accent-text">
+                          <Icon className="h-4 w-4" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="break-words font-semibold admin-text">{t.name}</p>
+                          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs admin-muted">
+                            <span className="capitalize">{t.channel}</span>
+                            <span aria-hidden="true">·</span>
+                            <span className="inline-flex min-w-0 items-center gap-1">
+                              <FolderTree className="h-3 w-3 shrink-0" />
+                              <span className="truncate">{t.category}</span>
+                            </span>
+                          </div>
+                          {t.subject && (
+                            <p className="mt-2 break-words text-sm font-medium admin-text">{t.subject}</p>
+                          )}
+                          <p className="mt-1.5 line-clamp-3 break-words text-xs leading-5 admin-muted">{t.body}</p>
                         </div>
-                        {t.subject && (
-                          <p className="mt-1.5 text-sm font-medium admin-text">{t.subject}</p>
-                        )}
-                        <p className="mt-1 line-clamp-2 text-xs admin-muted">{t.body}</p>
                       </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </AdminPanel>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </AdminPanel>
+        </div>
       </div>
     </AdminShell>
   );

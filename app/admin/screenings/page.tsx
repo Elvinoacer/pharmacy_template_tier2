@@ -8,7 +8,8 @@ import {
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import { AdminCard } from "@/app/components/admin/AdminUI";
 import { AdminScreeningCenter } from "@/app/components/admin/AdminScreeningCenter";
-import { Activity, Heart, Building2, AlertTriangle, Scale } from "lucide-react";
+import { Activity, Heart, Building2, AlertTriangle } from "lucide-react";
+import styles from "./screenings.module.css";
 
 export const metadata = { title: "Health Screenings & Clinical Referrals | Admin" };
 
@@ -97,45 +98,46 @@ export default async function AdminScreeningsPage() {
     <AdminShell
       user={user}
       title="Screenings & referrals"
-      subtitle="Record vital signs and screening results, then arrange referrals when needed."
+      subtitle="Record vital signs first, surface clinical risk quickly, and move flagged patients into the right referral path."
     >
-      {/* Overview Stat Cards */}
-      <div className="mb-6 grid gap-3 sm:grid-cols-4">
+      <div className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
         <AdminCard
-          label="Total Screenings"
+          label="Screenings"
           value={totalScreenings}
           hint="Logged vital checks"
           icon={Activity}
           accent="accent"
         />
         <AdminCard
-          label="HTN / Glucose Flags"
+          label="Clinical flags"
           value={htnFlags}
           hint="Elevated vital markers"
           icon={Heart}
           accent="danger"
         />
         <AdminCard
-          label="Referrals Issued"
+          label="Referrals"
           value={referralCount}
-          hint="Clinics, Hospitals & Labs"
+          hint="Issued onward referrals"
           icon={Building2}
           accent="info"
         />
         <AdminCard
-          label="Emergency Transfers"
+          label="Emergencies"
           value={emergencyFlags}
-          hint="Immediate EMS triggers"
+          hint="Immediate-transfer cases"
           icon={AlertTriangle}
           accent="danger"
         />
       </div>
 
-      <AdminScreeningCenter
-        screenings={formattedScreenings}
-        referrals={formattedReferrals}
-        customers={customers}
-      />
+      <div className={styles.surface}>
+        <AdminScreeningCenter
+          screenings={formattedScreenings}
+          referrals={formattedReferrals}
+          customers={customers}
+        />
+      </div>
     </AdminShell>
   );
 }

@@ -13,7 +13,7 @@ import {
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationForm from "@/app/components/admin/MedicationForm";
 import Link from "next/link";
-import { ArrowLeft, Pill } from "lucide-react";
+import { ArrowLeft, Pill, ShieldCheck, Sparkles } from "lucide-react";
 
 export const metadata = { title: "Manual Entry — Medication" };
 
@@ -40,37 +40,64 @@ export default async function NewMedicationPage() {
   ]);
 
   return (
-    <AdminShell user={user} title="Enter medicine details" subtitle="Add a medicine manually. Check the clinical details before saving.">
-      <div className="mb-6">
-        <Link
-          href="/admin/medications/add"
-          className="group inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
-        >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" /> Back to acquisition chooser
-        </Link>
-      </div>
+    <AdminShell
+      user={user}
+      title="Enter medicine details"
+      subtitle="Add a medicine manually. Check the clinical details before saving."
+    >
+      <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href="/admin/medications/add"
+            className="group inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--admin-border-2)] bg-[var(--admin-card)] px-3.5 text-sm font-medium admin-muted transition hover:border-[var(--admin-accent)] hover:admin-accent-text"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" /> Back to acquisition chooser
+          </Link>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+            <ShieldCheck className="h-3.5 w-3.5" /> Review before save
+          </span>
+        </div>
 
-      <div className="mx-auto max-w-4xl">
-        <div className="relative overflow-hidden rounded-3xl border border-gray-200/60 bg-white/40 shadow-2xl shadow-emerald-500/10 ring-1 ring-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/20 dark:ring-white/10">
-          <div className="pointer-events-none absolute -inset-px rounded-3xl opacity-20 transition-opacity duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-transparent to-teal-500/20" />
-          </div>
+        <div className="relative overflow-hidden rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl shadow-emerald-500/5 sm:rounded-3xl">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-br from-emerald-500/10 via-transparent to-teal-500/10 dark:from-emerald-400/10 dark:to-cyan-400/5" />
 
-          <div className="relative border-b border-gray-200/50 bg-white/50 p-8 dark:border-white/5 dark:bg-black/20">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">
-                <Pill className="h-6 w-6" />
+          <div className="relative border-b border-[var(--admin-border-2)] p-4 sm:p-6 lg:p-8">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 sm:h-12 sm:w-12">
+                <Pill className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Medication Details</h2>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Five sections: Identification, Clinical, Commercial, Inventory, Media &amp; relationships.
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-lg font-bold admin-text sm:text-xl">Medication details</h2>
+                  <span className="rounded-full bg-[var(--admin-inset)] px-2 py-1 text-[10px] font-bold uppercase tracking-wide admin-soft">Manual</span>
+                </div>
+                <p className="mt-1 max-w-2xl text-xs leading-relaxed admin-muted sm:text-sm">
+                  Work from identity and clinical safety first, then complete commercial, inventory, and media details.
                 </p>
               </div>
             </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-5">
+              {["Identity", "Clinical", "Commercial", "Inventory", "Media"].map((step, index) => (
+                <div
+                  key={step}
+                  className="flex min-w-0 items-center gap-2 rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-inset)] px-2.5 py-2 text-[10px] font-semibold admin-muted sm:text-xs"
+                >
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--admin-accent-soft)] text-[10px] font-black admin-accent-text">
+                    {index + 1}
+                  </span>
+                  <span className="truncate">{step}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-3 flex items-start gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2.5 text-xs leading-relaxed admin-soft">
+              <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
+              Required and safety-critical fields come first. Collapsible sections keep the form focused on smaller screens.
+            </div>
           </div>
 
-          <div className="relative p-6 sm:p-8">
+          <div className="relative p-3 sm:p-5 lg:p-6">
             <MedicationForm
               action={adminCreateMedicationAction}
               categories={categories}
