@@ -5,7 +5,6 @@ import TravelLabHero from "./components/landing/TravelLabHero";
 import TravelLabNetwork from "./components/landing/TravelLabNetwork";
 import LandingCareDemo from "./components/landing/LandingCareDemo";
 import TravelLabContact from "./components/landing/TravelLabContact";
-import LandingMobileActionBar from "./components/landing/LandingMobileActionBar";
 import LandingMobilePolish from "./components/landing/LandingMobilePolish";
 import HeroFeatureCardMobilePolish from "./components/landing/HeroFeatureCardMobilePolish";
 import HeroMetricsMobilePolish from "./components/landing/HeroMetricsMobilePolish";
@@ -26,7 +25,7 @@ export default async function MarketplacePage() {
   const featuredPharmacies = await getMarketplaceFeaturedPharmacies();
 
   return (
-    <div className="landing-root min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-16 lg:pb-0">
+    <div className="landing-root min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <LandingMobilePolish />
       <HeroFeatureCardMobilePolish />
       <HeroMetricsMobilePolish />
@@ -47,7 +46,6 @@ export default async function MarketplacePage() {
       <div className={`${styles.adaptiveSection} ${styles.contactSection}`}>
         <TravelLabContact />
       </div>
-      <LandingMobileActionBar />
     </div>
   );
 }
