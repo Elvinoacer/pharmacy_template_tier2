@@ -1,8 +1,6 @@
 "use client";
 
-import { useId } from "react";
-
-import { useActionState, useState } from "react";
+import { useActionState, useId, useState } from "react";
 import type { ActionState } from "@/app/actions/admin";
 import { CalendarClock, Mail, MessageSquare, MessageCircle, Bell, Type, FileText, Calendar, AlertCircle, Check, Send, Zap, Wand2 } from "lucide-react";
 import { CustomerPicker } from "@/app/components/CustomerPicker";
@@ -60,7 +58,7 @@ export default function ReminderForm({
   }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="min-w-0 space-y-4">
       {state?.error && (
         <div className="admin-alert-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> <span>{state.error}</span>
@@ -72,7 +70,7 @@ export default function ReminderForm({
         </div>
       )}
 
-      <div>
+      <div className="min-w-0">
         <label className="label-admin">Customer *</label>
         <CustomerPicker
           name="customerId"
@@ -83,18 +81,18 @@ export default function ReminderForm({
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="min-w-0">
           <label htmlFor={`${fieldPrefix}-1`} className="label-admin">Type</label>
-          <select id={`${fieldPrefix}-1`} name="type" className="input-admin" defaultValue="custom">
+          <select id={`${fieldPrefix}-1`} name="type" className="input-admin w-full" defaultValue="custom">
             {TYPES.map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
         </div>
-        <div>
+        <div className="min-w-0">
           <label htmlFor={`${fieldPrefix}-2`} className="label-admin">Channel</label>
-          <select id={`${fieldPrefix}-2`} name="channel" className="input-admin" defaultValue="email">
+          <select id={`${fieldPrefix}-2`} name="channel" className="input-admin w-full" defaultValue="email">
             {CHANNELS.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.value === "in_app" ? "In-app" : c.value.charAt(0).toUpperCase() + c.value.slice(1)}
@@ -104,50 +102,51 @@ export default function ReminderForm({
         </div>
       </div>
 
-      <div>
+      <div className="min-w-0">
         <label htmlFor={`${fieldPrefix}-3`} className="label-admin">Title *</label>
         <div className="relative">
           <Type className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-          <input id={`${fieldPrefix}-3`}
+          <input
+            id={`${fieldPrefix}-3`}
             name="title"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Time to refill your medication"
-            className="input-admin pl-9"
+            className="input-admin w-full pl-9"
           />
         </div>
       </div>
 
-      <div>
-        <div className="flex items-center justify-between">
-          <label className="label-admin">Body</label>
+      <div className="min-w-0">
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+          <label className="label-admin !mb-0">Body</label>
           <button
             type="button"
             onClick={aiDraft}
             disabled={aiLoading}
-            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#0d6e5a] px-2 py-0.5 text-xs font-semibold text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-[var(--admin-accent-soft)] px-3 py-1 text-xs font-semibold admin-accent-text transition-colors hover:bg-[var(--admin-hover)] disabled:cursor-wait disabled:opacity-60"
           >
-            <Wand2 className={`h-2.5 w-2.5 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
+            <Wand2 className={`h-3 w-3 ${aiLoading ? "animate-pulse" : ""}`} /> {aiLoading ? "Drafting…" : "AI draft"}
           </button>
         </div>
         <div className="relative">
           <FileText className="pointer-events-none absolute left-3 top-3 h-3.5 w-3.5 admin-soft" />
           <textarea
             name="body"
-            rows={3}
+            rows={4}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Reminder message…"
-            className="input-admin resize-y pl-9"
+            className="input-admin w-full resize-y pl-9"
           />
         </div>
       </div>
 
-      <div>
-        <label className="label-admin">When to send *</label>
-        <div className="mb-2 flex items-center gap-2">
-          <label className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs">
+      <fieldset className="min-w-0">
+        <legend className="label-admin">When to send *</legend>
+        <div className="mb-2 grid gap-2 sm:grid-cols-2">
+          <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2 text-xs admin-text transition-colors hover:border-[var(--admin-border-2)]">
             <input
               type="radio"
               name="sendNow"
@@ -156,9 +155,10 @@ export default function ReminderForm({
               onChange={() => setSendNow(false)}
               className="accent-[var(--admin-accent)]"
             />
-            <Calendar className="h-3 w-3" /> Schedule for later
+            <Calendar className="h-3.5 w-3.5 shrink-0" />
+            <span>Schedule for later</span>
           </label>
-          <label className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-1.5 text-xs">
+          <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-inset)] px-3 py-2 text-xs admin-text transition-colors hover:border-[var(--admin-border-2)]">
             <input
               type="radio"
               name="sendNow"
@@ -167,19 +167,18 @@ export default function ReminderForm({
               onChange={() => setSendNow(true)}
               className="accent-[var(--admin-accent)]"
             />
-            <Zap className="h-3 w-3" /> Send immediately
+            <Zap className="h-3.5 w-3.5 shrink-0" />
+            <span>Send immediately</span>
           </label>
         </div>
         {!sendNow && (
           <div className="relative">
             <Calendar className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
-            <input name="scheduledFor" type="datetime-local" required className="input-admin pl-9" />
+            <input name="scheduledFor" type="datetime-local" required className="input-admin w-full pl-9" />
           </div>
         )}
-        {sendNow && (
-          <input type="hidden" name="scheduledFor" value={localNowDatetimeInputValue()} />
-        )}
-      </div>
+        {sendNow && <input type="hidden" name="scheduledFor" value={localNowDatetimeInputValue()} />}
+      </fieldset>
 
       <button
         type="submit"
