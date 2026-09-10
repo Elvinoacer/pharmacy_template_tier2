@@ -1,17 +1,23 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { toast } from "@/app/components/Toaster";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/app/components/Toaster";
 import {
-  Upload, FileSpreadsheet, ArrowRight, Check, AlertCircle, Loader2, X,
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  FileSpreadsheet,
+  Loader2,
+  RotateCcw,
+  Upload,
 } from "lucide-react";
 
 type SystemField = {
   key: string;
   label: string;
   required?: boolean;
-  hint?: string;
 };
 
 const SYSTEM_FIELDS: SystemField[] = [
@@ -36,315 +42,381 @@ const SYSTEM_FIELDS: SystemField[] = [
 
 type Step = "upload" | "map" | "preview" | "importing" | "done";
 
+type Summary = { created: number; matched: number; flagged: number };
+
+const STEP_META: Array<{ key: Exclude<Step, "importing" | "done">; label: string }> = [
+  { key: "upload", label: "Upload" },
+  { key: "map", label: "Map columns" },
+  { key: "preview", label: "Review" },
+];
+
 export function CsvImportFlow() {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<Step>("upload");
+  const [fileName, setFileName] = useState("");
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<Record<string, string>[]>([]);
-  const [mapping, setMapping] = useState<Record<string, string>>({}); // systemField → sourceColumn
-  const [summary, setSummary] = useState<{ created: number; matched: number; flagged: number } | null>(null);
+  const [mapping, setMapping] = useState<Record<string, string>>({});
+  const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const visibleStep = step === "importing" ? "preview" : step === "done" ? "preview" : step;
+  const activeIndex = STEP_META.findIndex((item) => item.key === visibleStep);
+  const mappedCount = SYSTEM_FIELDS.filter((field) => mapping[field.key]).length;
+  const requiredReady = SYSTEM_FIELDS.filter((field) => field.required).every((field) => mapping[field.key]);
+
   function parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] } {
-    const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+    const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
     if (lines.length === 0) return { headers: [], rows: [] };
+
     const parseLine = (line: string): string[] => {
       const out: string[] = [];
-      let cur = "";
+      let current = "";
       let inQuotes = false;
-      for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        if (ch === '"') {
-          if (inQuotes && line[i + 1] === '"') {
-            cur += '"';
-            i++;
+
+      for (let index = 0; index < line.length; index++) {
+        const char = line[index];
+        if (char === '"') {
+          if (inQuotes && line[index + 1] === '"') {
+            current += '"';
+            index++;
           } else {
             inQuotes = !inQuotes;
           }
-        } else if (ch === "," && !inQuotes) {
-          out.push(cur);
-          cur = "";
+        } else if (char === "," && !inQuotes) {
+          out.push(current);
+          current = "";
         } else {
-          cur += ch;
+          current += char;
         }
       }
-      out.push(cur);
-      return out.map((s) => s.trim());
+
+      out.push(current);
+      return out.map((value) => value.trim());
     };
-    const headers = parseLine(lines[0]);
-    const rows = lines.slice(1).map((line) => {
+
+    const parsedHeaders = parseLine(lines[0]);
+    const parsedRows = lines.slice(1).map((line) => {
       const cells = parseLine(line);
-      const obj: Record<string, string> = {};
-      headers.forEach((h, i) => {
-        obj[h] = cells[i] ?? "";
+      const record: Record<string, string> = {};
+      parsedHeaders.forEach((header, index) => {
+        record[header] = cells[index] ?? "";
       });
-      return obj;
+      return record;
     });
-    return { headers, rows };
+
+    return { headers: parsedHeaders, rows: parsedRows };
   }
 
-  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+  async function onFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
     if (!file) return;
+
     setError(null);
-    const name = file.name.toLowerCase();
-    if (!name.endsWith(".csv") && !name.endsWith(".txt")) {
-      setError("Only .csv files are supported in this build. For .xlsx, use Excel's 'Save As CSV' first.");
-      toast.error(".xlsx not supported — save as CSV first.");
+    const lowerName = file.name.toLowerCase();
+    if (!lowerName.endsWith(".csv") && !lowerName.endsWith(".txt")) {
+      setError("Only .csv files are supported. Save .xlsx files as CSV first.");
+      toast.error("Save the spreadsheet as CSV first.");
       return;
     }
+
     try {
       const text = await file.text();
-      const { headers, rows } = parseCsv(text);
-      if (headers.length === 0 || rows.length === 0) {
+      const parsed = parseCsv(text);
+      if (parsed.headers.length === 0 || parsed.rows.length === 0) {
         setError("The CSV file appears to be empty.");
         return;
       }
-      setHeaders(headers);
-      setRows(rows);
-      // Auto-map: try to match source column names to system field keys/labels.
-      const auto: Record<string, string> = {};
-      for (const f of SYSTEM_FIELDS) {
-        const match = headers.find((h) => {
-          const hn = h.toLowerCase().replace(/[^a-z0-9]/g, "");
-          const fk = f.key.toLowerCase().replace(/[^a-z0-9]/g, "");
-          const fl = f.label.toLowerCase().replace(/[^a-z0-9]/g, "");
-          return hn === fk || hn === fl || hn.includes(fk) || fk.includes(hn);
-        });
-        if (match) auto[f.key] = match;
+      if (parsed.rows.length > 1000) {
+        setError("This importer accepts up to 1000 rows per batch. Split the file and try again.");
+        return;
       }
+
+      const auto: Record<string, string> = {};
+      for (const field of SYSTEM_FIELDS) {
+        const match = parsed.headers.find((header) => {
+          const normalizedHeader = header.toLowerCase().replace(/[^a-z0-9]/g, "");
+          const normalizedKey = field.key.toLowerCase().replace(/[^a-z0-9]/g, "");
+          const normalizedLabel = field.label.toLowerCase().replace(/[^a-z0-9]/g, "");
+          return (
+            normalizedHeader === normalizedKey ||
+            normalizedHeader === normalizedLabel ||
+            normalizedHeader.includes(normalizedKey) ||
+            normalizedKey.includes(normalizedHeader)
+          );
+        });
+        if (match) auto[field.key] = match;
+      }
+
+      setFileName(file.name);
+      setHeaders(parsed.headers);
+      setRows(parsed.rows);
       setMapping(auto);
       setStep("map");
-      toast.success(`Loaded ${rows.length} rows with ${headers.length} columns.`);
-    } catch (err) {
-      console.error(err);
+      toast.success(`Loaded ${parsed.rows.length} rows with ${parsed.headers.length} columns.`);
+    } catch (parseError) {
+      console.error(parseError);
       setError("Could not parse the CSV file.");
     }
   }
 
   function fieldFor(row: Record<string, string>, systemKey: string): string {
-    const col = mapping[systemKey];
-    return col ? (row[col] ?? "") : "";
+    const column = mapping[systemKey];
+    return column ? row[column] ?? "" : "";
   }
 
   async function doImport() {
+    if (!requiredReady) {
+      setError("Map all required fields before importing.");
+      return;
+    }
+
     setStep("importing");
     setError(null);
+
     try {
-      const mappedRows = rows.map((r) => {
-        const obj: Record<string, string> = {};
-        for (const f of SYSTEM_FIELDS) {
-          obj[f.key] = fieldFor(r, f.key);
-        }
-        return obj;
+      const mappedRows = rows.map((row) => {
+        const result: Record<string, string> = {};
+        for (const field of SYSTEM_FIELDS) result[field.key] = fieldFor(row, field.key);
+        return result;
       });
-      const res = await fetch("/api/admin/medications/import/csv", {
+
+      const response = await fetch("/api/admin/medications/import/csv", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rows: mappedRows }),
       });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j.message || "Import failed.");
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.message || "Import failed.");
       }
-      const j = (await res.json()) as { created: number; matched: number; flagged: number };
-      setSummary(j);
+
+      const payload = (await response.json()) as Summary;
+      setSummary(payload);
       setStep("done");
-      toast.success(`Imported ${j.created + j.matched} medications (${j.matched} matched existing).`);
+      toast.success(`Imported ${payload.created + payload.matched} medications (${payload.matched} matched existing).`);
       router.refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Import failed.");
+    } catch (importError) {
+      setError(importError instanceof Error ? importError.message : "Import failed.");
       setStep("preview");
     }
   }
 
-  if (step === "upload") {
-    return (
-      <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-8">
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".csv,.txt"
-          onChange={onFile}
-          className="hidden"
-        />
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          className="flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-[var(--admin-border-2)] py-12 text-center transition hover:border-emerald-500/50 hover:bg-emerald-500/5"
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            <Upload className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold admin-text">Click to upload a .csv file</p>
-            <p className="mt-1 text-xs admin-soft">Max 1000 rows. Headers in the first row.</p>
-          </div>
-        </button>
-        {error && (
-          <div className="mt-4 admin-alert-error">
-            <AlertCircle className="h-3.5 w-3.5" /> <span>{error}</span>
-          </div>
-        )}
-      </div>
-    );
+  function reset() {
+    setStep("upload");
+    setFileName("");
+    setHeaders([]);
+    setRows([]);
+    setMapping({});
+    setSummary(null);
+    setError(null);
+    if (fileRef.current) fileRef.current.value = "";
   }
 
-  if (step === "map") {
-    return (
-      <div className="space-y-4">
-        <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-4">
-          <h3 className="mb-3 text-sm font-semibold admin-text">Map source columns to system fields</h3>
-          <p className="mb-4 text-xs admin-soft">
-            Your file has {headers.length} columns. Match each to a system field. Required fields are marked *.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {SYSTEM_FIELDS.map((f) => (
-              <div key={f.key} className="flex items-center gap-2">
-                <label className="w-40 text-xs font-medium admin-muted">
-                  {f.label}{f.required && <span className="text-rose-500"> *</span>}
-                </label>
-                <select
-                  value={mapping[f.key] || ""}
-                  onChange={(e) => setMapping((m) => ({ ...m, [f.key]: e.target.value }))}
-                  className="input-admin flex-1 text-xs"
-                >
-                  <option value="">— Skip —</option>
-                  {headers.map((h) => (
-                    <option key={h} value={h}>{h}</option>
-                  ))}
-                </select>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex justify-between">
-          <button
-            type="button"
-            onClick={() => setStep("upload")}
-            className="rounded-full bg-[var(--admin-inset)] px-4 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
-          >
-            ← Upload different file
-          </button>
-          <button
-            type="button"
-            onClick={() => setStep("preview")}
-            className="btn-admin inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs"
-          >
-            Preview <ArrowRight className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (step === "preview") {
-    const previewRows = rows.slice(0, 10);
-    return (
-      <div className="space-y-4">
-        <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-4">
-          <h3 className="mb-3 text-sm font-semibold admin-text">Preview (first 10 rows)</h3>
-          <div tabIndex={0} role="region" aria-label="Scrollable records" className="admin-table-region overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-[var(--admin-border-2)]">
-                  <th className="px-2 py-1.5 text-left font-semibold admin-muted">#</th>
-                  {SYSTEM_FIELDS.filter((f) => mapping[f.key]).map((f) => (
-                    <th key={f.key} className="px-2 py-1.5 text-left font-semibold admin-muted">{f.label}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {previewRows.map((r, i) => (
-                  <tr key={i} className="border-b border-[var(--admin-border-2)]/50">
-                    <td className="px-2 py-1 admin-soft">{i + 1}</td>
-                    {SYSTEM_FIELDS.filter((f) => mapping[f.key]).map((f) => (
-                      <td key={f.key} className="px-2 py-1 admin-text">{fieldFor(r, f.key) || <span className="admin-soft">—</span>}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="mt-3 text-xs admin-soft">
-            Importing {rows.length} rows. Missing clinical fields will flag records for enrichment (not reject).
-          </p>
-        </div>
-        {error && (
-          <div className="admin-alert-error">
-            <AlertCircle className="h-3.5 w-3.5" /> <span>{error}</span>
-          </div>
-        )}
-        <div className="flex justify-between">
-          <button
-            type="button"
-            onClick={() => setStep("map")}
-            className="rounded-full bg-[var(--admin-inset)] px-4 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
-          >
-            ← Edit mapping
-          </button>
-          <button
-            type="button"
-            onClick={doImport}
-            className="btn-admin inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs"
-          >
-            <FileSpreadsheet className="h-3.5 w-3.5" /> Import {rows.length} rows
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (step === "importing") {
-    return (
-      <div className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-12 text-center">
-        <Loader2 className="mx-auto h-8 w-8 animate-spin admin-accent-text" />
-        <p className="mt-4 text-sm font-semibold admin-text">Importing {rows.length} medications…</p>
-        <p className="mt-1 text-xs admin-soft">Matching against existing masters + creating new ones.</p>
-      </div>
-    );
-  }
-
-  // done
   return (
-    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-8 text-center">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-        <Check className="h-6 w-6" />
-      </div>
-      <h3 className="mt-4 text-lg font-bold admin-text">Import complete</h3>
-      {summary && (
-        <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{summary.created}</p>
-            <p className="text-xs admin-soft">New masters</p>
-          </div>
-          <div>
-            <p className="text-2xl font-black text-blue-600 dark:text-blue-400">{summary.matched}</p>
-            <p className="text-xs admin-soft">Matched existing</p>
-          </div>
-          <div>
-            <p className="text-2xl font-black text-amber-600 dark:text-amber-400">{summary.flagged}</p>
-            <p className="text-xs admin-soft">Flagged for enrichment</p>
+    <div className="space-y-4 sm:space-y-5">
+      {step !== "done" && (
+        <nav aria-label="CSV import progress" className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-2 sm:p-3">
+          <ol className="grid grid-cols-3 gap-1.5 sm:gap-2">
+            {STEP_META.map((item, index) => {
+              const current = index === activeIndex;
+              const complete = index < activeIndex;
+              return (
+                <li
+                  key={item.key}
+                  aria-current={current ? "step" : undefined}
+                  className={`rounded-xl px-2 py-2.5 text-center transition sm:px-3 ${
+                    current
+                      ? "bg-[var(--admin-accent-soft)] ring-1 ring-inset ring-[var(--admin-border-2)]"
+                      : complete
+                        ? "bg-emerald-500/[0.06]"
+                        : "bg-[var(--admin-inset)]"
+                  }`}
+                >
+                  <span className={`text-[11px] font-semibold sm:text-xs ${current ? "admin-text" : complete ? "text-emerald-700 dark:text-emerald-300" : "admin-muted"}`}>
+                    {complete ? "✓ " : `${index + 1}. `}{item.label}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+      )}
+
+      {step === "upload" && (
+        <section className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-3.5 sm:p-6">
+          <input ref={fileRef} type="file" accept=".csv,.txt" onChange={onFile} className="hidden" />
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="group flex min-h-56 w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[var(--admin-border-2)] px-4 py-8 text-center transition duration-200 hover:border-emerald-500/40 hover:bg-emerald-500/[0.04] sm:min-h-72 sm:py-12"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 transition-transform duration-200 group-hover:-translate-y-0.5 dark:text-emerald-300">
+              <Upload className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold admin-text">Choose a CSV file</p>
+              <p className="mt-1 text-xs leading-5 admin-muted">Up to 1000 rows · headers must be in the first row</p>
+            </div>
+            <span className="rounded-full bg-[var(--admin-inset)] px-3 py-1 text-[10px] font-semibold admin-soft">.csv or .txt</span>
+          </button>
+          {error && (
+            <div className="admin-alert-error mt-4 items-start">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> <span>{error}</span>
+            </div>
+          )}
+        </section>
+      )}
+
+      {step === "map" && (
+        <div className="space-y-4">
+          <section className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] p-3.5 sm:p-5">
+            <div className="flex flex-col gap-3 border-b border-[var(--admin-border-2)] pb-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-sm font-semibold admin-text">Match columns to medicine fields</h2>
+                <p className="mt-1 text-xs leading-5 admin-muted">{fileName} · {rows.length} rows · {headers.length} source columns</p>
+              </div>
+              <span className={`w-fit rounded-full px-2.5 py-1 text-[10px] font-semibold ${requiredReady ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/10 text-amber-700 dark:text-amber-300"}`}>
+                {mappedCount}/{SYSTEM_FIELDS.length} mapped
+              </span>
+            </div>
+
+            <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
+              {SYSTEM_FIELDS.map((field) => (
+                <label key={field.key} className="grid gap-1.5 rounded-xl bg-[var(--admin-inset)] p-3 sm:grid-cols-[minmax(0,10rem)_1fr] sm:items-center sm:gap-3">
+                  <span className="text-xs font-medium admin-muted">
+                    {field.label}{field.required && <span className="text-rose-500"> *</span>}
+                  </span>
+                  <select
+                    value={mapping[field.key] || ""}
+                    onChange={(event) => setMapping((current) => ({ ...current, [field.key]: event.target.value }))}
+                    className="input-admin min-w-0 text-xs"
+                  >
+                    <option value="">— Skip —</option>
+                    {headers.map((header) => <option key={header} value={header}>{header}</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </section>
+
+          {!requiredReady && (
+            <div className="flex items-start gap-2 rounded-xl border border-amber-500/25 bg-amber-500/[0.06] p-3 text-xs text-amber-800 dark:text-amber-200">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              Map medicine name, generic name, and price before continuing.
+            </div>
+          )}
+
+          <div className="grid gap-2 sm:grid-cols-[auto_1fr]">
+            <button type="button" onClick={reset} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full">
+              <RotateCcw className="h-3.5 w-3.5" /> Different file
+            </button>
+            <button type="button" onClick={() => setStep("preview")} disabled={!requiredReady} className="btn-admin min-h-11 w-full !rounded-xl justify-center disabled:opacity-50">
+              Preview mapped data <ArrowRight className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       )}
-      <div className="mt-6 flex justify-center gap-2">
-        <button
-          type="button"
-          onClick={() => router.push("/admin/medications")}
-          className="btn-admin inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs"
-        >
-          View catalog
-        </button>
-        <button
-          type="button"
-          onClick={() => { setStep("upload"); setRows([]); setHeaders([]); setSummary(null); }}
-          className="rounded-full bg-[var(--admin-inset)] px-4 py-2 text-xs font-semibold admin-muted hover:text-[var(--admin-text)]"
-        >
-          Import another file
-        </button>
-      </div>
+
+      {step === "preview" && (
+        <div className="space-y-4">
+          <section className="overflow-hidden rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)]">
+            <div className="flex flex-col gap-2 border-b border-[var(--admin-border-2)] p-3.5 sm:flex-row sm:items-end sm:justify-between sm:p-5">
+              <div>
+                <h2 className="text-sm font-semibold admin-text">Preview before import</h2>
+                <p className="mt-1 text-xs admin-muted">Showing the first {Math.min(10, rows.length)} of {rows.length} rows.</p>
+              </div>
+              <span className="w-fit rounded-full bg-[var(--admin-inset)] px-2.5 py-1 text-[10px] font-semibold admin-muted">{mappedCount} columns included</span>
+            </div>
+            <div tabIndex={0} role="region" aria-label="Scrollable medication import preview" className="admin-table-region overflow-x-auto">
+              <table className="min-w-[720px] w-full text-xs">
+                <thead className="bg-[var(--admin-inset)]">
+                  <tr className="border-b border-[var(--admin-border-2)]">
+                    <th className="sticky left-0 z-10 bg-[var(--admin-inset)] px-3 py-2.5 text-left font-semibold admin-muted">#</th>
+                    {SYSTEM_FIELDS.filter((field) => mapping[field.key]).map((field) => (
+                      <th key={field.key} className="whitespace-nowrap px-3 py-2.5 text-left font-semibold admin-muted">{field.label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.slice(0, 10).map((row, index) => (
+                    <tr key={index} className="border-b border-[var(--admin-border-2)]/60 last:border-0">
+                      <td className="sticky left-0 bg-[var(--admin-card)] px-3 py-2.5 font-semibold admin-soft">{index + 1}</td>
+                      {SYSTEM_FIELDS.filter((field) => mapping[field.key]).map((field) => (
+                        <td key={field.key} className="max-w-64 px-3 py-2.5 admin-text">
+                          <span className="line-clamp-2">{fieldFor(row, field.key) || <span className="admin-soft">—</span>}</span>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="border-t border-[var(--admin-border-2)] p-3 text-[11px] leading-5 admin-muted sm:px-5">
+              Missing clinical fields do not reject a row; new master records can be flagged for enrichment after import.
+            </p>
+          </section>
+
+          {error && (
+            <div className="admin-alert-error items-start">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> <span>{error}</span>
+            </div>
+          )}
+
+          <div className="grid gap-2 sm:grid-cols-[auto_1fr]">
+            <button type="button" onClick={() => setStep("map")} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)] sm:rounded-full">
+              <ArrowLeft className="h-3.5 w-3.5" /> Edit mapping
+            </button>
+            <button type="button" onClick={doImport} className="btn-admin min-h-11 w-full !rounded-xl justify-center">
+              <FileSpreadsheet className="h-4 w-4" /> Import {rows.length} rows
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === "importing" && (
+        <section className="rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] px-5 py-12 text-center sm:p-14">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin admin-accent-text" />
+          <p className="mt-4 text-sm font-semibold admin-text">Importing {rows.length} medicines…</p>
+          <p className="mx-auto mt-1 max-w-md text-xs leading-5 admin-muted">Matching shared medicine masters first, then creating only the records that do not already exist.</p>
+        </section>
+      )}
+
+      {step === "done" && (
+        <section className="rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.06] p-4 text-center sm:p-8">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+            <Check className="h-6 w-6" />
+          </div>
+          <h2 className="mt-4 text-lg font-bold admin-text">Import complete</h2>
+          <p className="mt-1 text-xs admin-muted">Your catalogue has been refreshed with the processed rows.</p>
+
+          {summary && (
+            <div className="mx-auto mt-5 grid max-w-xl grid-cols-3 gap-2 sm:gap-3">
+              {[
+                [summary.created, "New masters", "text-emerald-700 dark:text-emerald-300"],
+                [summary.matched, "Matched", "text-blue-700 dark:text-blue-300"],
+                [summary.flagged, "Needs enrichment", "text-amber-700 dark:text-amber-300"],
+              ].map(([value, label, className]) => (
+                <div key={label as string} className="rounded-xl bg-[var(--admin-card)] p-3 sm:p-4">
+                  <p className={`text-xl font-black sm:text-2xl ${className as string}`}>{value as number}</p>
+                  <p className="mt-1 text-[10px] leading-4 admin-muted sm:text-xs">{label as string}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mx-auto mt-6 grid max-w-xl gap-2 sm:grid-cols-2">
+            <button type="button" onClick={() => router.push("/admin/medications")} className="btn-admin min-h-11 w-full !rounded-xl justify-center">
+              View catalogue
+            </button>
+            <button type="button" onClick={reset} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--admin-inset)] px-4 text-xs font-semibold admin-muted transition hover:bg-[var(--admin-inset-2)] hover:text-[var(--admin-text)]">
+              <RotateCcw className="h-3.5 w-3.5" /> Import another file
+            </button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

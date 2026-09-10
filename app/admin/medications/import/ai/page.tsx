@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import Link from "next/link";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Camera, ClipboardCheck, Sparkles } from "lucide-react";
 import { AiImportFlow } from "./AiImportFlow";
 
 export const metadata = { title: "AI-Assisted Import — Medication" };
@@ -15,30 +15,48 @@ export default async function AiImportPage() {
     <AdminShell
       user={user}
       title="Import with AI assistance"
-      subtitle="Prepare a medicine list with your preferred AI tool, then review it before importing."
+      subtitle="Extract medicine details with your preferred AI tool, review the structured data, then save it safely."
     >
-      <div className="mb-6">
+      <div className="mx-auto max-w-5xl space-y-4 sm:space-y-6">
         <Link
           href="/admin/medications/add"
-          className="group inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
+          className="group inline-flex min-h-11 items-center gap-2 rounded-xl bg-[var(--admin-inset)] px-3 text-sm font-medium admin-muted transition hover:text-[var(--admin-text)] sm:min-h-0 sm:bg-transparent sm:px-0"
         >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" /> Back to acquisition chooser
+          <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+          Back to acquisition methods
         </Link>
-      </div>
 
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-4 rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4">
-          <p className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-400">
-            <Sparkles className="h-4 w-4" /> How this works
-          </p>
-          <ol className="mt-2 space-y-1 text-xs text-purple-700/80 dark:text-purple-400/80 list-decimal list-inside">
-            <li>Copy our extraction prompt below.</li>
-            <li>Open your AI tool of choice (ChatGPT, Claude, Gemini, etc.).</li>
-            <li>Take photos of the medicine pack (front, back, leaflet) and attach them with the pasted prompt.</li>
-            <li>Copy the AI&apos;s JSON response and paste it back here.</li>
-            <li>We parse it, you review, then save. Partial data is fine (progressive enrichment).</li>
-          </ol>
-        </div>
+        <section className="overflow-hidden rounded-2xl border border-violet-500/20 bg-violet-500/[0.06]">
+          <div className="grid gap-3 p-4 sm:grid-cols-[auto_1fr] sm:items-start sm:p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-700 dark:text-violet-300">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-violet-800 dark:text-violet-200">A guided three-step workflow</p>
+              <p className="mt-1 text-xs leading-5 text-violet-800/75 dark:text-violet-200/75">
+                Your photos stay with the AI tool you choose. This workspace only receives the JSON you paste back for validation and review.
+              </p>
+            </div>
+          </div>
+          <div className="grid border-t border-violet-500/15 sm:grid-cols-3">
+            {[
+              [Camera, "1. Capture", "Photograph the pack and leaflet clearly."],
+              [Sparkles, "2. Extract", "Run the provided prompt in your AI tool."],
+              [ClipboardCheck, "3. Review", "Paste JSON, validate it, then save."],
+            ].map(([Icon, title, description], index) => {
+              const StepIcon = Icon as typeof Camera;
+              return (
+                <div key={title as string} className={`flex gap-3 p-4 ${index > 0 ? "border-t border-violet-500/15 sm:border-l sm:border-t-0" : ""}`}>
+                  <StepIcon className="mt-0.5 h-4 w-4 shrink-0 text-violet-700 dark:text-violet-300" />
+                  <div>
+                    <p className="text-xs font-semibold text-violet-800 dark:text-violet-200">{title as string}</p>
+                    <p className="mt-1 text-[11px] leading-4 text-violet-800/70 dark:text-violet-200/70">{description as string}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
         <AiImportFlow />
       </div>
