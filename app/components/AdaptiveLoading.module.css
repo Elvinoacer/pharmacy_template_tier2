@@ -20,8 +20,9 @@
   transition: background-color 180ms ease, color 180ms ease;
 }
 
-/* Public loading states follow the public theme only. */
-:global(html[data-theme="dark"]) .public {
+/* Public and patient/caregiver workspaces follow the main app theme. */
+:global(html[data-theme="dark"]) .public,
+:global(html[data-theme="dark"]) .workspace {
   --loading-bg: #0b0f14;
   --loading-card: #161d27;
   --loading-card-2: #1b2430;
@@ -36,7 +37,8 @@
   color-scheme: dark;
 }
 
-:global(html[data-theme="light"]) .public {
+:global(html[data-theme="light"]) .public,
+:global(html[data-theme="light"]) .workspace {
   --loading-bg: #f4f7f4;
   --loading-card: #ffffff;
   --loading-card-2: #f8faf9;
@@ -51,9 +53,9 @@
   color-scheme: light;
 }
 
-/* Staff workspaces prefer the explicit admin theme, then fall back to the public theme. */
-:global(html[data-admin-theme="dark"]) .workspace,
-:global(html:not([data-admin-theme])[data-theme="dark"]) .workspace {
+/* Admin/platform loading follows the explicit staff theme first. */
+:global(html[data-admin-theme="dark"]) .admin,
+:global(html:not([data-admin-theme])[data-theme="dark"]) .admin {
   --loading-bg: #0b0f14;
   --loading-card: #161d27;
   --loading-card-2: #1b2430;
@@ -68,8 +70,8 @@
   color-scheme: dark;
 }
 
-:global(html[data-admin-theme="light"]) .workspace,
-:global(html:not([data-admin-theme])[data-theme="light"]) .workspace {
+:global(html[data-admin-theme="light"]) .admin,
+:global(html:not([data-admin-theme])[data-theme="light"]) .admin {
   --loading-bg: #f4f7f4;
   --loading-card: #ffffff;
   --loading-card-2: #f8faf9;
@@ -86,7 +88,8 @@
 
 @media (prefers-color-scheme: dark) {
   :global(html:not([data-theme])) .public,
-  :global(html:not([data-admin-theme]):not([data-theme])) .workspace {
+  :global(html:not([data-theme])) .workspace,
+  :global(html:not([data-admin-theme]):not([data-theme])) .admin {
     --loading-bg: #0b0f14;
     --loading-card: #161d27;
     --loading-card-2: #1b2430;
@@ -114,7 +117,8 @@
   padding-top: clamp(5.75rem, 12vw, 8rem);
 }
 
-.workspace .wrap {
+.workspace .wrap,
+.admin .wrap {
   padding-top: clamp(1.25rem, 4vw, 2.5rem);
 }
 
@@ -259,7 +263,8 @@
     padding-top: 5.25rem;
   }
 
-  .workspace .wrap {
+  .workspace .wrap,
+  .admin .wrap {
     padding-top: 1rem;
   }
 
