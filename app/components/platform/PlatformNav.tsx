@@ -42,34 +42,12 @@ export const PLATFORM_NAV = [
 ] as const;
 
 const groups = [
-  {
-    label: "Daily work",
-    paths: ["/platform", "/platform/applications", "/platform/pharmacies", "/platform/users"],
-  },
-  {
-    label: "Operations",
-    paths: [
-      "/platform/billing",
-      "/platform/plans",
-      "/platform/jobs",
-      "/platform/notifications",
-      "/platform/integrations",
-      "/platform/webhooks",
-    ],
-  },
-  {
-    label: "Security & settings",
-    paths: ["/platform/security", "/platform/audit", "/platform/compliance", "/platform/feature-flags"],
-  },
+  { label: "Daily work", paths: ["/platform", "/platform/applications", "/platform/pharmacies", "/platform/users"] },
+  { label: "Operations", paths: ["/platform/billing", "/platform/plans", "/platform/jobs", "/platform/notifications", "/platform/integrations", "/platform/webhooks"] },
+  { label: "Security & settings", paths: ["/platform/security", "/platform/audit", "/platform/compliance", "/platform/feature-flags"] },
 ];
 
-export default function PlatformNav({
-  email,
-  mobileOnly = false,
-}: {
-  email: string;
-  mobileOnly?: boolean;
-}) {
+export default function PlatformNav({ email, mobileOnly = false }: { email: string; mobileOnly?: boolean }) {
   const pathname = usePathname() || "/platform";
   const drawer = useRef<HTMLDialogElement>(null);
 
@@ -78,19 +56,16 @@ export default function PlatformNav({
   }, [pathname]);
 
   const navigation = (
-    <nav aria-label="Platform navigation" className="space-y-5 p-3 sm:p-4 lg:p-3">
+    <nav aria-label="Platform navigation" className="space-y-5 p-3">
       {groups.map((group) => (
         <section key={group.label}>
-          <h2 className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#718078] dark:text-teal-100/55">
+          <h2 className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--admin-text-soft)]">
             {group.label}
           </h2>
           <div className="space-y-1">
             {group.paths.map((path) => {
               const item = PLATFORM_NAV.find((link) => link.href === path)!;
-              const active =
-                path === "/platform"
-                  ? pathname === path
-                  : pathname === path || pathname.startsWith(`${path}/`);
+              const active = path === "/platform" ? pathname === path : pathname === path || pathname.startsWith(`${path}/`);
               const Icon = item.icon;
 
               return (
@@ -99,22 +74,20 @@ export default function PlatformNav({
                   href={path}
                   onClick={() => drawer.current?.close()}
                   aria-current={active ? "page" : undefined}
-                  className={`group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition duration-150 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-500 dark:focus-visible:outline-teal-300 ${
+                  className={`group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition duration-150 active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] ${
                     active
-                      ? "bg-teal-100 text-teal-950 shadow-sm dark:bg-teal-300/20 dark:text-white dark:shadow-none"
-                      : "text-[#35453c] hover:bg-[#eef5f1] hover:text-teal-900 dark:text-teal-50/90 dark:hover:bg-teal-300/10 dark:hover:text-white"
+                      ? "bg-[var(--admin-accent-soft)] text-[var(--admin-accent-text)] shadow-sm"
+                      : "text-[var(--admin-text-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
                   }`}
                 >
                   <span
-                    className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors ${
-                      active
-                        ? "bg-white/70 text-teal-700 dark:bg-teal-300/10 dark:text-teal-200"
-                        : "bg-[#f4f7f5] text-[#6b7a71] group-hover:text-teal-700 dark:bg-white/5 dark:text-teal-100/60 dark:group-hover:text-teal-200"
+                    className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg transition ${
+                      active ? "bg-[var(--admin-card)] text-[var(--admin-accent)]" : "text-[var(--admin-text-soft)] group-hover:text-[var(--admin-accent)]"
                     }`}
                   >
                     <Icon className="h-4 w-4" aria-hidden />
                   </span>
-                  <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                  <span className="min-w-0 truncate">{item.label}</span>
                 </Link>
               );
             })}
@@ -134,7 +107,7 @@ export default function PlatformNav({
         aria-haspopup="dialog"
         aria-controls="platform-mobile-nav"
         onClick={() => drawer.current?.showModal()}
-        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#cfdcd4] bg-white/80 text-[#26352d] shadow-sm transition active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-teal-200/25 dark:bg-white/5 dark:text-teal-50 dark:shadow-none dark:focus-visible:ring-teal-300"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] text-[var(--admin-text)] shadow-sm transition hover:bg-[var(--admin-hover)] active:scale-[0.96] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)]"
       >
         <Menu className="h-5 w-5" aria-hidden />
       </button>
@@ -143,7 +116,7 @@ export default function PlatformNav({
         ref={drawer}
         id="platform-mobile-nav"
         aria-label="Platform navigation"
-        className="fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-none w-[min(100vw-1rem,23rem)] max-w-none border-l border-[#dfe8e2] bg-white p-0 text-[#17231d] shadow-2xl backdrop:bg-black/45 dark:border-teal-200/20 dark:bg-[#040c0a] dark:text-white dark:backdrop:bg-black/65"
+        className="fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-none w-[min(100vw-1rem,22rem)] max-w-none border-l border-[var(--admin-border)] bg-[var(--admin-panel)] p-0 text-[var(--admin-text)] shadow-2xl backdrop:bg-black/45"
         onClick={(event) => {
           if (event.target === event.currentTarget) {
             const box = event.currentTarget.getBoundingClientRect();
@@ -151,19 +124,17 @@ export default function PlatformNav({
           }
         }}
       >
-        <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between border-b border-[#dfe8e2] px-4 py-3 dark:border-teal-200/15">
+        <div className="flex h-full flex-col bg-[var(--admin-panel)] text-[var(--admin-text)]">
+          <div className="flex min-h-16 items-center justify-between border-b border-[var(--admin-border)] px-4 py-2.5">
             <div>
               <p className="font-semibold">Platform menu</p>
-              <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-[#74837a] dark:text-teal-100/50">
-                Operations & control
-              </p>
+              <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-[var(--admin-text-soft)]">Navigation</p>
             </div>
             <button
               type="button"
               aria-label="Close navigation"
               onClick={() => drawer.current?.close()}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl transition hover:bg-[#eef5f1] active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:hover:bg-teal-300/10 dark:focus-visible:ring-teal-300"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)]"
             >
               <X className="h-5 w-5" aria-hidden />
             </button>
@@ -171,16 +142,16 @@ export default function PlatformNav({
 
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{navigation}</div>
 
-          <div className="border-t border-[#dfe8e2] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:border-teal-200/15">
-            <p className="truncate px-3 py-2 text-xs text-[#718078] dark:text-teal-100/65">{email}</p>
+          <div className="border-t border-[var(--admin-border)] bg-[var(--admin-card-2)] p-3">
+            <p className="truncate px-3 py-2 text-xs text-[var(--admin-text-soft)]" title={email}>{email}</p>
             <Link
               href="/"
-              className="flex min-h-11 items-center rounded-xl px-3 text-sm font-medium text-[#35453c] transition hover:bg-[#eef5f1] dark:text-teal-50/90 dark:hover:bg-teal-300/10"
+              className="flex min-h-11 items-center rounded-xl px-3 text-sm font-medium text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
             >
               View marketplace
             </Link>
             <form action={logoutAction}>
-              <button className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 dark:text-rose-100 dark:hover:bg-rose-400/15">
+              <button className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50">
                 <LogOut className="h-4 w-4" aria-hidden />
                 Sign out
               </button>
