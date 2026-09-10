@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 function resolveAdminUxPage(pathname: string):
@@ -17,7 +18,7 @@ function resolveAdminUxPage(pathname: string):
   return undefined;
 }
 
-export function AdminRouteUxBoundary({ children }: { children: React.ReactNode }) {
+export function AdminRouteUxBoundary({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const page = resolveAdminUxPage(pathname);
 
