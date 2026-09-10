@@ -40,37 +40,37 @@ export function verificationPriority(
 export function statusBadgeClass(status: PharmacyStatusKey): string {
   switch (status) {
     case "submitted":
-      return "border-sky-400/40 bg-sky-400/15 text-sky-100";
+      return "border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-400/40 dark:bg-sky-400/15 dark:text-sky-100";
     case "under_review":
-      return "border-violet-400/40 bg-violet-400/15 text-violet-100";
+      return "border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-400/40 dark:bg-violet-400/15 dark:text-violet-100";
     case "needs_info":
-      return "border-amber-400/50 bg-amber-400/15 text-amber-100";
+      return "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/50 dark:bg-amber-400/15 dark:text-amber-100";
     case "approved":
-      return "border-emerald-400/40 bg-emerald-400/15 text-emerald-100";
+      return "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-400/40 dark:bg-emerald-400/15 dark:text-emerald-100";
     case "active":
-      return "border-emerald-300/50 bg-emerald-300/20 text-emerald-50";
+      return "border-emerald-200 bg-emerald-100/70 text-emerald-900 dark:border-emerald-300/50 dark:bg-emerald-300/20 dark:text-emerald-50";
     case "rejected":
-      return "border-rose-400/50 bg-rose-400/15 text-rose-100";
+      return "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-400/50 dark:bg-rose-400/15 dark:text-rose-100";
     case "suspended":
-      return "border-rose-500/50 bg-rose-500/20 text-rose-50";
+      return "border-rose-300 bg-rose-100 text-rose-900 dark:border-rose-500/50 dark:bg-rose-500/20 dark:text-rose-50";
     case "draft":
-      return "border-white/20 bg-white/5 text-teal-50/70";
+      return "border-slate-200 bg-slate-50 text-slate-700 dark:border-white/20 dark:bg-white/5 dark:text-teal-50/70";
     default:
-      return "border-white/20 bg-white/5 text-teal-50/80";
+      return "border-slate-200 bg-slate-50 text-slate-700 dark:border-white/20 dark:bg-white/5 dark:text-teal-50/80";
   }
 }
 
 export function priorityBadgeClass(priority: Priority): string {
   switch (priority) {
     case "critical":
-      return "border-rose-400/60 bg-rose-500/25 text-rose-50";
+      return "border-rose-300 bg-rose-100 text-rose-900 dark:border-rose-400/60 dark:bg-rose-500/25 dark:text-rose-50";
     case "high":
-      return "border-amber-400/50 bg-amber-400/20 text-amber-50";
+      return "border-amber-300 bg-amber-100 text-amber-900 dark:border-amber-400/50 dark:bg-amber-400/20 dark:text-amber-50";
     case "normal":
-      return "border-sky-400/40 bg-sky-400/10 text-sky-100";
+      return "border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-400/40 dark:bg-sky-400/10 dark:text-sky-100";
     case "low":
     default:
-      return "border-white/15 bg-white/5 text-teal-50/70";
+      return "border-slate-200 bg-slate-50 text-slate-700 dark:border-white/15 dark:bg-white/5 dark:text-teal-50/70";
   }
 }
 
