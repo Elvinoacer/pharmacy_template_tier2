@@ -32,7 +32,7 @@ export function PeriodSelector({
             className={`inline-flex min-h-9 items-center justify-center rounded-xl border px-3 py-1.5 text-xs font-semibold transition-[background-color,border-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-bg)] motion-reduce:transition-none ${
               current === p
                 ? "border-[var(--admin-accent)] bg-[var(--admin-accent)] text-[var(--admin-btn-fg)] shadow-sm"
-                : "border-[var(--admin-border)] admin-muted hover:border-[var(--admin-accent)] hover:admin-text"
+                : "border-[var(--admin-border)] admin-muted hover:border-[var(--admin-accent)] hover:text-[var(--admin-text)]"
             }`}
           >
             {PERIOD_LABELS[p]}
