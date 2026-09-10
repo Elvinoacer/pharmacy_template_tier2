@@ -27,11 +27,16 @@ const REMEMBERED_PUBLIC_TENANT_PREFIXES = [
   '/contact',
 ] as const
 
+// Discovery roots are marketplaces, not implicit tenant rooms. A remembered
+// pharmacy must not silently collapse these pages back to one tenant.
+const NETWORK_BROWSE_ROOTS = new Set(['/medicines', '/services'])
+
 function isExternalApiPath(pathname: string): boolean {
   return EXTERNAL_API_PREFIXES.some((p) => pathname.startsWith(p))
 }
 
 function usesRememberedPublicTenant(pathname: string): boolean {
+  if (NETWORK_BROWSE_ROOTS.has(pathname)) return false
   return REMEMBERED_PUBLIC_TENANT_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   )
@@ -111,14 +116,16 @@ export async function proxy(request: NextRequest) {
       }
 
       // Sub-pages use a two-request handoff: first persist the selected
-      // pharmacy, then redirect to the real destination. This is intentionally
-      // a redirect rather than a rewrite so the destination render starts with
-      // the pharmacy cookie already present. It prevents the UI from changing
-      // URL while remaining stuck on the chooser/loading state.
+      // pharmacy, then redirect to the real destination. Catalogue roots are
+      // special: they remain network pages but carry an explicit pharmacy
+      // filter so "browse this pharmacy" is visible rather than implicit.
       if (request.method === 'GET' || request.method === 'HEAD') {
         const destination = request.nextUrl.clone()
         destination.pathname = restPath
         destination.searchParams.delete('changePharmacy')
+        if (restPath === '/medicines' || restPath === '/services') {
+          destination.searchParams.set('pharmacy', slug)
+        }
         const res = NextResponse.redirect(destination, 303)
         res.cookies.set('aether_pharmacy', slug, {
           path: '/',
@@ -143,12 +150,9 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Once a visitor explicitly chooses a pharmacy, tenant-dependent public
-  // rooms should keep that context instead of throwing them back into the
-  // chooser on the next navigation. The slug is still validated by tenant
-  // resolution before any scoped data is returned. `changePharmacy=1`
-  // intentionally bypasses the remembered choice so a page can reopen the
-  // chooser without clearing unrelated browser state.
+  // Once a visitor explicitly chooses a pharmacy, tenant-dependent actions and
+  // detail rooms keep that context. Network catalogue roots deliberately do
+  // not: users can return to /medicines or /services and compare everyone.
   if (
     usesRememberedPublicTenant(pathname) &&
     request.nextUrl.searchParams.get('changePharmacy') !== '1'
