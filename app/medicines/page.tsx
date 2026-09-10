@@ -1,24 +1,18 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight, Building2, Layers3, Pill, Store } from "lucide-react";
 import CtaBanner from "../components/CtaBanner";
 import PageHero from "../components/PageHero";
 import MedicinesBrowseTools from "../components/MedicinesBrowseTools";
-import {
-  MedicineCatalogGrid,
-  type MedicineCatalogItem,
-} from "../components/MedicineCatalogCard";
+import { MedicineCatalogGrid, type MedicineCatalogItem } from "../components/MedicineCatalogCard";
 import { Pagination } from "../components/Pagination";
 import { parsePageParam } from "../lib/pagination";
 import { platform } from "../lib/data";
-import { prisma } from "../lib/db";
-import { listPublicCategories } from "../lib/medication-categories";
-import ChoosePharmacy from "@/app/components/ChoosePharmacy";
-import { loadStorefront } from "@/app/components/StorefrontGate";
+import { listNetworkMedicineListings } from "../lib/services/network-catalog";
 
 export const metadata: Metadata = {
-  title: "Medicines & Health Categories",
-  description: `Browse OTC health categories at ${platform.name}. Educational guidance plus live stock for OTC products. Search by name or snap a pack photo.`,
+  title: "Medicines",
+  description: `Browse medicines listed by active pharmacies across ${platform.name}. Compare availability, price and pharmacy before choosing where to continue.`,
   alternates: { canonical: "/medicines" },
 };
 
@@ -26,413 +20,250 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 24;
 
-function toCatalogItem(m: {
-  id: string;
-  slug: string;
-  price: { toString(): string } | number;
-  currentStock: number;
-  overTheCounter: boolean;
-  prescriptionRequired: boolean;
-  medicationMaster: {
-    name: string;
-    description: string | null;
-    category: string;
-    imageUrl: string | null;
-  } | null;
-}): MedicineCatalogItem | null {
-  const master = m.medicationMaster;
-  if (!master) return null;
-  const priceNum =
-    typeof m.price === "number" ? m.price : Number(m.price.toString());
-  return {
-    id: m.id,
-    slug: m.slug,
-    price: Number.isFinite(priceNum) ? priceNum : 0,
-    currentStock: m.currentStock,
-    overTheCounter: m.overTheCounter,
-    prescriptionRequired: m.prescriptionRequired,
-    medicationMaster: {
-      name: master.name,
-      description: master.description,
-      category: master.category,
-      imageUrl: master.imageUrl,
-    },
+function categoryEmoji(slug: string) {
+  const emojis: Record<string, string> = {
+    "pain-relief": "🧠",
+    "cold-flu": "🫁",
+    "allergy-treatments": "🌿",
+    "digestive-health": "🫄",
+    "first-aid": "🩹",
+    "topical-treatments": "🧴",
+    "skin-care": "✨",
+    antiseptics: "🧪",
+    "wound-care": "🩹",
+    "oral-care": "🦷",
+    "feminine-hygiene": "🌸",
+    "baby-care": "👶",
+    "medical-consumables": "🩺",
+    "nutritional-products": "⚡",
   };
+  return emojis[slug] || "💊";
+}
+
+function medicinesHref(params: { q?: string; category?: string; pharmacy?: string }) {
+  const sp = new URLSearchParams();
+  if (params.q) sp.set("q", params.q);
+  if (params.category && params.category !== "all") sp.set("category", params.category);
+  if (params.pharmacy) sp.set("pharmacy", params.pharmacy);
+  const query = sp.toString();
+  return query ? `/medicines?${query}` : "/medicines";
 }
 
 export default async function MedicinesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; page?: string; photo?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; page?: string; pharmacy?: string }>;
 }) {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/medicines" />;
-
   const sp = await searchParams;
   const q = sp.q?.trim() || undefined;
-  const category = sp.category || undefined;
-  const initialPhotoOpen = sp.photo === "1" || sp.photo === "true";
+  const category = sp.category?.trim() || undefined;
+  const pharmacySlug = sp.pharmacy?.trim().toLowerCase() || undefined;
+  const requestedPage = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
 
-  const masterWhere: Record<string, unknown> = {};
-  if (category && category !== "all") {
-    masterWhere.category = category;
+  let catalogue = await listNetworkMedicineListings({
+    q,
+    category,
+    pharmacySlug,
+    skip: (requestedPage - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+  }).catch(() => ({ total: 0, items: [], categories: [], selectedPharmacy: null }));
+
+  const page = parsePageParam(sp.page, catalogue.total, PAGE_SIZE);
+  if (page !== requestedPage && catalogue.total > 0) {
+    catalogue = await listNetworkMedicineListings({
+      q,
+      category,
+      pharmacySlug,
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }).catch(() => catalogue);
   }
-  if (q) {
-    masterWhere.OR = [
-      { name: { contains: q, mode: "insensitive" as const } },
-      { description: { contains: q, mode: "insensitive" as const } },
-    ];
-  }
 
-  const where = {
-    publicListing: true,
-    active: true,
-    ...(Object.keys(masterWhere).length > 0 ? { medicationMaster: masterWhere } : {}),
-  };
-
-  const masterInclude = {
-    medicationMaster: {
-      select: {
-        name: true,
-        description: true,
-        category: true,
-        imageUrl: true,
-      },
-    },
-  };
-
-  const [total, medications, publicCategories] = await Promise.all([
-    prisma.pharmacyInventory.count({ where }).catch(() => 0),
-    prisma.pharmacyInventory
-      .findMany({
-        where,
-        include: masterInclude,
-        orderBy: [{ currentStock: "desc" }],
-        take: PAGE_SIZE,
-      })
-      .catch(() => []),
-    listPublicCategories().catch(() => []),
-  ]);
-
-  const page = parsePageParam(sp.page, total, PAGE_SIZE);
-  const paged =
-    page === 1
-      ? medications
-      : await prisma.pharmacyInventory
-          .findMany({
-            where,
-            include: masterInclude,
-            orderBy: [{ currentStock: "desc" }],
-            take: PAGE_SIZE,
-            skip: (page - 1) * PAGE_SIZE,
-          })
-          .catch(() => []);
-
-  const catalogItems = paged
-    .map(toCatalogItem)
-    .filter((x): x is MedicineCatalogItem => x !== null);
-
-  const filterOptions = publicCategories.map((c) => ({
-    slug: c.slug,
-    name: c.name,
-  }));
-
-  const hasActiveFilters = Boolean(q || (category && category !== "all"));
-  const selectedCategoryName = filterOptions.find(
-    (option) => option.slug === category,
-  )?.name;
-  const activeFilterSummary = [q ? `“${q}”` : null, selectedCategoryName]
-    .filter(Boolean)
-    .join(" · ");
-
-  const categorySection = (
-    <section id="medicine-categories" className="scroll-mt-32 px-4 pb-10 sm:px-6 sm:pb-14">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs">
-              Browse by need
-            </p>
-            <h2
-              className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl"
-              style={{ fontFamily: "var(--font-display), serif" }}
-            >
-              Shop by health category
-            </h2>
-            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
-              Start with the health need you recognise, then compare the products currently listed by {pharmacy.name}.
-            </p>
-          </div>
-          <a
-            href="#medicine-search"
-            className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
-          >
-            Search by name instead ↑
-          </a>
-        </div>
-
-        {publicCategories.length === 0 ? (
-          <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-5 py-8 text-center shadow-sm sm:px-6 sm:py-10">
-            <p className="text-sm font-semibold text-[var(--foreground)]">Categories coming soon</p>
-            <p className="mt-1 text-xs text-[var(--muted)]">
-              Search products above or ask our pharmacists for guidance.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {publicCategories.map((c) => {
-              const emojis: Record<string, string> = {
-                "pain-relief": "🧠",
-                "cold-flu": "🫁",
-                "allergy-treatments": "🌿",
-                "digestive-health": "🫄",
-                "first-aid": "🩹",
-                "topical-treatments": "🧴",
-                "skin-care": "✨",
-                antiseptics: "🧪",
-                "wound-care": "🩹",
-                "oral-care": "👄",
-                "feminine-hygiene": "🌸",
-                "baby-care": "👶",
-                "medical-consumables": "🩺",
-                "nutritional-products": "⚡",
-              };
-              const emoji = emojis[c.slug] || "💊";
-
-              return (
-                <Link
-                  key={c.slug}
-                  href={`/medicines/${c.slug}`}
-                  className="group grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2.5 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--brand)_42%,var(--line-2))] hover:shadow-md sm:gap-3 sm:p-3.5"
-                >
-                  <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--card-elev)] text-xl sm:h-12 sm:w-12">
-                    {c.imageUrl ? (
-                      <Image
-                        src={c.imageUrl}
-                        alt=""
-                        fill
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                        sizes="48px"
-                      />
-                    ) : (
-                      <span aria-hidden>{emoji}</span>
-                    )}
-                  </span>
-                  <span className="min-w-0">
-                    <span
-                      className="block line-clamp-2 text-xs font-bold leading-tight text-[var(--foreground)] sm:text-sm"
-                      style={{ fontFamily: "var(--font-display), serif" }}
-                    >
-                      {c.name}
-                    </span>
-                    <span className="mt-1 block text-[10px] font-medium text-[var(--muted)] sm:text-[11px]">
-                      {c.publicMedCount > 0
-                        ? `${c.publicMedCount} ${c.publicMedCount === 1 ? "product" : "products"}`
-                        : "View guidance"}
-                    </span>
-                  </span>
-                  <span className="text-sm font-semibold text-[var(--brand)] transition-transform group-hover:translate-x-0.5" aria-hidden>
-                    →
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </section>
-  );
-
-  const stockSection = (
-    <section id="medicine-stock" className="scroll-mt-32 px-4 pb-12 sm:px-6 sm:pb-16">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs">
-              Live stock · {pharmacy.name}
-            </p>
-            <h2
-              className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl"
-              style={{ fontFamily: "var(--font-display), serif" }}
-            >
-              {hasActiveFilters ? "Search results" : "Available medicines"}
-            </h2>
-            <p className="mt-1 text-xs text-[var(--muted)] sm:text-sm">
-              {hasActiveFilters
-                ? `${total} ${total === 1 ? "match" : "matches"}${activeFilterSummary ? ` for ${activeFilterSummary}` : ""}.`
-                : `${total} ${total === 1 ? "listed product" : "listed products"}, with in-stock items shown first.`}
-            </p>
-          </div>
-          {hasActiveFilters && (
-            <Link
-              href="/medicines"
-              className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
-            >
-              Clear search
-            </Link>
-          )}
-        </div>
-
-        {catalogItems.length > 0 ? (
-          <>
-            <MedicineCatalogGrid items={catalogItems} />
-            <Pagination
-              page={page}
-              total={total}
-              pageSize={PAGE_SIZE}
-              basePath="/medicines"
-              queryParams={{ q, category }}
-              variant="portal"
-            />
-          </>
-        ) : (
-          <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-5 py-8 text-center shadow-sm sm:px-6 sm:py-10">
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--card-elev)] text-xl" aria-hidden>
-              🔎
-            </div>
-            <p className="mt-3 text-sm font-semibold text-[var(--foreground)]">
-              {hasActiveFilters ? "No medicines matched that search" : "No medicines are listed yet"}
-            </p>
-            <p className="mx-auto mt-1 max-w-lg text-xs leading-relaxed text-[var(--muted)]">
-              {hasActiveFilters
-                ? "Try a shorter medicine name, choose another category, or use photo search to match a pack you already have."
-                : "Check back soon, browse health categories, or contact the pharmacy for help finding a product."}
-            </p>
-            {hasActiveFilters && (
-              <div className="mt-4 flex flex-wrap justify-center gap-2">
-                <Link href="/medicines" className="btn-primary !min-h-10 !px-4 !py-2 text-xs">
-                  Clear search
-                </Link>
-                <Link href="/medicines?photo=1" className="btn-ghost !min-h-10 !px-4 !py-2 text-xs">
-                  Try photo search
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </section>
-  );
+  const { total, categories, selectedPharmacy } = catalogue;
+  const catalogItems: MedicineCatalogItem[] = catalogue.items;
+  const hasFilters = Boolean(q || (category && category !== "all") || pharmacySlug);
+  const selectedCategory = categories.find((item) => item.slug === category)?.name;
+  const location = selectedPharmacy
+    ? [selectedPharmacy.city, selectedPharmacy.county].filter(Boolean).join(", ")
+    : "";
 
   return (
     <div>
       <PageHero
-        eyebrow="Medicines & health"
-        title="Find the medicine you need, faster"
-        description={`Search live stock at ${pharmacy.name}, browse by health need, or snap a pack photo to find a match. OTC and prescription-required products stay clearly labelled.`}
+        eyebrow="Aether medicine marketplace"
+        title="Browse medicine first. Choose the pharmacy second."
+        description="Compare public medicine listings across the network without picking a pharmacy up front. Every listing shows the pharmacy behind it, so you always know where price and stock are coming from."
         crumbs={[{ label: "Medicines" }]}
       />
 
-      <section id="medicine-search" className="scroll-mt-32 px-4 pb-8 sm:px-6 sm:pb-10">
+      <section className="px-4 pb-5 sm:px-6 sm:pb-7">
         <div className="mx-auto max-w-6xl">
-          <nav
-            aria-label="Medicine page sections"
-            className="mb-3 flex max-w-full gap-2 overflow-x-auto pb-1 text-xs font-semibold sm:mb-4"
-          >
-            <a
-              href="#medicine-search"
-              className="shrink-0 rounded-full bg-[var(--brand)] px-3.5 py-2 text-white shadow-sm"
-            >
-              Search medicines
-            </a>
-            <a
-              href="#medicine-categories"
-              className="shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 py-2 text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
-            >
-              Browse categories
-            </a>
-            <a
-              href="#medicine-stock"
-              className="shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 py-2 text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
-            >
-              View live stock
-            </a>
+          <nav aria-label="Marketplace shortcuts" className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
+            <Link href="/medicines" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] px-3 text-xs font-semibold text-white shadow-sm">
+              <Pill className="h-4 w-4" aria-hidden /> Medicines
+            </Link>
+            <Link href="/services" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-3 text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--brand-soft)]">
+              <Layers3 className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Services
+            </Link>
+            <Link href="/pharmacies" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] px-3 text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--brand-soft)]">
+              <Store className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Pharmacies
+            </Link>
           </nav>
+        </div>
+      </section>
 
-          <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(280px,0.75fr)] lg:items-start">
-            <article className="min-w-0 rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5 lg:p-6">
-              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs">
-                    Search live inventory
-                  </p>
-                  <h2
-                    className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl"
-                    style={{ fontFamily: "var(--font-display), serif" }}
-                  >
-                    What are you looking for?
-                  </h2>
-                  <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
-                    Type a medicine name, narrow by category, or use a photo of the pack. Results come from this pharmacy’s public stock list.
-                  </p>
+      {pharmacySlug ? (
+        <section className="px-4 pb-5 sm:px-6 sm:pb-7">
+          <div className="mx-auto max-w-6xl">
+            {selectedPharmacy ? (
+              <div className="flex flex-col gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--brand-tint)] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--card)] text-[var(--brand)] shadow-sm">
+                    <Building2 className="h-5 w-5" aria-hidden />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Shopping this pharmacy</p>
+                    <p className="truncate text-sm font-bold text-[var(--foreground)] sm:text-base">{selectedPharmacy.name}</p>
+                    {location ? <p className="mt-0.5 text-xs text-[var(--muted)]">{location}</p> : null}
+                  </div>
                 </div>
-                <span className="inline-flex min-h-8 w-fit shrink-0 items-center gap-1.5 rounded-full border border-[var(--line-2)] bg-[var(--card-elev)] px-2.5 text-[10px] font-bold uppercase tracking-wide text-[var(--brand-deep)]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-                  {pharmacy.name}
-                </span>
+                <div className="flex flex-wrap gap-2">
+                  <Link href={`/p/${selectedPharmacy.slug}`} className="inline-flex min-h-10 items-center rounded-xl bg-[var(--brand)] px-3.5 text-xs font-semibold text-white">
+                    View pharmacy
+                  </Link>
+                  <Link href={medicinesHref({ q, category })} className="inline-flex min-h-10 items-center rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--foreground)]">
+                    Browse all pharmacies
+                  </Link>
+                </div>
               </div>
+            ) : (
+              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-[var(--foreground)]">
+                That pharmacy is not currently available in the public marketplace. <Link href={medicinesHref({ q, category })} className="font-semibold text-[var(--brand)] underline underline-offset-4">Browse all medicine listings</Link>.
+              </div>
+            )}
+          </div>
+        </section>
+      ) : null}
 
+      <section id="medicine-search" className="scroll-mt-28 px-4 pb-8 sm:px-6 sm:pb-10">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(260px,0.7fr)] lg:items-start">
+            <article className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5 lg:p-6">
+              <div className="mb-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs">Search the network</p>
+                <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
+                  Find a medicine by name, brand or category
+                </h2>
+                <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--muted)] sm:text-sm">
+                  Results are separate pharmacy listings, so the same medicine can appear more than once when multiple pharmacies stock it.
+                </p>
+              </div>
               <MedicinesBrowseTools
                 q={q}
                 category={category}
-                categoryOptions={filterOptions}
-                initialPhotoOpen={initialPhotoOpen}
+                categoryOptions={categories}
+                photoSearchEnabled={false}
+                preserveParams={{ pharmacy: selectedPharmacy?.slug }}
               />
             </article>
 
-            <aside className="rounded-3xl border border-[var(--line-2)] bg-[linear-gradient(145deg,var(--brand-soft),var(--card)_55%,var(--accent-soft))] p-4 shadow-sm sm:p-5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--brand)] text-lg text-white shadow-sm" aria-hidden>
-                💡
-              </div>
-              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
-                Need guidance?
-              </p>
-              <h2
-                className="mt-1 text-lg font-semibold text-[var(--foreground)]"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                Not sure what product you need?
+            <aside className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Prefer a pharmacy?</p>
+              <h2 className="mt-1 text-lg font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
+                Shop by pharmacy instead
               </h2>
-              <p className="mt-2 text-xs leading-relaxed text-[var(--muted)]">
-                Start with symptoms and safety guidance instead of guessing a medicine.
+              <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+                Open the pharmacy directory to search by area, delivery, medicine category or pharmacy name, then browse that pharmacy directly.
               </p>
-              <div className="mt-4 grid gap-2">
-                <Link
-                  href="/health/self-care-guide"
-                  className="btn-primary !min-h-11 !w-full !justify-center !px-4 !py-2.5 text-xs font-semibold"
-                >
-                  Self-care vs doctor guide
-                </Link>
-                <Link
-                  href="/how-do-you-feel"
-                  className="btn-ghost !min-h-11 !w-full !justify-center !px-4 !py-2.5 text-xs font-semibold"
-                >
-                  AI symptom check
-                </Link>
-              </div>
-              <p className="mt-3 text-[10px] leading-relaxed text-[var(--muted-2)]">
-                Educational support only. Urgent or severe symptoms should be assessed by a clinician.
-              </p>
+              <Link href="/pharmacies" className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-xs font-semibold text-white shadow-sm">
+                Browse pharmacies <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
             </aside>
           </div>
         </div>
       </section>
 
-      {hasActiveFilters ? (
-        <>
-          {stockSection}
-          {categorySection}
-        </>
-      ) : (
-        <>
-          {categorySection}
-          {stockSection}
-        </>
-      )}
+      {categories.length > 0 ? (
+        <section id="medicine-categories" className="scroll-mt-28 px-4 pb-9 sm:px-6 sm:pb-12">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Browse by need</p>
+                <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
+                  Health categories across the network
+                </h2>
+              </div>
+              {category ? (
+                <Link href={medicinesHref({ q, pharmacy: selectedPharmacy?.slug })} className="shrink-0 text-xs font-semibold text-[var(--brand)] hover:underline">
+                  Clear category
+                </Link>
+              ) : null}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
+              {categories.map((item) => {
+                const active = item.slug === category;
+                return (
+                  <Link
+                    key={item.slug}
+                    href={medicinesHref({ category: item.slug, pharmacy: selectedPharmacy?.slug })}
+                    className={`group flex min-w-0 items-center gap-2.5 rounded-2xl border p-3 transition sm:p-3.5 ${active ? "border-[var(--brand)] bg-[var(--brand-soft)] shadow-sm" : "border-[var(--line-2)] bg-[var(--card)] hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-sm"}`}
+                  >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--card-elev)] text-lg" aria-hidden>{categoryEmoji(item.slug)}</span>
+                    <span className="line-clamp-2 text-xs font-semibold leading-tight text-[var(--foreground)] sm:text-sm">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section id="medicine-stock" className="scroll-mt-28 px-4 pb-12 sm:px-6 sm:pb-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">{selectedPharmacy ? selectedPharmacy.name : "Aether network"}</p>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
+                {hasFilters ? "Medicine results" : "Available medicine listings"}
+              </h2>
+              <p className="mt-1 text-xs leading-5 text-[var(--muted)] sm:text-sm">
+                {total} {total === 1 ? "public listing" : "public listings"}{q ? ` matching “${q}”` : ""}{selectedCategory ? ` · ${selectedCategory}` : ""}. Pharmacy and location are shown on every card.
+              </p>
+            </div>
+            {hasFilters ? (
+              <Link href={selectedPharmacy ? `/medicines?pharmacy=${selectedPharmacy.slug}` : "/medicines"} className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--brand-soft)]">
+                Clear search filters
+              </Link>
+            ) : null}
+          </div>
+
+          {catalogItems.length > 0 ? (
+            <>
+              <MedicineCatalogGrid items={catalogItems} />
+              <Pagination page={page} total={total} pageSize={PAGE_SIZE} basePath="/medicines" queryParams={{ q, category, pharmacy: selectedPharmacy?.slug }} variant="portal" />
+            </>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-[var(--line-2)] bg-[var(--card)] px-5 py-10 text-center shadow-sm">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-2xl" aria-hidden>🔎</div>
+              <p className="mt-3 text-sm font-semibold text-[var(--foreground)]">No medicine listings matched</p>
+              <p className="mx-auto mt-1 max-w-lg text-xs leading-5 text-[var(--muted)]">Try a shorter medicine or brand name, switch category, or browse pharmacies directly.</p>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <Link href="/medicines" className="inline-flex min-h-10 items-center rounded-xl bg-[var(--brand)] px-4 text-xs font-semibold text-white">Browse all medicines</Link>
+                <Link href="/pharmacies" className="inline-flex min-h-10 items-center rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-semibold text-[var(--foreground)]">Browse pharmacies</Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       <CtaBanner
-        title="Still not sure which medicine is right?"
-        description="Ask a pharmacist for help choosing a safe OTC option that fits your symptoms, medicines, and health history."
+        title="Want to shop from one pharmacy only?"
+        description="Use the pharmacy directory to choose by location, delivery or services, then open that pharmacy's storefront."
+        primaryHref="/pharmacies"
+        primaryLabel="Shop by pharmacy"
+        secondaryHref="/services"
+        secondaryLabel="Browse services"
       />
     </div>
   );
