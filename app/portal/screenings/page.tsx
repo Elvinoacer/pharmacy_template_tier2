@@ -82,19 +82,19 @@ export default async function PortalScreeningsPage() {
       title="Health Screenings & Vitals"
       subtitle="View your vital measurements, blood pressure, blood glucose, BMI, and clinical referrals issued by your pharmacy."
       actions={
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <Link
             href={shopBase ? `${shopBase}/services/health-screenings` : "/services/health-screenings"}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-xs font-semibold text-[#0d6e5a] hover:bg-[#f2f7f4] shadow-2xs transition"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-card px-3 py-2 text-xs font-semibold text-brand shadow-2xs transition hover:bg-brand-tint sm:w-auto"
           >
-            <CalendarCheck className="h-3.5 w-3.5" />
+            <CalendarCheck className="h-3.5 w-3.5 shrink-0" />
             <span>Book Screening</span>
           </Link>
           <Link
             href={shopBase ? `${shopBase}/screenings` : "/screenings"}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[#e3ebe6] bg-white px-3 py-2 text-xs font-semibold text-[#5a6b62] hover:bg-[#f2f7f4] shadow-2xs transition"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-card px-3 py-2 text-xs font-semibold text-muted shadow-2xs transition hover:bg-brand-tint hover:text-brand sm:w-auto"
           >
-            <Activity className="h-3.5 w-3.5" />
+            <Activity className="h-3.5 w-3.5 shrink-0" />
             <span>Screening Guide</span>
           </Link>
         </div>
