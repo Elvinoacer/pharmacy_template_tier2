@@ -3,6 +3,13 @@ import { getSessionUser } from "@/app/lib/auth";
 import { updateUserAction } from "@/app/actions/platform";
 import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
+import {
+  AdaptiveDataTable,
+  AdaptivePlatformPage,
+  PlatformSection,
+  StatusPill,
+  adaptivePlatformStyles as styles,
+} from "@/app/platform/_components/AdaptivePlatformPage";
 
 export const metadata = { title: "Users" };
 export const dynamic = "force-dynamic";
@@ -50,136 +57,119 @@ export default async function PlatformUsersPage({
     })
     .catch(() => []);
 
-  const back = `/platform/users${q ? `?q=${encodeURIComponent(q)}` : ""}`;
+  const backParams = new URLSearchParams();
+  if (q) backParams.set("q", q);
+  if (page > 1) backParams.set("page", String(page));
+  const backQuery = backParams.toString();
+  const back = `/platform/users${backQuery ? `?${backQuery}` : ""}`;
+  const activeOnPage = rows.filter((user) => user.status === "active").length;
+  const adminsOnPage = rows.filter((user) => user.platformAdmin).length;
 
   return (
-    <div>
-      <h1 className="text-3xl font-semibold" style={{ fontFamily: "var(--font-display), serif" }}>
-        User administration
-      </h1>
-      <p className="mt-2 text-sm text-teal-100/70">
-        Search every account on the network, suspend abusive users, and grant or revoke super-admin
-        access. Suspended users are signed out immediately.
-      </p>
-
-      <form method="GET" className="mt-6 flex gap-2">
+    <AdaptivePlatformPage
+      eyebrow="Identity operations"
+      title="User administration"
+      description="Search network accounts, review access state and perform high-impact account actions with touch-friendly controls and clear status hierarchy."
+      metrics={[
+        { label: q ? "Search matches" : "Total accounts", value: total, hint: q ? `Matching “${q}”` : "Across the platform" },
+        { label: "Active on page", value: activeOnPage, hint: `${rows.length} account${rows.length === 1 ? "" : "s"} shown` },
+        { label: "Admins on page", value: adminsOnPage, hint: "Platform super-admin access" },
+      ]}
+    >
+      <form method="GET" className={styles.searchForm}>
         <input
           type="search"
           name="q"
           defaultValue={q}
           placeholder="Search by email or name…"
           aria-label="Search users"
-          className="h-11 flex-1 rounded-xl border border-white/15 bg-black/30 px-4 text-sm outline-none placeholder:text-teal-100/40 focus:border-teal-300/40"
+          className={styles.searchInput}
         />
-        <button type="submit" className="h-11 rounded-xl bg-white/10 px-5 text-sm font-semibold hover:bg-white/15">
-          Search
-        </button>
+        <button type="submit" className={styles.searchButton}>Search users</button>
       </form>
 
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
-        <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="bg-white/5 text-xs uppercase tracking-wide text-teal-100/60">
-            <tr>
-              <th className="px-4 py-3">User</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Last login</th>
-              <th className="px-4 py-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/10">
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-teal-100/50">
-                  No users match this search.
-                </td>
-              </tr>
-            )}
-            {rows.map((u) => {
-              const isSelf = u.id === me?.id;
-              return (
-                <tr key={u.id} className="align-top hover:bg-white/5">
-                  <td className="px-4 py-3">
-                    <p className="font-medium">{u.profile?.fullName || u.email}</p>
-                    <p className="text-xs text-teal-100/50">{u.email}</p>
-                    {u.platformAdmin && (
-                      <span className="mt-1 inline-flex rounded-full bg-amber-300/15 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-200">
-                        Super-admin
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-teal-100/80">
-                    {u.role}
-                    {u.emailVerified && <span className="ml-1 text-emerald-300" title="Email verified">✓</span>}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-[11px] uppercase ${
-                        u.status === "active" ? "border-emerald-300/40 text-emerald-200" : "border-rose-300/40 text-rose-200"
-                      }`}
-                    >
-                      {u.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-teal-100/60">
-                    {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("en-KE") : "Never"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {isSelf ? (
-                      <span className="text-xs text-teal-100/40">That&apos;s you</span>
-                    ) : (
-                      <div className="flex flex-wrap justify-end gap-1.5">
-                        <form action={updateUserAction}>
-                          <input type="hidden" name="userId" value={u.id} />
-                          <input type="hidden" name="back" value={back} />
-                          {u.status === "active" ? (
-                            <button
-                              name="status"
-                              value="suspended"
-                              className="rounded-full border border-rose-400/40 px-2.5 py-1 text-[11px] text-rose-100 hover:bg-rose-400/10"
-                            >
-                              Suspend
-                            </button>
-                          ) : (
-                            <button
-                              name="status"
-                              value="active"
-                              className="rounded-full border border-emerald-400/40 px-2.5 py-1 text-[11px] text-emerald-100 hover:bg-emerald-400/10"
-                            >
-                              Reactivate
-                            </button>
-                          )}
-                        </form>
-                        <form action={updateUserAction}>
-                          <input type="hidden" name="userId" value={u.id} />
-                          <input type="hidden" name="back" value={back} />
-                          <button
-                            name="platformAdmin"
-                            value={u.platformAdmin ? "revoke" : "grant"}
-                            className={`rounded-full border px-2.5 py-1 text-[11px] hover:bg-white/5 ${
-                              u.platformAdmin ? "border-amber-300/40 text-amber-200" : "border-white/20 text-teal-100/80"
-                            }`}
-                          >
-                            {u.platformAdmin ? "Revoke admin" : "Make admin"}
-                          </button>
-                        </form>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <PlatformSection
+        title="Account register"
+        description="On mobile, every account becomes a labeled card and administrative actions expand to full-width touch targets."
+      >
+        <AdaptiveDataTable
+          headers={["User", "Role", "Status", "Last login", "Actions"]}
+          empty={q ? "No users match this search." : "No user accounts are available."}
+          minWidth="52rem"
+          rows={rows.map((user) => {
+            const isSelf = user.id === me?.id;
 
-      <Pagination
-        page={page}
-        total={total}
-        pageSize={PAGE_SIZE}
-        basePath="/platform/users"
-        queryParams={{ q: q || undefined }}
-      />
-    </div>
+            return {
+              key: user.id,
+              cells: [
+                <div key="user" className={styles.userIdentity}>
+                  <p className={styles.userName}>{user.profile?.fullName || user.email}</p>
+                  <p className={styles.userEmail}>{user.email}</p>
+                  <div className={styles.metaInline}>
+                    {user.platformAdmin ? <StatusPill tone="warning">Super-admin</StatusPill> : null}
+                    {user.emailVerified ? <span className={styles.verified}>✓ Verified email</span> : null}
+                  </div>
+                </div>,
+                <StatusPill key="role" tone="neutral">{user.role}</StatusPill>,
+                <StatusPill key="status" tone={user.status === "active" ? "success" : "danger"}>
+                  {user.status}
+                </StatusPill>,
+                <span key="last-login" className={styles.muted}>
+                  {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("en-KE") : "Never"}
+                </span>,
+                isSelf ? (
+                  <span key="actions" className={styles.selfNote}>Your signed-in account</span>
+                ) : (
+                  <div key="actions" className={styles.actions}>
+                    <form action={updateUserAction}>
+                      <input type="hidden" name="userId" value={user.id} />
+                      <input type="hidden" name="back" value={back} />
+                      {user.status === "active" ? (
+                        <button
+                          name="status"
+                          value="suspended"
+                          className={`${styles.actionButton} ${styles.actionDanger}`}
+                        >
+                          Suspend
+                        </button>
+                      ) : (
+                        <button
+                          name="status"
+                          value="active"
+                          className={`${styles.actionButton} ${styles.actionSuccess}`}
+                        >
+                          Reactivate
+                        </button>
+                      )}
+                    </form>
+                    <form action={updateUserAction}>
+                      <input type="hidden" name="userId" value={user.id} />
+                      <input type="hidden" name="back" value={back} />
+                      <button
+                        name="platformAdmin"
+                        value={user.platformAdmin ? "revoke" : "grant"}
+                        className={`${styles.actionButton} ${user.platformAdmin ? styles.actionWarning : ""}`}
+                      >
+                        {user.platformAdmin ? "Revoke admin" : "Make admin"}
+                      </button>
+                    </form>
+                  </div>
+                ),
+              ],
+            };
+          })}
+        />
+
+        <div className={styles.paginationWrap}>
+          <Pagination
+            page={page}
+            total={total}
+            pageSize={PAGE_SIZE}
+            basePath="/platform/users"
+            queryParams={{ q: q || undefined }}
+          />
+        </div>
+      </PlatformSection>
+    </AdaptivePlatformPage>
   );
 }
