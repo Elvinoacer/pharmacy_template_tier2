@@ -4,7 +4,7 @@
 
 .clinicWorkspace :global(.admin-card) {
   border-color: var(--admin-border);
-  background: var(--admin-surface);
+  background: var(--admin-card);
   color: var(--admin-text);
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
@@ -19,7 +19,7 @@
   width: 100%;
   min-height: 44px;
   border-color: var(--admin-border) !important;
-  background: var(--admin-inset) !important;
+  background: var(--admin-input-bg) !important;
   color: var(--admin-text) !important;
   outline: none;
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
@@ -42,7 +42,7 @@
 }
 
 .clinicWorkspace :global(select option) {
-  background: var(--admin-surface);
+  background: var(--admin-panel);
   color: var(--admin-text);
 }
 
@@ -183,10 +183,6 @@
   .clinicWorkspace :global(form.grid > *) {
     grid-column: 1 / -1 !important;
     min-width: 0;
-  }
-
-  .clinicWorkspace :global(.grid.lg\:grid-cols-\[1fr_1fr\]) {
-    grid-template-columns: minmax(0, 1fr) !important;
   }
 
   .clinicWorkspace :global(.btn-primary) {
