@@ -2,34 +2,97 @@ export function PlatformPage({
   title,
   description,
   eyebrow,
+  actions,
   children,
 }: {
   title: string;
   description?: string;
   eyebrow?: string;
+  actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div className="min-w-0">
-      <header className="rounded-2xl border border-[#dce7e1] bg-white/75 px-4 py-5 shadow-sm shadow-black/[0.025] backdrop-blur-sm dark:border-teal-200/15 dark:bg-teal-950/25 dark:shadow-none sm:rounded-3xl sm:px-6 sm:py-6">
-        {eyebrow ? (
-          <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.17em] text-teal-700/80 dark:text-teal-200/75">
-            {eyebrow}
-          </p>
-        ) : null}
-        <h1
-          className="text-2xl font-semibold tracking-tight text-[#14211d] dark:text-white sm:text-3xl"
-          style={{ fontFamily: "var(--font-display), serif" }}
-        >
-          {title}
-        </h1>
-        {description ? (
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#617069] dark:text-teal-100/80">
-            {description}
-          </p>
-        ) : null}
-      </header>
-      <div className="mt-5 min-w-0 sm:mt-6">{children}</div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="min-w-0">
+          {eyebrow ? (
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--admin-accent)]">
+              {eyebrow}
+            </p>
+          ) : null}
+          <h1
+            className="text-2xl font-semibold tracking-tight text-[var(--admin-text)] sm:text-3xl"
+            style={{ fontFamily: "var(--font-display), serif" }}
+          >
+            {title}
+          </h1>
+          {description ? (
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--admin-text-muted)] sm:text-[15px]">
+              {description}
+            </p>
+          ) : null}
+        </div>
+        {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
+      </div>
+      <div className="mt-5 sm:mt-6">{children}</div>
+    </div>
+  );
+}
+
+export function PlatformSection({
+  title,
+  description,
+  action,
+  children,
+  className = "",
+}: {
+  title: string;
+  description?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={className}>
+      <div className="mb-3 flex flex-col gap-2 sm:mb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+        <div>
+          <h2 className="text-base font-semibold tracking-tight text-[var(--admin-text)] sm:text-lg">{title}</h2>
+          {description ? (
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--admin-text-muted)] sm:text-sm">{description}</p>
+          ) : null}
+        </div>
+        {action ? <div className="shrink-0">{action}</div> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+export function PlatformStat({
+  label,
+  value,
+  detail,
+  tone = "default",
+}: {
+  label: string;
+  value: React.ReactNode;
+  detail?: React.ReactNode;
+  tone?: "default" | "success" | "warning" | "danger";
+}) {
+  const toneClass = {
+    default: "text-[var(--admin-accent)]",
+    success: "text-emerald-600 dark:text-emerald-300",
+    warning: "text-amber-600 dark:text-amber-300",
+    danger: "text-rose-600 dark:text-rose-300",
+  }[tone];
+
+  return (
+    <div className="group min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3.5 shadow-[var(--admin-shadow)] transition duration-200 motion-safe:hover:-translate-y-0.5 sm:p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-soft)] sm:text-[11px]">
+        {label}
+      </p>
+      <p className={`mt-1.5 truncate text-xl font-semibold tracking-tight sm:text-2xl ${toneClass}`}>{value}</p>
+      {detail ? <p className="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">{detail}</p> : null}
     </div>
   );
 }
@@ -45,7 +108,7 @@ export function PlatformTable({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#cfded7] bg-white/55 px-4 py-9 text-center text-sm text-[#697871] dark:border-teal-200/15 dark:bg-teal-950/25 dark:text-teal-100/70 sm:px-5 sm:py-10">
+      <div className="rounded-2xl border border-dashed border-[var(--admin-border-2)] bg-[var(--admin-card-2)] px-4 py-9 text-center text-sm text-[var(--admin-text-muted)] sm:px-5 sm:py-10">
         {empty}
       </div>
     );
@@ -53,42 +116,41 @@ export function PlatformTable({
 
   return (
     <>
-      <div className="space-y-2.5 md:hidden">
-        {rows.map((row, rowIndex) => (
+      <div className="grid gap-3 md:hidden">
+        {rows.map((row, i) => (
           <article
-            key={rowIndex}
-            className="rounded-2xl border border-[#dce7e1] bg-white p-4 shadow-sm shadow-black/[0.025] transition active:scale-[0.995] dark:border-teal-200/15 dark:bg-teal-950/30 dark:shadow-none"
+            key={i}
+            className="min-w-0 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] p-3.5 shadow-[var(--admin-shadow)] transition duration-200 motion-safe:hover:-translate-y-0.5"
           >
-            <dl className="space-y-3">
-              {row.map((cell, cellIndex) => (
-                <div
-                  key={cellIndex}
-                  className={`grid min-w-0 grid-cols-[minmax(0,.78fr)_minmax(0,1.22fr)] gap-3 ${
-                    cellIndex === 0 ? "pb-1" : "border-t border-[#edf2ef] pt-3 dark:border-teal-200/10"
-                  }`}
-                >
-                  <dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#78857f] dark:text-teal-100/55">
-                    {headers[cellIndex] ?? `Field ${cellIndex + 1}`}
-                  </dt>
-                  <dd
-                    className={`min-w-0 break-words text-right text-sm ${
-                      cellIndex === 0
-                        ? "font-semibold text-[#14211d] dark:text-white"
-                        : "text-[#45574f] dark:text-teal-50/90"
-                    }`}
-                  >
-                    {cell}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            {row.map((cell, j) => (
+              <div
+                key={j}
+                className={`min-w-0 ${j === 0 ? "pb-3" : "grid grid-cols-[minmax(5.75rem,0.38fr)_minmax(0,1fr)] gap-3 border-t border-[var(--admin-border)] py-2.5 last:pb-0"}`}
+              >
+                {j === 0 ? (
+                  <>
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-soft)]">
+                      {headers[j]}
+                    </p>
+                    <div className="min-w-0 break-words text-sm font-semibold text-[var(--admin-text)]">{cell}</div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--admin-text-soft)]">
+                      {headers[j]}
+                    </p>
+                    <div className="min-w-0 break-words text-right text-xs leading-5 text-[var(--admin-text)]">{cell}</div>
+                  </>
+                )}
+              </div>
+            ))}
           </article>
         ))}
       </div>
 
-      <div className="hidden overflow-x-auto overscroll-x-contain rounded-2xl border border-[#dce7e1] bg-white md:block dark:border-teal-200/15 dark:bg-teal-950/20">
-        <table className="w-full min-w-[560px] text-left text-sm">
-          <thead className="bg-[#f4f7f5] text-[11px] uppercase tracking-wide text-[#687870] dark:bg-teal-950/50 dark:text-teal-100/65">
+      <div className="hidden overflow-x-auto overscroll-x-contain rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card)] shadow-[var(--admin-shadow)] md:block">
+        <table className="w-full min-w-[640px] text-left text-sm">
+          <thead className="bg-[var(--admin-card-2)] text-[11px] uppercase tracking-wide text-[var(--admin-text-soft)]">
             <tr>
               {headers.map((h) => (
                 <th key={h} className="whitespace-nowrap px-4 py-3.5 font-semibold">
@@ -101,18 +163,11 @@ export function PlatformTable({
             {rows.map((row, i) => (
               <tr
                 key={i}
-                className="border-t border-[#edf2ef] transition hover:bg-teal-50/45 dark:border-teal-200/10 dark:hover:bg-teal-300/5"
+                className="border-t border-[var(--admin-border)] transition-colors duration-150 hover:bg-[var(--admin-hover)]"
               >
                 {row.map((cell, j) => (
-                  <td
-                    key={j}
-                    className={`px-4 py-3.5 align-top ${
-                      j === 0
-                        ? "font-medium text-[#1c2c26] dark:text-white"
-                        : "text-[#4d5f57] dark:text-teal-50/90"
-                    }`}
-                  >
-                    {cell}
+                  <td key={j} className="max-w-[28rem] px-4 py-3.5 align-top text-[var(--admin-text)]">
+                    <div className="min-w-0 break-words">{cell}</div>
                   </td>
                 ))}
               </tr>
