@@ -45,13 +45,13 @@ export default async function PortalOrdersPage({
       title="Orders & payments"
       subtitle="OTC purchases and refill payments."
       actions={
-        <Link href="/portal/orders/new" className="btn-primary !py-2 text-xs">
+        <Link href="/portal/orders/new" className="btn-primary w-full justify-center !py-2 text-xs sm:w-auto">
           <Plus className="h-3.5 w-3.5" /> New OTC order
         </Link>
       }
     >
       {sp.placed && (
-        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm leading-relaxed text-emerald-800 sm:px-4">
           Order reserved — stock is held. Pay with M-Pesa below or at the counter; staff will
           dispatch when you collect.
         </div>
@@ -65,7 +65,7 @@ export default async function PortalOrdersPage({
             description="Order OTC products online or pay for approved refills here."
           />
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-2.5 sm:space-y-3">
             {orders.map((o) => {
               const isHighlight = highlight === o.id;
               const pendingPay = o.status === "pending";
@@ -73,16 +73,16 @@ export default async function PortalOrdersPage({
               return (
                 <li
                   key={o.id}
-                  className={`rounded-xl border p-4 ${
+                  className={`min-w-0 rounded-xl border p-3 sm:p-4 ${
                     isHighlight
-                      ? "border-[#0d6e5a] bg-[#f0faf6]"
-                      : "border-[#e3ebe6] bg-white"
+                      ? "border-[var(--brand)] bg-[var(--brand-tint)]"
+                      : "border-[var(--line)] bg-[var(--card)]"
                   }`}
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-semibold text-[#0c1a14]">
+                  <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex min-w-0 flex-wrap items-center gap-2">
+                        <p className="min-w-0 break-words text-sm font-semibold text-[var(--foreground)] sm:text-base">
                           {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                         </p>
                         <span
@@ -107,21 +107,21 @@ export default async function PortalOrdersPage({
                             ready for collection
                           </span>
                         ) : null}
-                        <span className="rounded-full bg-[#f4f7f4] px-2 py-0.5 text-[10px] text-[#5a6b62]">
+                        <span className="rounded-full bg-[var(--card-elev)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
                           {o.source}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-[#5a6b62]">{formatDateTime(o.createdAt)}</p>
+                      <p className="mt-1 text-xs text-[var(--muted)]">{formatDateTime(o.createdAt)}</p>
                       {o.payments[0] && (
-                        <p className="mt-0.5 text-[10px] text-[#8a9a92]">
+                        <p className="mt-0.5 break-words text-[10px] leading-relaxed text-[var(--muted-2)]">
                           Last payment: {o.payments[0].provider} · {o.payments[0].status}
                         </p>
                       )}
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-[#0c1a14]">{formatPrice(Number(o.total))}</p>
+                    <div className="flex w-full items-center justify-between gap-3 border-t border-[var(--line)] pt-3 sm:w-auto sm:block sm:border-0 sm:pt-0 sm:text-right">
+                      <p className="shrink-0 font-bold text-[var(--foreground)]">{formatPrice(Number(o.total))}</p>
                       {pendingPay && (
-                        <div className="mt-2">
+                        <div className="min-w-0 sm:mt-2">
                           <MpesaPayButton
                             orderId={o.id}
                             defaultPhone={o.guestPhone || profile?.phone || ""}
