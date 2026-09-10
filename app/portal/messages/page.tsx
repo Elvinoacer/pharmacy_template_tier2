@@ -6,7 +6,6 @@ import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { PortalNotificationsPanel, type NotifRow } from "@/app/components/portal/PortalNotificationsPanel";
 import { PortalReplyForm } from "@/app/components/portal/PortalReplyForm";
-import { Pagination } from "@/app/components/Pagination";
 import { parsePageParam } from "@/app/lib/pagination";
 import { formatDateTime } from "@/app/lib/time";
 import {
@@ -198,14 +197,6 @@ export default async function PortalMessagesPage({
             pageSize={PAGE_SIZE}
             basePath="/portal/messages"
             queryParams={{ q }}
-          />
-          <Pagination
-            page={page}
-            total={total}
-            pageSize={PAGE_SIZE}
-            basePath="/portal/messages"
-            queryParams={{ q }}
-            variant="portal"
           />
         </Panel>
       </div>
