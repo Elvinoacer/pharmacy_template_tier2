@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { redirect } from "next/navigation";
-import { ArrowRight, CheckCircle2, Circle, MapPin, Phone, ShieldCheck, Clock, Rocket } from "lucide-react";
+import { ArrowRight, CheckCircle2, Circle, ShieldCheck, Rocket } from "lucide-react";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { goLiveAction } from "@/app/actions/tenant-admin";
@@ -17,27 +18,17 @@ export default async function AdminSetupPage() {
   const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId }, include: { settings: true } });
   if (!pharmacy) redirect("/onboard");
 
-  const hoursOk = Boolean(pharmacy.settings?.hours && JSON.stringify(pharmacy.settings.hours) !== "[]");
-  const phoneOk = Boolean(pharmacy.settings?.phone || pharmacy.phone);
-  const cityOk = Boolean(pharmacy.city || pharmacy.settings?.city);
-  const pinOk = (pharmacy.latitude != null && pharmacy.longitude != null) || (pharmacy.settings?.latitude != null && pharmacy.settings?.longitude != null);
-  const verified = pharmacy.status === "approved" || pharmacy.status === "active";
-  const checks = [
-    { ok: Boolean(pharmacy.licenseNumber), label: "Licence number on file", hint: "Submitted with your application", href: "/onboard", icon: ShieldCheck },
-    { ok: verified, label: "Network verification", hint: verified ? "Approved by the Aether team" : "Waiting for review", href: "/onboard", icon: ShieldCheck },
-    { ok: cityOk && pinOk, label: "City & map pin", hint: pinOk ? "Pin saved" : "Confirm premises location for patients", href: "/admin/settings/location", icon: MapPin },
-    { ok: phoneOk, label: "Public phone", hint: phoneOk ? "Shown on your storefront" : "Add a number patients can call", href: "/admin/settings/location", icon: Phone },
-    { ok: hoursOk, label: "Opening hours", hint: hoursOk ? "Published" : "Tell patients when you are open", href: "/admin/settings/location", icon: Clock },
-  ];
+  const readiness = await loadPharmacySetup(pharmacyId);
+  const checks = readiness.checks.map(check => ({ ...check, icon: ShieldCheck }));
   const remaining = checks.filter((c) => !c.ok).length;
   const done = checks.length - remaining;
   const completion = Math.round((done / checks.length) * 100);
   const nextCheck = checks.find((c) => !c.ok);
   const NextCheckIcon = nextCheck?.icon;
-  const canGoLive = remaining === 0 && verified;
+  const canGoLive = readiness.ready;
 
   return (
-    <AdminShell user={user} title="Getting ready to go live" subtitle={`Finish the highest-impact setup items for ${pharmacy.name}, then publish with confidence.`}>
+    <AdminShell user={user} title="Getting ready to go live" subtitle={`Your saved progress is here. Finish the setup items for ${pharmacy.name}, then publish with confidence.`}>
       <div className="setup-ux max-w-4xl space-y-4 sm:space-y-6">
         <section className="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-panel)] p-4 sm:p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">

@@ -1,4 +1,5 @@
 "use server";
+import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -123,6 +124,13 @@ export async function reviewPharmacyAction(
     if (!pharmacy) return { error: "Pharmacy not found." };
 
     if (decision === "approve") {
+      if (!["submitted", "under_review"].includes(pharmacy.status)) return { error: "Only submitted applications can be approved." };
+      const { loadApprovalReadiness } = await import("@/app/lib/services/pharmacy-verification");
+      const readiness = await loadApprovalReadiness(pharmacyId);
+      if (!readiness.ready) return { error: `Verification incomplete: ${[...readiness.profileMissing, ...readiness.checklistMissing].join("; ")}` };
+      const fee = await prismaUnscoped.invoice.findUnique({ where: { number: `KYP-${pharmacyId}` } });
+      if (fee?.status !== "paid") return { error: "Verification fee must be paid or waived before approval." };
+
       await prismaUnscoped.pharmacy.update({
         where: { id: pharmacyId },
         data: {
@@ -251,6 +259,8 @@ export async function setPharmacyLiveAction(formData: FormData): Promise<void> {
 
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
     if (!pharmacy) throw new Error("Pharmacy not found.");
+
+    if ((listed || restore) && !suspend && !(await loadPharmacySetup(pharmacyId)).ready) throw new Error("Complete verification, storefront setup and billing before listing this pharmacy.");
 
     if (suspend) {
       await prismaUnscoped.pharmacy.update({

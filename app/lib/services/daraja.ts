@@ -68,6 +68,7 @@ export async function getDarajaToken(creds?: DarajaCredentials): Promise<string>
   const r = await fetch(`${baseUrl(resolved.env)}/oauth/v1/generate?grant_type=client_credentials`, {
     headers: { Authorization: `Basic ${auth}` },
     cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
   });
   if (!r.ok) {
     const body = await r.text().catch(() => "");
@@ -146,6 +147,7 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
       TransactionDesc: input.transactionDesc.slice(0, 13),
     }),
     cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
   });
 
   const j = (await res.json().catch(() => ({}))) as {
@@ -217,6 +219,7 @@ export async function stkQuery(
       CheckoutRequestID: checkoutRequestId,
     }),
     cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
   });
 
   const j = (await res.json().catch(() => ({}))) as Record<string, unknown> & {

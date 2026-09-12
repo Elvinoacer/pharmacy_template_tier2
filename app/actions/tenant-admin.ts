@@ -1,4 +1,5 @@
 "use server";
+import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -94,6 +95,7 @@ export async function goLiveAction() {
   if (!can) redirect("/admin");
   if (pharmacy.status !== "approved" && pharmacy.status !== "active") redirect("/admin/setup");
 
+  if (!(await loadPharmacySetup(pharmacy.id)).ready) redirect("/admin/setup");
   await prismaUnscoped.pharmacy.update({
     where: { id: pharmacy.id },
     data: {

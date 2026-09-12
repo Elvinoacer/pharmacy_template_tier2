@@ -5,7 +5,7 @@ import { processOutboxBatch } from "@/app/lib/platform/outbox";
 import { processQueuedDeliveries } from "@/app/lib/platform/notifications";
 import { processWebhookDeliveryBatch } from "@/app/lib/platform/webhooks";
 import { recoverStaleJobs } from "@/app/lib/platform/jobs";
-import { applyDunning, processSubscriptionCycle } from "@/app/lib/platform/billing";
+import { applyDunning, processSubscriptionCycle, reconcileBillingPayments } from "@/app/lib/platform/billing";
 import { prismaUnscoped } from "@/app/lib/db";
 import { isCronAuthorized } from "@/app/lib/cron-auth";
 import { enforceExpiredPharmacyLicences } from "@/app/lib/services/pharmacy-verification-expiry";
@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     const outbox = await processOutboxBatch(50);
     const deliveries = await processQueuedDeliveries(null, 40);
     const webhooks = await processWebhookDeliveryBatch(40);
+    const billingReconciliation = await reconcileBillingPayments(10);
     const billing = await processSubscriptionCycle();
     const verificationExpiry = await enforceExpiredPharmacyLicences(100);
 
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
       await applyDunning(inv.id);
       dunning++;
     }
-    return { stale, jobs, outbox, deliveries, webhooks, billing, verificationExpiry, dunning };
+    return { stale, jobs, outbox, deliveries, webhooks, billing, billingReconciliation, verificationExpiry, dunning };
   });
 
   return Response.json({ ok: true, ...result });

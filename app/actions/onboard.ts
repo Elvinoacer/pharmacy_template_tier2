@@ -1,4 +1,5 @@
 "use server";
+import { ensureVerificationInvoice } from "@/app/lib/platform/pharmacy-enrolment";
 
 import { revalidatePath } from "next/cache";
 import { prismaUnscoped } from "@/app/lib/db";
@@ -179,7 +180,10 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
       country: String(formData.get("country") || "Kenya").trim() || "Kenya",
     };
 
-    await prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data });
+    await prismaUnscoped.$transaction([
+      prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data }),
+      prismaUnscoped.pharmacyOnboardingEvent.create({ data: { pharmacyId, actorId: user.id, type: "verification_input_changed", message: "Premises or contact details updated; reviewer checks must be refreshed" } }),
+    ]);
     await prismaUnscoped.pharmacySettings.updateMany({
       where: { pharmacyId },
       data: {
@@ -212,6 +216,8 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
       return { error: "This application has already been submitted or reviewed.", field: "general" };
     }
 
+    const invoice = await ensureVerificationInvoice(pharmacyId);
+    if (invoice.status !== "paid") return { error: "Pay the KES 100 verification fee in Pricing & billing before submitting. Any allocated waiver is applied automatically.", field: "general" };
     const readiness = await loadOwnerSubmissionReadiness(pharmacyId);
     if (!readiness.ready) {
       return {

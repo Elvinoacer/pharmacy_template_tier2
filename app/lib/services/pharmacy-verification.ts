@@ -299,6 +299,8 @@ export async function loadApprovalReadiness(pharmacyId: string): Promise<Approva
   const checklist = checklistResult?.checklist ?? null;
   const checklistStale = checklistResult?.stale ?? false;
   const checklistMissing = checklistMissingItems(checklist);
+  const fee = await prismaUnscoped.invoice.findUnique({ where: { number: `KYP-${pharmacyId}` } });
+  if (fee?.status !== "paid") checklistMissing.push("verification fee paid or promotional waiver allocated");
   if (checklistStale) {
     checklistMissing.push("reviewer checklist must be repeated after the latest pharmacy evidence change");
   }

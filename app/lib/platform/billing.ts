@@ -1,19 +1,19 @@
 import "server-only";
+import { MONTHLY_FEE_KES, nextBillingMonth } from "./pricing";
 
+import type { Prisma } from "@/app/generated/prisma/client";
 import { prismaUnscoped } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { DEFAULT_PLAN_FEATURES } from "@/app/lib/platform/entitlements";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
-import { enqueueOutbox } from "@/app/lib/platform/outbox";
 import { recordLifecycle } from "@/app/lib/platform/lifecycle";
 import { stkPush } from "@/app/lib/services/daraja";
 import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
 
 export async function ensureDefaultPlans() {
+  await prismaUnscoped.plan.updateMany({ where: { slug: { in: ["professional", "enterprise"] } }, data: { active: false, priceKes: MONTHLY_FEE_KES } });
   const defs = [
-    { slug: "starter", name: "Starter", priceKes: 4999, sortOrder: 1 },
-    { slug: "professional", name: "Professional", priceKes: 14999, sortOrder: 2 },
-    { slug: "enterprise", name: "Enterprise", priceKes: 49999, sortOrder: 3 },
+    { slug: "starter", name: "Pharmacy Platform", priceKes: MONTHLY_FEE_KES, sortOrder: 1 },
   ] as const;
 
   for (const d of defs) {
@@ -104,94 +104,82 @@ async function createInvoiceSafe(data: Parameters<typeof prismaUnscoped.invoice.
   throw new Error("invoice_number_collision");
 }
 
-export async function issueSubscriptionInvoice(
-  subscriptionId: string,
-  period?: { start: Date; end: Date },
-) {
-  const sub = await prismaUnscoped.subscription.findUnique({
-    where: { id: subscriptionId },
-    include: { plan: true },
+export async function issueSubscriptionInvoice(subscriptionId: string, period?: { start: Date; end: Date }) {
+  return prismaUnscoped.$transaction(async tx => {
+    await tx.$queryRaw`SELECT id FROM subscriptions WHERE id = ${subscriptionId}::uuid FOR UPDATE`;
+    const sub = await tx.subscription.findUniqueOrThrow({ where: { id: subscriptionId }, include: { plan: true, pharmacy: { include: { owner: { select: { email: true } } } } } });
+    const periodStart = period?.start ?? sub.currentPeriodStart;
+    const periodEnd = period?.end ?? sub.currentPeriodEnd;
+    const existing = await tx.invoice.findFirst({ where: { subscriptionId, periodStart, periodEnd } });
+    if (existing) return existing;
+    if (sub.status === "cancelled") throw new Error("subscription_cancelled");
+    const grant = await tx.pharmacyPromotionGrant.findUnique({ where: { pharmacyId: sub.pharmacyId } });
+    const firstSubscription = grant ? await tx.subscription.findFirst({ where: { pharmacyId: sub.pharmacyId }, orderBy: { startedAt: "asc" }, select: { startedAt: true } }) : null;
+    let waiverEnd = new Date(firstSubscription?.startedAt ?? sub.startedAt);
+    for (let i = 0; i < (grant?.recurringMonths ?? 0); i++) waiverEnd = nextBillingMonth(waiverEnd);
+    const waived = periodStart < waiverEnd && (grant?.recurringMonths ?? 0) > 0;
+    const price = Number(sub.plan.priceKes);
+    const sequence = await tx.$queryRaw<Array<{ n: bigint }>>`SELECT nextval('invoice_number_seq') AS n`;
+    const number = `INV-${new Date().getUTCFullYear()}-${String(sequence[0].n).padStart(8, "0")}`;
+    const invoice = await tx.invoice.create({ data: {
+      pharmacyId: sub.pharmacyId, subscriptionId, number, periodStart, periodEnd,
+      subtotalKes: price, taxKes: 0, totalKes: waived ? 0 : price, status: "open", dueAt: periodStart,
+      items: { create: [
+        { description: `${sub.plan.name} (monthly)`, quantity: 1, unitKes: price, totalKes: price },
+        ...(waived ? [{ description: "Promotional monthly service waiver", quantity: 1, unitKes: -price, totalKes: -price }] : []),
+      ] },
+    } });
+    await tx.billingEvent.create({ data: { pharmacyId: sub.pharmacyId, type: "invoice.created", payload: { invoiceId: invoice.id } } });
+    await tx.outboxEvent.create({ data: { pharmacyId: sub.pharmacyId, eventType: "invoice.created", aggregateType: "Invoice", aggregateId: invoice.id, payload: { invoiceId: invoice.id, totalKes: Number(invoice.totalKes) } } });
+    const email = sub.pharmacy.owner?.email;
+    if (email) await tx.notificationDelivery.create({ data: {
+      pharmacyId: sub.pharmacyId, channel: "email", status: "queued", payload: {
+        channel: "email", purpose: "transactional", recipient: { email }, subject: `Your Aether pharmacy invoice ${number}`,
+        body: waived ? `Your monthly platform service fee has been waived for this period. Review your invoices at /onboard/billing.` : `Your monthly platform service invoice is KES ${price}. Sign in and open Pricing & billing to pay with M-Pesa. No payment is taken automatically.`,
+        fallback: ["email"], attempted: [],
+      },
+    } });
+    return waived ? settleInvoice(tx, invoice.id) : invoice;
   });
-  if (!sub) throw new Error("subscription_not_found");
-  const periodStart = period?.start ?? sub.currentPeriodStart;
-  const periodEnd = period?.end ?? sub.currentPeriodEnd;
+}
 
-  const existing = await prismaUnscoped.invoice.findFirst({
-    where: { subscriptionId: sub.id, periodStart, periodEnd },
+async function settleInvoice(tx: Prisma.TransactionClient, invoiceId: string, actorId?: string | null) {
+  await tx.$queryRaw`SELECT id FROM invoices WHERE id = ${invoiceId}::uuid FOR UPDATE`;
+  const current = await tx.invoice.findUniqueOrThrow({ where: { id: invoiceId } });
+  if (!["open", "paid"].includes(current.status)) throw new Error("invoice_not_collectible");
+  const invoice = current.status === "paid" ? current : await tx.invoice.update({
+    where: { id: invoiceId }, data: { status: "paid", paidAt: new Date() },
   });
-  if (existing) return existing;
-
-  const invoice = await createInvoiceSafe({
-    pharmacyId: sub.pharmacyId,
-    subscriptionId: sub.id,
-    number: "pending",
-    periodStart,
-    periodEnd,
-    subtotalKes: sub.plan.priceKes,
-    taxKes: 0,
-    totalKes: sub.plan.priceKes,
-    status: "open",
-    dueAt: periodEnd,
-    items: {
-      create: [
-        {
-          description: `${sub.plan.name} (${sub.plan.interval})`,
-          quantity: 1,
-          unitKes: sub.plan.priceKes,
-          totalKes: sub.plan.priceKes,
-        },
-      ],
-    },
-  });
-  await prismaUnscoped.billingEvent.create({
-    data: { pharmacyId: sub.pharmacyId, type: "invoice.created", payload: { invoiceId: invoice.id } },
-  });
-  await enqueueOutbox({
-    pharmacyId: sub.pharmacyId,
-    eventType: "invoice.created",
-    aggregateType: "Invoice",
-    aggregateId: invoice.id,
-    payload: { invoiceId: invoice.id, totalKes: Number(invoice.totalKes) },
-  });
+  await tx.dunningCase.updateMany({ where: { invoiceId, status: { not: "resolved" } }, data: { status: "resolved", resolvedAt: new Date() } });
+  if (invoice.subscriptionId) {
+    const unpaid = await tx.invoice.count({ where: { subscriptionId: invoice.subscriptionId, status: "open" } });
+    if (unpaid === 0) {
+      const activated = await tx.subscription.updateMany({
+        where: { id: invoice.subscriptionId, status: "past_due", currentPeriodStart: invoice.periodStart }, data: { status: "active" },
+      });
+      if (activated.count) await tx.pharmacy.updateMany({
+        where: { id: invoice.pharmacyId, status: { in: ["approved", "active"] }, lifecycleStatus: { notIn: ["suspended", "archived"] } },
+        data: { lifecycleStatus: "active", restrictedAt: null },
+      });
+    }
+  }
+  if (current.status !== "paid") await tx.auditLog.create({ data: {
+    actorId, pharmacyId: invoice.pharmacyId, action: "billing.invoice.paid", entityType: "invoice", entityId: invoiceId,
+  } });
   return invoice;
 }
 
 export async function markInvoicePaid(invoiceId: string, actorId?: string | null) {
-  const current = await prismaUnscoped.invoice.findUnique({ where: { id: invoiceId } });
-  if (!current) throw new Error("invoice_not_found");
-  if (current.status === "paid") return current;
-
-  const invoice = await prismaUnscoped.invoice.update({
-    where: { id: invoiceId },
-    data: { status: "paid", paidAt: new Date() },
+  return prismaUnscoped.$transaction(async tx => {
+    const evidence = await tx.billingPayment.findFirst({ where: { invoiceId, status: "succeeded" } });
+    if (!evidence) throw new Error("confirmed_payment_required");
+    return settleInvoice(tx, invoiceId, actorId);
   });
-  await prismaUnscoped.dunningCase.updateMany({
-    where: { invoiceId, status: { not: "resolved" } },
-    data: { status: "resolved", resolvedAt: new Date() },
-  });
-  await prismaUnscoped.pharmacy.update({
-    where: { id: invoice.pharmacyId },
-    data: { lifecycleStatus: "active", restrictedAt: null },
-  });
-  if (invoice.subscriptionId) {
-    await prismaUnscoped.subscription.updateMany({
-      where: { id: invoice.subscriptionId, status: { not: "cancelled" } },
-      data: { status: "active" },
-    });
-  }
-  await recordAuditRequired({
-    actorId,
-    action: "billing.invoice.paid",
-    resource: "invoice",
-    resourceId: invoiceId,
-    tenantId: invoice.pharmacyId,
-  });
-  return invoice;
 }
 
 export async function applyDunning(invoiceId: string) {
   const invoice = await prismaUnscoped.invoice.findUnique({ where: { id: invoiceId } });
-  if (!invoice || invoice.status === "paid") return null;
+  if (!invoice || !["open"].includes(invoice.status) || !invoice.subscriptionId || invoice.dueAt > new Date()) return null;
   const now = new Date();
   const due = invoice.dueAt.getTime();
   const daysLate = Math.floor((now.getTime() - due) / 86400000);
@@ -241,7 +229,7 @@ export async function applyDunning(invoiceId: string) {
 export async function processSubscriptionCycle() {
   const now = new Date();
   let invoiced = 0;
-  let activated = 0;
+  const activated = 0;
   const endingTrials = await prismaUnscoped.subscription.findMany({
     where: { status: "trialing", trialEndsAt: { lte: now } },
     include: { plan: true },
@@ -250,10 +238,10 @@ export async function processSubscriptionCycle() {
   for (const sub of endingTrials) {
     const claimed = await prismaUnscoped.subscription.updateMany({
       where: { id: sub.id, status: "trialing", trialEndsAt: sub.trialEndsAt ?? undefined },
-      data: { status: "past_due" },
+      data: { status: "past_due", currentPeriodStart: sub.currentPeriodEnd, currentPeriodEnd: nextBillingMonth(sub.currentPeriodEnd) },
     });
     if (claimed.count === 0) continue;
-    await issueSubscriptionInvoice(sub.id, { start: sub.currentPeriodStart, end: sub.currentPeriodEnd });
+    await issueSubscriptionInvoice(sub.id, { start: sub.currentPeriodEnd, end: nextBillingMonth(sub.currentPeriodEnd) });
     invoiced++;
   }
 
@@ -262,7 +250,7 @@ export async function processSubscriptionCycle() {
     take: 100,
   });
   for (const sub of renewing) {
-    const nextEnd = new Date(sub.currentPeriodEnd.getTime() + 30 * 86400000);
+    const nextEnd = nextBillingMonth(sub.currentPeriodEnd);
     const claimed = await prismaUnscoped.subscription.updateMany({
       where: {
         id: sub.id,
@@ -298,20 +286,9 @@ export async function processSubscriptionCycle() {
     await recordLifecycle(sub.pharmacyId, "plan_changed", { reason: "cancelled_at_period_end" });
   }
 
-  const paid = await prismaUnscoped.invoice.findMany({
-    where: { status: "paid", subscriptionId: { not: null } },
-    take: 50,
-    include: { subscription: true },
-  });
-  for (const inv of paid) {
-    if (inv.subscription && inv.subscription.status !== "active") {
-      await prismaUnscoped.subscription.update({
-        where: { id: inv.subscription.id },
-        data: { status: "active" },
-      });
-      activated++;
-    }
-  }
+  // Recover a cycle interrupted after claiming the period but before invoice creation.
+  const unfinished = await prismaUnscoped.subscription.findMany({ where: { status: "past_due" }, take: 100 });
+  for (const sub of unfinished) await issueSubscriptionInvoice(sub.id);
 
   return { invoiced, activated, cancelled: cancelling.length };
 }
@@ -432,6 +409,9 @@ export async function collectInvoicePayment(invoiceId: string, opts?: { phone?: 
   });
   if (!invoice) throw new Error("invoice_not_found");
   if (invoice.status === "paid") return { ok: true as const, alreadyPaid: true, invoiceId };
+  if (!["open"].includes(invoice.status) || Number(invoice.totalKes) <= 0) throw new Error("invoice_not_collectible");
+  const pending = await prismaUnscoped.billingPayment.findFirst({ where: { invoiceId, status: { in: ["pending", "processing"] } } });
+  if (pending) throw new Error("A payment is awaiting confirmation. Please refresh before trying again.");
 
   const method = await prismaUnscoped.billingPaymentMethod.findFirst({
     where: { pharmacyId: invoice.pharmacyId, isDefault: true },
@@ -439,6 +419,9 @@ export async function collectInvoicePayment(invoiceId: string, opts?: { phone?: 
   const phone = opts?.phone || method?.mpesaPhone;
   if (!phone) throw new Error("billing_phone_missing");
 
+  const creds = await resolveDarajaCredentials(null);
+  if (!creds) throw new Error("Platform M-Pesa is not configured.");
+  if (process.env.NODE_ENV === "production" && creds.env !== "production") throw new Error("Live platform M-Pesa credentials are required.");
   const payment = await prismaUnscoped.billingPayment.create({
     data: {
       pharmacyId: invoice.pharmacyId,
@@ -450,7 +433,6 @@ export async function collectInvoicePayment(invoiceId: string, opts?: { phone?: 
     },
   });
 
-  const creds = await resolveDarajaCredentials(null);
   const push = await stkPush({
     amount: Number(invoice.totalKes),
     phone,
@@ -501,48 +483,65 @@ export async function completeBillingPayment(opts: {
   resultCode: number;
   resultDesc?: string | null;
 }) {
-  const row = await prismaUnscoped.billingPayment.findFirst({
-    where: { checkoutRequestId: opts.checkoutRequestId },
-    orderBy: { createdAt: "desc" },
-    include: { invoice: true },
-  });
-  if (!row) return null;
-  if (row.status === "succeeded") return row;
-
-  if (opts.resultCode === 0) {
-    // Reconcile amount if provided by the callback
-    if (opts.amount != null) {
-      const expected = Number(row.amountKes);
-      const received = Number(opts.amount);
-      if (Math.abs(expected - received) > 1.0) {
-        await prismaUnscoped.billingPayment.update({
-          where: { id: row.id },
-          data: {
-            status: "failed",
-            failureReason: `amount_mismatch: expected ${expected}, got ${received}`,
-            providerRef: opts.mpesaReceipt ?? row.providerRef,
-          },
-        });
-        return prismaUnscoped.billingPayment.findUnique({ where: { id: row.id } });
-      }
+  return prismaUnscoped.$transaction(async tx => {
+    const found = await tx.billingPayment.findFirst({ where: { checkoutRequestId: opts.checkoutRequestId } });
+    if (!found) return null;
+    await tx.$queryRaw`SELECT id FROM billing_payments WHERE id = ${found.id}::uuid FOR UPDATE`;
+    const row = await tx.billingPayment.findUniqueOrThrow({ where: { id: found.id } });
+    if (row.status === "succeeded") { await settleInvoice(tx, row.invoiceId); return row; }
+    if (opts.resultCode === 0) {
+      if (!opts.mpesaReceipt || opts.amount == null || !Number.isFinite(opts.amount) || opts.merchantRequestId !== row.merchantRequestId || Math.abs(Number(row.amountKes) - opts.amount) > 0.01) throw new Error("billing_evidence_mismatch");
+      const payment = await tx.billingPayment.update({ where: { id: row.id }, data: {
+        status: "succeeded", providerRef: opts.mpesaReceipt, paidAt: new Date(), failureReason: null,
+      } });
+      await settleInvoice(tx, row.invoiceId);
+      return payment;
     }
-
-    await prismaUnscoped.billingPayment.update({
-      where: { id: row.id },
-      data: {
-        status: "succeeded",
-        providerRef: opts.mpesaReceipt ?? row.providerRef,
-        paidAt: new Date(),
-        failureReason: null,
-      },
-    });
-    await markInvoicePaid(row.invoiceId);
-    return prismaUnscoped.billingPayment.findUnique({ where: { id: row.id } });
-  }
-
-  await prismaUnscoped.billingPayment.update({
-    where: { id: row.id },
-    data: { status: "failed", failureReason: opts.resultDesc ?? "stk_failed" },
+    return tx.billingPayment.update({ where: { id: row.id }, data: { status: "failed", failureReason: opts.resultDesc ?? "stk_failed" } });
   });
-  return prismaUnscoped.billingPayment.findUnique({ where: { id: row.id } });
+}
+
+/** Recover provider-confirmed failures and replay stored success evidence.
+ * A success query alone has no receipt: keep it pending for reconciliation.
+ */
+export async function reconcileBillingPayments(limit = 50) {
+  const { stkQuery } = await import("@/app/lib/services/daraja");
+  const { verifyDarajaCallback } = await import("@/app/lib/services/daraja-callback-verification");
+  const rows = await prismaUnscoped.billingPayment.findMany({
+    where: { status: { in: ["pending", "processing"] }, updatedAt: { lt: new Date(Date.now() - 60_000) } },
+    orderBy: { updatedAt: "asc" }, take: limit,
+  });
+  const credentials = await resolveDarajaCredentials(null);
+  if (!credentials) return { scanned: 0, reconciled: 0 };
+  let reconciled = 0;
+  for (const row of rows) {
+    try {
+      if (!row.checkoutRequestId) {
+        await prismaUnscoped.billingPayment.update({ where: { id: row.id }, data: { failureReason: "Provider response was not recorded. Check merchant records before allowing another payment." } });
+        continue;
+      }
+      const result = await stkQuery(row.checkoutRequestId, credentials);
+      if (!result.ok || !result.resultCode) continue;
+      if (result.resultCode !== "0") {
+        await completeBillingPayment({ checkoutRequestId: row.checkoutRequestId, merchantRequestId: row.merchantRequestId, resultCode: Number(result.resultCode), resultDesc: result.resultDesc });
+        reconciled++;
+        continue;
+      }
+      const event = await prismaUnscoped.webhookEvent.findFirst({ where: { pharmacyId: row.pharmacyId, provider: "daraja", providerEventId: row.checkoutRequestId } });
+      const payload = event?.payload as { Body?: { stkCallback?: { MerchantRequestID?: string; ResultCode?: number; CallbackMetadata?: { Item?: Array<{ Name?: string; Value?: string | number }> } } } } | null;
+      const cb = payload?.Body?.stkCallback;
+      if (cb?.ResultCode === 0) {
+        const verified = await verifyDarajaCallback({ pharmacyId: null, expectedAmount: Number(row.amountKes), expectedCheckoutRequestId: row.checkoutRequestId, expectedMerchantRequestId: row.merchantRequestId, callback: { checkoutRequestId: row.checkoutRequestId, merchantRequestId: cb.MerchantRequestID, resultCode: 0, items: cb.CallbackMetadata?.Item } });
+        if (verified.ok) {
+          await completeBillingPayment({ checkoutRequestId: row.checkoutRequestId, merchantRequestId: row.merchantRequestId, resultCode: 0, amount: verified.evidence.amount, mpesaReceipt: verified.evidence.receipt });
+          reconciled++;
+          continue;
+        }
+      }
+      await prismaUnscoped.billingPayment.update({ where: { id: row.id }, data: { failureReason: "Provider confirms success; waiting for complete receipt evidence. Do not collect again." } });
+    } catch (error) {
+      console.error("[billing reconciliation]", row.id, error instanceof Error ? error.message : "failed");
+    }
+  }
+  return { scanned: rows.length, reconciled };
 }

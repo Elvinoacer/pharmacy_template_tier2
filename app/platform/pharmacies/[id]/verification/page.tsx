@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import {
   AlertTriangle,
@@ -207,6 +208,10 @@ export default async function PharmacyVerificationReviewPage({
         </div>
 
         <aside className="min-w-0 space-y-5">
+          <section className="rounded-2xl border border-teal-500/20 bg-[var(--surface)] p-4">
+            <h2 className="font-semibold">Evidence viewer</h2><p className="mt-2 text-xs leading-5 text-[var(--muted)]">Compare documents with the submitted identity and official registers. Every document access is recorded.</p>
+            {([{ kind: "license", label: "PPB premises licence", available: hasPrivateLicense }, { kind: "business", label: "Business registration", available: hasPrivateBusiness }]).map(doc => <details key={doc.kind} className="mt-3 rounded-xl border border-[var(--border)] p-3"><summary className="cursor-pointer text-sm font-semibold">{doc.label}</summary>{doc.available ? <div className="mt-3"><Image unoptimized src={`/api/platform/verification-documents?pharmacyId=${pharmacy.id}&kind=${doc.kind}`} width={800} height={600} alt={doc.label} className="h-auto max-h-[36rem] w-full rounded-lg object-contain"/><a target="_blank" rel="noopener noreferrer" href={`/api/platform/verification-documents?pharmacyId=${pharmacy.id}&kind=${doc.kind}`} className="mt-3 inline-block min-h-10 text-xs font-semibold underline">Open full document</a></div> : <p className="mt-2 text-sm">Awaiting secure upload</p>}</details>)}
+          </section>
           <section className="rounded-2xl border border-[#dce7e1] bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] dark:shadow-none sm:p-5">
             <h2 className="text-sm font-semibold text-[#17231d] dark:text-white">Current check status</h2>
             <div className="mt-3 space-y-2">

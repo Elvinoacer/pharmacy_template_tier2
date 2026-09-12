@@ -456,6 +456,7 @@ enum DataRequestStatus {
 
 /// A tenant on the Aether network. One row per pharmacy business.
 model Pharmacy {
+  promotionGrant PharmacyPromotionGrant?
   id                 String         @id @default(uuid()) @db.Uuid
   /// Public URL key: /p/{slug}
   slug               String         @unique
@@ -708,6 +709,7 @@ model PlatformSettings {
 // ── Auth ──────────────────────────────────────────────────────
 
 model User {
+  pharmacyPromotions PharmacyPromotion[]
   id               String     @id @default(uuid()) @db.Uuid
   email            String     @unique
   /// Null for OAuth-only accounts (e.g. Google sign-in).
@@ -4328,3 +4330,32 @@ model GoodsReceipt {
   @@map("goods_receipts")
 }
 
+
+/// Platform-only promotion inventory; redemption is serialized under a row lock.
+model PharmacyPromotion {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  capacity Int
+  claimed Int @default(0)
+  verification Boolean @default(false)
+  recurring Boolean @default(false)
+  recurringMonths Int @default(1) @map("recurring_months")
+  active Boolean @default(true)
+  createdBy String @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  grants PharmacyPromotionGrant[]
+  creator User @relation(fields: [createdBy], references: [id], onDelete: Restrict, map: "pharmacy_promotions_created_by_fkey")
+  @@map("pharmacy_promotions")
+}
+
+model PharmacyPromotionGrant {
+  id String @id @default(uuid()) @db.Uuid
+  pharmacyId String @unique @map("pharmacy_id") @db.Uuid
+  promotionId String @map("promotion_id") @db.Uuid
+  verification Boolean
+  recurringMonths Int @map("recurring_months")
+  createdAt DateTime @default(now()) @map("created_at")
+  promotion PharmacyPromotion @relation(fields: [promotionId], references: [id], onDelete: Restrict, map: "pharmacy_promotion_grants_promotion_id_fkey")
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade, map: "pharmacy_promotion_grants_pharmacy_id_fkey")
+  @@map("pharmacy_promotion_grants")
+}

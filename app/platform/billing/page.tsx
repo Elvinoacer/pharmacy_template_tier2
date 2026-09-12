@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PromotionForm } from "@/app/components/onboard/BillingForms";
 import { AlertCircle, ArrowRight, FileText, Layers3, ReceiptText, UsersRound } from "lucide-react";
 import { prismaUnscoped } from "@/app/lib/db";
 import { PlatformPage, PlatformTable } from "@/app/platform/_components/PlatformPage";
@@ -8,11 +9,12 @@ export const metadata = { title: "Billing" };
 export const dynamic = "force-dynamic";
 
 export default async function PlatformBillingPage() {
-  await ensureDefaultPlans().catch(() => {});
+  await ensureDefaultPlans();
 
   const [plans, subs, invoices, dunning] = await Promise.all([
     prismaUnscoped.plan
       .findMany({
+        where: { active: true },
         orderBy: { sortOrder: "asc" },
         include: { _count: { select: { subscriptions: true } } },
       })
@@ -36,6 +38,10 @@ export default async function PlatformBillingPage() {
       .catch(() => 0),
   ]);
 
+  const promotions = await prismaUnscoped.pharmacyPromotion.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
+
+  const unresolved = await prismaUnscoped.billingPayment.findMany({ where: { status: { in: ["pending", "processing"] }, createdAt: { lt: new Date(Date.now() - 10 * 60_000) } }, include: { pharmacy: { select: { name: true } }, invoice: { select: { number: true } } }, orderBy: { createdAt: "asc" }, take: 50 });
+
   const totalMonthlyPlanValue = plans.reduce(
     (sum, plan) => sum + Number(plan.priceKes) * plan._count.subscriptions,
     0,
@@ -54,6 +60,13 @@ export default async function PlatformBillingPage() {
       title="SaaS billing"
       description="Manage pharmacy plans, subscriptions, invoices and dunning separately from customer M-Pesa transactions."
     >
+      <section className="mb-6 rounded-2xl border border-teal-500/20 p-5">
+        <h2 className="text-xl font-semibold">Joining pharmacy promotions</h2>
+        <p className="my-3 text-sm">KES 100 verification once · KES 500/month platform service. Allocate a limited number of places to new pharmacies. Oldest eligible promotion applies first; offers do not stack. Stopping an offer preserves already allocated waivers.</p>
+        <PromotionForm/>
+        {promotions.map(p => <div key={p.id} className="mt-4 border-t border-teal-500/20 pt-4"><h3 className="font-semibold">{p.name} · {p.claimed}/{p.capacity} allocated</h3><p className="my-2 text-sm">Verification {p.verification ? "waived" : "payable"} · {p.recurring ? `${p.recurringMonths} free monthly periods` : "monthly service payable"} · {p.active ? "Open" : "Stopped"}</p>{p.active && <PromotionForm promotionId={p.id}/>}</div>)}
+      </section>
+      {unresolved.length > 0 && <section className="mb-6 rounded-2xl border border-amber-500/30 p-5"><h2 className="font-semibold">Payments needing reconciliation</h2><p className="my-2 text-sm">Check platform M-Pesa merchant records for payments without complete receipt evidence. Do not request a second payment while a result is uncertain.</p><PlatformTable headers={["Pharmacy", "Invoice", "Amount", "Evidence status"]} empty="No unresolved payments" rows={unresolved.map(p => [p.pharmacy.name, p.invoice.number, `KES ${Number(p.amountKes)}`, p.failureReason || "Awaiting provider callback"])} /></section>}
       <section aria-label="Billing summary" className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
         <div className="rounded-2xl border border-[#dce7e1] bg-white p-4 shadow-sm shadow-black/[0.02] dark:border-teal-200/15 dark:bg-teal-950/30 dark:shadow-none">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#78857f] dark:text-teal-100/55">Plans</p>

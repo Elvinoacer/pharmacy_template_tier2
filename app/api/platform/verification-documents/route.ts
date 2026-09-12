@@ -44,6 +44,11 @@ export async function GET(request: Request) {
   const object = await readPrivateR2Object(reference);
   if (!object) return NextResponse.json({ error: "document_unavailable" }, { status: 404 });
 
+  const reviewer = await requirePlatformAction(["super_admin"], { stepUp: true });
+  await prismaUnscoped.sensitiveAccessLog.create({ data: {
+    actorId: reviewer.id, pharmacyId, resource: "pharmacy_verification_document", resourceId: pharmacyId, purpose: `KYP ${kind} evidence review`,
+  } });
+
   return new Response(new Uint8Array(object.body), {
     status: 200,
     headers: {

@@ -281,7 +281,8 @@ export default function VerificationDossierForm({
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/onboard" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--border)] px-4 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface-alt)]">Back to onboarding</Link>
-          <button type="submit" disabled={pending || uploading !== null} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-300 dark:text-teal-950 dark:hover:bg-teal-200">
+          <button type="submit" name="intent" value="draft" formNoValidate disabled={pending || uploading !== null} className="min-h-11 rounded-xl border border-[var(--border)] px-4 text-sm font-semibold">Save & continue later</button>
+          <button type="submit" name="intent" value="complete" disabled={pending || uploading !== null} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-300 dark:text-teal-950 dark:hover:bg-teal-200">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
             Save verification dossier
           </button>

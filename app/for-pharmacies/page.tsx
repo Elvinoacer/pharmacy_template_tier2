@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PharmacyPricing from "@/app/components/onboard/PharmacyPricing";
 import { ArrowRight, CheckCircle2, ClipboardList, Shield, Sparkles } from "lucide-react";
 
 export const metadata = {
@@ -46,6 +47,7 @@ const adaptiveCard =
 export default function ForPharmaciesPage() {
   return (
     <div className={pageShell}>
+      <div className="mx-auto max-w-5xl px-4 pt-24"><PharmacyPricing/></div>
       <section className="relative overflow-hidden px-3 pb-10 pt-24 sm:px-6 sm:pb-14 sm:pt-32 lg:pb-16 lg:pt-36">
         <div
           className="pointer-events-none absolute inset-0 -z-10 opacity-90"

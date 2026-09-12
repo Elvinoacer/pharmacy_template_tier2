@@ -9,6 +9,7 @@ import PharmacyLocationCapture from "@/app/components/location/PharmacyLocationC
 import styles from "./OnboardWizard.module.css";
 
 type Existing = {
+  verificationNotes?: string | null; rejectionReason?: string | null;
   id: string; slug: string; name: string; legalName: string | null; tagline: string | null; description: string | null;
   licenseNumber: string | null; ppbPremisesNumber: string | null; phone: string | null; whatsapp: string | null; email: string | null;
   city: string | null; county: string | null; latitude: number | null; longitude: number | null; status: string;
@@ -92,7 +93,7 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
   if (status === "rejected") return (
     <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-center sm:p-8">
       <h2 className="text-xl font-semibold text-rose-950">Application was not approved</h2>
-      <p className="mt-2 text-sm text-rose-800">Check the email on the account, or start a new draft.</p>
+      <p className="mt-2 text-sm text-rose-800">{existing?.rejectionReason || "Check your account email for the reviewer’s decision. Contact support if you believe there is an error."}</p>
     </div>
   );
 

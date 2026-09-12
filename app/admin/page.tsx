@@ -32,6 +32,11 @@ export default async function AdminDashboardPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
+  if (user.activePharmacyId) {
+    const pharmacy = await prisma.pharmacy.findUnique({ where: { id: user.activePharmacyId }, select: { setupCompletedAt: true } });
+    if (pharmacy && !pharmacy.setupCompletedAt) redirect("/admin/setup");
+  }
+
   const [a, inv, discoverableMedicines, publishedServices] = await Promise.all([
     getAdminAnalytics(),
     getInventoryHealth({ expiryDays: 30, salesLookbackDays: 30 }),

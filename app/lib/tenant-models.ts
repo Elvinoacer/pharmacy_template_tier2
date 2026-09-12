@@ -62,6 +62,7 @@ export const TENANT_MODELS = new Set<string>([
   "IntegrationAccount",
   "InventorySyncConflict",
   "BillingPayment",
+  "PharmacyPromotionGrant",
   "SupportSession",
   "IdempotencyKey",
   "CustomDomain",

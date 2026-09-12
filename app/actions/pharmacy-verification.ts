@@ -73,6 +73,7 @@ export async function savePharmacyVerificationProfileAction(
       return { error: "This verification dossier can no longer be edited while the application is in review." };
     }
 
+    const draft = text(formData, "intent") === "draft";
     const licenseNumber = text(formData, "licenseNumber") || pharmacy.licenseNumber || "";
     const ppbPremisesNumber = text(formData, "ppbPremisesNumber");
     const facilityType = text(formData, "facilityType");
@@ -105,18 +106,25 @@ export async function savePharmacyVerificationProfileAction(
     ];
     const missing = required.filter(([value]) => !value).map(([, label]) => label);
     if (!applicantAuthorityConfirmed) missing.push("applicant authority declaration");
-    if (missing.length) {
+    if (!draft && missing.length) {
       return { error: `Complete the verification dossier first: ${missing.join(", ")}.` };
     }
 
-    if (isExpired(licenseExpiryDate)) {
+    if (licenseExpiryDate && isExpired(licenseExpiryDate)) {
       return { error: "The submitted PPB premises licence expiry date must be valid and in the future." };
     }
-    if (!validVerificationReference(licenseDocumentUrl, pharmacyId, "license")) {
+    if (licenseDocumentUrl && !validVerificationReference(licenseDocumentUrl, pharmacyId, "license")) {
       return { error: "Upload the PPB licence through the secure document uploader." };
     }
-    if (!validVerificationReference(businessDocumentUrl, pharmacyId, "business")) {
+    if (businessDocumentUrl && !validVerificationReference(businessDocumentUrl, pharmacyId, "business")) {
       return { error: "Upload the business-registration evidence through the secure document uploader." };
+    }
+
+    for (const reference of [licenseDocumentUrl, businessDocumentUrl].filter(Boolean)) {
+      const uploaded = await prismaUnscoped.pharmacyOnboardingEvent.findFirst({
+        where: { pharmacyId, type: "verification_document_uploaded", meta: { path: ["reference"], equals: reference } }, select: { id: true },
+      });
+      if (!uploaded) return { error: "Document not found in your secure uploads. Please upload it again." };
     }
 
     const duplicate = await prismaUnscoped.pharmacy.findFirst({
@@ -129,24 +137,27 @@ export async function savePharmacyVerificationProfileAction(
       },
       select: { id: true, name: true, licenseNumber: true, ppbPremisesNumber: true, status: true },
     });
-    if (duplicate) {
+    if (duplicate && (licenseNumber || ppbPremisesNumber)) {
       return {
         error: "That PPB licence or premises number is already attached to another pharmacy application. Contact platform support if this is a legitimate transfer or duplicate record.",
       };
     }
 
     const declaredAt = new Date().toISOString();
-    await prismaUnscoped.$transaction([
-      prismaUnscoped.pharmacy.update({
+    await prismaUnscoped.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
+      const latest = await tx.pharmacy.findUniqueOrThrow({ where: { id: pharmacyId } });
+      if (!["draft", "needs_info"].includes(latest.status)) throw new Error("Application is already in review. Your changes were not saved.");
+      await tx.pharmacy.update({
         where: { id: pharmacyId },
         data: {
-          licenseNumber,
-          ppbPremisesNumber,
-          licenseDocumentUrl,
+          licenseNumber: licenseNumber || null,
+          ppbPremisesNumber: ppbPremisesNumber || null,
+          licenseDocumentUrl: licenseDocumentUrl || null,
           kraPin: kraPin || null,
         },
-      }),
-      prismaUnscoped.pharmacyOnboardingEvent.create({
+      });
+      await tx.pharmacyOnboardingEvent.create({
         data: {
           pharmacyId,
           actorId: user.id,
@@ -168,14 +179,14 @@ export async function savePharmacyVerificationProfileAction(
             declaredAt,
           },
         },
-      }),
-    ]);
+      });
+    });
 
     revalidatePath("/onboard");
     revalidatePath("/onboard/verification");
     revalidatePath(`/platform/pharmacies/${pharmacyId}`);
     revalidatePath(`/platform/pharmacies/${pharmacyId}/verification`);
-    return { success: "Verification dossier saved. You can now return to onboarding and submit for review." };
+    return { success: draft ? "Progress saved securely. Return any time to continue." : "Verification dossier saved. Continue to premises details, billing and submission." };
   } catch (err) {
     console.error("[verification] save owner dossier", err);
     return { error: err instanceof Error ? err.message : "Could not save the verification dossier." };

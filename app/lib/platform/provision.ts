@@ -1,7 +1,7 @@
 import "server-only";
 
 import { prismaUnscoped } from "@/app/lib/db";
-import { startTrial } from "@/app/lib/platform/billing";
+
 import { recordLifecycle } from "@/app/lib/platform/lifecycle";
 import { encryptSecret, generateApiKey } from "@/app/lib/platform/secrets";
 
@@ -50,11 +50,6 @@ export async function provisionTenant(pharmacyId: string, actorId?: string | nul
     },
   });
 
-  const existingSub = await prismaUnscoped.subscription.findFirst({ where: { pharmacyId } });
-  if (!existingSub) {
-    await startTrial(pharmacyId, "starter", 14);
-  }
-
   const templates = [
     { key: "order_paid", channel: "email" as const, subject: "Payment received", body: "Thank you. Your order has been paid." },
     { key: "order_ready", channel: "sms" as const, subject: null, body: "Your order is ready for pickup." },
@@ -67,7 +62,7 @@ export async function provisionTenant(pharmacyId: string, actorId?: string | nul
     });
   }
 
-  await recordLifecycle(pharmacyId, "verified", { toStatus: "trial", actorId: actorId ?? undefined });
+  await recordLifecycle(pharmacyId, "verified", { toStatus: "onboarding", actorId: actorId ?? undefined });
   return { branchId: branch.id };
 }
 

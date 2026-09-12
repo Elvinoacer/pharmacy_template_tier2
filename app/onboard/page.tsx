@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PharmacyPricing from "@/app/components/onboard/PharmacyPricing";
 import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
@@ -57,6 +58,8 @@ export default async function OnboardPage() {
         latitude: owned.latitude,
         longitude: owned.longitude,
         status: owned.status,
+        verificationNotes: owned.verificationNotes,
+        rejectionReason: owned.rejectionReason,
       };
 
       verificationPharmacy = {
@@ -118,6 +121,10 @@ export default async function OnboardPage() {
           </p>
         </header>
 
+        <PharmacyPricing/>
+        {existing && <Link href="/onboard/billing" className="mb-5 inline-block rounded-xl border border-[var(--border)] px-4 py-3 font-semibold text-[var(--brand)]">Pricing & billing · Pay verification fee →</Link>}
+
+        {existing?.status === "needs_info" && <section role="status" className="mb-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5"><h2 className="font-semibold">Your reviewer needs a correction</h2><p className="mt-2 text-sm leading-6">{existing.verificationNotes || "Review your dossier and resubmit the missing evidence."}</p></section>}
         {requiresKyp && verificationPharmacy && verificationReadiness ? (
           <>
             <section className="mb-5 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 shadow-sm dark:border-teal-300/20 dark:bg-teal-300/[0.06] sm:mb-6 sm:p-5">

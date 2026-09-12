@@ -1,0 +1,86 @@
+import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
+import { test } from "node:test";
+import { prismaUnscoped as db } from "../app/lib/db";
+import { withPlatformBypass, withPharmacy } from "../app/lib/tenant-context";
+import { claimPromotion, ensureVerificationInvoice, startPharmacyService } from "../app/lib/platform/pharmacy-enrolment";
+import { completeBillingPayment, processSubscriptionCycle, collectInvoicePayment } from "../app/lib/platform/billing";
+import { loadPharmacySetup } from "../app/lib/services/pharmacy-setup";
+
+// Explicit opt-in to an isolated disposable database. Never load .env.local here.
+test("pharmacy billing: capped promotions, settlement, isolation and renewals", { skip: !process.env.KYP_TEST_DATABASE_URL }, async () => {
+  process.env.DATABASE_URL = process.env.KYP_TEST_DATABASE_URL;
+  await withPlatformBypass(async () => {
+    const owner = await db.user.create({ data: { email: `kyp-${randomUUID()}@example.test`, passwordHash: "test-only", role: "manager" } });
+    const promo = await db.pharmacyPromotion.create({ data: { name: "One promotional place", capacity: 1, verification: true, recurring: true, recurringMonths: 1, createdBy: owner.id } });
+    const first = await db.pharmacy.create({ data: { name: "KYP test first", slug: randomUUID(), ownerUserId: owner.id } });
+    const second = await db.pharmacy.create({ data: { name: "KYP test second", slug: randomUUID(), ownerUserId: owner.id } });
+    try {
+      const grants = await Promise.all([claimPromotion(first.id), claimPromotion(second.id)]);
+      assert.equal(grants.filter(Boolean).length, 1, "capacity must hold under concurrent enrolments");
+      const winner = grants[0] ? first : second;
+      const payer = grants[0] ? second : first;
+      assert.equal((await db.pharmacyPromotion.findUniqueOrThrow({ where: { id: promo.id } })).claimed, 1);
+      assert.equal((await claimPromotion(winner.id))?.id, grants.find(Boolean)?.id, "redemption is idempotent");
+      const waived = await ensureVerificationInvoice(winner.id);
+      assert.equal(Number(waived.totalKes), 0);
+      assert.equal(waived.status, "paid");
+      const invoices = await Promise.all([ensureVerificationInvoice(payer.id), ensureVerificationInvoice(payer.id)]);
+      assert.equal(invoices[0].id, invoices[1].id);
+      assert.equal(Number(invoices[0].totalKes), 100);
+      const checkout = randomUUID();
+      const originalFetch = globalThis.fetch;
+      const keys = ["DARAJA_CONSUMER_KEY", "DARAJA_CONSUMER_SECRET", "DARAJA_SHORTCODE", "DARAJA_PASSKEY", "DARAJA_CALLBACK_URL", "DARAJA_ENV"];
+      const oldEnv = keys.map(k => process.env[k]);
+      for (const key of keys) process.env[key] = key === "DARAJA_ENV" ? "sandbox" : "test-placeholder";
+      let prompts = 0;
+      globalThis.fetch = async (input, init) => {
+        if (String(input).includes("oauth")) return Response.json({ access_token: "test-token", expires_in: "3599" });
+        assert.ok(String(input).includes("stkpush/v1/processrequest"));
+        assert.equal(JSON.parse(String(init?.body)).Amount, 100);
+        prompts++;
+        return Response.json({ ResponseCode: "0", CheckoutRequestID: checkout, MerchantRequestID: "merchant" });
+      };
+      try {
+        const attempts = await Promise.allSettled([collectInvoicePayment(invoices[0].id, { phone: "254712345678" }), collectInvoicePayment(invoices[0].id, { phone: "254712345678" })]);
+        assert.equal(attempts.filter(a => a.status === "fulfilled").length, 1);
+        assert.equal(prompts, 1, "concurrent clicks must send only one provider prompt");
+      } finally {
+        globalThis.fetch = originalFetch;
+        keys.forEach((key, index) => { if (oldEnv[index] === undefined) delete process.env[key]; else process.env[key] = oldEnv[index]; });
+      }
+      const payment = await db.billingPayment.findFirstOrThrow({ where: { checkoutRequestId: checkout } });
+      await assert.rejects(db.billingPayment.create({ data: { pharmacyId: payer.id, invoiceId: invoices[0].id, provider: "mpesa", amountKes: 100 } }), "only one unsettled payment can exist");
+      const success = { checkoutRequestId: checkout, merchantRequestId: "merchant", mpesaReceipt: randomUUID(), amount: 100, resultCode: 0 };
+      await assert.rejects(completeBillingPayment({ ...success, amount: 99 }), /billing_evidence_mismatch/);
+      assert.equal((await db.invoice.findUniqueOrThrow({ where: { id: invoices[0].id } })).status, "open");
+      await Promise.all([completeBillingPayment(success), completeBillingPayment(success)]);
+      assert.equal((await db.invoice.findUniqueOrThrow({ where: { id: invoices[0].id } })).status, "paid");
+      assert.equal((await db.pharmacy.findUniqueOrThrow({ where: { id: payer.id } })).lifecycleStatus, "onboarding", "verification payment must not activate a pharmacy");
+      await completeBillingPayment({ ...success, resultCode: 1032 });
+      assert.equal((await db.billingPayment.findUniqueOrThrow({ where: { id: payment.id } })).status, "succeeded", "late failure cannot overwrite success");
+      await withPharmacy(winner.id, async () => {
+        assert.equal(await db.invoice.findUnique({ where: { id: invoices[0].id } }), null, "invoice is tenant isolated");
+        assert.equal(await db.pharmacyPromotion.count(), 0, "tenant cannot inspect promotion inventory");
+      });
+      assert.equal((await loadPharmacySetup(winner.id)).ready, false, "verification waiver cannot bypass setup");
+      const monthly = await startPharmacyService(winner.id);
+      assert.equal(Number(monthly.totalKes), 0);
+      const sub = await db.subscription.findUniqueOrThrow({ where: { id: monthly.subscriptionId! } });
+      assert.equal(sub.status, "active");
+      assert.equal((await startPharmacyService(winner.id)).id, monthly.id);
+      await db.subscription.update({ where: { id: sub.id }, data: { status: "cancelled", cancelledAt: new Date() } });
+      await processSubscriptionCycle();
+      assert.equal((await db.subscription.findUniqueOrThrow({ where: { id: sub.id } })).status, "cancelled", "historical paid invoices cannot resurrect cancelled subscriptions");
+      const paidMonthly = await startPharmacyService(payer.id);
+      assert.equal(Number(paidMonthly.totalKes), 500);
+      assert.equal(paidMonthly.status, "open");
+    } finally {
+      await db.auditLog.deleteMany({ where: { pharmacyId: { in: [first.id, second.id] } } });
+      await db.pharmacy.deleteMany({ where: { id: { in: [first.id, second.id] } } });
+      await db.pharmacyPromotion.delete({ where: { id: promo.id } });
+      await db.user.delete({ where: { id: owner.id } });
+    }
+  });
+  await db.$disconnect();
+});

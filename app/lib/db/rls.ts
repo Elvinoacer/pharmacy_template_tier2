@@ -137,6 +137,10 @@ export function createRlsPool(config: PoolConfig): Pool {
           : undefined;
 
       const execute = async () => {
+        const statement = typeof args[0] === "string" ? args[0] : (args[0] as { text?: string } | undefined)?.text || "";
+        // An aborted transaction rejects SET/config queries. Always allow the
+        // driver to roll it back before installing context for the next query.
+        if (/^\s*(ROLLBACK|COMMIT|RELEASE\s+SAVEPOINT)\b/i.test(statement)) return origClientQuery(...args);
         await ensureRuntimeRole();
         await setRlsContext(rawQuery, await resolveRlsScope());
         return origClientQuery(...args);

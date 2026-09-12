@@ -18,7 +18,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:migrate:status": "prisma migrate status",
     "db:test": "tsx scripts/test-db.ts",
-    "test": "node --conditions=react-server --import tsx --test --test-concurrency=1 tests/platform-foundation.test.ts tests/tenant-isolation.test.ts tests/rls-postgres.test.ts tests/security-regressions.test.ts tests/admin-access.test.ts tests/mfa-flow.test.ts tests/prescription-discovery.test.ts tests/care-request-flow.test.ts tests/care-availability.test.ts",
+    "test": "node --conditions=react-server --import tsx --test --test-concurrency=1 tests/platform-foundation.test.ts tests/tenant-isolation.test.ts tests/rls-postgres.test.ts tests/security-regressions.test.ts tests/admin-access.test.ts tests/mfa-flow.test.ts tests/prescription-discovery.test.ts tests/care-request-flow.test.ts tests/care-availability.test.ts tests/pharmacy-pricing.test.ts tests/pharmacy-billing.integration.test.ts",
     "db:seed:admin": "tsx scripts/seed-platform-admin.ts"
   },
   "dependencies": {
