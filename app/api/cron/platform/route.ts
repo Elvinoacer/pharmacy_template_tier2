@@ -8,6 +8,7 @@ import { recoverStaleJobs } from "@/app/lib/platform/jobs";
 import { applyDunning, processSubscriptionCycle } from "@/app/lib/platform/billing";
 import { prismaUnscoped } from "@/app/lib/db";
 import { isCronAuthorized } from "@/app/lib/cron-auth";
+import { enforceExpiredPharmacyLicences } from "@/app/lib/services/pharmacy-verification-expiry";
 
 export const runtime = "nodejs";
 
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
     const deliveries = await processQueuedDeliveries(null, 40);
     const webhooks = await processWebhookDeliveryBatch(40);
     const billing = await processSubscriptionCycle();
+    const verificationExpiry = await enforceExpiredPharmacyLicences(100);
 
     const overdue = await prismaUnscoped.invoice.findMany({
       where: { status: "open", dueAt: { lt: new Date() } },
@@ -34,7 +36,7 @@ export async function GET(request: NextRequest) {
       await applyDunning(inv.id);
       dunning++;
     }
-    return { stale, jobs, outbox, deliveries, webhooks, billing, dunning };
+    return { stale, jobs, outbox, deliveries, webhooks, billing, verificationExpiry, dunning };
   });
 
   return Response.json({ ok: true, ...result });
