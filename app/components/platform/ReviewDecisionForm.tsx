@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useEffect, useRef } from "react";
-import { CheckCircle2, Loader2 } from "lucide-react";
-import { reviewPharmacyAction, type ReviewActionState } from "@/app/actions/platform";
+import { CheckCircle2, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
+import { type ReviewActionState } from "@/app/actions/platform";
+import { safeReviewPharmacyAction } from "@/app/actions/pharmacy-verification";
 
 const initial: ReviewActionState = {};
 
@@ -22,7 +24,7 @@ const decisions = [
   },
   {
     value: "approve",
-    label: "Approve",
+    label: "Approve verified pharmacy",
     className:
       "border-emerald-700 bg-emerald-700 font-semibold text-white hover:bg-emerald-800 dark:border-emerald-400/60 dark:bg-emerald-400 dark:text-emerald-950 dark:hover:bg-emerald-300",
   },
@@ -42,7 +44,7 @@ export default function ReviewDecisionForm({
   pharmacyId: string;
   currentStatus: string;
 }) {
-  const [state, action, pending] = useActionState(reviewPharmacyAction, initial);
+  const [state, action, pending] = useActionState(safeReviewPharmacyAction, initial);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -65,16 +67,30 @@ export default function ReviewDecisionForm({
         </span>
       </div>
 
+      <Link
+        href={`/platform/pharmacies/${pharmacyId}/verification`}
+        className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-teal-200 bg-teal-50 px-3 py-2.5 text-sm font-semibold text-teal-900 transition hover:bg-teal-100 dark:border-teal-300/25 dark:bg-teal-300/10 dark:text-teal-50 dark:hover:bg-teal-300/15"
+      >
+        <span className="flex min-w-0 items-center gap-2">
+          <ShieldCheck className="h-4 w-4 shrink-0" />
+          <span className="truncate">Open regulatory verification dossier</span>
+        </span>
+        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+      </Link>
+      <p className="text-xs leading-5 text-[#718078] dark:text-teal-100/55">
+        Approval is protected by mandatory PPB, responsible-professional, location, ownership, applicant-authority and contact checks. The server will reject approval while any required verification remains incomplete.
+      </p>
+
       <label className="block text-sm">
         <span className="font-semibold text-[#26352d] dark:text-teal-50/90">Review notes</span>
         <span className="mt-1 block text-xs leading-5 text-[#718078] dark:text-teal-100/55">
-          Required for reject or request-info. Visible on the onboarding timeline and emailed to the owner.
+          Required for reject or request-info. For approval, record the decisive evidence or any resolved discrepancies.
         </span>
         <textarea
           name="notes"
           rows={4}
           className="mt-2 w-full resize-y rounded-xl border border-[#cfdcd4] bg-white px-3 py-2.5 text-sm text-[#17231d] outline-none transition placeholder:text-[#8e9a93] focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 dark:border-white/15 dark:bg-black/25 dark:text-white dark:placeholder:text-teal-100/35 dark:focus:border-teal-300/50 dark:focus:ring-teal-300/10"
-          placeholder="e.g. Licence number matches PPB register. Pin confirmed."
+          placeholder="e.g. PPB premises record matched; licence current; superintendent registration and practice licence matched; address/pin and business evidence confirmed."
           disabled={pending}
         />
       </label>
