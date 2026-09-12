@@ -17,6 +17,23 @@
   --workspace-slate-text: #475569;
 }
 
+/*
+ * The platform workspace has its own nested responsive sidebar/content layout.
+ * Keep the shared admin theme tokens/compatibility rules without inheriting the
+ * legacy fixed two-column .shell-grid-admin geometry from globals.css.
+ */
+.platform-shell.shell-grid-admin,
+.platform-security-shell.shell-grid-admin {
+  display: block;
+  grid-template-columns: none;
+  grid-template-rows: none;
+  grid-template-areas: none;
+  width: 100%;
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+}
+
 html[data-admin-theme="dark"] .shell-grid-admin,
 .shell-grid-admin[data-theme="dark"] {
   --workspace-rose-text: #fda4af;
