@@ -44,7 +44,7 @@ export async function GET(request: Request) {
   const object = await readPrivateR2Object(reference);
   if (!object) return NextResponse.json({ error: "document_unavailable" }, { status: 404 });
 
-  return new Response(object.body, {
+  return new Response(new Uint8Array(object.body), {
     status: 200,
     headers: {
       "Content-Type": object.contentType,
