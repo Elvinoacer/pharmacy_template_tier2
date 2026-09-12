@@ -6,6 +6,7 @@ import {
   BarChart3,
   Check,
   CheckCircle2,
+  ChevronRight,
   ClipboardCheck,
   Clock3,
   HeartPulse,
