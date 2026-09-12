@@ -22,9 +22,8 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
   const [name, setName] = useState(existing?.name || "");
   const [slug, setSlug] = useState(existing?.slug || "");
   const [legalName, setLegalName] = useState(existing?.legalName || "");
-  const [licenseNumber] = useState(existing?.licenseNumber || "");
-  const [pharmacyId, setPharmacyId] = useState(existing?.id || "");
-  const [status, setStatus] = useState(existing?.status || "draft");
+  const licenseNumber = existing?.licenseNumber || "";
+  const pharmacyId = existing?.id || "";
   const [city, setCity] = useState(existing?.city || "");
   const [county, setCounty] = useState(existing?.county || "");
   const [phone, setPhone] = useState(existing?.phone || "");
@@ -44,15 +43,11 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
   const liveSlug = useMemo(() => slug || slugifyPharmacyName(name), [slug, name]);
   const isIdentityError = ["name", "slug"].includes(state.field || "");
   const isContactError = ["city", "phone", "location"].includes(state.field || "");
+  const status = submitState.success ? "submitted" : (existing?.status || "draft");
 
   useEffect(() => {
-    if (createState.pharmacyId) {
-      setPharmacyId(createState.pharmacyId);
-      if (createState.slug) setSlug(createState.slug);
-      setStatus("draft");
-      router.refresh();
-    }
-  }, [createState.pharmacyId, createState.slug, router]);
+    if (createState.pharmacyId) router.refresh();
+  }, [createState.pharmacyId, router]);
 
   useEffect(() => {
     if (updateState.success && nextStepAfterUpdate.current !== null) {
@@ -63,8 +58,6 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
       nextStepAfterUpdate.current = null;
     }
   }, [updateState]);
-
-  useEffect(() => { if (submitState.success) setStatus("submitted"); }, [submitState.success]);
 
   if (status === "submitted" || status === "under_review") return (
     <div className="rounded-3xl border border-teal-900/10 bg-white p-6 text-center shadow-sm sm:p-8">
