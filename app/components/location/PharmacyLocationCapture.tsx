@@ -97,10 +97,10 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
         </span>
         <div className="min-w-0 flex-1">
           <h2 id="pharmacy-location-title" className="text-sm font-semibold text-[var(--foreground)]">
-            Pinpoint your pharmacy
+            Map pin
           </h2>
           <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-            Use your device location to save the exact premises. This helps customers reach the correct branch.
+            So patients reach the right branch.
           </p>
         </div>
       </div>

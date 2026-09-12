@@ -866,7 +866,7 @@ const PAGE_CONTENT: PageAssistContent[] = [
       "AI assistant grounded in your own knowledge base",
     ],
     actions: [
-      { label: "Start onboarding", href: "/onboard", description: "Guided, about a week", primary: true },
+      { label: "List your pharmacy", href: "/onboard", description: "KES 500 a month after you go live", primary: true },
       { label: "See the platform console", href: "/platform", description: "Super-admin overview" },
     ],
     suggestions: ["What does onboarding involve?", "How much does it cost?"],

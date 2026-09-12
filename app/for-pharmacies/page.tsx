@@ -5,39 +5,32 @@ import {
   BadgeCheck,
   Check,
   CheckCircle2,
-  ChevronRight,
-  Clock3,
-  ExternalLink,
   HeartPulse,
-  LayoutDashboard,
-  MessageCircle,
-  Package,
+  Search,
   ShieldCheck,
   Sparkles,
-  Store,
-  Stethoscope,
   Users,
   WalletCards,
-  Zap,
+  Workflow,
 } from "lucide-react";
+import StorefrontPreview from "@/app/components/onboard/StorefrontPreview";
 
 export const metadata = {
   title: "For pharmacies",
-  description:
-    "Give your pharmacy a beautiful digital storefront and a simpler way to receive patient requests.",
+  description: "Be found nearby, keep refill patients, and run requests in one place — from KES 500 a month after you go live.",
 };
 
 const actions: { icon: LucideIcon; title: string; detail: string }[] = [
-  { icon: Store, title: "Get discovered", detail: "Your pharmacy, visible." },
-  { icon: Package, title: "Show what you have", detail: "Medicines, services, hours." },
-  { icon: Zap, title: "Receive requests", detail: "One organised workspace." },
-  { icon: HeartPulse, title: "Keep the relationship", detail: "Refills and follow-ups." },
+  { icon: Search, title: "Found nearby", detail: "A real storefront — not a pin on a map." },
+  { icon: Workflow, title: "One workspace", detail: "Requests arrive in order, not WhatsApp." },
+  { icon: HeartPulse, title: "Patients stay", detail: "Refills that remember them." },
+  { icon: ShieldCheck, title: "Trusted first", detail: "Verified before anyone can see you." },
 ];
 
 const verifySteps: { icon: LucideIcon; title: string; detail: string }[] = [
-  { icon: Users, title: "Create", detail: "Your pharmacy profile" },
-  { icon: ShieldCheck, title: "Verify", detail: "Your real details" },
-  { icon: BadgeCheck, title: "Launch", detail: "After approval" },
+  { icon: Users, title: "Create", detail: "Your pharmacy" },
+  { icon: ShieldCheck, title: "Verify", detail: "Your licence" },
+  { icon: BadgeCheck, title: "Launch", detail: "When you’re ready" },
 ];
 
 function FloatingCard({
@@ -94,12 +87,12 @@ export default function ForPharmaciesPage() {
               className="mt-6 max-w-xl text-[clamp(3.2rem,7vw,6.5rem)] font-semibold leading-[0.9] tracking-[-0.07em] text-[var(--foreground)]"
               style={{ fontFamily: "var(--font-display), serif" }}
             >
-              Your pharmacy.
-              <span className="block text-[var(--brand)]">Online, properly.</span>
+              Be the pharmacy
+              <span className="block text-[var(--brand)]">they find — and stay with.</span>
             </h1>
 
             <p className="mt-6 max-w-md text-base leading-7 text-[var(--muted)] sm:text-lg">
-              A beautiful digital front door for medicines, refills, services and patient requests.
+              A storefront patients can use. Requests your team can run. Follow-up that keeps them yours.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -107,118 +100,30 @@ export default function ForPharmaciesPage() {
                 href="/onboard"
                 className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-extrabold text-white shadow-[0_16px_40px_color-mix(in_srgb,var(--brand)_28%,transparent)] transition hover:-translate-y-0.5 hover:bg-[var(--brand-deep)]"
               >
-                Start onboarding
+                List your pharmacy
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
               </Link>
               <Link
-                href="#how-it-works"
+                href="#pricing"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--line-2)] bg-[color-mix(in_srgb,var(--card)_68%,transparent)] px-5 py-3 text-sm font-bold text-[var(--foreground)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-[var(--brand)]"
               >
-                See how it works
+                See what KES 500 includes
               </Link>
             </div>
 
             <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-[var(--muted)]">
               <CheckCircle2 className="h-4 w-4 text-[var(--brand)]" aria-hidden />
-              Verified pharmacies only
+              Verified before anyone can see you
             </div>
           </div>
 
           <div className="relative min-w-0 lg:py-8">
-            <div
-              className="absolute -inset-8 -z-10 rounded-[4rem] opacity-70 blur-3xl"
-              aria-hidden
-              style={{
-                background:
-                  "radial-gradient(circle, color-mix(in srgb, var(--brand) 24%, transparent) 0%, transparent 68%)",
-              }}
-            />
-
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/15 bg-[#071d19] p-2 shadow-[0_34px_100px_rgba(6,42,35,0.24)] sm:rounded-[2.5rem] sm:p-3">
-              <div className="pointer-events-none absolute inset-0 opacity-80" aria-hidden style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.12), transparent 30%, transparent 65%, rgba(45,212,191,0.12))" }} />
-
-              <div className="relative overflow-hidden rounded-[1.55rem] border border-white/10 bg-[#f5faf8] p-3 text-[#0c1a14] sm:rounded-[2rem] sm:p-4">
-                <div className="flex items-center gap-2 border-b border-black/10 px-1 pb-3">
-                  <span className="h-2 w-2 rounded-full bg-[#ff6b5b]" />
-                  <span className="h-2 w-2 rounded-full bg-[#f4bd4f]" />
-                  <span className="h-2 w-2 rounded-full bg-[#51c45b]" />
-                  <div className="ml-2 min-w-0 flex-1 truncate rounded-full bg-black/[0.055] px-3 py-1.5 text-[10px] font-semibold text-[#5a6b62]">
-                    aether.health/p/your-pharmacy
-                  </div>
-                  <ExternalLink className="h-3.5 w-3.5 shrink-0 text-[#7b8c84]" aria-hidden />
-                </div>
-
-                <div className="mt-3 rounded-[1.35rem] bg-gradient-to-br from-[#0d6e5a] via-[#0b5c4d] to-[#073b32] p-4 text-white shadow-lg sm:p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/12 ring-1 ring-white/20">
-                        <Store className="h-5 w-5" aria-hidden />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-extrabold sm:text-base">Your Pharmacy</p>
-                        <p className="mt-1 flex items-center gap-1.5 text-[10px] font-semibold text-teal-100/80">
-                          <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
-                          Verified · Open today
-                        </p>
-                      </div>
-                    </div>
-                    <span className="shrink-0 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-teal-50">
-                      Eldoret
-                    </span>
-                  </div>
-                  <div className="mt-5 flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-3 py-2.5 text-[11px] font-semibold text-white/70">
-                    <Package className="h-4 w-4 shrink-0" aria-hidden />
-                    Search medicines and services
-                  </div>
-                </div>
-
-                <div className="mt-3 grid grid-cols-2 gap-2.5">
-                  <div className="flex min-h-16 items-center gap-2.5 rounded-2xl border border-black/10 bg-white px-3 py-2.5 shadow-sm">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
-                      <Package className="h-4 w-4" aria-hidden />
-                    </span>
-                    <span className="text-xs font-extrabold text-[#1d3028]">Catalogue</span>
-                  </div>
-                  <div className="flex min-h-16 items-center gap-2.5 rounded-2xl border border-black/10 bg-white px-3 py-2.5 shadow-sm">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
-                      <Clock3 className="h-4 w-4" aria-hidden />
-                    </span>
-                    <span className="text-xs font-extrabold text-[#1d3028]">Refills</span>
-                  </div>
-                  <div className="flex min-h-16 items-center gap-2.5 rounded-2xl border border-black/10 bg-white px-3 py-2.5 shadow-sm">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
-                      <Stethoscope className="h-4 w-4" aria-hidden />
-                    </span>
-                    <span className="text-xs font-extrabold text-[#1d3028]">Services</span>
-                  </div>
-                  <div className="flex min-h-16 items-center gap-2.5 rounded-2xl border border-black/10 bg-white px-3 py-2.5 shadow-sm">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#e6f4ef] text-[#0d6e5a]">
-                      <MessageCircle className="h-4 w-4" aria-hidden />
-                    </span>
-                    <span className="text-xs font-extrabold text-[#1d3028]">Messages</span>
-                  </div>
-                </div>
-
-                <div className="mt-3 rounded-2xl border border-black/10 bg-white p-3 shadow-sm">
-                  <div className="flex items-center gap-2.5">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#fbf4dd] text-[#a08418]">
-                      <LayoutDashboard className="h-4 w-4" aria-hidden />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7b8c84]">Workspace</p>
-                      <p className="mt-1 text-sm font-extrabold text-[#153027]">1 new request to review</p>
-                    </div>
-                    <ChevronRight className="ml-auto h-4 w-4 shrink-0 text-[#7b8c84]" aria-hidden />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-3 grid gap-3 sm:absolute sm:-bottom-5 sm:-left-7 sm:mt-0 sm:max-w-[14rem]">
+            <StorefrontPreview />
+            <div className="mt-3 grid gap-3 sm:absolute sm:-bottom-4 sm:-left-7 sm:mt-0 sm:max-w-[14rem]">
               <FloatingCard icon={ShieldCheck} label="Trust first" value="Verified before visible" tone="teal" />
             </div>
             <div className="mt-3 grid gap-3 sm:absolute sm:-right-6 sm:top-2 sm:mt-0 sm:max-w-[14rem]">
-              <FloatingCard icon={WalletCards} label="Simple start" value="KES 17/day after launch" tone="gold" />
+              <FloatingCard icon={WalletCards} label="After launch" value="KES 17 a day" tone="gold" />
             </div>
           </div>
         </div>
@@ -226,11 +131,10 @@ export default function ForPharmaciesPage() {
 
       <section className="border-y border-[var(--line)] bg-[color-mix(in_srgb,var(--surface)_78%,transparent)] px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-semibold text-[var(--foreground)] sm:justify-between">
-          <span className="text-xs font-extrabold uppercase tracking-[0.16em] text-[var(--muted)]">One place to</span>
-          <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Be found</span>
-          <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Show stock</span>
-          <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Receive requests</span>
-          <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Follow up</span>
+          <span className="text-xs font-extrabold uppercase tracking-[0.16em] text-[var(--muted)]">Patients get</span>
+          <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[var(--brand)]" aria-hidden /> A pharmacy they can find</span>
+          <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[var(--brand)]" aria-hidden /> Refills without the queue</span>
+          <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[var(--brand)]" aria-hidden /> A team that remembers them</span>
         </div>
       </section>
 
@@ -238,15 +142,15 @@ export default function ForPharmaciesPage() {
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--brand)]">What patients see</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--brand)]">Why join</p>
               <h2
                 className="mt-3 max-w-xl text-3xl font-semibold leading-tight tracking-[-0.05em] sm:text-5xl"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
-                Your pharmacy, beyond the counter.
+                Convenience is how chains win. Keep the relationship.
               </h2>
             </div>
-            <p className="max-w-xs text-sm leading-6 text-[var(--muted)]">Less chasing. More useful action.</p>
+            <p className="max-w-xs text-sm leading-6 text-[var(--muted)]">You already have the trust. This is the front door and the memory.</p>
           </div>
 
           <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -266,8 +170,8 @@ export default function ForPharmaciesPage() {
         </div>
       </section>
 
-      <section className="px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8" id="how-it-works">
-        <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-[0.82fr_1.18fr]">
+      <section className="px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8" id="pricing">
+        <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="relative overflow-hidden rounded-[2rem] bg-[#073b32] p-7 text-white shadow-[0_26px_80px_rgba(7,59,50,0.2)] sm:p-10">
             <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-teal-300/15 blur-3xl" aria-hidden />
             <div className="relative">
@@ -275,16 +179,18 @@ export default function ForPharmaciesPage() {
                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-300/15 text-amber-100 ring-1 ring-amber-200/15">
                   <WalletCards className="h-5 w-5" aria-hidden />
                 </span>
-                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-teal-100/70">Simple pricing</p>
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-teal-100/70">After you launch</p>
               </div>
               <p className="mt-9 flex items-end gap-2 text-6xl font-extrabold leading-none tracking-[-0.08em]">
                 <span className="mb-1 text-base tracking-normal text-teal-100">KES</span>500
               </p>
-              <p className="mt-3 text-lg font-bold text-white">per month</p>
-              <p className="mt-2 max-w-xs text-sm leading-6 text-teal-50/70">Only after verification and activation.</p>
-              <div className="mt-9 border-t border-white/15 pt-5 text-sm text-teal-50/80">
-                <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-teal-200" aria-hidden /> KES 100 one-time review</p>
-                <p className="mt-3 flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-teal-200" aria-hidden /> No monthly charge before launch</p>
+              <p className="mt-3 text-lg font-bold text-white">per month · about KES 17 a day</p>
+              <p className="mt-2 max-w-xs text-sm leading-6 text-teal-50/70">
+                Storefront, catalogue, requests, follow-up. Nothing monthly until you’re live.
+              </p>
+              <div className="mt-9 space-y-3 border-t border-white/15 pt-5 text-sm text-teal-50/80">
+                <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-teal-200" aria-hidden /> KES 100 once to verify</p>
+                <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-teal-200" aria-hidden /> Patients never see an unverified listing</p>
               </div>
             </div>
           </div>
@@ -297,11 +203,11 @@ export default function ForPharmaciesPage() {
                   className="mt-2 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl"
                   style={{ fontFamily: "var(--font-display), serif" }}
                 >
-                  From application to launch.
+                  Create. Verify. Launch.
                 </h2>
               </div>
               <Link href="/for-pharmacies/walkthrough" className="inline-flex items-center gap-1.5 text-sm font-extrabold text-[var(--brand)] hover:underline">
-                Full walkthrough <ArrowRight className="h-4 w-4" aria-hidden />
+                See it work <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>
 
@@ -341,7 +247,7 @@ export default function ForPharmaciesPage() {
               href="/onboard"
               className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-extrabold text-[#084c3f] shadow-xl transition hover:-translate-y-0.5 hover:bg-teal-50"
             >
-              Start onboarding
+              List your pharmacy
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
           </div>

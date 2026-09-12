@@ -1,12 +1,54 @@
-import PharmacyDemo from "@/app/components/onboard/PharmacyDemo";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import PharmacyDemo from "@/app/components/onboard/PharmacyDemo";
+import styles from "@/app/components/onboard/OnboardSurface.module.css";
+
+export const metadata = {
+  title: "How pharmacies join",
+  description: "From your name to a live storefront patients can use.",
+};
+
 const steps = [
-  ["Your identity", "Create your owner account and pharmacy name. Verify your email. Your application stays private while you prepare.", "/onboard", "Create your pharmacy"],
-  ["Your verification evidence", "Upload a clear current PPB premises licence and business registration evidence. Add your responsible professional’s registration and practice licence, and your premises address. Save an unfinished dossier and return later.", "/onboard/verification", "Open your KYP dossier"],
-  ["Review & verification fee", "Confirm your location and public contacts. Pay KES 100 once, or use your allocated waiver. Submit for independent review. If the reviewer requests corrections, your saved application is reopened with feedback.", "/onboard/billing", "View your fees"],
-  ["A storefront patients can trust", "After approval, follow your saved setup checklist: location, opening hours, three stocked and priced medicines, services, an introduction, logo and premises photo. Only offer medicines and services you are authorized to supply.", "/admin/setup", "Continue guided setup"],
-  ["Activate & serve patients", "Start the KES 500 monthly service and confirm payment. Allocated free months apply automatically. Publish when the checklist is complete. Manage your catalogue, patient orders and conversations in your workspace.", "/admin/setup", "Check launch readiness"],
-];
+  ["You", "Name the pharmacy. Verify email. Nothing is public yet.", "/onboard", "Create your pharmacy"],
+  ["Licence", "PPB premises licence, pharmacist in charge, business evidence.", "/onboard/verification", "Open licence"],
+  ["Place & fee", "Pin the premises. Pay KES 100 once — or use a waiver.", "/onboard/billing", "See fees"],
+  ["Setup", "Hours, a few priced medicines, services, your look.", "/admin/setup", "Open setup"],
+  ["Live", "Start KES 500 / month. Publish when you’re ready.", "/admin/setup", "Go live"],
+] as const;
+
 export default function Walkthrough() {
-  return <main className="mx-auto min-h-screen max-w-4xl px-4 pb-16 pt-28"><Link href="/for-pharmacies" className="underline">← For pharmacies</Link><p className="mt-6 text-xs font-semibold uppercase tracking-widest text-[var(--brand)]">Guided product walkthrough</p><h1 className="mt-2 text-4xl font-bold">From first join to your first patient.</h1><p className="my-5 text-[var(--muted)]">Explore each stage, then open the real screen to follow along. Your saved application and profile remain available when you return.</p><PharmacyDemo/><ol className="space-y-4">{steps.map(([title, description, href, cta], i) => <li key={title} className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6"><details open={i === 0}><summary className="cursor-pointer text-xl font-semibold"><span className="mr-3 text-teal-600">0{i + 1}</span>{title}</summary><p className="my-4 leading-7 text-[var(--muted)]">{description}</p><Link href={href} className="inline-block min-h-11 rounded-xl bg-teal-700 px-4 py-3 font-semibold text-white">{cta} →</Link></details></li>)}</ol></main>;
+  return (
+    <div className={styles.page}>
+      <div className={styles.frame}>
+        <Link href="/for-pharmacies" className={styles.quietLink}>
+          For pharmacies
+        </Link>
+        <p className={`${styles.kicker} mt-6`}>The path</p>
+        <h1 className={styles.display} style={{ maxWidth: "16ch" }}>
+          From join
+          <em>to first patient.</em>
+        </h1>
+        <p className={styles.lead}>Five quiet steps. You can leave and come back.</p>
+
+        <div className="mt-10 max-w-3xl">
+          <PharmacyDemo />
+        </div>
+
+        <ol className="mx-auto mt-12 max-w-3xl">
+          {steps.map(([title, description, href, cta], i) => (
+            <li key={title} className={styles.walkStep}>
+              <span className={styles.walkIndex}>{String(i + 1).padStart(2, "0")}</span>
+              <div>
+                <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+                <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{description}</p>
+                <Link href={href} className={`${styles.quietLink} mt-3`}>
+                  {cta} <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                </Link>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
 }

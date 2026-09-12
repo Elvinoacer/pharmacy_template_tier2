@@ -1,21 +1,67 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createPharmacyDraftAction, submitPharmacyApplicationAction, updatePharmacyDraftAction, type OnboardState } from "@/app/actions/onboard";
+import {
+  createPharmacyDraftAction,
+  submitPharmacyApplicationAction,
+  updatePharmacyDraftAction,
+  type OnboardState,
+} from "@/app/actions/onboard";
 import { slugifyPharmacyName } from "@/app/lib/slug";
 import PharmacyLocationCapture from "@/app/components/location/PharmacyLocationCapture";
-import styles from "./OnboardWizard.module.css";
+import PasswordField from "@/app/components/PasswordField";
+import OnboardStepper from "./OnboardStepper";
+import styles from "./OnboardSurface.module.css";
 
 type Existing = {
-  verificationNotes?: string | null; rejectionReason?: string | null;
-  id: string; slug: string; name: string; legalName: string | null; tagline: string | null; description: string | null;
-  licenseNumber: string | null; ppbPremisesNumber: string | null; phone: string | null; whatsapp: string | null; email: string | null;
-  city: string | null; county: string | null; latitude: number | null; longitude: number | null; status: string;
+  verificationNotes?: string | null;
+  rejectionReason?: string | null;
+  id: string;
+  slug: string;
+  name: string;
+  legalName: string | null;
+  tagline: string | null;
+  description: string | null;
+  licenseNumber: string | null;
+  ppbPremisesNumber: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  city: string | null;
+  county: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  status: string;
 } | null;
 
-const STEPS = ["Applicant", "Know Your Pharmacy", "Premises", "Review"];
+function Field({
+  label,
+  hint,
+  error,
+  className,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  error?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className={`${styles.field} ${className || ""}`}>
+      <span className={styles.fieldLabel}>{label}</span>
+      {children}
+      {hint ? <span className={styles.fieldHint}>{hint}</span> : null}
+      {error ? (
+        <span className={styles.fieldError} role="alert">
+          {error}
+        </span>
+      ) : null}
+    </label>
+  );
+}
 
 export default function OnboardWizard({ signedIn, existing }: { signedIn: boolean; existing: Existing }) {
   const router = useRouter();
@@ -44,7 +90,7 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
   const liveSlug = useMemo(() => slug || slugifyPharmacyName(name), [slug, name]);
   const isIdentityError = ["name", "slug"].includes(state.field || "");
   const isContactError = ["city", "phone", "location"].includes(state.field || "");
-  const status = submitState.success ? "submitted" : (existing?.status || "draft");
+  const status = submitState.success ? "submitted" : existing?.status || "draft";
 
   useEffect(() => {
     if (createState.pharmacyId) router.refresh();
@@ -60,105 +106,305 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
     }
   }, [updateState]);
 
-  if (status === "submitted" || status === "under_review") return (
-    <div className="rounded-3xl border border-teal-900/10 bg-white p-6 text-center shadow-sm sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0d6e5a]">In review</p>
-      <h2 className="mt-3 text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>{name || "Your pharmacy"} is with the network team</h2>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#5a6b62]">Super-admins independently verify the KYP dossier, PPB records, responsible professional, ownership evidence and precise premises location before approval.</p>
-      <p className="mt-6 text-xs text-[#7a8b84]">Application ID {pharmacyId.slice(0, 8)}</p>
-    </div>
-  );
+  if (status === "submitted" || status === "under_review") {
+    return (
+      <div className={`${styles.form} ${styles.status}`}>
+        <p className={styles.kicker}>In review</p>
+        <h2>{name || "Your pharmacy"} is with the network team</h2>
+        <p>We’ll match your licence and premises, then write to you. Patients cannot see you yet.</p>
+        <p className={styles.fieldHint} style={{ marginTop: "1.25rem" }}>
+          Application {pharmacyId.slice(0, 8)}
+        </p>
+      </div>
+    );
+  }
 
-  if (status === "approved" || status === "active") return (
-    <div className="rounded-3xl border border-emerald-200/80 bg-gradient-to-b from-emerald-50/90 to-white p-6 text-center shadow-sm sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">Verified</p>
-      <h2 className="mt-3 text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
-        {name || "Your pharmacy"} is approved
-      </h2>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#5a6b62]">
-        Next: finish the operational setup for your verified pharmacy profile.
-      </p>
-      <Link href="/admin/setup" className="btn-primary mt-6 inline-flex w-full justify-center sm:w-auto">
-        Continue to setup
-      </Link>
-      <p className="mt-4 text-xs text-[#7a8b84]">
-        Or jump straight to{" "}
-        <Link href="/admin/settings/location" className="font-semibold text-[#0d6e5a] underline-offset-2 hover:underline">
-          location &amp; contact
+  if (status === "approved" || status === "active") {
+    return (
+      <div className={`${styles.form} ${styles.status}`}>
+        <p className={styles.kicker}>Verified</p>
+        <h2>{name || "Your pharmacy"} is approved</h2>
+        <p>Finish setup, then go live. Monthly billing starts only when you launch.</p>
+        <Link href="/admin/setup" className="btn-primary mt-6 inline-flex justify-center">
+          Continue to setup
         </Link>
-      </p>
-    </div>
-  );
+      </div>
+    );
+  }
 
-  if (status === "rejected") return (
-    <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-center sm:p-8">
-      <h2 className="text-xl font-semibold text-rose-950">Application was not approved</h2>
-      <p className="mt-2 text-sm text-rose-800">{existing?.rejectionReason || "Check your account email for the reviewer’s decision. Contact support if you believe there is an error."}</p>
-    </div>
-  );
+  if (status === "rejected") {
+    return (
+      <div className={`${styles.form} ${styles.status}`}>
+        <p className={styles.kicker}>Not approved</p>
+        <h2>This application was not approved</h2>
+        <p>{existing?.rejectionReason || "Check the email on this account for the reviewer’s decision."}</p>
+      </div>
+    );
+  }
+
+  const titles =
+    step === 0
+      ? { title: "Create your pharmacy", sub: "A name and a private URL. Licence next." }
+      : step === 2
+        ? { title: "Where patients find you", sub: "Pin the real premises and the numbers they should call." }
+        : { title: "Ready to submit", sub: "Patients won’t see you until you’re verified." };
 
   return (
-    <div className={`${styles.onboardForm} rounded-2xl border border-teal-900/10 bg-white p-4 shadow-[0_16px_50px_rgba(8,40,32,0.07)] sm:rounded-3xl sm:p-8`}>
-      <ol className="mb-6 grid grid-cols-4 gap-1.5 sm:mb-8 sm:gap-2" aria-label="Application progress">
-        {STEPS.map((label, i) => <li key={label} aria-current={i === step ? "step" : undefined} className={`flex min-w-0 items-center justify-center rounded-xl px-1 py-2 text-center text-[9px] font-semibold leading-tight sm:px-2 sm:text-[11px] ${i === step ? "bg-[#0d6e5a] text-white" : i < step ? "bg-teal-50 text-[#0d6e5a]" : "bg-slate-100 text-slate-500"}`}><span>{i + 1}. {label}</span></li>)}
-      </ol>
+    <div className={styles.form}>
+      <OnboardStepper current={step === 0 ? 0 : step === 2 ? 2 : 3} />
 
-      {state.error && !((step === 0 && isIdentityError) || (step === 2 && isContactError)) && <p className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-3 text-sm leading-5 text-rose-800" role="alert">{state.error}</p>}
+      <header className={styles.formHead}>
+        <h2>{titles.title}</h2>
+        <p>{titles.sub}</p>
+      </header>
 
-      {step === 0 && <form action={(fd) => { if (pharmacyId) { fd.set("pharmacyId", pharmacyId); nextStepAfterUpdate.current = 2; updateAction(fd); } else createAction(fd); }} className="space-y-5 sm:space-y-4">
-        <input type="hidden" name="pharmacyId" value={pharmacyId} />
-        {!signedIn && !pharmacyId && <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
-          <label className="block text-sm font-medium text-[#0c1a14]">Your name<input name="fullName" autoComplete="name" required className="input-admin mt-1.5" /></label>
-          <label className="block text-sm font-medium text-[#0c1a14]">Work email<input name="email" type="email" inputMode="email" autoComplete="email" required className="input-admin mt-1.5" /></label>
-          <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Password<input name="password" type="password" autoComplete="new-password" required className="input-admin mt-1.5" /></label>
-        </div>}
+      {state.error && !((step === 0 && isIdentityError) || (step === 2 && isContactError)) ? (
+        <p className={`${styles.alert} ${styles.alertError} mb-4`} role="alert">
+          {state.error}
+        </p>
+      ) : null}
 
-        <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-xs leading-5 text-teal-900">
-          Start with the applicant and pharmacy identity only. After this draft is created, the next screen is the mandatory Know Your Pharmacy dossier where PPB, responsible-professional and business evidence are collected.
-        </div>
+      {step === 0 ? (
+        <form
+          action={(fd) => {
+            if (pharmacyId) {
+              fd.set("pharmacyId", pharmacyId);
+              nextStepAfterUpdate.current = 2;
+              updateAction(fd);
+            } else {
+              createAction(fd);
+            }
+          }}
+        >
+          <input type="hidden" name="pharmacyId" value={pharmacyId} />
+          <div className={styles.fields}>
+            {!signedIn && !pharmacyId ? (
+              <>
+                <div className={styles.fieldsTwo}>
+                  <Field label="Your name">
+                    <input name="fullName" autoComplete="name" required className="input-admin" />
+                  </Field>
+                  <Field label="Work email">
+                    <input name="email" type="email" inputMode="email" autoComplete="email" required className="input-admin" />
+                  </Field>
+                </div>
+                <PasswordField label="Password" name="password" autoComplete="new-password" required />
+              </>
+            ) : null}
 
-        <label className="block text-sm font-medium text-[#0c1a14]">Trading name<input name="name" required value={name} onChange={(e) => { setName(e.target.value); if (!pharmacyId) setSlug(slugifyPharmacyName(e.target.value)); }} className="input-admin mt-1.5" placeholder="e.g. Coast Care Pharmacy" autoComplete="organization" aria-invalid={state.field === "name"} />{state.field === "name" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
-        <label className="block text-sm font-medium text-[#0c1a14]">Public URL<span className="mt-1 block text-xs font-normal leading-5 text-[#7a8b84]">Reserved now, but the storefront stays hidden until verification and activation.</span><div className="mt-1.5 flex min-w-0 items-center gap-2"><span className="shrink-0 rounded-lg bg-slate-50 px-2.5 py-3 text-sm font-medium text-[#7a8b84]">/p/</span><input name="slug" required value={slug || liveSlug} onChange={(e) => setSlug(e.target.value.toLowerCase())} className="input-admin min-w-0" aria-invalid={state.field === "slug"} autoComplete="off" spellCheck={false} /></div>{state.field === "slug" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
-        <label className="block text-sm font-medium text-[#0c1a14]">Legal / registered name<input name="legalName" value={legalName} onChange={(e) => setLegalName(e.target.value)} className="input-admin mt-1.5" autoComplete="organization" /><span className="mt-1 block text-xs font-normal leading-5 text-[#7a8b84]">Use the registered entity name if it differs from the trading name.</span></label>
-        <button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={createPending || updatePending}>{createPending || updatePending ? "Creating secure profile…" : "Continue to Know Your Pharmacy"}</button>
-      </form>}
+            <Field label="Pharmacy name" error={state.field === "name" ? state.error : undefined}>
+              <input
+                name="name"
+                required
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (!pharmacyId) setSlug(slugifyPharmacyName(e.target.value));
+                }}
+                className="input-admin"
+                placeholder="Coast Care Pharmacy"
+                autoComplete="organization"
+                aria-invalid={state.field === "name"}
+              />
+            </Field>
 
-      {step === 2 && pharmacyId && <form action={(fd) => { fd.set("pharmacyId", pharmacyId); nextStepAfterUpdate.current = 3; updateAction(fd); }} className="space-y-5 sm:space-y-4">
-        <input type="hidden" name="pharmacyId" value={pharmacyId} /><input type="hidden" name="name" value={name} /><input type="hidden" name="slug" value={slug || liveSlug} /><input type="hidden" name="legalName" value={legalName} /><input type="hidden" name="licenseNumber" value={licenseNumber} />
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs leading-5 text-emerald-900">
-          Know Your Pharmacy evidence is on file. Now verify the real premises and contact channels used by customers. <Link href={`/onboard/verification?pharmacyId=${pharmacyId}`} className="font-semibold underline underline-offset-2">Review KYP dossier</Link>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
-          <label className="block text-sm font-medium text-[#0c1a14]">City<input name="city" value={city} onChange={(e) => setCity(e.target.value)} required className="input-admin mt-1.5" autoComplete="address-level2" />{state.field === "city" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
-          <label className="block text-sm font-medium text-[#0c1a14]">County<input name="county" value={county} onChange={(e) => setCounty(e.target.value)} className="input-admin mt-1.5" autoComplete="address-level1" /></label>
-        </div>
-        <PharmacyLocationCapture pharmacyId={pharmacyId} initialLatitude={latitude} initialLongitude={longitude} onCoordinatesChange={(lat, lng) => { setLatitude(lat); setLongitude(lng); }} />
-        <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
-          <label className="block text-sm font-medium text-[#0c1a14]">Public phone<input name="phone" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required className="input-admin mt-1.5" autoComplete="tel" />{state.field === "phone" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
-          <label className="block text-sm font-medium text-[#0c1a14]">WhatsApp<input name="whatsapp" type="tel" inputMode="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="input-admin mt-1.5" autoComplete="tel" /></label>
-          <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Public email<input name="publicEmail" type="email" inputMode="email" value={publicEmail} onChange={(e) => setPublicEmail(e.target.value)} className="input-admin mt-1.5" autoComplete="email" /></label>
-          <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Tagline<input name="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} className="input-admin mt-1.5" placeholder="Your neighbourhood pharmacy, built on trust" /></label>
-          <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Short description<textarea name="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="input-admin mt-1.5" /></label>
-        </div>
-        <div className="flex flex-col-reverse gap-3 sm:flex-row"><button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(0)}>Edit pharmacy identity</button><button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={updatePending}>{updatePending ? "Saving…" : "Continue to verification review"}</button></div>
-      </form>}
+            <Field
+              label="Public address"
+              hint="Hidden until you go live."
+              error={state.field === "slug" ? state.error : undefined}
+            >
+              <div className={styles.slug}>
+                <span>/p/</span>
+                <input
+                  name="slug"
+                  required
+                  value={slug || liveSlug}
+                  onChange={(e) => setSlug(e.target.value.toLowerCase())}
+                  className="input-admin"
+                  aria-invalid={state.field === "slug"}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+              </div>
+            </Field>
 
-      {step === 3 && pharmacyId && <form action={submitAction} className="space-y-5 sm:space-y-4">
-        <input type="hidden" name="pharmacyId" value={pharmacyId} />
-        <div className="rounded-2xl bg-teal-50/80 p-4 text-sm leading-6 text-[#084c3f] sm:p-5">
-          <p className="font-semibold">{name}</p><p className="mt-1 break-words">Public URL <code className="rounded bg-white px-1.5 py-0.5">/p/{slug || liveSlug}</code></p>
-          <div className="mt-4 rounded-xl border border-emerald-200 bg-white px-3 py-2.5 text-xs font-semibold text-emerald-800">Know Your Pharmacy dossier completed — final approval still requires independent platform-admin checks.</div>
-          <dl className="mt-4 grid gap-3 text-xs text-[#5a6b62] sm:grid-cols-2">
-            <div><dt className="font-semibold text-[#084c3f]">PPB / premises licence</dt><dd className="mt-0.5 break-words">{licenseNumber || "Captured in KYP dossier"}</dd></div>
-            <div><dt className="font-semibold text-[#084c3f]">Location</dt><dd className="mt-0.5 break-words">{city}{county ? `, ${county}` : ""}</dd></div>
-            <div><dt className="font-semibold text-[#084c3f]">Precise pin</dt><dd className="mt-0.5 break-words">{latitude != null && longitude != null ? `${latitude}, ${longitude}` : "Not captured yet"}</dd></div>
-            <div><dt className="font-semibold text-[#084c3f]">Phone</dt><dd className="mt-0.5 break-words">{phone}</dd></div>
-          </dl>
-          <p className="mt-4 text-[#5a6b62]">Submitting sends the full KYP evidence package to Aether super-admins. Patients cannot see the storefront until independent verification is passed, the pharmacy is approved and it is explicitly listed.</p>
-        </div>
-        {submitState.error && <div className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-3 text-sm leading-5 text-rose-800" role="alert">{submitState.error}</div>}
-        <div className="flex flex-col-reverse gap-3 sm:flex-row"><button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(2)}>Back</button><button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={submitPending}>{submitPending ? "Submitting KYP package…" : "Submit for independent verification"}</button></div>
-      </form>}
+            <Field label="Registered name" hint="Only if it differs from the trading name.">
+              <input
+                name="legalName"
+                value={legalName}
+                onChange={(e) => setLegalName(e.target.value)}
+                className="input-admin"
+                autoComplete="organization"
+              />
+            </Field>
+          </div>
+
+          <div className={styles.actions}>
+            <button className="btn-primary justify-center" type="submit" disabled={createPending || updatePending}>
+              {createPending || updatePending ? "Saving…" : "Continue"}
+            </button>
+          </div>
+
+          {!signedIn && !pharmacyId ? (
+            <p className={styles.signIn}>
+              Already registered? <Link href="/login?next=/onboard">Sign in</Link>
+            </p>
+          ) : null}
+        </form>
+      ) : null}
+
+      {step === 2 && pharmacyId ? (
+        <form
+          action={(fd) => {
+            fd.set("pharmacyId", pharmacyId);
+            nextStepAfterUpdate.current = 3;
+            updateAction(fd);
+          }}
+        >
+          <input type="hidden" name="pharmacyId" value={pharmacyId} />
+          <input type="hidden" name="name" value={name} />
+          <input type="hidden" name="slug" value={slug || liveSlug} />
+          <input type="hidden" name="legalName" value={legalName} />
+          <input type="hidden" name="licenseNumber" value={licenseNumber} />
+
+          <div className={styles.fields}>
+            <div className={styles.fieldsTwo}>
+              <Field label="City" error={state.field === "city" ? state.error : undefined}>
+                <input
+                  name="city"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                  className="input-admin"
+                  autoComplete="address-level2"
+                />
+              </Field>
+              <Field label="County">
+                <input
+                  name="county"
+                  value={county}
+                  onChange={(e) => setCounty(e.target.value)}
+                  className="input-admin"
+                  autoComplete="address-level1"
+                />
+              </Field>
+            </div>
+
+            <PharmacyLocationCapture
+              pharmacyId={pharmacyId}
+              initialLatitude={latitude}
+              initialLongitude={longitude}
+              onCoordinatesChange={(lat, lng) => {
+                setLatitude(lat);
+                setLongitude(lng);
+              }}
+            />
+
+            <div className={styles.fieldsTwo}>
+              <Field label="Public phone" error={state.field === "phone" ? state.error : undefined}>
+                <input
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                  className="input-admin"
+                  autoComplete="tel"
+                />
+              </Field>
+              <Field label="WhatsApp">
+                <input
+                  name="whatsapp"
+                  type="tel"
+                  inputMode="tel"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  className="input-admin"
+                  autoComplete="tel"
+                />
+              </Field>
+            </div>
+
+            <Field label="Public email">
+              <input
+                name="publicEmail"
+                type="email"
+                inputMode="email"
+                value={publicEmail}
+                onChange={(e) => setPublicEmail(e.target.value)}
+                className="input-admin"
+                autoComplete="email"
+              />
+            </Field>
+            <Field label="Tagline">
+              <input
+                name="tagline"
+                value={tagline}
+                onChange={(e) => setTagline(e.target.value)}
+                className="input-admin"
+                placeholder="Your neighbourhood pharmacy"
+              />
+            </Field>
+            <Field label="Short description">
+              <textarea name="description" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="input-admin" />
+            </Field>
+          </div>
+
+          <div className={styles.actions}>
+            <button type="button" className="btn-ghost justify-center" onClick={() => setStep(0)}>
+              Back
+            </button>
+            <button className="btn-primary justify-center" type="submit" disabled={updatePending}>
+              {updatePending ? "Saving…" : "Continue"}
+            </button>
+          </div>
+        </form>
+      ) : null}
+
+      {step === 3 && pharmacyId ? (
+        <form action={submitAction}>
+          <input type="hidden" name="pharmacyId" value={pharmacyId} />
+          <div className={styles.summary}>
+            <p>{name}</p>
+            <p className={styles.fieldHint}>/p/{slug || liveSlug}</p>
+            <dl>
+              <div>
+                <dt>Licence</dt>
+                <dd>{licenseNumber || "On file"}</dd>
+              </div>
+              <div>
+                <dt>Place</dt>
+                <dd>
+                  {city}
+                  {county ? `, ${county}` : ""}
+                </dd>
+              </div>
+              <div>
+                <dt>Map pin</dt>
+                <dd>{latitude != null && longitude != null ? "Saved" : "Not captured yet"}</dd>
+              </div>
+              <div>
+                <dt>Phone</dt>
+                <dd>{phone || "—"}</dd>
+              </div>
+            </dl>
+          </div>
+          {submitState.error ? (
+            <div className={`${styles.alert} ${styles.alertError} mt-4`} role="alert">
+              {submitState.error}
+            </div>
+          ) : null}
+          <div className={styles.actions}>
+            <button type="button" className="btn-ghost justify-center" onClick={() => setStep(2)}>
+              Back
+            </button>
+            <button className="btn-primary justify-center" type="submit" disabled={submitPending}>
+              {submitPending ? "Submitting…" : "Submit for review"}
+            </button>
+          </div>
+        </form>
+      ) : null}
     </div>
   );
 }

@@ -110,8 +110,8 @@ const PLATFORM_CATEGORIES: NavCategory[] = [
     key: "pharmacies",
     label: "For pharmacies",
     items: [
-      { href: "/for-pharmacies", label: "Why Aether", desc: "Keep your brand, licence, and M-Pesa", icon: Building2 },
-      { href: "/onboard", label: "Start onboarding", desc: "Draft, submit, go live after PPB review", icon: BadgeCheck, badge: "Join" },
+      { href: "/for-pharmacies", label: "Why Aether", desc: "Be found. Keep refill patients.", icon: Building2 },
+      { href: "/onboard", label: "List your pharmacy", desc: "KES 500 a month after you go live", icon: BadgeCheck, badge: "Join" },
       { href: "/login?next=/admin", label: "Staff sign in", desc: "CRM, refills, and the pharmacy workspace", icon: LayoutDashboard },
     ],
   },
