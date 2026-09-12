@@ -29,29 +29,6 @@ export const metadata = {
     "Give your independent pharmacy a trusted digital front door, structured patient requests and an operating workspace built for Kenya.",
 };
 
-const outcomes = [
-  {
-    icon: Store,
-    title: "A storefront people can trust",
-    text: "Your name, your hours, your location and the services you actually offer.",
-  },
-  {
-    icon: Package,
-    title: "A catalogue that works harder",
-    text: "Show stocked medicines and prices clearly, without rebuilding your product list elsewhere.",
-  },
-  {
-    icon: Workflow,
-    title: "Requests with less back-and-forth",
-    text: "Turn scattered chats into structured orders, refill requests and follow-ups.",
-  },
-  {
-    icon: BarChart3,
-    title: "A clearer view of the business",
-    text: "See activity, revenue signals and patient conversations in one workspace.",
-  },
-];
-
 const beforeAfter = [
   {
     icon: MessageCircle,
