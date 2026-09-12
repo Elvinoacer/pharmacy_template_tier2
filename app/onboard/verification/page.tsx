@@ -21,7 +21,7 @@ export default async function PharmacyVerificationPage({
   const requestedId = (params.pharmacyId || "").trim();
   const pharmacy = await prismaUnscoped.pharmacy.findFirst({
     where: requestedId
-      ? { id: requestedId, OR: [{ ownerUserId: user.id }, { ownerUserId: user.platformAdmin ? undefined : user.id }] }
+      ? { id: requestedId, ownerUserId: user.id }
       : { ownerUserId: user.id },
     orderBy: { createdAt: "desc" },
     select: {
