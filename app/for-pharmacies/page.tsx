@@ -124,7 +124,7 @@ function GlassIcon({
 
   return (
     <span
-      className={\`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1 \${toneClasses[tone]}\`}
+      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1 ${toneClasses[tone]}`}
     >
       <Icon className="h-5 w-5" aria-hidden />
     </span>
@@ -252,7 +252,7 @@ export default function ForPharmaciesPage() {
                     ["Refills", Clock3],
                     ["Services", Stethoscope],
                     ["Messages", MessageCircle],
-                  ].map(([label, Icon]) => (
+                  ] as const).map(([label, Icon]) => (
                     <div
                       key={label as string}
                       className="flex min-h-16 items-center gap-2.5 rounded-2xl border border-black/10 bg-white px-3 py-2.5 shadow-sm"
