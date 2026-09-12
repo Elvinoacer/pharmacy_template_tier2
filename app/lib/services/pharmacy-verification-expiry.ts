@@ -3,10 +3,16 @@ import "server-only";
 import { prismaUnscoped } from "@/app/lib/db";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { sendDelivery } from "@/app/lib/services/delivery";
-import {
-  parseVerificationProfile,
-  VERIFICATION_PROFILE_EVENT,
-} from "@/app/lib/services/pharmacy-verification";
+import { VERIFICATION_PROFILE_EVENT } from "@/app/lib/services/pharmacy-verification";
+
+type ExpiredPharmacyRow = {
+  id: string;
+  name: string;
+  email: string | null;
+  ownerUserId: string | null;
+  expiryDate: string;
+  profileCreatedAt: Date;
+};
 
 function nairobiDateKey(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -25,46 +31,47 @@ function appUrl() {
 
 /**
  * Remove network trust when a previously approved pharmacy's submitted PPB
- * premises licence reaches its expiry date. The pharmacy is moved to
- * `needs_info`, unlisted, and must provide renewed evidence and undergo a fresh
- * reviewer checklist before approval can be restored.
+ * premises licence reaches its expiry date. The query filters expiry in
+ * PostgreSQL instead of scanning the first N pharmacies, so a large network
+ * cannot starve later tenants from re-verification enforcement.
  */
 export async function enforceExpiredPharmacyLicences(limit = 100) {
   const take = Math.max(1, Math.min(limit, 500));
   const today = nairobiDateKey();
-  const pharmacies = await prismaUnscoped.pharmacy.findMany({
-    where: { status: { in: ["approved", "active"] } },
-    orderBy: { verifiedAt: "asc" },
-    take,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      ownerUserId: true,
-      owner: {
-        select: {
-          email: true,
-          profile: { select: { fullName: true } },
-        },
-      },
-      onboardingEvents: {
-        where: { type: VERIFICATION_PROFILE_EVENT },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-        select: { meta: true, createdAt: true },
-      },
-    },
-  });
+
+  const pharmacies = await prismaUnscoped.$queryRaw<ExpiredPharmacyRow[]>`
+    SELECT
+      p."id",
+      p."name",
+      p."email",
+      p."owner_user_id" AS "ownerUserId",
+      profile."meta"->>'licenseExpiryDate' AS "expiryDate",
+      profile."created_at" AS "profileCreatedAt"
+    FROM "pharmacies" p
+    JOIN LATERAL (
+      SELECT e."meta", e."created_at"
+      FROM "pharmacy_onboarding_events" e
+      WHERE e."pharmacy_id" = p."id"
+        AND e."type" = ${VERIFICATION_PROFILE_EVENT}
+      ORDER BY e."created_at" DESC
+      LIMIT 1
+    ) profile ON true
+    WHERE p."status"::text IN ('approved', 'active')
+      AND CASE
+        WHEN COALESCE(profile."meta"->>'licenseExpiryDate', '') ~ '^\\d{4}-\\d{2}-\\d{2}$'
+          THEN (profile."meta"->>'licenseExpiryDate')::date
+            < (CURRENT_TIMESTAMP AT TIME ZONE 'Africa/Nairobi')::date
+        ELSE false
+      END
+    ORDER BY (profile."meta"->>'licenseExpiryDate')::date ASC, p."id" ASC
+    LIMIT ${take}
+  `;
 
   let expired = 0;
   let notificationsFailed = 0;
 
   for (const pharmacy of pharmacies) {
-    const event = pharmacy.onboardingEvents[0];
-    if (!event) continue;
-    const profile = parseVerificationProfile(event.meta);
-    const expiryDate = profile.licenseExpiryDate;
-    if (!expiryDate || !/^\d{4}-\d{2}-\d{2}$/.test(expiryDate) || expiryDate >= today) continue;
+    const expiryDate = pharmacy.expiryDate;
 
     await prismaUnscoped.$transaction([
       prismaUnscoped.pharmacy.update({
@@ -86,7 +93,7 @@ export async function enforceExpiredPharmacyLicences(limit = 100) {
           meta: {
             expiryDate,
             detectedAt: new Date().toISOString(),
-            sourceProfileCreatedAt: event.createdAt.toISOString(),
+            sourceProfileCreatedAt: pharmacy.profileCreatedAt.toISOString(),
             automatic: true,
           },
         },
@@ -105,9 +112,18 @@ export async function enforceExpiredPharmacyLicences(limit = 100) {
 
     expired++;
 
-    const email = pharmacy.owner?.email || pharmacy.email;
+    const owner = pharmacy.ownerUserId
+      ? await prismaUnscoped.user.findUnique({
+          where: { id: pharmacy.ownerUserId },
+          select: {
+            email: true,
+            profile: { select: { fullName: true } },
+          },
+        })
+      : null;
+    const email = owner?.email || pharmacy.email;
     if (email) {
-      const firstName = pharmacy.owner?.profile?.fullName?.trim().split(/\s+/)[0] || "there";
+      const firstName = owner?.profile?.fullName?.trim().split(/\s+/)[0] || "there";
       const delivery = await sendDelivery({
         channel: "email",
         purpose: "transactional",
