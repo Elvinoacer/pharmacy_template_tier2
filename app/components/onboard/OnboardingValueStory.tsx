@@ -15,11 +15,9 @@ const outcomes = [
 export default function OnboardingValueStory() {
   function scrollToApplication(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
-    const target =
-      document.querySelector<HTMLInputElement>('input[name="name"]')?.closest("form") ||
-      document.querySelector<HTMLInputElement>('input[name="pharmacyId"]')?.closest("form");
-
+    const target = document.getElementById("pharmacy-application");
     if (!target) return;
+
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
   }
@@ -28,10 +26,15 @@ export default function OnboardingValueStory() {
     <section className={styles.stage} aria-labelledby="value-story-title">
       <div className={styles.orbOne} aria-hidden />
       <div className={styles.orbTwo} aria-hidden />
+
       <div className={styles.copy}>
         <div className={styles.eyebrow}><Sparkles className="h-3.5 w-3.5" /> See what you are building</div>
-        <h2 id="value-story-title" className={styles.title}>Not another listing. <span>A digital front door for your pharmacy.</span></h2>
-        <p className={styles.lead}>Give people one clear place to discover your pharmacy, browse medicines and services, make requests and continue the conversation.</p>
+        <h2 id="value-story-title" className={styles.title}>
+          Not another listing. <span>A digital front door for your pharmacy.</span>
+        </h2>
+        <p className={styles.lead}>
+          Give people one clear place to discover your pharmacy, browse medicines and services, make requests and continue the conversation.
+        </p>
 
         <div className={styles.outcomes}>
           {outcomes.map(({ icon: Icon, title, text }) => (
@@ -53,9 +56,16 @@ export default function OnboardingValueStory() {
             <div><strong>KES 100 once</strong><small>Know Your Pharmacy review</small></div>
           </div>
         </div>
-        <p className={styles.truth}><BadgeCheck className="h-4 w-4" /> Monthly billing starts only after verification, profile setup and service activation. Verification payment does not guarantee approval.</p>
+
+        <p className={styles.truth}>
+          <BadgeCheck className="h-4 w-4" />
+          Monthly billing starts only after verification, profile setup and service activation. Verification payment does not guarantee approval.
+        </p>
+
         <div className={styles.actions}>
-          <a href="/onboard" onClick={scrollToApplication}>Start with my pharmacy <ArrowRight className="h-4 w-4" /></a>
+          <a href="#pharmacy-application" onClick={scrollToApplication}>
+            Start with my pharmacy <ArrowRight className="h-4 w-4" />
+          </a>
           <Link href="/for-pharmacies/walkthrough">Explore the walkthrough</Link>
         </div>
       </div>
@@ -70,7 +80,11 @@ export default function OnboardingValueStory() {
           </div>
           <div className={styles.search}><Search className="h-4 w-4" /> Search medicines, services…</div>
           <div className={styles.previewGrid}>
-            {outcomes.map(({ icon: Icon, title }, index) => <div key={title} style={{ animationDelay: `${index * 0.35}s` }}><Icon className="h-4 w-4" /><span>{title}</span></div>)}
+            {outcomes.map(({ icon: Icon, title }, index) => (
+              <div key={title} style={{ animationDelay: `${index * 0.35}s` }}>
+                <Icon className="h-4 w-4" /><span>{title}</span>
+              </div>
+            ))}
           </div>
           <div className={styles.activity}>
             <p>Today at your pharmacy</p>
