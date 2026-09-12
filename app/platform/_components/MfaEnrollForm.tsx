@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { confirmMfaAction, verifyStepUpAction, type MfaState } from "@/app/actions/mfa";
+import LocalQrCode from "@/app/platform/_components/LocalQrCode";
 
 export default function MfaEnrollForm({
   startAction,
@@ -56,7 +57,7 @@ export default function MfaEnrollForm({
           onClick={() => run(startAction)}
           className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-teal-700 px-4 py-2 font-semibold text-white transition hover:bg-teal-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-300 dark:text-teal-950 dark:hover:bg-teal-200 sm:w-auto"
         >
-          {pending ? "Preparing setup…" : "Set up authenticator"}
+          {pending ? "Preparing QR code…" : "Set up authenticator"}
         </button>
       ) : null}
 
@@ -66,21 +67,41 @@ export default function MfaEnrollForm({
             <>
               <section>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-teal-700 dark:text-teal-200/65">Step 1</p>
-                <h3 className="mt-1 font-semibold text-[#17231d] dark:text-white">Add Aether to your authenticator</h3>
+                <h3 className="mt-1 font-semibold text-[#17231d] dark:text-white">Scan the QR code</h3>
                 <p className="mt-1 leading-6 text-[#627168] dark:text-teal-50/75">
-                  Choose “Enter a setup key”, select time-based codes, and copy this key.
+                  Open your authenticator app, choose add account, then scan this code. The QR is generated locally in your browser; the setup secret is not sent to a QR service.
                 </p>
-                <code className="mt-3 block select-all break-all rounded-xl border border-[#dce7e1] bg-white p-3 text-sm font-semibold tracking-wider text-[#17231d] shadow-inner dark:border-white/10 dark:bg-black/30 dark:text-white sm:text-base">
-                  {state.secret}
-                </code>
+
                 {state.otpauth ? (
-                  <a
-                    className="mt-2 inline-flex min-h-10 items-center rounded-lg text-xs font-semibold text-teal-700 underline-offset-4 hover:underline dark:text-teal-200"
-                    href={state.otpauth}
-                  >
-                    Open in authenticator on this device
-                  </a>
+                  <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
+                    <div className="w-fit rounded-2xl border border-[#dce7e1] bg-white p-2 shadow-sm dark:border-white/10">
+                      <LocalQrCode value={state.otpauth} />
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <p className="text-xs leading-5 text-[#627168] dark:text-teal-50/70">
+                        Google Authenticator, Microsoft Authenticator, 1Password and other TOTP apps can scan this code.
+                      </p>
+                      <a
+                        className="inline-flex min-h-10 items-center rounded-lg text-xs font-semibold text-teal-700 underline-offset-4 hover:underline dark:text-teal-200"
+                        href={state.otpauth}
+                      >
+                        Open in authenticator on this device
+                      </a>
+                    </div>
+                  </div>
                 ) : null}
+
+                <details className="mt-4 rounded-xl border border-[#dce7e1] bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.025]">
+                  <summary className="cursor-pointer font-semibold text-[#304139] dark:text-teal-50/90">
+                    Can’t scan the QR code?
+                  </summary>
+                  <p className="mt-3 leading-6 text-[#627168] dark:text-teal-50/75">
+                    Choose “Enter a setup key” in your authenticator, select time-based codes, then enter this key manually.
+                  </p>
+                  <code className="mt-3 block select-all break-all rounded-xl border border-[#dce7e1] bg-white p-3 text-sm font-semibold tracking-wider text-[#17231d] shadow-inner dark:border-white/10 dark:bg-black/30 dark:text-white sm:text-base">
+                    {state.secret}
+                  </code>
+                </details>
               </section>
 
               <section className="border-t border-[#e5ece7] pt-5 dark:border-white/10">
