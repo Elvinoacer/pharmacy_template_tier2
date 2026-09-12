@@ -2,10 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { prismaUnscoped } from "@/app/lib/db";
-import { AuthError, createSession, hashPassword, getSessionUser } from "@/app/lib/auth";
+import {
+  AuthError,
+  createEmailVerification,
+  createSession,
+  getSessionUser,
+  hashPassword,
+} from "@/app/lib/auth";
 import { validatePassword } from "@/app/lib/password";
 import { isValidPharmacySlug, slugifyPharmacyName } from "@/app/lib/slug";
 import { getRequestMeta } from "@/app/lib/request-meta";
+import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
+import { loadOwnerSubmissionReadiness } from "@/app/lib/services/pharmacy-verification";
 
 export type OnboardState = {
   error?: string;
@@ -65,6 +73,23 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
       });
       const meta = await getRequestMeta();
       await createSession(created.id, { ip: meta.ip, userAgent: meta.userAgent });
+
+      try {
+        const verificationToken = await createEmailVerification(created.id);
+        const delivery = await sendDelivery({
+          channel: "email",
+          purpose: "transactional",
+          recipient: { email: created.email },
+          subject: "Verify your email for pharmacy onboarding",
+          body: emailVerificationBody(verificationToken),
+        });
+        if (delivery.status === "failed") {
+          console.error("[onboard] verification email failed", delivery.error);
+        }
+      } catch (emailError) {
+        console.error("[onboard] verification email setup failed", emailError);
+      }
+
       user = await getSessionUser();
     }
     if (!user) return { error: "Could not establish a session.", field: "general" };
@@ -104,6 +129,7 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
     });
 
     revalidatePath("/onboard");
+    revalidatePath("/onboard/verification");
     return { success: "Draft saved.", pharmacyId: pharmacy.id, slug: pharmacy.slug };
   } catch (err) {
     console.error("[onboard] create draft", err);
@@ -164,6 +190,7 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
       },
     });
     revalidatePath("/onboard");
+    revalidatePath("/onboard/verification");
     return { success: "Saved.", pharmacyId, slug: data.slug };
   } catch (err) {
     console.error("[onboard] update draft", err);
@@ -178,11 +205,16 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
     if (!pharmacy) return { error: "Pharmacy not found.", field: "general" };
     if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) return { error: "You do not own this application.", field: "general" };
-    if (!pharmacy.licenseNumber) return { error: "Enter the PPB / premises licence number before submitting.", field: "licenseNumber" };
-    if (!pharmacy.city) return { error: "Enter the pharmacy city before submitting.", field: "city" };
-    if (!pharmacy.phone) return { error: "Enter a public phone number before submitting.", field: "phone" };
-    if (pharmacy.latitude == null || pharmacy.longitude == null) {
-      return { error: "Pinpoint the pharmacy premises with your current location before submitting.", field: "location" };
+    if (!["draft", "needs_info"].includes(pharmacy.status)) {
+      return { error: "This application has already been submitted or reviewed.", field: "general" };
+    }
+
+    const readiness = await loadOwnerSubmissionReadiness(pharmacyId);
+    if (!readiness.ready) {
+      return {
+        error: `Complete pharmacy verification before submitting: ${readiness.missing.join("; ")}.`,
+        field: "general",
+      };
     }
 
     await prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data: { status: "submitted", submittedAt: new Date() } });
@@ -192,12 +224,19 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
         actorId: user.id,
         type: "submitted",
         message: "Application submitted for network review",
-        meta: { latitude: pharmacy.latitude, longitude: pharmacy.longitude, locationSource: "browser_geolocation_or_manual_pin" },
+        meta: {
+          latitude: pharmacy.latitude,
+          longitude: pharmacy.longitude,
+          locationSource: "browser_geolocation_or_manual_pin",
+          verificationDossierComplete: true,
+        },
       },
     });
     revalidatePath("/onboard");
+    revalidatePath("/onboard/verification");
     revalidatePath("/platform");
-    return { success: "Submitted for review.", pharmacyId, slug: pharmacy.slug };
+    revalidatePath("/platform/applications");
+    return { success: "Submitted for verification review.", pharmacyId, slug: pharmacy.slug };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Submit failed.", field: "general" };
   }

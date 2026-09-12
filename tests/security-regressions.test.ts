@@ -101,3 +101,61 @@ describe("caregiver invitation account isolation", () => {
     assert.doesNotMatch(source, /passwordHash:\s*user\.passwordHash\s*\|\|/);
   });
 });
+
+describe("pharmacy regulatory verification boundary", () => {
+  it("blocks owner submission until the verification dossier is complete", () => {
+    const source = readFileSync(
+      new URL("../app/actions/onboard.ts", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(source, /loadOwnerSubmissionReadiness\(pharmacyId\)/);
+    assert.match(source, /Complete pharmacy verification before submitting/);
+    assert.match(source, /verificationDossierComplete:\s*true/);
+  });
+
+  it("routes approval through the readiness guard rather than the raw review action", () => {
+    const actionSource = readFileSync(
+      new URL("../app/actions/pharmacy-verification.ts", import.meta.url),
+      "utf8",
+    );
+    const formSource = readFileSync(
+      new URL("../app/components/platform/ReviewDecisionForm.tsx", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(actionSource, /decision === "approve"/);
+    assert.match(actionSource, /loadApprovalReadiness\(pharmacyId\)/);
+    assert.match(actionSource, /Approval blocked\. Complete mandatory pharmacy verification first/);
+    assert.match(formSource, /useActionState\(safeReviewPharmacyAction, initial\)/);
+    assert.doesNotMatch(formSource, /useActionState\(reviewPharmacyAction, initial\)/);
+  });
+
+  it("stores owner verification evidence only in private R2", () => {
+    const source = readFileSync(
+      new URL("../app/api/onboard/verification-documents/route.ts", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(source, /isPrivateR2Configured\(\)/);
+    assert.match(source, /uploadPrivateImageToR2/);
+    assert.match(source, /pharmacy-verification\/\$\{pharmacyId\}\/\$\{kind\}/);
+    assert.doesNotMatch(source, /uploadImageToR2\(/);
+  });
+
+  it("keeps a database-level trust gate and invalidates stale reviewer evidence", () => {
+    const migration = readFileSync(
+      new URL(
+        "../prisma/migrations/20260912190000_pharmacy_verification_gate/migration.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    );
+
+    assert.match(migration, /CREATE TRIGGER pharmacy_verification_trust_gate/);
+    assert.match(migration, /NEW\."status"::text NOT IN \('approved', 'active'\)/);
+    assert.match(migration, /reviewer checklist is stale after pharmacy evidence changed/);
+    assert.match(migration, /verification_input_changed/);
+    assert.match(migration, /owner email is not verified/);
+  });
+});
