@@ -76,6 +76,12 @@ function licenceExpired(dateInput: string | null) {
   return Number.isNaN(parsed.getTime()) || parsed.getTime() < Date.now();
 }
 
+function latestDate(values: Array<Date | null | undefined>) {
+  return values
+    .filter((value): value is Date => value instanceof Date)
+    .sort((a, b) => b.getTime() - a.getTime())[0] ?? null;
+}
+
 export function parseVerificationProfile(meta: unknown): VerificationProfile {
   const row = asRecord(meta);
   return {
@@ -122,11 +128,40 @@ export async function loadLatestVerificationProfile(pharmacyId: string) {
 }
 
 export async function loadLatestVerificationChecklist(pharmacyId: string) {
-  const event = await prismaUnscoped.pharmacyOnboardingEvent.findFirst({
-    where: { pharmacyId, type: VERIFICATION_CHECKLIST_EVENT },
-    orderBy: { createdAt: "desc" },
-  });
-  return event ? { event, checklist: parseVerificationChecklist(event.meta) } : null;
+  const [event, latestProfile, latestInputChange] = await Promise.all([
+    prismaUnscoped.pharmacyOnboardingEvent.findFirst({
+      where: { pharmacyId, type: VERIFICATION_CHECKLIST_EVENT },
+      orderBy: { createdAt: "desc" },
+    }),
+    prismaUnscoped.pharmacyOnboardingEvent.findFirst({
+      where: { pharmacyId, type: VERIFICATION_PROFILE_EVENT },
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    }),
+    prismaUnscoped.pharmacyOnboardingEvent.findFirst({
+      where: { pharmacyId, type: VERIFICATION_INPUT_CHANGED_EVENT },
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    }),
+  ]);
+
+  if (!event) return null;
+  const parsed = parseVerificationChecklist(event.meta);
+  const latestTrustInputAt = latestDate([
+    latestProfile?.createdAt,
+    latestInputChange?.createdAt,
+  ]);
+  const stale = Boolean(
+    latestTrustInputAt && event.createdAt.getTime() < latestTrustInputAt.getTime(),
+  );
+
+  return {
+    event,
+    checklist: stale ? null : parsed,
+    previousChecklist: parsed,
+    stale,
+    latestTrustInputAt,
+  };
 }
 
 export function profileMissingItems(input: {
@@ -256,27 +291,14 @@ export function verificationRiskScore(checklist: VerificationChecklist | null) {
 }
 
 export async function loadApprovalReadiness(pharmacyId: string): Promise<ApprovalReadiness> {
-  const [ownerReadiness, checklistResult, latestInputChange] = await Promise.all([
+  const [ownerReadiness, checklistResult] = await Promise.all([
     loadOwnerSubmissionReadiness(pharmacyId),
     loadLatestVerificationChecklist(pharmacyId),
-    prismaUnscoped.pharmacyOnboardingEvent.findFirst({
-      where: { pharmacyId, type: VERIFICATION_INPUT_CHANGED_EVENT },
-      orderBy: { createdAt: "desc" },
-      select: { createdAt: true },
-    }),
   ]);
 
   const checklist = checklistResult?.checklist ?? null;
+  const checklistStale = checklistResult?.stale ?? false;
   const checklistMissing = checklistMissingItems(checklist);
-  const latestTrustInputAt = [ownerReadiness.profileEventCreatedAt, latestInputChange?.createdAt ?? null]
-    .filter((value): value is Date => value instanceof Date)
-    .sort((a, b) => b.getTime() - a.getTime())[0] ?? null;
-
-  const checklistStale = Boolean(
-    checklistResult?.event.createdAt &&
-      latestTrustInputAt &&
-      checklistResult.event.createdAt.getTime() < latestTrustInputAt.getTime(),
-  );
   if (checklistStale) {
     checklistMissing.push("reviewer checklist must be repeated after the latest pharmacy evidence change");
   }
