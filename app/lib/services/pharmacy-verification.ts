@@ -36,6 +36,12 @@ export type VerificationChecklist = {
   notes: string | null;
 };
 
+export type OwnerSubmissionReadiness = {
+  ready: boolean;
+  missing: string[];
+  profile: VerificationProfile | null;
+};
+
 export type ApprovalReadiness = {
   ready: boolean;
   profileMissing: string[];
@@ -59,6 +65,12 @@ function stringValue(value: unknown): string | null {
 
 function booleanValue(value: unknown): boolean {
   return value === true;
+}
+
+function licenceExpired(dateInput: string | null) {
+  if (!dateInput) return false;
+  const parsed = new Date(`${dateInput}T23:59:59+03:00`);
+  return Number.isNaN(parsed.getTime()) || parsed.getTime() < Date.now();
 }
 
 export function parseVerificationProfile(meta: unknown): VerificationProfile {
@@ -146,6 +158,7 @@ export function profileMissingItems(input: {
   if (!profile.facilityType) missing.push("facility type");
   if (!profile.physicalAddress) missing.push("physical premises address");
   if (!profile.licenseExpiryDate) missing.push("licence expiry date");
+  else if (licenceExpired(profile.licenseExpiryDate)) missing.push("current unexpired PPB premises licence");
   if (!profile.superintendentName) missing.push("superintendent / responsible professional name");
   if (!profile.superintendentRegistrationNumber) missing.push("professional PPB registration/enrolment number");
   if (!profile.superintendentPracticeLicenseNumber) missing.push("current professional practice licence number");
@@ -155,6 +168,34 @@ export function profileMissingItems(input: {
   if (!profile.applicantAuthorityConfirmed) missing.push("applicant authority declaration");
 
   return missing;
+}
+
+export async function loadOwnerSubmissionReadiness(pharmacyId: string): Promise<OwnerSubmissionReadiness> {
+  const [pharmacy, profileResult] = await Promise.all([
+    prismaUnscoped.pharmacy.findUnique({
+      where: { id: pharmacyId },
+      select: {
+        licenseNumber: true,
+        licenseDocumentUrl: true,
+        ppbPremisesNumber: true,
+        city: true,
+        phone: true,
+        latitude: true,
+        longitude: true,
+        owner: { select: { emailVerified: true } },
+      },
+    }),
+    loadLatestVerificationProfile(pharmacyId),
+  ]);
+
+  if (!pharmacy) return { ready: false, missing: ["pharmacy application"], profile: null };
+  const profile = profileResult?.profile ?? null;
+  const missing = profileMissingItems({
+    pharmacy,
+    profile,
+    ownerEmailVerified: Boolean(pharmacy.owner?.emailVerified),
+  });
+  return { ready: missing.length === 0, missing, profile };
 }
 
 export const REQUIRED_REVIEW_CHECKS: Array<{
@@ -195,50 +236,19 @@ export function verificationRiskScore(checklist: VerificationChecklist | null) {
 }
 
 export async function loadApprovalReadiness(pharmacyId: string): Promise<ApprovalReadiness> {
-  const [pharmacy, profileResult, checklistResult] = await Promise.all([
-    prismaUnscoped.pharmacy.findUnique({
-      where: { id: pharmacyId },
-      select: {
-        licenseNumber: true,
-        licenseDocumentUrl: true,
-        ppbPremisesNumber: true,
-        city: true,
-        phone: true,
-        latitude: true,
-        longitude: true,
-        owner: { select: { emailVerified: true } },
-      },
-    }),
-    loadLatestVerificationProfile(pharmacyId),
+  const [ownerReadiness, checklistResult] = await Promise.all([
+    loadOwnerSubmissionReadiness(pharmacyId),
     loadLatestVerificationChecklist(pharmacyId),
   ]);
 
-  if (!pharmacy) {
-    return {
-      ready: false,
-      profileMissing: ["pharmacy application"],
-      checklistMissing: ["reviewer verification checklist"],
-      riskScore: 100,
-      profile: null,
-      checklist: null,
-    };
-  }
-
-  const profile = profileResult?.profile ?? null;
   const checklist = checklistResult?.checklist ?? null;
-  const profileMissing = profileMissingItems({
-    pharmacy,
-    profile,
-    ownerEmailVerified: Boolean(pharmacy.owner?.emailVerified),
-  });
   const checklistMissing = checklistMissingItems(checklist);
-
   return {
-    ready: profileMissing.length === 0 && checklistMissing.length === 0,
-    profileMissing,
+    ready: ownerReadiness.missing.length === 0 && checklistMissing.length === 0,
+    profileMissing: ownerReadiness.missing,
     checklistMissing,
     riskScore: verificationRiskScore(checklist),
-    profile,
+    profile: ownerReadiness.profile,
     checklist,
   };
 }
