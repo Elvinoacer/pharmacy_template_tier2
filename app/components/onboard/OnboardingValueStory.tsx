@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import type { MouseEvent } from "react";
 import { ArrowRight, BadgeCheck, Check, MessageCircleMore, Search, ShieldCheck, ShoppingBag, Sparkles, Store, Stethoscope } from "lucide-react";
 import styles from "./OnboardingValueStory.module.css";
 
@@ -10,6 +13,17 @@ const outcomes = [
 ];
 
 export default function OnboardingValueStory() {
+  function scrollToApplication(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    const target =
+      document.querySelector<HTMLInputElement>('input[name="name"]')?.closest("form") ||
+      document.querySelector<HTMLInputElement>('input[name="pharmacyId"]')?.closest("form");
+
+    if (!target) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+  }
+
   return (
     <section className={styles.stage} aria-labelledby="value-story-title">
       <div className={styles.orbOne} aria-hidden />
@@ -41,7 +55,7 @@ export default function OnboardingValueStory() {
         </div>
         <p className={styles.truth}><BadgeCheck className="h-4 w-4" /> Monthly billing starts only after verification, profile setup and service activation. Verification payment does not guarantee approval.</p>
         <div className={styles.actions}>
-          <a href="#pharmacy-application">Start with my pharmacy <ArrowRight className="h-4 w-4" /></a>
+          <a href="/onboard" onClick={scrollToApplication}>Start with my pharmacy <ArrowRight className="h-4 w-4" /></a>
           <Link href="/for-pharmacies/walkthrough">Explore the walkthrough</Link>
         </div>
       </div>
