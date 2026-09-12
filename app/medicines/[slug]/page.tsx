@@ -417,7 +417,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
               {med.medicationMaster.imageUrl ? (
                 <Image src={med.medicationMaster.imageUrl} alt={med.medicationMaster.name} fill priority className="object-contain p-4 sm:p-6" sizes="(max-width:1024px) 100vw,44vw" />
               ) : (
-                <div className="flex h-full items-center justify-center text-6xl opacity-50">💊</div>
+                <Image src="/images/care/medicine-still-life.png" alt="Illustrative medicine supplies; product photo not provided" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
               )}
             </div>
             {gallery.length > 0 && (
@@ -451,7 +451,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                 </div>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3"><span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Pharmacy</span><p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)]">{pharmacy.name}</p></div>
+                <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3"><span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Pharmacy</span><Link href={`/pharmacies/${pharmacySlug}`} className="mt-1 block text-sm font-bold text-[var(--brand)]">About {pharmacy.name} ↗</Link></div>
                 <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3"><span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Supply</span><p className="mt-1 text-sm font-bold text-[var(--foreground)]">{med.prescriptionRequired ? "Prescription" : "Direct purchase"}</p></div>
               </div>
             </div>
@@ -464,7 +464,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
               </p>
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {med.prescriptionRequired ? (
-                  <Link href={`/portal/refills/new?medicationId=${med.id}&pharmacy=${pharmacySlug}`} className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--brand)] px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:brightness-95">Request prescription refill</Link>
+                  <Link href={`/refill?inventoryId=${med.id}`} className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--brand)] px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:brightness-95">Request prescription refill</Link>
                 ) : (
                   <Link href={`${base}/order?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`} className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--brand)] px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:brightness-95">Reserve or pay</Link>
                 )}

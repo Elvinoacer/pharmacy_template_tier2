@@ -320,7 +320,7 @@ export const getStorefrontView = cache(async (): Promise<StorefrontView> => {
 
   const resolved = await getResolvedPharmacyOrNull();
   if (!resolved) {
-    return { status: "unavailable", slug: urlSlug };
+    return urlSlug ? { status: "unavailable", slug: urlSlug } : { status: "none" };
   }
 
   const content = await buildContent(resolved);

@@ -117,6 +117,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                 </span>
               </div>
 
+              <Link href={`/pharmacies/${pharmacy.slug}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand)]">About {pharmacy.name} · contacts & directions <ArrowRight size={15} aria-hidden /></Link>
               <div className={styles.heroActions}>
                 {service.bookable ? (
                   <a href="#booking" className={styles.primaryAction}>

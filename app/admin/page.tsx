@@ -1,3 +1,4 @@
+import { prisma } from "@/app/lib/db";
 import { getSessionUser } from "@/app/lib/auth";
 import { getAdminAnalytics } from "@/app/lib/services/crm";
 import { getInventoryHealth } from "@/app/lib/services/stock";
@@ -31,9 +32,11 @@ export default async function AdminDashboardPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
-  const [a, inv] = await Promise.all([
+  const [a, inv, discoverableMedicines, publishedServices] = await Promise.all([
     getAdminAnalytics(),
     getInventoryHealth({ expiryDays: 30, salesLookbackDays: 30 }),
+    prisma.pharmacyInventory.count({ where: { active: true, publicListing: true, currentStock: { gt: 0 }, pharmacy: { status: "active", listed: true } } }),
+    prisma.pharmacyService.count({ where: { active: true, pharmacy: { status: "active", listed: true } } }),
   ]);
   const avgRating = a.feedbackAvg ? Number(a.feedbackAvg).toFixed(1) : "—";
   const totalRefills = a.refillByStatus.reduce((s, r) => s + r._count, 0);
@@ -61,6 +64,14 @@ export default async function AdminDashboardPage() {
     >
       <div className="space-y-5 sm:space-y-6">
         <AdminToday user={user} refills={a.activeRefills} enquiries={a.openEnquiries} escalations={a.aiEscalations} />
+
+        <section aria-label="Manage what customers discover" className="grid gap-3 sm:grid-cols-3">
+          {[
+            ["/admin/medications", `${discoverableMedicines} medicines discoverable`, "Publish medicines and keep stock and prices current. Your pharmacy must be active and listed."],
+            ["/admin/refills", "Incoming medicine requests", "Review requests from prescription searches and update customers as you prepare their medicines."],
+            ["/admin/services", `${publishedServices} services discoverable`, "Publish services, set prices and manage online booking availability."],
+          ].map(([href, title, description]) => <Link key={href} href={href} className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 transition hover:border-[var(--brand)]"><h2 className="text-sm font-semibold admin-text">{title}</h2><p className="mt-2 text-xs leading-5 admin-muted">{description}</p></Link>)}
+        </section>
 
         <section aria-labelledby="stock-priority-heading">
           <div className="mb-3 flex items-end justify-between gap-3 sm:mb-4">

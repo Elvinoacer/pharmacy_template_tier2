@@ -1,5 +1,8 @@
 "use server";
 
+import { prismaUnscoped } from "@/app/lib/db";
+import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getSessionUser } from "@/app/lib/auth";
@@ -57,6 +60,10 @@ export async function bookServiceAction(
     };
   }
 
+  if (!z.string().uuid().safeParse(serviceId).success) return { error: "This service link is invalid. Please open an available service listing." };
+  const listing = await withPlatformBypass(() => prismaUnscoped.pharmacyService.findFirst({ where: { id: serviceId, active: true, bookable: true, pharmacy: { status: "active", listed: true } }, select: { pharmacyId: true } })).catch(() => null);
+  if (!listing) return { error: "This service is no longer available for online booking. Please explore the current services." };
+  return withPharmacy(listing.pharmacyId, async () => {
   const session = await getSessionUser().catch(() => null);
 
   // Never infer account ownership from public form fields. Email addresses and
@@ -164,4 +171,5 @@ export async function bookServiceAction(
     serviceTitle,
     status: booking.status,
   };
+  });
 }

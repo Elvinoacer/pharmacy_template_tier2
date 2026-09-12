@@ -1,0 +1,433 @@
+.upload { composes: liquid from "../components/care/LiquidGlass.module.css"; }
+.form { composes: liquid from "../components/care/LiquidGlass.module.css"; }
+.offer { composes: liquid from "../components/care/LiquidGlass.module.css"; }
+.request { composes: liquid from "../components/care/LiquidGlass.module.css"; }
+.uploadIcon { composes: liquid from "../components/care/LiquidGlass.module.css"; }
+.steps {
+  display: flex;
+  list-style: none;
+  gap: 24px;
+  border-block: 1px solid var(--line-2);
+  padding: 18px 0;
+  margin: 0 0 28px;
+}
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.steps li > span {
+  height: 25px;
+  width: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--card-elev);
+  font-size: 10px;
+  font-weight: 750;
+}
+.steps [aria-current] {
+  color: var(--brand);
+  font-weight: 750;
+}
+.steps [aria-current] > span {
+  color: var(--background);
+  background: var(--foreground);
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 0.9fr 1.2fr;
+  gap: 24px;
+}
+.upload,
+.form,
+.offer,
+.request {
+  padding: 30px;
+  background: var(--care-glass);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--care-border);
+  box-shadow: 0 16px 50px #1637250d;
+  border-radius: 28px;
+}
+.upload {
+  background: linear-gradient(135deg, var(--brand-soft), var(--care-glass));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.uploadIcon {
+  height: 61px;
+  width: 61px;
+  border: 1px solid var(--care-border);
+  border-radius: 19px;
+  display: grid;
+  place-items: center;
+  background: var(--care-glass);
+  color: var(--brand);
+  margin-bottom: 25px;
+  box-shadow: 0 7px 22px #193c300a;
+}
+.kicker {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  font-weight: 750;
+  color: var(--brand);
+  margin-bottom: 14px;
+}
+.upload h2,
+.form h2,
+.results h2,
+.request h2 {
+  font:
+    450 29px/1.17 var(--font-display),
+    Georgia,
+    serif;
+  letter-spacing: -0.035em;
+}
+.upload h2 em {
+  color: var(--brand);
+  font-weight: 400;
+}
+.upload > p:not(.kicker),
+.form > p:not(.kicker) {
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--muted);
+  margin: 16px 0 23px;
+}
+.fileLabel {
+  min-height: 49px;
+  padding: 13px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: 13px;
+  background: var(--care-glass);
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 650;
+  width: 100%;
+  cursor: pointer;
+  margin-top: auto;
+}
+.fileLabel input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.fileLabel:focus-within {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+.upload small {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 11px;
+}
+.upload .privacy {
+  font-size: 10px !important;
+  line-height: 1.9 !important;
+  margin: 19px 0 0 !important;
+  max-width: 360px;
+}
+.form label {
+  font-size: 11px;
+  font-weight: 650;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 18px 0 9px;
+}
+.form label > span {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.form textarea,
+.location {
+  width: 100%;
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  background: var(--card-elev);
+  padding: 14px;
+  color: var(--foreground);
+  font-size: 14px;
+}
+.form textarea {
+  resize: vertical;
+  min-height: 140px;
+  outline: none;
+}
+.location {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.location input {
+  width: 100%;
+  outline: none;
+  background: transparent;
+  min-width: 0;
+}
+.location svg {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.location:focus-within,
+.form textarea:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+.primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--foreground);
+  color: var(--background);
+  border-radius: 13px;
+  min-height: 51px;
+  width: 100%;
+  margin-top: 22px;
+  padding: 14px 18px;
+  font-size: 12px;
+  font-weight: 650;
+}
+.primary:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.notice,
+.error {
+  margin: 20px 0;
+  padding: 18px;
+  border-radius: 15px;
+  font-size: 12px;
+  line-height: 1.9;
+  background: var(--brand-soft);
+  border: 1px solid var(--line-2);
+}
+.error {
+  background: #fff0eb;
+  color: #923625;
+}
+.results {
+  margin-top: 42px;
+}
+.results h2 {
+  scroll-margin-top: 130px;
+  font-size: 33px;
+}
+.help {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.9;
+  margin: 15px 0 23px;
+  max-width: 750px;
+}
+.offer {
+  max-width: 850px;
+  margin-top: 25px;
+}
+.offerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line-2);
+}
+.offerHead > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 650;
+  background: var(--brand-soft);
+  color: var(--brand);
+  border-radius: 25px;
+  padding: 9px 13px;
+}
+.offerHead p {
+  font-size: 10px;
+  color: var(--muted);
+}
+.lines {
+  list-style: none;
+}
+.lines li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.lines li > div > span {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  display: block;
+  text-transform: uppercase;
+}
+.lines li a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 650;
+  margin: 9px 0;
+}
+.lines small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.lines strong {
+  font-size: 13px;
+  white-space: nowrap;
+}
+.supplier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: var(--brand-tint);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+  margin: 23px 0 10px;
+}
+.supplier span {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+  color: var(--muted);
+  display: block;
+}
+.supplier strong {
+  display: block;
+  font-size: 13px;
+  margin-top: 6px;
+}
+.supplier a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 650;
+}
+.micro {
+  font-size: 10px;
+  line-height: 1.8;
+  text-align: center;
+  color: var(--muted);
+  margin-top: 13px;
+}
+.request {
+  max-width: 780px;
+  margin: auto;
+}
+.back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--brand);
+  min-height: 44px;
+  margin-bottom: 15px;
+}
+.footer {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  padding: 26px 0;
+  margin-top: 40px;
+  border-top: 1px solid var(--line-2);
+}
+.footer a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--brand);
+}
+@media (max-width: 700px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .upload,
+  .form,
+  .offer,
+  .request {
+    padding: 23px;
+    border-radius: 23px;
+  }
+  .uploadIcon {
+    height: 49px;
+    width: 49px;
+    margin-bottom: 20px;
+  }
+  .steps {
+    gap: 14px;
+    justify-content: space-between;
+  }
+  .steps li {
+    font-size: 10px;
+    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .upload h2,
+  .form h2,
+  .request h2 {
+    font-size: 27px;
+  }
+  .form textarea,
+  .location {
+    font-size: 16px;
+  }
+  .form label {
+    flex-wrap: wrap;
+  }
+  .offerHead {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .lines li {
+    align-items: flex-start;
+  }
+  .lines li a {
+    font-size: 14px;
+  }
+  .lines strong {
+    font-size: 12px;
+    margin-top: 20px;
+  }
+  .supplier {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .results h2 {
+    font-size: 29px;
+  }
+  .primary {
+    font-size: 11px;
+  }
+  .footer {
+    gap: 20px;
+    padding-bottom: 35px;
+  }
+}
+.upload, .form, .offer, .request, .uploadIcon { position: relative; }

@@ -12,6 +12,9 @@ import type { PortalSessionHint } from "@/app/lib/portal-dest";
 import { publicSurface, unscopedPublicBrand, type PublicBrand } from "@/app/lib/brand";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
 import { platform } from "@/app/lib/data";
+import CareMotion from "./care/CareMotion";
+import CareMobileNav from "./care/CareMobileNav";
+import careStyles from "./care/CareExperience.module.css";
 import publicChromeStyles from "./landing/PublicChromeTheme.module.css";
 import contrastStyles from "./landing/PublicChromeContrast.module.css";
 
@@ -61,6 +64,7 @@ export default function AppChrome({
       ? storefrontBrand ?? unscopedPublicBrand()
       : platformBrand;
   const isLandingPage = pathname === "/";
+  const isCarePage = ["/", "/medicines", "/services", "/prescription", "/refill", "/pharmacies", "/order", "/about"].some((path) => pathname === path || (path !== "/" && pathname.startsWith(`${path}/`)));
   const hasMobileCareDock = shouldShowMobileCareDock(pathname);
 
   return (
@@ -72,7 +76,7 @@ export default function AppChrome({
       }}
     >
       <div
-        className={`mesh-bg relative flex min-h-screen flex-col ${publicChromeStyles.publicChrome} ${
+        className={`mesh-bg relative flex min-h-screen flex-col ${isCarePage ? careStyles.experience : ""} ${publicChromeStyles.publicChrome} ${
           isLandingPage
             ? `${publicChromeStyles.landingChrome} ${contrastStyles.landingContrast}`
             : ""
@@ -86,14 +90,14 @@ export default function AppChrome({
           brand={brand}
         />
         <a href="#main-content" className="skip-link">Skip to content</a>
-        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1">{children}</main>
+        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1"><div key={pathname} className={isCarePage ? careStyles.enter : undefined}>{children}{isCarePage && <CareMotion />}</div></main>
         <div id="site-footer" className="shrink-0">
           <Footer surface={surface} brand={brand} clearMobileActionBar={hasMobileCareDock} />
         </div>
         {surface === "storefront" ? <AiChatbot /> : null}
         {surface === "storefront" ? <LiveAlertCenter audience="public" /> : null}
         <QuickPageAssist />
-        {!isLandingPage && hasMobileCareDock ? <MobileCareDock /> : null}
+        {!isLandingPage && isCarePage ? <CareMobileNav /> : !isLandingPage && hasMobileCareDock ? <MobileCareDock /> : null}
         {sessionUser ? <VerificationStatusModal /> : null}
       </div>
     </TenantBrandProvider>

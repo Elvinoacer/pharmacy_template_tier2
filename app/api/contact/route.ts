@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getSessionUser } from "@/app/lib/auth";
+import {
+  findPharmacyBySlug,
+  isActiveListed,
+  withPharmacy,
+} from "@/app/lib/tenant";
 import { createEnquiry } from "@/app/lib/services/crm";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { formatMpesaPhone } from "@/app/lib/services/daraja";
@@ -46,7 +51,10 @@ export async function POST(request: Request) {
     });
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "validation_failed", fields: parsed.error.flatten().fieldErrors },
+        {
+          error: "validation_failed",
+          fields: parsed.error.flatten().fieldErrors,
+        },
         { status: 400 },
       );
     }
@@ -54,23 +62,38 @@ export async function POST(request: Request) {
     const phone = formatMpesaPhone(parsed.data.phone);
     if (!/^254\d{9}$/.test(phone)) {
       return NextResponse.json(
-        { error: "validation_failed", fields: { phone: ["Enter a valid Kenyan phone number."] } },
+        {
+          error: "validation_failed",
+          fields: { phone: ["Enter a valid Kenyan phone number."] },
+        },
         { status: 400 },
       );
     }
 
-    const session = await getSessionUser();
-    await createEnquiry({
-      name: parsed.data.name,
-      phone,
-      email: parsed.data.email.toLowerCase(),
-      subject: parsed.data.subject,
-      message: parsed.data.message,
-      type: "contact",
-      customerId: session?.customerId ?? undefined,
-      source: "website",
-    });
-
+    const pharmacy =
+      typeof raw.pharmacySlug === "string"
+        ? await findPharmacyBySlug(raw.pharmacySlug)
+        : null;
+    if (raw.pharmacySlug && (!pharmacy || !isActiveListed(pharmacy)))
+      return NextResponse.json(
+        { error: "This pharmacy is unavailable." },
+        { status: 409 },
+      );
+    const submit = async () => {
+      const session = await getSessionUser();
+      await createEnquiry({
+        name: parsed.data.name,
+        phone,
+        email: parsed.data.email.toLowerCase(),
+        subject: parsed.data.subject,
+        message: parsed.data.message,
+        type: "contact",
+        customerId: session?.customerId ?? undefined,
+        source: "website",
+      });
+    };
+    if (pharmacy) await withPharmacy(pharmacy.id, submit, pharmacy.slug);
+    else await submit();
     revalidatePath("/admin/enquiries");
     return NextResponse.json({ ok: true });
   } catch (err) {
@@ -78,6 +101,9 @@ export async function POST(request: Request) {
     if (err instanceof SyntaxError) {
       return NextResponse.json({ error: "invalid_json" }, { status: 400 });
     }
-    return NextResponse.json({ error: "Could not submit enquiry" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Could not submit enquiry" },
+      { status: 500 },
+    );
   }
 }

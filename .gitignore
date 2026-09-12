@@ -20,7 +20,8 @@ tsconfig.tsbuildinfo
 
 # Design mockups and raster assets — served from Cloudflare R2
 landing_page_designs/
-public/images/
+public/images/*
+!public/images/care/
 header_white_bg.png
 
 # Logs

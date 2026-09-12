@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { FormSuccess, SelectInput, TextArea, TextInput } from "./FormField";
 
-export default function ContactForm() {
+export default function ContactForm({ pharmacySlug }: { pharmacySlug?: string } = {}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -17,7 +17,7 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, ...(pharmacySlug ? { pharmacySlug } : {}) }),
       });
       if (!res.ok) throw new Error("Failed");
       setStatus("success");

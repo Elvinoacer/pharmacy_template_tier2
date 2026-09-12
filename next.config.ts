@@ -6,6 +6,8 @@ const canonicalAppUrl =
   "";
 
 const nextConfig: NextConfig = {
+  // The in-app preview uses the loopback address rather than localhost.
+  allowedDevOrigins: ["127.0.0.1"],
   turbopack: {
     root: __dirname,
   },

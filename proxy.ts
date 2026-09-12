@@ -29,7 +29,7 @@ const REMEMBERED_PUBLIC_TENANT_PREFIXES = [
 
 // Discovery roots are marketplaces, not implicit tenant rooms. A remembered
 // pharmacy must not silently collapse these pages back to one tenant.
-const NETWORK_BROWSE_ROOTS = new Set(['/medicines', '/services'])
+const NETWORK_BROWSE_ROOTS = new Set(['/medicines', '/services', '/refill', '/prescription'])
 
 function isExternalApiPath(pathname: string): boolean {
   return EXTERNAL_API_PREFIXES.some((p) => pathname.startsWith(p))
@@ -94,6 +94,15 @@ export async function proxy(request: NextRequest) {
     const rest = storefront[2] || ''
     const restPath = rest === '' || rest === '/' ? '/' : rest
     const firstSeg = restPath === '/' ? '' : restPath.split('/').filter(Boolean)[0] || ''
+
+    // A pharmacy is an information profile, not a selection gate. Opening it
+    // must not switch medicine or service context in other tabs.
+    if ((request.method === 'GET' || request.method === 'HEAD') && (restPath === '/' || restPath === '/about')) {
+      const destination = request.nextUrl.clone()
+      destination.pathname = `/pharmacies/${slug}`
+      return NextResponse.redirect(destination, 303)
+    }
+
 
     const reserved = new Set([
       'login', 'register', 'forgot-password', 'reset-password',

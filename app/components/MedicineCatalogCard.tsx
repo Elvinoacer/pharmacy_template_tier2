@@ -1,5 +1,7 @@
 import Image from "next/image";
-import { MapPin, Store } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import styles from "./care/CarePages.module.css";
 import TenantLink from "@/app/components/TenantLink";
 import { formatPrice } from "@/app/lib/format";
 
@@ -28,121 +30,12 @@ export type MedicineCatalogItem = {
   };
 };
 
-export default function MedicineCatalogCard({
-  item,
-  badge,
-}: {
-  item: MedicineCatalogItem;
-  /** Optional extra badge (e.g. match confidence from photo search). */
-  badge?: string | null;
-}) {
-  const master = item.medicationMaster;
-  const inStock = (item.currentStock ?? 0) > 0;
-  const pharmacyLocation = item.pharmacy
-    ? [item.pharmacy.city, item.pharmacy.county].filter(Boolean).join(", ")
-    : "";
-
-  return (
-    <TenantLink
-      href={item.href || `/medicines/${item.slug}`}
-      className="card-lift group flex min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--brand)_40%,var(--line-2))] hover:shadow-lg sm:rounded-3xl"
-    >
-      <div className="min-w-0">
-        <div className="relative h-32 overflow-hidden bg-[var(--card-elev)] sm:h-36">
-          {master.imageUrl ? (
-            <Image
-              src={master.imageUrl}
-              alt={master.name}
-              fill
-              className="object-cover transition duration-700 group-hover:scale-105"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-4xl opacity-30" aria-hidden>
-              💊
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-
-          <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
-            {item.overTheCounter && (
-              <span className="rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
-                OTC
-              </span>
-            )}
-            {item.prescriptionRequired && !item.overTheCounter && (
-              <span className="rounded-full bg-amber-500/95 px-2.5 py-0.5 text-[10px] font-bold text-slate-950 shadow-sm">
-                Rx
-              </span>
-            )}
-          </div>
-
-          {badge && (
-            <span className="absolute bottom-2.5 right-2.5 rounded-full bg-[var(--brand-deep)]/90 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm backdrop-blur-sm">
-              {badge}
-            </span>
-          )}
-        </div>
-
-        <div className="min-w-0 p-3 sm:p-4">
-          <p className="truncate text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--brand)] sm:text-[10px]">
-            {master.category ? master.category.replace(/-/g, " ") : "general"}
-          </p>
-          <h3 className="mt-1 line-clamp-2 text-[13px] font-bold leading-snug text-[var(--foreground)] transition-colors group-hover:text-[var(--brand)] sm:text-sm">
-            {master.name}
-          </h3>
-          {master.description && (
-            <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-[var(--muted)] sm:text-xs">
-              {master.description}
-            </p>
-          )}
-
-          {item.pharmacy && (
-            <div className="mt-3 rounded-xl border border-[var(--line)] bg-[var(--brand-tint)]/60 px-2.5 py-2 sm:px-3">
-              <div className="flex min-w-0 items-center gap-2">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--card)] text-[var(--brand)] shadow-sm">
-                  <Store className="h-3.5 w-3.5" aria-hidden="true" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block truncate text-[10px] font-bold text-[var(--foreground)] sm:text-[11px]">
-                    {item.pharmacy.name}
-                  </span>
-                  {pharmacyLocation && (
-                    <span className="mt-0.5 flex min-w-0 items-center gap-1 text-[9px] text-[var(--muted)] sm:text-[10px]">
-                      <MapPin className="h-2.5 w-2.5 shrink-0" aria-hidden="true" />
-                      <span className="truncate">{pharmacyLocation}</span>
-                    </span>
-                  )}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="border-t border-[var(--line)] bg-[var(--card-elev)] p-3 sm:p-4 sm:pt-3">
-        <div className="flex min-w-0 items-end justify-between gap-2">
-          <div className="min-w-0">
-            <span className="block text-[9px] font-medium text-[var(--muted-2)] sm:text-[10px]">Price</span>
-            <span className="block truncate text-xs font-bold text-[var(--foreground)] sm:text-sm">
-              KES {formatPrice(Number(item.price ?? 0))}
-            </span>
-          </div>
-
-          <div className="shrink-0 text-right">
-            <span
-              className={`inline-flex items-center gap-1 text-[10px] font-semibold sm:text-[11px] ${
-                inStock ? "text-emerald-600" : "text-rose-600"
-              }`}
-            >
-              <span className={`h-1.5 w-1.5 rounded-full ${inStock ? "bg-emerald-500" : "bg-rose-500"}`} />
-              {inStock ? `${item.currentStock} in stock` : "Out of stock"}
-            </span>
-          </div>
-        </div>
-      </div>
-    </TenantLink>
-  );
+export default function MedicineCatalogCard({item,badge}:{item:MedicineCatalogItem;badge?:string|null}) {
+  const master=item.medicationMaster;const inStock=item.currentStock>0;const href=item.href||`/medicines/${item.slug}`;
+  return <article className={styles.serviceCard}>
+    <TenantLink href={href} className={styles.medicineImage} aria-label={`View ${master.name}`}><Image src={master.imageUrl||"/images/care/medicine-still-life.png"} alt={master.imageUrl?master.name:""} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover" /><span className={styles.badge}>{item.prescriptionRequired&&!item.overTheCounter?"Prescription required":"OTC"}</span>{!master.imageUrl&&<span className={styles.imageCredit}>Illustrative image</span>}</TenantLink>
+    <div className={styles.medicineBody}><span className={styles.medicineCategory}>{master.category?.replace(/-/g," ")||"Medicine"}</span><TenantLink href={href}><h3>{master.name}</h3></TenantLink>{badge&&<p>{badge}</p>}<span className={styles.medicineStock} data-stock={inStock}>{inStock?"Listed in stock":"Currently unavailable"}</span>{item.pharmacy&&<Link href={`/pharmacies/${item.pharmacy.slug}`} className={styles.provider}>About {item.pharmacy.name}<ArrowUpRight size={12} aria-hidden /></Link>}<TenantLink href={href} className={styles.serviceFoot}><strong>KES {formatPrice(Number(item.price))}</strong><ArrowRight size={16} aria-hidden /></TenantLink></div>
+  </article>;
 }
 
 export function MedicineCatalogGrid({

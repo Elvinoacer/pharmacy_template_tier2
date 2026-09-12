@@ -1,0 +1,44 @@
+.nav { composes: liquid from "./LiquidGlass.module.css"; }
+.nav {
+  display: none;
+}
+@media (max-width: 767px) {
+  .nav {
+    display: flex;
+    position: fixed;
+    z-index: 45;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: 12px;
+    justify-content: space-around;
+    gap: 3px;
+    background: var(--care-glass);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--care-border);
+    border-radius: 22px;
+    padding: 9px 5px;
+    box-shadow: 0 8px 32px #102b292b;
+  }
+  .nav a {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 42px;
+    color: var(--muted);
+    border-radius: 14px;
+    font-size: 8px;
+  }
+  .nav a[aria-current] {
+    color: var(--brand);
+    background: var(--brand-soft);
+  }
+  :global(body:has(input:focus)) .nav,
+  :global(body:has(textarea:focus)) .nav,
+  :global(body:has(select:focus)) .nav {
+    display: none;
+  }
+}

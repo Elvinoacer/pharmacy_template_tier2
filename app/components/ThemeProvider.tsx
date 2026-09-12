@@ -62,5 +62,5 @@ export default function ThemeToggle() {
   const { mode, cycle } = useAppTheme();
   const Icon = mode === "system" ? Monitor : mode === "light" ? Sun : Moon;
   const next = mode === "system" ? "light" : mode === "light" ? "dark" : "system";
-  return <button type="button" onClick={cycle} className="theme-toggle" aria-label={`Theme: ${mode}. Switch to ${next} theme`} title={`Theme: ${mode}. Switch to ${next}`}><Icon size={18} aria-hidden="true" /></button>;
+  return <button type="button" onClick={cycle} className="theme-toggle" aria-label={`Theme: ${mode}. Switch to ${next} theme`} title={`Theme: ${mode}. Switch to ${next}`}><Icon key={mode} size={18} aria-hidden="true" /></button>;
 }

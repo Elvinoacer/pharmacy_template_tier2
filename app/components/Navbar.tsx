@@ -24,6 +24,7 @@ import {
   Phone,
   Pill,
   Search,
+  RotateCw,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
@@ -95,7 +96,10 @@ const PLATFORM_CATEGORIES: NavCategory[] = [
     key: "patients",
     label: "For patients",
     items: [
-      { href: "/", label: "Find a pharmacy", desc: "Search verified neighbourhood shops", icon: MapPin, badge: "Network" },
+      { href: "/medicines", label: "Find medicine", desc: "Compare medicine availability and prices", icon: Pill },
+      { href: "/prescription", label: "Upload prescription", desc: "Find pharmacy options for your medicines", icon: Camera },
+      { href: "/services", label: "Find a service", desc: "Explore care and booking options", icon: Stethoscope },
+      { href: "/refill", label: "Refill medicine", desc: "Find availability for your next refill", icon: RotateCw },
       { href: "/register", label: "Patient account", desc: "One login across every Aether pharmacy", icon: User },
       { href: "/health", label: "Health library", desc: "Guides written for people, not pamphlets", icon: HeartPulse },
       { href: "/health/self-care-guide", label: "Self-care vs doctor", desc: "When to treat at home vs seek care", icon: ShieldCheck },
@@ -169,10 +173,12 @@ export default function Navbar({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
+  const [menuPathname, setMenuPathname] = useState(pathname);
+  if (menuPathname !== pathname) {
+    setMenuPathname(pathname);
     setActiveDropdown(null);
     setMenuOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -219,7 +225,7 @@ export default function Navbar({
 
   const shortAddress = brand.addressShort;
   const isLandingPage = isPlatform && pathname === "/";
-  const onDarkHero = isLandingPage;
+  const onDarkHero = isLandingPage && !isPlatform;
   const brandLabel = isPlatform ? "Aether" : brand.name.replace(/ Pharmacy$/i, "") || "Aether";
   const brandMeta = isPlatform ? "Network" : slug || "Pharmacy";
 
@@ -270,6 +276,7 @@ export default function Navbar({
       <div className={`transition-all duration-300 ${scrolled ? "py-1.5 sm:py-2" : "py-2 sm:py-3"}`}>
         <div className="mx-auto max-w-7xl px-2.5 sm:px-6 lg:px-8">
           <div
+            data-care-header-surface
             className={`flex min-h-14 min-w-0 items-center gap-2 rounded-[20px] border px-2.5 py-2 transition-all duration-300 sm:gap-3 sm:rounded-2xl sm:px-5 sm:py-2.5 ${headerSurface}`}
           >
             <Link
@@ -411,13 +418,13 @@ export default function Navbar({
 
             <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
               <Link
-                href={isPlatform ? "/pharmacies?focus=search" : withBase("/search")}
+                href={isPlatform ? "/medicines" : withBase("/search")}
                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-xs font-semibold transition sm:h-11 sm:w-auto sm:gap-2 sm:rounded-full sm:px-3 ${
                   onDarkHero
                     ? "border-white/15 bg-white/10 text-white hover:bg-white/15"
                     : "border-[var(--line-2)] bg-[var(--glass-fill)] text-[var(--brand-deep)] hover:bg-[var(--card-elev)]"
                 }`}
-                aria-label={isPlatform ? "Find pharmacies" : "Search medications"}
+                aria-label={isPlatform ? "Find medicines" : "Search medications"}
               >
                 <Search className="h-4 w-4 shrink-0" />
                 <span className="hidden sm:inline">Search</span>

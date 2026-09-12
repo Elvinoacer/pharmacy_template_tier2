@@ -76,6 +76,7 @@ function pharmacyWhere(pharmacySlug?: string) {
 export async function listNetworkMedicineListings(opts?: {
   q?: string;
   category?: string;
+  inStock?: boolean;
   pharmacySlug?: string;
   skip?: number;
   take?: number;
@@ -103,6 +104,7 @@ export async function listNetworkMedicineListings(opts?: {
     const where = {
       active: true,
       publicListing: true,
+      ...(opts?.inStock ? { currentStock: { gt: 0 } } : {}),
       pharmacy: pharmacyFilter,
       ...(Object.keys(medicationMaster).length > 0 ? { medicationMaster } : {}),
     };

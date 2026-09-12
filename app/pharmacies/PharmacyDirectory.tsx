@@ -569,7 +569,7 @@ function PharmacyCard({
         <div className="mt-auto pt-4">
           <div className="flex gap-2">
             <Link
-              href={`/p/${pharmacy.slug}`}
+              href={`/pharmacies/${pharmacy.slug}`}
               className="inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#0d6e5a] px-3 text-[11px] font-bold text-white transition hover:bg-[#084c3f]"
             >
               Visit storefront <ArrowRight className="h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -598,7 +598,7 @@ function PharmacyCard({
 
           <div className="mt-2 grid grid-cols-2 gap-2">
             <Link
-              href={`/p/${pharmacy.slug}/refill`}
+              href="/refill"
               className="rounded-xl border border-[var(--line-2)] py-2 text-center text-[10px] font-bold text-[var(--brand-deep)] transition hover:bg-[var(--brand-tint)]"
             >
               Request refill
