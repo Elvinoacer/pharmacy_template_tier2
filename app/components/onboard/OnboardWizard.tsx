@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createPharmacyDraftAction, submitPharmacyApplicationAction, updatePharmacyDraftAction, type OnboardState } from "@/app/actions/onboard";
 import { slugifyPharmacyName } from "@/app/lib/slug";
 import PharmacyLocationCapture from "@/app/components/location/PharmacyLocationCapture";
@@ -13,14 +14,15 @@ type Existing = {
   city: string | null; county: string | null; latitude: number | null; longitude: number | null; status: string;
 } | null;
 
-const STEPS = ["Account & identity", "Location & contact", "Review"];
+const STEPS = ["Applicant & pharmacy", "Premises & contact", "Review"];
 
 export default function OnboardWizard({ signedIn, existing }: { signedIn: boolean; existing: Existing }) {
+  const router = useRouter();
   const [step, setStep] = useState(existing ? 1 : 0);
   const [name, setName] = useState(existing?.name || "");
   const [slug, setSlug] = useState(existing?.slug || "");
   const [legalName, setLegalName] = useState(existing?.legalName || "");
-  const [licenseNumber, setLicenseNumber] = useState(existing?.licenseNumber || "");
+  const [licenseNumber] = useState(existing?.licenseNumber || "");
   const [pharmacyId, setPharmacyId] = useState(existing?.id || "");
   const [status, setStatus] = useState(existing?.status || "draft");
   const [city, setCity] = useState(existing?.city || "");
@@ -40,7 +42,7 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
 
   const state = createState.error ? createState : updateState.error ? updateState : submitState.error ? submitState : {};
   const liveSlug = useMemo(() => slug || slugifyPharmacyName(name), [slug, name]);
-  const isIdentityError = ["name", "slug", "licenseNumber"].includes(state.field || "");
+  const isIdentityError = ["name", "slug"].includes(state.field || "");
   const isContactError = ["city", "phone", "location"].includes(state.field || "");
 
   useEffect(() => {
@@ -48,9 +50,9 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
       setPharmacyId(createState.pharmacyId);
       if (createState.slug) setSlug(createState.slug);
       setStatus("draft");
-      setStep(1);
+      router.refresh();
     }
-  }, [createState.pharmacyId, createState.slug]);
+  }, [createState.pharmacyId, createState.slug, router]);
 
   useEffect(() => {
     if (updateState.success && nextStepAfterUpdate.current !== null) {
@@ -68,7 +70,7 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
     <div className="rounded-3xl border border-teal-900/10 bg-white p-6 text-center shadow-sm sm:p-8">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0d6e5a]">In review</p>
       <h2 className="mt-3 text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>{name || "Your pharmacy"} is with the network team</h2>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#5a6b62]">Super-admins verify the licence and precise premises location. You will land in the pharmacy admin to finish setup once it is approved.</p>
+      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#5a6b62]">Super-admins independently verify the KYP dossier, PPB records, responsible professional, ownership evidence and precise premises location before approval.</p>
       <p className="mt-6 text-xs text-[#7a8b84]">Application ID {pharmacyId.slice(0, 8)}</p>
     </div>
   );
@@ -80,7 +82,7 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
         {name || "Your pharmacy"} is approved
       </h2>
       <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#5a6b62]">
-        Next: confirm your map pin, phone, and opening hours — we will not ask again for the trading name or email you already provided.
+        Next: finish the operational setup for your verified pharmacy profile.
       </p>
       <Link href="/admin/setup" className="btn-primary mt-6 inline-flex w-full justify-center sm:w-auto">
         Continue to setup
@@ -117,15 +119,21 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
           <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Password<input name="password" type="password" autoComplete="new-password" required className="input-admin mt-1.5" /></label>
         </div>}
 
+        <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-xs leading-5 text-teal-900">
+          Start with the applicant and pharmacy identity only. After this draft is created, the next screen is the mandatory Know Your Pharmacy dossier where PPB, responsible-professional and business evidence are collected.
+        </div>
+
         <label className="block text-sm font-medium text-[#0c1a14]">Trading name<input name="name" required value={name} onChange={(e) => { setName(e.target.value); if (!pharmacyId) setSlug(slugifyPharmacyName(e.target.value)); }} className="input-admin mt-1.5" placeholder="e.g. Coast Care Pharmacy" autoComplete="organization" aria-invalid={state.field === "name"} />{state.field === "name" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
-        <label className="block text-sm font-medium text-[#0c1a14]">Public URL<span className="mt-1 block text-xs font-normal leading-5 text-[#7a8b84]">This is your pharmacy's public link.</span><div className="mt-1.5 flex min-w-0 items-center gap-2"><span className="shrink-0 rounded-lg bg-slate-50 px-2.5 py-3 text-sm font-medium text-[#7a8b84]">/p/</span><input name="slug" required value={slug || liveSlug} onChange={(e) => setSlug(e.target.value.toLowerCase())} className="input-admin min-w-0" aria-invalid={state.field === "slug"} autoComplete="off" spellCheck={false} /></div>{state.field === "slug" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
-        <label className="block text-sm font-medium text-[#0c1a14]">Legal name<input name="legalName" value={legalName} onChange={(e) => setLegalName(e.target.value)} className="input-admin mt-1.5" autoComplete="organization" /></label>
-        <label className="block text-sm font-medium text-[#0c1a14]">PPB / premises licence number<span className="mt-1 block text-xs font-normal leading-5 text-[#7a8b84]">Required for verification. Enter the number exactly as shown on your licence.</span><input name="licenseNumber" required value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} className="input-admin mt-1.5" aria-invalid={state.field === "licenseNumber"} autoComplete="off" spellCheck={false} />{state.field === "licenseNumber" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
-        <button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={createPending || updatePending}>{createPending || updatePending ? "Saving…" : "Save and continue"}</button>
+        <label className="block text-sm font-medium text-[#0c1a14]">Public URL<span className="mt-1 block text-xs font-normal leading-5 text-[#7a8b84]">Reserved now, but the storefront stays hidden until verification and activation.</span><div className="mt-1.5 flex min-w-0 items-center gap-2"><span className="shrink-0 rounded-lg bg-slate-50 px-2.5 py-3 text-sm font-medium text-[#7a8b84]">/p/</span><input name="slug" required value={slug || liveSlug} onChange={(e) => setSlug(e.target.value.toLowerCase())} className="input-admin min-w-0" aria-invalid={state.field === "slug"} autoComplete="off" spellCheck={false} /></div>{state.field === "slug" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
+        <label className="block text-sm font-medium text-[#0c1a14]">Legal / registered name<input name="legalName" value={legalName} onChange={(e) => setLegalName(e.target.value)} className="input-admin mt-1.5" autoComplete="organization" /><span className="mt-1 block text-xs font-normal leading-5 text-[#7a8b84]">Use the registered entity name if it differs from the trading name.</span></label>
+        <button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={createPending || updatePending}>{createPending || updatePending ? "Creating secure profile…" : "Continue to Know Your Pharmacy"}</button>
       </form>}
 
       {step === 1 && pharmacyId && <form action={(fd) => { fd.set("pharmacyId", pharmacyId); nextStepAfterUpdate.current = 2; updateAction(fd); }} className="space-y-5 sm:space-y-4">
         <input type="hidden" name="pharmacyId" value={pharmacyId} /><input type="hidden" name="name" value={name} /><input type="hidden" name="slug" value={slug || liveSlug} /><input type="hidden" name="legalName" value={legalName} /><input type="hidden" name="licenseNumber" value={licenseNumber} />
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs leading-5 text-emerald-900">
+          Know Your Pharmacy evidence is on file. Now verify the real premises and contact channels used by customers.
+        </div>
         <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
           <label className="block text-sm font-medium text-[#0c1a14]">City<input name="city" value={city} onChange={(e) => setCity(e.target.value)} required className="input-admin mt-1.5" autoComplete="address-level2" />{state.field === "city" && <p className="mt-1.5 text-xs leading-5 text-rose-700" role="alert">{state.error}</p>}</label>
           <label className="block text-sm font-medium text-[#0c1a14]">County<input name="county" value={county} onChange={(e) => setCounty(e.target.value)} className="input-admin mt-1.5" autoComplete="address-level1" /></label>
@@ -138,23 +146,24 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
           <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Tagline<input name="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} className="input-admin mt-1.5" placeholder="Your neighbourhood pharmacy, built on trust" /></label>
           <label className="block text-sm font-medium text-[#0c1a14] sm:col-span-2">Short description<textarea name="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="input-admin mt-1.5" /></label>
         </div>
-        <div className="flex flex-col-reverse gap-3 sm:flex-row"><button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(0)}>Back</button><button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={updatePending}>{updatePending ? "Saving…" : "Continue to review"}</button></div>
+        <div className="flex flex-col-reverse gap-3 sm:flex-row"><button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(0)}>Back</button><button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={updatePending}>{updatePending ? "Saving…" : "Continue to verification review"}</button></div>
       </form>}
 
       {step === 2 && pharmacyId && <form action={submitAction} className="space-y-5 sm:space-y-4">
         <input type="hidden" name="pharmacyId" value={pharmacyId} />
         <div className="rounded-2xl bg-teal-50/80 p-4 text-sm leading-6 text-[#084c3f] sm:p-5">
           <p className="font-semibold">{name}</p><p className="mt-1 break-words">Public URL <code className="rounded bg-white px-1.5 py-0.5">/p/{slug || liveSlug}</code></p>
+          <div className="mt-4 rounded-xl border border-emerald-200 bg-white px-3 py-2.5 text-xs font-semibold text-emerald-800">Know Your Pharmacy dossier completed — final approval still requires independent platform-admin checks.</div>
           <dl className="mt-4 grid gap-3 text-xs text-[#5a6b62] sm:grid-cols-2">
-            <div><dt className="font-semibold text-[#084c3f]">PPB / premises licence</dt><dd className="mt-0.5 break-words">{licenseNumber}</dd></div>
+            <div><dt className="font-semibold text-[#084c3f]">PPB / premises licence</dt><dd className="mt-0.5 break-words">{licenseNumber || "Captured in KYP dossier"}</dd></div>
             <div><dt className="font-semibold text-[#084c3f]">Location</dt><dd className="mt-0.5 break-words">{city}{county ? `, ${county}` : ""}</dd></div>
             <div><dt className="font-semibold text-[#084c3f]">Precise pin</dt><dd className="mt-0.5 break-words">{latitude != null && longitude != null ? `${latitude}, ${longitude}` : "Not captured yet"}</dd></div>
             <div><dt className="font-semibold text-[#084c3f]">Phone</dt><dd className="mt-0.5 break-words">{phone}</dd></div>
           </dl>
-          <p className="mt-4 text-[#5a6b62]">Submitting sends this application to Aether super-admins. Patients cannot see the storefront until you are approved and you choose to go live.</p>
+          <p className="mt-4 text-[#5a6b62]">Submitting sends the full KYP evidence package to Aether super-admins. Patients cannot see the storefront until independent verification is passed, the pharmacy is approved and it is explicitly listed.</p>
         </div>
         {submitState.error && <div className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-3 text-sm leading-5 text-rose-800" role="alert">{submitState.error}</div>}
-        <div className="flex flex-col-reverse gap-3 sm:flex-row"><button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(1)}>Back</button><button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={submitPending}>{submitPending ? "Submitting…" : "Submit for verification"}</button></div>
+        <div className="flex flex-col-reverse gap-3 sm:flex-row"><button type="button" className="btn-ghost w-full justify-center sm:w-auto" onClick={() => setStep(1)}>Back</button><button className="btn-primary w-full justify-center sm:w-auto" type="submit" disabled={submitPending}>{submitPending ? "Submitting KYP package…" : "Submit for independent verification"}</button></div>
       </form>}
     </div>
   );
