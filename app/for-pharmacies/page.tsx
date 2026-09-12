@@ -229,7 +229,7 @@ export default function ForPharmaciesPage() {
                     ["Refills", Clock3],
                     ["Services", Stethoscope],
                     ["Messages", MessageCircle],
-                  ] as const).map(([label, Icon]) => (
+                  ].map(([label, Icon]) => (
                     <div
                       key={label as string}
                       className="flex min-h-16 items-center gap-2.5 rounded-2xl border border-black/10 bg-white px-3 py-2.5 shadow-sm"
