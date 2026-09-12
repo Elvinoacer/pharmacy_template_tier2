@@ -35,8 +35,13 @@ function checked(formData: FormData, key: string) {
   return value === "on" || value === "true" || value === "1";
 }
 
-function validVerificationReference(value: string, pharmacyId: string) {
-  return value.startsWith(`r2-private://pharmacy-verification/${pharmacyId}/`);
+function validVerificationReference(value: string, pharmacyId: string, kind: "license" | "business") {
+  return value.startsWith(`r2-private://pharmacy-verification/${pharmacyId}/${kind}/`);
+}
+
+function isExpired(dateInput: string) {
+  const parsed = new Date(`${dateInput}T23:59:59+03:00`);
+  return Number.isNaN(parsed.getTime()) || parsed.getTime() < Date.now();
 }
 
 export async function savePharmacyVerificationProfileAction(
@@ -93,11 +98,30 @@ export async function savePharmacyVerificationProfileAction(
       return { error: `Complete the verification dossier first: ${missing.join(", ")}.` };
     }
 
-    if (!validVerificationReference(licenseDocumentUrl, pharmacyId)) {
+    if (isExpired(licenseExpiryDate)) {
+      return { error: "The submitted PPB premises licence expiry date must be valid and in the future." };
+    }
+    if (!validVerificationReference(licenseDocumentUrl, pharmacyId, "license")) {
       return { error: "Upload the PPB licence through the secure document uploader." };
     }
-    if (!validVerificationReference(businessDocumentUrl, pharmacyId)) {
+    if (!validVerificationReference(businessDocumentUrl, pharmacyId, "business")) {
       return { error: "Upload the business-registration evidence through the secure document uploader." };
+    }
+
+    const duplicate = await prismaUnscoped.pharmacy.findFirst({
+      where: {
+        id: { not: pharmacyId },
+        OR: [
+          { licenseNumber: { equals: licenseNumber, mode: "insensitive" } },
+          { ppbPremisesNumber: { equals: ppbPremisesNumber, mode: "insensitive" } },
+        ],
+      },
+      select: { id: true, name: true, licenseNumber: true, ppbPremisesNumber: true, status: true },
+    });
+    if (duplicate) {
+      return {
+        error: "That PPB licence or premises number is already attached to another pharmacy application. Contact platform support if this is a legitimate transfer or duplicate record.",
+      };
     }
 
     const declaredAt = new Date().toISOString();
@@ -152,8 +176,14 @@ export async function resendOwnerVerificationEmailAction(
   _formData: FormData,
 ): Promise<VerificationActionState> {
   try {
-    const user = await getSessionUser();
-    if (!user) return { error: "Sign in first." };
+    const session = await getSessionUser();
+    if (!session) return { error: "Sign in first." };
+
+    const user = await prismaUnscoped.user.findUnique({
+      where: { id: session.id },
+      select: { id: true, email: true, emailVerified: true },
+    });
+    if (!user) return { error: "Account not found." };
     if (user.emailVerified) return { success: "Your email is already verified." };
 
     const token = await createEmailVerification(user.id);
@@ -164,7 +194,10 @@ export async function resendOwnerVerificationEmailAction(
       subject: "Verify your email for pharmacy onboarding",
       body: emailVerificationBody(token),
     });
-    if (!delivery.ok) return { error: "Could not send the verification email. Try again shortly." };
+    if (delivery.status === "failed") {
+      console.error("[verification] email delivery failed", delivery.error);
+      return { error: "Could not send the verification email. Try again shortly." };
+    }
     return { success: `Verification email sent to ${user.email}.` };
   } catch (err) {
     console.error("[verification] resend owner email", err);
@@ -221,7 +254,7 @@ export async function savePharmacyVerificationChecklistAction(
       resourceId: pharmacyId,
       tenantId: pharmacyId,
       reason: checklist.notes,
-      metadata: { riskScore },
+      details: { riskScore },
     });
 
     revalidatePath("/platform/applications");
