@@ -9,6 +9,7 @@ import {
   ChevronRight,
   ClipboardCheck,
   Clock3,
+  ExternalLink,
   HeartPulse,
   LayoutDashboard,
   MessageCircle,
