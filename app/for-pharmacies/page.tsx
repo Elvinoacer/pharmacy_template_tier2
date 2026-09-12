@@ -3,24 +3,29 @@ import { ArrowRight, CheckCircle2, ClipboardList, Shield, Sparkles } from "lucid
 
 export const metadata = {
   title: "For pharmacies",
-  description: "Bring your independent pharmacy onto the Aether network — branded storefront, CRM, and verified listing.",
+  description: "Bring your independent pharmacy onto the Aether network through Know Your Pharmacy verification — then launch a branded storefront and CRM.",
 };
 
 const STEPS = [
   {
     n: "01",
-    title: "Tell us about the pharmacy",
-    body: "Legal name, trading name, PPB premises number, and a public slug. Save a draft any time — nothing goes live until you submit.",
+    title: "Identify the applicant",
+    body: "Create the applicant account and reserve the pharmacy identity. Nothing is published and a PPB number alone is never treated as verification.",
   },
   {
     n: "02",
-    title: "Network review",
-    body: "Aether super-admins check licence details, location, and duplicates. We may ask for a clearer document or a phone confirmation.",
+    title: "Complete Know Your Pharmacy",
+    body: "Provide PPB premises identity and licence evidence, the responsible professional, legal business evidence, verified owner email, and authority to represent the pharmacy.",
   },
   {
     n: "03",
-    title: "Set up & go live",
-    body: "Hours, delivery, branding, first staff invite, and optional M-Pesa. When you are ready, list the storefront in the marketplace.",
+    title: "Verify the real premises",
+    body: "Confirm the physical premises, county, precise map pin, and public contact channels before the application can be submitted.",
+  },
+  {
+    n: "04",
+    title: "Independent network review",
+    body: "Aether reviewers independently reconcile the dossier against official PPB records and submitted evidence. Approval stays locked until every mandatory check passes.",
   },
 ];
 
@@ -65,12 +70,13 @@ export default function ForPharmaciesPage() {
             <p className="mt-4 max-w-2xl text-[13.5px] leading-6 text-[var(--muted)] sm:text-base sm:leading-relaxed lg:text-lg">
               Aether is a multi-tenant network, not a single shop. You keep the licence, the
               counter, and the relationship — we give you a verified storefront, CRM, and
-              a patient portal that already knows how refills work in Kenya.
+              a patient portal that already knows how refills work in Kenya. Joining starts
+              with a full Know Your Pharmacy identity and regulatory check.
             </p>
 
             <div className="mt-6 grid w-full grid-cols-1 gap-2.5 sm:mt-8 sm:flex sm:w-auto sm:flex-wrap sm:gap-3">
               <Link href="/onboard" className="btn-primary w-full justify-center sm:w-auto">
-                Start pharmacy onboarding
+                Start Know Your Pharmacy onboarding
                 <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </Link>
               <Link href="/login?next=/onboard" className="btn-ghost w-full justify-center sm:w-auto">
@@ -82,7 +88,7 @@ export default function ForPharmaciesPage() {
       </section>
 
       <section className="px-3 pb-10 sm:px-6 sm:pb-16">
-        <div className="mx-auto grid max-w-5xl gap-3 sm:gap-4 md:grid-cols-3">
+        <div className="mx-auto grid max-w-5xl gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step) => (
             <article key={step.n} className={`${adaptiveCard} p-5 sm:p-6`}>
               <p className="text-[10px] font-bold tracking-[0.18em] text-[var(--accent)] sm:text-xs sm:tracking-[0.2em]">
@@ -143,19 +149,20 @@ export default function ForPharmaciesPage() {
             </div>
 
             <p className="mt-3 text-[11.5px] leading-[1.6] text-white/80 sm:mt-2 sm:text-sm sm:leading-relaxed">
-              Draft applications are invisible to patients. Super-admins review licence
-              documents, flag duplicates, and only then can you go live. Suspended
-              pharmacies drop off the marketplace immediately.
+              Draft applications stay invisible to patients. Applicants must complete the
+              KYP dossier and premises evidence, then platform reviewers independently check
+              official PPB facility and practitioner records, licence evidence, ownership,
+              applicant authority, contact identity, and location before approval is unlocked.
             </p>
 
             <div className="mt-4 grid gap-2 sm:mt-6 sm:gap-2.5">
               <div className="flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2 text-[10.5px] font-semibold leading-4 text-teal-100 sm:items-start sm:rounded-2xl sm:px-3 sm:py-2.5 sm:text-xs sm:uppercase sm:tracking-wide">
                 <ClipboardList className="h-3.5 w-3.5 shrink-0 sm:mt-0.5 sm:h-4 sm:w-4" aria-hidden />
-                <span className="min-w-0 break-words">Typical review: 1–2 business days</span>
+                <span className="min-w-0 break-words">Evidence-backed review before approval</span>
               </div>
               <div className="flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2 text-[10.5px] font-semibold leading-4 text-amber-200 sm:items-start sm:rounded-2xl sm:px-3 sm:py-2.5 sm:text-xs sm:uppercase sm:tracking-wide">
                 <Sparkles className="h-3.5 w-3.5 shrink-0 sm:mt-0.5 sm:h-4 sm:w-4" aria-hidden />
-                <span className="min-w-0 break-words">Setup wizard after approval</span>
+                <span className="min-w-0 break-words">Operational setup only after approval</span>
               </div>
             </div>
           </aside>
