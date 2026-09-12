@@ -4,6 +4,7 @@ import { prismaUnscoped } from "@/app/lib/db";
 
 export const VERIFICATION_PROFILE_EVENT = "verification_profile_saved";
 export const VERIFICATION_CHECKLIST_EVENT = "verification_checklist_saved";
+export const VERIFICATION_INPUT_CHANGED_EVENT = "verification_input_changed";
 
 export type VerificationProfile = {
   facilityType: string | null;
@@ -40,6 +41,7 @@ export type OwnerSubmissionReadiness = {
   ready: boolean;
   missing: string[];
   profile: VerificationProfile | null;
+  profileEventCreatedAt: Date | null;
 };
 
 export type ApprovalReadiness = {
@@ -188,14 +190,26 @@ export async function loadOwnerSubmissionReadiness(pharmacyId: string): Promise<
     loadLatestVerificationProfile(pharmacyId),
   ]);
 
-  if (!pharmacy) return { ready: false, missing: ["pharmacy application"], profile: null };
+  if (!pharmacy) {
+    return {
+      ready: false,
+      missing: ["pharmacy application"],
+      profile: null,
+      profileEventCreatedAt: null,
+    };
+  }
   const profile = profileResult?.profile ?? null;
   const missing = profileMissingItems({
     pharmacy,
     profile,
     ownerEmailVerified: Boolean(pharmacy.owner?.emailVerified),
   });
-  return { ready: missing.length === 0, missing, profile };
+  return {
+    ready: missing.length === 0,
+    missing,
+    profile,
+    profileEventCreatedAt: profileResult?.event.createdAt ?? null,
+  };
 }
 
 export const REQUIRED_REVIEW_CHECKS: Array<{
@@ -226,7 +240,12 @@ export const REQUIRED_REVIEW_CHECKS: Array<{
 
 export function checklistMissingItems(checklist: VerificationChecklist | null) {
   if (!checklist) return ["reviewer verification checklist"];
-  return REQUIRED_REVIEW_CHECKS.filter(({ key }) => !checklist[key]).map(({ label }) => label);
+  const missing = REQUIRED_REVIEW_CHECKS.filter(({ key }) => !checklist[key]).map(({ label }) => label);
+  if (!checklist.ppbRegistrySource) missing.push("PPB facility-register evidence source");
+  if (!checklist.practitionerRegistrySource) missing.push("PPB practitioner-register evidence source");
+  if (!checklist.checkedAt) missing.push("review timestamp");
+  if (!checklist.notes) missing.push("reviewer evidence notes");
+  return missing;
 }
 
 export function verificationRiskScore(checklist: VerificationChecklist | null) {
@@ -236,13 +255,30 @@ export function verificationRiskScore(checklist: VerificationChecklist | null) {
 }
 
 export async function loadApprovalReadiness(pharmacyId: string): Promise<ApprovalReadiness> {
-  const [ownerReadiness, checklistResult] = await Promise.all([
+  const [ownerReadiness, checklistResult, latestInputChange] = await Promise.all([
     loadOwnerSubmissionReadiness(pharmacyId),
     loadLatestVerificationChecklist(pharmacyId),
+    prismaUnscoped.pharmacyOnboardingEvent.findFirst({
+      where: { pharmacyId, type: VERIFICATION_INPUT_CHANGED_EVENT },
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    }),
   ]);
 
   const checklist = checklistResult?.checklist ?? null;
   const checklistMissing = checklistMissingItems(checklist);
+  const latestTrustInputAt = [ownerReadiness.profileEventCreatedAt, latestInputChange?.createdAt ?? null]
+    .filter((value): value is Date => value instanceof Date)
+    .sort((a, b) => b.getTime() - a.getTime())[0] ?? null;
+
+  if (
+    checklistResult?.event.createdAt &&
+    latestTrustInputAt &&
+    checklistResult.event.createdAt.getTime() < latestTrustInputAt.getTime()
+  ) {
+    checklistMissing.push("reviewer checklist must be repeated after the latest pharmacy evidence change");
+  }
+
   return {
     ready: ownerReadiness.missing.length === 0 && checklistMissing.length === 0,
     profileMissing: ownerReadiness.missing,
