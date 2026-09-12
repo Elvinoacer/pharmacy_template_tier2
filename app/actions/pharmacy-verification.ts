@@ -44,6 +44,17 @@ function isExpired(dateInput: string) {
   return Number.isNaN(parsed.getTime()) || parsed.getTime() < Date.now();
 }
 
+function isOfficialPpbSource(value: string | null) {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    return url.protocol === "https:" && (host === "pharmacyboardkenya.org" || host.endsWith(".pharmacyboardkenya.org"));
+  } catch {
+    return false;
+  }
+}
+
 export async function savePharmacyVerificationProfileAction(
   _prev: VerificationActionState,
   formData: FormData,
@@ -232,7 +243,19 @@ export async function savePharmacyVerificationChecklistAction(
     };
     const riskScore = verificationRiskScore(checklist);
 
+    if (riskScore === 0) {
+      if (!isOfficialPpbSource(checklist.ppbRegistrySource) || !isOfficialPpbSource(checklist.practitionerRegistrySource)) {
+        return { error: "Completed verification must cite official Pharmacy and Poisons Board HTTPS sources." };
+      }
+      if (!checklist.notes || checklist.notes.length < 20) {
+        return { error: "Add meaningful reviewer evidence notes (at least 20 characters) before marking all checks passed." };
+      }
+    }
+
     await prismaUnscoped.$transaction([
+      ...(pharmacy.status === "submitted"
+        ? [prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data: { status: "under_review" } })]
+        : []),
       prismaUnscoped.pharmacyOnboardingEvent.create({
         data: {
           pharmacyId,
@@ -242,9 +265,6 @@ export async function savePharmacyVerificationChecklistAction(
           meta: { ...checklist, riskScore, schemaVersion: 1 },
         },
       }),
-      ...(pharmacy.status === "submitted"
-        ? [prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data: { status: "under_review" } })]
-        : []),
     ]);
 
     await recordAuditRequired({
@@ -263,7 +283,7 @@ export async function savePharmacyVerificationChecklistAction(
     return {
       success:
         riskScore === 0
-          ? "All mandatory verification checks are recorded as passed. Approval is now unlocked."
+          ? "All mandatory verification checks are recorded with evidence. Approval is now unlocked unless the pharmacy data changes."
           : `Checklist saved. Risk score ${riskScore}/100; approval remains blocked until every mandatory check passes.`,
     };
   } catch (err) {
