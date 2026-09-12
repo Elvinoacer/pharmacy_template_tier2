@@ -46,13 +46,11 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
     const name = String(formData.get("name") || "").trim();
     const legalName = String(formData.get("legalName") || "").trim();
     let slug = String(formData.get("slug") || "").trim().toLowerCase();
-    const licenseNumber = String(formData.get("licenseNumber") || "").trim();
 
     if (!name) return { error: "Enter the pharmacy trading name.", field: "name" };
     if (!slug) slug = slugifyPharmacyName(name);
     const slugError = validateSlug(slug);
     if (slugError) return { error: slugError, field: "slug" };
-    if (!licenseNumber) return { error: "Enter the PPB / premises licence number to continue.", field: "licenseNumber" };
 
     if (!user) {
       if (!email || !password || !fullName) return { error: "Create an owner account (name, email, password) or sign in first.", field: "general" };
@@ -102,7 +100,7 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
         slug,
         name,
         legalName: legalName || name,
-        licenseNumber,
+        licenseNumber: null,
         tagline: null,
         phone: null,
         email: user.email,
@@ -125,12 +123,17 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
     await prismaUnscoped.pharmacyIntegration.create({ data: { pharmacyId: pharmacy.id } });
 
     await prismaUnscoped.pharmacyOnboardingEvent.create({
-      data: { pharmacyId: pharmacy.id, actorId: user.id, type: "draft_created", message: "Pharmacy draft created" },
+      data: {
+        pharmacyId: pharmacy.id,
+        actorId: user.id,
+        type: "draft_created",
+        message: "Pharmacy draft created; KYP verification required before premises setup and submission",
+      },
     });
 
     revalidatePath("/onboard");
     revalidatePath("/onboard/verification");
-    return { success: "Draft saved.", pharmacyId: pharmacy.id, slug: pharmacy.slug };
+    return { success: "Secure pharmacy profile created. Continue with Know Your Pharmacy verification.", pharmacyId: pharmacy.id, slug: pharmacy.slug };
   } catch (err) {
     console.error("[onboard] create draft", err);
     return { error: err instanceof Error ? err.message : "Could not save draft.", field: "general" };
@@ -154,7 +157,7 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
     if (!name) return { error: "Enter the pharmacy trading name.", field: "name" };
     const slugError = validateSlug(slug);
     if (slugError) return { error: slugError, field: "slug" };
-    if (!licenseNumber) return { error: "Enter the PPB / premises licence number to continue.", field: "licenseNumber" };
+    if (!licenseNumber) return { error: "Complete the Know Your Pharmacy regulatory dossier before premises setup.", field: "licenseNumber" };
 
     if (slug !== pharmacy.slug) {
       const taken = await prismaUnscoped.pharmacy.findUnique({ where: { slug } });
@@ -236,7 +239,7 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
     revalidatePath("/onboard/verification");
     revalidatePath("/platform");
     revalidatePath("/platform/applications");
-    return { success: "Submitted for verification review.", pharmacyId, slug: pharmacy.slug };
+    return { success: "Submitted for independent verification review.", pharmacyId, slug: pharmacy.slug };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Submit failed.", field: "general" };
   }
