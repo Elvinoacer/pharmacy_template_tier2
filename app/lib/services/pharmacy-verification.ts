@@ -48,6 +48,7 @@ export type ApprovalReadiness = {
   ready: boolean;
   profileMissing: string[];
   checklistMissing: string[];
+  checklistStale: boolean;
   riskScore: number;
   profile: VerificationProfile | null;
   checklist: VerificationChecklist | null;
@@ -271,11 +272,12 @@ export async function loadApprovalReadiness(pharmacyId: string): Promise<Approva
     .filter((value): value is Date => value instanceof Date)
     .sort((a, b) => b.getTime() - a.getTime())[0] ?? null;
 
-  if (
+  const checklistStale = Boolean(
     checklistResult?.event.createdAt &&
-    latestTrustInputAt &&
-    checklistResult.event.createdAt.getTime() < latestTrustInputAt.getTime()
-  ) {
+      latestTrustInputAt &&
+      checklistResult.event.createdAt.getTime() < latestTrustInputAt.getTime(),
+  );
+  if (checklistStale) {
     checklistMissing.push("reviewer checklist must be repeated after the latest pharmacy evidence change");
   }
 
@@ -283,7 +285,8 @@ export async function loadApprovalReadiness(pharmacyId: string): Promise<Approva
     ready: ownerReadiness.missing.length === 0 && checklistMissing.length === 0,
     profileMissing: ownerReadiness.missing,
     checklistMissing,
-    riskScore: verificationRiskScore(checklist),
+    checklistStale,
+    riskScore: checklistStale ? 100 : verificationRiskScore(checklist),
     profile: ownerReadiness.profile,
     checklist,
   };
