@@ -22,8 +22,8 @@ export default async function PlatformLayout({ children }: { children: React.Rea
 
   if (!user.twoFactorEnabled || !user.mfaVerifiedAt) {
     return (
-      <main className="shell-grid-admin min-h-dvh bg-[var(--admin-bg)] px-4 py-8 text-[var(--admin-text)] sm:py-10">
-        <div className="mx-auto max-w-2xl">
+      <main className="platform-security-shell shell-grid-admin min-h-dvh bg-[var(--admin-bg)] px-4 py-8 text-[var(--admin-text)] sm:py-10">
+        <div className="mx-auto w-full max-w-2xl">
           <Link
             href="/"
             className="mb-7 inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-[var(--admin-text-muted)] transition hover:text-[var(--admin-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)] sm:mb-8"
