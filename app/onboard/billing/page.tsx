@@ -56,7 +56,10 @@ function describeMpesaOutcome(payment: PaymentView) {
     lower.includes("timed out") ||
     lower.includes("1037") ||
     lower.includes("unreachable");
-  const pinProblem = lower.includes("pin") || lower.includes("2001");
+  const pinProblem =
+    lower.includes("pin") ||
+    lower.includes("2001") ||
+    lower.includes("initiator information is invalid");
 
   let title = payment.status === "cancelled" ? "M-Pesa request cancelled" : "M-Pesa payment failed";
   let message = reason || "M-Pesa did not complete the payment. You can try again.";
@@ -71,8 +74,9 @@ function describeMpesaOutcome(payment: PaymentView) {
     title = "M-Pesa request timed out";
     message = "The phone did not complete the prompt in time. Check network access and send a new prompt.";
   } else if (pinProblem) {
-    title = "M-Pesa PIN was not accepted";
-    message = "Safaricom did not complete the payment because of the M-Pesa PIN response. You can retry safely.";
+    title = "M-Pesa authorization was rejected";
+    message =
+      "Safaricom returned result 2001 after the PIN step. This can mean the PIN response or the STK signing credentials were not accepted. No payment was recorded, so you can retry safely.";
   }
 
   if (["pending", "processing"].includes(payment.status) && reason) {
