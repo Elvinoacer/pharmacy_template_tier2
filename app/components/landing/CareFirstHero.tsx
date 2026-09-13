@@ -92,6 +92,22 @@ export default function CareFirstHero() {
           <span className={styles.credit}>Illustrative imagery</span>
         </div>
       </div>
+
+      <div className="mx-auto mt-10 max-w-2xl text-center md:mt-14">
+        <p className="text-[9px] font-extrabold tracking-[.16em] text-[var(--brand)]">
+          WHAT BRINGS YOU TODAY?
+        </p>
+        <h2
+          className="mt-2 text-3xl leading-tight tracking-[-.035em] md:text-4xl"
+          style={{ fontFamily: "var(--font-display), Georgia, serif" }}
+        >
+          Start with your need. <em className="font-normal text-[var(--brand)]">Not a pharmacy.</em>
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-xs leading-6 text-[var(--muted)]">
+          We’ll connect availability to the pharmacy that can actually help after we know what you need.
+        </p>
+      </div>
+
       <div className={styles.paths}>
         <Link className={glass.liquid} href="/prescription">
           <span className={styles.pathIcon}>
@@ -127,12 +143,16 @@ export default function CareFirstHero() {
           <ArrowUpRight className={styles.pathArrow} size={23} aria-hidden />
         </Link>
       </div>
-      <div className={styles.note}>
+      <div className={`${styles.note} flex-wrap`}>
         <Pill size={16} aria-hidden />
         <span>
           Start with what you need. Availability connects your request to the
           pharmacy that can help.
         </span>
+        <span aria-hidden>·</span>
+        <Link href="/pharmacies" className="font-semibold text-[var(--brand)]">
+          Looking for a specific pharmacy? Browse the directory.
+        </Link>
       </div>
     </section>
   );

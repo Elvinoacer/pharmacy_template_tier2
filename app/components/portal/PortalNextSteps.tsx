@@ -1,10 +1,52 @@
 import Link from "next/link";
-import { ArrowRight, Pill, CalendarDays, Package } from "lucide-react";
+import { ArrowRight, Bell, Package } from "lucide-react";
+import CareIntentNavigator from "@/app/components/care/CareIntentNavigator";
+
 export default function PortalNextSteps({ readyForPickup }: { readyForPickup: number }) {
-  const actions = [
-    { href: "/medicines", title: "Find medicine", description: "Availability, prices and nearby care.", Icon: Pill },
-    { href: "/services", title: "Book a service", description: "Choose the care you need.", Icon: CalendarDays },
-    { href: readyForPickup ? "/portal/refills" : "/portal/orders", title: readyForPickup ? `${readyForPickup} ready for collection` : "Track requests", description: "Updates and payments in one place.", Icon: Package },
-  ];
-  return <section aria-label="Your next step" className="mb-6 grid gap-3 md:grid-cols-3">{actions.map(({ href, title, description, Icon }) => <Link key={href} href={href} className="group rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-5 transition hover:border-[var(--brand)]"><Icon className="mb-4 h-5 w-5 text-[var(--brand)]" aria-hidden /><h2 className="flex items-center justify-between font-semibold">{title}<ArrowRight size={16} aria-hidden /></h2><p className="mt-1 text-sm text-[var(--muted)]">{description}</p></Link>)}</section>;
+  return (
+    <section aria-label="Your next step" className="mb-6">
+      <CareIntentNavigator
+        signedIn
+        compact
+        title="What do you need today?"
+        description="Start with the task, not a pharmacy. We’ll connect availability and the right provider as you continue."
+      />
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link
+          href={readyForPickup ? "/portal/refills" : "/portal/orders"}
+          className="group flex items-center gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 transition hover:border-[var(--brand)]"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+            <Package className="h-5 w-5" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1">
+            <strong className="block text-sm font-semibold text-[var(--foreground)]">
+              {readyForPickup ? `${readyForPickup} ready for collection` : "Track my requests"}
+            </strong>
+            <span className="mt-0.5 block text-xs text-[var(--muted)]">
+              Orders, refill progress and payment updates.
+            </span>
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--brand)]" aria-hidden />
+        </Link>
+
+        <Link
+          href="/portal/messages"
+          className="group flex items-center gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 transition hover:border-[var(--brand)]"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
+            <Bell className="h-5 w-5" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1">
+            <strong className="block text-sm font-semibold text-[var(--foreground)]">Messages & updates</strong>
+            <span className="mt-0.5 block text-xs text-[var(--muted)]">
+              Continue conversations about care already in progress.
+            </span>
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--brand)]" aria-hidden />
+        </Link>
+      </div>
+    </section>
+  );
 }
