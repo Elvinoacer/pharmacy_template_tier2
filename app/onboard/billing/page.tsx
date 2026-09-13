@@ -18,6 +18,76 @@ export const metadata = { title: "Pharmacy fees" };
 
 const ACTIVE_STK_WINDOW_MS = 90_000;
 
+type PaymentView = {
+  provider: string;
+  status: string;
+  failureReason: string | null;
+  providerRef: string | null;
+  createdAt: Date;
+};
+
+function isActivePayment(payment: PaymentView | undefined, activeStkSince: Date) {
+  if (!payment || !["pending", "processing"].includes(payment.status)) return false;
+  if (payment.provider !== "mpesa") return true;
+  return payment.createdAt >= activeStkSince;
+}
+
+function describeMpesaOutcome(payment: PaymentView) {
+  const reason = payment.failureReason?.trim() || "";
+  const lower = reason.toLowerCase();
+
+  if (payment.status === "succeeded") {
+    return {
+      title: "M-Pesa payment confirmed",
+      message: "Safaricom confirmed the payment and the invoice has been updated.",
+      ok: true,
+    };
+  }
+
+  const cancelled = lower.includes("cancel") || lower.includes("1032");
+  const insufficient =
+    lower.includes("insufficient") ||
+    lower.includes("balance") ||
+    lower.includes("result 1:");
+  const timedOut =
+    lower.includes("timeout") ||
+    lower.includes("timed out") ||
+    lower.includes("1037") ||
+    lower.includes("unreachable");
+  const pinProblem = lower.includes("pin") || lower.includes("2001");
+
+  let title = payment.status === "cancelled" ? "M-Pesa request cancelled" : "M-Pesa payment failed";
+  let message = reason || "M-Pesa did not complete the payment. You can try again.";
+
+  if (cancelled) {
+    title = "M-Pesa request cancelled";
+    message = "The M-Pesa prompt was cancelled. No payment was recorded. You can send a new prompt when ready.";
+  } else if (insufficient) {
+    title = "Insufficient M-Pesa balance";
+    message = "Safaricom reported insufficient funds. Top up the M-Pesa account or use another number, then try again.";
+  } else if (timedOut) {
+    title = "M-Pesa request timed out";
+    message = "The phone did not complete the prompt in time. Check network access and send a new prompt.";
+  } else if (pinProblem) {
+    title = "M-Pesa PIN was not accepted";
+    message = "Safaricom did not complete the payment because of the M-Pesa PIN response. You can retry safely.";
+  }
+
+  if (["pending", "processing"].includes(payment.status) && reason) {
+    return {
+      title,
+      message: `${message} Safaricom's final status is still being verified automatically.`,
+      ok: false,
+    };
+  }
+
+  if (["failed", "cancelled"].includes(payment.status)) {
+    return { title, message, ok: false };
+  }
+
+  return null;
+}
+
 export default async function PharmacyBillingPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/onboard/billing");
@@ -37,14 +107,8 @@ export default async function PharmacyBillingPage() {
         include: {
           items: true,
           payments: {
-            where: {
-              status: { in: ["pending", "processing"] },
-              OR: [
-                { provider: { not: "mpesa" } },
-                { provider: "mpesa", createdAt: { gte: activeStkSince } },
-              ],
-            },
             orderBy: { createdAt: "desc" },
+            take: 1,
           },
         },
         orderBy: { createdAt: "desc" },
@@ -71,7 +135,9 @@ export default async function PharmacyBillingPage() {
     }),
   );
   const feeCents = feeBalance._sum.quantity || 0;
-  const paymentPending = invoices.some((invoice) => invoice.payments.length > 0);
+  const paymentPending = invoices.some((invoice) =>
+    isActivePayment(invoice.payments[0] as PaymentView | undefined, activeStkSince),
+  );
   const stkAvailable = Boolean(platformDaraja);
   const checkoutAvailable = intasendCheckoutConfigured();
 
@@ -113,11 +179,14 @@ export default async function PharmacyBillingPage() {
 
       <div className="mt-4 grid gap-3">
         {invoices.map((inv) => {
-          const pending = inv.payments[0];
+          const latestPayment = inv.payments[0] as PaymentView | undefined;
+          const pending = isActivePayment(latestPayment, activeStkSince) ? latestPayment : undefined;
           const resumableCheckout =
             pending?.provider === "intasend" && pending.providerRef?.startsWith("https://")
               ? pending.providerRef
               : null;
+          const mpesaOutcome =
+            latestPayment?.provider === "mpesa" ? describeMpesaOutcome(latestPayment) : null;
 
           return (
             <section key={inv.id} className={styles.invoice}>
@@ -146,13 +215,24 @@ export default async function PharmacyBillingPage() {
                 ))}
               </ul>
 
+              {mpesaOutcome ? (
+                <div className={`${styles.notice} ${mpesaOutcome.ok ? styles.noticeOk : styles.noticeWarn} mb-3`} role="status">
+                  <div>
+                    <h3>{mpesaOutcome.title}</h3>
+                    <p>{mpesaOutcome.message}</p>
+                  </div>
+                </div>
+              ) : null}
+
               {["open", "overdue"].includes(inv.status) ? (
                 pending ? (
                   <div className="space-y-3">
                     <p role="status" className="text-sm text-[var(--muted)]">
                       {pending.provider === "intasend"
                         ? "Secure checkout is still in progress. Do not start another payment for this invoice."
-                        : "M-Pesa payment is confirming through Daraja. If no prompt appears, retry becomes available automatically after about 90 seconds."}
+                        : latestPayment?.failureReason
+                          ? "Safaricom has returned an outcome. We are verifying it and this page will update automatically."
+                          : "M-Pesa payment is confirming through Daraja. This page checks the status automatically every few seconds."}
                     </p>
                     {resumableCheckout ? (
                       <a href={resumableCheckout} className="btn-ghost inline-flex min-h-11 items-center justify-center">
