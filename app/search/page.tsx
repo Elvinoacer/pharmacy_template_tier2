@@ -4,14 +4,13 @@ import SearchPanel, { type SearchCorpus, type SearchResults } from "../component
 import ChoosePharmacy from "@/app/components/ChoosePharmacy";
 import { loadStorefront } from "@/app/components/StorefrontGate";
 import { prisma } from "@/app/lib/db";
-import { articles, faqs } from "@/app/lib/data";
 import { listPublicServices } from "@/app/lib/services/pharmacy-services";
 import { listPublicVaccines } from "@/app/lib/services/vaccination-service";
 import { listPublicCategories } from "@/app/lib/medication-categories";
 
 export const metadata: Metadata = {
   title: "Search",
-  description: "Search this pharmacy's medicines, services, vaccines, health articles, and FAQs.",
+  description: "Search this pharmacy's live medicines, services, vaccines, and medication categories.",
   alternates: { canonical: "/search" },
   robots: { index: false, follow: true },
 };
@@ -43,6 +42,9 @@ export default async function SearchPage({ searchParams }: Props) {
     listPublicCategories().catch(() => []),
   ]);
 
+  // The storefront search corpus contains operational records only. Editorial
+  // health articles/FAQs are intentionally excluded here until they are backed
+  // by approved KnowledgeArticle records rather than static template copy.
   const corpus: SearchCorpus = {
     medicines: medicines.map((m) => ({
       slug: m.slug,
@@ -62,13 +64,8 @@ export default async function SearchPage({ searchParams }: Props) {
       title: c.name,
       body: c.description || "",
     })),
-    articles: articles.map((a) => ({
-      slug: a.slug,
-      title: a.title,
-      body: a.excerpt,
-      meta: a.category,
-    })),
-    faqs: faqs.map((f) => ({ question: f.question, answer: f.answer, category: f.category })),
+    articles: [],
+    faqs: [],
   };
 
   const initial: SearchResults = {
@@ -76,7 +73,7 @@ export default async function SearchPage({ searchParams }: Props) {
     services: corpus.services.slice(0, 6).map((s) => ({ ...s, href: `${base}/services/${s.slug}` })),
     vaccines: corpus.vaccines.slice(0, 6).map((v) => ({ ...v, href: `${base}/vaccinations/${v.slug}` })),
     categories: corpus.categories.slice(0, 6).map((c) => ({ ...c, href: `${base}/medicines/${c.slug}` })),
-    articles: corpus.articles.slice(0, 4).map((a) => ({ ...a, href: `${base}/health/${a.slug}` })),
+    articles: [],
   };
 
   return (
@@ -84,7 +81,7 @@ export default async function SearchPage({ searchParams }: Props) {
       <PageHero
         eyebrow="Search"
         title={`Search ${pharmacy.name}`}
-        description="Search this pharmacy's medicines, services and vaccines, plus network health articles and FAQs."
+        description="Search this pharmacy's live medicines, services, vaccines, and medication categories."
         crumbs={[{ label: "Search" }]}
       />
 
