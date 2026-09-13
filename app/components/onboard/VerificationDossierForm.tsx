@@ -7,12 +7,17 @@
 import { useActionState, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
+  ArrowLeft,
+  ArrowRight,
+  BriefcaseBusiness,
+  Building2,
   CheckCircle2,
   ExternalLink,
   ImageIcon,
   Loader2,
   ShieldCheck,
   UploadCloud,
+  UserRound,
 } from "lucide-react";
 import {
   resendOwnerVerificationEmailAction,
@@ -21,6 +26,7 @@ import {
 } from "@/app/actions/pharmacy-verification";
 import OnboardStepper from "./OnboardStepper";
 import styles from "./OnboardSurface.module.css";
+import polish from "./OnboardFormPolish.module.css";
 
 const initial: VerificationActionState = {};
 
@@ -71,10 +77,10 @@ function Field({
   children: ReactNode;
 }) {
   return (
-    <label className={`${styles.field} ${className || ""}`}>
-      <span className={styles.fieldLabel}>{label}</span>
+    <label className={`${styles.field} ${polish.formField} ${className || ""}`}>
+      <span className={`${styles.fieldLabel} ${polish.fieldLabel}`}>{label}</span>
       {children}
-      {hint ? <span className={styles.fieldHint}>{hint}</span> : null}
+      {hint ? <span className={`${styles.fieldHint} ${polish.fieldHint}`}>{hint}</span> : null}
     </label>
   );
 }
@@ -96,24 +102,48 @@ function DocumentPreview({
   label: string;
 }) {
   return (
-    <div className="mt-3 overflow-hidden rounded-2xl border border-emerald-400/25 bg-emerald-500/[0.04]">
-      <div className="relative flex min-h-44 items-center justify-center bg-black/[0.035] p-2 dark:bg-white/[0.025] sm:min-h-56">
-        <img
-          src={previewSrc(pharmacyId, kind, version)}
-          alt={label}
-          className="max-h-72 w-full rounded-xl object-contain"
-        />
+    <div className={polish.previewCard}>
+      <div className={polish.previewImage}>
+        <img src={previewSrc(pharmacyId, kind, version)} alt={label} />
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-emerald-400/15 px-3 py-2.5 sm:px-4">
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+      <div className={polish.previewMeta}>
+        <span className={polish.previewSaved}>
           <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
           Uploaded & saved as draft
         </span>
-        <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--muted)]">
-          <ImageIcon className="h-3.5 w-3.5" aria-hidden />
+        <span className={polish.previewHint}>
+          <ImageIcon className="mr-1 inline h-3.5 w-3.5" aria-hidden />
           Preview remains after refresh
         </span>
       </div>
+    </div>
+  );
+}
+
+function SectionHeader({
+  icon,
+  step,
+  title,
+  copy,
+  children,
+}: {
+  icon: ReactNode;
+  step: string;
+  title: string;
+  copy: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div className={styles.sectionHead}>
+      <div className={polish.panelHeader} style={{ marginBottom: 0 }}>
+        <span className={polish.panelHeaderIcon}>{icon}</span>
+        <div className={polish.panelHeaderText}>
+          <span>{step}</span>
+          <strong>{title}</strong>
+          <span>{copy}</span>
+        </div>
+      </div>
+      {children}
     </div>
   );
 }
@@ -190,33 +220,37 @@ export default function VerificationDossierForm({
   }
 
   return (
-    <div className={styles.form}>
+    <div className={`${styles.form} ${polish.wizardShell}`}>
       <OnboardStepper current={1} />
-      <header className={styles.formHead}>
-        <h2>Let’s verify your pharmacy</h2>
-        <p>Have your premises licence and business certificate ready.</p>
+
+      <div className={polish.topline}>
+        <span className={polish.stepPill}>Step 2 of 4 · Verification</span>
+        <span className={polish.securePill}><ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Private review</span>
+      </div>
+
+      <header className={`${styles.formHead} ${polish.heading}`}>
+        <h2>Verify the pharmacy, without the paperwork feel</h2>
+        <p>We’ll guide you through the premises, pharmacist, and business details in three short sections.</p>
       </header>
 
-      <section className={styles.section} style={{ marginBottom: "1rem" }}>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className={styles.kicker} style={{ letterSpacing: "0.12em" }}>Owner</p>
-            <p className="mt-1 text-sm font-semibold">{ownerEmail}</p>
-          </div>
-          <span
-            className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-              ownerEmailVerified
-                ? "bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"
-                : "bg-amber-500/10 text-amber-900 dark:text-amber-100"
-            }`}
-          >
-            {ownerEmailVerified ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> : null}
-            {ownerEmailVerified ? "Email verified" : "Verify email"}
-          </span>
+      <section className={polish.ownerCard}>
+        <div className={polish.ownerMeta}>
+          <span>Owner account</span>
+          <strong>{ownerEmail}</strong>
         </div>
+        <span
+          className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+            ownerEmailVerified
+              ? "bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"
+              : "bg-amber-500/10 text-amber-900 dark:text-amber-100"
+          }`}
+        >
+          {ownerEmailVerified ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> : null}
+          {ownerEmailVerified ? "Email verified" : "Verify email"}
+        </span>
         {!ownerEmailVerified ? (
-          <form action={emailAction} className="mt-3">
-            <button type="submit" disabled={emailPending} className="btn-ghost">
+          <form action={emailAction} className="w-full border-t border-[var(--line-2)] pt-3">
+            <button type="submit" disabled={emailPending} className={`btn-ghost ${polish.secondaryAction}`}>
               {emailPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : null}
               Send verification email
             </button>
@@ -226,7 +260,7 @@ export default function VerificationDossierForm({
         ) : null}
       </section>
 
-      <div className={styles.licenceTabs} aria-label="Licence sections">
+      <div className={polish.segmented} aria-label="Verification sections">
         {["Premises", "Pharmacist", "Business"].map((label, index) => (
           <button
             key={label}
@@ -243,7 +277,7 @@ export default function VerificationDossierForm({
       <form
         ref={formRef}
         action={action}
-        className="space-y-4"
+        className={polish.contentStack}
         aria-busy={pending || uploading !== null}
         onInvalidCapture={(event) => {
           const target = event.target as HTMLInputElement;
@@ -259,32 +293,33 @@ export default function VerificationDossierForm({
         <input type="hidden" name="licenseDocumentUrl" value={licenseDocumentUrl} />
         <input type="hidden" name="businessDocumentUrl" value={businessDocumentUrl} />
 
-        <section data-licence-section="0" hidden={section !== 0} className={styles.section}>
-          <div className={styles.sectionHead}>
-            <div>
-              <small>1 of 3</small>
-              <h2>Premises licence</h2>
-            </div>
+        <section data-licence-section="0" hidden={section !== 0} className={`${styles.section} ${polish.panel}`}>
+          <SectionHeader
+            icon={<Building2 className="h-5 w-5" aria-hidden />}
+            step="Section 1 of 3"
+            title="Premises licence"
+            copy="Details that identify the licensed pharmacy location."
+          >
             <a
               href="https://practice.pharmacyboardkenya.org/LicenseStatus?register=facilities"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.quietLink}
             >
-              PPB register <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+              Check PPB register <ExternalLink className="h-3.5 w-3.5" aria-hidden />
             </a>
-          </div>
+          </SectionHeader>
 
-          <div className={`${styles.fields} ${styles.fieldsTwo}`}>
-            <Field label="PPB / premises licence number">
-              <input name="licenseNumber" required defaultValue={pharmacy.licenseNumber || ""} className="input-admin" autoComplete="off" />
+          <div className={polish.fieldsGrid}>
+            <Field label="PPB / premises licence number" hint="Enter it exactly as shown on the current premises licence.">
+              <input name="licenseNumber" required defaultValue={pharmacy.licenseNumber || ""} className="input-admin" autoComplete="off" placeholder="Premises licence number" />
             </Field>
-            <Field label="Facility / premises number">
-              <input name="ppbPremisesNumber" required defaultValue={pharmacy.ppbPremisesNumber || ""} className="input-admin" autoComplete="off" />
+            <Field label="Facility / premises number" hint="The facility identifier associated with this outlet.">
+              <input name="ppbPremisesNumber" required defaultValue={pharmacy.ppbPremisesNumber || ""} className="input-admin" autoComplete="off" placeholder="Facility number" />
             </Field>
             <Field label="Facility type">
               <select name="facilityType" required defaultValue={profile?.facilityType || ""} className="input-admin">
-                <option value="">Select type</option>
+                <option value="">Select facility type</option>
                 <option value="retail">Retail pharmacy</option>
                 <option value="wholesale">Wholesale pharmacy</option>
                 <option value="hospital">Hospital pharmacy</option>
@@ -295,28 +330,28 @@ export default function VerificationDossierForm({
             <Field label="Licence expiry">
               <input name="licenseExpiryDate" type="date" required defaultValue={profile?.licenseExpiryDate || ""} className="input-admin" />
             </Field>
-            <Field label="Physical address" className={styles.spanAll}>
+            <Field label="Licensed physical address" hint="Use the address written on the licence so the reviewer can match it to the captured premises location." className={styles.spanAll}>
               <textarea
                 name="physicalAddress"
                 required
                 rows={3}
                 defaultValue={profile?.physicalAddress || ""}
                 className="input-admin"
-                placeholder="Building, street, area, town, county"
+                placeholder="Address exactly as shown on the licence"
               />
             </Field>
-            <Field label="Licence QR text (optional)" className={styles.spanAll}>
-              <input name="licenseQrPayload" defaultValue={profile?.licenseQrPayload || ""} className="input-admin" />
+            <Field label="Licence QR text" hint="Optional — only if you already have the decoded text." className={styles.spanAll}>
+              <input name="licenseQrPayload" defaultValue={profile?.licenseQrPayload || ""} className="input-admin" placeholder="Optional QR payload" />
             </Field>
           </div>
 
-          <div className={styles.upload}>
+          <div className={`${styles.upload} ${polish.uploadZone}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold">Current licence image</p>
-                <p className={styles.fieldHint}>JPEG, PNG or WebP. Include the QR if it is on the licence.</p>
+                <p className="text-sm font-semibold tracking-[-0.01em]">Premises licence image</p>
+                <p className={`${styles.fieldHint} ${polish.fieldHint}`}>Upload a clear full image. Include the QR code if one appears on the licence.</p>
               </div>
-              <label className="btn-ghost inline-flex cursor-pointer">
+              <label className={`btn-ghost inline-flex cursor-pointer ${polish.secondaryAction}`}>
                 {uploading === "license" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <UploadCloud className="h-3.5 w-3.5" aria-hidden />}
                 {licenseDocumentUrl ? "Replace image" : "Upload image"}
                 <input
@@ -343,24 +378,26 @@ export default function VerificationDossierForm({
           </div>
         </section>
 
-        <section data-licence-section="1" hidden={section !== 1} className={styles.section}>
-          <div className={styles.sectionHead}>
-            <div>
-              <small>2 of 3</small>
-              <h2>Pharmacist in charge</h2>
-            </div>
+        <section data-licence-section="1" hidden={section !== 1} className={`${styles.section} ${polish.panel}`}>
+          <SectionHeader
+            icon={<UserRound className="h-5 w-5" aria-hidden />}
+            step="Section 2 of 3"
+            title="Pharmacist in charge"
+            copy="The registered professional responsible for this premises."
+          >
             <a
               href="https://practice.pharmacyboardkenya.org/LicenseStatus?registers=search"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.quietLink}
             >
-              PPB professionals <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+              Check PPB professionals <ExternalLink className="h-3.5 w-3.5" aria-hidden />
             </a>
-          </div>
-          <div className={`${styles.fields} ${styles.fieldsTwo}`}>
+          </SectionHeader>
+
+          <div className={polish.fieldsGrid}>
             <Field label="Full name" className={styles.spanAll}>
-              <input name="superintendentName" required defaultValue={profile?.superintendentName || ""} className="input-admin" autoComplete="name" />
+              <input name="superintendentName" required defaultValue={profile?.superintendentName || ""} className="input-admin" autoComplete="name" placeholder="Pharmacist’s full name" />
             </Field>
             <Field label="PPB registration number">
               <input
@@ -369,6 +406,7 @@ export default function VerificationDossierForm({
                 defaultValue={profile?.superintendentRegistrationNumber || ""}
                 className="input-admin"
                 autoComplete="off"
+                placeholder="Registration number"
               />
             </Field>
             <Field label="Practice licence number">
@@ -378,19 +416,21 @@ export default function VerificationDossierForm({
                 defaultValue={profile?.superintendentPracticeLicenseNumber || ""}
                 className="input-admin"
                 autoComplete="off"
+                placeholder="Current practice licence"
               />
             </Field>
           </div>
         </section>
 
-        <section data-licence-section="2" hidden={section !== 2} className={styles.section}>
-          <div className={styles.sectionHead}>
-            <div>
-              <small>3 of 3</small>
-              <h2>The business</h2>
-            </div>
-          </div>
-          <div className={`${styles.fields} ${styles.fieldsTwo}`}>
+        <section data-licence-section="2" hidden={section !== 2} className={`${styles.section} ${polish.panel}`}>
+          <SectionHeader
+            icon={<BriefcaseBusiness className="h-5 w-5" aria-hidden />}
+            step="Section 3 of 3"
+            title="The business"
+            copy="Connect the licensed premises to the legal business behind it."
+          />
+
+          <div className={polish.fieldsGrid}>
             <Field label="Ownership">
               <select name="ownershipType" required defaultValue={profile?.ownershipType || ""} className="input-admin">
                 <option value="">Select ownership</option>
@@ -409,20 +449,21 @@ export default function VerificationDossierForm({
                 defaultValue={profile?.businessRegistrationNumber || ""}
                 className="input-admin"
                 autoComplete="off"
+                placeholder="Registration number"
               />
             </Field>
-            <Field label="KRA PIN (recommended)" className={styles.spanAll}>
-              <input name="kraPin" defaultValue={pharmacy.kraPin || ""} className="input-admin" autoComplete="off" />
+            <Field label="KRA PIN" hint="Recommended for stronger business matching." className={styles.spanAll}>
+              <input name="kraPin" defaultValue={pharmacy.kraPin || ""} className="input-admin" autoComplete="off" placeholder="KRA PIN" />
             </Field>
           </div>
 
-          <div className={styles.upload}>
+          <div className={`${styles.upload} ${polish.uploadZone}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold">Registration evidence</p>
-                <p className={styles.fieldHint}>Certificate or document that ties the business to this pharmacy.</p>
+                <p className="text-sm font-semibold tracking-[-0.01em]">Business registration evidence</p>
+                <p className={`${styles.fieldHint} ${polish.fieldHint}`}>Certificate or official document linking this business to the pharmacy.</p>
               </div>
-              <label className="btn-ghost inline-flex cursor-pointer">
+              <label className={`btn-ghost inline-flex cursor-pointer ${polish.secondaryAction}`}>
                 {uploading === "business" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <UploadCloud className="h-3.5 w-3.5" aria-hidden />}
                 {businessDocumentUrl ? "Replace image" : "Upload image"}
                 <input
@@ -449,8 +490,8 @@ export default function VerificationDossierForm({
           </div>
         </section>
 
-        <section data-licence-section="2" hidden={section !== 2} className={styles.section}>
-          <label className="flex cursor-pointer items-start gap-3 text-sm leading-6">
+        <section data-licence-section="2" hidden={section !== 2} className={`${styles.section} ${polish.panel} ${polish.authorityCard}`}>
+          <label className="flex cursor-pointer items-start gap-3">
             <input
               name="applicantAuthorityConfirmed"
               type="checkbox"
@@ -458,7 +499,7 @@ export default function VerificationDossierForm({
               defaultChecked={profile?.applicantAuthorityConfirmed || false}
               className="mt-1 h-4 w-4 rounded border-[var(--line-2)] text-[var(--brand)] focus:ring-[var(--brand)]"
             />
-            <span>I am authorised to represent this pharmacy, and this information is accurate.</span>
+            <span>I’m authorised to represent this pharmacy, and the information above is accurate.</span>
           </label>
         </section>
 
@@ -466,10 +507,10 @@ export default function VerificationDossierForm({
         {state.error ? <p role="alert" className={`${styles.alert} ${styles.alertError}`}>{state.error}</p> : null}
         {state.success ? <p className={`${styles.alert} ${styles.alertOk}`}>{state.success}</p> : null}
 
-        <div className={styles.actions}>
+        <div className={`${styles.actions} ${polish.actionsBar}`}>
           {embedded ? null : (
-            <Link href="/onboard" className="btn-ghost justify-center">
-              Back
+            <Link href="/onboard" className={`btn-ghost justify-center ${polish.secondaryAction}`}>
+              <ArrowLeft className="h-4 w-4" aria-hidden /> Back
             </Link>
           )}
           <button
@@ -478,7 +519,7 @@ export default function VerificationDossierForm({
             value="draft"
             formNoValidate
             disabled={pending || uploading !== null}
-            className="btn-ghost justify-center"
+            className={`btn-ghost justify-center ${polish.secondaryAction}`}
           >
             Save for later
           </button>
@@ -487,9 +528,10 @@ export default function VerificationDossierForm({
               type="button"
               onClick={nextSection}
               disabled={pending || uploading !== null}
-              className="btn-primary justify-center"
+              className={`btn-primary justify-center ${polish.primaryAction}`}
             >
               Continue to {section === 0 ? "pharmacist" : "business"}
+              <ArrowRight className="h-4 w-4" aria-hidden />
             </button>
           ) : (
             <button
@@ -497,10 +539,11 @@ export default function VerificationDossierForm({
               name="intent"
               value="complete"
               disabled={pending || uploading !== null}
-              className="btn-primary inline-flex justify-center gap-2"
+              className={`btn-primary inline-flex justify-center gap-2 ${polish.primaryAction}`}
             >
               {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <ShieldCheck className="h-4 w-4" aria-hidden />}
               {pending ? "Saving…" : "Save & continue"}
+              {!pending ? <ArrowRight className="h-4 w-4" aria-hidden /> : null}
             </button>
           )}
         </div>
