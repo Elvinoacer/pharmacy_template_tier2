@@ -71,7 +71,6 @@ async function reverseGeocode(latitude: number, longitude: number): Promise<Reve
     };
     const address = payload.address ?? {};
 
-    // Prefer the most local locality and fall back through common OSM fields.
     const city =
       address.city ??
       address.town ??
@@ -94,7 +93,7 @@ async function reverseGeocode(latitude: number, longitude: number): Promise<Reve
   }
 }
 
-/** Save the pharmacy's precise premises pin during onboarding. */
+/** Save the pharmacy's precise premises pin and derive its locality during onboarding. */
 export async function saveOnboardingPharmacyLocationAction(
   _prev: GeolocationActionState,
   formData: FormData,
@@ -122,17 +121,29 @@ export async function saveOnboardingPharmacyLocationAction(
 
     const accuracyMeters = parseAccuracy(formData.get("accuracyMeters"));
     if (accuracyMeters == null) return { error: "Capture the location from your browser while at the pharmacy premises." };
-    const reverse = await reverseGeocode(latitude!, longitude!);
 
-    // Keep manually entered values intact; GPS only fills missing location details.
-    const city = pharmacy.city || reverse.city;
-    const county = pharmacy.county || reverse.county;
-    const country = pharmacy.country || reverse.country || "Kenya";
+    const reverse = await reverseGeocode(latitude!, longitude!);
+    if (!reverse.city) {
+      return {
+        error: "We found the premises GPS position but could not identify the city. Refresh current location and try again.",
+      };
+    }
+
+    const city = reverse.city;
+    const county = reverse.county;
+    const country = reverse.country || "Kenya";
 
     await withPharmacy(pharmacyId, () => prismaUnscoped.$transaction([
       prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data: { latitude, longitude, city, county, country } }),
       prismaUnscoped.pharmacySettings.updateMany({ where: { pharmacyId }, data: { latitude, longitude, city, state: county, country } }),
-      prismaUnscoped.pharmacyOnboardingEvent.create({ data: { pharmacyId, actorId: user.id, type: "verification_input_changed", message: `Premises location captured: ${latitude}, ${longitude}; browser accuracy ±${Math.round(accuracyMeters)} m. Reviewer must match the licensed address.` } }),
+      prismaUnscoped.pharmacyOnboardingEvent.create({
+        data: {
+          pharmacyId,
+          actorId: user.id,
+          type: "verification_input_changed",
+          message: `Premises location captured from browser GPS: ${latitude}, ${longitude}; derived area ${city}${county ? `, ${county}` : ""}; accuracy ±${Math.round(accuracyMeters)} m. Reviewer must match the licensed address.`,
+        },
+      }),
     ]));
 
     revalidatePath("/onboard");
@@ -140,9 +151,7 @@ export async function saveOnboardingPharmacyLocationAction(
     revalidatePath("/");
 
     return {
-      success: reverse.city || reverse.county
-        ? "Premises located. We filled in the nearby area details for you."
-        : "Precise pharmacy location saved securely.",
+      success: "Location captured. City and county were filled automatically.",
       city,
       county,
       country,
