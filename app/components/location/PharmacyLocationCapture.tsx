@@ -123,18 +123,6 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
           </button>
         </div>
 
-        {hasCoordinates && (
-            <button
-              type="button"
-              onClick={saveCurrentCoordinates}
-              disabled={pending}
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-4 py-3 text-sm font-semibold text-[var(--brand)] transition hover:bg-[var(--brand-tint)] disabled:opacity-60 sm:w-auto"
-            >
-              <Save className="h-4 w-4" aria-hidden="true" />Save pin
-            </button>
-          )}
-        </div>
-
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block min-w-0 text-xs font-semibold text-[var(--muted)]">
             Latitude
