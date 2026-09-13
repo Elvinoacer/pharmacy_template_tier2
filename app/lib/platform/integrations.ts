@@ -34,9 +34,6 @@ export type SenderIdentity = {
 };
 
 function platformDaraja(): DarajaCredentials | null {
-  if (process.env.NEXT_PUBLIC_DARAJA_ENABLED?.trim().toLowerCase() === "false") {
-    return null;
-  }
   const consumerKey = process.env.DARAJA_CONSUMER_KEY?.trim();
   const consumerSecret = process.env.DARAJA_CONSUMER_SECRET?.trim();
   const shortcode = process.env.DARAJA_SHORTCODE?.trim();
