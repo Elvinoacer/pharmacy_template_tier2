@@ -28,7 +28,7 @@ export async function darajaConfiguredFor(pharmacyId?: string | null): Promise<b
 }
 
 export function getDarajaEnv(): DarajaEnv {
-  return process.env.DARAJA_ENV?.trim() === "production" ? "production" : "sandbox";
+  return process.env.DARAJA_ENV?.trim().toLowerCase() === "production" ? "production" : "sandbox";
 }
 
 function baseUrl(env: DarajaEnv): string {
@@ -87,36 +87,94 @@ export function phoneLast9(phone: string): string {
   return formatMpesaPhone(phone).slice(-9);
 }
 
-function timestamp(): string {
-  return new Date().toISOString().replace(/[-:T]/g, "").slice(0, 14);
+/**
+ * Daraja expects the password timestamp and request Timestamp to use East Africa
+ * Time (Africa/Nairobi), formatted as YYYYMMDDHHmmss. Vercel functions run in
+ * UTC, so using Date#toISOString() produces a timestamp three hours behind EAT
+ * and can cause otherwise-valid STK requests to be rejected.
+ */
+export function darajaTimestamp(date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Nairobi",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((item) => item.type === type)?.value || "";
+  return `${part("year")}${part("month")}${part("day")}${part("hour")}${part("minute")}${part("second")}`;
 }
 
 function password(creds: DarajaCredentials, ts: string): string {
   return Buffer.from(`${creds.shortcode}${creds.passkey}${ts}`).toString("base64");
 }
 
+function safeProviderDetail(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Record<string, unknown>;
+  const allowed = [
+    "requestId",
+    "errorCode",
+    "errorMessage",
+    "ResponseCode",
+    "ResponseDescription",
+    "CustomerMessage",
+    "MerchantRequestID",
+    "CheckoutRequestID",
+  ];
+  const detail: Record<string, unknown> = {};
+  for (const key of allowed) {
+    if (raw[key] !== undefined) detail[key] = raw[key];
+  }
+  return Object.keys(detail).length ? detail : undefined;
+}
+
 export async function getDarajaToken(creds?: DarajaCredentials): Promise<string> {
   const resolved = creds ?? (await resolveDarajaCredentials(peekTenant()?.pharmacyId ?? null));
   if (!resolved) throw new Error("daraja_not_configured");
-  const cacheKey = `${resolved.shortcode}:${resolved.consumerKey.slice(0, 8)}`;
+  const cacheKey = `${resolved.env}:${resolved.shortcode}:${resolved.consumerKey.slice(0, 8)}`;
   const cached = tokenCache.get(cacheKey);
   if (cached && cached.expiresAt > Date.now()) return cached.token;
 
   const auth = Buffer.from(`${resolved.consumerKey}:${resolved.consumerSecret}`).toString("base64");
-  const r = await fetch(`${baseUrl(resolved.env)}/oauth/v1/generate?grant_type=client_credentials`, {
-    headers: { Authorization: `Basic ${auth}` },
-    cache: "no-store",
-    signal: AbortSignal.timeout(15_000),
-  });
-  if (!r.ok) {
-    const body = await r.text().catch(() => "");
-    throw new Error(`daraja_auth_failed:${r.status}:${body.slice(0, 120)}`);
+  let r: Response;
+  try {
+    r = await fetch(`${baseUrl(resolved.env)}/oauth/v1/generate?grant_type=client_credentials`, {
+      headers: { Authorization: `Basic ${auth}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? `daraja_auth_unreachable:${error.message}` : "daraja_auth_unreachable",
+    );
   }
-  const j = (await r.json()) as { access_token?: string; expires_in?: string };
+
+  const raw = await r.text().catch(() => "");
+  let j: { access_token?: string; expires_in?: string; errorCode?: string; errorMessage?: string } = {};
+  try {
+    j = raw ? JSON.parse(raw) : {};
+  } catch {
+    // Non-JSON provider responses are surfaced below without leaking credentials.
+  }
+
+  if (!r.ok) {
+    const providerMessage = j.errorMessage || raw.slice(0, 160) || "oauth_request_failed";
+    throw new Error(`daraja_auth_failed:${r.status}:${providerMessage}`);
+  }
   if (!j.access_token) throw new Error("daraja_auth_failed:no_token");
+
+  const providerTtl = Number(j.expires_in);
+  const ttlMs = Number.isFinite(providerTtl) && providerTtl > 120
+    ? Math.max(60_000, (providerTtl - 60) * 1000)
+    : TOKEN_TTL_MS;
   tokenCache.set(cacheKey, {
     token: j.access_token,
-    expiresAt: Date.now() + TOKEN_TTL_MS,
+    expiresAt: Date.now() + ttlMs,
   });
   return j.access_token;
 }
@@ -137,6 +195,7 @@ export type StkPushResult =
       checkoutRequestId: string;
       customerMessage: string;
       shortcode: string;
+      environment: DarajaEnv;
     }
   | {
       ok: false;
@@ -158,12 +217,19 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
   try {
     token = await getDarajaToken(creds);
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "daraja_auth_failed" };
+    const error = e instanceof Error ? e.message : "daraja_auth_failed";
+    console.error("[daraja][stk] OAuth failed", { environment: creds.env, error });
+    return { ok: false, error };
   }
 
-  const ts = timestamp();
+  const ts = darajaTimestamp();
   const callbackUrl = resolveCallbackUrl(input, creds);
   if (!callbackUrl) return { ok: false, error: "daraja_callback_url_missing" };
+
+  const transactionType =
+    process.env.DARAJA_TRANSACTION_TYPE?.trim() === "CustomerBuyGoodsOnline"
+      ? "CustomerBuyGoodsOnline"
+      : "CustomerPayBillOnline";
 
   let res: Response;
   try {
@@ -177,41 +243,72 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
         BusinessShortCode: creds.shortcode,
         Password: password(creds, ts),
         Timestamp: ts,
-        TransactionType: "CustomerPayBillOnline",
+        TransactionType: transactionType,
         Amount: amount,
         PartyA: phone,
         PartyB: creds.shortcode,
         PhoneNumber: phone,
         CallBackURL: callbackUrl,
-        AccountReference: input.accountReference.slice(0, 12),
-        TransactionDesc: input.transactionDesc.slice(0, 13),
+        AccountReference: input.accountReference.slice(0, 12) || "Aether",
+        TransactionDesc: input.transactionDesc.slice(0, 13) || "Payment",
       }),
       cache: "no-store",
-      signal: AbortSignal.timeout(15_000),
+      signal: AbortSignal.timeout(20_000),
     });
   } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? `daraja_unreachable:${error.message}` : "daraja_unreachable",
-    };
+    const message = error instanceof Error ? `daraja_unreachable:${error.message}` : "daraja_unreachable";
+    console.error("[daraja][stk] request failed", { environment: creds.env, error: message });
+    return { ok: false, error: message };
   }
 
-  const j = (await res.json().catch(() => ({}))) as {
-    ResponseCode?: string;
+  const raw = await res.text().catch(() => "");
+  let j: {
+    requestId?: string;
+    errorCode?: string;
+    errorMessage?: string;
+    ResponseCode?: string | number;
     ResponseDescription?: string;
     MerchantRequestID?: string;
     CheckoutRequestID?: string;
     CustomerMessage?: string;
-    errorMessage?: string;
-  };
-
-  if (!res.ok || j.ResponseCode !== "0" || !j.CheckoutRequestID) {
-    return {
-      ok: false,
-      error: j.errorMessage || j.ResponseDescription || "stk_failed",
-      detail: j,
-    };
+  } = {};
+  try {
+    j = raw ? JSON.parse(raw) : {};
+  } catch {
+    // Preserve the HTTP status as the primary diagnostic below.
   }
+
+  const responseCode = j.ResponseCode === undefined ? "" : String(j.ResponseCode);
+  if (!res.ok || responseCode !== "0" || !j.CheckoutRequestID) {
+    const providerMessage =
+      j.errorMessage ||
+      j.ResponseDescription ||
+      raw.slice(0, 180) ||
+      "stk_failed";
+    const providerCode = j.errorCode ? `:${j.errorCode}` : "";
+    const error = `daraja_stk_failed:${res.status}${providerCode}:${providerMessage}`;
+    console.error("[daraja][stk] rejected", {
+      environment: creds.env,
+      httpStatus: res.status,
+      shortcode: creds.shortcode,
+      transactionType,
+      callbackHost: (() => {
+        try {
+          return new URL(callbackUrl).host;
+        } catch {
+          return "invalid";
+        }
+      })(),
+      detail: safeProviderDetail(j),
+    });
+    return { ok: false, error, detail: safeProviderDetail(j) };
+  }
+
+  console.info("[daraja][stk] accepted", {
+    environment: creds.env,
+    checkoutRequestId: j.CheckoutRequestID,
+    merchantRequestId: j.MerchantRequestID || "",
+  });
 
   return {
     ok: true,
@@ -219,6 +316,7 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
     checkoutRequestId: j.CheckoutRequestID,
     customerMessage: j.CustomerMessage || "STK push sent",
     shortcode: creds.shortcode,
+    environment: creds.env,
   };
 }
 
@@ -251,7 +349,7 @@ export async function stkQuery(
     return { ok: false, error: e instanceof Error ? e.message : "daraja_auth_failed" };
   }
 
-  const ts = timestamp();
+  const ts = darajaTimestamp();
   let res: Response;
   try {
     res = await fetch(`${baseUrl(creds.env)}/mpesa/stkpushquery/v1/query`, {
@@ -267,7 +365,7 @@ export async function stkQuery(
         CheckoutRequestID: checkoutRequestId,
       }),
       cache: "no-store",
-      signal: AbortSignal.timeout(15_000),
+      signal: AbortSignal.timeout(20_000),
     });
   } catch (error) {
     return {
@@ -276,15 +374,26 @@ export async function stkQuery(
     };
   }
 
-  const j = (await res.json().catch(() => ({}))) as Record<string, unknown> & {
-    ResponseCode?: string;
+  const raw = await res.text().catch(() => "");
+  let j: Record<string, unknown> & {
+    ResponseCode?: string | number;
     ResultCode?: string | number;
     ResultDesc?: string;
+    errorCode?: string;
     errorMessage?: string;
-  };
+  } = {};
+  try {
+    j = raw ? JSON.parse(raw) : {};
+  } catch {
+    // Preserve the HTTP status below.
+  }
 
   if (!res.ok && j.ResultCode === undefined) {
-    return { ok: false, error: j.errorMessage || "stk_query_failed", detail: j };
+    return {
+      ok: false,
+      error: j.errorMessage || raw.slice(0, 180) || `stk_query_failed:${res.status}`,
+      detail: safeProviderDetail(j),
+    };
   }
 
   return {
