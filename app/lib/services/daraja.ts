@@ -1,10 +1,10 @@
 import "server-only";
 
-import { peekTenant } from "@/app/lib/tenant-context";
 import {
   resolveDarajaCredentials,
   type DarajaCredentials,
 } from "@/app/lib/platform/integrations";
+import { peekTenant } from "@/app/lib/tenant-context";
 
 const TOKEN_TTL_MS = 55 * 60 * 1000;
 
@@ -35,6 +35,44 @@ function baseUrl(env: DarajaEnv): string {
   return env === "production"
     ? "https://api.safaricom.co.ke"
     : "https://sandbox.safaricom.co.ke";
+}
+
+function validHttpsUrl(value: string | null | undefined): string | null {
+  if (!value?.trim()) return null;
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+function derivedDarajaCallbackUrl(): string | null {
+  const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (configuredAppUrl) {
+    try {
+      const url = new URL("/api/payments/daraja/callback", configuredAppUrl);
+      if (url.protocol === "https:") return url.toString();
+    } catch {
+      // Fall through to Vercel's deployment host.
+    }
+  }
+
+  const vercelHost =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() ||
+    process.env.VERCEL_URL?.trim();
+  if (!vercelHost) return null;
+  return validHttpsUrl(
+    `https://${vercelHost.replace(/^https?:\/\//, "")}/api/payments/daraja/callback`,
+  );
+}
+
+function resolveCallbackUrl(input: StkPushInput, creds: DarajaCredentials): string | null {
+  return (
+    validHttpsUrl(input.callbackUrl) ||
+    validHttpsUrl(creds.callbackUrl) ||
+    derivedDarajaCallbackUrl()
+  );
 }
 
 export function formatMpesaPhone(phone: string): string {
@@ -114,7 +152,7 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
 
   const amount = Math.max(1, Math.round(Number(input.amount)));
   const phone = formatMpesaPhone(input.phone);
-  if (phone.length < 12) return { ok: false, error: "invalid_phone" };
+  if (!/^254[17]\d{8}$/.test(phone)) return { ok: false, error: "invalid_phone" };
 
   let token: string;
   try {
@@ -124,31 +162,39 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
   }
 
   const ts = timestamp();
-  const callbackUrl = input.callbackUrl?.trim() || creds.callbackUrl;
+  const callbackUrl = resolveCallbackUrl(input, creds);
   if (!callbackUrl) return { ok: false, error: "daraja_callback_url_missing" };
 
-  const res = await fetch(`${baseUrl(creds.env)}/mpesa/stkpush/v1/processrequest`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      BusinessShortCode: creds.shortcode,
-      Password: password(creds, ts),
-      Timestamp: ts,
-      TransactionType: "CustomerPayBillOnline",
-      Amount: amount,
-      PartyA: phone,
-      PartyB: creds.shortcode,
-      PhoneNumber: phone,
-      CallBackURL: callbackUrl,
-      AccountReference: input.accountReference.slice(0, 12),
-      TransactionDesc: input.transactionDesc.slice(0, 13),
-    }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(15_000),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${baseUrl(creds.env)}/mpesa/stkpush/v1/processrequest`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        BusinessShortCode: creds.shortcode,
+        Password: password(creds, ts),
+        Timestamp: ts,
+        TransactionType: "CustomerPayBillOnline",
+        Amount: amount,
+        PartyA: phone,
+        PartyB: creds.shortcode,
+        PhoneNumber: phone,
+        CallBackURL: callbackUrl,
+        AccountReference: input.accountReference.slice(0, 12),
+        TransactionDesc: input.transactionDesc.slice(0, 13),
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? `daraja_unreachable:${error.message}` : "daraja_unreachable",
+    };
+  }
 
   const j = (await res.json().catch(() => ({}))) as {
     ResponseCode?: string;
@@ -206,21 +252,29 @@ export async function stkQuery(
   }
 
   const ts = timestamp();
-  const res = await fetch(`${baseUrl(creds.env)}/mpesa/stkpushquery/v1/query`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      BusinessShortCode: creds.shortcode,
-      Password: password(creds, ts),
-      Timestamp: ts,
-      CheckoutRequestID: checkoutRequestId,
-    }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(15_000),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${baseUrl(creds.env)}/mpesa/stkpushquery/v1/query`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        BusinessShortCode: creds.shortcode,
+        Password: password(creds, ts),
+        Timestamp: ts,
+        CheckoutRequestID: checkoutRequestId,
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? `daraja_query_unreachable:${error.message}` : "daraja_query_unreachable",
+    };
+  }
 
   const j = (await res.json().catch(() => ({}))) as Record<string, unknown> & {
     ResponseCode?: string;
