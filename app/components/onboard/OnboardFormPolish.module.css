@@ -1,0 +1,754 @@
+.wizardShell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  border-color: color-mix(in srgb, var(--brand) 20%, var(--line-2)) !important;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--brand) 10%, transparent), transparent 24rem),
+    linear-gradient(160deg, color-mix(in srgb, var(--card) 96%, transparent), color-mix(in srgb, var(--card-elev) 90%, transparent)) !important;
+  box-shadow:
+    0 28px 90px color-mix(in srgb, var(--foreground) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 55%, transparent) !important;
+}
+
+.wizardShell::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--brand) 60%, white), transparent);
+  opacity: .8;
+}
+
+.topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .65rem;
+  margin: .15rem 0 1rem;
+}
+
+.stepPill,
+.savedPill,
+.securePill {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  width: fit-content;
+  min-height: 30px;
+  border: 1px solid color-mix(in srgb, var(--brand) 22%, var(--line-2));
+  border-radius: 999px;
+  padding: .35rem .7rem;
+  font-size: .69rem;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.stepPill {
+  background: color-mix(in srgb, var(--brand-soft) 72%, var(--card));
+  color: var(--brand);
+  letter-spacing: .025em;
+}
+
+.savedPill,
+.securePill {
+  background: color-mix(in srgb, var(--card-elev) 82%, transparent);
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.savedPill svg,
+.securePill svg {
+  color: var(--brand);
+}
+
+.heading {
+  margin-bottom: 1.45rem;
+}
+
+.heading h2 {
+  max-width: 17ch;
+  margin: 0;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif !important;
+  font-size: clamp(1.8rem, 4vw, 2.55rem) !important;
+  font-weight: 760 !important;
+  line-height: 1.04 !important;
+  letter-spacing: -.052em !important;
+  text-wrap: balance;
+}
+
+.heading p {
+  max-width: 54ch;
+  margin-top: .55rem !important;
+  font-size: .9rem !important;
+  line-height: 1.6 !important;
+  color: color-mix(in srgb, var(--muted) 94%, var(--foreground)) !important;
+}
+
+.contentStack {
+  display: grid;
+  gap: 1rem;
+}
+
+.panel {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2)) !important;
+  border-radius: 1.35rem !important;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--card-elev) 92%, transparent), color-mix(in srgb, var(--brand-soft) 18%, var(--card))) !important;
+  padding: 1rem !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 42%, transparent),
+    0 10px 28px color-mix(in srgb, var(--foreground) 3.5%, transparent);
+}
+
+.panel::after {
+  content: "";
+  position: absolute;
+  width: 10rem;
+  height: 10rem;
+  right: -5rem;
+  top: -6rem;
+  border-radius: 50%;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--brand) 8%, transparent);
+  filter: blur(12px);
+}
+
+.panelHeader {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+  margin-bottom: .95rem;
+}
+
+.panelHeaderIcon {
+  display: inline-flex;
+  width: 2.55rem;
+  height: 2.55rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--brand) 20%, var(--line-2));
+  border-radius: .9rem;
+  background: color-mix(in srgb, var(--brand-soft) 72%, var(--card));
+  color: var(--brand);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 45%, transparent);
+}
+
+.panelHeaderText {
+  min-width: 0;
+  flex: 1;
+}
+
+.panelHeaderText strong {
+  display: block;
+  color: var(--foreground);
+  font-size: .95rem;
+  font-weight: 760;
+  letter-spacing: -.018em;
+}
+
+.panelHeaderText span {
+  display: block;
+  margin-top: .16rem;
+  color: var(--muted);
+  font-size: .75rem;
+  line-height: 1.45;
+}
+
+.fieldsGrid {
+  display: grid;
+  gap: .9rem;
+}
+
+.formField {
+  position: relative;
+  min-width: 0;
+}
+
+.formField :global(.input-admin),
+.formField input,
+.formField textarea,
+.formField select {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.formField :global(.input-admin) {
+  min-height: 52px !important;
+  border: 1px solid color-mix(in srgb, var(--line-2) 88%, transparent) !important;
+  border-radius: .95rem !important;
+  background: color-mix(in srgb, var(--background) 38%, var(--card-elev)) !important;
+  padding: .82rem .92rem !important;
+  color: var(--foreground) !important;
+  font-size: .94rem !important;
+  font-weight: 540;
+  letter-spacing: -.01em;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 38%, transparent);
+  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.formField :global(.input-admin)::placeholder {
+  color: color-mix(in srgb, var(--muted) 78%, transparent);
+}
+
+.formField :global(.input-admin):hover {
+  border-color: color-mix(in srgb, var(--brand) 24%, var(--line-2)) !important;
+}
+
+.formField :global(.input-admin):focus {
+  border-color: color-mix(in srgb, var(--brand) 62%, var(--line-2)) !important;
+  background: color-mix(in srgb, var(--card) 96%, transparent) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 11%, transparent) !important;
+  outline: none !important;
+}
+
+.formField :global(textarea.input-admin) {
+  min-height: 108px !important;
+  line-height: 1.55;
+}
+
+.fieldLabel {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-bottom: .42rem;
+  color: var(--foreground);
+  font-size: .76rem;
+  font-weight: 720;
+  letter-spacing: -.008em;
+}
+
+.fieldHint {
+  margin-top: .34rem;
+  color: var(--muted);
+  font-size: .69rem;
+  line-height: 1.45;
+}
+
+.optionalPanel {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line-2) 90%, transparent) !important;
+  border-radius: 1.05rem;
+  background: color-mix(in srgb, var(--card-elev) 55%, transparent);
+  padding: 0 !important;
+}
+
+.optionalPanel summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+  list-style: none;
+  padding: .86rem .95rem !important;
+  color: var(--foreground);
+  font-size: .78rem !important;
+  font-weight: 720 !important;
+  user-select: none;
+}
+
+.optionalPanel summary::-webkit-details-marker { display: none; }
+
+.optionalPanel summary::after {
+  content: "+";
+  display: grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform 180ms ease;
+}
+
+.optionalPanel[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.optionalPanel summary span {
+  margin-left: auto !important;
+  color: var(--muted) !important;
+  font-size: .67rem !important;
+  font-weight: 560 !important;
+}
+
+.optionalBody {
+  display: grid;
+  gap: .9rem;
+  border-top: 1px solid var(--line-2);
+  padding: .95rem;
+}
+
+.actionsBar {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: .65rem;
+  margin-top: 1.15rem !important;
+  border-top: 1px solid color-mix(in srgb, var(--line-2) 78%, transparent);
+  padding-top: 1rem;
+}
+
+.actionsBar :global(.btn-primary),
+.actionsBar :global(.btn-ghost) {
+  min-height: 50px;
+  border-radius: .95rem;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: .82rem;
+  font-weight: 740;
+  letter-spacing: -.01em;
+}
+
+.primaryAction {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--brand) 20%, transparent) !important;
+}
+
+.secondaryAction {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+}
+
+.statusStrip {
+  display: flex;
+  align-items: flex-start;
+  gap: .65rem;
+  margin-top: .9rem;
+  border: 1px solid color-mix(in srgb, #d97706 22%, var(--line-2));
+  border-radius: 1rem;
+  background: color-mix(in srgb, #f59e0b 7%, var(--card));
+  padding: .78rem .85rem;
+  color: color-mix(in srgb, var(--foreground) 88%, #d97706);
+  font-size: .74rem;
+  line-height: 1.5;
+}
+
+.statusStrip svg { flex: 0 0 auto; margin-top: .12rem; color: #d97706; }
+
+.reviewHero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand) 22%, var(--line-2));
+  border-radius: 1.4rem;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--brand-soft) 72%, var(--card)), color-mix(in srgb, var(--card-elev) 90%, transparent));
+  padding: 1.05rem;
+}
+
+.reviewHeroTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .7rem;
+}
+
+.reviewName {
+  font-size: 1.05rem;
+  font-weight: 770;
+  letter-spacing: -.025em;
+}
+
+.reviewSlug {
+  margin-top: .12rem;
+  color: var(--muted);
+  font-size: .7rem;
+}
+
+.reviewBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
+  padding: .38rem .65rem;
+  color: var(--brand);
+  font-size: .68rem;
+  font-weight: 720;
+}
+
+.reviewGrid {
+  display: grid;
+  gap: .65rem;
+  margin-top: .9rem;
+}
+
+.reviewItem {
+  border: 1px solid color-mix(in srgb, var(--line-2) 82%, transparent);
+  border-radius: .9rem;
+  background: color-mix(in srgb, var(--card) 72%, transparent);
+  padding: .7rem .75rem;
+}
+
+.reviewItem span {
+  display: block;
+  color: var(--muted);
+  font-size: .62rem;
+  font-weight: 760;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.reviewItem strong {
+  display: block;
+  margin-top: .22rem;
+  color: var(--foreground);
+  font-size: .78rem;
+  font-weight: 690;
+  line-height: 1.4;
+}
+
+.feeNote {
+  display: flex;
+  align-items: flex-start;
+  gap: .65rem;
+  margin-top: .85rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--brand-soft) 34%, var(--card));
+  padding: .78rem .85rem;
+  color: var(--muted);
+  font-size: .72rem;
+  line-height: 1.5;
+}
+
+.feeNote svg { flex: 0 0 auto; margin-top: .08rem; color: var(--brand); }
+
+.ownerCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: 1rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2));
+  border-radius: 1.1rem;
+  background: color-mix(in srgb, var(--brand-soft) 24%, var(--card));
+  padding: .82rem .9rem;
+}
+
+.ownerMeta {
+  min-width: 0;
+}
+
+.ownerMeta span {
+  display: block;
+  color: var(--muted);
+  font-size: .62rem;
+  font-weight: 760;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ownerMeta strong {
+  display: block;
+  overflow: hidden;
+  margin-top: .2rem;
+  color: var(--foreground);
+  font-size: .79rem;
+  font-weight: 680;
+  text-overflow: ellipsis;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .35rem;
+  margin-bottom: 1rem;
+  border: 1px solid color-mix(in srgb, var(--line-2) 88%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--background) 45%, var(--card-elev));
+  padding: .3rem;
+}
+
+.segmented button {
+  min-height: 43px;
+  border-radius: .72rem;
+  color: var(--muted);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: .69rem;
+  font-weight: 680;
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.segmented button[aria-current="step"] {
+  background: var(--card);
+  color: var(--brand);
+  box-shadow: 0 5px 18px color-mix(in srgb, var(--foreground) 7%, transparent), inset 0 1px 0 color-mix(in srgb, white 50%, transparent);
+}
+
+.segmented button:disabled { cursor: default; opacity: .55; }
+
+.uploadZone {
+  border-style: dashed !important;
+  border-color: color-mix(in srgb, var(--brand) 24%, var(--line-2)) !important;
+  border-radius: 1rem !important;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--brand-soft) 30%, transparent), color-mix(in srgb, var(--card) 74%, transparent)) !important;
+  padding: .9rem !important;
+}
+
+.previewCard {
+  overflow: hidden;
+  margin-top: .8rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 20%, var(--line-2));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--card) 76%, transparent);
+}
+
+.previewImage {
+  display: flex;
+  min-height: 11rem;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--background) 58%, transparent);
+  padding: .55rem;
+}
+
+.previewImage img {
+  width: 100%;
+  max-height: 18rem;
+  border-radius: .72rem;
+  object-fit: contain;
+}
+
+.previewMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  border-top: 1px solid color-mix(in srgb, var(--brand) 14%, var(--line-2));
+  padding: .65rem .75rem;
+  font-size: .68rem;
+}
+
+.previewSaved {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  color: var(--brand);
+  font-weight: 720;
+}
+
+.previewHint {
+  color: var(--muted);
+}
+
+.authorityCard {
+  border: 1px solid color-mix(in srgb, var(--brand) 18%, var(--line-2)) !important;
+  background: color-mix(in srgb, var(--brand-soft) 34%, var(--card)) !important;
+}
+
+.authorityCard label {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: .78rem !important;
+  line-height: 1.55 !important;
+}
+
+.locationCard {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand) 18%, var(--line-2));
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--brand) 12%, transparent), transparent 13rem),
+    linear-gradient(145deg, color-mix(in srgb, var(--card-elev) 92%, transparent), color-mix(in srgb, var(--brand-soft) 22%, var(--card)));
+  padding: 1rem;
+}
+
+.locationTop {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+}
+
+.locationIcon {
+  display: inline-flex;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: .9rem;
+  background: color-mix(in srgb, var(--brand-soft) 78%, var(--card));
+  color: var(--brand);
+}
+
+.locationTitle {
+  font-size: .95rem;
+  font-weight: 760;
+  letter-spacing: -.02em;
+}
+
+.locationCopy {
+  margin-top: .2rem;
+  color: var(--muted);
+  font-size: .74rem;
+  line-height: 1.48;
+}
+
+.locationAction {
+  display: inline-flex;
+  min-height: 48px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  margin-top: .9rem;
+  border-radius: .9rem;
+  background: var(--brand);
+  padding: .72rem .95rem;
+  color: white;
+  font-size: .78rem;
+  font-weight: 740;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--brand) 20%, transparent);
+  transition: transform 160ms ease, filter 160ms ease, opacity 160ms ease;
+}
+
+.locationAction:hover:not(:disabled) { filter: brightness(.97); transform: translateY(-1px); }
+.locationAction:disabled { cursor: wait; opacity: .6; }
+
+.locationResult {
+  margin-top: .8rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 20%, var(--line-2));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--brand-soft) 38%, var(--card));
+  padding: .8rem;
+}
+
+.locationResultTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .55rem;
+}
+
+.locationSuccess {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: var(--brand);
+  font-size: .72rem;
+  font-weight: 740;
+}
+
+.locationAccuracy {
+  color: var(--muted);
+  font-size: .65rem;
+}
+
+.locationChips {
+  display: grid;
+  gap: .5rem;
+  margin-top: .65rem;
+}
+
+.locationChip {
+  border: 1px solid color-mix(in srgb, var(--brand) 15%, var(--line-2));
+  border-radius: .82rem;
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  padding: .58rem .65rem;
+}
+
+.locationChip span {
+  display: block;
+  color: var(--muted);
+  font-size: .58rem;
+  font-weight: 760;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.locationChip strong {
+  display: block;
+  margin-top: .12rem;
+  color: var(--foreground);
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.locationNote {
+  margin-top: .65rem;
+  color: var(--muted);
+  font-size: .68rem;
+  line-height: 1.5;
+}
+
+.locationAlert {
+  margin-top: .75rem;
+  border: 1px solid color-mix(in srgb, #e11d48 24%, var(--line-2));
+  border-radius: .9rem;
+  background: color-mix(in srgb, #e11d48 7%, var(--card));
+  padding: .7rem .75rem;
+  color: #9f1239;
+  font-size: .7rem;
+  line-height: 1.45;
+}
+
+.locationSaved {
+  margin-top: .75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .45rem;
+  border-radius: .9rem;
+  background: color-mix(in srgb, var(--brand) 8%, transparent);
+  padding: .68rem .75rem;
+  color: var(--brand);
+  font-size: .7rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 640px) {
+  .panel { padding: 1.15rem !important; }
+  .fieldsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .actionsBar { flex-direction: row; justify-content: flex-end; align-items: center; }
+  .reviewGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .locationAction { width: auto; }
+  .locationChips { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 639px) {
+  .wizardShell { border-radius: 1.35rem !important; }
+  .heading h2 { font-size: 1.78rem !important; }
+  .topline { margin-top: 0; }
+  .panel { padding: .9rem !important; border-radius: 1.12rem !important; }
+  .panelHeaderIcon { width: 2.35rem; height: 2.35rem; }
+  .actionsBar {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    margin-inline: -.1rem;
+    background: linear-gradient(to top, var(--card) 75%, transparent);
+    padding: .9rem .1rem .1rem;
+  }
+  .actionsBar :global(.btn-primary),
+  .actionsBar :global(.btn-ghost) { width: 100%; }
+  .segmented button { font-size: .64rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locationAction,
+  .formField :global(.input-admin),
+  .segmented button,
+  .optionalPanel summary::after { transition: none !important; }
+}
+
+:global(html[data-theme="dark"]) .locationAlert { color: #fecdd3; }
