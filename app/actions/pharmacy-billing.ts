@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped as db, withPlatformTx } from "@/app/lib/db";
 import { cancelSubscription, collectInvoicePayment } from "@/app/lib/platform/billing";
+import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
 import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
 import { createIntaSendBillingCheckout } from "@/app/lib/services/intasend-checkout";
@@ -88,11 +89,23 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
     );
     if (!result.ok) throw new Error(result.error);
 
+    const daraja = await resolveDarajaCredentials(null);
     revalidatePath("/onboard/billing");
     revalidatePath("/admin/setup");
+
+    if (daraja?.env === "sandbox") {
+      return {
+        success:
+          `Daraja sandbox accepted the STK request (CheckoutRequestID ${result.checkoutRequestId}). ` +
+          "Sandbox verifies the API flow but does not prove that a real handset prompt was delivered. " +
+          "For a real M-Pesa popup, deploy the corresponding live credentials with DARAJA_ENV=production.",
+      };
+    }
+
     return {
       success:
-        "M-Pesa prompt sent directly through Safaricom Daraja. Approve it on your phone; this page will confirm the result automatically.",
+        `M-Pesa prompt accepted by Safaricom Daraja (CheckoutRequestID ${result.checkoutRequestId}). ` +
+        "Approve it on your phone; this page will confirm the result automatically.",
     };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Could not process billing." };
