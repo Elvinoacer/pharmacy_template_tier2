@@ -90,12 +90,30 @@ export function phoneLast9(phone: string): string {
 }
 
 /**
- * Safaricom's official Node reference implementation signs the request with
- * the first 14 digits of an ISO timestamp (YYYYMMDDHHmmss). Keep password and
- * request Timestamp identical and do not apply an additional Nairobi offset.
+ * M-Pesa Express authenticates the request with
+ * Base64(BusinessShortCode + Passkey + Timestamp). The timestamp is Kenya
+ * local time (Africa/Nairobi / EAT) in YYYYMMDDHHmmss format and the exact
+ * same value must be used in both the password and request body.
+ *
+ * Vercel functions run in UTC. Using Date#toISOString() therefore signs an
+ * STK request three hours behind M-Pesa's clock. Daraja can accept the prompt
+ * for processing and still finish it with ResultCode 2001 after the customer
+ * enters a PIN. Generate the timestamp explicitly in Africa/Nairobi instead.
  */
 export function darajaTimestamp(date = new Date()): string {
-  return date.toISOString().replace(/[^0-9]/g, "").slice(0, 14);
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Nairobi",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((item) => item.type === type)?.value || "";
+  return `${part("year")}${part("month")}${part("day")}${part("hour")}${part("minute")}${part("second")}`;
 }
 
 function password(creds: DarajaCredentials, ts: string): string {
@@ -315,6 +333,7 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
     environment: creds.env,
     shortcode: creds.shortcode,
     transactionType,
+    timestampZone: "Africa/Nairobi",
     checkoutRequestId: j.CheckoutRequestID,
     merchantRequestId: j.MerchantRequestID || "",
   });
