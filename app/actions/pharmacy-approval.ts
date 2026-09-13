@@ -27,7 +27,8 @@ async function notifyOwnerPharmacyIsLive(opts: {
   notes: string;
   monthlyAmountKes: number;
   monthlyInvoiceStatus: string;
-  medicinesVisible: number;
+  medicinesPublished: number;
+  medicinesInStock: number;
   servicesVisible: number;
 }) {
   let toEmail = opts.pharmacyEmail?.trim() || null;
@@ -58,8 +59,8 @@ async function notifyOwnerPharmacyIsLive(opts: {
     "",
     `Public storefront: ${base}/p/${opts.pharmacySlug}`,
     "",
-    `Right now, ${opts.medicinesVisible} medicine listing${opts.medicinesVisible === 1 ? " is" : "s are"} publicly discoverable and ${opts.servicesVisible} service${opts.servicesVisible === 1 ? " is" : "s are"} published.`,
-    "Medicines only appear publicly when the item is active, marked for public listing, and has available stock. Active services appear automatically.",
+    `Right now, ${opts.medicinesPublished} medicine listing${opts.medicinesPublished === 1 ? " is" : "s are"} published (${opts.medicinesInStock} currently in stock) and ${opts.servicesVisible} active service${opts.servicesVisible === 1 ? " is" : "s are"} published.`,
+    "A medicine appears publicly when it is active and its Public listing switch is enabled. Stock still controls availability and whether a customer can reserve/order it. Active services appear automatically.",
     "",
     billingLine,
     `${base}/onboard/billing`,
@@ -233,7 +234,10 @@ async function approveAndActivatePharmacy(formData: FormData): Promise<ReviewAct
     return activated;
   });
 
-  const [medicinesVisible, servicesVisible] = await Promise.all([
+  const [medicinesPublished, medicinesInStock, servicesVisible] = await Promise.all([
+    prismaUnscoped.pharmacyInventory.count({
+      where: { pharmacyId, active: true, publicListing: true },
+    }),
     prismaUnscoped.pharmacyInventory.count({
       where: {
         pharmacyId,
@@ -255,7 +259,8 @@ async function approveAndActivatePharmacy(formData: FormData): Promise<ReviewAct
     details: {
       status: "active",
       listed: true,
-      medicinesVisible,
+      medicinesPublished,
+      medicinesInStock,
       servicesVisible,
       monthlyInvoiceId: monthlyInvoice.id,
       monthlyInvoiceStatus: monthlyInvoice.status,
@@ -272,7 +277,8 @@ async function approveAndActivatePharmacy(formData: FormData): Promise<ReviewAct
     notes,
     monthlyAmountKes: Number(monthlyInvoice.totalKes),
     monthlyInvoiceStatus: monthlyInvoice.status,
-    medicinesVisible,
+    medicinesPublished,
+    medicinesInStock,
     servicesVisible,
   });
 
@@ -280,7 +286,7 @@ async function approveAndActivatePharmacy(formData: FormData): Promise<ReviewAct
 
   return {
     success:
-      `Approved and live. ${medicinesVisible} public medicine listing${medicinesVisible === 1 ? "" : "s"} and ${servicesVisible} active service${servicesVisible === 1 ? "" : "s"} are discoverable now. ` +
+      `Approved and live. ${medicinesPublished} published medicine listing${medicinesPublished === 1 ? "" : "s"} (${medicinesInStock} in stock) and ${servicesVisible} active service${servicesVisible === 1 ? "" : "s"} are available on the public pharmacy surfaces. ` +
       (monthlyInvoice.status === "paid"
         ? "The current monthly service period is covered."
         : `Monthly service billing has started (KES ${Number(monthlyInvoice.totalKes).toLocaleString("en-KE")}, ${monthlyInvoice.status}).`),
