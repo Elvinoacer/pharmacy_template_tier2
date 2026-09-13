@@ -138,26 +138,10 @@ export async function listActiveCategoryOptions(): Promise<
       .map((c) => ({ slug: c.slug, name: c.name }));
   } catch (err) {
     console.error("[listActiveCategoryOptions]", err);
-    return [
-      { slug: "general", name: "General" },
-      { slug: "pain-relief", name: "Pain Relief" },
-      { slug: "antibiotics", name: "Antibiotics" },
-      { slug: "cardiovascular", name: "Cardiovascular" },
-      { slug: "diabetes", name: "Diabetes" },
-      { slug: "diabetes-care", name: "Diabetes Care" },
-      { slug: "respiratory", name: "Respiratory" },
-      { slug: "vitamins", name: "Vitamins" },
-      { slug: "vitamins-supplements", name: "Vitamins & Supplements" },
-      { slug: "first-aid", name: "First Aid" },
-      { slug: "cold-flu", name: "Cold Flu" },
-      { slug: "skin-care", name: "Skin Care" },
-      { slug: "baby-care", name: "Baby Care" },
-      { slug: "womens-health", name: "Womens Health" },
-      { slug: "mens-health", name: "Mens Health" },
-      { slug: "mental-health", name: "Mental Health" },
-      { slug: "digestive", name: "Digestive" },
-      { slug: "allergy", name: "Allergy" },
-    ];
+    // Production must not invent a healthy-looking taxonomy when the database
+    // is unavailable. An empty list makes the failure visible and prevents
+    // users from choosing categories that do not exist in this tenant's data.
+    return [];
   }
 }
 
