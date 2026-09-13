@@ -15,6 +15,8 @@ export type GeolocationActionState = {
   displayName?: string | null;
 };
 
+const MAX_ONBOARDING_ACCURACY_METERS = 400;
+
 function parseCoordinate(value: FormDataEntryValue | null): number | null {
   if (value == null || String(value).trim() === "") return null;
   const number = Number(String(value).trim());
@@ -34,23 +36,40 @@ function validateCoordinates(latitude: number | null, longitude: number | null) 
   return null;
 }
 
+function cleanAdministrativeName(value: string | null | undefined): string | null {
+  const cleaned = value?.trim();
+  if (!cleaned) return null;
+  return cleaned.replace(/\s+County$/i, "").trim() || null;
+}
+
 type ReverseGeocode = {
   city: string | null;
   county: string | null;
   country: string | null;
+  countryCode: string | null;
   displayName: string | null;
 };
 
 async function reverseGeocode(latitude: number, longitude: number): Promise<ReverseGeocode> {
-  const empty: ReverseGeocode = { city: null, county: null, country: null, displayName: null };
+  const empty: ReverseGeocode = {
+    city: null,
+    county: null,
+    country: null,
+    countryCode: null,
+    displayName: null,
+  };
+
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 6500);
     const url = new URL("https://nominatim.openstreetmap.org/reverse");
     url.searchParams.set("lat", String(latitude));
     url.searchParams.set("lon", String(longitude));
     url.searchParams.set("format", "jsonv2");
-    url.searchParams.set("zoom", "18");
+    // We need the administrative hierarchy, not a guessed IP locality or a
+    // user-entered place. A street-level reverse lookup still returns the full
+    // OSM address hierarchy used below.
+    url.searchParams.set("zoom", "16");
     url.searchParams.set("addressdetails", "1");
     url.searchParams.set("accept-language", "en");
 
@@ -70,22 +89,33 @@ async function reverseGeocode(latitude: number, longitude: number): Promise<Reve
       address?: Record<string, string | undefined>;
     };
     const address = payload.address ?? {};
+    const countryCode = address.country_code?.toLowerCase() || null;
+    const isKenya = countryCode === "ke" || address.country?.toLowerCase() === "kenya";
 
+    // Prefer actual settlements over broader municipalities/districts. This is
+    // especially important around Kenyan metro areas where a district/suburb
+    // may otherwise be surfaced as the apparent city.
     const city =
       address.city ??
       address.town ??
+      address.village ??
       address.municipality ??
       address.city_district ??
-      address.village ??
       address.suburb ??
       null;
-    const county = address.county ?? address.state_district ?? address.state ?? null;
-    const country = address.country ?? null;
+
+    // Kenyan counties are admin-level 4 and are commonly exposed by Nominatim
+    // as `state`. `county`/`state_district` may instead describe a sub-county or
+    // smaller administrative unit, so prefer `state` for Kenya.
+    const county = isKenya
+      ? cleanAdministrativeName(address.state ?? address.county ?? address.state_district)
+      : cleanAdministrativeName(address.county ?? address.state_district ?? address.state);
 
     return {
-      city,
+      city: city?.trim() || null,
       county,
-      country,
+      country: address.country?.trim() || null,
+      countryCode,
       displayName: payload.display_name ?? null,
     };
   } catch {
@@ -120,12 +150,32 @@ export async function saveOnboardingPharmacyLocationAction(
     if (coordinateError) return { error: coordinateError };
 
     const accuracyMeters = parseAccuracy(formData.get("accuracyMeters"));
-    if (accuracyMeters == null) return { error: "Capture the location from your browser while at the pharmacy premises." };
+    if (accuracyMeters == null) {
+      return { error: "Capture the location from your browser while at the pharmacy premises." };
+    }
+
+    if (accuracyMeters > MAX_ONBOARDING_ACCURACY_METERS) {
+      return {
+        error: `This location is too broad (about ±${Math.round(accuracyMeters)} m). Enable precise location/GPS or use a phone at the pharmacy, then try again.`,
+      };
+    }
 
     const reverse = await reverseGeocode(latitude!, longitude!);
+    if (reverse.countryCode && reverse.countryCode !== "ke") {
+      return {
+        error: `This location appears to be in ${reverse.country || "another country"}. Pharmacy onboarding currently requires a premises location in Kenya.`,
+      };
+    }
+
     if (!reverse.city) {
       return {
-        error: "We found the premises GPS position but could not identify the city. Refresh current location and try again.",
+        error: "We captured a precise premises position but could not identify the city or town. Refresh the location with GPS enabled and try again.",
+      };
+    }
+
+    if (!reverse.county) {
+      return {
+        error: "We captured the premises position but could not resolve the Kenyan county reliably. Refresh the location and try again.",
       };
     }
 
@@ -141,7 +191,7 @@ export async function saveOnboardingPharmacyLocationAction(
           pharmacyId,
           actorId: user.id,
           type: "verification_input_changed",
-          message: `Premises location captured from browser GPS: ${latitude}, ${longitude}; derived area ${city}${county ? `, ${county}` : ""}; accuracy ±${Math.round(accuracyMeters)} m. Reviewer must match the licensed address.`,
+          message: `Premises location captured from high-accuracy browser geolocation: ${latitude}, ${longitude}; derived area ${city}, ${county}; accuracy ±${Math.round(accuracyMeters)} m. Reviewer must match the licensed address.`,
         },
       }),
     ]));
@@ -151,7 +201,7 @@ export async function saveOnboardingPharmacyLocationAction(
     revalidatePath("/");
 
     return {
-      success: "Location captured. City and county were filled automatically.",
+      success: `Premises confirmed near ${city}, ${county}.`,
       city,
       county,
       country,
