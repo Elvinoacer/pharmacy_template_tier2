@@ -1,6 +1,5 @@
 import "server-only";
 
-import { articles, categories, faqs } from "./data";
 import { SUGGESTED_PROMPTS } from "./suggested-prompts";
 import type { SessionUser } from "@/app/lib/types";
 import { getActiveCaregiverLinks } from "@/app/lib/services/caregiver-permissions";
@@ -10,6 +9,7 @@ import {
   formatKnowledgeForPrompt,
 } from "@/app/lib/services/ai-knowledge-lookup";
 import { listNetworkServiceListings } from "@/app/lib/services/network-catalog";
+import { listPublicCategories } from "@/app/lib/medication-categories";
 import { prisma } from "@/app/lib/db";
 import { toLocalDateInputValue } from "@/app/lib/time";
 import { getResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
@@ -17,10 +17,10 @@ import { getResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
 export { SUGGESTED_PROMPTS };
 
 /**
- * Tenant-aware public context. Operational service availability always comes
- * from PharmacyService rows belonging to active, verified, listed pharmacies.
- * Static editorial content is allowed only for non-operational education/FAQ
- * context and must never be treated as proof of availability.
+ * Tenant-aware public context. Operational facts are database-backed only:
+ * services from PharmacyService, categories from MedicationCategory, and
+ * tenant identity from Pharmacy/PharmacySettings. Approved knowledge is
+ * injected only when relevant to the current question.
  */
 export async function buildPharmacyContext(userQuery?: string): Promise<string> {
   const pharmacy = await getResolvedPharmacy();
@@ -28,9 +28,12 @@ export async function buildPharmacyContext(userQuery?: string): Promise<string> 
     ? pharmacy.hours.map((h) => `${h.day}: ${h.time}`).join("; ")
     : "Hours not published — contact the pharmacy to confirm";
 
-  const serviceData = await listNetworkServiceListings({
-    pharmacySlug: pharmacy.unresolved ? undefined : pharmacy.slug || undefined,
-  }).catch(() => ({ services: [], selectedPharmacy: null }));
+  const [serviceData, liveCategories] = await Promise.all([
+    listNetworkServiceListings({
+      pharmacySlug: pharmacy.unresolved ? undefined : pharmacy.slug || undefined,
+    }).catch(() => ({ services: [], selectedPharmacy: null })),
+    listPublicCategories().catch(() => []),
+  ]);
 
   const serviceList = serviceData.services.length
     ? serviceData.services
@@ -42,12 +45,9 @@ export async function buildPharmacyContext(userQuery?: string): Promise<string> 
         .join("\n")
     : "No live pharmacy-published services matched the current context.";
 
-  const faqList = faqs
-    .slice(0, 12)
-    .map((f) => `Q: ${f.question}\nA: ${f.answer}`)
-    .join("\n\n");
-  const cats = categories.map((c) => c.title).join(", ");
-  const articleTitles = articles.map((a) => a.title).join("; ");
+  const cats = liveCategories.length
+    ? liveCategories.map((category) => category.name).join(", ")
+    : "No public medication categories are currently published.";
 
   let relevantKb = "";
   if (userQuery?.trim()) {
@@ -85,16 +85,9 @@ ${identityWarning}
 These entries came from current PharmacyService database rows for active, verified, listed pharmacies. If no tenant is selected, each entry keeps its real provider attached. Do not claim services that are absent from this list.
 ${serviceList}
 
-## Medicine categories
-The following labels are educational/browse vocabulary only, not evidence that a medicine is currently stocked. Use live medication search for availability.
+## Live medicine categories
+These labels come from the current MedicationCategory database. They are browse vocabulary, not proof that a specific medicine is in stock; use live medication search for availability.
 ${cats}
-
-## Sample FAQs
-FAQ text is general educational guidance. Provider-specific prices, hours, delivery, insurance and policies must be confirmed from live tenant/provider data.
-${faqList}
-
-## Health library topics
-${articleTitles}
 ${relevantKb}
 
 ## How do you feel?
@@ -103,7 +96,7 @@ For mild everyday symptom questions, guide visitors to /how-do-you-feel. Emergen
 ## Tools
 1. search_medications — live public catalogue/availability questions.
 2. get_medication — one public listing by slug.
-3. search_knowledge — approved operational/policy detail.
+3. search_knowledge — approved database-backed operational/policy detail.
 4. get_medication_counselling — educational medicine-use/counselling information.
 
 Security rules:
