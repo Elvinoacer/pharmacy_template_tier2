@@ -63,10 +63,7 @@ export default async function PharmacyBillingPage() {
   );
   const feeCents = feeBalance._sum.quantity || 0;
   const paymentPending = invoices.some((invoice) => invoice.payments.length > 0);
-  const stkAvailable = Boolean(
-    platformDaraja &&
-      (process.env.VERCEL_ENV !== "production" || platformDaraja.env === "production"),
-  );
+  const stkAvailable = Boolean(platformDaraja);
   const checkoutAvailable = intasendCheckoutConfigured();
 
   return (

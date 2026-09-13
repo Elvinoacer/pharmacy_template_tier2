@@ -19,7 +19,10 @@ export const platform = {
   phoneHref: "tel:+254790670542",
   whatsapp: "+254790670542",
   whatsappHref: "https://wa.me/254790670542",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://pharmacy-template-tier2.vercel.app",
+  siteUrl:
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://pharmacy-template-tier2.vercel.app",
   country: "Kenya",
   regulator: "Pharmacy and Poisons Board",
   emergency: "999",
@@ -82,7 +85,10 @@ export const pharmacy = {
     "Data Protection Act 2019",
     "Good Pharmacy Practice",
   ],
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://pharmacy-template-tier2.vercel.app",
+  siteUrl:
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://pharmacy-template-tier2.vercel.app",
 };
 
 export const team = [

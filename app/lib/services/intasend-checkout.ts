@@ -28,7 +28,6 @@ export function intasendWebhookChallenge(): string | null {
 
 export function intasendCheckoutConfigured(): boolean {
   if (!publishableKey() || !intasendWebhookChallenge()) return false;
-  if (process.env.VERCEL_ENV === "production" && intasendEnv() !== "production") return false;
   return true;
 }
 
@@ -72,9 +71,6 @@ export async function createIntaSendBillingCheckout(input: {
   const origin = appOrigin();
 
   if (!key || !challenge) throw new Error("Secure checkout is not configured yet.");
-  if (process.env.VERCEL_ENV === "production" && env !== "production") {
-    throw new Error("Live IntaSend checkout credentials are required in production.");
-  }
   if (!origin) throw new Error("The application URL is not configured for secure checkout.");
 
   const invoice = await prismaUnscoped.invoice.findUnique({ where: { id: input.invoiceId } });

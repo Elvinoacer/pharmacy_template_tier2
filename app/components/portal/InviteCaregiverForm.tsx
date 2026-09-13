@@ -29,8 +29,13 @@ export function InviteCaregiverForm({
       try {
         await inviteCaregiverAction(fd);
         toast.success("Invitation email sent.");
-        // Start local cooldown mirror (server enforces the real one).
-        setRemaining(Number(process.env.NEXT_PUBLIC_CAREGIVER_INVITE_COOLDOWN || 60));
+        setRemaining(
+          Number(
+            process.env.NEXT_PUBLIC_CAREGIVER_INVITE_COOLDOWN_SECONDS ||
+              process.env.NEXT_PUBLIC_CAREGIVER_INVITE_COOLDOWN ||
+              60,
+          ),
+        );
       } catch {
         toast.error("Could not send invite. Try again shortly.");
       }

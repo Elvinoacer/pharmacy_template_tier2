@@ -19,7 +19,7 @@ function authorized(request: NextRequest, rawBody: string) {
       : provider === "whatsapp"
         ? process.env.WHATSAPP_APP_SECRET || process.env.WHATSAPP_ACCESS_TOKEN
         : provider === "resend"
-          ? process.env.RESEND_WEBHOOK_SECRET
+          ? process.env.RESEND_WEBHOOK_SECRET || process.env.DELIVERY_WEBHOOK_SECRET
           : process.env.DELIVERY_WEBHOOK_SECRET;
   return verifyInboundProvider({
     provider,

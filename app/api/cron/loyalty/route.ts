@@ -186,7 +186,10 @@ async function processOrderBonuses(pharmacyId: string): Promise<number> {
     where: { pharmacyId },
     select: { loyaltySpendMultiplier: true },
   });
-  const multiplier = Number(integration?.loyaltySpendMultiplier ?? 0.01);
+  const envMultiplier = Number(process.env.LOYALTY_SPEND_MULTIPLIER);
+  const defaultMultiplier =
+    Number.isFinite(envMultiplier) && envMultiplier > 0 ? envMultiplier : 0.01;
+  const multiplier = Number(integration?.loyaltySpendMultiplier ?? defaultMultiplier);
 
   const payments = await prisma.payment.findMany({
     where: {

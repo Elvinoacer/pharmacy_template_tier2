@@ -298,7 +298,13 @@ export async function inviteCaregiverAction(formData: FormData) {
   });
   if (!caregiver || !caregiver.caregiverEmail) return;
 
-  const cooldownMs = Number(process.env.CAREGIVER_INVITE_COOLDOWN_SECONDS || 60) * 1000;
+  const cooldownMs =
+    Number(
+      process.env.CAREGIVER_INVITE_COOLDOWN_SECONDS ||
+        process.env.NEXT_PUBLIC_CAREGIVER_INVITE_COOLDOWN_SECONDS ||
+        process.env.NEXT_PUBLIC_CAREGIVER_INVITE_COOLDOWN ||
+        60,
+    ) * 1000;
   if (caregiver.lastInviteSentAt) {
     const remainingMs = cooldownMs - (Date.now() - caregiver.lastInviteSentAt.getTime());
     if (remainingMs > 0) {

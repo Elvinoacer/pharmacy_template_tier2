@@ -14,6 +14,9 @@ const tokenCache = new Map<string, TokenCache>();
 export type DarajaEnv = "sandbox" | "production";
 
 export function darajaConfigured(): boolean {
+  if (process.env.NEXT_PUBLIC_DARAJA_ENABLED?.trim().toLowerCase() === "false") {
+    return false;
+  }
   return Boolean(
     process.env.DARAJA_CONSUMER_KEY?.trim() &&
       process.env.DARAJA_CONSUMER_SECRET?.trim() &&

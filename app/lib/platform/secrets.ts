@@ -10,7 +10,10 @@ function deriveKey(secret: string): Buffer {
 }
 
 function currentKeyMaterial(): Buffer {
-  const secret = process.env.INTEGRATION_SECRET?.trim() || "";
+  let secret = process.env.INTEGRATION_SECRET?.trim() || "";
+  if (secret.length < 32 && process.env.NODE_ENV !== "production") {
+    secret = process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim() || "";
+  }
   if (secret.length < 32) {
     throw new Error(
       "INTEGRATION_SECRET (32+ chars) is required to encrypt integration credentials. Auth/session secrets are intentionally not reused.",

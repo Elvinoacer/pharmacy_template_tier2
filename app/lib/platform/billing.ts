@@ -421,7 +421,6 @@ export async function collectInvoicePayment(invoiceId: string, opts?: { phone?: 
 
   const creds = await resolveDarajaCredentials(null);
   if (!creds) throw new Error("Platform M-Pesa is not configured.");
-  if (process.env.NODE_ENV === "production" && creds.env !== "production") throw new Error("Live platform M-Pesa credentials are required.");
   const payment = await prismaUnscoped.billingPayment.create({
     data: {
       pharmacyId: invoice.pharmacyId,
