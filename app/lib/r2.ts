@@ -6,7 +6,14 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { createHmac, randomUUID, timingSafeEqual } from "crypto";
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHmac,
+  randomBytes,
+  randomUUID,
+  timingSafeEqual,
+} from "crypto";
 
 const ALLOWED_TYPES = new Set([
   "image/jpeg",
@@ -30,6 +37,9 @@ export const PRIVATE_IMAGE_MAX_PIXELS = 20_000_000;
 export const PRIVATE_IMAGE_MAX_DIMENSION = 8_192;
 const PRIVATE_PREFIX = "r2-private://";
 const MEDIA_TOKEN_TTL_SECONDS = 5 * 60;
+const PRIVATE_ENVELOPE_MAGIC = Buffer.from("AETHR2E1", "ascii");
+const PRIVATE_IV_BYTES = 12;
+const PRIVATE_TAG_BYTES = 16;
 
 export type R2Config = {
   accountId: string;
@@ -40,7 +50,10 @@ export type R2Config = {
   endpoint: string;
 };
 
-export type PrivateR2Config = Omit<R2Config, "publicUrl">;
+export type PrivateR2Config = Omit<R2Config, "publicUrl"> & {
+  /** Shared/public R2 buckets must encrypt private objects at the application layer. */
+  encrypted: boolean;
+};
 
 function baseConfig() {
   const accountId = process.env.R2_ACCOUNT_ID?.trim();
@@ -61,11 +74,47 @@ export function getR2Config(): R2Config | null {
   return { ...base, bucket, publicUrl };
 }
 
-export function getPrivateR2Config(): PrivateR2Config | null {
+/**
+ * Derive a storage-only encryption key from the app session secret. This keeps
+ * the existing deployment configuration working without exposing private
+ * regulatory/health media when the normal R2 bucket has public delivery.
+ */
+function privateStorageEncryptionKey(): Buffer | null {
+  const secret = process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
+  if (!secret) return null;
+  return createHmac("sha256", secret)
+    .update("aether/private-r2-storage-encryption/v1")
+    .digest();
+}
+
+function privateR2Configs(): PrivateR2Config[] {
   const base = baseConfig();
-  const bucket = process.env.R2_PRIVATE_BUCKET_NAME?.trim();
-  if (!base || !bucket) return null;
-  return { ...base, bucket };
+  if (!base) return [];
+
+  const dedicatedBucket = process.env.R2_PRIVATE_BUCKET_NAME?.trim();
+  const sharedBucket = process.env.R2_BUCKET_NAME?.trim();
+  const encryptionReady = privateStorageEncryptionKey() !== null;
+  const configs: PrivateR2Config[] = [];
+
+  if (dedicatedBucket) {
+    const sameAsShared = Boolean(sharedBucket && dedicatedBucket === sharedBucket);
+    if (!sameAsShared || encryptionReady) {
+      configs.push({ ...base, bucket: dedicatedBucket, encrypted: sameAsShared });
+    }
+  }
+
+  // Backward-compatible secure fallback: reuse the platform's configured R2
+  // bucket, but only with authenticated encryption because that bucket may be
+  // reachable through R2_PUBLIC_URL/r2.dev.
+  if (sharedBucket && sharedBucket !== dedicatedBucket && encryptionReady) {
+    configs.push({ ...base, bucket: sharedBucket, encrypted: true });
+  }
+
+  return configs;
+}
+
+export function getPrivateR2Config(): PrivateR2Config | null {
+  return privateR2Configs()[0] ?? null;
 }
 
 export function isR2Configured(): boolean {
@@ -307,6 +356,67 @@ async function validatedImage(file: File | Blob, opts?: { privateHealth?: boolea
   return { body: buffer, contentType: sniffed, size: buffer.byteLength };
 }
 
+function privateContentTypeCode(contentType: string): number {
+  if (contentType === "image/jpeg") return 1;
+  if (contentType === "image/png") return 2;
+  if (contentType === "image/webp") return 3;
+  throw new Error("Unsupported private image type.");
+}
+
+function privateContentTypeFromCode(code: number): string | null {
+  if (code === 1) return "image/jpeg";
+  if (code === 2) return "image/png";
+  if (code === 3) return "image/webp";
+  return null;
+}
+
+function encryptPrivateObject(body: Buffer, contentType: string): Buffer {
+  const key = privateStorageEncryptionKey();
+  if (!key) throw new Error("Private media encryption is unavailable.");
+  const typeCode = privateContentTypeCode(contentType);
+  const iv = randomBytes(PRIVATE_IV_BYTES);
+  const type = Buffer.from([typeCode]);
+  const aad = Buffer.concat([PRIVATE_ENVELOPE_MAGIC, type]);
+  const cipher = createCipheriv("aes-256-gcm", key, iv);
+  cipher.setAAD(aad);
+  const ciphertext = Buffer.concat([cipher.update(body), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return Buffer.concat([PRIVATE_ENVELOPE_MAGIC, type, iv, tag, ciphertext]);
+}
+
+function decryptPrivateObject(envelope: Buffer): { body: Buffer; contentType: string } | null {
+  const minLength = PRIVATE_ENVELOPE_MAGIC.length + 1 + PRIVATE_IV_BYTES + PRIVATE_TAG_BYTES + 1;
+  if (envelope.length < minLength) return null;
+  if (!envelope.subarray(0, PRIVATE_ENVELOPE_MAGIC.length).equals(PRIVATE_ENVELOPE_MAGIC)) return null;
+
+  const key = privateStorageEncryptionKey();
+  if (!key) return null;
+  const typeOffset = PRIVATE_ENVELOPE_MAGIC.length;
+  const typeCode = envelope[typeOffset];
+  const contentType = privateContentTypeFromCode(typeCode);
+  if (!contentType) return null;
+
+  const ivStart = typeOffset + 1;
+  const tagStart = ivStart + PRIVATE_IV_BYTES;
+  const bodyStart = tagStart + PRIVATE_TAG_BYTES;
+  const iv = envelope.subarray(ivStart, tagStart);
+  const tag = envelope.subarray(tagStart, bodyStart);
+  const ciphertext = envelope.subarray(bodyStart);
+  const aad = Buffer.concat([PRIVATE_ENVELOPE_MAGIC, Buffer.from([typeCode])]);
+
+  try {
+    const decipher = createDecipheriv("aes-256-gcm", key, iv);
+    decipher.setAAD(aad);
+    decipher.setAuthTag(tag);
+    return {
+      body: Buffer.concat([decipher.update(ciphertext), decipher.final()]),
+      contentType,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export type UploadResult = { key: string; url: string; contentType: string; size: number };
 export type PrivateUploadResult = { key: string; reference: string; contentType: string; size: number };
 
@@ -334,25 +444,29 @@ export async function uploadToR2(
   return { key, url: `${config.publicUrl}/${key}`, contentType: validated.contentType, size: validated.size };
 }
 
-/** Upload sensitive health media into a private bucket after privacy sanitization. */
+/** Upload sensitive media, using a dedicated private bucket when available. */
 export async function uploadPrivateImageToR2(
   file: File | Blob,
   opts?: { folder?: string },
 ): Promise<PrivateUploadResult> {
   const config = getPrivateR2Config();
   if (!config) {
-    throw new Error("Private R2 storage is not configured. Set R2_PRIVATE_BUCKET_NAME before accepting health-media uploads.");
+    throw new Error("Secure R2 storage is not configured. Check the platform R2 credentials and AUTH_SECRET.");
   }
   const validated = await validatedImage(file, { privateHealth: true });
   const folder = sanitizeFolder(opts?.folder || "health-media");
   const key = `${folder}/${randomUUID()}.${extensionFor(validated.contentType)}`;
   const s3 = getClient(config);
+  const body = config.encrypted
+    ? encryptPrivateObject(validated.body, validated.contentType)
+    : validated.body;
   await s3.send(new PutObjectCommand({
     Bucket: config.bucket,
     Key: key,
-    Body: validated.body,
-    ContentType: validated.contentType,
+    Body: body,
+    ContentType: config.encrypted ? "application/octet-stream" : validated.contentType,
     CacheControl: "private, no-store, max-age=0",
+    Metadata: config.encrypted ? { "aether-private-encrypted": "aes-256-gcm-v1" } : undefined,
   }));
   return { key, reference: `${PRIVATE_PREFIX}${key}`, contentType: validated.contentType, size: validated.size };
 }
@@ -367,16 +481,36 @@ export function privateR2Key(value: string): string | null {
   return key || null;
 }
 
+function isMissingR2Object(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const value = error as { name?: string; $metadata?: { httpStatusCode?: number } };
+  return value.$metadata?.httpStatusCode === 404 || value.name === "NoSuchKey" || value.name === "NotFound";
+}
+
 export async function readPrivateR2Object(referenceOrKey: string): Promise<{ body: Buffer; contentType: string } | null> {
-  const config = getPrivateR2Config();
-  if (!config) return null;
+  const configs = privateR2Configs();
+  if (!configs.length) return null;
   const key = privateR2Key(referenceOrKey) ?? referenceOrKey.replace(/^\/+/, "");
   if (!key) return null;
-  const s3 = getClient(config);
-  const result = await s3.send(new GetObjectCommand({ Bucket: config.bucket, Key: key }));
-  if (!result.Body) return null;
-  const bytes = await result.Body.transformToByteArray();
-  return { body: Buffer.from(bytes), contentType: result.ContentType || "application/octet-stream" };
+
+  for (const config of configs) {
+    const s3 = getClient(config);
+    try {
+      const result = await s3.send(new GetObjectCommand({ Bucket: config.bucket, Key: key }));
+      if (!result.Body) continue;
+      const bytes = Buffer.from(await result.Body.transformToByteArray());
+      if (config.encrypted) {
+        const decrypted = decryptPrivateObject(bytes);
+        if (decrypted) return decrypted;
+        continue;
+      }
+      return { body: bytes, contentType: result.ContentType || "application/octet-stream" };
+    } catch (error) {
+      if (isMissingR2Object(error)) continue;
+      throw error;
+    }
+  }
+  return null;
 }
 
 export async function privateR2ReferenceToDataUrl(reference: string): Promise<string | null> {
@@ -447,10 +581,15 @@ export async function deleteFromR2(keyOrUrl: string): Promise<void> {
 }
 
 export async function deletePrivateFromR2(referenceOrKey: string): Promise<void> {
-  const config = getPrivateR2Config();
-  if (!config) throw new Error("Private R2 is not configured.");
+  const configs = privateR2Configs();
+  if (!configs.length) throw new Error("Secure R2 storage is not configured.");
   const key = privateR2Key(referenceOrKey) ?? referenceOrKey.replace(/^\/+/, "");
   if (!key) return;
-  const s3 = getClient(config);
-  await s3.send(new DeleteObjectCommand({ Bucket: config.bucket, Key: key }));
+  const s3 = getClient(configs[0]);
+  // Delete from every possible private backend. DeleteObject is idempotent, so
+  // this also keeps encrypted fallback objects removable after a dedicated
+  // private bucket is added later.
+  for (const config of configs) {
+    await s3.send(new DeleteObjectCommand({ Bucket: config.bucket, Key: key }));
+  }
 }
