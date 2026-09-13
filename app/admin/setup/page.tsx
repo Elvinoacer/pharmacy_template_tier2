@@ -60,7 +60,7 @@ export default async function AdminSetupPage() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-200"><CheckCircle2 className="h-4 w-4" /> Verified, active and listed</p>
-                <p className="mt-1 max-w-2xl text-xs leading-5 admin-muted">Eligible medicines and active services are exposed automatically. A medicine still needs its own Public listing switch enabled, active status and available stock before it appears to patients.</p>
+                <p className="mt-1 max-w-2xl text-xs leading-5 admin-muted">Eligible medicines and active services are exposed automatically. A medicine appears publicly when it is active and its Public listing switch is enabled; stock controls availability and whether a customer can reserve or order it.</p>
               </div>
               <Link href={`/p/${pharmacy.slug}`} target="_blank" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-[var(--admin-panel)] px-3 text-xs font-semibold text-emerald-700 dark:text-emerald-200">View public pharmacy <ExternalLink className="h-3.5 w-3.5" /></Link>
             </div>
