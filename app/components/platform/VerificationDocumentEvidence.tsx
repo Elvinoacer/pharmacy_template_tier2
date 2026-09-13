@@ -4,10 +4,9 @@
  * they are loaded directly from the authenticated evidence endpoint. */
 /* eslint-disable @next/next/no-img-element */
 
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { AlertTriangle, ExternalLink, FileImage, KeyRound, Loader2, ShieldCheck } from "lucide-react";
+import { useActionState, useEffect, useState } from "react";
+import { AlertTriangle, ExternalLink, FileImage, KeyRound, Loader2, ShieldCheck, X } from "lucide-react";
+import { verifyStepUpAction, type MfaState } from "@/app/actions/mfa";
 
 type Kind = "license" | "business";
 type DocumentSource = "saved-dossier" | "uploaded-draft" | "unknown";
@@ -31,10 +30,86 @@ const documents: Array<{ kind: Kind; title: string; description: string }> = [
   },
 ];
 
+const initialMfaState: MfaState = {};
+
 function sourceLabel(source: DocumentSource) {
   if (source === "uploaded-draft") return "Uploaded draft";
   if (source === "saved-dossier") return "Saved with dossier";
   return "Secure upload";
+}
+
+function StepUpDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [state, action, pending] = useActionState(verifyStepUpAction, initialMfaState);
+
+  useEffect(() => {
+    if (!state.success) return;
+    // The server action has refreshed the session's MFA timestamp. Reloading the
+    // current review route re-runs the secure image requests without losing place.
+    window.location.reload();
+  }, [state.success]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="document-step-up-title">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#111a17] shadow-2xl">
+        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-teal-300/20 bg-teal-300/10 text-teal-200">
+              <ShieldCheck className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-teal-200/65">Sensitive evidence</p>
+              <h2 id="document-step-up-title" className="mt-1 text-lg font-semibold text-white">Verify identity to continue</h2>
+            </div>
+          </div>
+          <button type="button" onClick={onClose} disabled={pending} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white/55 transition hover:bg-white/10 hover:text-white disabled:opacity-40" aria-label="Close verification dialog">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <form action={action} className="space-y-4 px-5 py-5">
+          <p className="text-sm leading-6 text-teal-50/70">
+            Enter a fresh code from your authenticator app or one of your recovery codes. After verification, this pharmacy review reloads automatically and the private documents appear here.
+          </p>
+          <label className="block text-sm font-semibold text-white">
+            Authenticator or recovery code
+            <input
+              name="code"
+              autoComplete="one-time-code"
+              required
+              pattern="[0-9a-fA-F ]{6,12}"
+              maxLength={12}
+              autoFocus
+              placeholder="Enter code"
+              className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-black/25 px-3.5 text-base text-white outline-none transition placeholder:text-white/30 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10"
+            />
+          </label>
+
+          {state.error ? (
+            <p role="alert" className="rounded-xl border border-rose-400/25 bg-rose-400/10 px-3 py-2.5 text-sm text-rose-100">
+              {state.error}
+            </p>
+          ) : null}
+          {state.success ? (
+            <p role="status" className="rounded-xl border border-emerald-400/25 bg-emerald-400/10 px-3 py-2.5 text-sm text-emerald-100">
+              Verified. Reloading the document review…
+            </p>
+          ) : null}
+
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button type="button" onClick={onClose} disabled={pending} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/15 px-4 text-sm font-semibold text-white/75 transition hover:bg-white/5 disabled:opacity-40">
+              Cancel
+            </button>
+            <button type="submit" disabled={pending || Boolean(state.success)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 text-sm font-semibold text-teal-950 transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-50">
+              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
+              {pending ? "Verifying…" : "Verify and show documents"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 function EvidenceCard({
@@ -42,13 +117,13 @@ function EvidenceCard({
   kind,
   title,
   description,
-  verifyHref,
+  onRequestVerification,
 }: {
   pharmacyId: string;
   kind: Kind;
   title: string;
   description: string;
-  verifyHref: string;
+  onRequestVerification: () => void;
 }) {
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const endpoint = `/api/platform/verification-documents?pharmacyId=${encodeURIComponent(pharmacyId)}&kind=${kind}`;
@@ -90,8 +165,8 @@ function EvidenceCard({
             return;
           }
 
-          // Older deployments reported an expired step-up session as 403. Treat
-          // this as re-verification rather than telling the reviewer the image is broken.
+          // The existing endpoint historically returned 403 for an expired
+          // step-up timestamp. Give the reviewer the safe re-verification path.
           if (response.status === 403 && !payload.message) {
             setState({ status: "reauth", reason: "STEP_UP_REQUIRED" });
             return;
@@ -183,14 +258,15 @@ function EvidenceCard({
           </span>
           <p className="mt-3 text-sm font-semibold text-amber-950 dark:text-amber-100">Verify identity to view document</p>
           <p className="mt-1 max-w-sm text-xs leading-5 text-amber-900/70 dark:text-amber-100/65">
-            Your secure-review window expired. Enter a fresh authenticator or recovery code; you will return to this pharmacy automatically.
+            Your secure-review window expired. Re-verify here and this exact review page will reload automatically.
           </p>
-          <Link
-            href={verifyHref}
+          <button
+            type="button"
+            onClick={onRequestVerification}
             className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-amber-700 px-4 text-sm font-semibold text-white transition hover:bg-amber-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 dark:bg-amber-300 dark:text-amber-950 dark:hover:bg-amber-200"
           >
             <KeyRound className="h-4 w-4" /> Verify identity
-          </Link>
+          </button>
           <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-amber-800/50 dark:text-amber-100/40">Sensitive evidence · fresh verification required</p>
         </div>
       ) : null}
@@ -207,31 +283,33 @@ function EvidenceCard({
 }
 
 export default function VerificationDocumentEvidence({ pharmacyId }: { pharmacyId: string }) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const verifyHref = useMemo(() => {
-    const query = searchParams.toString();
-    const returnTo = `${pathname}${query ? `?${query}` : ""}`;
-    return `/platform/security?reason=verification-documents&next=${encodeURIComponent(returnTo)}`;
-  }, [pathname, searchParams]);
+  const [stepUpOpen, setStepUpOpen] = useState(false);
 
   return (
-    <section className="rounded-2xl border border-teal-200/80 bg-teal-50/35 p-3.5 dark:border-teal-300/15 dark:bg-teal-300/[0.035] sm:p-4">
-      <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-teal-200 bg-white text-teal-700 dark:border-teal-300/20 dark:bg-white/5 dark:text-teal-200">
-          <ShieldCheck className="h-4 w-4" />
-        </span>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-teal-700 dark:text-teal-200/70">Private onboarding evidence</p>
-          <h3 className="mt-1 text-base font-semibold text-[#17231d] dark:text-white">Review the actual uploaded images</h3>
-          <p className="mt-1 text-xs leading-5 text-[#65736b] dark:text-teal-100/55">These are the secure files uploaded by the pharmacy during onboarding. Compare them directly with the submitted licence, business and identity details before marking verification checks complete.</p>
+    <>
+      <section className="rounded-2xl border border-teal-200/80 bg-teal-50/35 p-3.5 dark:border-teal-300/15 dark:bg-teal-300/[0.035] sm:p-4">
+        <div className="flex items-start gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-teal-200 bg-white text-teal-700 dark:border-teal-300/20 dark:bg-white/5 dark:text-teal-200">
+            <ShieldCheck className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-teal-700 dark:text-teal-200/70">Private onboarding evidence</p>
+            <h3 className="mt-1 text-base font-semibold text-[#17231d] dark:text-white">Review the actual uploaded images</h3>
+            <p className="mt-1 text-xs leading-5 text-[#65736b] dark:text-teal-100/55">These are the secure files uploaded by the pharmacy during onboarding. Compare them directly with the submitted licence, business and identity details before marking verification checks complete.</p>
+          </div>
         </div>
-      </div>
-      <div className="mt-4 grid gap-3 lg:grid-cols-2">
-        {documents.map((document) => (
-          <EvidenceCard key={document.kind} pharmacyId={pharmacyId} verifyHref={verifyHref} {...document} />
-        ))}
-      </div>
-    </section>
+        <div className="mt-4 grid gap-3 lg:grid-cols-2">
+          {documents.map((document) => (
+            <EvidenceCard
+              key={document.kind}
+              pharmacyId={pharmacyId}
+              onRequestVerification={() => setStepUpOpen(true)}
+              {...document}
+            />
+          ))}
+        </div>
+      </section>
+      <StepUpDialog open={stepUpOpen} onClose={() => setStepUpOpen(false)} />
+    </>
   );
 }
