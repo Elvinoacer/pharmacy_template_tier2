@@ -1,5 +1,7 @@
 "use server";
 
+import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
+import { z } from "zod";
 import { getTenant } from "@/app/lib/tenant";
 import { recordAudit } from "@/app/lib/platform/audit";
 import { resolvePostLoginPath } from "@/app/lib/session-claim";
@@ -8,7 +10,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getSessionUser, addTimelineEvent, writeAuditLog } from "@/app/lib/auth";
 import { prisma, prismaUnscoped } from "@/app/lib/db";
-import { createRefillRequest, createFeedback } from "@/app/lib/services/crm";
+import { createRefillRequest, createFeedback, updateRefillStatus } from "@/app/lib/services/crm";
 import { ageSegmentFromDob, isFuture, parseLocalDateInput } from "@/app/lib/time";
 import { PUBLIC_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 
@@ -22,7 +24,7 @@ export async function portalRefillAction(
   if (!user?.customerId) return { error: "Please sign in." };
 
   const prescriptionId = String(formData.get("prescriptionId") || "").trim();
-  if (!prescriptionId) {
+  if (!z.string().uuid().safeParse(prescriptionId).success) {
     return {
       error:
         "Please select a prescription from your file. If you need a new medication added, contact the pharmacy.",
@@ -31,9 +33,9 @@ export async function portalRefillAction(
 
   // Always re-derive medicine details from the prescription on file.
   // Never trust client-supplied medicineName/rxReference.
-  const rx = await prisma.prescription.findFirst({
-    where: { id: prescriptionId, customerId: user.customerId, status: "active" },
-  });
+  const rx = await withPlatformBypass(() => prismaUnscoped.prescription.findFirst({
+    where: { id: prescriptionId, customerId: user.customerId!, status: "active" },
+  }));
   if (!rx) {
     return { error: "Selected prescription was not found on your account." };
   }
@@ -43,8 +45,9 @@ export async function portalRefillAction(
     };
   }
 
-  await createRefillRequest({
-    customerId: user.customerId,
+  try {
+  await withPharmacy(rx.pharmacyId, () => createRefillRequest({
+    customerId: user.customerId!,
     medicineName: rx.medicineName,
     rxReference: rx.rxReference || undefined,
     customerName: user.fullName || undefined,
@@ -56,7 +59,10 @@ export async function portalRefillAction(
     notes: String(formData.get("notes") || "") || undefined,
     prescriptionId: rx.id,
     source: "portal",
-  });
+  }));
+  } catch {
+    return { error: "Could not request this refill. Check the details and that the pharmacy is accepting requests." };
+  }
 
   revalidatePath("/portal");
   revalidatePath("/portal/refills");
@@ -68,24 +74,13 @@ export async function cancelRefillAction(formData: FormData) {
   if (!user?.customerId) return;
 
   const id = String(formData.get("id") || "");
-  const refill = await prisma.refillRequest.findFirst({
+  if (!z.string().uuid().safeParse(id).success) return;
+  const refill = await withPlatformBypass(() => prismaUnscoped.refillRequest.findFirst({
     where: { id, customerId: user.customerId },
-  });
+  }));
   if (!refill || ["collected", "cancelled"].includes(refill.status)) return;
 
-  await prisma.refillRequest.update({
-    where: { id },
-    data: { status: "cancelled", statusUpdatedAt: new Date() },
-  });
-  await addTimelineEvent(
-    user.customerId,
-    user.id,
-    "refill_cancelled",
-    "Refill cancelled",
-    refill.medicineName,
-    { refillId: id },
-    user.id,
-  );
+  await withPharmacy(refill.pharmacyId, () => updateRefillStatus(id, "cancelled", user.id));
   revalidatePath("/portal/refills");
 }
 
@@ -97,9 +92,9 @@ export async function completeOnboardingAction(_prev: ActionState, formData: For
   const phone = String(formData.get("phone") || "").trim();
   if (!fullName || fullName.length > 120) return { error: "Enter your name using up to 120 characters." };
   if (phone && !/^[+()0-9 .-]{7,30}$/.test(phone)) return { error: "Enter a valid phone number, or leave it blank for now." };
-  const profile = await prisma.customerProfile.findUnique({ where: { id: user.customerId }, select: { onboardingCompletedAt: true } });
+  const profile = await prisma.customerProfile.findUnique({ where: { id: user.customerId! }, select: { onboardingCompletedAt: true } });
   if (!profile) return { error: "We could not find your profile. Please sign in again." };
-  await prisma.customerProfile.update({ where: { id: user.customerId }, data: { fullName, phone: phone || null, onboardingCompletedAt: profile.onboardingCompletedAt ?? new Date() } });
+  await prisma.customerProfile.update({ where: { id: user.customerId! }, data: { fullName, phone: phone || null, onboardingCompletedAt: profile.onboardingCompletedAt ?? new Date() } });
   await recordAudit({ actorId: user.id, action: "onboarding_completed", resource: "customer_profile", resourceId: user.customerId });
   revalidatePath("/portal", "layout");
   const next = String(formData.get("next") || "/portal");
@@ -127,13 +122,13 @@ export async function updateProfileAction(
 
   // Get the existing profile so we can check if onboarding was previously incomplete.
   const existing = await prisma.customerProfile.findUnique({
-    where: { id: user.customerId },
+    where: { id: user.customerId! },
     select: { onboardingCompletedAt: true, fullName: true, phone: true },
   });
   const wasOnboarding = !existing?.onboardingCompletedAt;
 
   await prisma.customerProfile.update({
-    where: { id: user.customerId },
+    where: { id: user.customerId! },
     data: {
       fullName: String(formData.get("fullName") || "").trim(),
       phone: String(formData.get("phone") || "").trim() || null,
@@ -195,7 +190,7 @@ export async function updatePreferencesAction(
   await prisma.customerPreference.upsert({
     where: { customerId: user.customerId },
     create: {
-      customerId: user.customerId,
+      customerId: user.customerId!,
       emailEnabled: checked("emailEnabled"),
       smsEnabled: checked("smsEnabled"),
       whatsappEnabled: checked("whatsappEnabled"),
@@ -229,7 +224,7 @@ export async function addCaregiverAction(
 
   await prisma.caregiver.create({
     data: {
-      customerId: user.customerId,
+      customerId: user.customerId!,
       caregiverName,
       caregiverEmail: String(formData.get("caregiverEmail") || "") || null,
       caregiverPhone: String(formData.get("caregiverPhone") || "") || null,
@@ -359,7 +354,7 @@ export async function portalFeedbackAction(
   if (!body) return { error: "Please share your feedback." };
 
   await createFeedback({
-    customerId: user.customerId,
+    customerId: user.customerId!,
     name: user.fullName || undefined,
     email: user.email,
     rating: Number(formData.get("rating") || 0) || undefined,
@@ -435,7 +430,7 @@ export async function redeemCouponAction(
     });
     await tx.timelineEvent.create({
       data: {
-        customerId: user.customerId,
+        customerId: user.customerId!,
         userId: user.id,
         eventType: "coupon_redeemed",
         title: "Coupon redeemed",
@@ -604,7 +599,7 @@ export async function portalCreateOrderAction(
 
       const o = await tx.order.create({
         data: {
-          customerId: user.customerId,
+          customerId: user.customerId!,
           source: "portal",
           status: "pending",
           total,
@@ -665,7 +660,7 @@ export async function portalCreateOrderAction(
         entityType: "order",
         entityId: o.id,
         orderId: o.id,
-        customerId: user.customerId,
+        customerId: user.customerId!,
         actorId: user.id,
         amount: netAmount,
         metadata: { source: "portal", type: "OTC_PURCHASE", quantity, medicationId },
@@ -675,7 +670,7 @@ export async function portalCreateOrderAction(
         entityType: "order",
         entityId: o.id,
         orderId: o.id,
-        customerId: user.customerId,
+        customerId: user.customerId!,
         actorId: user.id,
         amount: netAmount,
         metadata: { expiresAt },
@@ -691,7 +686,7 @@ export async function portalCreateOrderAction(
           entityType: "coupon",
           entityId: couponId,
           orderId: o.id,
-          customerId: user.customerId,
+          customerId: user.customerId!,
           actorId: user.id,
           amount: discount,
           metadata: { couponId, code: couponCode },
@@ -784,7 +779,7 @@ export async function portalPayRefillAction(
 
   const order = await prisma.order.create({
     data: {
-      customerId: user.customerId,
+      customerId: user.customerId!,
       source: "refill",
       refillId,
       status: "pending",
@@ -863,7 +858,7 @@ export async function portalPayRefillAction(
           entityType: "prescription",
           entityId: refill.prescriptionId!,
           orderId: order.id,
-          customerId: user.customerId,
+          customerId: user.customerId!,
           actorId: user.id,
           amount: netAmount,
           metadata: { refillId, quantity: qty },
@@ -972,25 +967,25 @@ export async function chooseCustomerPharmacyAction(formData: FormData): Promise<
 
   await prismaUnscoped.customerPharmacy.upsert({
     where: {
-      customerId_pharmacyId: { customerId: user.customerId, pharmacyId: pharmacy.id },
+      customerId_pharmacyId: { customerId: user.customerId!, pharmacyId: pharmacy.id },
     },
-    create: { customerId: user.customerId, pharmacyId: pharmacy.id, preferred: true },
+    create: { customerId: user.customerId!, pharmacyId: pharmacy.id, preferred: true },
     update: { preferred: true },
   });
   await prismaUnscoped.customerPharmacy.updateMany({
-    where: { customerId: user.customerId, pharmacyId: { not: pharmacy.id } },
+    where: { customerId: user.customerId!, pharmacyId: { not: pharmacy.id } },
     data: { preferred: false },
   });
 
   const existingLoyalty = await prismaUnscoped.loyaltyAccount.findFirst({
-    where: { customerId: user.customerId, pharmacyId: pharmacy.id },
+    where: { customerId: user.customerId!, pharmacyId: pharmacy.id },
   });
   if (!existingLoyalty) {
     const code = `AE${user.customerId.replace(/-/g, "").slice(0, 6).toUpperCase()}${pharmacy.slug.slice(0, 4).toUpperCase()}`;
     const loyalty = await prismaUnscoped.loyaltyAccount.create({
       data: {
         pharmacyId: pharmacy.id,
-        customerId: user.customerId,
+        customerId: user.customerId!,
         points: 50,
         lifetimePoints: 50,
         referralCode: code,

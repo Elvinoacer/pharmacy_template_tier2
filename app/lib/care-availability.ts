@@ -1,9 +1,11 @@
+import { proximityOrder } from "./proximity";
 export type CarePharmacy = {
   id: string;
   name: string;
   slug: string;
   city: string | null;
   county: string | null;
+  distanceKm?: number | null;
 };
 export type CareMatch = {
   id: string;
@@ -46,6 +48,7 @@ export function availabilityOffer(results: CareResult[]): CareOffer | null {
   offers.sort(
     (a, b) =>
       b.lines.length - a.lines.length ||
+      proximityOrder(a.pharmacy, b.pharmacy) ||
       a.lines.reduce((n, l) => n + l.match.price, 0) -
         b.lines.reduce((n, l) => n + l.match.price, 0) ||
       a.pharmacy.slug.localeCompare(b.pharmacy.slug),

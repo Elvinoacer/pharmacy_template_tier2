@@ -1,5 +1,7 @@
 "use server";
+import { issueOrderAccessToken } from "@/app/lib/services/payments";
 
+import { acceptingCareRequests } from "@/app/lib/services/care-request-availability";
 import { prismaUnscoped } from "@/app/lib/db";
 import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import { z } from "zod";
@@ -8,6 +10,7 @@ import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getSessionUser } from "@/app/lib/auth";
 import {
   createServiceBooking,
+  BookingValidationError,
   notifyBookingCustomer,
 } from "@/app/lib/services/pharmacy-services";
 
@@ -16,6 +19,7 @@ export type ServiceBookingState = {
   success?: string;
   bookingId?: string;
   orderId?: string | null;
+  accessToken?: string;
   requiresPayment?: boolean;
   amount?: number | null;
   phone?: string;
@@ -61,7 +65,7 @@ export async function bookServiceAction(
   }
 
   if (!z.string().uuid().safeParse(serviceId).success) return { error: "This service link is invalid. Please open an available service listing." };
-  const listing = await withPlatformBypass(() => prismaUnscoped.pharmacyService.findFirst({ where: { id: serviceId, active: true, bookable: true, pharmacy: { status: "active", listed: true } }, select: { pharmacyId: true } })).catch(() => null);
+  const listing = await withPlatformBypass(() => prismaUnscoped.pharmacyService.findFirst({ where: { id: serviceId, active: true, bookable: true, pharmacy: acceptingCareRequests }, select: { pharmacyId: true } })).catch(() => null);
   if (!listing) return { error: "This service is no longer available for online booking. Please explore the current services." };
   return withPharmacy(listing.pharmacyId, async () => {
   const session = await getSessionUser().catch(() => null);
@@ -90,7 +94,7 @@ export async function bookServiceAction(
     console.error("[bookServiceAction]", e);
     return {
       error:
-        e instanceof Error
+        e instanceof BookingValidationError
           ? e.message
           : "Could not submit booking. Please try again or call us.",
     };
@@ -98,27 +102,6 @@ export async function bookServiceAction(
 
   const { booking, requiresPayment, orderId, amount } = result;
   const serviceTitle = booking.service.title;
-
-  // Staff notifications
-  try {
-    const { recordAdminNotification } = await import(
-      "@/app/lib/services/admin-notifications"
-    );
-    await recordAdminNotification({
-      type: "enquiry_new",
-      title: requiresPayment
-        ? "Service booking — awaiting payment"
-        : "New service booking",
-      body: requiresPayment
-        ? `${fullName} (${phone}) booked ${serviceTitle} — KES ${amount}. Waiting for payment to confirm.`
-        : `${fullName} (${phone}) booked ${serviceTitle}.`,
-      severity: "info",
-      relatedType: "service_booking",
-      relatedId: booking.id,
-    });
-  } catch {
-    /* non-fatal */
-  }
 
   try {
     const { dispatchPushToStaff } = await import("@/app/lib/services/push");
@@ -141,6 +124,8 @@ export async function bookServiceAction(
       customerId: booking.customerId,
       fullName: booking.fullName,
       phone: booking.phone,
+      pharmacyId: booking.pharmacyId,
+      email: booking.email,
     },
     requiresPayment
       ? {
@@ -165,6 +150,7 @@ export async function bookServiceAction(
       : `You're booked for ${serviceTitle}. We'll reach you on ${phone} to confirm timing.`,
     bookingId: booking.id,
     orderId: orderId ?? null,
+    accessToken: orderId ? await issueOrderAccessToken(orderId) : undefined,
     requiresPayment,
     amount: amount ?? null,
     phone: booking.phone,

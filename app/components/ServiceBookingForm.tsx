@@ -171,6 +171,7 @@ export function ServiceBookingForm({
             <div className="mt-3 min-w-0">
               <MpesaPayButton
                 orderId={state.orderId}
+              accessToken={state.accessToken}
                 defaultPhone={state.phone || defaultPhone}
                 guestMode
               />

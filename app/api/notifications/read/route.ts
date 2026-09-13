@@ -1,3 +1,4 @@
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, isStaff } from "@/app/lib/auth";
@@ -44,6 +45,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  return withPlatformBypass(async () => {
   // Customer notification mark-as-read.
   if (parsed.all) {
     if (user.customerId) {
@@ -63,4 +65,5 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ ok: true });
+  });
 }

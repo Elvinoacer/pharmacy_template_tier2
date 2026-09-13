@@ -1,8 +1,6 @@
+import { withAuthorizedPayment } from "@/app/lib/services/payment-scope";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getSessionUser, isStaff } from "@/app/lib/auth";
-import { prisma } from "@/app/lib/db";
-import { phoneLast9 } from "@/app/lib/services/daraja";
 import { resolvePaymentStatus } from "@/app/lib/services/payments";
 
 export const runtime = "nodejs";
@@ -40,46 +38,7 @@ export async function GET(req: Request) {
     );
   }
 
-  const session = await getSessionUser().catch(() => null);
-  const staff = session ? isStaff(session.role) : false;
-
-  // Authorization: staff, order owner, or guest phone match.
-  if (parsed.data.paymentId) {
-    const p = await prisma.payment.findUnique({
-      where: { id: parsed.data.paymentId },
-      include: { order: true },
-    });
-    if (!p) {
-      return NextResponse.json({ error: "not_found" }, { status: 404 });
-    }
-    const allowed =
-      staff ||
-      (session?.customerId && p.order.customerId === session.customerId) ||
-      (parsed.data.phone &&
-        p.phone &&
-        phoneLast9(parsed.data.phone) === phoneLast9(p.phone)) ||
-      (parsed.data.phone &&
-        p.order.guestPhone &&
-        phoneLast9(parsed.data.phone) === phoneLast9(p.order.guestPhone));
-    if (!allowed) {
-      return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    }
-  } else if (parsed.data.orderId) {
-    const order = await prisma.order.findUnique({ where: { id: parsed.data.orderId } });
-    if (!order) {
-      return NextResponse.json({ error: "not_found" }, { status: 404 });
-    }
-    const allowed =
-      staff ||
-      (session?.customerId && order.customerId === session.customerId) ||
-      (parsed.data.phone &&
-        order.guestPhone &&
-        phoneLast9(parsed.data.phone) === phoneLast9(order.guestPhone));
-    if (!allowed) {
-      return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    }
-  }
-
+  const response = await withAuthorizedPayment({ orderId: parsed.data.orderId, paymentId: parsed.data.paymentId, accessToken: req.headers.get("x-order-access-token") }, async () => {
   const queryProvider =
     parsed.data.query === "1" || parsed.data.query === "true";
 
@@ -97,4 +56,6 @@ export async function GET(req: Request) {
   }
 
   return NextResponse.json({ ok: true, ...view });
+  });
+  return response ?? NextResponse.json({ error: "forbidden" }, { status: 403 });
 }

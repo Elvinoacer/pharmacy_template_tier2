@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 const PAGE_SIZE = 20;
 
 const STATUS_TABS = [
+  { value: "review", label: "Awaiting review" },
   { value: "", label: "All statuses" },
   { value: "active", label: "Active" },
   { value: "suspended", label: "Suspended" },
@@ -30,10 +31,11 @@ export default async function PharmaciesAdminPage({
 }) {
   const params = await searchParams;
   const q = (params.q || "").trim();
-  const status = (params.status || "").trim();
+  const requestedStatus = params.status == null ? "review" : params.status.trim();
+  const status = STATUS_TABS.some((tab) => tab.value === requestedStatus) ? requestedStatus : "review";
 
   const where = {
-    ...(status ? { status: status as PharmacyStatus } : {}),
+    ...(status === "review" ? { status: { in: ["submitted", "under_review"] as PharmacyStatus[] } } : status ? { status: status as PharmacyStatus } : {}),
     ...(q
       ? {
           OR: [
@@ -52,7 +54,7 @@ export default async function PharmaciesAdminPage({
   const rows = await prismaUnscoped.pharmacy
     .findMany({
       where,
-      orderBy: [{ featured: "desc" }, { name: "asc" }],
+      orderBy: status === "review" ? [{ submittedAt: "asc" }, { createdAt: "asc" }] : [{ featured: "desc" }, { name: "asc" }],
       take: PAGE_SIZE,
       skip: (page - 1) * PAGE_SIZE,
     })
@@ -72,10 +74,10 @@ export default async function PharmaciesAdminPage({
             className="mt-1 text-2xl font-semibold tracking-tight text-[#14211b] dark:text-white sm:text-4xl"
             style={{ fontFamily: "var(--font-display), serif" }}
           >
-            Pharmacies
+            {status === "review" ? "Applications to review" : "Pharmacies"}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[#68776e] dark:text-teal-100/65">
-            Find a tenant quickly, inspect verification state, and open the pharmacy record for support or lifecycle actions.
+            Review submitted applications, check the evidence, and decide.
           </p>
         </div>
         <div className="flex shrink-0 items-baseline gap-1 rounded-2xl border border-[#dce7e1] bg-white px-3.5 py-2.5 shadow-sm dark:border-white/10 dark:bg-white/[0.035] dark:shadow-none">

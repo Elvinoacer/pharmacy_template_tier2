@@ -1,5 +1,6 @@
 "use server";
 
+import { withPharmacy } from "@/app/lib/tenant-context";
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/app/lib/auth";
@@ -120,6 +121,7 @@ export async function saveOnboardingPharmacyLocationAction(
     if (coordinateError) return { error: coordinateError };
 
     const accuracyMeters = parseAccuracy(formData.get("accuracyMeters"));
+    if (accuracyMeters == null) return { error: "Capture the location from your browser while at the pharmacy premises." };
     const reverse = await reverseGeocode(latitude!, longitude!);
 
     // Keep manually entered values intact; GPS only fills missing location details.
@@ -127,15 +129,11 @@ export async function saveOnboardingPharmacyLocationAction(
     const county = pharmacy.county || reverse.county;
     const country = pharmacy.country || reverse.country || "Kenya";
 
-    await prismaUnscoped.pharmacy.update({
-      where: { id: pharmacyId },
-      data: { latitude, longitude, city, county, country },
-    });
-
-    await prismaUnscoped.pharmacySettings.updateMany({
-      where: { pharmacyId },
-      data: { latitude, longitude, city, state: county, country },
-    });
+    await withPharmacy(pharmacyId, () => prismaUnscoped.$transaction([
+      prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data: { latitude, longitude, city, county, country } }),
+      prismaUnscoped.pharmacySettings.updateMany({ where: { pharmacyId }, data: { latitude, longitude, city, state: county, country } }),
+      prismaUnscoped.pharmacyOnboardingEvent.create({ data: { pharmacyId, actorId: user.id, type: "verification_input_changed", message: `Premises location captured: ${latitude}, ${longitude}; browser accuracy ±${Math.round(accuracyMeters)} m. Reviewer must match the licensed address.` } }),
+    ]));
 
     revalidatePath("/onboard");
     revalidatePath("/admin/settings/location");

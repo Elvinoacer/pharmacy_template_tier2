@@ -8,7 +8,7 @@ import { PortalShell } from "@/app/components/portal/PortalShell";
 import { StatCard, Panel, Badge, EmptyState } from "@/app/components/portal/PortalWidgets";
 import { redirect } from "next/navigation";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
-import { getTenant } from "@/app/lib/tenant";
+
 import {
   FileText,
   Pill,
@@ -29,7 +29,6 @@ export default async function PortalDashboardPage() {
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
 
-  const tenant = await getTenant().catch(() => ({ pharmacyId: null as string | null }));
   const data = await getCustomerDashboard(user.customerId);
   const activeRefills = data.refills.filter(
     (r) => !["collected", "cancelled"].includes(r.status),
@@ -43,12 +42,12 @@ export default async function PortalDashboardPage() {
       title={`Hello, ${firstName}`}
       subtitle="Here's a snapshot of your prescriptions, refills, and rewards."
       actions={
-        <Link href={tenant.pharmacyId ? "/portal/refills/new" : "/portal/pharmacies"} className="btn-primary">
-          <Plus className="h-4 w-4" /> {tenant.pharmacyId ? "Request refill" : "Choose a pharmacy"}
+        <Link href="/refill" className="btn-primary">
+          <Plus className="h-4 w-4" /> Request refill
         </Link>
       }
     >
-      <PortalNextSteps hasPharmacy={Boolean(tenant.pharmacyId)} readyForPickup={readyForPickup} />
+      <PortalNextSteps readyForPickup={readyForPickup} />
       {/* Stat cards */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
@@ -103,7 +102,7 @@ export default async function PortalDashboardPage() {
               icon={FileText}
               title="No prescriptions on file"
               description="Upload a prescription or ask your pharmacy to add one. You can follow its review here."
-              action={<Link href={tenant.pharmacyId ? "/portal/prescriptions" : "/portal/pharmacies"} className="btn-primary !py-2 text-sm">{tenant.pharmacyId ? "Add a prescription" : "Choose a pharmacy"}</Link>}
+              action={<Link href="/prescription" className="btn-primary !py-2 text-sm">Find my medicines</Link>}
             />
           ) : (
             <ul className="space-y-2.5">

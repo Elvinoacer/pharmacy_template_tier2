@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import Link from "next/link";
+import { useActionState, useState } from "react";
 import { ExternalLink, Loader2, ShieldCheck } from "lucide-react";
 import {
   savePharmacyVerificationChecklistAction,
@@ -44,6 +45,7 @@ export default function VerificationChecklistForm({
   pharmacyId: string;
   checklist: Checklist;
 }) {
+  const [checked, setChecked] = useState(() => new Set(CHECKS.filter(([key]) => checklist?.[key]).map(([key]) => key)));
   const [state, action, pending] = useActionState(savePharmacyVerificationChecklistAction, initial);
   const inputClass =
     "mt-1.5 min-h-11 w-full rounded-xl border border-[#cfdcd4] bg-white px-3 py-2.5 text-sm text-[#17231d] outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 dark:border-white/15 dark:bg-black/25 dark:text-white dark:focus:border-teal-300/50 dark:focus:ring-teal-300/10";
@@ -71,6 +73,11 @@ export default function VerificationChecklistForm({
         </a>
       </div>
 
+      <div className="sticky top-4 z-10 rounded-2xl border border-teal-200 bg-white/95 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#10271f]/95">
+        <div className="flex justify-between text-sm font-semibold"><span>Evidence reviewed</span><span>{checked.size} / {CHECKS.length}</span></div>
+        <progress className="mt-2 h-2 w-full accent-teal-600" aria-label="Review checks completed" value={checked.size} max={CHECKS.length} />
+        <p className="mt-2 text-xs text-slate-500">Check each item against the submitted evidence.</p>
+      </div>
       <div className="space-y-2.5">
         {CHECKS.map(([key, label, help]) => (
           <label
@@ -80,7 +87,8 @@ export default function VerificationChecklistForm({
             <input
               type="checkbox"
               name={key}
-              defaultChecked={Boolean(checklist?.[key])}
+              checked={checked.has(key)}
+              onChange={(event) => setChecked((previous) => { const next = new Set(previous); if (event.target.checked) next.add(key); else next.delete(key); return next; })}
               className="mt-1 h-4 w-4 shrink-0 rounded border-[#aebdb5] text-teal-700 focus:ring-teal-500 dark:border-white/30 dark:bg-black/20"
             />
             <span className="min-w-0">
@@ -138,8 +146,9 @@ export default function VerificationChecklistForm({
         className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-300 dark:text-teal-950 dark:hover:bg-teal-200 sm:w-auto"
       >
         {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-        Save verification checklist
+        {pending ? "Saving checks…" : "Save verification checklist"}
       </button>
+      {state.success && checked.size === CHECKS.length ? <Link className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-teal-700 dark:text-teal-200" href={`/platform/pharmacies/${pharmacyId}`}>Continue to approval decision →</Link> : null}
     </form>
   );
 }

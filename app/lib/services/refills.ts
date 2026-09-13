@@ -1,3 +1,4 @@
+import { notifyCareRequest } from "./care-request-notifications";
 import "server-only";
 
 import { prisma } from "@/app/lib/db";
@@ -730,6 +731,9 @@ export async function approveRefillRequest(
       },
     });
   }
+
+  await notifyCareRequest({ ...refill, relatedType: "refill_request", staff: true,
+    title: "Refill approved", body: `Your refill request is now ${nextStatus}.` });
 
   // Multi-channel notifications
   if (refill.customerId) {

@@ -1,3 +1,4 @@
+import { withAuthorizedPayment } from "@/app/lib/services/payment-scope";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, isStaff } from "@/app/lib/auth";
@@ -23,6 +24,7 @@ const Body = z.object({
   orderId: z.string().uuid(),
   phone: z.string().min(9).max(20),
   forceRetry: z.boolean().optional(),
+  accessToken: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -33,12 +35,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_body", message: "Invalid request." }, { status: 400 });
   }
 
+  const response = await withAuthorizedPayment({ orderId: parsed.orderId, accessToken: parsed.accessToken }, async () => {
   const session = await getSessionUser().catch(() => null);
   const staff = session ? isStaff(session.role) : false;
 
   const authz = await canInitiatePayment({
     orderId: parsed.orderId,
     phone: parsed.phone,
+    accessToken: parsed.accessToken,
     session: session
       ? { id: session.id, customerId: session.customerId, role: session.role }
       : null,
@@ -96,4 +100,6 @@ export async function POST(req: Request) {
     phone: result.phone,
     attemptCount: result.attemptCount,
   });
+  });
+  return response ?? NextResponse.json({ error: "forbidden", message: "Sign in or reopen your checkout to pay." }, { status: 403 });
 }

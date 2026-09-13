@@ -1,3 +1,4 @@
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { NextResponse } from "next/server";
 import { getSessionUser, isStaff } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -15,6 +16,7 @@ export async function GET() {
   }
 
   if (user.customerId) {
+    return withPlatformBypass(async () => {
     const [count, feelReplies] = await Promise.all([
       prisma.notification.count({
         where: { customerId: user.customerId, openedAt: null, deletedAt: null },
@@ -32,6 +34,7 @@ export async function GET() {
       count,
       feel: feelReplies,
       feelReplies,
+    });
     });
   }
 

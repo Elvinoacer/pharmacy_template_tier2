@@ -1,3 +1,4 @@
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
@@ -20,6 +21,7 @@ export default async function PortalOrdersPage({
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  return withPlatformBypass(async () => {
   const sp = await searchParams;
 
   const orders = await prisma.order.findMany({
@@ -33,7 +35,7 @@ export default async function PortalOrdersPage({
   });
 
   const profile = await prisma.customerProfile.findUnique({
-    where: { id: user.customerId },
+    where: { id: user.customerId! },
     select: { phone: true },
   });
 
@@ -45,7 +47,7 @@ export default async function PortalOrdersPage({
       title="Orders & payments"
       subtitle="OTC purchases and refill payments."
       actions={
-        <Link href="/portal/orders/new" className="btn-primary w-full justify-center !py-2 text-xs sm:w-auto">
+        <Link href="/medicines" className="btn-primary w-full justify-center !py-2 text-xs sm:w-auto">
           <Plus className="h-3.5 w-3.5" /> New OTC order
         </Link>
       }
@@ -138,4 +140,5 @@ export default async function PortalOrdersPage({
       </Panel>
     </PortalShell>
   );
+  });
 }

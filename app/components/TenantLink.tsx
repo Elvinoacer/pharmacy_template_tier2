@@ -20,6 +20,7 @@ export function useTenantSlug(): string | null {
 export function tenantHref(slug: string | null | undefined, href: string): string {
   if (!slug) return href;
   if (!href.startsWith("/")) return href;
+  if (/^\/(portal|login|register|forgot-password|reset-password|pharmacies|privacy|terms|onboard|admin)(?:[/?#]|$)/.test(href)) return href;
   if (href === "/") return `/p/${slug}`;
   if (href.startsWith(`/p/`)) return href;
   return `/p/${slug}${href}`;

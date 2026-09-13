@@ -1,3 +1,5 @@
+import { getBrowseLocation } from "@/app/lib/browse-location";
+import { distanceKm, proximityOrder } from "@/app/lib/proximity";
 import { medicineDisplayName } from "@/app/lib/prescription-discovery";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -94,6 +96,7 @@ export async function POST(request: Request) {
         { status: 400, headers },
       );
     const { names, area } = parsed.data;
+    const origin = await getBrowseLocation();
     const results = await withPlatformBypass(async () =>
       Promise.all(
         names.map(async (name) => {
@@ -108,6 +111,7 @@ export async function POST(request: Request) {
               pharmacy: {
                 status: "active",
                 listed: true,
+                verifiedAt: { not: null },
                 ...(area
                   ? {
                       OR: [
@@ -155,15 +159,17 @@ export async function POST(request: Request) {
                   slug: true,
                   city: true,
                   county: true,
+                  latitude: true,
+                  longitude: true,
                 },
               },
             },
             orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
-            take: 200,
+            take: origin ? undefined : 200,
           });
           return {
             name,
-            truncated: rows.length === 200,
+            truncated: rows.length >= 200,
             matches: rows
               .filter((row) => {
                 const med = row.medicationMaster;
@@ -179,8 +185,8 @@ export async function POST(request: Request) {
                 price: Number(row.price),
                 updatedAt: row.updatedAt.toISOString(),
                 href: `/p/${row.pharmacy.slug}/medicines/${row.slug}`,
-                pharmacy: row.pharmacy,
-              })),
+                pharmacy: { ...row.pharmacy, distanceKm: origin ? distanceKm(origin, row.pharmacy) : null },
+              })).sort((a, b) => proximityOrder(a.pharmacy, b.pharmacy)).slice(0, 200),
           };
         }),
       ),

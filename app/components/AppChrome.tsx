@@ -29,6 +29,7 @@ const VerificationStatusModal = dynamic(() => import("./VerificationStatusModal"
 });
 
 const BARE_PREFIXES = [
+  "/p", // Explicit storefront routes provide their own pharmacy-only chrome.
   "/portal",
   "/admin",
   "/login",

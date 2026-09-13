@@ -1,4 +1,5 @@
 "use server";
+import { issueOrderAccessToken } from "@/app/lib/services/payments";
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/db";
@@ -10,6 +11,7 @@ export type GuestOrderState = {
   error?: string;
   success?: string;
   orderId?: string;
+  accessToken?: string;
   /** Phone normalized for guest M-Pesa pay authz */
   phone?: string;
   total?: number;
@@ -262,6 +264,7 @@ export async function guestCreateOrderAction(
       ? `Reserved. Complete M-Pesa below — stock is held under ref ${orderId.slice(0, 8).toUpperCase()}.`
       : `Reserved under ${orderId.slice(0, 8).toUpperCase()}. Pay with M-Pesa now or at collection. We'll confirm on ${phone}.`,
     orderId,
+    accessToken: await issueOrderAccessToken(orderId),
     phone: mpesaPhone,
     total,
     suggestAccount: !session?.customerId,

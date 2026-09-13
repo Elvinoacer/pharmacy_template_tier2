@@ -1,3 +1,4 @@
+import { getBrowseLocation } from "@/app/lib/browse-location";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -25,6 +26,7 @@ type SearchParams = { q?: string; city?: string; county?: string; category?: str
 
 export default async function PharmaciesPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
+  const origin = await getBrowseLocation();
   const q = (params.q || "").trim();
   const city = (params.city || "").trim();
   const county = (params.county || "").trim();
@@ -56,10 +58,10 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
                   className="mt-1.5 text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-3xl lg:text-4xl"
                   style={{ fontFamily: "var(--font-display), serif" }}
                 >
-                  Find a pharmacy and act immediately.
+                  Care around you.
                 </h1>
                 <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--muted)] sm:text-sm sm:leading-6">
-                  Search by pharmacy, medicine, service or area. Use location, filters and stock signals to choose where to go next.
+                  Explore local pharmacies, stock and services.
                 </p>
               </div>
 
@@ -91,6 +93,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
             <main className="min-w-0">
               <PharmacyDirectory
                 pharmacies={pharmacies}
+                initialLocation={origin}
                 cities={facets.cities}
                 counties={facets.counties}
                 categories={facets.categories}

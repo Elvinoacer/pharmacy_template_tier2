@@ -1,4 +1,5 @@
 import "server-only";
+import { syncRefundFeeCredit } from "./transaction-fees";
 
 import { prisma } from "@/app/lib/db";
 import type { Prisma } from "@/app/generated/prisma/client";
@@ -97,11 +98,14 @@ export async function createRefund(
       });
     }
 
+    if (input.markCompleted) await syncRefundFeeCredit(tx, payment.order.id);
+
     // Recompute Order totals (amountRefunded, amountDue).
     await recomputeOrderFinancials(tx, payment.order.id);
 
     // If the refund covers the entire payment, mark Payment.status = refunded.
     // For partial refunds, keep Payment.status = completed and use Order.paymentStage.
+    if (input.markCompleted) {
     const totalRefundedAfter = alreadyRefunded + input.amount;
     if (totalRefundedAfter >= Number(payment.amount) - 0.001) {
       // Full refund: mark payment as fully refunded
@@ -125,6 +129,7 @@ export async function createRefund(
       });
     }
 
+    }
     return r;
   });
 
@@ -161,6 +166,7 @@ export async function completeRefund(refundId: string, opts?: { providerRef?: st
       amount: Number(refund.amount),
       metadata: { refundId: refund.id, paymentId: refund.paymentId },
     });
+    await syncRefundFeeCredit(tx, refund.orderId);
     await recomputeOrderFinancials(tx, refund.orderId);
   });
 }

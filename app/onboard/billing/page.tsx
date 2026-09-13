@@ -1,3 +1,4 @@
+import { createTransactionFeeStatement } from "@/app/actions/transaction-fees";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -36,6 +37,8 @@ export default async function PharmacyBillingPage() {
   );
 
   const readiness = await loadPharmacySetup(pharmacy.id);
+  const feeBalance = await withPharmacy(pharmacy.id, () => db.usageRecord.aggregate({ where: { pharmacyId: pharmacy.id, metric: "transaction_fee_cents" }, _sum: { quantity: true } }));
+  const feeCents = feeBalance._sum.quantity || 0;
   const paymentPending = invoices.some((invoice) => invoice.payments.length > 0);
 
   return (
@@ -76,7 +79,7 @@ export default async function PharmacyBillingPage() {
         {invoices.map((inv) => (
           <section key={inv.id} className={styles.invoice}>
             <div className={styles.invoiceTop}>
-              <h2 className="font-semibold">{inv.subscriptionId ? "Monthly service" : "Verification"}</h2>
+              <h2 className="font-semibold">{inv.number.startsWith("TXF-") ? "Transaction fees" : inv.subscriptionId ? "Monthly service" : "Verification"}</h2>
               <strong>
                 KES {Number(inv.totalKes).toLocaleString("en-KE")} · {inv.status}
               </strong>
@@ -106,6 +109,13 @@ export default async function PharmacyBillingPage() {
         ))}
       </div>
 
+      <section className={`${styles.section} mt-5`}>
+        <h2 className="font-semibold">1% transaction fee</h2>
+        <p className="mt-2 text-sm text-[var(--muted)]">Customers pay the listed total to your connected M-Pesa account. Your 1% platform fee is billed separately.</p>
+        <p className="mt-3 font-semibold">KES {(feeCents / 100).toFixed(2)} awaiting a statement</p>
+        <form action={createTransactionFeeStatement} className="mt-3"><button disabled={feeCents < 100} className="btn-ghost" type="submit">Create fee statement</button></form>
+        <p className={styles.fieldHint}>Statements collect whole shillings. Remaining cents carry forward without rounding up.</p>
+      </section>
       <PaymentStatusRefresh pending={paymentPending} />
       {sub ? <Link href="/admin/setup" className="btn-primary mt-5 inline-flex justify-center">Continue to launch checklist</Link> : null}
       {sub ? (

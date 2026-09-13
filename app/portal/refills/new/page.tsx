@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
-import { prisma } from "@/app/lib/db";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { portalRefillAction } from "@/app/actions/portal";
 import { PortalShell } from "@/app/components/portal/PortalShell";
 import { Panel } from "@/app/components/portal/PortalWidgets";
@@ -22,10 +23,10 @@ export default async function NewRefillPage({
   const sp = await searchParams;
 
   const profile = await prisma.customerProfile.findUnique({ where: { id: user.customerId } });
-  const prescriptions = await prisma.prescription.findMany({
-    where: { customerId: user.customerId, status: "active" },
+  const prescriptions = await withPlatformBypass(() => prismaUnscoped.prescription.findMany({
+    where: { customerId: user.customerId!, status: "active" },
     orderBy: { medicineName: "asc" },
-  });
+  }));
 
   return (
     <PortalShell
@@ -85,15 +86,15 @@ export default async function NewRefillPage({
             <div className="space-y-2 text-sm">
               <div className="flex items-start gap-2 text-muted">
                 <Clock className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                <span>Average review time: <strong className="text-foreground">2 hours</strong></span>
+                <span>The pharmacy will confirm timing after review</span>
               </div>
               <div className="flex items-start gap-2 text-muted">
                 <Store className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                <span>Pickup at any branch</span>
+                <span>Pickup at the pharmacy holding your prescription</span>
               </div>
               <div className="flex items-start gap-2 text-muted">
                 <Truck className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                <span>Home delivery available</span>
+                <span>Ask the pharmacy about delivery</span>
               </div>
             </div>
           </Panel>

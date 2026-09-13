@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { startTransition, useActionState, useRef, useState } from "react";
 import { CheckCircle2, Crosshair, Loader2, MapPin } from "lucide-react";
 import {
   saveCustomerLocationAction,
@@ -45,7 +45,7 @@ export default function CustomerLocationCapture() {
           data.set("longitude", lng.toString());
           data.set("accuracyMeters", String(accuracyMeters));
           data.set("capturedAt", timestamp);
-          saveAction(data);
+          startTransition(() => saveAction(data));
         });
       },
       (error) => {

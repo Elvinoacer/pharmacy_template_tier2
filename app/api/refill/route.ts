@@ -1,3 +1,4 @@
+import { acceptsCareRequests } from "@/app/lib/services/care-request-availability";
 import { medicineDisplayName } from "@/app/lib/prescription-discovery";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
         pharmacy.slug,
       );
     }
-    return await submitRefill(raw);
+    return NextResponse.json({ error: "Open an available medicine listing to continue your request." }, { status: 409 });
   } catch (err) {
     console.error("[refill]", err instanceof Error ? err.name : "unknown");
     if (err instanceof SyntaxError)
@@ -128,6 +129,10 @@ async function submitRefill(raw: Record<string, unknown>) {
       { error: "Find an available medicine before submitting your request" },
       { status: 409 },
     );
+  }
+
+  if (!(await acceptsCareRequests(tenant.pharmacyId))) {
+    return NextResponse.json({ error: "This pharmacy is no longer accepting requests." }, { status: 409 });
   }
 
   const session = await getSessionUser();

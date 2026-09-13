@@ -1,4 +1,5 @@
 import "server-only";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 import { prismaUnscoped } from "@/app/lib/db/prisma";
 
@@ -51,10 +52,11 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
   const category = opts.category?.trim();
 
   try {
-    const pharmacies = await prismaUnscoped.pharmacy.findMany({
+    const pharmacies = await withPlatformBypass(() => prismaUnscoped.pharmacy.findMany({
       where: {
         status: "active",
         listed: true,
+        verifiedAt: { not: null },
         ...(opts.featured ? { featured: true } : {}),
         ...(city ? { city: { equals: city, mode: "insensitive" as const } } : {}),
         ...(county ? { county: { equals: county, mode: "insensitive" as const } } : {}),
@@ -169,7 +171,7 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
           take: 4,
         },
       },
-    });
+    }));
 
     return pharmacies.map((pharmacy) => {
       const inventory = pharmacy.inventory;

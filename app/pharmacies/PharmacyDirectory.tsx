@@ -1,4 +1,5 @@
 "use client";
+import { setBrowseLocation } from "@/app/actions/browse-location";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -48,6 +49,7 @@ type Props = {
   initialCounty: string;
   initialCategory: string;
   initialDelivery: boolean;
+  initialLocation?: { latitude: number; longitude: number } | null;
 };
 
 export default function PharmacyDirectory({
@@ -60,6 +62,7 @@ export default function PharmacyDirectory({
   initialCounty,
   initialCategory,
   initialDelivery,
+  initialLocation,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -70,8 +73,8 @@ export default function PharmacyDirectory({
   const [category, setCategory] = useState(initialCategory);
   const [delivery, setDelivery] = useState(initialDelivery);
   const [showFilters, setShowFilters] = useState(false);
-  const [sort, setSort] = useState<"near" | "featured" | "name">("featured");
-  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [sort, setSort] = useState<"near" | "featured" | "name">(initialLocation ? "near" : "featured");
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(initialLocation ? { lat: initialLocation.latitude, lng: initialLocation.longitude } : null);
   const [locationState, setLocationState] = useState<"idle" | "loading" | "denied">("idle");
 
   useEffect(() => {
@@ -166,6 +169,7 @@ export default function PharmacyDirectory({
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         setPosition({ lat: coords.latitude, lng: coords.longitude });
+        void setBrowseLocation(coords.latitude, coords.longitude);
         setSort("near");
         setLocationState("idle");
       },

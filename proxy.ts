@@ -12,38 +12,8 @@ const EXTERNAL_API_PREFIXES = [
   '/api/v1/',
 ] as const
 
-const REMEMBERED_PUBLIC_TENANT_PREFIXES = [
-  '/services',
-  '/medicines',
-  '/refill',
-  '/order',
-  '/search',
-  '/preventive',
-  '/screenings',
-  '/vaccinations',
-  '/delivery',
-  '/faq',
-  '/careers',
-  '/contact',
-] as const
-
-// Discovery roots are marketplaces, not implicit tenant rooms. A remembered
-// pharmacy must not silently collapse these pages back to one tenant.
-const NETWORK_BROWSE_ROOTS = new Set(['/medicines', '/services', '/refill', '/prescription'])
-
 function isExternalApiPath(pathname: string): boolean {
   return EXTERNAL_API_PREFIXES.some((p) => pathname.startsWith(p))
-}
-
-function usesRememberedPublicTenant(pathname: string): boolean {
-  if (NETWORK_BROWSE_ROOTS.has(pathname)) return false
-  return REMEMBERED_PUBLIC_TENANT_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  )
-}
-
-function validPublicSlug(value: string | undefined): value is string {
-  return Boolean(value && /^[a-z0-9][a-z0-9-]{1,60}$/i.test(value))
 }
 
 function sameOrigin(request: NextRequest): boolean {
@@ -88,88 +58,15 @@ export async function proxy(request: NextRequest) {
     return new NextResponse('Cross-origin request rejected', { status: 403 })
   }
 
-  const storefront = pathname.match(/^\/p\/([a-z0-9][a-z0-9-]{1,60})(\/.*)?$/i)
-  if (storefront) {
-    const slug = storefront[1].toLowerCase()
-    const rest = storefront[2] || ''
-    const restPath = rest === '' || rest === '/' ? '/' : rest
-    const firstSeg = restPath === '/' ? '' : restPath.split('/').filter(Boolean)[0] || ''
-
-    // A pharmacy is an information profile, not a selection gate. Opening it
-    // must not switch medicine or service context in other tabs.
-    if ((request.method === 'GET' || request.method === 'HEAD') && (restPath === '/' || restPath === '/about')) {
-      const destination = request.nextUrl.clone()
-      destination.pathname = `/pharmacies/${slug}`
-      return NextResponse.redirect(destination, 303)
-    }
-
-
-    const reserved = new Set([
-      'login', 'register', 'forgot-password', 'reset-password',
-      'portal', 'admin', 'platform', 'onboard', 'api', '_next',
-    ])
-    if (!reserved.has(firstSeg)) {
-      // The storefront root still renders through an internal rewrite so its
-      // canonical /p/{slug} address remains stable.
-      if (restPath === '/') {
-        const url = request.nextUrl.clone()
-        url.pathname = '/storefront'
-        requestHeaders.set('x-pharmacy-slug', slug)
-        const res = NextResponse.rewrite(url, { request: { headers: requestHeaders } })
-        res.cookies.set('aether_pharmacy', slug, {
-          path: '/',
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 30,
-        })
-        return res
-      }
-
-      // Sub-pages use a two-request handoff: first persist the selected
-      // pharmacy, then redirect to the real destination. Catalogue roots are
-      // special: they remain network pages but carry an explicit pharmacy
-      // filter so "browse this pharmacy" is visible rather than implicit.
-      if (request.method === 'GET' || request.method === 'HEAD') {
-        const destination = request.nextUrl.clone()
-        destination.pathname = restPath
-        destination.searchParams.delete('changePharmacy')
-        if (restPath === '/medicines' || restPath === '/services') {
-          destination.searchParams.set('pharmacy', slug)
-        }
-        const res = NextResponse.redirect(destination, 303)
-        res.cookies.set('aether_pharmacy', slug, {
-          path: '/',
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 30,
-        })
-        res.headers.set('Cache-Control', 'no-store')
-        return res
-      }
-
-      // Preserve the existing rewrite behaviour for non-navigation requests.
-      const url = request.nextUrl.clone()
-      url.pathname = restPath
-      requestHeaders.set('x-pharmacy-slug', slug)
-      const res = NextResponse.rewrite(url, { request: { headers: requestHeaders } })
-      res.cookies.set('aether_pharmacy', slug, {
-        path: '/',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 30,
-      })
-      return res
-    }
-  }
-
-  // Once a visitor explicitly chooses a pharmacy, tenant-dependent actions and
-  // detail rooms keep that context. Network catalogue roots deliberately do
-  // not: users can return to /medicines or /services and compare everyone.
-  if (
-    usesRememberedPublicTenant(pathname) &&
-    request.nextUrl.searchParams.get('changePharmacy') !== '1'
-  ) {
-    const remembered = request.cookies.get('aether_pharmacy')?.value?.trim().toLowerCase()
-    if (validPublicSlug(remembered)) {
-      requestHeaders.set('x-pharmacy-slug', remembered)
-    }
+  // Public storefronts resolve their tenant from route params, never a
+  // remembered selection. Keep every subpage under its explicit /p/{slug}
+  // address; unknown/private paths are rejected by the public route itself.
+  if (pathname === '/p' || pathname.startsWith('/p/')) {
+    const slug = pathname.split('/')[2];
+    if (slug && /^[a-z0-9][a-z0-9-]{1,60}$/i.test(slug)) requestHeaders.set('x-pharmacy-slug', slug.toLowerCase())
+    const response = NextResponse.next({ request: { headers: requestHeaders } })
+    response.headers.set('Cache-Control', 'no-store')
+    return response
   }
 
   if (pathname.startsWith('/platform') || pathname.startsWith('/api/platform')) {

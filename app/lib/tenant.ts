@@ -102,7 +102,7 @@ export const getTenant = cache(async (): Promise<TenantStore> => {
     const headerSlug = h.get("x-pharmacy-slug")?.trim();
     if (headerSlug) {
       const row = await findPharmacyBySlug(headerSlug);
-      if (row && PUBLIC_RESOLVABLE_STATUS.has(row.status)) {
+      if (row && row.listed && PUBLIC_RESOLVABLE_STATUS.has(row.status)) {
         return { pharmacyId: row.id, slug: row.slug, bypass: false };
       }
     }
@@ -111,6 +111,8 @@ export const getTenant = cache(async (): Promise<TenantStore> => {
   }
 
   try {
+    const pathname = (await headers()).get("x-pathname") || "";
+    if (!pathname.startsWith("/admin") && !pathname.startsWith("/api/admin")) return { pharmacyId: null, slug: null, bypass: false };
     const jar = await cookies();
     const staffId = jar.get(STAFF_PHARMACY_COOKIE)?.value;
     if (staffId) {

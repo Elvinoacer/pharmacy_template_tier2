@@ -1,3 +1,4 @@
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { redirect } from "next/navigation";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
 import { getSessionUser } from "@/app/lib/auth";
@@ -52,6 +53,7 @@ export default async function PortalMessagesPage({
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  return withPlatformBypass(async () => {
   const sp = await searchParams;
   const q = sp.q?.trim() || undefined;
 
@@ -202,4 +204,5 @@ export default async function PortalMessagesPage({
       </div>
     </PortalShell>
   );
+  });
 }

@@ -31,6 +31,7 @@ export default function RefillForm({ pharmacyName, pharmacySlug, initialMedicine
       });
       const body = (await res.json().catch(() => ({}))) as {
         error?: string;
+        fields?: Record<string, string[]>;
         reference?: string;
         trackingToken?: string | null;
         duplicate?: boolean;
@@ -38,7 +39,7 @@ export default function RefillForm({ pharmacyName, pharmacySlug, initialMedicine
       if (!res.ok) {
         throw new Error(
           body.error === "validation_failed"
-            ? "Please check the form details and try again."
+            ? Object.values(body.fields || {}).flat()[0] || "Please check the form details and try again."
             : body.error || "Could not submit the medicine request.",
         );
       }

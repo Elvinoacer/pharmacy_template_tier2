@@ -1,5 +1,9 @@
 import "server-only";
 
+import { notifyCareRequest } from "./care-request-notifications";
+import { acceptsCareRequests } from "./care-request-availability";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { requireTenantId } from "@/app/lib/tenant";
 import { prisma } from "@/app/lib/db";
 import type { RefillStatus, EnquiryStatus, FeedbackStatus, CampaignStatus } from "@/app/generated/prisma/client";
 import { addTimelineEvent } from "@/app/lib/timeline";
@@ -9,6 +13,7 @@ import { recordAdminNotification } from "@/app/lib/services/admin-notifications"
 import { formatTime, toLocalDateInputValue } from "@/app/lib/time";
 
 export async function getCustomerDashboard(customerId: string) {
+  return withPlatformBypass(async () => {
   const [profile, prescriptions, refills, notifications, loyalty, reminders, timeline] =
     await Promise.all([
       prisma.customerProfile.findUnique({
@@ -46,6 +51,7 @@ export async function getCustomerDashboard(customerId: string) {
     ]);
 
   return { profile, prescriptions, refills, notifications, loyalty, reminders, timeline };
+  });
 }
 
 export async function createRefillRequest(data: {
@@ -62,7 +68,10 @@ export async function createRefillRequest(data: {
   source?: "website" | "portal" | "ai" | "phone" | "whatsapp" | "staff";
   prescriptionId?: string;
 }) {
-  const refill = await prisma.refillRequest.create({
+  const pharmacyId = await requireTenantId();
+  if (!(await acceptsCareRequests(pharmacyId))) throw new Error("This pharmacy is no longer accepting requests.");
+  const refill = await prisma.$transaction(async (tx) => {
+  const saved = await tx.refillRequest.create({
     data: {
       customerId: data.customerId ?? undefined,
       prescriptionId: data.prescriptionId ?? undefined,
@@ -79,6 +88,16 @@ export async function createRefillRequest(data: {
       status: "submitted",
     },
   });
+  await tx.adminNotification.create({ data: {
+    type: "refill_new", title: "New refill request",
+    body: `${data.customerName || "A customer"} requested ${data.medicineName}.`,
+    relatedType: "refill_request", relatedId: saved.id,
+  } });
+  return saved;
+  });
+  await notifyCareRequest({ ...refill, relatedType: "refill_request",
+    title: "Refill request received", body: "Your refill request has been received. The pharmacy will review it and confirm availability." });
+
 
   if (data.customerId) {
     await addTimelineEvent(
@@ -157,13 +176,7 @@ export async function createRefillRequest(data: {
     /* push is best-effort */
   });
 
-  await recordAdminNotification({
-    type: "refill_new",
-    title: "New refill request",
-    body: `${who} requested ${data.medicineName}.`,
-    relatedType: "refill_request",
-    relatedId: refill.id,
-  });
+
 
   return refill;
 }
@@ -446,6 +459,9 @@ export async function updateRefillStatus(
     where: { id: refillId },
     data: { status, statusUpdatedAt: new Date(), assignedToId: actorId },
   });
+  await notifyCareRequest({ ...refill, relatedType: "refill_request", staff: true,
+    title: `Refill ${status.replaceAll("_", " ")}`, body: `Your refill request is now ${status.replaceAll("_", " ")}.` });
+
 
   if (refill.customerId) {
     await addTimelineEvent(

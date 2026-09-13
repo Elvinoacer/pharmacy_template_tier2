@@ -13,6 +13,7 @@ import {
   updateBookingStatus,
   notifyBookingCustomer,
 } from "@/app/lib/services/pharmacy-services";
+import { notifyCareRequest } from "@/app/lib/services/care-request-notifications";
 import { prisma } from "@/app/lib/db";
 
 export type AdminServiceState = {
@@ -256,6 +257,7 @@ export async function updateBookingStatusAction(
   }
 
   try {
+    const previous = await prisma.serviceBooking.findUnique({ where: { id: bookingId } });
     const booking = await updateBookingStatus(
       bookingId,
       status,
@@ -266,8 +268,11 @@ export async function updateBookingStatusAction(
       include: { service: { select: { title: true, slug: true } } },
     });
 
-    if (full && (status === "confirmed" || status === "completed" || status === "cancelled")) {
+    if (full && previous?.status !== status) {
+      await notifyCareRequest({ id: full.id, pharmacyId: full.pharmacyId, relatedType: "service_booking", staff: true,
+        title: "Booking status updated", body: `${full.fullName}: ${full.service.title} — ${status.replaceAll("_", " ")}.` });
       const messages: Record<string, { title: string; body: string }> = {
+        awaiting_payment: { title: "Booking awaiting payment", body: "Your booking is awaiting payment. Contact the pharmacy to arrange payment and confirm your visit." },
         confirmed: {
           title: "Booking confirmed",
           body: `Your ${full.service.title} booking is confirmed. We'll see you soon.`,

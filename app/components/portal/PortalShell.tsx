@@ -49,11 +49,11 @@ import {
 import { PushEnableChip, PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
 import { useTenantBrand } from "@/app/components/TenantBrand";
-import PharmacySwitcher from "@/app/components/portal/PharmacySwitcher";
+
 
 export const PORTAL_LINKS = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
-  { href: "/portal/pharmacies", label: "My pharmacies", icon: Store, group: "overview" },
+  { href: "/portal/pharmacies", label: "Nearby pharmacies", icon: Store, group: "overview" },
   { href: "/portal/refills", label: "Refills", icon: Pill, group: "medications" },
   { href: "/portal/prescriptions", label: "Prescriptions", icon: FileText, group: "medications" },
   { href: "/portal/calendar", label: "Medication Calendar", icon: Calendar, group: "medications" },
@@ -404,7 +404,7 @@ export function PortalShell({
 
         <div className="ml-auto flex items-center gap-1.5">
           <ThemeToggle />
-          <PharmacySwitcher />
+          <Link href="/pharmacies" className="btn-ghost text-xs">Nearby care</Link>
           <PushEnableChip audience="portal" />
           <BellButton unread={unread} />
           <Link href={homeHref} className="btn-icon hidden sm:inline-flex" title={brand.slug ? `Open ${brand.name}` : "View website"} aria-label={brand.slug ? `Open ${brand.name} storefront` : "View website"}>

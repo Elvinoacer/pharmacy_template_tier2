@@ -1,3 +1,6 @@
+import NearbyLocation from "@/app/components/location/NearbyLocation";
+import { getBrowseLocation } from "@/app/lib/browse-location";
+import { distanceLabel } from "@/app/lib/proximity";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -23,19 +26,21 @@ export default async function ServicesPage({
   searchParams: Promise<{ q?: string; bookable?: string }>;
 }) {
   const sp = await searchParams;
+  const origin = await getBrowseLocation();
   const q = sp.q?.trim() || "";
   const bookable = sp.bookable === "1";
-  const data = await listNetworkServiceListings({ q }).catch(() => null);
+  const data = await listNetworkServiceListings({ q, origin }).catch(() => null);
   const services = data?.services.filter((s) => !bookable || s.bookable) || [];
   return (
     <div className={styles.page}>
       <CareHero
         section="services"
         eyebrow="CARE BEYOND MEDICINE"
-        title="Make time"
-        accent="for feeling well."
-        description="Everyday checks. Preventive care. A conversation that helps. Explore available services and take your next step."
+        title="Care you need."
+        accent="Close to home."
+        description="Find a service, see the price, book your visit."
       />
+      <NearbyLocation active={Boolean(origin)} />
       <section className={styles.searchPanel} aria-label="Find a service">
         <form action="/services" className={styles.searchForm} role="search">
           <label htmlFor="service-query">
@@ -114,6 +119,7 @@ export default async function ServicesPage({
                   <h3>{s.title}</h3>
                 </Link>
                 <p>{s.short}</p>
+                <p className="text-xs font-semibold text-[var(--brand)]">{distanceLabel(s.distanceKm) || s.pharmacy.city}</p>
                 <Link
                   href={`/pharmacies/${s.pharmacy.slug}`}
                   className={styles.provider}

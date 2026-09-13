@@ -1,4 +1,5 @@
 import "server-only";
+import { validCoordinates } from "@/app/lib/proximity";
 
 import { prismaUnscoped } from "@/app/lib/db";
 
@@ -185,7 +186,7 @@ export function profileMissingItems(input: {
   if (!pharmacy.licenseDocumentUrl) missing.push("current PPB licence image");
   if (!pharmacy.city) missing.push("pharmacy city");
   if (!pharmacy.phone) missing.push("public phone number");
-  if (pharmacy.latitude == null || pharmacy.longitude == null) missing.push("precise premises map pin");
+  if (!validCoordinates(pharmacy.latitude, pharmacy.longitude)) missing.push("precise premises map pin");
   if (!input.ownerEmailVerified) missing.push("verified owner email address");
 
   if (!profile) {

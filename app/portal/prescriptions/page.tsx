@@ -1,3 +1,4 @@
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireOnboarded } from "@/app/lib/require-onboarded";
@@ -48,12 +49,14 @@ export default async function PortalPrescriptionsPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  const customerId = user.customerId;
+  return withPlatformBypass(async () => {
 
-  await processAutoMissedDoses(user.customerId).catch(() => 0);
+  await processAutoMissedDoses(customerId).catch(() => 0);
 
   const [prescriptions, todaysDoses, otcOrders] = await Promise.all([
     prisma.prescription.findMany({
-      where: { customerId: user.customerId },
+      where: { customerId },
       orderBy: { nextRefillDue: "asc" },
       include: {
         doseLogs: {
@@ -66,9 +69,9 @@ export default async function PortalPrescriptionsPage() {
         },
       },
     }),
-    getTodaysDosesForCustomer(user.customerId),
+    getTodaysDosesForCustomer(customerId),
     prisma.order.findMany({
-      where: { customerId: user.customerId, status: { in: ["paid", "fulfilled"] } },
+      where: { customerId, status: { in: ["paid", "fulfilled"] } },
       include: { items: true },
       orderBy: { createdAt: "desc" },
       take: 10,
@@ -507,6 +510,7 @@ export default async function PortalPrescriptionsPage() {
       )}
     </PortalShell>
   );
+  });
 }
 
 function StatCard({

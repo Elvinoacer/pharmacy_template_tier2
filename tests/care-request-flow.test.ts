@@ -11,12 +11,14 @@ const pharmacies = [
     slug: "pharmacy-a",
     status: "active",
     listed: true,
+    verifiedAt: new Date(),
   },
   {
     id: "22222222-2222-4222-a222-222222222222",
     slug: "pharmacy-b",
     status: "active",
     listed: true,
+    verifiedAt: new Date(),
   },
   {
     id: "33333333-3333-4333-a333-333333333333",
@@ -52,6 +54,7 @@ stub("../app/lib/refill-tracking", {
     `track:${pharmacyId}:${id}`,
 });
 stub("../app/lib/db", {
+  prismaUnscoped: { pharmacy: { findFirst: async ({ where }: { where: { id: string } }) => pharmacies.find((p) => p.id === where.id && p.status === "active" && p.listed && "verifiedAt" in p) || null } },
   prisma: {
     refillRequest: {
       findFirst: async ({ where }: { where: Record<string, unknown> }) =>

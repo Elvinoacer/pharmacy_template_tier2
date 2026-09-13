@@ -23,7 +23,11 @@ import {
 import { formatPrice } from "../../lib/format";
 import { getSessionUser } from "../../lib/auth";
 import { prisma } from "../../lib/db";
-import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import { getTenant, withPharmacy } from "@/app/lib/tenant";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { prismaUnscoped } from "@/app/lib/db";
+import { acceptingCareRequests } from "@/app/lib/services/care-request-availability";
+import { redirect } from "next/navigation";
 import { loadStorefront } from "@/app/components/StorefrontGate";
 import styles from "./ServiceDetail.module.css";
 
@@ -43,10 +47,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/services" />;
-
   const { slug } = await params;
+  const tenant = await getTenant();
+  if (!tenant.pharmacyId || tenant.bypass) {
+    const listings = await withPlatformBypass(() => prismaUnscoped.pharmacyService.findMany({
+      where: { slug, active: true, pharmacy: acceptingCareRequests },
+      select: { pharmacy: { select: { slug: true } } }, take: 2,
+    }));
+    if (listings.length === 1) redirect(`/p/${listings[0].pharmacy.slug}/services/${slug}`);
+    return <div className="mx-auto max-w-xl px-6 py-16"><h1 className="text-2xl font-semibold">Find an available service</h1><p className="mt-3">Open a service listing to see the pharmacy and book your visit.</p><Link className="btn-primary mt-6 inline-flex" href="/services">Explore services</Link></div>;
+  }
+  return withPharmacy(tenant.pharmacyId, async () => {
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) notFound();
   const service = await getPublicServiceBySlug(slug).catch(() => null);
   if (!service) notFound();
 
@@ -294,7 +307,7 @@ export default async function ServiceDetailPage({ params }: Props) {
 
             <div className={styles.relatedGrid}>
               {related.map((item) => (
-                <Link key={item.slug} href={`/services/${item.slug}`} className={styles.relatedCard}>
+                <Link key={item.slug} href={`/p/${pharmacy.slug}/services/${item.slug}`} className={styles.relatedCard}>
                   <div className="min-w-0">
                     <strong>{item.title}</strong>
                     <p>{item.short}</p>
@@ -310,4 +323,5 @@ export default async function ServiceDetailPage({ params }: Props) {
       <CtaBanner />
     </div>
   );
+  });
 }

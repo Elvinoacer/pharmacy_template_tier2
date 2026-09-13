@@ -1,3 +1,4 @@
+import { getBrowseLocation } from "@/app/lib/browse-location";
 import { medicineDisplayName } from "@/app/lib/prescription-discovery";
 import { z } from "zod";
 import PrescriptionFinder from "../prescription/PrescriptionFinder";
@@ -49,7 +50,7 @@ export default async function RefillPage({
     }
   }
   return (
-    <PrescriptionFinder
+    <PrescriptionFinder nearby={Boolean(await getBrowseLocation())}
       mode="refill"
       initialResults={initialResults}
       initialError={initialError}

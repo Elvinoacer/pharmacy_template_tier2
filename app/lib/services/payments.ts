@@ -1,4 +1,5 @@
 import "server-only";
+import { transactionFeeCents } from "@/app/lib/transaction-fee";
 
 import { createHash, randomBytes } from "crypto";
 import { prisma, prismaUnscoped } from "@/app/lib/db";
@@ -226,14 +227,14 @@ export async function initiateStkPayment(opts: {
 
   const pharmacyId = order.pharmacyId || peekTenant()?.pharmacyId || null;
   const creds = await resolveDarajaCredentials(pharmacyId);
-  if (!creds || !(await darajaConfiguredFor(pharmacyId))) {
+  if (!creds || creds.source !== "tenant" || !(await darajaConfiguredFor(pharmacyId))) {
     const payment = await prisma.payment.create({
       data: {
         orderId: order.id,
         customerId: order.customerId,
         amount,
         provider: "daraja",
-        status: "pending",
+        status: "failed",
         phone,
         attemptCount: recentAttempts + 1,
         lastAttemptAt: new Date(),
@@ -247,7 +248,7 @@ export async function initiateStkPayment(opts: {
       ok: false,
       error: "daraja_not_configured",
       message:
-        "M-Pesa is not configured for this pharmacy. Add tenant Daraja credentials, or mark paid at the counter.",
+        "This pharmacy hasn’t connected its M-Pesa account yet. Please pay at collection.",
       paymentId: payment.id,
       statusCode: 503,
     };
@@ -411,6 +412,12 @@ export async function completeDarajaPayment(opts: {
         status: "failed",
         failureReason: "Superseded by successful payment",
       },
+    });
+
+    await tx.usageRecord.upsert({
+      where: { pharmacyId_eventId: { pharmacyId: order.pharmacyId, eventId: `sale-fee:${order.id}` } },
+      create: { pharmacyId: order.pharmacyId, metric: "transaction_fee_cents", quantity: transactionFeeCents(providerAmount), unit: "KES_cent", eventId: `sale-fee:${order.id}`, period: new Date().toISOString().slice(0, 7), meta: { paymentId: payment.id, orderId: order.id, grossKes: providerAmount, ratePercent: 1, merchantShortcode: payment.expectedShortcode, receipt } },
+      update: {},
     });
 
     await markOrderPaid(tx, {

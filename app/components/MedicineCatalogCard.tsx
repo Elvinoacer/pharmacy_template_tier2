@@ -1,3 +1,4 @@
+import { distanceLabel } from "@/app/lib/proximity";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
@@ -13,6 +14,7 @@ export type MedicineCatalogItem = {
   href?: string;
   price: number;
   currentStock: number;
+  distanceKm?: number | null;
   overTheCounter: boolean;
   prescriptionRequired: boolean;
   pharmacy?: {
@@ -34,7 +36,7 @@ export default function MedicineCatalogCard({item,badge}:{item:MedicineCatalogIt
   const master=item.medicationMaster;const inStock=item.currentStock>0;const href=item.href||`/medicines/${item.slug}`;
   return <article className={styles.serviceCard}>
     <TenantLink href={href} className={styles.medicineImage} aria-label={`View ${master.name}`}><Image src={master.imageUrl||"/images/care/medicine-still-life.png"} alt={master.imageUrl?master.name:""} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover" /><span className={styles.badge}>{item.prescriptionRequired&&!item.overTheCounter?"Prescription required":"OTC"}</span>{!master.imageUrl&&<span className={styles.imageCredit}>Illustrative image</span>}</TenantLink>
-    <div className={styles.medicineBody}><span className={styles.medicineCategory}>{master.category?.replace(/-/g," ")||"Medicine"}</span><TenantLink href={href}><h3>{master.name}</h3></TenantLink>{badge&&<p>{badge}</p>}<span className={styles.medicineStock} data-stock={inStock}>{inStock?"Listed in stock":"Currently unavailable"}</span>{item.pharmacy&&<Link href={`/pharmacies/${item.pharmacy.slug}`} className={styles.provider}>About {item.pharmacy.name}<ArrowUpRight size={12} aria-hidden /></Link>}<TenantLink href={href} className={styles.serviceFoot}><strong>KES {formatPrice(Number(item.price))}</strong><ArrowRight size={16} aria-hidden /></TenantLink></div>
+    <div className={styles.medicineBody}><span className={styles.medicineCategory}>{master.category?.replace(/-/g," ")||"Medicine"}</span><TenantLink href={href}><h3>{master.name}</h3></TenantLink>{badge&&<p>{badge}</p>}{item.distanceKm != null && <p className="text-xs font-semibold text-[var(--brand)]">{distanceLabel(item.distanceKm)}</p>}<span className={styles.medicineStock} data-stock={inStock}>{inStock?"Listed in stock":"Currently unavailable"}</span>{item.pharmacy&&<Link href={`/pharmacies/${item.pharmacy.slug}`} className={styles.provider}>About {item.pharmacy.name}<ArrowUpRight size={12} aria-hidden /></Link>}<TenantLink href={href} className={styles.serviceFoot}><strong>KES {formatPrice(Number(item.price))}</strong><ArrowRight size={16} aria-hidden /></TenantLink></div>
   </article>;
 }
 

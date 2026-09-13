@@ -1,3 +1,5 @@
+import NearbyLocation from "@/app/components/location/NearbyLocation";
+import { getBrowseLocation } from "@/app/lib/browse-location";
 import Link from "next/link";
 import { ArrowRight, FileUp, PackageSearch, Search } from "lucide-react";
 import CareHero from "../components/care/CareHero";
@@ -23,12 +25,14 @@ export default async function MedicinesPage({
   }>;
 }) {
   const sp = await searchParams;
+  const origin = await getBrowseLocation();
   const q = sp.q?.trim() || "";
   const category = sp.category?.trim() || "";
   const inStock = sp.stock !== "all";
   const requestedPage = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
   let data = await listNetworkMedicineListings({
     q,
+    origin,
     category,
     inStock,
     skip: (requestedPage - 1) * PAGE_SIZE,
@@ -41,6 +45,7 @@ export default async function MedicinesPage({
   if (data && page !== requestedPage)
     data = await listNetworkMedicineListings({
       q,
+      origin,
       category,
       inStock,
       skip: (page - 1) * PAGE_SIZE,
@@ -59,10 +64,11 @@ export default async function MedicinesPage({
       <CareHero
         section="medicines"
         eyebrow="THE MEDICINE YOU NEED"
-        title="A little less searching."
-        accent="A little more certainty."
-        description="Search by name, brand, or generic. Explore available medicines and prices, then continue with the product you need."
+        title="Your medicine."
+        accent="Closer to you."
+        description="Compare availability and prices. Order from the listing."
       />
+      <NearbyLocation active={Boolean(origin)} />
       <section className={styles.searchPanel} aria-label="Find medicine">
         <form action="/medicines" className={styles.searchForm} role="search">
           <label htmlFor="medicine-query">
@@ -108,11 +114,11 @@ export default async function MedicinesPage({
       </section>
       <div className={styles.sectionHeading}>
         <div>
-          <h2>{q ? `Results for “${q}”` : "Explore your medicine cabinet"}</h2>
+          <h2>{q ? `Results for “${q}”` : origin ? "Nearest medicines first" : "Available medicines"}</h2>
           <p>
             {q
               ? "Review the exact name, strength, and form before continuing."
-              : "Start with the product. Its availability takes care of the pharmacy connection."}
+              : origin ? "Approximate distance to the supplying pharmacy." : "Share your location to sort by distance."}
           </p>
         </div>
         {data && (

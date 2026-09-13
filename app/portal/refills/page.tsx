@@ -1,3 +1,4 @@
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 import { formatDate, formatDateTime } from "@/app/lib/time";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -32,6 +33,7 @@ export default async function PortalRefillsPage() {
   const user = await getSessionUser();
   if (!user?.customerId) redirect("/login");
   await requireOnboarded();
+  return withPlatformBypass(async () => {
 
   const [refills, activePrescriptions] = await Promise.all([
     prisma.refillRequest.findMany({
@@ -48,7 +50,7 @@ export default async function PortalRefillsPage() {
       orderBy: { createdAt: "desc" },
     }),
     prisma.prescription.findMany({
-      where: { customerId: user.customerId, status: "active" },
+      where: { customerId: user.customerId!, status: "active" },
       orderBy: [{ nextRefillDue: "asc" }, { createdAt: "desc" }],
     }),
   ]);
@@ -432,4 +434,5 @@ export default async function PortalRefillsPage() {
       </Panel>
     </PortalShell>
   );
+  });
 }

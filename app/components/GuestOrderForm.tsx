@@ -78,6 +78,7 @@ export function GuestOrderForm({
           <div className="mt-3">
             <MpesaPayButton
               orderId={state.orderId}
+              accessToken={state.accessToken}
               defaultPhone={state.phone || ""}
               guestMode
             />

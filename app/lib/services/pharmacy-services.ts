@@ -1,5 +1,8 @@
 import "server-only";
 
+import { acceptingCareRequests } from "./care-request-availability";
+import { notifyCareRequest } from "./care-request-notifications";
+import { z } from "zod";
 import { prisma } from "@/app/lib/db";
 import { formatMpesaPhone } from "@/app/lib/services/daraja";
 
@@ -227,6 +230,8 @@ export async function deleteService(id: string) {
   return prisma.pharmacyService.delete({ where: { id } });
 }
 
+export class BookingValidationError extends Error {}
+
 export type BookingInput = {
   serviceId: string;
   fullName: string;
@@ -246,18 +251,27 @@ export type BookingInput = {
  */
 export async function createServiceBooking(input: BookingInput) {
   const service = await prisma.pharmacyService.findFirst({
-    where: { id: input.serviceId, active: true, bookable: true },
+    where: { id: input.serviceId, active: true, bookable: true, pharmacy: acceptingCareRequests },
   });
-  if (!service) throw new Error("This service is not available for booking.");
+  if (!service) throw new BookingValidationError("This service is not available for booking.");
 
   const fullName = input.fullName.trim();
   const phoneRaw = input.phone.trim();
-  if (fullName.length < 2) throw new Error("Your name is required.");
+  if (fullName.length < 2) throw new BookingValidationError("Your name is required.");
   if (phoneRaw.replace(/\D/g, "").length < 9) {
-    throw new Error("A valid phone number is required.");
+    throw new BookingValidationError("A valid phone number is required.");
   }
 
   const mpesaPhone = formatMpesaPhone(phoneRaw);
+  if (!/^254[17]\d{8}$/.test(mpesaPhone)) throw new BookingValidationError("Enter a valid Kenyan mobile number.");
+  if (input.email && !z.email().max(254).safeParse(input.email).success) throw new BookingValidationError("Enter a valid email address.");
+  if (fullName.length > 120 || (input.notes?.length ?? 0) > 1500 || (input.preferredTime?.length ?? 0) > 40 || (input.pushToken?.length ?? 0) > 4096) throw new BookingValidationError("Please shorten your booking details.");
+  if (input.preferredDate) {
+    const date = input.preferredDate;
+    const parsed = new Date(`${date}T00:00:00Z`);
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Nairobi" }).format(new Date());
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date || date < today) throw new BookingValidationError("Choose today or a future date.");
+  }
   const priceNum =
     service.price == null ? null : Number(service.price.toString());
   const requiresPayment =
@@ -320,6 +334,11 @@ export async function createServiceBooking(input: BookingInput) {
       },
     });
 
+    await tx.adminNotification.create({ data: {
+      type: "booking_new", title: "New service booking",
+      body: `${fullName} requested ${service.title}. Status: ${booking.status.replaceAll("_", " ")}.`,
+      relatedType: "service_booking", relatedId: booking.id,
+    } });
     return { booking, requiresPayment, orderId, amount: priceNum };
   });
 
@@ -462,9 +481,14 @@ export async function notifyBookingCustomer(
     customerId?: string | null;
     fullName: string;
     phone: string;
+    pharmacyId?: string;
+    email?: string | null;
   },
   payload: { title: string; body: string; url?: string },
 ) {
+  const saved = await prisma.serviceBooking.findUnique({ where: { id: booking.id } });
+  if (!saved) return;
+  await notifyCareRequest({ ...saved, relatedType: "service_booking", ...payload, inApp: true });
   const { sendPush, isFirebaseConfigured } = await import(
     "@/app/lib/firebase/admin"
   );

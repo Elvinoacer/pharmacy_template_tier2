@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
-import { Crosshair, Loader2, MapPin, CheckCircle2, Save } from "lucide-react";
+import { startTransition, useActionState, useRef, useState } from "react";
+import { Crosshair, Loader2, MapPin, CheckCircle2 } from "lucide-react";
 import {
   saveOnboardingPharmacyLocationAction,
   type GeolocationActionState,
@@ -31,22 +31,10 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
     onCoordinatesChange?.(Number.isFinite(parsedLat) ? parsedLat : null, Number.isFinite(parsedLng) ? parsedLng : null);
   };
 
-  const saveCurrentCoordinates = () => {
-    setGeoError(null);
-    const form = formRef.current;
-    if (!form) return;
-    const data = new FormData(form);
-    data.set("pharmacyId", pharmacyId);
-    data.set("latitude", latitude);
-    data.set("longitude", longitude);
-    data.set("accuracyMeters", accuracy == null ? "" : String(accuracy));
-    saveAction(data);
-  };
-
   const useCurrentLocation = () => {
     setGeoError(null);
     if (!navigator.geolocation) {
-      setGeoError("Location is not available in this browser. You can enter coordinates manually.");
+      setGeoError("Location is not available in this browser. Open this application on a phone with location enabled.");
       return;
     }
 
@@ -68,16 +56,16 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
           data.set("latitude", lat.toString());
           data.set("longitude", lng.toString());
           data.set("accuracyMeters", String(accuracyMeters));
-          saveAction(data);
+          startTransition(() => saveAction(data));
         });
       },
       (error) => {
         setBusy(false);
         setGeoError(error.code === error.PERMISSION_DENIED
-          ? "Location permission was denied. Allow location access, or enter the coordinates manually."
+          ? "Location permission was denied. Allow location access while at the pharmacy."
           : error.code === error.TIMEOUT
-            ? "Location lookup timed out. Try again with GPS enabled, or enter the coordinates manually."
-            : "Could not read your location. Try again or enter the coordinates manually.");
+            ? "Location lookup timed out. Try again with GPS enabled, from the pharmacy premises."
+            : "Could not read your location. Try again from the pharmacy premises.");
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
     );
@@ -100,7 +88,7 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
             Map pin
           </h2>
           <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-            So patients reach the right branch.
+            Capture your location while at the pharmacy. Your reviewer checks this pin against the premises.
           </p>
         </div>
       </div>
@@ -133,7 +121,9 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
             {busy || pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Crosshair className="h-4 w-4" aria-hidden="true" />}
             {busy ? "Finding your location…" : pending ? "Saving location…" : hasCoordinates ? "Refresh my location" : "Use my current location"}
           </button>
-          {hasCoordinates && (
+        </div>
+
+        {hasCoordinates && (
             <button
               type="button"
               onClick={saveCurrentCoordinates}
@@ -174,7 +164,7 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
 
         {hasCoordinates && (
           <p className="break-words text-xs leading-5 text-[var(--muted)]">
-            Saved pin: <span className="font-medium text-[var(--foreground)]">{latitude}, {longitude}</span>
+            Map pin: <span className="font-medium text-[var(--foreground)]">{latitude}, {longitude}</span>
             {accuracy != null && <> · GPS accuracy about <span className="font-medium text-[var(--foreground)]">{Math.round(accuracy)} m</span></>}
           </p>
         )}

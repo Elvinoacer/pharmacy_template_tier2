@@ -1,4 +1,5 @@
 "use client";
+import NearbyLocation from "@/app/components/location/NearbyLocation";
 import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -30,10 +31,12 @@ export default function PrescriptionFinder({
   mode = "prescription",
   initialResults = null,
   initialError = "",
+  nearby = false,
 }: {
   mode?: "prescription" | "refill";
   initialResults?: CareResult[] | null;
   initialError?: string;
+  nearby?: boolean;
 }) {
   const [names, setNames] = useState(
     initialResults?.map((r) => r.name).join("\n") || "",
@@ -150,6 +153,7 @@ export default function PrescriptionFinder({
             : "Upload a photo or enter your medicine names. Review what’s available, then continue with your medicine request."
         }
       />
+      <NearbyLocation active={nearby} />
       <ol className={styles.steps} aria-label="Your progress">
         {["Your medicines", "Availability", "Review request"].map(
           (label, i) => (

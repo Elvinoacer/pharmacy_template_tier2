@@ -32,6 +32,7 @@ type StkPayload = {
  */
 export function MpesaStkPanel({
   orderId,
+  accessToken,
   defaultPhone = "",
   /** Staff can forceRetry after timeout. */
   staffMode = false,
@@ -44,6 +45,7 @@ export function MpesaStkPanel({
   className = "",
 }: {
   orderId: string;
+  accessToken?: string;
   defaultPhone?: string;
   staffMode?: boolean;
   guestMode?: boolean;
@@ -81,6 +83,7 @@ export function MpesaStkPanel({
       try {
         const response = await fetch(`/api/payments/daraja/status?${qs.toString()}`, {
           cache: "no-store",
+          headers: accessToken ? { "x-order-access-token": accessToken } : undefined,
         });
         const payload = (await response.json()) as StatusPayload;
         if (!response.ok) return;
@@ -112,7 +115,7 @@ export function MpesaStkPanel({
         /* keep polling */
       }
     },
-    [guestMode, staffMode, onSuccess, stopPoll],
+    [guestMode, staffMode, onSuccess, stopPoll, accessToken],
   );
 
   const startPoll = useCallback(
@@ -151,6 +154,7 @@ export function MpesaStkPanel({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             orderId,
+            accessToken,
             phone: phone.trim(),
             forceRetry: Boolean(forceRetry),
           }),
@@ -190,7 +194,7 @@ export function MpesaStkPanel({
         toast.error("Network error starting payment.");
       }
     },
-    [orderId, phone, startPoll],
+    [accessToken, orderId, phone, startPoll],
   );
 
   useEffect(() => {
