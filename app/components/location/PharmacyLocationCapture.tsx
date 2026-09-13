@@ -1,7 +1,7 @@
 "use client";
 
-import { startTransition, useActionState, useRef, useState } from "react";
-import { Crosshair, Loader2, MapPin, CheckCircle2 } from "lucide-react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
+import { CheckCircle2, Crosshair, Loader2, MapPin } from "lucide-react";
 import {
   saveOnboardingPharmacyLocationAction,
   type GeolocationActionState,
@@ -9,27 +9,68 @@ import {
 
 const initial: GeolocationActionState = {};
 
+type LocationSnapshot = {
+  latitude: number | null;
+  longitude: number | null;
+  city?: string | null;
+  county?: string | null;
+  country?: string | null;
+};
+
 type Props = {
   pharmacyId: string;
   initialLatitude?: number | null;
   initialLongitude?: number | null;
-  onCoordinatesChange?: (latitude: number | null, longitude: number | null) => void;
+  initialCity?: string | null;
+  initialCounty?: string | null;
+  initialCountry?: string | null;
+  onLocationChange?: (location: LocationSnapshot) => void;
 };
 
-export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = null, initialLongitude = null, onCoordinatesChange }: Props) {
+export default function PharmacyLocationCapture({
+  pharmacyId,
+  initialLatitude = null,
+  initialLongitude = null,
+  initialCity = null,
+  initialCounty = null,
+  initialCountry = null,
+  onLocationChange,
+}: Props) {
   const [latitude, setLatitude] = useState(initialLatitude != null ? String(initialLatitude) : "");
   const [longitude, setLongitude] = useState(initialLongitude != null ? String(initialLongitude) : "");
+  const [city, setCity] = useState(initialCity || "");
+  const [county, setCounty] = useState(initialCounty || "");
+  const [country, setCountry] = useState(initialCountry || "Kenya");
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [state, saveAction, pending] = useActionState(saveOnboardingPharmacyLocationAction, initial);
 
-  const notifyCoordinates = (lat: string, lng: string) => {
-    const parsedLat = Number(lat);
-    const parsedLng = Number(lng);
-    onCoordinatesChange?.(Number.isFinite(parsedLat) ? parsedLat : null, Number.isFinite(parsedLng) ? parsedLng : null);
-  };
+  const parsedLatitude = latitude ? Number(latitude) : null;
+  const parsedLongitude = longitude ? Number(longitude) : null;
+  const hasCoordinates = Number.isFinite(parsedLatitude) && Number.isFinite(parsedLongitude);
+  const hasArea = Boolean(city || county);
+  const message = state.error || geoError;
+
+  useEffect(() => {
+    if (!state.success) return;
+
+    const nextCity = state.city || "";
+    const nextCounty = state.county || "";
+    const nextCountry = state.country || "Kenya";
+    setCity(nextCity);
+    setCounty(nextCounty);
+    setCountry(nextCountry);
+
+    onLocationChange?.({
+      latitude: Number.isFinite(parsedLatitude) ? parsedLatitude : null,
+      longitude: Number.isFinite(parsedLongitude) ? parsedLongitude : null,
+      city: nextCity || null,
+      county: nextCounty || null,
+      country: nextCountry,
+    });
+  }, [state.success, state.city, state.county, state.country, latitude, longitude, onLocationChange, parsedLatitude, parsedLongitude]);
 
   const useCurrentLocation = () => {
     setGeoError(null);
@@ -45,7 +86,7 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
         setLatitude(lat.toFixed(7));
         setLongitude(lng.toFixed(7));
         setAccuracy(Number.isFinite(accuracyMeters) ? accuracyMeters : null);
-        notifyCoordinates(String(lat), String(lng));
+        onLocationChange?.({ latitude: lat, longitude: lng });
         setBusy(false);
 
         requestAnimationFrame(() => {
@@ -71,8 +112,7 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
     );
   };
 
-  const hasCoordinates = Boolean(latitude && longitude);
-  const message = state.error || geoError;
+  const placeLabel = [city, county].filter(Boolean).join(", ");
 
   return (
     <section
@@ -85,10 +125,10 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
         </span>
         <div className="min-w-0 flex-1">
           <h2 id="pharmacy-location-title" className="text-sm font-semibold text-[var(--foreground)]">
-            Map pin
+            Pharmacy location
           </h2>
           <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-            Capture your location while at the pharmacy. Your reviewer checks this pin against the premises.
+            Nothing to type here. Share the location while you are at the pharmacy and we will fill the city and county automatically.
           </p>
         </div>
       </div>
@@ -111,49 +151,38 @@ export default function PharmacyLocationCapture({ pharmacyId, initialLatitude = 
         <input type="hidden" name="longitude" value={longitude} />
         <input type="hidden" name="accuracyMeters" value={accuracy ?? ""} />
 
-        <div className="grid gap-2 sm:flex sm:flex-wrap">
-          <button
-            type="button"
-            onClick={useCurrentLocation}
-            disabled={busy || pending}
-            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-          >
-            {busy || pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Crosshair className="h-4 w-4" aria-hidden="true" />}
-            {busy ? "Finding your location…" : pending ? "Saving location…" : hasCoordinates ? "Refresh my location" : "Use my current location"}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={useCurrentLocation}
+          disabled={busy || pending}
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        >
+          {busy || pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Crosshair className="h-4 w-4" aria-hidden="true" />}
+          {busy ? "Finding your location…" : pending ? "Identifying city & county…" : hasCoordinates ? "Refresh current location" : "Use my current location"}
+        </button>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="block min-w-0 text-xs font-semibold text-[var(--muted)]">
-            Latitude
-            <input
-              name="latitudeManual"
-              value={latitude}
-              onChange={(event) => { setLatitude(event.target.value); notifyCoordinates(event.target.value, longitude); }}
-              placeholder="e.g. -1.286389"
-              inputMode="decimal"
-              className="input-admin mt-1.5 w-full"
-              aria-label="Pharmacy latitude"
-            />
-          </label>
-          <label className="block min-w-0 text-xs font-semibold text-[var(--muted)]">
-            Longitude
-            <input
-              name="longitudeManual"
-              value={longitude}
-              onChange={(event) => { setLongitude(event.target.value); notifyCoordinates(latitude, event.target.value); }}
-              placeholder="e.g. 36.817223"
-              inputMode="decimal"
-              className="input-admin mt-1.5 w-full"
-              aria-label="Pharmacy longitude"
-            />
-          </label>
-        </div>
-
-        {hasCoordinates && (
-          <p className="break-words text-xs leading-5 text-[var(--muted)]">
-            Map pin: <span className="font-medium text-[var(--foreground)]">{latitude}, {longitude}</span>
-            {accuracy != null && <> · GPS accuracy about <span className="font-medium text-[var(--foreground)]">{Math.round(accuracy)} m</span></>}
+        {hasCoordinates ? (
+          <div className="rounded-xl border border-[var(--line)] bg-[var(--background)]/55 p-3.5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">Detected premises area</p>
+                <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">
+                  {hasArea ? placeLabel : pending ? "Identifying your area…" : "Location saved"}
+                </p>
+                {country ? <p className="mt-0.5 text-xs text-[var(--muted)]">{country}</p> : null}
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/25 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-200">
+                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> Device captured
+              </span>
+            </div>
+            <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+              City and county are derived from this captured location and cannot be typed manually.
+              {accuracy != null ? ` GPS accuracy is about ${Math.round(accuracy)} m.` : ""}
+            </p>
+          </div>
+        ) : (
+          <p className="text-xs leading-5 text-[var(--muted)]">
+            Use the button above while physically at the pharmacy premises.
           </p>
         )}
       </form>
