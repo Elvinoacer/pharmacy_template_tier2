@@ -8,9 +8,10 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, ExternalLink, FileImage, Loader2, ShieldCheck } from "lucide-react";
 
 type Kind = "license" | "business";
+type DocumentSource = "saved-dossier" | "uploaded-draft" | "unknown";
 type LoadState =
   | { status: "loading" }
-  | { status: "ready"; objectUrl: string; source: "saved-dossier" | "uploaded-draft" | "unknown" }
+  | { status: "ready"; objectUrl: string; source: DocumentSource }
   | { status: "missing" }
   | { status: "error" };
 
@@ -27,7 +28,7 @@ const documents: Array<{ kind: Kind; title: string; description: string }> = [
   },
 ];
 
-function sourceLabel(source: LoadState extends { status: "ready"; source: infer T } ? T : never) {
+function sourceLabel(source: DocumentSource) {
   if (source === "uploaded-draft") return "Uploaded draft";
   if (source === "saved-dossier") return "Saved with dossier";
   return "Secure upload";
@@ -58,7 +59,7 @@ function EvidenceCard({ pharmacyId, kind, title, description }: { pharmacyId: st
         const blob = await response.blob();
         objectUrl = URL.createObjectURL(blob);
         const rawSource = response.headers.get("X-Verification-Document-Source");
-        const source = rawSource === "saved-dossier" || rawSource === "uploaded-draft" ? rawSource : "unknown";
+        const source: DocumentSource = rawSource === "saved-dossier" || rawSource === "uploaded-draft" ? rawSource : "unknown";
         if (active) setState({ status: "ready", objectUrl, source });
       } catch {
         if (active) setState({ status: "error" });
