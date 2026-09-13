@@ -9,7 +9,7 @@ import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
 import { createIntaSendBillingCheckout } from "@/app/lib/services/intasend-checkout";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
-import { withPharmacy } from "@/app/lib/tenant-context";
+import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 
 export type BillingState = { error?: string; success?: string; redirectUrl?: string };
 
@@ -53,6 +53,76 @@ async function clearExpiredBillingStk(invoiceId: string, pharmacyId: string) {
   );
 }
 
+async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
+  const invoiceId = String(form.get("invoiceId") || "").trim();
+  const invoiceNumber = String(form.get("invoiceNumber") || "").trim();
+
+  const identifiers = [
+    ...(invoiceId ? [{ id: invoiceId }] : []),
+    ...(invoiceNumber ? [{ number: invoiceNumber }] : []),
+  ];
+
+  const exact = identifiers.length
+    ? await withPlatformBypass(() =>
+        db.invoice.findFirst({
+          where: { pharmacyId, OR: identifiers },
+        }),
+      )
+    : null;
+
+  if (exact) return exact;
+
+  const verification = await withPlatformBypass(() =>
+    db.invoice.findFirst({
+      where: {
+        pharmacyId,
+        number: `KYP-${pharmacyId}`,
+        status: "open",
+      },
+    }),
+  );
+  if (verification) {
+    console.warn("[billing][onboard] recovered verification invoice", {
+      pharmacyId,
+      submittedInvoiceId: invoiceId || "missing",
+      submittedInvoiceNumber: invoiceNumber || "missing",
+      resolvedInvoiceId: verification.id,
+    });
+    return verification;
+  }
+
+  const collectible = await withPlatformBypass(() =>
+    db.invoice.findMany({
+      where: {
+        pharmacyId,
+        status: "open",
+        totalKes: { gt: 0 },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 2,
+    }),
+  );
+
+  if (collectible.length === 1) {
+    console.warn("[billing][onboard] recovered sole collectible invoice", {
+      pharmacyId,
+      submittedInvoiceId: invoiceId || "missing",
+      submittedInvoiceNumber: invoiceNumber || "missing",
+      resolvedInvoiceId: collectible[0].id,
+      resolvedInvoiceNumber: collectible[0].number,
+    });
+    return collectible[0];
+  }
+
+  console.error("[billing][onboard] invoice resolution failed", {
+    pharmacyId,
+    submittedInvoiceId: invoiceId || "missing",
+    submittedInvoiceNumber: invoiceNumber || "missing",
+    collectibleCount: collectible.length,
+  });
+  return null;
+}
+
 export async function pharmacyBillingAction(_: BillingState, form: FormData): Promise<BillingState> {
   try {
     const user = await getSessionUser();
@@ -92,11 +162,14 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       return { success: "Monthly service invoice created. Any promotion has been applied." };
     }
 
-    const invoiceId = String(form.get("invoiceId") || "");
-    const invoice = await withPharmacy(pharmacyId, () =>
-      db.invoice.findFirst({ where: { id: invoiceId, pharmacyId } }),
-    );
-    if (!invoice) throw new Error("Invoice not found.");
+    if (intent !== "checkout" && intent !== "pay") {
+      throw new Error("Unknown billing action.");
+    }
+
+    const invoice = await resolveOwnedBillingInvoice(pharmacyId, form);
+    if (!invoice) {
+      throw new Error("This billing page was stale and the invoice could not be resolved safely. Refresh the page and try once more.");
+    }
 
     if (intent === "checkout") {
       const result = await withPharmacy(pharmacyId, () =>
@@ -115,8 +188,6 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       };
     }
 
-    if (intent !== "pay") throw new Error("Unknown billing action.");
-
     const phone = String(form.get("phone") || "")
       .replace(/[\s+]/g, "")
       .replace(/^0/, "254");
@@ -124,11 +195,6 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       throw new Error("Enter a valid Kenyan M-Pesa number.");
     }
 
-    // A successful STK initiation is stored as `processing` until Safaricom's
-    // callback settles it. If a callback never arrives (common while switching
-    // sandbox/live credentials), that row used to block every future retry
-    // forever. Expire only old attempts; recent attempts remain protected from
-    // accidental double prompts.
     await clearExpiredBillingStk(invoice.id, pharmacyId);
 
     const result = await withPharmacy(pharmacyId, () =>
@@ -138,6 +204,7 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       console.error("[billing][daraja] STK initiation failed", {
         pharmacyId,
         invoiceId: invoice.id,
+        invoiceNumber: invoice.number,
         error: result.error,
       });
       throw new Error(result.error);
@@ -147,8 +214,10 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
     console.info("[billing][daraja] STK accepted", {
       pharmacyId,
       invoiceId: invoice.id,
+      invoiceNumber: invoice.number,
       checkoutRequestId: result.checkoutRequestId,
       environment: daraja?.env ?? "unknown",
+      shortcode: daraja?.shortcode ?? "unknown",
     });
 
     revalidatePath("/onboard/billing");
