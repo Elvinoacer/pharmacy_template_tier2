@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { CheckCircle2, ExternalLink, Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { type ReviewActionState } from "@/app/actions/platform";
-import { safeReviewPharmacyAction } from "@/app/actions/pharmacy-verification";
+import { safeReviewPharmacyAction } from "@/app/actions/pharmacy-approval";
 
 const initial: ReviewActionState = {};
 
@@ -45,10 +45,11 @@ export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { phar
 
   const approvalReady = readiness?.ready === true;
   const approvalLoading = readiness === null;
+  const alreadyLive = currentStatus === "active";
   const buttons = [
     ["under_review", "Mark in review", "border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-400/40 dark:bg-violet-400/10 dark:text-violet-100"],
     ["needs_info", "Request info", "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/50 dark:bg-amber-400/10 dark:text-amber-100"],
-    ["approve", approvalLoading ? "Checking verification…" : approvalReady ? "Approve verified pharmacy" : "Approval locked", "border-emerald-700 bg-emerald-700 font-semibold text-white dark:border-emerald-400/60 dark:bg-emerald-400 dark:text-emerald-950"],
+    ["approve", alreadyLive ? "Already live" : approvalLoading ? "Checking verification…" : approvalReady ? "Approve & go live" : "Approval locked", "border-emerald-700 bg-emerald-700 font-semibold text-white dark:border-emerald-400/60 dark:bg-emerald-400 dark:text-emerald-950"],
     ["reject", "Reject", "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-400/50 dark:bg-rose-400/10 dark:text-rose-100"],
   ] as const;
 
@@ -65,14 +66,19 @@ export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { phar
         <ExternalLink className="h-3.5 w-3.5" />
       </Link>
 
-      {approvalLoading ? (
+      {alreadyLive ? (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-100">
+          <p className="flex items-center gap-2 font-semibold"><CheckCircle2 className="h-4 w-4" /> Pharmacy is verified and public</p>
+          <p className="mt-1 text-xs opacity-80">Active public medicines, services, storefront discovery and care-request flows are enabled. Individual medicine visibility still respects each item&apos;s public-listing, stock and active settings.</p>
+        </div>
+      ) : approvalLoading ? (
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-teal-50/75">
           <p className="flex items-center gap-2 font-semibold"><Loader2 className="h-4 w-4 animate-spin" /> Checking saved verification state…</p>
         </div>
       ) : approvalReady ? (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-100">
           <p className="flex items-center gap-2 font-semibold"><CheckCircle2 className="h-4 w-4" /> Saved verification complete</p>
-          <p className="mt-1 text-xs opacity-80">The approval action is reading the complete persisted checklist from the server.</p>
+          <p className="mt-1 text-xs opacity-80">Approval is now the final go-live action: it provisions the tenant, starts monthly service billing, marks the pharmacy active, lists it publicly and immediately exposes eligible medicines and active services.</p>
         </div>
       ) : (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-950 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">
@@ -84,7 +90,7 @@ export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { phar
 
       <label className="block text-sm font-semibold">
         Review notes
-        <textarea name="notes" rows={4} disabled={pending} className="mt-2 w-full rounded-xl border border-[#cfdcd4] bg-white px-3 py-2.5 text-sm text-[#17231d] outline-none dark:border-white/15 dark:bg-black/25 dark:text-white" placeholder="Record decisive evidence or resolved discrepancies." />
+        <textarea name="notes" rows={4} disabled={pending || alreadyLive} className="mt-2 w-full rounded-xl border border-[#cfdcd4] bg-white px-3 py-2.5 text-sm text-[#17231d] outline-none disabled:opacity-60 dark:border-white/15 dark:bg-black/25 dark:text-white" placeholder="Record decisive evidence or resolved discrepancies." />
       </label>
 
       {state.error ? <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800 dark:border-rose-400/40 dark:bg-rose-500/15 dark:text-rose-100">{state.error}</p> : null}
@@ -92,8 +98,8 @@ export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { phar
 
       <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
         {buttons.map(([value, label, className]) => {
-          const blocked = value === "approve" && !approvalReady;
-          return <button key={value} type="submit" name="decision" value={value} disabled={pending || blocked} className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm ${className}`}>{pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : blocked ? <LockKeyhole className="h-3.5 w-3.5" /> : null}{label}</button>;
+          const blocked = (value === "approve" && (!approvalReady || alreadyLive)) || (alreadyLive && value !== "approve");
+          return <button key={value} type="submit" name="decision" value={value} disabled={pending || blocked} className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm ${className}`}>{pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : value === "approve" && !alreadyLive && !approvalReady ? <LockKeyhole className="h-3.5 w-3.5" /> : null}{label}</button>;
         })}
       </div>
     </form>
