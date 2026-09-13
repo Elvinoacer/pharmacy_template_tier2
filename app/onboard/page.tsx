@@ -4,6 +4,7 @@ import { withPharmacy } from "@/app/lib/tenant-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { loadOwnerSubmissionReadiness } from "@/app/lib/services/pharmacy-verification";
+import { loadLatestVerificationDocumentDrafts } from "@/app/lib/services/pharmacy-verification-documents";
 import OnboardWizard from "@/app/components/onboard/OnboardWizard";
 import VerificationDossierForm from "@/app/components/onboard/VerificationDossierForm";
 import JoinValuePanel from "@/app/components/onboard/JoinValuePanel";
@@ -25,6 +26,8 @@ export default async function OnboardPage() {
   let verificationPharmacy = null;
   let ownerEmailVerified = false;
   let ownerEmail = user?.email || "";
+  let initialLicenseDocumentUrl: string | null = null;
+  let initialBusinessDocumentUrl: string | null = null;
 
   if (user) {
     const [owned, owner] = await Promise.all([
@@ -42,11 +45,17 @@ export default async function OnboardPage() {
     ownerEmailVerified = Boolean(owner?.emailVerified);
 
     if (owned) {
-      const invoice = await withPharmacy(owned.id, () => prismaUnscoped.invoice.findUnique({
-        where: { number: `KYP-${owned.id}` },
-        select: { status: true },
-      }));
+      const [invoice, documentDrafts] = await Promise.all([
+        withPharmacy(owned.id, () => prismaUnscoped.invoice.findUnique({
+          where: { number: `KYP-${owned.id}` },
+          select: { status: true },
+        })),
+        loadLatestVerificationDocumentDrafts(owned.id),
+      ]);
       verificationFeePaid = invoice?.status === "paid";
+      initialLicenseDocumentUrl = documentDrafts.license?.reference ?? owned.licenseDocumentUrl;
+      initialBusinessDocumentUrl = documentDrafts.business?.reference ?? null;
+
       existing = {
         id: owned.id,
         slug: owned.slug,
@@ -81,6 +90,9 @@ export default async function OnboardPage() {
 
       if (["draft", "needs_info"].includes(owned.status)) {
         verificationReadiness = await loadOwnerSubmissionReadiness(owned.id);
+        initialBusinessDocumentUrl = documentDrafts.business?.reference
+          ?? verificationReadiness.profile?.businessDocumentUrl
+          ?? null;
       }
     }
   }
@@ -128,6 +140,8 @@ export default async function OnboardPage() {
             <VerificationDossierForm
               pharmacy={verificationPharmacy}
               profile={verificationReadiness.profile}
+              initialLicenseDocumentUrl={initialLicenseDocumentUrl}
+              initialBusinessDocumentUrl={initialBusinessDocumentUrl}
               ownerEmail={ownerEmail}
               ownerEmailVerified={ownerEmailVerified}
               embedded
