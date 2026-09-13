@@ -7,6 +7,7 @@ import {
   savePharmacyVerificationChecklistAction,
   type VerificationActionState,
 } from "@/app/actions/pharmacy-verification";
+import VerificationDocumentEvidence from "@/app/components/platform/VerificationDocumentEvidence";
 
 const initial: VerificationActionState = {};
 
@@ -54,6 +55,8 @@ export default function VerificationChecklistForm({
     <form action={action} className="space-y-5">
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
 
+      <VerificationDocumentEvidence pharmacyId={pharmacyId} />
+
       <div className="grid gap-3 sm:grid-cols-2">
         <a
           href="https://practice.pharmacyboardkenya.org/LicenseStatus?register=facilities"
@@ -76,7 +79,7 @@ export default function VerificationChecklistForm({
       <div className="sticky top-4 z-10 rounded-2xl border border-teal-200 bg-white/95 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#10271f]/95">
         <div className="flex justify-between text-sm font-semibold"><span>Evidence reviewed</span><span>{checked.size} / {CHECKS.length}</span></div>
         <progress className="mt-2 h-2 w-full accent-teal-600" aria-label="Review checks completed" value={checked.size} max={CHECKS.length} />
-        <p className="mt-2 text-xs text-slate-500">Check each item against the submitted evidence.</p>
+        <p className="mt-2 text-xs text-slate-500">Check each item against the submitted evidence shown above and the official PPB registers.</p>
       </div>
       <div className="space-y-2.5">
         {CHECKS.map(([key, label, help]) => (
