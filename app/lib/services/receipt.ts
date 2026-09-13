@@ -3,7 +3,6 @@ import "server-only";
 import { prisma } from "@/app/lib/db";
 import { formatDateTime, formatDate } from "@/app/lib/time";
 import { sendDelivery } from "@/app/lib/services/delivery";
-import { pharmacy as defaultPharmacy } from "@/app/lib/data";
 
 export type PharmacyReceiptItem = {
   id: string;
@@ -30,8 +29,8 @@ export type PharmacyReceiptData = {
   createdAt: string;
   paidAt?: string | null;
   dispatchedAt?: string | null;
-  
-  // Pharmacy Details
+
+  // Pharmacy Details — always sourced from the order's tenant records.
   pharmacy: {
     name: string;
     branch: string;
@@ -81,11 +80,49 @@ export type PharmacyReceiptData = {
 
 /**
  * Fetch and construct complete receipt data for an order or prescription fill.
+ * Pharmacy identity is resolved from the order's Pharmacy/PharmacySettings/
+ * PharmacyBranch records. No static demo pharmacy data is permitted here.
  */
 export async function getReceiptData(orderId: string): Promise<PharmacyReceiptData | null> {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: {
+      pharmacy: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+          whatsapp: true,
+          city: true,
+          county: true,
+          country: true,
+          kraPin: true,
+          settings: {
+            select: {
+              displayName: true,
+              phone: true,
+              email: true,
+              whatsapp: true,
+              addressLine1: true,
+              addressLine2: true,
+              city: true,
+              state: true,
+              zip: true,
+              country: true,
+            },
+          },
+        },
+      },
+      branch: {
+        select: {
+          name: true,
+          phone: true,
+          email: true,
+          addressLine1: true,
+          city: true,
+          county: true,
+        },
+      },
       customer: {
         include: {
           user: { select: { email: true, role: true } },
@@ -128,18 +165,25 @@ export async function getReceiptData(orderId: string): Promise<PharmacyReceiptDa
 
   if (!order) return null;
 
-  // Retrieve pharmacy settings singleton
-  const settings = await prisma.pharmacySettings.findFirst({}).catch(() => null);
+  const pharmacy = order.pharmacy;
+  const settings = pharmacy.settings;
+  const branch = order.branch;
 
-  const pharmacyName = settings?.displayName || defaultPharmacy.name;
-  const pharmacyPhone = settings?.phone || defaultPharmacy.phone;
-  const pharmacyEmail = settings?.email || defaultPharmacy.email;
-  const pharmacyWhatsapp = settings?.whatsapp || defaultPharmacy.whatsapp;
+  const pharmacyName = settings?.displayName?.trim() || pharmacy.name;
+  const pharmacyPhone = settings?.phone?.trim() || pharmacy.phone || "";
+  const pharmacyEmail = settings?.email?.trim() || pharmacy.email || "";
+  const pharmacyWhatsapp =
+    settings?.whatsapp?.trim() || pharmacy.whatsapp || pharmacyPhone;
   const pharmacyAddress = [
-    settings?.addressLine1 || defaultPharmacy.address.street,
-    settings?.city || defaultPharmacy.address.city,
-    settings?.country || "Kenya",
-  ].filter(Boolean).join(", ");
+    settings?.addressLine1?.trim(),
+    settings?.addressLine2?.trim(),
+    settings?.city?.trim() || pharmacy.city,
+    settings?.state?.trim() || pharmacy.county,
+    settings?.zip?.trim(),
+    settings?.country?.trim() || pharmacy.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   const latestPayment = order.payments[0];
   const customerProfile = order.customer;
@@ -192,15 +236,20 @@ export async function getReceiptData(orderId: string): Promise<PharmacyReceiptDa
       ? "WAIVED"
       : "CASH";
 
-  const mpesaReceipt = latestPayment?.providerRef?.startsWith("CASH-") || latestPayment?.providerRef?.startsWith("WAIVE-")
-    ? null
-    : latestPayment?.providerRef || null;
+  const mpesaReceipt =
+    latestPayment?.providerRef?.startsWith("CASH-") ||
+    latestPayment?.providerRef?.startsWith("WAIVE-")
+      ? null
+      : latestPayment?.providerRef || null;
 
   // Dispenser info
   let dispenserInfo: { name: string; email: string; role: string } | null = null;
   if (order.prescriptionFill?.dispensedBy) {
     dispenserInfo = {
-      name: order.prescriptionFill.dispensedBy.email.split("@")[0].replace(".", " ").toUpperCase(),
+      name: order.prescriptionFill.dispensedBy.email
+        .split("@")[0]
+        .replace(".", " ")
+        .toUpperCase(),
       email: order.prescriptionFill.dispensedBy.email,
       role: order.prescriptionFill.dispensedBy.role,
     };
@@ -225,19 +274,23 @@ export async function getReceiptData(orderId: string): Promise<PharmacyReceiptDa
     dispatchedAt: order.dispatchedAt ? formatDateTime(order.dispatchedAt) : null,
     pharmacy: {
       name: pharmacyName,
-      branch: "Main Branch",
-      phone: pharmacyPhone,
-      email: pharmacyEmail,
+      branch: branch?.name || "",
+      phone: branch?.phone || pharmacyPhone,
+      email: branch?.email || pharmacyEmail,
       whatsapp: pharmacyWhatsapp,
-      address: pharmacyAddress,
-      taxPin: "P051234567Z",
+      address:
+        [branch?.addressLine1, branch?.city, branch?.county].filter(Boolean).join(", ") ||
+        pharmacyAddress,
+      taxPin: pharmacy.kraPin || "",
     },
     customer: {
       id: customerProfile?.id || null,
       fullName: customerProfile?.fullName || order.guestName || "Walk-in Customer",
       phone: customerProfile?.phone || order.guestPhone || null,
       email: customerProfile?.user?.email || order.guestEmail || null,
-      address: [customerProfile?.addressLine1, customerProfile?.city].filter(Boolean).join(", ") || null,
+      address:
+        [customerProfile?.addressLine1, customerProfile?.city].filter(Boolean).join(", ") ||
+        null,
       isWalkIn: !customerProfile,
     },
     items,
@@ -245,7 +298,10 @@ export async function getReceiptData(orderId: string): Promise<PharmacyReceiptDa
     discountTotal: Number(order.discountTotal || 0),
     taxTotal: Number(order.taxTotal || 0),
     netTotal: Number(order.netTotal || order.total),
-    amountPaid: Number(order.amountPaid || (order.status === "paid" || order.status === "fulfilled" ? order.total : 0)),
+    amountPaid: Number(
+      order.amountPaid ||
+        (order.status === "paid" || order.status === "fulfilled" ? order.total : 0),
+    ),
     amountDue: Number(order.amountDue || 0),
     currency: order.currency || "KES",
     paymentMethod,
@@ -262,7 +318,7 @@ export async function getReceiptData(orderId: string): Promise<PharmacyReceiptDa
  */
 export async function sendReceiptEmail(
   orderId: string,
-  recipientEmail?: string
+  recipientEmail?: string,
 ): Promise<{ ok: boolean; message?: string; error?: string }> {
   const receipt = await getReceiptData(orderId);
   if (!receipt) return { ok: false, error: "Order not found." };
@@ -271,30 +327,6 @@ export async function sendReceiptEmail(
   if (!targetEmail) {
     return { ok: false, error: "No customer email available to send receipt." };
   }
-
-  const itemsHtml = receipt.items
-    .map(
-      (item) => `
-    <tr>
-      <td style="padding:10px;border-bottom:1px solid #e2e8f0;font-size:14px;color:#1e293b;">
-        <strong>${item.name}</strong>
-        ${item.genericName ? `<br><span style="font-size:12px;color:#64748b;">Generic: ${item.genericName}</span>` : ""}
-        ${item.batchNumber ? `<br><span style="font-size:11px;color:#0d6e5a;">Batch: ${item.batchNumber}${item.expiryDate ? ` (Exp: ${item.expiryDate})` : ""}</span>` : ""}
-        ${item.dosageInstructions ? `<br><span style="font-size:12px;color:#334155;font-style:italic;">Directions: ${item.dosageInstructions}</span>` : ""}
-      </td>
-      <td style="padding:10px;border-bottom:1px solid #e2e8f0;font-size:14px;text-align:center;color:#1e293b;">
-        ${item.quantity} ${item.billingUnit}
-      </td>
-      <td style="padding:10px;border-bottom:1px solid #e2e8f0;font-size:14px;text-align:right;color:#1e293b;">
-        KES ${item.unitPrice.toLocaleString()}
-      </td>
-      <td style="padding:10px;border-bottom:1px solid #e2e8f0;font-size:14px;text-align:right;font-weight:600;color:#0f172a;">
-        KES ${item.totalPrice.toLocaleString()}
-      </td>
-    </tr>
-  `
-    )
-    .join("");
 
   const emailBodyMarkdown = `
 # Official Dispensing & Sales Receipt
@@ -321,8 +353,7 @@ ${receipt.dispenserNote ? `\n> **Pharmacist Note / Counselling:**\n> ${receipt.d
 ---
 
 **${receipt.pharmacy.name}**  
-${receipt.pharmacy.address}  
-Helpline: ${receipt.pharmacy.phone} | WhatsApp: ${receipt.pharmacy.whatsapp}
+${receipt.pharmacy.branch ? `${receipt.pharmacy.branch}  \n` : ""}${receipt.pharmacy.address ? `${receipt.pharmacy.address}  \n` : ""}${receipt.pharmacy.phone ? `Helpline: ${receipt.pharmacy.phone}` : ""}${receipt.pharmacy.whatsapp ? ` | WhatsApp: ${receipt.pharmacy.whatsapp}` : ""}
 `;
 
   try {
@@ -351,7 +382,7 @@ Helpline: ${receipt.pharmacy.phone} | WhatsApp: ${receipt.pharmacy.whatsapp}
 export async function sendReceiptSmsOrWhatsapp(
   orderId: string,
   recipientPhone?: string,
-  channel: "sms" | "whatsapp" = "sms"
+  channel: "sms" | "whatsapp" = "sms",
 ): Promise<{ ok: boolean; message?: string; error?: string }> {
   const receipt = await getReceiptData(orderId);
   if (!receipt) return { ok: false, error: "Order not found." };
@@ -367,7 +398,7 @@ export async function sendReceiptSmsOrWhatsapp(
     `No: ${receipt.receiptNumber}\n` +
     `Items: ${itemsSummary}\n` +
     `Total: KES ${receipt.netTotal.toLocaleString()} (${receipt.paymentMethod}${receipt.mpesaReceipt ? ` Ref: ${receipt.mpesaReceipt}` : ""})\n` +
-    `Thank you for trusting us with your health. Help: ${receipt.pharmacy.phone}`;
+    `Thank you for trusting us with your health.${receipt.pharmacy.phone ? ` Help: ${receipt.pharmacy.phone}` : ""}`;
 
   try {
     const res = await sendDelivery({
