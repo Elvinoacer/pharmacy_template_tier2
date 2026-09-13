@@ -45,16 +45,36 @@ export function boundTenant(): TenantStore | undefined {
   return tenantAls.getStore() ?? scopes.get(executionAsyncId());
 }
 
-export function withPlatformBypass<T>(fn: () => T): T {
-  const store = { pharmacyId: null, slug: null, bypass: true };
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  if (value === null || value === undefined) return false;
+  if (typeof value !== "object" && typeof value !== "function") return false;
+  return typeof (value as { then?: unknown }).then === "function";
+}
+
+function runScoped<T>(store: TenantStore, fn: () => T): T {
   bindScope(store);
-  return tenantAls.run(store, fn);
+  return tenantAls.run(store, () => {
+    const result = fn();
+
+    // Prisma returns lazy thenables. If we return one directly from
+    // AsyncLocalStorage.run(), its actual SQL may start only after the scope has
+    // already unwound, causing RLS to see an empty/wrong tenant. Assimilate any
+    // thenable while the tenant store is still active so the whole async chain
+    // inherits the correct pharmacy/bypass context.
+    if (isPromiseLike(result)) {
+      return (async () => await result)() as T;
+    }
+
+    return result;
+  });
+}
+
+export function withPlatformBypass<T>(fn: () => T): T {
+  return runScoped({ pharmacyId: null, slug: null, bypass: true }, fn);
 }
 
 export function withPharmacy<T>(pharmacyId: string, fn: () => T, slug?: string | null): T {
-  const store = { pharmacyId, slug: slug ?? null, bypass: false };
-  bindScope(store);
-  return tenantAls.run(store, fn);
+  return runScoped({ pharmacyId, slug: slug ?? null, bypass: false }, fn);
 }
 
 export function failClosedId(): string {
