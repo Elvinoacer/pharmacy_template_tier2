@@ -7,6 +7,7 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { createService } from "@/app/lib/services/pharmacy-services";
 import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
+import { SETUP_MEDICINES_DEFERRED_EVENT } from "@/app/lib/services/pharmacy-setup";
 
 type SetupPharmacy = NonNullable<Awaited<ReturnType<typeof loadSetupPharmacy>>>;
 
@@ -124,6 +125,41 @@ export async function saveSetupHoursAction(formData: FormData) {
   revalidatePath("/admin/setup");
   revalidatePath(`/p/${pharmacy.slug}`);
   redirect("/admin/setup?step=medicines");
+}
+
+export async function deferSetupMedicinesAction() {
+  const pharmacy = await loadSetupPharmacy();
+  const user = await getSessionUser();
+  if (!user) redirect("/login?next=/admin/setup");
+
+  const existing = await prismaUnscoped.pharmacyOnboardingEvent.findFirst({
+    where: { pharmacyId: pharmacy.id, type: SETUP_MEDICINES_DEFERRED_EVENT },
+    select: { id: true },
+  });
+
+  if (!existing) {
+    const medicines = await prismaUnscoped.pharmacyInventory.count({
+      where: {
+        pharmacyId: pharmacy.id,
+        active: true,
+        publicListing: true,
+        currentStock: { gt: 0 },
+        price: { gt: 0 },
+      },
+    });
+    await prismaUnscoped.pharmacyOnboardingEvent.create({
+      data: {
+        pharmacyId: pharmacy.id,
+        actorId: user.id,
+        type: SETUP_MEDICINES_DEFERRED_EVENT,
+        message: "Medicine catalogue deferred until after pharmacy launch.",
+        meta: { source: "guided_setup", medicinesAtDecision: medicines },
+      },
+    });
+  }
+
+  revalidatePath("/admin/setup");
+  redirect("/admin/setup?step=services");
 }
 
 export async function saveSetupServiceAction(formData: FormData) {

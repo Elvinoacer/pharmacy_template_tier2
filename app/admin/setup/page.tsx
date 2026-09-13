@@ -22,6 +22,7 @@ import { loadPharmacySetup, type PharmacySetupCheckKey } from "@/app/lib/service
 import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
 import { goLiveAction } from "@/app/actions/tenant-admin";
 import {
+  deferSetupMedicinesAction,
   saveSetupHoursAction,
   saveSetupProfileAction,
   saveSetupServiceAction,
@@ -69,7 +70,7 @@ function rangeDefaults(rows: HourRow[], day: string): [string, string] {
 
 const stepMeta = [
   { id: "hours", label: "Hours", minutes: 2, icon: Clock3, check: "hours" as PharmacySetupCheckKey },
-  { id: "medicines", label: "Medicines", minutes: 4, icon: Pill, check: "medicines" as PharmacySetupCheckKey },
+  { id: "medicines", label: "Medicines", minutes: 2, icon: Pill, check: "medicines" as PharmacySetupCheckKey },
   { id: "services", label: "Services", minutes: 2, icon: Stethoscope, check: "services" as PharmacySetupCheckKey },
   { id: "profile", label: "Profile", minutes: 2, icon: Store, check: "about" as PharmacySetupCheckKey },
   { id: "billing", label: "Plan", minutes: 2, icon: CreditCard, check: "subscription" as PharmacySetupCheckKey },
@@ -148,6 +149,10 @@ export default async function AdminSetupPage({ searchParams }: PageProps) {
   const taglineDefault = settings?.tagline || pharmacy.tagline || "";
 
   const stageHref = (index: number) => `/admin/setup?step=${stepMeta[index].id}`;
+  const medicineLaunchLabel =
+    readiness.counts.medicines > 0
+      ? `${readiness.counts.medicines} medicine${readiness.counts.medicines === 1 ? "" : "s"} listed`
+      : "Medicines can be added later";
 
   return (
     <main className="min-h-screen bg-[#f5f7f5] text-slate-900 dark:bg-[#08110e] dark:text-white">
@@ -240,11 +245,43 @@ export default async function AdminSetupPage({ searchParams }: PageProps) {
 
           {activeStep === "medicines" ? (
             <div className="mx-auto max-w-2xl">
-              <div className="mb-5 flex items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300">Step 2</p><h2 className="mt-1 text-2xl font-bold">Add 3 medicines</h2></div><span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold dark:bg-white/10">{Math.min(readiness.counts.medicines, 3)}/3</span></div>
-              {check("medicines") ? (
-                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4"><p className="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-100"><CheckCircle2 className="h-5 w-5" /> Starter catalogue ready</p><Link href="/admin/setup?step=services" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white">Continue <ArrowRight className="h-4 w-4" /></Link></div>
+              <div className="mb-5 flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300">Step 2</p>
+                  <h2 className="mt-1 text-2xl font-bold">Add medicines if you have them</h2>
+                  <p className="mt-2 max-w-lg text-xs leading-5 text-slate-500 dark:text-slate-400">Optional. Add one medicine now, or continue and build your catalogue from the dashboard later.</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold dark:bg-white/10">
+                  {readiness.counts.medicines > 0 ? `${readiness.counts.medicines} added` : readiness.medicineDeferred ? "Add later" : "Optional"}
+                </span>
+              </div>
+
+              {readiness.counts.medicines > 0 ? (
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+                  <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-100"><CheckCircle2 className="h-5 w-5" /> {readiness.counts.medicines} medicine{readiness.counts.medicines === 1 ? "" : "s"} ready for your public catalogue</p>
+                  <p className="mt-2 text-xs leading-5 text-emerald-900/70 dark:text-emerald-100/70">You can add, import or update the rest after launch.</p>
+                  <Link href="/admin/setup?step=services" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white">Continue <ArrowRight className="h-4 w-4" /></Link>
+                </div>
+              ) : readiness.medicineDeferred ? (
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+                  <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-100"><CheckCircle2 className="h-5 w-5" /> Medicines can be added later</p>
+                  <p className="mt-2 text-xs leading-5 text-emerald-900/70 dark:text-emerald-100/70">Your pharmacy can still launch. The public medicine catalogue will simply stay empty until you add stock.</p>
+                  <Link href="/admin/setup?step=services" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white">Continue <ArrowRight className="h-4 w-4" /></Link>
+                </div>
               ) : (
-                <SetupMedicineSearch remaining={Math.max(0, 3 - readiness.counts.medicines)} />
+                <div className="space-y-4">
+                  <SetupMedicineSearch />
+                  <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400"><span className="h-px flex-1 bg-slate-200 dark:bg-white/10" />or<span className="h-px flex-1 bg-slate-200 dark:bg-white/10" /></div>
+                  <form action={deferSetupMedicinesAction} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm font-semibold">No medicines to add right now?</p>
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">That is okay. This choice is saved and will not block launch.</p>
+                      </div>
+                      <button type="submit" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-emerald-500 hover:text-emerald-700 dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-100">I’ll add medicines later <ArrowRight className="h-4 w-4" /></button>
+                    </div>
+                  </form>
+                </div>
               )}
             </div>
           ) : null}
@@ -291,7 +328,7 @@ export default async function AdminSetupPage({ searchParams }: PageProps) {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"><Rocket className="h-7 w-7" /></div>
               <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300">Setup complete</p>
               <h2 className="mt-1 text-3xl font-bold tracking-tight">Ready for patients</h2>
-              <div className="mx-auto mt-5 grid max-w-md grid-cols-2 gap-2 text-left text-xs">{["Verified premises", "Opening hours", "Starter medicines", "Pharmacy service", "Public profile", "Active plan"].map((item) => <div key={item} className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 font-semibold dark:bg-white/[0.04]"><CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />{item}</div>)}</div>
+              <div className="mx-auto mt-5 grid max-w-md grid-cols-2 gap-2 text-left text-xs">{["Verified premises", "Opening hours", medicineLaunchLabel, "Pharmacy service", "Public profile", "Active plan"].map((item) => <div key={item} className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 font-semibold dark:bg-white/[0.04]"><CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />{item}</div>)}</div>
               <form action={goLiveAction} className="mt-6"><button type="submit" disabled={!readiness.ready} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 sm:w-auto">Publish & open dashboard <ArrowRight className="h-4 w-4" /></button></form>
               <p className="mt-3 text-[11px] text-slate-500">You won’t return to setup after this.</p>
             </div>

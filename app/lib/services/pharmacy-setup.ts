@@ -4,6 +4,8 @@ import { prismaUnscoped as db } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
 
+export const SETUP_MEDICINES_DEFERRED_EVENT = "setup_medicines_deferred";
+
 export type PharmacySetupCheckKey =
   | "verification"
   | "verification_fee"
@@ -27,7 +29,7 @@ export type PharmacySetupCheck = {
 
 export async function loadPharmacySetup(pharmacyId: string) {
   return withPharmacy(pharmacyId, async () => {
-    const [p, medicines, services, invoice, subscription, verificationProfile] = await Promise.all([
+    const [p, medicines, services, invoice, subscription, verificationProfile, medicineDeferredEvent] = await Promise.all([
       db.pharmacy.findUniqueOrThrow({
         where: { id: pharmacyId },
         include: {
@@ -56,6 +58,11 @@ export async function loadPharmacySetup(pharmacyId: string) {
         },
       }),
       loadLatestVerificationProfile(pharmacyId),
+      db.pharmacyOnboardingEvent.findFirst({
+        where: { pharmacyId, type: SETUP_MEDICINES_DEFERRED_EVENT },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, createdAt: true },
+      }),
     ]);
 
     const settings = p.settings;
@@ -67,6 +74,8 @@ export async function loadPharmacySetup(pharmacyId: string) {
         : null;
     const verifiedAddress = verificationProfile?.profile.physicalAddress;
     const publicEmail = settings?.email || p.email || p.owner?.email || null;
+    const medicineDeferred = Boolean(medicineDeferredEvent);
+    const medicineStepDone = medicines > 0 || medicineDeferred;
 
     const checks: PharmacySetupCheck[] = [
       {
@@ -120,10 +129,15 @@ export async function loadPharmacySetup(pharmacyId: string) {
       },
       {
         key: "medicines",
-        ok: medicines >= 3,
+        ok: medicineStepDone,
         required: true,
-        label: "Starter medicines",
-        hint: `${medicines}/3 ready with price, stock and public listing`,
+        label: "Medicine catalogue choice",
+        hint:
+          medicines > 0
+            ? `${medicines} public medicine${medicines === 1 ? "" : "s"} ready`
+            : medicineDeferred
+              ? "Medicine catalogue deferred until after launch"
+              : "Optional — add a medicine now or choose to add medicines later",
         href: "/admin/setup?step=medicines",
       },
       {
@@ -180,6 +194,7 @@ export async function loadPharmacySetup(pharmacyId: string) {
         .filter((check) => check.key !== "subscription")
         .every((check) => check.ok),
       counts: { medicines, services },
+      medicineDeferred,
     };
   });
 }

@@ -23,7 +23,7 @@ function slugify(input: string) {
     .slice(0, 150);
 }
 
-export function SetupMedicineSearch({ remaining }: { remaining: number }) {
+export function SetupMedicineSearch() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Result[]>([]);
@@ -223,7 +223,7 @@ export function SetupMedicineSearch({ remaining }: { remaining: number }) {
       ) : null}
 
       <p className="text-[11px] text-slate-500 dark:text-slate-400">
-        {remaining > 0 ? `${remaining} more ready medicine${remaining === 1 ? "" : "s"} needed.` : "Starter catalogue ready."}
+        Add any medicine you already stock. One medicine is enough to continue; adding none is also okay.
       </p>
     </div>
   );
