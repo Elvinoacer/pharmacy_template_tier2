@@ -4,13 +4,77 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import {
   isPrivateR2Configured,
+  isPrivateR2Reference,
+  readPrivateR2Object,
   R2_MAX_BYTES,
   uploadPrivateImageToR2,
 } from "@/app/lib/r2";
+import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
+import {
+  loadLatestVerificationDocumentDrafts,
+  VERIFICATION_DOCUMENT_UPLOADED_EVENT,
+  type VerificationDocumentKind,
+} from "@/app/lib/services/pharmacy-verification-documents";
 
 export const runtime = "nodejs";
 
-const ALLOWED_KINDS = new Set(["license", "business"]);
+const ALLOWED_KINDS = new Set<VerificationDocumentKind>(["license", "business"]);
+
+function parseKind(value: string): VerificationDocumentKind | null {
+  return ALLOWED_KINDS.has(value as VerificationDocumentKind)
+    ? (value as VerificationDocumentKind)
+    : null;
+}
+
+export async function GET(req: Request) {
+  const user = await getSessionUser();
+  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  const url = new URL(req.url);
+  const pharmacyId = (url.searchParams.get("pharmacyId") || "").trim();
+  const kind = parseKind((url.searchParams.get("kind") || "").trim());
+  if (!pharmacyId || !kind) {
+    return NextResponse.json({ error: "invalid_request" }, { status: 400 });
+  }
+
+  const pharmacy = await prismaUnscoped.pharmacy.findUnique({
+    where: { id: pharmacyId },
+    select: { ownerUserId: true, licenseDocumentUrl: true },
+  });
+  if (!pharmacy) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  const drafts = await loadLatestVerificationDocumentDrafts(pharmacyId);
+  let reference = drafts[kind]?.reference ?? null;
+
+  // Backward compatibility for applications saved before draft rehydration was added.
+  if (!reference && kind === "license") reference = pharmacy.licenseDocumentUrl;
+  if (!reference && kind === "business") {
+    const profile = await loadLatestVerificationProfile(pharmacyId);
+    reference = profile?.profile.businessDocumentUrl ?? null;
+  }
+
+  const expectedPrefix = `r2-private://pharmacy-verification/${pharmacyId}/${kind}/`;
+  if (!reference || !isPrivateR2Reference(reference) || !reference.startsWith(expectedPrefix)) {
+    return NextResponse.json({ error: "document_unavailable" }, { status: 404 });
+  }
+
+  const object = await readPrivateR2Object(reference);
+  if (!object) return NextResponse.json({ error: "document_unavailable" }, { status: 404 });
+
+  return new Response(new Uint8Array(object.body), {
+    status: 200,
+    headers: {
+      "Content-Type": object.contentType,
+      "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+      "Content-Disposition": `inline; filename="${kind}-verification-evidence"`,
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
+}
 
 export async function POST(req: Request) {
   const user = await getSessionUser();
@@ -32,7 +96,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error: "private_storage_not_configured",
-        message: "Private document storage is not configured. Configure R2_PRIVATE_BUCKET_NAME before accepting regulatory documents.",
+        message: "Secure document storage is unavailable. Check the configured R2 credentials and application secret.",
       },
       { status: 503 },
     );
@@ -46,8 +110,8 @@ export async function POST(req: Request) {
   }
 
   const pharmacyId = String(form.get("pharmacyId") || "").trim();
-  const kind = String(form.get("kind") || "").trim();
-  if (!pharmacyId || !ALLOWED_KINDS.has(kind)) {
+  const kind = parseKind(String(form.get("kind") || "").trim());
+  if (!pharmacyId || !kind) {
     return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   }
 
@@ -85,11 +149,13 @@ export async function POST(req: Request) {
       folder: `pharmacy-verification/${pharmacyId}/${kind}`,
     });
 
+    // This event is the durable draft pointer. The surrounding dossier does not
+    // need to be submitted for a successful upload to survive a page refresh.
     await prismaUnscoped.pharmacyOnboardingEvent.create({
       data: {
         pharmacyId,
         actorId: user.id,
-        type: "verification_document_uploaded",
+        type: VERIFICATION_DOCUMENT_UPLOADED_EVENT,
         message: kind === "license" ? "PPB licence evidence uploaded" : "Business-registration evidence uploaded",
         meta: {
           kind,
@@ -105,6 +171,7 @@ export async function POST(req: Request) {
       reference: result.reference,
       contentType: result.contentType,
       size: result.size,
+      previewUrl: `/api/onboard/verification-documents?pharmacyId=${encodeURIComponent(pharmacyId)}&kind=${kind}`,
     });
   } catch (err) {
     console.error("[verification upload]", err);
