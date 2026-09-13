@@ -1,0 +1,306 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { prismaUnscoped } from "@/app/lib/db";
+import { reviewPharmacyAction, type ReviewActionState } from "@/app/actions/platform";
+import { requirePlatformAction } from "@/app/lib/platform/policy";
+import { recordAuditRequired } from "@/app/lib/platform/audit";
+import { provisionTenant } from "@/app/lib/platform/provision";
+import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
+import { loadApprovalReadiness } from "@/app/lib/services/pharmacy-verification";
+import { sendDelivery } from "@/app/lib/services/delivery";
+
+function text(formData: FormData, key: string) {
+  return String(formData.get(key) || "").trim();
+}
+
+function appUrl() {
+  return process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "http://localhost:3000";
+}
+
+async function notifyOwnerPharmacyIsLive(opts: {
+  pharmacyId: string;
+  pharmacyName: string;
+  pharmacySlug: string;
+  ownerUserId: string | null;
+  pharmacyEmail: string | null;
+  notes: string;
+  monthlyAmountKes: number;
+  monthlyInvoiceStatus: string;
+  medicinesVisible: number;
+  servicesVisible: number;
+}) {
+  let toEmail = opts.pharmacyEmail?.trim() || null;
+  let ownerName = "there";
+
+  if (opts.ownerUserId) {
+    const owner = await prismaUnscoped.user.findUnique({
+      where: { id: opts.ownerUserId },
+      select: { email: true, profile: { select: { fullName: true } } },
+    });
+    if (owner?.email) toEmail = owner.email;
+    if (owner?.profile?.fullName) ownerName = owner.profile.fullName.split(" ")[0] || ownerName;
+  }
+
+  if (!toEmail) return;
+
+  const base = appUrl();
+  const billingLine =
+    opts.monthlyInvoiceStatus === "paid"
+      ? "Your current monthly platform-service period is already covered."
+      : `Your monthly platform-service invoice is KES ${opts.monthlyAmountKes.toLocaleString("en-KE")} and is ${opts.monthlyInvoiceStatus}. You can manage it from Pricing & billing.`;
+
+  const body = [
+    `Hi ${ownerName},`,
+    "",
+    `**${opts.pharmacyName}** has passed platform verification and is now live on the Aether Pharmacy Network.`,
+    opts.notes ? `Reviewer note: ${opts.notes}` : "",
+    "",
+    `Public storefront: ${base}/p/${opts.pharmacySlug}`,
+    "",
+    `Right now, ${opts.medicinesVisible} medicine listing${opts.medicinesVisible === 1 ? " is" : "s are"} publicly discoverable and ${opts.servicesVisible} service${opts.servicesVisible === 1 ? " is" : "s are"} published.`,
+    "Medicines only appear publicly when the item is active, marked for public listing, and has available stock. Active services appear automatically.",
+    "",
+    billingLine,
+    `${base}/onboard/billing`,
+    "",
+    "You can keep improving opening hours, photos, catalogue depth and storefront content from Admin without waiting for another platform approval.",
+    `${base}/admin`,
+    "",
+    "— Aether Network",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  await sendDelivery({
+    channel: "email",
+    purpose: "transactional",
+    recipient: { email: toEmail },
+    subject: `${opts.pharmacyName} is verified and live`,
+    body,
+  }).catch((error) => {
+    console.error("[pharmacy-approval] go-live email failed", error);
+  });
+}
+
+function revalidateApprovalSurfaces(pharmacyId: string, slug: string) {
+  revalidatePath("/");
+  revalidatePath("/pharmacies");
+  revalidatePath(`/pharmacies/${slug}`);
+  revalidatePath(`/p/${slug}`);
+  revalidatePath("/medicines");
+  revalidatePath("/services");
+  revalidatePath("/search");
+  revalidatePath("/prescription");
+  revalidatePath("/refill");
+  revalidatePath("/platform");
+  revalidatePath("/platform/applications");
+  revalidatePath("/platform/pharmacies");
+  revalidatePath(`/platform/pharmacies/${pharmacyId}`);
+  revalidatePath(`/platform/pharmacies/${pharmacyId}/verification`);
+  revalidatePath("/admin");
+  revalidatePath("/admin/setup");
+  revalidatePath("/onboard");
+  revalidatePath("/onboard/billing");
+}
+
+async function approveAndActivatePharmacy(formData: FormData): Promise<ReviewActionState> {
+  const reviewer = await requirePlatformAction(["super_admin"], { stepUp: true });
+  const pharmacyId = text(formData, "pharmacyId");
+  const notes = text(formData, "notes");
+
+  if (!pharmacyId) return { error: "Missing pharmacy application." };
+
+  const readiness = await loadApprovalReadiness(pharmacyId);
+  if (!readiness.ready) {
+    const missing = [...readiness.profileMissing, ...readiness.checklistMissing];
+    return {
+      error: `Approval blocked. Complete mandatory pharmacy verification first: ${missing.join("; ")}.`,
+    };
+  }
+
+  let pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
+  if (!pharmacy) return { error: "Pharmacy not found." };
+
+  if (pharmacy.status === "active" && pharmacy.listed && pharmacy.verifiedAt) {
+    return { success: "This pharmacy is already verified, active and visible on the public network." };
+  }
+
+  if (!["submitted", "under_review", "approved"].includes(pharmacy.status)) {
+    return { error: "Only a submitted, under-review or already-approved pharmacy can be activated." };
+  }
+
+  const verificationFee = await prismaUnscoped.invoice.findUnique({
+    where: { number: `KYP-${pharmacyId}` },
+  });
+  if (verificationFee?.status !== "paid") {
+    return { error: "Verification fee must be paid or waived before approval." };
+  }
+
+  const verifiedAt = pharmacy.verifiedAt ?? new Date();
+
+  // First move the record into the trusted approved state. The database trust
+  // trigger independently re-checks the regulatory dossier and reviewer checklist.
+  // If provisioning or billing fails later, the pharmacy remains approved but is
+  // not exposed publicly; pressing Approve again safely resumes this idempotent flow.
+  if (pharmacy.status !== "approved") {
+    await prismaUnscoped.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
+      const latest = await tx.pharmacy.findUniqueOrThrow({ where: { id: pharmacyId } });
+      if (!["submitted", "under_review", "approved"].includes(latest.status)) {
+        throw new Error("The pharmacy application changed while it was being approved. Refresh and review it again.");
+      }
+      if (latest.status !== "approved") {
+        await tx.pharmacy.update({
+          where: { id: pharmacyId },
+          data: {
+            status: "approved",
+            verifiedAt,
+            verifiedById: reviewer.id,
+            verificationNotes: notes || latest.verificationNotes,
+            rejectionReason: null,
+          },
+        });
+        await tx.pharmacyOnboardingEvent.create({
+          data: {
+            pharmacyId,
+            actorId: reviewer.id,
+            type: "approved",
+            message: notes || "Regulatory verification passed — preparing pharmacy for public activation",
+          },
+        });
+      }
+    });
+  }
+
+  // Provisioning and monthly-service creation are intentionally completed before
+  // public exposure. Both functions are idempotent, so a partial approval can be
+  // retried without duplicating the tenant, subscription, or current-period invoice.
+  await provisionTenant(pharmacyId, reviewer.id);
+  const monthlyInvoice = await startPharmacyService(pharmacyId);
+
+  const subscription = await prismaUnscoped.subscription.findFirst({
+    where: { pharmacyId, status: { not: "cancelled" } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const lifecycleStatus =
+    subscription?.status === "active"
+      ? "active"
+      : subscription?.status === "trialing"
+        ? "trial"
+        : subscription?.status === "past_due"
+          ? "past_due"
+          : undefined;
+
+  pharmacy = await prismaUnscoped.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
+    const latest = await tx.pharmacy.findUniqueOrThrow({ where: { id: pharmacyId } });
+    if (!["approved", "active"].includes(latest.status)) {
+      throw new Error("The pharmacy is no longer eligible for activation. Refresh and review its current status.");
+    }
+
+    const wasLive = latest.status === "active" && latest.listed;
+    const activated = await tx.pharmacy.update({
+      where: { id: pharmacyId },
+      data: {
+        status: "active",
+        listed: true,
+        verifiedAt: latest.verifiedAt ?? verifiedAt,
+        verifiedById: latest.verifiedById ?? reviewer.id,
+        verificationNotes: notes || latest.verificationNotes,
+        rejectionReason: null,
+        goLiveAt: latest.goLiveAt ?? new Date(),
+        ...(lifecycleStatus ? { lifecycleStatus } : {}),
+      },
+    });
+
+    if (!wasLive) {
+      await tx.pharmacyOnboardingEvent.create({
+        data: {
+          pharmacyId,
+          actorId: reviewer.id,
+          type: "activated",
+          message: "Verification complete — pharmacy activated and listed on the public network",
+          meta: {
+            source: "platform_verification_approval",
+            monthlyInvoiceId: monthlyInvoice.id,
+            monthlyInvoiceStatus: monthlyInvoice.status,
+          },
+        },
+      });
+    }
+    return activated;
+  });
+
+  const [medicinesVisible, servicesVisible] = await Promise.all([
+    prismaUnscoped.pharmacyInventory.count({
+      where: {
+        pharmacyId,
+        active: true,
+        publicListing: true,
+        currentStock: { gt: 0 },
+      },
+    }),
+    prismaUnscoped.pharmacyService.count({ where: { pharmacyId, active: true } }),
+  ]);
+
+  await recordAuditRequired({
+    actorId: reviewer.id,
+    action: "pharmacy.approve_and_activate",
+    resource: "pharmacy",
+    resourceId: pharmacyId,
+    tenantId: pharmacyId,
+    reason: notes || null,
+    details: {
+      status: "active",
+      listed: true,
+      medicinesVisible,
+      servicesVisible,
+      monthlyInvoiceId: monthlyInvoice.id,
+      monthlyInvoiceStatus: monthlyInvoice.status,
+      subscriptionStatus: subscription?.status ?? null,
+    },
+  });
+
+  await notifyOwnerPharmacyIsLive({
+    pharmacyId,
+    pharmacyName: pharmacy.name,
+    pharmacySlug: pharmacy.slug,
+    ownerUserId: pharmacy.ownerUserId,
+    pharmacyEmail: pharmacy.email,
+    notes,
+    monthlyAmountKes: Number(monthlyInvoice.totalKes),
+    monthlyInvoiceStatus: monthlyInvoice.status,
+    medicinesVisible,
+    servicesVisible,
+  });
+
+  revalidateApprovalSurfaces(pharmacyId, pharmacy.slug);
+
+  return {
+    success:
+      `Approved and live. ${medicinesVisible} public medicine listing${medicinesVisible === 1 ? "" : "s"} and ${servicesVisible} active service${servicesVisible === 1 ? "" : "s"} are discoverable now. ` +
+      (monthlyInvoice.status === "paid"
+        ? "The current monthly service period is covered."
+        : `Monthly service billing has started (KES ${Number(monthlyInvoice.totalKes).toLocaleString("en-KE")}, ${monthlyInvoice.status}).`),
+  };
+}
+
+export async function safeReviewPharmacyAction(
+  prev: ReviewActionState,
+  formData: FormData,
+): Promise<ReviewActionState> {
+  if (text(formData, "decision") !== "approve") {
+    return reviewPharmacyAction(prev, formData);
+  }
+
+  try {
+    return await approveAndActivatePharmacy(formData);
+  } catch (error) {
+    console.error("[pharmacy-approval] approve and activate", error);
+    return {
+      error: error instanceof Error ? error.message : "Approval could not complete the pharmacy go-live transition.",
+    };
+  }
+}
