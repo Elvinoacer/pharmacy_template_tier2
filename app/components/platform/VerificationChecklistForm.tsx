@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useRef, useState } from "react";
-import { CheckCircle2, ExternalLink, Loader2, Save, ShieldCheck } from "lucide-react";
+import { useActionState, useCallback, useEffect, useRef, useState } from "react";
+import { CheckCircle2, ExternalLink, KeyRound, Loader2, Save, ShieldCheck, X } from "lucide-react";
 import { savePharmacyVerificationChecklistAction, type VerificationActionState } from "@/app/actions/pharmacy-verification";
+import { verifyStepUpAction, type MfaState } from "@/app/actions/mfa";
 import VerificationDocumentEvidence from "@/app/components/platform/VerificationDocumentEvidence";
 
 const initial: VerificationActionState = {};
+const initialMfaState: MfaState = {};
+
 type Checklist = {
   ppbRegistryMatched: boolean; licenceActive: boolean; licenceDocumentMatched: boolean;
   practitionerMatched: boolean; locationMatched: boolean; ownershipVerified: boolean;
@@ -30,6 +33,86 @@ const CHECKS = [
 const DEFAULT_FACILITY_SOURCE = "https://practice.pharmacyboardkenya.org/LicenseStatus?register=facilities";
 const DEFAULT_PRACTITIONER_SOURCE = "https://practice.pharmacyboardkenya.org/LicenseStatus?registers=search";
 
+function ChecklistStepUpDialog({
+  open,
+  onClose,
+  onVerified,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onVerified: () => void;
+}) {
+  const [state, action, pending] = useActionState(verifyStepUpAction, initialMfaState);
+
+  useEffect(() => {
+    if (!state.success) return;
+    onVerified();
+  }, [state.success, onVerified]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="checklist-step-up-title">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#111a17] shadow-2xl">
+        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-teal-300/20 bg-teal-300/10 text-teal-200">
+              <ShieldCheck className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-teal-200/65">Reviewer security</p>
+              <h2 id="checklist-step-up-title" className="mt-1 text-lg font-semibold text-white">Re-verify to save verification checks</h2>
+            </div>
+          </div>
+          <button type="button" onClick={onClose} disabled={pending} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white/55 transition hover:bg-white/10 hover:text-white disabled:opacity-40" aria-label="Close verification dialog">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <form action={action} className="space-y-4 px-5 py-5">
+          <p className="text-sm leading-6 text-teal-50/70">
+            Your protected reviewer session expired. Your checklist changes are still kept on this page. Enter a fresh authenticator or recovery code and the pending checklist will be saved automatically.
+          </p>
+          <label className="block text-sm font-semibold text-white">
+            Authenticator or recovery code
+            <input
+              name="code"
+              autoComplete="one-time-code"
+              required
+              pattern="[0-9a-fA-F ]{6,12}"
+              maxLength={12}
+              autoFocus
+              placeholder="Enter code"
+              className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-black/25 px-3.5 text-base text-white outline-none transition placeholder:text-white/30 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10"
+            />
+          </label>
+
+          {state.error ? (
+            <p role="alert" className="rounded-xl border border-rose-400/25 bg-rose-400/10 px-3 py-2.5 text-sm text-rose-100">
+              {state.error}
+            </p>
+          ) : null}
+          {state.success ? (
+            <p role="status" className="rounded-xl border border-emerald-400/25 bg-emerald-400/10 px-3 py-2.5 text-sm text-emerald-100">
+              Verified. Saving your pending checklist…
+            </p>
+          ) : null}
+
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button type="button" onClick={onClose} disabled={pending} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/15 px-4 text-sm font-semibold text-white/75 transition hover:bg-white/5 disabled:opacity-40">
+              Cancel
+            </button>
+            <button type="submit" disabled={pending || Boolean(state.success)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 text-sm font-semibold text-teal-950 transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-50">
+              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
+              {pending ? "Verifying…" : "Verify and continue saving"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function VerificationChecklistForm({ pharmacyId, checklist }: { pharmacyId: string; checklist: Checklist }) {
   const formRef = useRef<HTMLFormElement>(null);
   const lastAttemptedRevision = useRef(0);
@@ -44,6 +127,7 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
   const [facilitySource, setFacilitySource] = useState(checklist?.ppbRegistrySource || DEFAULT_FACILITY_SOURCE);
   const [practitionerSource, setPractitionerSource] = useState(checklist?.practitionerRegistrySource || DEFAULT_PRACTITIONER_SOURCE);
   const [notes, setNotes] = useState(checklist?.notes || "");
+  const [stepUpOpen, setStepUpOpen] = useState(false);
   const [state, action, pending] = useActionState(savePharmacyVerificationChecklistAction, initial);
 
   const field = "mt-1.5 min-h-11 w-full rounded-xl border border-[#cfdcd4] bg-white px-3 py-2.5 text-sm text-[#17231d] outline-none focus:border-teal-500 dark:border-white/15 dark:bg-black/25 dark:text-white";
@@ -67,8 +151,23 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
     setPersistedChecks(submittedCheckCount.current);
   }, [state]);
 
+  useEffect(() => {
+    if (state.error === "STEP_UP_REQUIRED" || state.error === "MFA_REQUIRED") {
+      setStepUpOpen(true);
+    }
+  }, [state]);
+
+  const retryPendingSave = useCallback(() => {
+    setStepUpOpen(false);
+    // The failed protected save already marked this revision as attempted. Clear
+    // that guard, then resubmit the same controlled values after MFA refreshes.
+    lastAttemptedRevision.current = -1;
+    window.setTimeout(() => formRef.current?.requestSubmit(), 0);
+  }, []);
+
   const hasUnsavedChanges = revision > persistedRevision;
-  const saveBlocked = Boolean(state.error) && lastAttemptedRevision.current >= revision && hasUnsavedChanges;
+  const stepUpRequired = state.error === "STEP_UP_REQUIRED" || state.error === "MFA_REQUIRED";
+  const saveBlocked = Boolean(state.error) && !stepUpRequired && lastAttemptedRevision.current >= revision && hasUnsavedChanges;
 
   return (
     <div className="space-y-5">
@@ -108,6 +207,8 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
             <div className="flex items-center gap-2 text-[11px] font-semibold">
               {pending ? (
                 <span className="inline-flex items-center gap-1.5 text-amber-700 dark:text-amber-200"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving…</span>
+              ) : stepUpRequired ? (
+                <button type="button" onClick={() => setStepUpOpen(true)} className="inline-flex items-center gap-1.5 text-amber-700 hover:underline dark:text-amber-200"><KeyRound className="h-3.5 w-3.5" /> Identity check required</button>
               ) : saveBlocked ? (
                 <span className="text-rose-700 dark:text-rose-200">Save needs attention</span>
               ) : hasUnsavedChanges ? (
@@ -119,7 +220,7 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
           </div>
           <progress className="mt-2 h-2 w-full accent-teal-600" value={checked.size} max={CHECKS.length} />
           <p className="mt-2 text-xs text-slate-500 dark:text-teal-100/55">
-            Every checklist change is saved automatically. A saved tick now stays visually checked while the server records it.
+            Every checklist change is saved automatically. A saved tick stays visually checked while the server records it.
           </p>
           <p className="mt-1 text-[11px] text-slate-400 dark:text-teal-100/40">
             Confirmed saved checks: {persistedChecks}/{CHECKS.length}. Complete all nine checks, use the official PPB sources, and add meaningful evidence notes to unlock approval.
@@ -187,7 +288,17 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
           />
         </label>
 
-        {state.error ? <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-800 dark:border-rose-400/30 dark:bg-rose-500/10 dark:text-rose-100">{state.error}</p> : null}
+        {stepUpRequired ? (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">
+            <p className="font-semibold">Your secure reviewer session expired.</p>
+            <p className="mt-1 text-xs leading-5 opacity-80">Your current ticks and notes are still preserved in this browser. Re-verify once and the pending checklist will save automatically.</p>
+            <button type="button" onClick={() => setStepUpOpen(true)} className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-amber-700 px-3.5 text-xs font-semibold text-white transition hover:bg-amber-800 dark:bg-amber-300 dark:text-amber-950 dark:hover:bg-amber-200">
+              <KeyRound className="h-3.5 w-3.5" /> Verify identity and resume saving
+            </button>
+          </div>
+        ) : state.error ? (
+          <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-800 dark:border-rose-400/30 dark:bg-rose-500/10 dark:text-rose-100">{state.error}</p>
+        ) : null}
         {state.success ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-100">{state.success}</p> : null}
 
         <div className="flex flex-wrap items-center gap-3">
@@ -204,6 +315,14 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
 
         {state.success && !hasUnsavedChanges && checked.size === CHECKS.length ? <Link className="inline-flex min-h-11 items-center text-sm font-semibold text-teal-700 dark:text-teal-200" href={`/platform/pharmacies/${pharmacyId}`}>Return to approval decision →</Link> : null}
       </form>
+
+      {stepUpOpen ? (
+        <ChecklistStepUpDialog
+          open={stepUpOpen}
+          onClose={() => setStepUpOpen(false)}
+          onVerified={retryPendingSave}
+        />
+      ) : null}
     </div>
   );
 }
