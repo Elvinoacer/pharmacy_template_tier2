@@ -1,10 +1,15 @@
 "use client";
 
-import { useActionState, useState, useRef, type ReactNode } from "react";
+/* The private preview endpoint requires the browser session cookie, so these
+ * images intentionally bypass Next/Image's server-side optimizer. */
+/* eslint-disable @next/next/no-img-element */
+
+import { useActionState, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   CheckCircle2,
   ExternalLink,
+  ImageIcon,
   Loader2,
   ShieldCheck,
   UploadCloud,
@@ -18,6 +23,8 @@ import OnboardStepper from "./OnboardStepper";
 import styles from "./OnboardSurface.module.css";
 
 const initial: VerificationActionState = {};
+
+type DocumentKind = "license" | "business";
 
 type Profile = {
   facilityType: string | null;
@@ -45,6 +52,8 @@ type Props = {
     status: string;
   };
   profile: Profile;
+  initialLicenseDocumentUrl?: string | null;
+  initialBusinessDocumentUrl?: string | null;
   ownerEmail: string;
   ownerEmailVerified: boolean;
   embedded?: boolean;
@@ -70,30 +79,85 @@ function Field({
   );
 }
 
+function previewSrc(pharmacyId: string, kind: DocumentKind, version: number) {
+  const params = new URLSearchParams({ pharmacyId, kind, v: String(version) });
+  return `/api/onboard/verification-documents?${params.toString()}`;
+}
+
+function DocumentPreview({
+  pharmacyId,
+  kind,
+  version,
+  label,
+}: {
+  pharmacyId: string;
+  kind: DocumentKind;
+  version: number;
+  label: string;
+}) {
+  return (
+    <div className="mt-3 overflow-hidden rounded-2xl border border-emerald-400/25 bg-emerald-500/[0.04]">
+      <div className="relative flex min-h-44 items-center justify-center bg-black/[0.035] p-2 dark:bg-white/[0.025] sm:min-h-56">
+        <img
+          src={previewSrc(pharmacyId, kind, version)}
+          alt={label}
+          className="max-h-72 w-full rounded-xl object-contain"
+        />
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-emerald-400/15 px-3 py-2.5 sm:px-4">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+          Uploaded & saved as draft
+        </span>
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--muted)]">
+          <ImageIcon className="h-3.5 w-3.5" aria-hidden />
+          Preview remains after refresh
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function VerificationDossierForm({
   pharmacy,
   profile,
+  initialLicenseDocumentUrl,
+  initialBusinessDocumentUrl,
   ownerEmail,
   ownerEmailVerified,
   embedded = false,
 }: Props) {
   const [section, setSection] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
+  const [state, action, pending] = useActionState(savePharmacyVerificationProfileAction, initial);
+  const [emailState, emailAction, emailPending] = useActionState(resendOwnerVerificationEmailAction, initial);
+  const [licenseDocumentUrl, setLicenseDocumentUrl] = useState(
+    initialLicenseDocumentUrl || pharmacy.licenseDocumentUrl || "",
+  );
+  const [businessDocumentUrl, setBusinessDocumentUrl] = useState(
+    initialBusinessDocumentUrl || profile?.businessDocumentUrl || "",
+  );
+  const [licensePreviewVersion, setLicensePreviewVersion] = useState(0);
+  const [businessPreviewVersion, setBusinessPreviewVersion] = useState(0);
+  const [uploading, setUploading] = useState<DocumentKind | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   function nextSection() {
-    const fields = formRef.current?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(`[data-licence-section="${section}"] input, [data-licence-section="${section}"] select, [data-licence-section="${section}"] textarea`);
-    for (const field of fields ?? []) { if (!field.reportValidity()) return; }
-    if (section === 0 && !licenseDocumentUrl) { setUploadError("Upload your premises licence to continue."); return; }
+    const fields = formRef.current?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+      `[data-licence-section="${section}"] input, [data-licence-section="${section}"] select, [data-licence-section="${section}"] textarea`,
+    );
+    for (const field of fields ?? []) {
+      if (!field.reportValidity()) return;
+    }
+    if (section === 0 && !licenseDocumentUrl) {
+      setUploadError("Upload your premises licence to continue.");
+      return;
+    }
     setUploadError(null);
     setSection((value) => Math.min(2, value + 1));
   }
-  const [state, action, pending] = useActionState(savePharmacyVerificationProfileAction, initial);
-  const [emailState, emailAction, emailPending] = useActionState(resendOwnerVerificationEmailAction, initial);
-  const [licenseDocumentUrl, setLicenseDocumentUrl] = useState(pharmacy.licenseDocumentUrl || "");
-  const [businessDocumentUrl, setBusinessDocumentUrl] = useState(profile?.businessDocumentUrl || "");
-  const [uploading, setUploading] = useState<"license" | "business" | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  async function uploadDocument(file: File, kind: "license" | "business") {
+  async function uploadDocument(file: File, kind: DocumentKind) {
     setUploading(kind);
     setUploadError(null);
     try {
@@ -109,8 +173,15 @@ export default function VerificationDossierForm({
       if (!response.ok || !payload.reference) {
         throw new Error(payload.message || "Document upload failed.");
       }
-      if (kind === "license") setLicenseDocumentUrl(payload.reference);
-      else setBusinessDocumentUrl(payload.reference);
+
+      const version = Date.now();
+      if (kind === "license") {
+        setLicenseDocumentUrl(payload.reference);
+        setLicensePreviewVersion(version);
+      } else {
+        setBusinessDocumentUrl(payload.reference);
+        setBusinessPreviewVersion(version);
+      }
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Document upload failed.");
     } finally {
@@ -156,17 +227,34 @@ export default function VerificationDossierForm({
       </section>
 
       <div className={styles.licenceTabs} aria-label="Licence sections">
-        {["Premises", "Pharmacist", "Business"].map((label, index) => <button key={label} type="button" disabled={index > section} aria-current={index === section ? "step" : undefined} onClick={() => setSection(index)}>{index < section ? "✓" : index + 1} {label}</button>)}
+        {["Premises", "Pharmacist", "Business"].map((label, index) => (
+          <button
+            key={label}
+            type="button"
+            disabled={index > section}
+            aria-current={index === section ? "step" : undefined}
+            onClick={() => setSection(index)}
+          >
+            {index < section ? "✓" : index + 1} {label}
+          </button>
+        ))}
       </div>
-      <form ref={formRef} action={action} className="space-y-4" aria-busy={pending || uploading !== null} onInvalidCapture={(event) => {
-        const target = event.target as HTMLInputElement;
-        const group = target.closest<HTMLElement>("[data-licence-section]");
-        if (group?.hidden) {
-          event.preventDefault();
-          setSection(Number(group.dataset.licenceSection));
-          requestAnimationFrame(() => target.focus());
-        }
-      }}>
+
+      <form
+        ref={formRef}
+        action={action}
+        className="space-y-4"
+        aria-busy={pending || uploading !== null}
+        onInvalidCapture={(event) => {
+          const target = event.target as HTMLInputElement;
+          const group = target.closest<HTMLElement>("[data-licence-section]");
+          if (group?.hidden) {
+            event.preventDefault();
+            setSection(Number(group.dataset.licenceSection));
+            requestAnimationFrame(() => target.focus());
+          }
+        }}
+      >
         <input type="hidden" name="pharmacyId" value={pharmacy.id} />
         <input type="hidden" name="licenseDocumentUrl" value={licenseDocumentUrl} />
         <input type="hidden" name="businessDocumentUrl" value={businessDocumentUrl} />
@@ -186,6 +274,7 @@ export default function VerificationDossierForm({
               PPB register <ExternalLink className="h-3.5 w-3.5" aria-hidden />
             </a>
           </div>
+
           <div className={`${styles.fields} ${styles.fieldsTwo}`}>
             <Field label="PPB / premises licence number">
               <input name="licenseNumber" required defaultValue={pharmacy.licenseNumber || ""} className="input-admin" autoComplete="off" />
@@ -220,28 +309,36 @@ export default function VerificationDossierForm({
               <input name="licenseQrPayload" defaultValue={profile?.licenseQrPayload || ""} className="input-admin" />
             </Field>
           </div>
+
           <div className={styles.upload}>
-            <p className="text-sm font-semibold">Current licence image</p>
-            <p className={styles.fieldHint}>JPEG, PNG or WebP. Include the QR if it is on the licence.</p>
-            <label className="btn-ghost mt-3 inline-flex cursor-pointer">
-              {uploading === "license" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <UploadCloud className="h-3.5 w-3.5" aria-hidden />}
-              {licenseDocumentUrl ? "Replace image" : "Upload image"}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                disabled={uploading !== null}
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) void uploadDocument(file, "license");
-                  event.currentTarget.value = "";
-                }}
-              />
-            </label>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold">Current licence image</p>
+                <p className={styles.fieldHint}>JPEG, PNG or WebP. Include the QR if it is on the licence.</p>
+              </div>
+              <label className="btn-ghost inline-flex cursor-pointer">
+                {uploading === "license" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <UploadCloud className="h-3.5 w-3.5" aria-hidden />}
+                {licenseDocumentUrl ? "Replace image" : "Upload image"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  disabled={uploading !== null}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) void uploadDocument(file, "license");
+                    event.currentTarget.value = "";
+                  }}
+                />
+              </label>
+            </div>
             {licenseDocumentUrl ? (
-              <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Uploaded
-              </p>
+              <DocumentPreview
+                pharmacyId={pharmacy.id}
+                kind="license"
+                version={licensePreviewVersion}
+                label="Preview of the uploaded PPB premises licence"
+              />
             ) : null}
           </div>
         </section>
@@ -318,28 +415,36 @@ export default function VerificationDossierForm({
               <input name="kraPin" defaultValue={pharmacy.kraPin || ""} className="input-admin" autoComplete="off" />
             </Field>
           </div>
+
           <div className={styles.upload}>
-            <p className="text-sm font-semibold">Registration evidence</p>
-            <p className={styles.fieldHint}>Certificate or document that ties the business to this pharmacy.</p>
-            <label className="btn-ghost mt-3 inline-flex cursor-pointer">
-              {uploading === "business" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <UploadCloud className="h-3.5 w-3.5" aria-hidden />}
-              {businessDocumentUrl ? "Replace image" : "Upload image"}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                disabled={uploading !== null}
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) void uploadDocument(file, "business");
-                  event.currentTarget.value = "";
-                }}
-              />
-            </label>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold">Registration evidence</p>
+                <p className={styles.fieldHint}>Certificate or document that ties the business to this pharmacy.</p>
+              </div>
+              <label className="btn-ghost inline-flex cursor-pointer">
+                {uploading === "business" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <UploadCloud className="h-3.5 w-3.5" aria-hidden />}
+                {businessDocumentUrl ? "Replace image" : "Upload image"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  disabled={uploading !== null}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) void uploadDocument(file, "business");
+                    event.currentTarget.value = "";
+                  }}
+                />
+              </label>
+            </div>
             {businessDocumentUrl ? (
-              <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Uploaded
-              </p>
+              <DocumentPreview
+                pharmacyId={pharmacy.id}
+                kind="business"
+                version={businessPreviewVersion}
+                label="Preview of the uploaded business registration evidence"
+              />
             ) : null}
           </div>
         </section>
@@ -367,19 +472,37 @@ export default function VerificationDossierForm({
               Back
             </Link>
           )}
-          <button type="submit" name="intent" value="draft" formNoValidate disabled={pending || uploading !== null} className="btn-ghost justify-center">
-            Save for later
-          </button>
-          {section < 2 ? <button type="button" onClick={nextSection} disabled={pending || uploading !== null} className="btn-primary justify-center">Continue to {section === 0 ? "pharmacist" : "business"}</button> : <button
+          <button
             type="submit"
             name="intent"
-            value="complete"
+            value="draft"
+            formNoValidate
             disabled={pending || uploading !== null}
-            className="btn-primary inline-flex justify-center gap-2"
+            className="btn-ghost justify-center"
           >
-            {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <ShieldCheck className="h-4 w-4" aria-hidden />}
-            {pending ? "Saving…" : "Save & continue"}
-          </button>}
+            Save for later
+          </button>
+          {section < 2 ? (
+            <button
+              type="button"
+              onClick={nextSection}
+              disabled={pending || uploading !== null}
+              className="btn-primary justify-center"
+            >
+              Continue to {section === 0 ? "pharmacist" : "business"}
+            </button>
+          ) : (
+            <button
+              type="submit"
+              name="intent"
+              value="complete"
+              disabled={pending || uploading !== null}
+              className="btn-primary inline-flex justify-center gap-2"
+            >
+              {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <ShieldCheck className="h-4 w-4" aria-hidden />}
+              {pending ? "Saving…" : "Save & continue"}
+            </button>
+          )}
         </div>
       </form>
     </div>
