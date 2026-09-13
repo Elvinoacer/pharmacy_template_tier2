@@ -13,6 +13,46 @@ import { withPharmacy } from "@/app/lib/tenant-context";
 
 export type BillingState = { error?: string; success?: string; redirectUrl?: string };
 
+const BILLING_STK_RETRY_AFTER_MS = 90_000;
+
+async function clearExpiredBillingStk(invoiceId: string, pharmacyId: string) {
+  const pending = await withPharmacy(pharmacyId, () =>
+    db.billingPayment.findFirst({
+      where: {
+        invoiceId,
+        pharmacyId,
+        status: { in: ["pending", "processing"] },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+  );
+
+  if (!pending) return;
+
+  const ageMs = Date.now() - pending.createdAt.getTime();
+  if (ageMs >= BILLING_STK_RETRY_AFTER_MS) {
+    await withPharmacy(pharmacyId, () =>
+      db.billingPayment.updateMany({
+        where: {
+          id: pending.id,
+          pharmacyId,
+          status: { in: ["pending", "processing"] },
+        },
+        data: {
+          status: "failed",
+          failureReason: "Previous STK request expired before confirmation; superseded by retry.",
+        },
+      }),
+    );
+    return;
+  }
+
+  const remainingSeconds = Math.max(1, Math.ceil((BILLING_STK_RETRY_AFTER_MS - ageMs) / 1000));
+  throw new Error(
+    `A previous M-Pesa request is still active. Wait about ${remainingSeconds}s, then retry if no prompt appears.`,
+  );
+}
+
 export async function pharmacyBillingAction(_: BillingState, form: FormData): Promise<BillingState> {
   try {
     const user = await getSessionUser();
@@ -84,12 +124,33 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       throw new Error("Enter a valid Kenyan M-Pesa number.");
     }
 
+    // A successful STK initiation is stored as `processing` until Safaricom's
+    // callback settles it. If a callback never arrives (common while switching
+    // sandbox/live credentials), that row used to block every future retry
+    // forever. Expire only old attempts; recent attempts remain protected from
+    // accidental double prompts.
+    await clearExpiredBillingStk(invoice.id, pharmacyId);
+
     const result = await withPharmacy(pharmacyId, () =>
       collectInvoicePayment(invoice.id, { phone, actorId: user.id }),
     );
-    if (!result.ok) throw new Error(result.error);
+    if (!result.ok) {
+      console.error("[billing][daraja] STK initiation failed", {
+        pharmacyId,
+        invoiceId: invoice.id,
+        error: result.error,
+      });
+      throw new Error(result.error);
+    }
 
     const daraja = await resolveDarajaCredentials(null);
+    console.info("[billing][daraja] STK accepted", {
+      pharmacyId,
+      invoiceId: invoice.id,
+      checkoutRequestId: result.checkoutRequestId,
+      environment: daraja?.env ?? "unknown",
+    });
+
     revalidatePath("/onboard/billing");
     revalidatePath("/admin/setup");
 
@@ -97,8 +158,7 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       return {
         success:
           `Daraja sandbox accepted the STK request (CheckoutRequestID ${result.checkoutRequestId}). ` +
-          "Sandbox verifies the API flow but does not prove that a real handset prompt was delivered. " +
-          "For a real M-Pesa popup, deploy the corresponding live credentials with DARAJA_ENV=production.",
+          "Sandbox verifies the API request path; switch only the Daraja environment/credentials to production when testing a real handset prompt.",
       };
     }
 
@@ -108,7 +168,9 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         "Approve it on your phone; this page will confirm the result automatically.",
     };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "Could not process billing." };
+    const message = error instanceof Error ? error.message : "Could not process billing.";
+    console.error("[billing][onboard] action failed", { message });
+    return { error: message };
   }
 }
 
