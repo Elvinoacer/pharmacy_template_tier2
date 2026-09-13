@@ -212,6 +212,7 @@ async function approveAndActivatePharmacy(formData: FormData): Promise<ReviewAct
         verificationNotes: notes || latest.verificationNotes,
         rejectionReason: null,
         goLiveAt: latest.goLiveAt ?? new Date(),
+        setupCompletedAt: latest.setupCompletedAt ?? new Date(),
         ...(lifecycleStatus ? { lifecycleStatus } : {}),
       },
     });
@@ -259,6 +260,7 @@ async function approveAndActivatePharmacy(formData: FormData): Promise<ReviewAct
     details: {
       status: "active",
       listed: true,
+      setupCompleted: true,
       medicinesPublished,
       medicinesInStock,
       servicesVisible,
