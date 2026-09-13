@@ -31,6 +31,11 @@ export const platform = {
   },
 };
 
+/**
+ * Legacy storefront presentation copy. Operational pharmacy identity must never
+ * use this object; it is retained only while old non-operational UI components
+ * are migrated to tenant-aware brand/context data.
+ */
 export const pharmacy = {
   name: "Aether Pharmacy",
   tagline: "Your neighbourhood pharmacy, built on trust",
@@ -79,6 +84,7 @@ export const pharmacy = {
   ],
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://pharmacy-template-tier2.vercel.app",
 };
+
 export const team = [
   {
     id: "priya-nair",
@@ -114,165 +120,9 @@ export const team = [
   },
 ];
 
-export const services = [
-  {
-    slug: "prescription-dispensing",
-    title: "Prescription Dispensing",
-    short: "Accurate, timely filling of prescriptions with pharmacist counselling on every new medication.",
-    description:
-      "Our pharmacists carefully review each prescription for accuracy, interactions, and appropriateness before dispensing. You receive clear counselling on how to take your medication, what to expect, and when to follow up.",
-    benefits: [
-      "Double-check safety review on every fill",
-      "Plain-language counselling",
-      "Insurance coordination and copay assistance tips",
-      "Generic alternatives when appropriate",
-    ],
-    eligibility: "Valid prescription from a licensed prescriber.",
-    duration: "Most prescriptions ready within 30–45 minutes.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/prescription-dispensing.webp",
-    icon: "pill",
-  },
-  {
-    slug: "prescription-refills",
-    title: "Prescription Refills",
-    short: "Request refills online or by phone — ready for pickup or delivery when you need them.",
-    description:
-      "Never run out of essential medication. Request a refill through our online form, WhatsApp, or phone. We will confirm availability and let you know when your order is ready.",
-    benefits: [
-      "Online refill requests 24/7",
-      "Reminder-friendly pickup windows",
-      "Auto-refill setup for maintenance meds",
-      "Transfer from other pharmacies welcome",
-    ],
-    eligibility: "Existing prescription on file with remaining refills, or new transfer.",
-    duration: "Typically ready same day when requested before 3 PM.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp",
-    icon: "refresh",
-  },
-  {
-    slug: "medication-counselling",
-    title: "Medication Counselling",
-    short: "One-on-one time with a pharmacist to understand your regimen, side effects, and interactions.",
-    description:
-      "Whether you are starting a new therapy or managing multiple medications, our pharmacists provide private counselling sessions so you feel confident and informed.",
-    benefits: [
-      "Private consultation space",
-      "Full regimen review",
-      "Side-effect and interaction guidance",
-      "Adherence strategies that fit your life",
-    ],
-    eligibility: "Open to all patients; appointments preferred for longer reviews.",
-    duration: "15–30 minutes depending on complexity.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/medication-counselling.webp",
-    icon: "chat",
-  },
-  {
-    slug: "blood-pressure-checks",
-    title: "Blood Pressure Checks",
-    short: "Walk-in blood pressure screening with guidance on readings and next steps.",
-    description:
-      "Know your numbers. Free walk-in blood pressure checks are available during open hours. Our team explains your reading and can discuss lifestyle tips or when to see your doctor.",
-    benefits: [
-      "Free walk-in service",
-      "Calibrated equipment",
-      "Printed or verbal results",
-      "Referral guidance when needed",
-    ],
-    eligibility: "Adults and teens; no appointment required.",
-    duration: "About 5–10 minutes.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/understanding-blood-pressure.webp",
-    icon: "heart",
-  },
-  {
-    slug: "diabetes-management",
-    title: "Diabetes Management Support",
-    short: "Supplies, education, and pharmacist support for living well with diabetes.",
-    description:
-      "From glucose monitors and test strips to counselling on medications and lifestyle, we support patients with type 1 and type 2 diabetes every step of the way.",
-    benefits: [
-      "Meter and strip supply coordination",
-      "Medication and insulin counselling",
-      "Hypoglycaemia education",
-      "Insurance supply authorisation help",
-    ],
-    eligibility: "Patients with diabetes or prediabetes.",
-    duration: "Counselling sessions 20–40 minutes by appointment.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/articles/diabetes-everyday-tips.webp",
-    icon: "activity",
-  },
-  {
-    slug: "vaccinations",
-    title: "Vaccinations",
-    short: "Flu, COVID-19, shingles, pneumonia, and travel vaccines administered by certified pharmacists.",
-    description:
-      "Stay protected with convenient on-site immunisations. We stock seasonal and year-round vaccines and can advise on schedules for adults and eligible children.",
-    benefits: [
-      "Walk-in and appointment options",
-      "Insurance billing when applicable",
-      "Digital vaccine records",
-      "Travel vaccine guidance",
-    ],
-    eligibility: "Age and medical criteria vary by vaccine; pharmacist will screen.",
-    duration: "10–20 minutes including observation.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/vaccinations.webp",
-    icon: "shield",
-  },
-  {
-    slug: "health-screenings",
-    title: "Health Screenings & Vitals",
-    short: "Blood pressure, glucose, BMI, temperature, and authorized point-of-care rapid tests.",
-    description:
-      "Preventive health screenings conducted by licensed pharmacists using calibrated clinical equipment. We screen for blood pressure, blood glucose, weight, BMI, body temperature, and authorized point-of-care tests (Malaria RDT, Lipid panel, HbA1c, Urinalysis). While screening is not a medical diagnosis, our pharmacists provide immediate results and structured clinical referrals to Clinics, Hospitals, Laboratories, Specialists, or Emergency EMS whenever further assessment is indicated.",
-    benefits: [
-      "Blood pressure & pulse rate checks",
-      "Capillary blood glucose & HbA1c testing",
-      "Weight, height & BMI calculation",
-      "Temperature & pulse oximetry (SpO2)",
-      "Authorized POCT rapid tests (Malaria RDT, Lipids, Urinalysis)",
-      "Screening vs Diagnosis clinical counselling",
-      "Structured referrals to Clinics, Hospitals, Labs & Specialists",
-      "Immediate emergency EMS escalation protocol",
-    ],
-    eligibility: "Open to all adults and teens; walk-in or advance booking available.",
-    duration: "10–20 minutes depending on test panel.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/modern_care_tools.webp",
-    icon: "clipboard",
-  },
-  {
-    slug: "delivery-services",
-    title: "Delivery Services",
-    short: "Safe, reliable medication delivery to homes across greater Nairobi.",
-    description:
-      "Cannot make it in? We deliver prescriptions and select OTC items within our service area. Temperature-sensitive medications are handled with care.",
-    benefits: [
-      "Same-day delivery on select routes",
-      "Signature confirmation available",
-      "WhatsApp status updates",
-      "Caregiver-friendly handoff options",
-    ],
-    eligibility: "Addresses within our delivery zones (see Delivery page).",
-    duration: "Usually within 2–6 hours of ready status on delivery days.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/delivery-services.webp",
-    icon: "truck",
-  },
-  {
-    slug: "home-care-support",
-    title: "Home Care Support",
-    short: "Medication organisation, blister packs, and caregiver coordination for home-based care.",
-    description:
-      "We partner with families and home-care agencies to simplify complex regimens — including multi-dose packaging, refill calendars, and caregiver briefings.",
-    benefits: [
-      "Weekly blister packaging",
-      "Caregiver education",
-      "Regimen simplification reviews",
-      "Coordination with visiting nurses",
-    ],
-    eligibility: "Patients managing multiple medications or with caregiver support.",
-    duration: "Setup consultation 30–45 minutes.",
-    image: "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/services/home-care-support.webp",
-    icon: "home",
-  },
-];
+// Service records intentionally do not live in this static module. Public and
+// tenant service discovery must use PharmacyService rows through
+// listNetworkServiceListings/listPublicServices.
 
 export const categories = [
   {
@@ -934,18 +784,16 @@ export const trustIndicators = [
   { label: "Avg. fill time", value: "35 min" },
 ];
 
-/** Simple in-memory search across site content */
+/**
+ * Static search is reserved for editorial/educational content. Operational
+ * services are deliberately excluded and must be queried from the database.
+ */
 export function searchContent(query: string) {
   const q = query.trim().toLowerCase();
   if (!q) return { services: [], articles: [], faqs: [], categories: [], vaccines: [] };
 
   return {
-    services: services.filter(
-      (s) =>
-        s.title.toLowerCase().includes(q) ||
-        s.short.toLowerCase().includes(q) ||
-        s.description.toLowerCase().includes(q),
-    ),
+    services: [],
     articles: articles.filter(
       (a) =>
         a.title.toLowerCase().includes(q) ||
@@ -961,10 +809,6 @@ export function searchContent(query: string) {
     categories: categories.filter((c) => c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)),
     vaccines: searchVaccines(q),
   };
-}
-
-export function getService(slug: string) {
-  return services.find((s) => s.slug === slug);
 }
 
 export function getArticle(slug: string) {
