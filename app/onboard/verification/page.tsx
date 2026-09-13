@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
+import { loadLatestVerificationDocumentDrafts } from "@/app/lib/services/pharmacy-verification-documents";
 import VerificationDossierForm from "@/app/components/onboard/VerificationDossierForm";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 
@@ -39,12 +40,13 @@ export default async function PharmacyVerificationPage({
 
   if (!pharmacy) redirect("/onboard");
 
-  const [profileResult, owner] = await Promise.all([
+  const [profileResult, owner, documentDrafts] = await Promise.all([
     loadLatestVerificationProfile(pharmacy.id),
     prismaUnscoped.user.findUnique({
       where: { id: user.id },
       select: { email: true, emailVerified: true },
     }),
+    loadLatestVerificationDocumentDrafts(pharmacy.id),
   ]);
 
   return (
@@ -58,6 +60,8 @@ export default async function PharmacyVerificationPage({
         <VerificationDossierForm
           pharmacy={pharmacy}
           profile={profileResult?.profile ?? null}
+          initialLicenseDocumentUrl={documentDrafts.license?.reference ?? pharmacy.licenseDocumentUrl}
+          initialBusinessDocumentUrl={documentDrafts.business?.reference ?? profileResult?.profile.businessDocumentUrl ?? null}
           ownerEmail={owner?.email || user.email}
           ownerEmailVerified={Boolean(owner?.emailVerified)}
         />
