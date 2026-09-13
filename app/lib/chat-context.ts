@@ -1,6 +1,6 @@
 import "server-only";
 
-import { articles, categories, faqs, services } from "./data";
+import { articles, categories, faqs } from "./data";
 import { SUGGESTED_PROMPTS } from "./suggested-prompts";
 import type { SessionUser } from "@/app/lib/types";
 import { getActiveCaregiverLinks } from "@/app/lib/services/caregiver-permissions";
@@ -9,6 +9,7 @@ import {
   findRelevantKnowledge,
   formatKnowledgeForPrompt,
 } from "@/app/lib/services/ai-knowledge-lookup";
+import { listNetworkServiceListings } from "@/app/lib/services/network-catalog";
 import { prisma } from "@/app/lib/db";
 import { toLocalDateInputValue } from "@/app/lib/time";
 import { getResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
@@ -16,16 +17,31 @@ import { getResolvedPharmacy } from "@/app/lib/services/pharmacy-settings";
 export { SUGGESTED_PROMPTS };
 
 /**
- * Tenant-aware public context. Static site content remains a fallback for
- * generic services/FAQs, but identity/contact/hours always come from the
- * resolved storefront tenant when one exists.
+ * Tenant-aware public context. Operational service availability always comes
+ * from PharmacyService rows belonging to active, verified, listed pharmacies.
+ * Static editorial content is allowed only for non-operational education/FAQ
+ * context and must never be treated as proof of availability.
  */
 export async function buildPharmacyContext(userQuery?: string): Promise<string> {
   const pharmacy = await getResolvedPharmacy();
   const hours = pharmacy.hours.length
     ? pharmacy.hours.map((h) => `${h.day}: ${h.time}`).join("; ")
     : "Hours not published — contact the pharmacy to confirm";
-  const serviceList = services.map((s) => `- ${s.title}: ${s.short}`).join("\n");
+
+  const serviceData = await listNetworkServiceListings({
+    pharmacySlug: pharmacy.unresolved ? undefined : pharmacy.slug || undefined,
+  }).catch(() => ({ services: [], selectedPharmacy: null }));
+
+  const serviceList = serviceData.services.length
+    ? serviceData.services
+        .map((service) => {
+          const price = service.price != null ? ` | KES ${service.price.toLocaleString()}` : "";
+          const booking = service.bookable ? " | booking available" : "";
+          return `- ${service.title}: ${service.short} | provider: ${service.pharmacy.name}${price}${booking}`;
+        })
+        .join("\n")
+    : "No live pharmacy-published services matched the current context.";
+
   const faqList = faqs
     .slice(0, 12)
     .map((f) => `Q: ${f.question}\nA: ${f.answer}`)
@@ -44,7 +60,7 @@ export async function buildPharmacyContext(userQuery?: string): Promise<string> 
   }
 
   const identityWarning = pharmacy.unresolved
-    ? "No pharmacy tenant is currently selected. Do not claim a specific address, phone, stock level, opening time, insurance policy, or service availability. Ask the visitor to choose a pharmacy first."
+    ? "No pharmacy tenant is currently selected. Do not invent a specific address, phone, stock level, opening time, insurance policy, price, or service. You may still help the visitor discover medicines/services across the live network; introduce a specific pharmacy only when a provider is needed to fulfil the request."
     : "Use only the pharmacy facts below for identity/contact/hours. Never substitute network/default pharmacy details.";
 
   return `
@@ -55,24 +71,26 @@ ${identityWarning}
 
 ## Pharmacy facts
 - Name: ${pharmacy.unresolved ? "Not selected" : pharmacy.name}
-- Tagline: ${pharmacy.tagline || "—"}
-- Description: ${pharmacy.description || "—"}
+- Tagline: ${pharmacy.unresolved ? "—" : pharmacy.tagline || "—"}
+- Description: ${pharmacy.unresolved ? "—" : pharmacy.description || "—"}
 - Address: ${pharmacy.unresolved ? "Not selected" : pharmacy.address.full || "Not published"}
 - Phone: ${pharmacy.unresolved ? "Not selected" : pharmacy.phone || "Not published"}
 - Email: ${pharmacy.unresolved ? "Not selected" : pharmacy.email || "Not published"}
 - WhatsApp: ${pharmacy.unresolved ? "Not selected" : pharmacy.whatsapp || "Not published"}
-- Hours: ${hours}
-- Insurance accepted: ${pharmacy.insurance.length ? pharmacy.insurance.join(", ") : "Not published"}
-- Certifications: ${pharmacy.certifications.length ? pharmacy.certifications.join(", ") : "Not published"}
+- Hours: ${pharmacy.unresolved ? "Provider-specific; resolve from the chosen result" : hours}
+- Insurance accepted: ${pharmacy.unresolved ? "Provider-specific" : pharmacy.insurance.length ? pharmacy.insurance.join(", ") : "Not published"}
+- Certifications: ${pharmacy.unresolved ? "Provider-specific" : pharmacy.certifications.length ? pharmacy.certifications.join(", ") : "Not published"}
 
-## Generic service catalogue
-These are network/template capabilities, not proof that every tenant offers each service. Confirm live tenant-specific availability before stating that a service is offered.
+## Live service catalogue
+These entries came from current PharmacyService database rows for active, verified, listed pharmacies. If no tenant is selected, each entry keeps its real provider attached. Do not claim services that are absent from this list.
 ${serviceList}
 
 ## Medicine categories
+The following labels are educational/browse vocabulary only, not evidence that a medicine is currently stocked. Use live medication search for availability.
 ${cats}
 
 ## Sample FAQs
+FAQ text is general educational guidance. Provider-specific prices, hours, delivery, insurance and policies must be confirmed from live tenant/provider data.
 ${faqList}
 
 ## Health library topics
@@ -111,10 +129,10 @@ Security rules:
 
 ## Behaviour
 1. Be clear and concise.
-2. Use the selected tenant's facts only.
+2. Use live provider/tenant facts for operational claims.
 3. Emergencies: direct to emergency services immediately.
 4. For refills: /refill, /portal/refills/new, or /caregiver/refills/new as appropriate.
-5. If the pharmacy is unresolved, ask the user to select a pharmacy before giving operational facts.
+5. Do not force a pharmacy selection before understanding the user's need. Search/discover first, then surface the relevant provider when fulfilment requires one.
 6. For product availability, use search_medications before answering.
 7. Caregiver data, when enabled, is strictly limited to authorised linked patients and the minimum data needed for the current question.
 `.trim();
