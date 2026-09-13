@@ -5,7 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped as db } from "@/app/lib/db";
 import { ensureVerificationInvoice } from "@/app/lib/platform/pharmacy-enrolment";
-import PharmacyPricing from "@/app/components/onboard/PharmacyPricing";
+import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
+import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh";
 import { PharmacyPaymentForm, CancelServiceForm } from "@/app/components/onboard/BillingForms";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 
@@ -34,6 +35,9 @@ export default async function PharmacyBillingPage() {
     ]),
   );
 
+  const readiness = await loadPharmacySetup(pharmacy.id);
+  const paymentPending = invoices.some((invoice) => invoice.payments.length > 0);
+
   return (
     <div className={styles.narrow}>
       <Link href={pharmacy.verifiedAt ? "/admin/setup" : "/onboard"} className={styles.quietLink}>
@@ -46,15 +50,12 @@ export default async function PharmacyBillingPage() {
         className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl"
         style={{ fontFamily: "var(--font-display), serif" }}
       >
-        What you pay
+        Your next step, paid simply
       </h1>
       <p className="mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">
-        A storefront, organised requests, and follow-up — billed only after you go live.
+        KES 100 verification. KES 500/month when you activate service.
       </p>
 
-      <div className="mt-6">
-        <PharmacyPricing />
-      </div>
 
       {grant ? (
         <section className={`${styles.notice} ${styles.noticeOk} mt-5`}>
@@ -70,24 +71,6 @@ export default async function PharmacyBillingPage() {
           </div>
         </section>
       ) : null}
-
-      {sub ? (
-        <section className={`${styles.section} mt-4`}>
-          <h2 className="font-semibold capitalize">{sub.status.replaceAll("_", " ")}</h2>
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            {sub.cancelAt ? "Ends" : "Current period ends"} {sub.currentPeriodEnd.toLocaleDateString("en-KE")}
-          </p>
-          {!sub.cancelAt ? <CancelServiceForm pharmacyId={pharmacy.id} /> : null}
-        </section>
-      ) : (
-        <section className={`${styles.section} mt-4`}>
-          <h2 className="font-semibold">Go live when ready</h2>
-          <p className="mb-4 mt-2 text-sm text-[var(--muted)]">
-            Finish verification and setup first. Starting service creates this month’s invoice.
-          </p>
-          <PharmacyPaymentForm pharmacyId={pharmacy.id} />
-        </section>
-      )}
 
       <div className="mt-4 grid gap-3">
         {invoices.map((inv) => (
@@ -123,9 +106,28 @@ export default async function PharmacyBillingPage() {
         ))}
       </div>
 
-      <Link href="/onboard/billing" className={`${styles.quietLink} mt-5`}>
-        Refresh payment status
-      </Link>
+      <PaymentStatusRefresh pending={paymentPending} />
+      {sub ? <Link href="/admin/setup" className="btn-primary mt-5 inline-flex justify-center">Continue to launch checklist</Link> : null}
+      {sub ? (
+        <section className={`${styles.section} mt-4`}>
+          <h2 className="font-semibold capitalize">{sub.status.replaceAll("_", " ")}</h2>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            {sub.cancelAt ? "Ends" : "Current period ends"} {sub.currentPeriodEnd.toLocaleDateString("en-KE")}
+          </p>
+          {!sub.cancelAt ? <CancelServiceForm pharmacyId={pharmacy.id} /> : null}
+        </section>
+      ) : readiness.profileReady ? (
+        <section className={`${styles.section} mt-4`}>
+          <h2 className="font-semibold">Go live when ready</h2>
+          <p className="mb-4 mt-2 text-sm text-[var(--muted)]">
+            Finish verification and setup first. Starting service creates this month’s invoice.
+          </p>
+          <PharmacyPaymentForm pharmacyId={pharmacy.id} />
+        </section>
+      ) : (
+        <Link href={pharmacy.verifiedAt ? "/admin/setup" : "/onboard"} className="btn-primary mt-5 inline-flex justify-center">{pharmacy.verifiedAt ? "Continue setup" : "Continue application"}</Link>
+      )}
+
     </div>
   );
 }

@@ -9,7 +9,7 @@ const input =
 export function PharmacyPaymentForm({ pharmacyId, invoiceId }: { pharmacyId: string; invoiceId?: string }) {
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
   return (
-    <form action={action} className="space-y-3">
+    <form action={action} className="space-y-3" aria-busy={pending}>
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       <input type="hidden" name="intent" value={invoiceId ? "pay" : "activate"} />
       {invoiceId ? (
@@ -17,14 +17,15 @@ export function PharmacyPaymentForm({ pharmacyId, invoiceId }: { pharmacyId: str
           <input type="hidden" name="invoiceId" value={invoiceId} />
           <label className="block text-sm font-medium">
             M-Pesa number
-            <input className={input} name="phone" type="tel" autoComplete="tel" placeholder="0712 345 678" required />
+            <input className={input} name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="0712 345 678" required />
           </label>
         </>
       ) : null}
       <button disabled={pending} className="btn-primary min-h-11" type="submit">
-        {pending ? "Processing…" : invoiceId ? "Pay with M-Pesa" : "Start monthly service"}
+        {pending ? "Processing…" : invoiceId ? "Send M-Pesa prompt" : "Start monthly service"}
       </button>
-      <p role="status" className="text-sm text-[var(--muted)]">
+      {invoiceId ? <p className="text-xs text-[var(--muted)]">Approve the payment on your phone with your M-Pesa PIN.</p> : null}
+      <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
         {state.error || state.success}
       </p>
     </form>

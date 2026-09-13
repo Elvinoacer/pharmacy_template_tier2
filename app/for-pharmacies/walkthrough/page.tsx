@@ -13,7 +13,7 @@ const steps = [
   ["Licence", "PPB premises licence, pharmacist in charge, business evidence.", "/onboard/verification", "Open licence"],
   ["Place & fee", "Pin the premises. Pay KES 100 once — or use a waiver.", "/onboard/billing", "See fees"],
   ["Setup", "Hours, a few priced medicines, services, your look.", "/admin/setup", "Open setup"],
-  ["Live", "Start KES 500 / month. Publish when you’re ready.", "/admin/setup", "Go live"],
+  ["Live", "Activate KES 500/month service, then publish.", "/admin/setup", "Go live"],
 ] as const;
 
 export default function Walkthrough() {
@@ -28,7 +28,7 @@ export default function Walkthrough() {
           From join
           <em>to first patient.</em>
         </h1>
-        <p className={styles.lead}>Five quiet steps. You can leave and come back.</p>
+        <p className={styles.lead}>Explore the demo, then create your pharmacy.</p>
 
         <div className="mt-10 max-w-3xl">
           <PharmacyDemo />

@@ -28,14 +28,14 @@ export default async function AdminSetupPage() {
   const canGoLive = readiness.ready;
 
   return (
-    <AdminShell user={user} title="Getting ready to go live" subtitle={`Your saved progress is here. Finish the setup items for ${pharmacy.name}, then publish with confidence.`}>
+    <AdminShell user={user} title="Your launch checklist" subtitle={`${pharmacy.name} · Your progress is saved.`}>
       <div className="setup-ux max-w-4xl space-y-4 sm:space-y-6">
         <section className="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-panel)] p-4 sm:p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div className="min-w-0">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] admin-accent-text"><Rocket className="h-4 w-4" /> Launch readiness</div>
               <p className="mt-2 text-2xl font-bold tracking-tight admin-text sm:text-3xl">{completion}% complete</p>
-              <p className="mt-1 max-w-xl text-sm leading-6 admin-muted">{remaining === 0 ? "Core storefront requirements are complete. Review the status below and publish when ready." : `${remaining} item${remaining === 1 ? "" : "s"} left. Complete the next missing requirement instead of scanning the whole checklist.`}</p>
+              <p className="mt-1 max-w-xl text-sm leading-6 admin-muted">{remaining === 0 ? "You’re ready. Publish your pharmacy when you choose." : `${remaining} item${remaining === 1 ? "" : "s"} to go. Pick up right here.`}</p>
             </div>
             <div className="w-full sm:max-w-xs">
               <div className="mb-2 flex items-center justify-between text-xs font-semibold admin-soft"><span>{done} of {checks.length}</span><span>{completion}%</span></div>
@@ -49,19 +49,19 @@ export default async function AdminSetupPage() {
         {nextCheck && NextCheckIcon && (
           <Link href={nextCheck.href} className="group flex min-h-14 items-center gap-3 rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-accent-soft)] px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-sm">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-panel)] admin-accent-text"><NextCheckIcon className="h-5 w-5" /></span>
-            <span className="min-w-0 flex-1"><span className="block text-[11px] font-bold uppercase tracking-[0.12em] admin-soft">Recommended next</span><span className="mt-0.5 block text-sm font-semibold admin-text">{nextCheck.label}</span><span className="mt-0.5 block text-xs admin-muted">{nextCheck.hint}</span></span>
+            <span className="min-w-0 flex-1"><span className="block text-[11px] font-bold uppercase tracking-[0.12em] admin-soft">Up next</span><span className="mt-0.5 block text-sm font-semibold admin-text">{nextCheck.label}</span><span className="mt-0.5 block text-xs admin-muted">{nextCheck.hint}</span></span>
             <ArrowRight className="h-4 w-4 shrink-0 admin-accent-text transition-transform group-hover:translate-x-0.5" />
           </Link>
         )}
 
-        <ol className="grid gap-2.5 sm:gap-3">
+        <ol className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
           {checks.map((c, index) => {
             const Icon = c.icon;
             return (
-              <li key={c.label} className={`rounded-2xl border p-3.5 sm:p-4 ${c.ok ? "border-emerald-500/25 bg-emerald-500/10" : "border-amber-500/25 bg-amber-500/10"}`}>
+              <li key={c.label} className={`rounded-2xl border p-3.5 sm:p-4 ${c.ok ? "border-emerald-500/25 bg-emerald-500/10" : "border-[var(--admin-border)] bg-[var(--admin-panel)]"}`}>
                 <div className="flex items-start gap-3">
-                  <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${c.ok ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300" : "bg-amber-500/15 text-amber-700 dark:text-amber-300"}`}>{c.ok ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}</span>
-                  <div className="min-w-0 flex-1"><div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="text-sm font-semibold admin-text"><span className="mr-2 text-xs admin-soft">{String(index + 1).padStart(2, "0")}</span>{c.label}</p><p className="mt-1 text-xs leading-5 admin-muted">{c.hint}</p></div>{!c.ok && <Link href={c.href} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-panel)] px-3 py-2 text-xs font-semibold admin-accent-text transition hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-inset)]"><Icon className="h-3.5 w-3.5" /> Complete</Link>}</div></div>
+                  <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${c.ok ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300" : "bg-[var(--admin-inset)] admin-muted"}`}>{c.ok ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}</span>
+                  <div className="min-w-0 flex-1"><div className="flex flex-col gap-2"><div className="min-w-0"><p className="text-sm font-semibold admin-text"><span className="mr-2 text-xs admin-soft">{String(index + 1).padStart(2, "0")}</span>{c.label}</p><p className="mt-1 text-xs leading-5 admin-muted">{c.hint}</p></div>{!c.ok && <Link href={c.href} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-panel)] px-3 py-2 text-xs font-semibold admin-accent-text transition hover:border-[var(--admin-border-2)] hover:bg-[var(--admin-inset)]"><Icon className="h-3.5 w-3.5" /> Complete</Link>}</div></div>
                 </div>
               </li>
             );
@@ -69,7 +69,7 @@ export default async function AdminSetupPage() {
         </ol>
 
         <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-panel)] p-4 sm:p-5">
-          <form action={goLiveAction}><button className="btn-primary min-h-11 w-full justify-center sm:w-auto" disabled={!canGoLive} type="submit">{canGoLive ? "List this pharmacy in the marketplace" : "Complete the checklist to go live"}</button></form>
+          <form action={goLiveAction}><button className="btn-primary min-h-11 w-full justify-center sm:w-auto" disabled={!canGoLive} type="submit">{canGoLive ? "Publish pharmacy" : "Complete the checklist to go live"}</button></form>
           <p className="mt-3 text-xs admin-soft">Current status: {pharmacy.status.replace(/_/g, " ")}{pharmacy.listed ? " · listed" : " · not listed yet"}</p>
         </div>
 

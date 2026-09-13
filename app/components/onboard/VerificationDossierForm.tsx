@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, type ReactNode } from "react";
+import { useActionState, useState, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -77,6 +77,15 @@ export default function VerificationDossierForm({
   ownerEmailVerified,
   embedded = false,
 }: Props) {
+  const [section, setSection] = useState(0);
+  const formRef = useRef<HTMLFormElement>(null);
+  function nextSection() {
+    const fields = formRef.current?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(`[data-licence-section="${section}"] input, [data-licence-section="${section}"] select, [data-licence-section="${section}"] textarea`);
+    for (const field of fields ?? []) { if (!field.reportValidity()) return; }
+    if (section === 0 && !licenseDocumentUrl) { setUploadError("Upload your premises licence to continue."); return; }
+    setUploadError(null);
+    setSection((value) => Math.min(2, value + 1));
+  }
   const [state, action, pending] = useActionState(savePharmacyVerificationProfileAction, initial);
   const [emailState, emailAction, emailPending] = useActionState(resendOwnerVerificationEmailAction, initial);
   const [licenseDocumentUrl, setLicenseDocumentUrl] = useState(pharmacy.licenseDocumentUrl || "");
@@ -113,8 +122,8 @@ export default function VerificationDossierForm({
     <div className={styles.form}>
       <OnboardStepper current={1} />
       <header className={styles.formHead}>
-        <h2>Your licence</h2>
-        <p>Used only to match this pharmacy to PPB records.</p>
+        <h2>Let’s verify your pharmacy</h2>
+        <p>Have your premises licence and business certificate ready.</p>
       </header>
 
       <section className={styles.section} style={{ marginBottom: "1rem" }}>
@@ -146,12 +155,23 @@ export default function VerificationDossierForm({
         ) : null}
       </section>
 
-      <form action={action} className="space-y-4">
+      <div className={styles.licenceTabs} aria-label="Licence sections">
+        {["Premises", "Pharmacist", "Business"].map((label, index) => <button key={label} type="button" disabled={index > section} aria-current={index === section ? "step" : undefined} onClick={() => setSection(index)}>{index < section ? "✓" : index + 1} {label}</button>)}
+      </div>
+      <form ref={formRef} action={action} className="space-y-4" aria-busy={pending || uploading !== null} onInvalidCapture={(event) => {
+        const target = event.target as HTMLInputElement;
+        const group = target.closest<HTMLElement>("[data-licence-section]");
+        if (group?.hidden) {
+          event.preventDefault();
+          setSection(Number(group.dataset.licenceSection));
+          requestAnimationFrame(() => target.focus());
+        }
+      }}>
         <input type="hidden" name="pharmacyId" value={pharmacy.id} />
         <input type="hidden" name="licenseDocumentUrl" value={licenseDocumentUrl} />
         <input type="hidden" name="businessDocumentUrl" value={businessDocumentUrl} />
 
-        <section className={styles.section}>
+        <section data-licence-section="0" hidden={section !== 0} className={styles.section}>
           <div className={styles.sectionHead}>
             <div>
               <small>1 of 3</small>
@@ -226,7 +246,7 @@ export default function VerificationDossierForm({
           </div>
         </section>
 
-        <section className={styles.section}>
+        <section data-licence-section="1" hidden={section !== 1} className={styles.section}>
           <div className={styles.sectionHead}>
             <div>
               <small>2 of 3</small>
@@ -266,7 +286,7 @@ export default function VerificationDossierForm({
           </div>
         </section>
 
-        <section className={styles.section}>
+        <section data-licence-section="2" hidden={section !== 2} className={styles.section}>
           <div className={styles.sectionHead}>
             <div>
               <small>3 of 3</small>
@@ -324,7 +344,7 @@ export default function VerificationDossierForm({
           </div>
         </section>
 
-        <section className={styles.section}>
+        <section data-licence-section="2" hidden={section !== 2} className={styles.section}>
           <label className="flex cursor-pointer items-start gap-3 text-sm leading-6">
             <input
               name="applicantAuthorityConfirmed"
@@ -337,8 +357,8 @@ export default function VerificationDossierForm({
           </label>
         </section>
 
-        {uploadError ? <p className={`${styles.alert} ${styles.alertError}`}>{uploadError}</p> : null}
-        {state.error ? <p className={`${styles.alert} ${styles.alertError}`}>{state.error}</p> : null}
+        {uploadError ? <p role="alert" className={`${styles.alert} ${styles.alertError}`}>{uploadError}</p> : null}
+        {state.error ? <p role="alert" className={`${styles.alert} ${styles.alertError}`}>{state.error}</p> : null}
         {state.success ? <p className={`${styles.alert} ${styles.alertOk}`}>{state.success}</p> : null}
 
         <div className={styles.actions}>
@@ -350,7 +370,7 @@ export default function VerificationDossierForm({
           <button type="submit" name="intent" value="draft" formNoValidate disabled={pending || uploading !== null} className="btn-ghost justify-center">
             Save for later
           </button>
-          <button
+          {section < 2 ? <button type="button" onClick={nextSection} disabled={pending || uploading !== null} className="btn-primary justify-center">Continue to {section === 0 ? "pharmacist" : "business"}</button> : <button
             type="submit"
             name="intent"
             value="complete"
@@ -358,8 +378,8 @@ export default function VerificationDossierForm({
             className="btn-primary inline-flex justify-center gap-2"
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <ShieldCheck className="h-4 w-4" aria-hidden />}
-            Save licence
-          </button>
+            {pending ? "Saving…" : "Save & continue"}
+          </button>}
         </div>
       </form>
     </div>

@@ -58,7 +58,7 @@ export default function StorefrontPreview({
           </div>
 
           <div className={styles.activity}>
-            <p>Today</p>
+            <p>Sample activity</p>
             <div>
               <span>
                 <Package className="h-3.5 w-3.5" aria-hidden />

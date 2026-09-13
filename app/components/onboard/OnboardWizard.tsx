@@ -63,9 +63,9 @@ function Field({
   );
 }
 
-export default function OnboardWizard({ signedIn, existing }: { signedIn: boolean; existing: Existing }) {
+export default function OnboardWizard({ signedIn, existing, verificationFeePaid = false }: { signedIn: boolean; existing: Existing; verificationFeePaid?: boolean }) {
   const router = useRouter();
-  const [step, setStep] = useState(existing ? 2 : 0);
+  const [step, setStep] = useState(existing ? existing.city && existing.phone && existing.latitude != null && existing.longitude != null ? 3 : 2 : 0);
   const [name, setName] = useState(existing?.name || "");
   const [slug, setSlug] = useState(existing?.slug || "");
   const [legalName, setLegalName] = useState(existing?.legalName || "");
@@ -111,7 +111,9 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
       <div className={`${styles.form} ${styles.status}`}>
         <p className={styles.kicker}>In review</p>
         <h2>{name || "Your pharmacy"} is with the network team</h2>
-        <p>We’ll match your licence and premises, then write to you. Patients cannot see you yet.</p>
+        <p>We’ll email you after the review. Your listing stays private.</p>
+        <div className={styles.statusPath}><span>✓ Submitted</span><strong>In review</strong><span>Setup next</span></div>
+        <Link href="/onboard/billing" className="btn-primary mt-6 inline-flex justify-center">Check verification payment</Link>
         <p className={styles.fieldHint} style={{ marginTop: "1.25rem" }}>
           Application {pharmacyId.slice(0, 8)}
         </p>
@@ -124,7 +126,7 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
       <div className={`${styles.form} ${styles.status}`}>
         <p className={styles.kicker}>Verified</p>
         <h2>{name || "Your pharmacy"} is approved</h2>
-        <p>Finish setup, then go live. Monthly billing starts only when you launch.</p>
+        <p>Finish setup, activate monthly service, then publish.</p>
         <Link href="/admin/setup" className="btn-primary mt-6 inline-flex justify-center">
           Continue to setup
         </Link>
@@ -144,16 +146,20 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
 
   const titles =
     step === 0
-      ? { title: "Create your pharmacy", sub: "A name and a private URL. Licence next." }
+      ? { title: "Create your pharmacy", sub: "Start with the essentials. Your licence comes next." }
       : step === 2
-        ? { title: "Where patients find you", sub: "Pin the real premises and the numbers they should call." }
+        ? { title: "Where patients find you", sub: "Add your location and a phone number." }
         : { title: "Ready to submit", sub: "Patients won’t see you until you’re verified." };
 
   return (
-    <div className={styles.form}>
+    <div className={styles.form} aria-busy={createPending || updatePending || submitPending} onInvalidCapture={(event) => {
+      const target = event.target as HTMLInputElement;
+      const details = target.closest("details");
+      if (details && !details.open) details.open = true;
+    }}>
       <OnboardStepper current={step === 0 ? 0 : step === 2 ? 2 : 3} />
 
-      <header className={styles.formHead}>
+      <header key={step} className={`${styles.formHead} ${styles.routeEnter}`} tabIndex={-1}>
         <h2>{titles.title}</h2>
         <p>{titles.sub}</p>
       </header>
@@ -208,6 +214,8 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
               />
             </Field>
 
+            <details className={styles.optional} open={state.field === "slug" || undefined}>
+              <summary>Customise address & registered name <span>Optional</span></summary>
             <Field
               label="Public address"
               hint="Hidden until you go live."
@@ -217,7 +225,6 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
                 <span>/p/</span>
                 <input
                   name="slug"
-                  required
                   value={slug || liveSlug}
                   onChange={(e) => setSlug(e.target.value.toLowerCase())}
                   className="input-admin"
@@ -237,11 +244,12 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
                 autoComplete="organization"
               />
             </Field>
+            </details>
           </div>
 
           <div className={styles.actions}>
             <button className="btn-primary justify-center" type="submit" disabled={createPending || updatePending}>
-              {createPending || updatePending ? "Saving…" : "Continue"}
+              {createPending || updatePending ? "Saving…" : pharmacyId ? "Save & continue" : "Create & continue"}
             </button>
           </div>
 
@@ -326,6 +334,8 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
               </Field>
             </div>
 
+            <details className={styles.optional}>
+              <summary>More contact & profile details <span>Optional now</span></summary>
             <Field label="Public email">
               <input
                 name="publicEmail"
@@ -349,6 +359,7 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
             <Field label="Short description">
               <textarea name="description" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="input-admin" />
             </Field>
+            </details>
           </div>
 
           <div className={styles.actions}>
@@ -390,6 +401,7 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
               </div>
             </dl>
           </div>
+          {!verificationFeePaid ? <p className={styles.fieldHint}>KES 100 once, before review. Any allocated waiver applies on the payment page.</p> : null}
           {submitState.error ? (
             <div className={`${styles.alert} ${styles.alertError} mt-4`} role="alert">
               {submitState.error}
@@ -399,9 +411,9 @@ export default function OnboardWizard({ signedIn, existing }: { signedIn: boolea
             <button type="button" className="btn-ghost justify-center" onClick={() => setStep(2)}>
               Back
             </button>
-            <button className="btn-primary justify-center" type="submit" disabled={submitPending}>
+            {verificationFeePaid ? <button className="btn-primary justify-center" type="submit" disabled={submitPending}>
               {submitPending ? "Submitting…" : "Submit for review"}
-            </button>
+            </button> : <Link href="/onboard/billing" className="btn-primary justify-center">Pay verification fee & continue</Link>}
           </div>
         </form>
       ) : null}

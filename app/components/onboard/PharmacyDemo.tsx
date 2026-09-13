@@ -24,6 +24,15 @@ export default function PharmacyDemo() {
             key={tab}
             id={`tab-${tab}`}
             role="tab"
+            tabIndex={tab === panel ? 0 : -1}
+            onKeyDown={(event) => {
+              const index = panels.indexOf(tab);
+              const next = event.key === "ArrowRight" ? (index + 1) % panels.length : event.key === "ArrowLeft" ? (index + panels.length - 1) % panels.length : event.key === "Home" ? 0 : event.key === "End" ? panels.length - 1 : null;
+              if (next === null) return;
+              event.preventDefault();
+              setPanel(panels[next]);
+              document.getElementById(`tab-${panels[next]}`)?.focus();
+            }}
             aria-selected={tab === panel}
             aria-controls="demo-panel"
             onClick={() => setPanel(tab)}
@@ -35,7 +44,7 @@ export default function PharmacyDemo() {
           </button>
         ))}
       </div>
-      <div id="demo-panel" role="tabpanel" aria-labelledby={`tab-${panel}`} className="p-4 sm:p-6">
+      <div key={panel} tabIndex={0} id="demo-panel" role="tabpanel" aria-labelledby={`tab-${panel}`} className={`${styles.routeEnter} p-4 sm:p-6`}>
         {panel === "Storefront" ? <StorefrontPreview flush /> : null}
         {panel === "Stock" ? (
           <div>
@@ -62,7 +71,7 @@ export default function PharmacyDemo() {
           <div>
             <MessageSquare className="h-6 w-6 text-[var(--brand)]" aria-hidden />
             <h3 className="mt-3 text-xl font-semibold tracking-tight">Every request has a next step</h3>
-            <p className="mt-2 text-sm text-[var(--muted)]">No lost WhatsApp. One list for the team.</p>
+            <p className="mt-2 text-sm text-[var(--muted)]">One shared queue. A clear next action.</p>
             <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4">
               <div>
                 <strong>Sample collection</strong>

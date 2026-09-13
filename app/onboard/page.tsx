@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
+import { withPharmacy } from "@/app/lib/tenant-context";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { loadOwnerSubmissionReadiness } from "@/app/lib/services/pharmacy-verification";
@@ -19,6 +20,7 @@ const PREMISES_CONTACT_ITEMS = new Set(["pharmacy city", "public phone number", 
 export default async function OnboardPage() {
   const user = await getSessionUser().catch(() => null);
   let existing = null;
+  let verificationFeePaid = false;
   let verificationReadiness: Awaited<ReturnType<typeof loadOwnerSubmissionReadiness>> | null = null;
   let verificationPharmacy = null;
   let ownerEmailVerified = false;
@@ -40,6 +42,11 @@ export default async function OnboardPage() {
     ownerEmailVerified = Boolean(owner?.emailVerified);
 
     if (owned) {
+      const invoice = await withPharmacy(owned.id, () => prismaUnscoped.invoice.findUnique({
+        where: { number: `KYP-${owned.id}` },
+        select: { status: true },
+      }));
+      verificationFeePaid = invoice?.status === "paid";
       existing = {
         id: owned.id,
         slug: owned.slug,
@@ -92,7 +99,7 @@ export default async function OnboardPage() {
         <div className={styles.split}>
           <JoinValuePanel />
           <div id="pharmacy-application" className={styles.work}>
-            <OnboardWizard signedIn={Boolean(user)} existing={existing} />
+            <OnboardWizard signedIn={Boolean(user)} existing={existing} verificationFeePaid={verificationFeePaid} />
           </div>
         </div>
       ) : (
@@ -144,7 +151,7 @@ export default async function OnboardPage() {
                   </div>
                 </section>
               ) : null}
-              <OnboardWizard signedIn={Boolean(user)} existing={existing} />
+              <OnboardWizard signedIn={Boolean(user)} existing={existing} verificationFeePaid={verificationFeePaid} />
             </>
           )}
         </div>
