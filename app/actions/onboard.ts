@@ -175,14 +175,16 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
       phone: String(formData.get("phone") || "").trim() || null,
       whatsapp: String(formData.get("whatsapp") || "").trim() || null,
       email: String(formData.get("publicEmail") || "").trim() || pharmacy.email,
-      city: String(formData.get("city") || "").trim() || null,
-      county: String(formData.get("county") || "").trim() || null,
-      country: String(formData.get("country") || "Kenya").trim() || "Kenya",
+      // Location is controlled exclusively by the browser-geolocation action.
+      // Never accept city/county/country from the onboarding form itself.
+      city: pharmacy.city,
+      county: pharmacy.county,
+      country: pharmacy.country || "Kenya",
     };
 
     await prismaUnscoped.$transaction([
       prismaUnscoped.pharmacy.update({ where: { id: pharmacyId }, data }),
-      prismaUnscoped.pharmacyOnboardingEvent.create({ data: { pharmacyId, actorId: user.id, type: "verification_input_changed", message: "Premises or contact details updated; reviewer checks must be refreshed" } }),
+      prismaUnscoped.pharmacyOnboardingEvent.create({ data: { pharmacyId, actorId: user.id, type: "verification_input_changed", message: "Premises contact details updated; reviewer checks must be refreshed" } }),
     ]);
     await prismaUnscoped.pharmacySettings.updateMany({
       where: { pharmacyId },
@@ -236,7 +238,7 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
         meta: {
           latitude: pharmacy.latitude,
           longitude: pharmacy.longitude,
-          locationSource: "browser_geolocation_or_manual_pin",
+          locationSource: "browser_geolocation",
           verificationDossierComplete: true,
         },
       },
