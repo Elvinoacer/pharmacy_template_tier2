@@ -16,6 +16,8 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Pharmacy fees" };
 
+const ACTIVE_STK_WINDOW_MS = 90_000;
+
 export default async function PharmacyBillingPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/onboard/billing");
@@ -27,6 +29,7 @@ export default async function PharmacyBillingPage() {
   if (!pharmacy) redirect("/onboard");
 
   await ensureVerificationInvoice(pharmacy.id);
+  const activeStkSince = new Date(Date.now() - ACTIVE_STK_WINDOW_MS);
   const [invoices, grant, sub, platformDaraja] = await Promise.all([
     withPharmacy(pharmacy.id, () =>
       db.invoice.findMany({
@@ -34,7 +37,13 @@ export default async function PharmacyBillingPage() {
         include: {
           items: true,
           payments: {
-            where: { status: { in: ["pending", "processing"] } },
+            where: {
+              status: { in: ["pending", "processing"] },
+              OR: [
+                { provider: { not: "mpesa" } },
+                { provider: "mpesa", createdAt: { gte: activeStkSince } },
+              ],
+            },
             orderBy: { createdAt: "desc" },
           },
         },
@@ -143,7 +152,7 @@ export default async function PharmacyBillingPage() {
                     <p role="status" className="text-sm text-[var(--muted)]">
                       {pending.provider === "intasend"
                         ? "Secure checkout is still in progress. Do not start another payment for this invoice."
-                        : "M-Pesa payment is confirming through Daraja. Don’t pay again until this updates."}
+                        : "M-Pesa payment is confirming through Daraja. If no prompt appears, retry becomes available automatically after about 90 seconds."}
                     </p>
                     {resumableCheckout ? (
                       <a href={resumableCheckout} className="btn-ghost inline-flex min-h-11 items-center justify-center">
