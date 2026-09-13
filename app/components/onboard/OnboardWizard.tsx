@@ -89,8 +89,9 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
   const state = createState.error ? createState : updateState.error ? updateState : submitState.error ? submitState : {};
   const liveSlug = useMemo(() => slug || slugifyPharmacyName(name), [slug, name]);
   const isIdentityError = ["name", "slug"].includes(state.field || "");
-  const isContactError = ["city", "phone", "location"].includes(state.field || "");
+  const isContactError = ["phone", "location"].includes(state.field || "");
   const status = submitState.success ? "submitted" : existing?.status || "draft";
+  const locationReady = Boolean(city && latitude != null && longitude != null);
 
   useEffect(() => {
     if (createState.pharmacyId) router.refresh();
@@ -148,7 +149,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
     step === 0
       ? { title: "Create your pharmacy", sub: "Start with the essentials. Your licence comes next." }
       : step === 2
-        ? { title: "Where patients find you", sub: "Add your location and a phone number." }
+        ? { title: "Where patients find you", sub: "Share the pharmacy premises location and your public contact details." }
         : { title: "Ready to submit", sub: "Patients won’t see you until you’re verified." };
 
   return (
@@ -276,35 +277,18 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
           <input type="hidden" name="licenseNumber" value={licenseNumber} />
 
           <div className={styles.fields}>
-            <div className={styles.fieldsTwo}>
-              <Field label="City" error={state.field === "city" ? state.error : undefined}>
-                <input
-                  name="city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  required
-                  className="input-admin"
-                  autoComplete="address-level2"
-                />
-              </Field>
-              <Field label="County">
-                <input
-                  name="county"
-                  value={county}
-                  onChange={(e) => setCounty(e.target.value)}
-                  className="input-admin"
-                  autoComplete="address-level1"
-                />
-              </Field>
-            </div>
-
             <PharmacyLocationCapture
               pharmacyId={pharmacyId}
               initialLatitude={latitude}
               initialLongitude={longitude}
-              onCoordinatesChange={(lat, lng) => {
-                setLatitude(lat);
-                setLongitude(lng);
+              initialCity={city}
+              initialCounty={county}
+              initialCountry="Kenya"
+              onLocationChange={(location) => {
+                setLatitude(location.latitude);
+                setLongitude(location.longitude);
+                if (location.city !== undefined) setCity(location.city || "");
+                if (location.county !== undefined) setCounty(location.county || "");
               }}
             />
 
@@ -362,11 +346,17 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
             </details>
           </div>
 
+          {!locationReady ? (
+            <p className={`${styles.alert} ${styles.alertWarn}`} role="status">
+              Capture the pharmacy’s current location above. City and county will be derived automatically.
+            </p>
+          ) : null}
+
           <div className={styles.actions}>
             <button type="button" className="btn-ghost justify-center" onClick={() => setStep(0)}>
               Back
             </button>
-            <button className="btn-primary justify-center" type="submit" disabled={updatePending}>
+            <button className="btn-primary justify-center" type="submit" disabled={updatePending || !locationReady}>
               {updatePending ? "Saving…" : "Continue"}
             </button>
           </div>
@@ -386,14 +376,11 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
               </div>
               <div>
                 <dt>Place</dt>
-                <dd>
-                  {city}
-                  {county ? `, ${county}` : ""}
-                </dd>
+                <dd>{city ? `${city}${county ? `, ${county}` : ""}` : "Captured from premises location"}</dd>
               </div>
               <div>
-                <dt>Map pin</dt>
-                <dd>{latitude != null && longitude != null ? "Saved" : "Not captured yet"}</dd>
+                <dt>Location</dt>
+                <dd>{latitude != null && longitude != null ? "Captured from device" : "Not captured yet"}</dd>
               </div>
               <div>
                 <dt>Phone</dt>
