@@ -12,6 +12,7 @@ type TokenCache = { token: string; expiresAt: number };
 const tokenCache = new Map<string, TokenCache>();
 
 export type DarajaEnv = "sandbox" | "production";
+export type DarajaTransactionType = "CustomerPayBillOnline" | "CustomerBuyGoodsOnline";
 
 export function darajaConfigured(): boolean {
   return Boolean(
@@ -28,7 +29,8 @@ export async function darajaConfiguredFor(pharmacyId?: string | null): Promise<b
 }
 
 export function getDarajaEnv(): DarajaEnv {
-  return process.env.DARAJA_ENV?.trim().toLowerCase() === "production" ? "production" : "sandbox";
+  const value = process.env.DARAJA_ENV?.trim().toLowerCase();
+  return value === "production" || value === "live" ? "production" : "sandbox";
 }
 
 function baseUrl(env: DarajaEnv): string {
@@ -88,29 +90,24 @@ export function phoneLast9(phone: string): string {
 }
 
 /**
- * Daraja expects the password timestamp and request Timestamp to use East Africa
- * Time (Africa/Nairobi), formatted as YYYYMMDDHHmmss. Vercel functions run in
- * UTC, so using Date#toISOString() produces a timestamp three hours behind EAT
- * and can cause otherwise-valid STK requests to be rejected.
+ * Safaricom's official Node reference implementation signs the request with
+ * the first 14 digits of an ISO timestamp (YYYYMMDDHHmmss). Keep password and
+ * request Timestamp identical and do not apply an additional Nairobi offset.
  */
 export function darajaTimestamp(date = new Date()): string {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Nairobi",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(date);
-  const part = (type: Intl.DateTimeFormatPartTypes) =>
-    parts.find((item) => item.type === type)?.value || "";
-  return `${part("year")}${part("month")}${part("day")}${part("hour")}${part("minute")}${part("second")}`;
+  return date.toISOString().replace(/[^0-9]/g, "").slice(0, 14);
 }
 
 function password(creds: DarajaCredentials, ts: string): string {
   return Buffer.from(`${creds.shortcode}${creds.passkey}${ts}`).toString("base64");
+}
+
+function darajaText(value: string, maxLength: number, fallback: string): string {
+  const clean = value
+    .replace(/[^A-Za-z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return (clean || fallback).slice(0, maxLength);
 }
 
 function safeProviderDetail(value: unknown): Record<string, unknown> | undefined {
@@ -144,7 +141,11 @@ export async function getDarajaToken(creds?: DarajaCredentials): Promise<string>
   let r: Response;
   try {
     r = await fetch(`${baseUrl(resolved.env)}/oauth/v1/generate?grant_type=client_credentials`, {
-      headers: { Authorization: `Basic ${auth}` },
+      headers: {
+        Authorization: `Basic ${auth}`,
+        Accept: "application/json",
+        "Cache-Control": "no-cache",
+      },
       cache: "no-store",
       signal: AbortSignal.timeout(15_000),
     });
@@ -186,6 +187,7 @@ export type StkPushInput = {
   transactionDesc: string;
   callbackUrl?: string;
   credentials?: DarajaCredentials | null;
+  transactionType?: DarajaTransactionType;
 };
 
 export type StkPushResult =
@@ -226,10 +228,13 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
   const callbackUrl = resolveCallbackUrl(input, creds);
   if (!callbackUrl) return { ok: false, error: "daraja_callback_url_missing" };
 
-  const transactionType =
+  const configuredTransactionType: DarajaTransactionType =
     process.env.DARAJA_TRANSACTION_TYPE?.trim() === "CustomerBuyGoodsOnline"
       ? "CustomerBuyGoodsOnline"
       : "CustomerPayBillOnline";
+  const transactionType = input.transactionType ?? configuredTransactionType;
+  const accountReference = darajaText(input.accountReference, 12, "Aether");
+  const transactionDesc = darajaText(input.transactionDesc, 19, "Payment");
 
   let res: Response;
   try {
@@ -238,6 +243,8 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        Accept: "application/json",
+        "Cache-Control": "no-cache",
       },
       body: JSON.stringify({
         BusinessShortCode: creds.shortcode,
@@ -249,8 +256,8 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
         PartyB: creds.shortcode,
         PhoneNumber: phone,
         CallBackURL: callbackUrl,
-        AccountReference: input.accountReference.slice(0, 12) || "Aether",
-        TransactionDesc: input.transactionDesc.slice(0, 13) || "Payment",
+        AccountReference: accountReference,
+        TransactionDesc: transactionDesc,
       }),
       cache: "no-store",
       signal: AbortSignal.timeout(20_000),
@@ -306,6 +313,8 @@ export async function stkPush(input: StkPushInput): Promise<StkPushResult> {
 
   console.info("[daraja][stk] accepted", {
     environment: creds.env,
+    shortcode: creds.shortcode,
+    transactionType,
     checkoutRequestId: j.CheckoutRequestID,
     merchantRequestId: j.MerchantRequestID || "",
   });
@@ -357,6 +366,8 @@ export async function stkQuery(
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        Accept: "application/json",
+        "Cache-Control": "no-cache",
       },
       body: JSON.stringify({
         BusinessShortCode: creds.shortcode,
