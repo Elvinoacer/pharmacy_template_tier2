@@ -2,7 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { prisma, prismaUnscoped } from "@/app/lib/db";
-import { pharmacy as staticPharmacy, platform } from "@/app/lib/data";
+import { platform } from "@/app/lib/data";
 import {
   findPharmacyById,
   findPharmacyBySlug,
@@ -93,12 +93,14 @@ export function buildMapsDirections(lat: number, lng: number, label?: string): s
 }
 
 export function buildMapsDirectionsFromAddress(address: string): string {
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+  return address
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`
+    : "";
 }
 
 function parseHours(raw: unknown): PharmacyHour[] {
-  // No silent fallback to seed-tenant hours — an empty array means the
-  // pharmacy hasn't published hours and pages show an honest placeholder.
+  // No silent fallback to demo hours — an empty array means the pharmacy has
+  // not published hours yet and the UI should say so honestly.
   if (!Array.isArray(raw)) return [];
   return raw
     .map((h) => {
@@ -127,25 +129,36 @@ function normalizedStringArray(raw: unknown): string[] {
   return raw.map((x) => String(x ?? "").trim()).filter(Boolean);
 }
 
+/**
+ * Neutral unresolved state. This deliberately contains no pharmacy/storefront
+ * identity so a missing tenant can never masquerade as a real pharmacy.
+ */
 function fallbackResolved(): ResolvedPharmacy {
   return {
     id: null,
     slug: null,
-    name: staticPharmacy.name,
-    tagline: staticPharmacy.tagline,
-    description: staticPharmacy.description,
-    phone: staticPharmacy.phone,
-    phoneHref: staticPharmacy.phoneHref,
-    email: staticPharmacy.email,
-    whatsapp: staticPharmacy.whatsapp,
-    whatsappHref: staticPharmacy.whatsappHref,
-    address: { ...staticPharmacy.address },
+    name: platform.name,
+    tagline: platform.tagline,
+    description: platform.description,
+    phone: platform.phone,
+    phoneHref: platform.phoneHref,
+    email: platform.email,
+    whatsapp: platform.whatsapp,
+    whatsappHref: platform.whatsappHref,
+    address: {
+      street: "",
+      city: "",
+      state: "",
+      zip: "",
+      full: "",
+      country: platform.country,
+    },
     latitude: null,
     longitude: null,
     placeId: null,
-    mapsEmbed: staticPharmacy.mapsEmbed,
-    mapsDirections: staticPharmacy.mapsDirections,
-    hours: staticPharmacy.hours,
+    mapsEmbed: "",
+    mapsDirections: "",
+    hours: [],
     logoUrl: null,
     coverImageUrl: null,
     about: null,
@@ -188,9 +201,8 @@ async function resolvePharmacyUncached(
 
   let row: Awaited<ReturnType<typeof prismaUnscoped.pharmacySettings.findUnique>> = null;
   try {
-    // We already know the verified tenant id. Bind it directly while loading
-    // settings so the RLS pool does not have to resolve the same pharmacy from
-    // request headers again just to establish database context.
+    // We already know the tenant id. Bind it directly while loading settings
+    // so the RLS pool does not have to resolve the same pharmacy again.
     row = await withPharmacy(
       pharmacy.id,
       () =>
@@ -200,13 +212,14 @@ async function resolvePharmacyUncached(
       pharmacy.slug,
     );
   } catch {
-    // DB may be unavailable during build/outage — fall back to pharmacy row + static.
+    // If settings are unavailable, use only the resolved Pharmacy database row.
+    // Never substitute a static/demo pharmacy profile.
   }
 
-  const phone = row?.phone?.trim() || pharmacy.phone || platform.phone;
-  const email = row?.email?.trim() || pharmacy.email || platform.email;
+  const phone = row?.phone?.trim() || pharmacy.phone || "";
+  const email = row?.email?.trim() || pharmacy.email || "";
   const whatsapp =
-    row?.whatsapp?.trim() || pharmacy.whatsapp || row?.phone?.trim() || pharmacy.phone || platform.whatsapp;
+    row?.whatsapp?.trim() || pharmacy.whatsapp || row?.phone?.trim() || pharmacy.phone || "";
   const street = row?.addressLine1?.trim() || "";
   const city = row?.city?.trim() || pharmacy.city || "";
   const state = row?.state?.trim() || pharmacy.county || "";
@@ -244,10 +257,10 @@ async function resolvePharmacyUncached(
     tagline: row?.tagline?.trim() || pharmacy.tagline || "",
     description: pharmacy.description || "",
     phone,
-    phoneHref: `tel:${phone.replace(/\s+/g, "")}`,
+    phoneHref: phone ? `tel:${phone.replace(/\s+/g, "")}` : "",
     email,
     whatsapp,
-    whatsappHref: `https://wa.me/${digitsOnly(whatsapp)}`,
+    whatsappHref: whatsapp ? `https://wa.me/${digitsOnly(whatsapp)}` : "",
     address: {
       street,
       city,
@@ -286,8 +299,8 @@ async function resolvePharmacyUncached(
 const resolveCurrentPharmacy = cache(() => resolvePharmacyUncached());
 
 /**
- * Resolve pharmacy public profile: tenant Pharmacy + PharmacySettings win over static seed data.
- * Safe to call from server components and route handlers.
+ * Resolve a pharmacy public profile from the tenant Pharmacy row plus its
+ * PharmacySettings row. No static/demo pharmacy identity is used.
  */
 export function getResolvedPharmacy(
   opts?: ResolvePharmacyOpts,
