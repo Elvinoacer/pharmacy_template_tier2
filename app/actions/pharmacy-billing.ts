@@ -9,7 +9,7 @@ import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
 import { createIntaSendBillingCheckout } from "@/app/lib/services/intasend-checkout";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
-import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
+import { withPharmacy } from "@/app/lib/tenant-context";
 
 export type BillingState = { error?: string; success?: string; redirectUrl?: string };
 
@@ -62,8 +62,12 @@ async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
     ...(invoiceNumber ? [{ number: invoiceNumber }] : []),
   ];
 
+  // The page that rendered the invoice uses this same explicit tenant scope.
+  // Keep the payment action under the pharmacy RLS context instead of switching
+  // to platform bypass mid-request, which can lose visibility on pooled
+  // connections and make an invoice that was just rendered appear missing.
   const exact = identifiers.length
-    ? await withPlatformBypass(() =>
+    ? await withPharmacy(pharmacyId, () =>
         db.invoice.findFirst({
           where: { pharmacyId, OR: identifiers },
         }),
@@ -72,7 +76,7 @@ async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
 
   if (exact) return exact;
 
-  const verification = await withPlatformBypass(() =>
+  const verification = await withPharmacy(pharmacyId, () =>
     db.invoice.findFirst({
       where: {
         pharmacyId,
@@ -91,7 +95,7 @@ async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
     return verification;
   }
 
-  const collectible = await withPlatformBypass(() =>
+  const collectible = await withPharmacy(pharmacyId, () =>
     db.invoice.findMany({
       where: {
         pharmacyId,
