@@ -3,15 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  CalendarCheck,
   FileText,
   Printer,
-  ShieldCheck,
   Syringe,
   HeartPulse,
 } from "lucide-react";
 import { COUNSELLING_TOPICS } from "@/app/lib/vaccination-catalog";
-import { pharmacy } from "@/app/lib/data";
 
 type RecordItem = {
   id: string;
@@ -152,8 +149,11 @@ export function PortalVaccinationsView({
           >
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-700">Immunisation certificate</p>
             <h3 className="mt-2 text-2xl font-semibold" style={{ fontFamily: "var(--font-display), serif" }}>
-              {pharmacy.name}
+              Pharmacy immunisation record
             </h3>
+            <p className="mt-1 text-xs text-[#5a6b62]">
+              Provider identity must come from the issuing pharmacy record; this patient view does not substitute a template pharmacy name.
+            </p>
             <p className="mt-4 text-sm text-[#5a6b62]">This certifies that</p>
             <p className="text-xl font-semibold text-[#0c1a14]">{open.patientName}</p>
             <p className="mt-4 text-sm">
@@ -170,11 +170,7 @@ export function PortalVaccinationsView({
               Issued under local pharmacy immunisation rules. Not a substitute for a national immunisation information system or an International Certificate of Vaccination where one is legally required (e.g. yellow fever ICVP).
             </p>
             <div className="mt-6 flex gap-2">
-              <button
-                type="button"
-                className="btn-primary inline-flex text-sm"
-                onClick={() => window.print()}
-              >
+              <button type="button" className="btn-primary inline-flex text-sm" onClick={() => window.print()}>
                 <Printer className="h-4 w-4" /> Print
               </button>
               <button type="button" className="rounded-full px-4 py-2 text-sm font-semibold" onClick={() => setOpen(null)}>
