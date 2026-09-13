@@ -7,6 +7,7 @@ import { cancelSubscription, collectInvoicePayment } from "@/app/lib/platform/bi
 import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
 import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
+import { stkQuery } from "@/app/lib/services/daraja";
 import { createIntaSendBillingCheckout } from "@/app/lib/services/intasend-checkout";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
@@ -14,6 +15,7 @@ import { withPharmacy } from "@/app/lib/tenant-context";
 export type BillingState = { error?: string; success?: string; redirectUrl?: string };
 
 const BILLING_STK_RETRY_AFTER_MS = 90_000;
+const DARAJA_TRANSIENT_RESULT_CODES = new Set(["4999"]);
 
 async function clearExpiredBillingStk(invoiceId: string, pharmacyId: string) {
   const pending = await withPharmacy(pharmacyId, () =>
@@ -28,6 +30,42 @@ async function clearExpiredBillingStk(invoiceId: string, pharmacyId: string) {
   );
 
   if (!pending) return;
+
+  // A Daraja callback can reach us before STK Query catches up (sandbox commonly
+  // returns transient 4999 for a short period). If Safaricom has already sent a
+  // failure/cancel reason, actively query the previous checkout before blocking
+  // a retry. A provider-confirmed terminal failure is closed immediately so the
+  // owner can send another prompt without reloading the page.
+  if (pending.failureReason && pending.checkoutRequestId) {
+    const credentials = await resolveDarajaCredentials(null);
+    if (credentials) {
+      const provider = await stkQuery(pending.checkoutRequestId, credentials);
+      if (provider.ok && provider.resultCode) {
+        if (provider.resultCode === "0") {
+          throw new Error(
+            "Safaricom reports the previous payment as successful. Please wait for receipt confirmation before trying again.",
+          );
+        }
+
+        if (!DARAJA_TRANSIENT_RESULT_CODES.has(provider.resultCode)) {
+          await withPharmacy(pharmacyId, () =>
+            db.billingPayment.updateMany({
+              where: {
+                id: pending.id,
+                pharmacyId,
+                status: { in: ["pending", "processing"] },
+              },
+              data: {
+                status: "failed",
+                failureReason: `M-Pesa result ${provider.resultCode}: ${provider.resultDesc || pending.failureReason}`,
+              },
+            }),
+          );
+          return;
+        }
+      }
+    }
+  }
 
   const ageMs = Date.now() - pending.createdAt.getTime();
   if (ageMs >= BILLING_STK_RETRY_AFTER_MS) {
@@ -49,7 +87,9 @@ async function clearExpiredBillingStk(invoiceId: string, pharmacyId: string) {
 
   const remainingSeconds = Math.max(1, Math.ceil((BILLING_STK_RETRY_AFTER_MS - ageMs) / 1000));
   throw new Error(
-    `A previous M-Pesa request is still active. Wait about ${remainingSeconds}s, then retry if no prompt appears.`,
+    pending.failureReason
+      ? `Safaricom is still closing the previous M-Pesa request. Try the retry button again in about ${remainingSeconds}s; you do not need to refresh this page.`
+      : `A previous M-Pesa request is still active. Wait about ${remainingSeconds}s, then retry if no prompt appears.`,
   );
 }
 
