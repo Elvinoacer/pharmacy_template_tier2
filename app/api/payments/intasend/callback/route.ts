@@ -139,8 +139,9 @@ export async function POST(req: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "intasend_webhook_failed";
     console.error("[intasend billing webhook]", message);
-    if (inboundId) {
-      await withPlatformBypass(() => markWebhookProcessed(inboundId, message.slice(0, 250))).catch(() => undefined);
+    const failedInboundId = inboundId;
+    if (failedInboundId) {
+      await withPlatformBypass(() => markWebhookProcessed(failedInboundId, message.slice(0, 250))).catch(() => undefined);
     }
     return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }
