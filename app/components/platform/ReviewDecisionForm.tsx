@@ -43,7 +43,7 @@ function ApprovalStepUpDialog({ onClose, onVerified }: { onClose: () => void; on
         </div>
 
         <form action={action} className="space-y-4 px-5 py-5">
-          <p className="text-sm leading-6 text-emerald-50/70">Approval activates and publicly lists this pharmacy. Enter a fresh authenticator or recovery code. Your review notes and approval state stay on this page and the approval resumes automatically.</p>
+          <p className="text-sm leading-6 text-emerald-50/70">Approval verifies this pharmacy and unlocks its guided setup. It stays off the public network until the owner finishes setup and publishes it. Enter a fresh authenticator or recovery code; your review state stays here.</p>
           <label className="block text-sm font-semibold text-white">
             Authenticator or recovery code
             <input name="code" autoComplete="one-time-code" required pattern="[0-9a-fA-F ]{6,12}" maxLength={12} autoFocus placeholder="Enter code" className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-black/25 px-3.5 text-base text-white outline-none transition placeholder:text-white/30 focus:border-emerald-300/50 focus:ring-2 focus:ring-emerald-300/10" />
@@ -102,7 +102,7 @@ export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { phar
   const buttons = [
     ["under_review", "Mark in review", "border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-400/40 dark:bg-violet-400/10 dark:text-violet-100"],
     ["needs_info", "Request info", "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/50 dark:bg-amber-400/10 dark:text-amber-100"],
-    ["approve", alreadyLive ? "Already live" : approvalLoading ? "Checking verification…" : approvalReady ? "Approve & go live" : "Approval locked", "border-emerald-700 bg-emerald-700 font-semibold text-white dark:border-emerald-400/60 dark:bg-emerald-400 dark:text-emerald-950"],
+    ["approve", alreadyLive ? "Already live" : approvalLoading ? "Checking verification…" : approvalReady ? "Approve pharmacy" : "Approval locked", "border-emerald-700 bg-emerald-700 font-semibold text-white dark:border-emerald-400/60 dark:bg-emerald-400 dark:text-emerald-950"],
     ["reject", "Reject", "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-400/50 dark:bg-rose-400/10 dark:text-rose-100"],
   ] as const;
 
@@ -122,8 +122,8 @@ export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { phar
 
         {alreadyLive ? (
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-100">
-            <p className="flex items-center gap-2 font-semibold"><CheckCircle2 className="h-4 w-4" /> Pharmacy is verified and public</p>
-            <p className="mt-1 text-xs opacity-80">Public storefront discovery and care-request flows are enabled. Active medicines with Public listing enabled and active services can appear immediately; stock still controls medicine availability and ordering.</p>
+            <p className="flex items-center gap-2 font-semibold"><CheckCircle2 className="h-4 w-4" /> Pharmacy is set up and public</p>
+            <p className="mt-1 text-xs opacity-80">The guided setup is complete and the public network can surface eligible medicines, services and the pharmacy storefront.</p>
           </div>
         ) : approvalLoading ? (
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-teal-50/75">
@@ -132,7 +132,7 @@ export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { phar
         ) : approvalReady ? (
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-100">
             <p className="flex items-center gap-2 font-semibold"><CheckCircle2 className="h-4 w-4" /> Saved verification complete</p>
-            <p className="mt-1 text-xs opacity-80">Approval is now the final go-live action: it provisions the tenant, starts monthly service billing, marks setup complete, activates the pharmacy, lists it publicly and exposes eligible medicines and active services.</p>
+            <p className="mt-1 text-xs opacity-80">Approval will provision the tenant, carry over verified location/contact data, create the monthly-service billing state, and send the owner into guided setup. Public listing waits for setup completion.</p>
           </div>
         ) : (
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-950 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">
@@ -148,7 +148,7 @@ export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { phar
         </label>
 
         {state.error && state.error !== "STEP_UP_REQUIRED" ? <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800 dark:border-rose-400/40 dark:bg-rose-500/15 dark:text-rose-100">{state.error}</p> : null}
-        {state.error === "STEP_UP_REQUIRED" ? <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-400/40 dark:bg-amber-500/10 dark:text-amber-100">Fresh identity verification is required for this final approval. Complete the secure prompt; your approval will resume automatically.</p> : null}
+        {state.error === "STEP_UP_REQUIRED" ? <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-400/40 dark:bg-amber-500/10 dark:text-amber-100">Fresh identity verification is required for this approval. Complete the secure prompt; your approval will resume automatically.</p> : null}
         {state.success ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-400/40 dark:bg-emerald-500/15 dark:text-emerald-50">{state.success}</p> : null}
 
         <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">

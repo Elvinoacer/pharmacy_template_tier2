@@ -44,6 +44,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/admin");
   }
 
+  // A newly verified pharmacy stays inside guided setup until the owner finishes it.
+  // Platform staff are excluded so support/review tools never become trapped here.
+  if (!user.platformAdmin && user.activePharmacyId && !pathname.startsWith("/admin/setup")) {
+    const activePharmacy = await prismaUnscoped.pharmacy.findUnique({
+      where: { id: user.activePharmacyId },
+      select: { verifiedAt: true, status: true, setupCompletedAt: true },
+    });
+    if (
+      activePharmacy?.verifiedAt &&
+      ["approved", "active"].includes(activePharmacy.status) &&
+      !activePharmacy.setupCompletedAt
+    ) {
+      redirect("/admin/setup");
+    }
+  }
+
   // Impersonation banner — platform admin viewing a tenant via support view.
   let impersonatedName: string | null = null;
   try {

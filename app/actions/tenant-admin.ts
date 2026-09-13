@@ -1,5 +1,4 @@
 "use server";
-import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -7,13 +6,14 @@ import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { STAFF_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
+import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 
 export async function switchPharmacyAction(formData: FormData) {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/admin");
   const pharmacyId = String(formData.get("pharmacyId") || "");
   const allowed =
-    user.platformAdmin || user.memberships.some((m) => m.pharmacyId === pharmacyId);
+    user.platformAdmin || user.memberships.some((membership) => membership.pharmacyId === pharmacyId);
   if (!allowed) redirect("/admin/select");
 
   const jar = await cookies();
@@ -34,7 +34,9 @@ export async function saveTenantIntegrationsAction(formData: FormData) {
   const can =
     user.platformAdmin ||
     user.memberships.some(
-      (m) => m.pharmacyId === pharmacyId && (m.role === "owner" || m.role === "manager"),
+      (membership) =>
+        membership.pharmacyId === pharmacyId &&
+        (membership.role === "owner" || membership.role === "manager"),
     );
   if (!can) redirect("/admin/settings/integrations");
 
@@ -83,29 +85,55 @@ export async function saveTenantIntegrationsAction(formData: FormData) {
 export async function goLiveAction() {
   const user = await getSessionUser();
   if (!user?.activePharmacyId) redirect("/admin");
+
   const pharmacy = await prismaUnscoped.pharmacy.findUnique({
     where: { id: user.activePharmacyId },
   });
   if (!pharmacy) redirect("/admin");
+
   const can =
     user.platformAdmin ||
     user.memberships.some(
-      (m) => m.pharmacyId === pharmacy.id && (m.role === "owner" || m.role === "manager"),
+      (membership) =>
+        membership.pharmacyId === pharmacy.id &&
+        (membership.role === "owner" || membership.role === "manager"),
     );
   if (!can) redirect("/admin");
   if (pharmacy.status !== "approved" && pharmacy.status !== "active") redirect("/admin/setup");
 
-  if (!(await loadPharmacySetup(pharmacy.id)).ready) redirect("/admin/setup");
-  await prismaUnscoped.pharmacy.update({
-    where: { id: pharmacy.id },
-    data: {
-      status: "active",
-      listed: true,
-      goLiveAt: pharmacy.goLiveAt ?? new Date(),
-      setupCompletedAt: pharmacy.setupCompletedAt ?? new Date(),
-    },
-  });
+  const readiness = await loadPharmacySetup(pharmacy.id);
+  if (!readiness.ready) redirect("/admin/setup");
+
+  const completedAt = pharmacy.setupCompletedAt ?? new Date();
+  await prismaUnscoped.$transaction([
+    prismaUnscoped.pharmacy.update({
+      where: { id: pharmacy.id },
+      data: {
+        status: "active",
+        listed: true,
+        lifecycleStatus: "active",
+        goLiveAt: pharmacy.goLiveAt ?? completedAt,
+        setupCompletedAt: completedAt,
+      },
+    }),
+    prismaUnscoped.pharmacyOnboardingEvent.create({
+      data: {
+        pharmacyId: pharmacy.id,
+        actorId: user.id,
+        type: "setup_completed",
+        message: "Guided pharmacy setup completed and public listing enabled.",
+        meta: { source: "guided_setup" },
+      },
+    }),
+  ]);
+
   revalidatePath("/");
+  revalidatePath("/pharmacies");
+  revalidatePath(`/pharmacies/${pharmacy.slug}`);
+  revalidatePath(`/p/${pharmacy.slug}`);
+  revalidatePath("/medicines");
+  revalidatePath("/services");
+  revalidatePath("/admin");
   revalidatePath("/admin/setup");
   redirect("/admin");
 }
