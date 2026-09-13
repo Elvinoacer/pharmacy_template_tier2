@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
-import { prisma } from "@/app/lib/db";
+import { addSharedMasterToPharmacy } from "@/app/lib/services/shared-medication-library";
 
 export const runtime = "nodejs";
 
 const Body = z.object({
   medicationMasterId: z.string().uuid(),
-  slug: z.string().min(1).max(200),
+  // Slug is optional: the server derives a tenant-safe slug from the canonical
+  // medicine name when clients (such as the shared-library picker) omit it.
+  slug: z.string().min(1).max(200).optional().nullable(),
   sku: z.string().max(100).optional().nullable(),
   price: z.coerce.number().min(0).default(0),
   purchasePrice: z.coerce.number().min(0).optional().nullable(),
@@ -17,18 +19,14 @@ const Body = z.object({
   shelfLocation: z.string().max(200).optional().nullable(),
   promotions: z.string().optional().nullable(),
   overTheCounter: z.boolean().default(false),
-  prescriptionRequired: z.boolean().default(true),
+  prescriptionRequired: z.boolean().optional(),
   publicListing: z.boolean().default(false),
   active: z.boolean().default(true),
 });
 
 /**
- * Phase 3.1 — "Add to Pharmacy" action.
- * Creates a new PharmacyInventory row pointing at an EXISTING MedicationMaster.
- * Does NOT create or modify the master — that's the whole point of the shared library.
- *
- * Decision D22: lightweight confirm step (no full validation review) since the master
- * is already vetted. Only checks SKU uniqueness (DB-level unique index backs this up).
+ * Add an existing network-wide MedicationMaster to the current pharmacy.
+ * Only PharmacyInventory is created; the canonical clinical record is never cloned.
  */
 export async function POST(req: Request) {
   const user = await getSessionUser();
@@ -36,69 +34,44 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  let parsed: z.infer<typeof Body>;
+  let body: z.infer<typeof Body>;
   try {
-    parsed = Body.parse(await req.json());
-  } catch (e) {
-    return NextResponse.json({ error: "invalid_body", message: e instanceof Error ? e.message : "Invalid body." }, { status: 400 });
+    body = Body.parse(await req.json());
+  } catch (error) {
+    return NextResponse.json(
+      { error: "invalid_body", message: error instanceof Error ? error.message : "Invalid request." },
+      { status: 400 },
+    );
   }
 
   try {
-    const master = await prisma.medicationMaster.findUnique({
-      where: { id: parsed.medicationMasterId },
-      select: { id: true, name: true },
-    });
-    if (!master) {
-      return NextResponse.json({ error: "master_not_found" }, { status: 404 });
-    }
+    const result = await addSharedMasterToPharmacy(body.medicationMasterId, body);
 
-    // Prevent duplicate stock entries for the same master (single-tenant — one inventory row per master).
-    const existing = await prisma.pharmacyInventory.findFirst({
-      where: { medicationMasterId: parsed.medicationMasterId },
-      select: { id: true, slug: true },
-    });
-    if (existing) {
-      return NextResponse.json({
-        ok: false,
-        error: "already_stocked",
-        message: `You already stock this medication (inventory row "${existing.slug}"). Edit it instead.`,
-        inventoryId: existing.id,
-      }, { status: 409 });
-    }
-
-    const inv = await prisma.pharmacyInventory.create({
-      data: {
-        medicationMasterId: parsed.medicationMasterId,
-        slug: parsed.slug,
-        sku: parsed.sku || null,
-        price: parsed.price,
-        purchasePrice: parsed.purchasePrice ?? null,
-        currentStock: parsed.currentStock,
-        lowStockThreshold: parsed.lowStockThreshold,
-        supplier: parsed.supplier ?? null,
-        shelfLocation: parsed.shelfLocation ?? null,
-        promotions: parsed.promotions ?? null,
-        overTheCounter: parsed.overTheCounter,
-        prescriptionRequired: parsed.prescriptionRequired,
-        publicListing: parsed.publicListing,
-        active: parsed.active,
-      },
-    });
-
-    await writeAuditLog(user.id, "medication_added_to_pharmacy", "medication_master", parsed.medicationMasterId, {
-      inventoryId: inv.id,
+    await writeAuditLog(user.id, "shared_medication_reused", "medication_master", result.masterId, {
+      inventoryId: result.inventoryId,
+      alreadyStocked: result.alreadyStocked,
       acquisitionMethod: "shared_library",
-      slug: parsed.slug,
     });
 
-    return NextResponse.json({ ok: true, inventoryId: inv.id, masterId: parsed.medicationMasterId });
-  } catch (e) {
-    console.error("[library add POST]", e);
-    const message = e instanceof Error ? e.message : "Could not add medication to pharmacy.";
-    // Prisma unique-constraint violation on slug/sku → friendly message.
-    if (message.includes("slug") || message.includes("sku")) {
-      return NextResponse.json({ error: "duplicate", message: "The slug or SKU is already in use. Pick another." }, { status: 409 });
+    return NextResponse.json({
+      ok: true,
+      inventoryId: result.inventoryId,
+      masterId: result.masterId,
+      alreadyStocked: result.alreadyStocked,
+      reusedSharedMaster: true,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not add medicine to inventory.";
+    if (message === "SHARED_MEDICATION_NOT_FOUND") {
+      return NextResponse.json({ error: "not_found", message: "Shared medicine no longer exists." }, { status: 404 });
     }
-    return NextResponse.json({ error: "failed", message }, { status: 400 });
+    if (message.includes("Unique constraint") || message.includes("P2002")) {
+      return NextResponse.json(
+        { error: "inventory_conflict", message: "That SKU or medicine is already in this pharmacy inventory." },
+        { status: 409 },
+      );
+    }
+    console.error("[library add POST]", error);
+    return NextResponse.json({ error: "add_failed", message }, { status: 500 });
   }
 }

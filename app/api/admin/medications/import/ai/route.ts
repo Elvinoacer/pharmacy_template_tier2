@@ -2,15 +2,20 @@ import { NextResponse } from "next/server";
 import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
 import { MedicationAiSchema } from "@/app/lib/medication-ai-schema";
-import { validateMedication, computeEnrichmentScore } from "@/app/lib/services/medication-validation";
+import { validateMedication } from "@/app/lib/services/medication-validation";
+import {
+  createOrReuseMedicationForPharmacy,
+  findSharedMedicationMatch,
+  medicationSlug,
+  type SharedMedicationMasterInput,
+} from "@/app/lib/services/shared-medication-library";
 
 export const runtime = "nodejs";
 
 /**
- * Phase 3.3 — AI-Assisted Import endpoint.
- * Takes the parsed AI JSON, resolves lookup names → IDs, validates, creates
- * MedicationMaster + PharmacyInventory. Provider-agnostic (no AI API calls here —
- * the admin did the AI interaction externally).
+ * AI-assisted acquisition now feeds the same shared library as manual entry.
+ * Existing canonical masters are reused; genuinely new medicines create one
+ * shared master and one pharmacy-specific inventory row.
  */
 export async function POST(req: Request) {
   const user = await getSessionUser();
@@ -34,7 +39,6 @@ export async function POST(req: Request) {
   }
   const data = parsed.data;
 
-  // Resolve lookup names → IDs (create-or-find for manufacturer, active ingredients, clinical tags).
   const [dosageForm, route, pregnancyCategory, manufacturer] = await Promise.all([
     data.dosageForm
       ? prisma.medicationLookup.findFirst({ where: { kind: "dosage_form", value: { equals: data.dosageForm, mode: "insensitive" } }, select: { id: true } })
@@ -57,18 +61,18 @@ export async function POST(req: Request) {
 
   const activeIngredientIds: string[] = [];
   for (const name of data.activeIngredients || []) {
-    const ai = await prisma.activeIngredient.upsert({
+    const ingredient = await prisma.activeIngredient.upsert({
       where: { name },
       create: { name, active: true },
       update: {},
       select: { id: true },
     });
-    activeIngredientIds.push(ai.id);
+    activeIngredientIds.push(ingredient.id);
   }
 
   const clinicalTagIds: string[] = [];
   for (const name of data.clinicalTags || []) {
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const slug = medicationSlug(name);
     const tag = await prisma.clinicalTag.upsert({
       where: { name },
       create: { name, slug, active: true },
@@ -78,128 +82,112 @@ export async function POST(req: Request) {
     clinicalTagIds.push(tag.id);
   }
 
-  const candidateMaster = {
+  const sharedInput: SharedMedicationMasterInput = {
     name: data.name,
+    slug: medicationSlug(data.name),
     genericName: data.genericName,
     brandName: data.brandName ?? null,
-    barcode: data.barcode ?? null,
+    strengthValue: data.strengthValue ?? null,
+    strengthUnit: data.strengthUnit ?? null,
+    strengthDisplay: data.strengthDisplay ?? null,
+    packSize: data.packSize ?? null,
     dosageFormId: dosageForm?.id ?? null,
     routeId: route?.id ?? null,
     pregnancyCategoryId: pregnancyCategory?.id ?? null,
     manufacturerId: manufacturer?.id ?? null,
+    countryOfOrigin: data.countryOfOrigin ?? null,
+    barcode: data.barcode ?? null,
+    category: data.category ?? "general",
+    description: data.description ?? null,
+    indications: data.indications ?? null,
+    dosage: data.dosage ?? null,
+    sideEffects: data.sideEffects ?? null,
+    contraindications: data.contraindications ?? null,
+    storage: data.storage ?? null,
+    clinicalNotes: data.clinicalNotes ?? null,
     controlledDrug: data.controlledDrug ?? false,
     controlledDrugSchedule: data.controlledDrugSchedule ?? null,
+    pediatricUse: data.pediatricUse ?? false,
+    requiresRefrigeration: data.requiresRefrigeration ?? false,
+    acquisitionMethod: "ai_import",
+    activeIngredientIds,
+    clinicalTagIds,
   };
 
-  const validation = await validateMedication(candidateMaster, {
-    slug: data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-    price: 0, // filled in the review step
-  });
+  const exactSharedMatch = await findSharedMedicationMatch(sharedInput);
+  const validation = await validateMedication(
+    {
+      id: exactSharedMatch?.id,
+      name: data.name,
+      genericName: data.genericName,
+      brandName: data.brandName ?? null,
+      strengthValue: data.strengthValue ?? null,
+      strengthUnit: data.strengthUnit ?? null,
+      strengthDisplay: data.strengthDisplay ?? null,
+      dosageFormId: dosageForm?.id ?? null,
+      routeId: route?.id ?? null,
+      barcode: data.barcode ?? null,
+      controlledDrug: data.controlledDrug ?? false,
+      controlledDrugSchedule: data.controlledDrugSchedule ?? null,
+    },
+    {
+      medicationMasterId: exactSharedMatch?.id,
+      slug: medicationSlug(data.name),
+      price: 0,
+      overTheCounter: false,
+      prescriptionRequired: true,
+    },
+    { existingMasterId: exactSharedMatch?.id },
+  );
 
   if (validation.counts.fail > 0) {
     return NextResponse.json({ ok: false, validation, error: "Validation failed." }, { status: 422 });
   }
 
-  const enrichment = computeEnrichmentScore({
-    genericName: data.genericName,
-    activeIngredients: activeIngredientIds,
-    strengthDisplay: data.strengthDisplay,
-    dosageFormId: dosageForm?.id,
-    routeId: route?.id,
-    indications: data.indications,
-    sideEffects: data.sideEffects,
-    contraindications: data.contraindications,
-    manufacturerId: manufacturer?.id,
-    pregnancyCategoryId: pregnancyCategory?.id,
-    barcode: data.barcode,
-  });
-
-  const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const master = await tx.medicationMaster.create({
-        data: {
-          name: data.name,
-          slug,
-          genericName: data.genericName,
-          brandName: data.brandName ?? null,
-          strengthValue: data.strengthValue ?? null,
-          strengthUnit: data.strengthUnit ?? null,
-          strengthDisplay: data.strengthDisplay ?? null,
-          packSize: data.packSize ?? null,
-          dosageFormId: dosageForm?.id,
-          routeId: route?.id,
-          pregnancyCategoryId: pregnancyCategory?.id,
-          manufacturerId: manufacturer?.id,
-          countryOfOrigin: data.countryOfOrigin ?? null,
-          barcode: data.barcode ?? null,
-          category: data.category ?? "general",
-          description: data.description ?? null,
-          indications: data.indications ?? null,
-          dosage: data.dosage ?? null,
-          sideEffects: data.sideEffects ?? null,
-          contraindications: data.contraindications ?? null,
-          storage: data.storage ?? null,
-          clinicalNotes: data.clinicalNotes ?? null,
-          controlledDrug: data.controlledDrug ?? false,
-          controlledDrugSchedule: data.controlledDrugSchedule ?? null,
-          pediatricUse: data.pediatricUse ?? false,
-          requiresRefrigeration: data.requiresRefrigeration ?? false,
-          enrichmentStatus: enrichment.status,
-          enrichmentScore: enrichment.score,
-          enrichedAt: enrichment.status === "complete" ? new Date() : null,
-          acquisitionMethod: "ai_import",
-        },
-      });
-
-      if (activeIngredientIds.length > 0) {
-        await tx.medicationActiveIngredient.createMany({
-          data: activeIngredientIds.map((id) => ({ medicationMasterId: master.id, activeIngredientId: id })),
-          skipDuplicates: true,
-        });
-      }
-      if (clinicalTagIds.length > 0) {
-        await tx.medicationClinicalTag.createMany({
-          data: clinicalTagIds.map((id) => ({ medicationMasterId: master.id, clinicalTagId: id })),
-          skipDuplicates: true,
-        });
-      }
-
-      const inventory = await tx.pharmacyInventory.create({
-        data: {
-          medicationMasterId: master.id,
-          slug,
-          price: 0,
-          currentStock: 0,
-          lowStockThreshold: 10,
-          overTheCounter: false,
-          prescriptionRequired: true,
-          publicListing: false,
-          active: true,
-        },
-      });
-
-      return { master, inventory };
+    const result = await createOrReuseMedicationForPharmacy(sharedInput, {
+      slug: medicationSlug(data.name),
+      price: 0,
+      currentStock: 0,
+      lowStockThreshold: 10,
+      overTheCounter: false,
+      prescriptionRequired: true,
+      publicListing: false,
+      active: true,
     });
 
-    await writeAuditLog(user.id, "medication_created", "medication_master", result.master.id, {
-      inventoryId: result.inventory.id,
-      acquisitionMethod: "ai_import",
-      enrichmentScore: enrichment.score,
-    });
+    await writeAuditLog(
+      user.id,
+      result.masterCreated ? "shared_medication_created" : "shared_medication_reused",
+      "medication_master",
+      result.masterId,
+      {
+        inventoryId: result.inventoryId,
+        acquisitionMethod: "ai_import",
+        matchReason: result.matchReason,
+        alreadyStocked: result.alreadyStocked,
+        enrichmentScore: result.enrichmentScore,
+      },
+    );
 
     return NextResponse.json({
       ok: true,
-      masterId: result.master.id,
-      inventoryId: result.inventory.id,
-      enrichmentScore: enrichment.score,
-      enrichmentStatus: enrichment.status,
+      masterId: result.masterId,
+      inventoryId: result.inventoryId,
+      masterCreated: result.masterCreated,
+      reusedSharedMaster: !result.masterCreated,
+      alreadyStocked: result.alreadyStocked,
+      matchReason: result.matchReason,
+      enrichmentScore: result.enrichmentScore,
+      enrichmentStatus: result.enrichmentStatus,
       validation,
-      redirectTo: `/admin/medications/${result.inventory.id}`,
+      redirectTo: `/admin/medications/${result.inventoryId}`,
     });
-  } catch (e) {
-    console.error("[ai import POST]", e);
-    return NextResponse.json({ error: "create_failed", message: e instanceof Error ? e.message : "Could not save medication." }, { status: 500 });
+  } catch (error) {
+    console.error("[ai import POST]", error);
+    return NextResponse.json(
+      { error: "create_failed", message: error instanceof Error ? error.message : "Could not save medication." },
+      { status: 500 },
+    );
   }
 }

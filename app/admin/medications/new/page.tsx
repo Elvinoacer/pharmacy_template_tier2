@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
-import { adminCreateMedicationAction } from "@/app/actions/admin";
+import { adminCreateSharedMedicationAction } from "@/app/actions/shared-medications";
 import { listActiveCategoryOptions } from "@/app/lib/medication-categories";
 import {
   listDosageForms,
@@ -13,7 +13,7 @@ import {
 import { AdminShell } from "@/app/components/admin/AdminShell";
 import MedicationForm from "@/app/components/admin/MedicationForm";
 import Link from "next/link";
-import { ArrowLeft, Pill, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, Library, Pill, ShieldCheck, Sparkles } from "lucide-react";
 
 export const metadata = { title: "Manual Entry — Medication" };
 
@@ -43,7 +43,7 @@ export default async function NewMedicationPage() {
     <AdminShell
       user={user}
       title="Enter medicine details"
-      subtitle="Add a medicine manually. Check the clinical details before saving."
+      subtitle="If the medicine already exists in the network library, it will be reused automatically."
     >
       <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -54,8 +54,20 @@ export default async function NewMedicationPage() {
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" /> Back to acquisition chooser
           </Link>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-            <ShieldCheck className="h-3.5 w-3.5" /> Review before save
+            <ShieldCheck className="h-3.5 w-3.5" /> Deduplicated before save
           </span>
+        </div>
+
+        <div className="rounded-2xl border border-sky-500/20 bg-sky-500/10 px-4 py-3 text-sm text-sky-900 dark:text-sky-100">
+          <div className="flex items-start gap-2.5">
+            <Library className="mt-0.5 h-4 w-4 shrink-0" />
+            <div>
+              <p className="font-semibold">One medicine record, many pharmacy inventories</p>
+              <p className="mt-0.5 text-xs leading-5 text-sky-800/80 dark:text-sky-100/75">
+                New medicines join the shared library after validation. Your price, stock, supplier, shelf and public visibility remain private to your pharmacy.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="relative overflow-hidden rounded-2xl border border-[var(--admin-border-2)] bg-[var(--admin-card)] shadow-xl shadow-emerald-500/5 sm:rounded-3xl">
@@ -72,7 +84,7 @@ export default async function NewMedicationPage() {
                   <span className="rounded-full bg-[var(--admin-inset)] px-2 py-1 text-[10px] font-bold uppercase tracking-wide admin-soft">Manual</span>
                 </div>
                 <p className="mt-1 max-w-2xl text-xs leading-relaxed admin-muted sm:text-sm">
-                  Work from identity and clinical safety first, then complete commercial, inventory, and media details.
+                  We check barcode and clinical identity against the shared library before creating anything new.
                 </p>
               </div>
             </div>
@@ -93,13 +105,13 @@ export default async function NewMedicationPage() {
 
             <div className="mt-3 flex items-start gap-2 rounded-xl bg-[var(--admin-inset)] px-3 py-2.5 text-xs leading-relaxed admin-soft">
               <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 admin-accent-text" />
-              Required and safety-critical fields come first. Collapsible sections keep the form focused on smaller screens.
+              Required and safety-critical fields come first. Possible duplicates are reviewed before a new shared record is created.
             </div>
           </div>
 
           <div className="relative p-3 sm:p-5 lg:p-6">
             <MedicationForm
-              action={adminCreateMedicationAction}
+              action={adminCreateSharedMedicationAction}
               categories={categories}
               dosageForms={dosageForms}
               routes={routes}
