@@ -1,5 +1,6 @@
 import { createTransactionFeeStatement } from "@/app/actions/transaction-fees";
 import { CancelServiceForm, PharmacyPaymentForm } from "@/app/components/onboard/BillingForms";
+import MpesaRetryForm from "@/app/components/onboard/MpesaRetryForm";
 import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 import { getSessionUser } from "@/app/lib/auth";
@@ -23,6 +24,7 @@ type PaymentView = {
   status: string;
   failureReason: string | null;
   providerRef: string | null;
+  phone: string | null;
   createdAt: Date;
 };
 
@@ -187,6 +189,10 @@ export default async function PharmacyBillingPage() {
               : null;
           const mpesaOutcome =
             latestPayment?.provider === "mpesa" ? describeMpesaOutcome(latestPayment) : null;
+          const retryableMpesa =
+            latestPayment?.provider === "mpesa" &&
+            Boolean(latestPayment.failureReason) &&
+            ["open", "overdue"].includes(inv.status);
 
           return (
             <section key={inv.id} className={styles.invoice}>
@@ -225,14 +231,26 @@ export default async function PharmacyBillingPage() {
               ) : null}
 
               {["open", "overdue"].includes(inv.status) ? (
-                pending ? (
+                retryableMpesa ? (
+                  <div className="space-y-3">
+                    {pending ? (
+                      <p role="status" className="text-sm text-[var(--muted)]">
+                        Safaricom has returned an outcome. You can retry here without refreshing; the server will first verify that the previous prompt is no longer active.
+                      </p>
+                    ) : null}
+                    <MpesaRetryForm
+                      pharmacyId={pharmacy.id}
+                      invoiceId={inv.id}
+                      invoiceNumber={inv.number}
+                      phone={latestPayment?.phone}
+                    />
+                  </div>
+                ) : pending ? (
                   <div className="space-y-3">
                     <p role="status" className="text-sm text-[var(--muted)]">
                       {pending.provider === "intasend"
                         ? "Secure checkout is still in progress. Do not start another payment for this invoice."
-                        : latestPayment?.failureReason
-                          ? "Safaricom has returned an outcome. We are verifying it and this page will update automatically."
-                          : "M-Pesa payment is confirming through Daraja. This page checks the status automatically every few seconds."}
+                        : "M-Pesa payment is confirming through Daraja. This page checks the status automatically every few seconds."}
                     </p>
                     {resumableCheckout ? (
                       <a href={resumableCheckout} className="btn-ghost inline-flex min-h-11 items-center justify-center">
