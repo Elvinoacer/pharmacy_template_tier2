@@ -10,11 +10,13 @@ const input =
 export function PharmacyPaymentForm({
   pharmacyId,
   invoiceId,
+  invoiceNumber,
   stkAvailable = true,
   checkoutAvailable = false,
 }: {
   pharmacyId: string;
   invoiceId?: string;
+  invoiceNumber?: string;
   stkAvailable?: boolean;
   checkoutAvailable?: boolean;
 }) {
@@ -41,6 +43,14 @@ export function PharmacyPaymentForm({
     );
   }
 
+  const invoiceIdentity = (
+    <>
+      <input type="hidden" name="pharmacyId" value={pharmacyId} />
+      <input type="hidden" name="invoiceId" value={invoiceId} />
+      {invoiceNumber ? <input type="hidden" name="invoiceNumber" value={invoiceNumber} /> : null}
+    </>
+  );
+
   return (
     <div className="grid gap-3">
       <form
@@ -48,8 +58,7 @@ export function PharmacyPaymentForm({
         className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4"
         aria-busy={stkPending}
       >
-        <input type="hidden" name="pharmacyId" value={pharmacyId} />
-        <input type="hidden" name="invoiceId" value={invoiceId} />
+        {invoiceIdentity}
         <input type="hidden" name="intent" value="pay" />
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-3">
@@ -89,7 +98,7 @@ export function PharmacyPaymentForm({
           </>
         ) : (
           <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
-            Direct M-Pesa prompt is temporarily unavailable because live platform Daraja credentials are not ready.
+            Direct M-Pesa prompt is temporarily unavailable because platform Daraja credentials are not ready.
           </p>
         )}
 
@@ -104,8 +113,7 @@ export function PharmacyPaymentForm({
           className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4"
           aria-busy={checkoutPending}
         >
-          <input type="hidden" name="pharmacyId" value={pharmacyId} />
-          <input type="hidden" name="invoiceId" value={invoiceId} />
+          {invoiceIdentity}
           <input type="hidden" name="intent" value="checkout" />
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-start gap-3">
@@ -135,7 +143,7 @@ export function PharmacyPaymentForm({
 
       {!stkAvailable && !checkoutAvailable ? (
         <p className="rounded-xl border border-[var(--line-2)] p-3 text-sm text-[var(--muted)]">
-          No live payment rail is configured for platform billing yet. Your invoice remains safe and unpaid until a verified payment succeeds.
+          No payment rail is configured for platform billing yet. Your invoice remains safe and unpaid until a verified payment succeeds.
         </p>
       ) : null}
     </div>
