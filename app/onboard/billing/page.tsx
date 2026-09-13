@@ -164,6 +164,7 @@ export default async function PharmacyBillingPage() {
                   <PharmacyPaymentForm
                     pharmacyId={pharmacy.id}
                     invoiceId={inv.id}
+                    invoiceNumber={inv.number}
                     stkAvailable={stkAvailable}
                     checkoutAvailable={checkoutAvailable}
                   />
