@@ -15,13 +15,7 @@ type Readiness = {
   riskScore: number;
 };
 
-export default function ReviewDecisionForm({
-  pharmacyId,
-  currentStatus,
-}: {
-  pharmacyId: string;
-  currentStatus: string;
-}) {
+export default function ReviewDecisionForm({ pharmacyId, currentStatus }: { pharmacyId: string; currentStatus: string }) {
   const [state, action, pending] = useActionState(safeReviewPharmacyAction, initial);
   const [readiness, setReadiness] = useState<Readiness | null>(null);
 
@@ -29,21 +23,28 @@ export default function ReviewDecisionForm({
     let active = true;
     async function load() {
       try {
-        const response = await fetch(`/api/platform/pharmacy-verification-readiness?pharmacyId=${encodeURIComponent(pharmacyId)}`, { cache: "no-store", credentials: "same-origin" });
+        const response = await fetch(`/api/platform/pharmacy-verification-readiness?pharmacyId=${encodeURIComponent(pharmacyId)}`, {
+          cache: "no-store",
+          credentials: "same-origin",
+        });
         if (!response.ok) return;
         const data = await response.json() as Readiness;
         if (active) setReadiness(data);
       } catch {
-        // The server-side approval action remains the final authority if this status request fails.
+        // The approval server action remains the final authority.
       }
     }
+
     void load();
-    return () => { active = false; };
-  }, [pharmacyId, state.success, state.error]);
+    const timer = readiness?.ready ? null : window.setInterval(() => { void load(); }, 1500);
+    return () => {
+      active = false;
+      if (timer) window.clearInterval(timer);
+    };
+  }, [pharmacyId, state.success, state.error, readiness?.ready]);
 
   const approvalReady = readiness?.ready === true;
   const approvalLoading = readiness === null;
-
   const buttons = [
     ["under_review", "Mark in review", "border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-400/40 dark:bg-violet-400/10 dark:text-violet-100"],
     ["needs_info", "Request info", "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/50 dark:bg-amber-400/10 dark:text-amber-100"],
@@ -71,12 +72,12 @@ export default function ReviewDecisionForm({
       ) : approvalReady ? (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-100">
           <p className="flex items-center gap-2 font-semibold"><CheckCircle2 className="h-4 w-4" /> Saved verification complete</p>
-          <p className="mt-1 text-xs opacity-80">The approval action is reading a complete checklist from the server.</p>
+          <p className="mt-1 text-xs opacity-80">The approval action is reading the complete persisted checklist from the server.</p>
         </div>
       ) : (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-950 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">
           <p className="flex items-center gap-2 text-sm font-semibold"><LockKeyhole className="h-4 w-4" /> Approval is waiting for saved verification</p>
-          <p className="mt-1 text-xs opacity-80">Complete the verification checklist. It autosaves, and this panel reads the persisted server copy.</p>
+          <p className="mt-1 text-xs opacity-80">Complete the verification checklist. It autosaves, and this panel checks the persisted server copy every few seconds.</p>
           {readiness.missing.length ? <p className="mt-2 text-xs opacity-80">Still required: {readiness.missing.slice(0, 4).join("; ")}{readiness.missing.length > 4 ? `; +${readiness.missing.length - 4} more` : ""}.</p> : null}
         </div>
       )}
