@@ -30,6 +30,34 @@ type CallbackBody = {
   };
 };
 
+type VerificationParams = Parameters<typeof verifyDarajaCallback>[0];
+type VerificationResult = Awaited<ReturnType<typeof verifyDarajaCallback>>;
+
+const PROVIDER_VERIFY_RETRY_MS = [0, 700, 1400] as const;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function providerVerificationMayLag(error: string) {
+  return (
+    error.startsWith("provider_verification_failed:") ||
+    error.startsWith("provider_not_successful:")
+  );
+}
+
+async function verifySuccessResult(params: VerificationParams): Promise<VerificationResult> {
+  let last: VerificationResult = { ok: false, error: "provider_verification_not_attempted" };
+
+  for (const delay of PROVIDER_VERIFY_RETRY_MS) {
+    if (delay) await sleep(delay);
+    last = await verifyDarajaCallback(params);
+    if (last.ok || !providerVerificationMayLag(last.error)) return last;
+  }
+
+  return last;
+}
+
 async function verifyFailureResult(opts: {
   pharmacyId: string | null;
   checkoutRequestId: string;
@@ -37,15 +65,32 @@ async function verifyFailureResult(opts: {
 }) {
   const credentials = await resolveDarajaCredentials(opts.pharmacyId);
   if (!credentials) return { ok: false as const, error: "daraja_credentials_unavailable" };
-  const provider = await stkQuery(opts.checkoutRequestId, credentials);
-  if (!provider.ok) return { ok: false as const, error: provider.error };
-  if (provider.resultCode === "0") {
-    return { ok: false as const, error: "provider_reports_success" };
+
+  let lastError = "provider_status_unavailable";
+  for (const delay of PROVIDER_VERIFY_RETRY_MS) {
+    if (delay) await sleep(delay);
+    const provider = await stkQuery(opts.checkoutRequestId, credentials);
+    if (!provider.ok) {
+      lastError = provider.error;
+      continue;
+    }
+    if (provider.resultCode === "0") {
+      lastError = "provider_reports_success";
+      continue;
+    }
+    if (provider.resultCode && provider.resultCode !== String(opts.callbackResultCode)) {
+      lastError = `provider_result_mismatch:${provider.resultCode}`;
+      continue;
+    }
+    return { ok: true as const, resultDesc: provider.resultDesc };
   }
-  if (provider.resultCode && provider.resultCode !== String(opts.callbackResultCode)) {
-    return { ok: false as const, error: `provider_result_mismatch:${provider.resultCode}` };
-  }
-  return { ok: true as const, resultDesc: provider.resultDesc };
+
+  return { ok: false as const, error: lastError };
+}
+
+function providerFailureText(resultCode: number, resultDesc?: string) {
+  const desc = resultDesc?.trim() || "M-Pesa did not complete the payment.";
+  return `M-Pesa result ${resultCode}: ${desc}`;
 }
 
 /**
@@ -57,7 +102,9 @@ async function verifyFailureResult(opts: {
  * - successful callbacks must contain amount + receipt and are independently
  *   confirmed with Daraja's STK query endpoint before financial state changes;
  * - failed/cancelled callbacks are also confirmed before a pending payment is
- *   transitioned to failed, preventing forged callbacks from creating outages.
+ *   transitioned to failed, preventing forged callbacks from creating outages;
+ * - a provider-reported failure reason is saved immediately for UX while that
+ *   independent confirmation is still catching up.
  */
 export async function POST(req: Request) {
   try {
@@ -103,7 +150,7 @@ export async function POST(req: Request) {
 
       try {
         if (resultCode === 0) {
-          const verified = await verifyDarajaCallback({
+          const verified = await verifySuccessResult({
             pharmacyId: null,
             expectedAmount: Number(billing.amountKes),
             expectedCheckoutRequestId: checkoutRequestId,
@@ -117,6 +164,10 @@ export async function POST(req: Request) {
             },
           });
           if (!verified.ok) {
+            console.warn("[daraja callback][billing] success verification pending", {
+              checkoutRequestId,
+              error: verified.error,
+            });
             await markWebhookProcessed(inbound.event.id, `unverified:${verified.error}`);
             return NextResponse.json(
               { ok: true, note: "billing_callback_unverified" },
@@ -135,13 +186,37 @@ export async function POST(req: Request) {
               resultDesc: verified.evidence.resultDesc,
             }),
           );
+          console.info("[daraja callback][billing] payment confirmed", {
+            checkoutRequestId,
+            resultCode,
+          });
         } else {
+          // Surface Safaricom's outcome immediately, while keeping the payment
+          // processing until the independent STK status query confirms it.
+          await withPlatformBypass(() =>
+            prismaUnscoped.billingPayment.updateMany({
+              where: {
+                id: billing.id,
+                status: { in: ["pending", "processing"] },
+              },
+              data: {
+                failureReason: providerFailureText(resultCode, cb.ResultDesc),
+              },
+            }),
+          );
+
           const verifiedFailure = await verifyFailureResult({
             pharmacyId: null,
             checkoutRequestId,
             callbackResultCode: resultCode,
           });
           if (!verifiedFailure.ok) {
+            console.warn("[daraja callback][billing] failure verification pending", {
+              checkoutRequestId,
+              resultCode,
+              resultDesc: cb.ResultDesc,
+              error: verifiedFailure.error,
+            });
             await markWebhookProcessed(inbound.event.id, `unverified_failure:${verifiedFailure.error}`);
             return NextResponse.json(
               { ok: true, note: "billing_failure_unverified" },
@@ -156,6 +231,11 @@ export async function POST(req: Request) {
               resultDesc: verifiedFailure.resultDesc || cb.ResultDesc,
             }),
           );
+          console.info("[daraja callback][billing] payment failed", {
+            checkoutRequestId,
+            resultCode,
+            resultDesc: verifiedFailure.resultDesc || cb.ResultDesc,
+          });
         }
 
         await markWebhookProcessed(inbound.event.id);
@@ -188,7 +268,7 @@ export async function POST(req: Request) {
 
     try {
       if (resultCode === 0) {
-        const verified = await verifyDarajaCallback({
+        const verified = await verifySuccessResult({
           pharmacyId: payment.pharmacyId,
           expectedAmount: Number(payment.expectedAmount ?? payment.amount),
           expectedCheckoutRequestId: payment.checkoutRequestId || checkoutRequestId,
