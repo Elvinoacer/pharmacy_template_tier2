@@ -33,19 +33,37 @@ export type SenderIdentity = {
   source: "tenant" | "platform";
 };
 
+const DARAJA_SANDBOX_SHORTCODE = "174379";
+const DARAJA_SANDBOX_PASSKEY =
+  "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+
 function platformDaraja(): DarajaCredentials | null {
   const consumerKey = process.env.DARAJA_CONSUMER_KEY?.trim();
   const consumerSecret = process.env.DARAJA_CONSUMER_SECRET?.trim();
-  const shortcode = process.env.DARAJA_SHORTCODE?.trim();
-  const passkey = process.env.DARAJA_PASSKEY?.trim();
+  const env: DarajaEnv = process.env.DARAJA_ENV?.trim().toLowerCase() === "production" ||
+    process.env.DARAJA_ENV?.trim().toLowerCase() === "live"
+    ? "production"
+    : "sandbox";
+  const configuredShortcode = process.env.DARAJA_SHORTCODE?.trim();
+  const configuredPasskey = process.env.DARAJA_PASSKEY?.trim();
   const callbackUrl = process.env.DARAJA_CALLBACK_URL?.trim() || "";
-  if (!consumerKey || !consumerSecret || !shortcode || !passkey) return null;
+
+  if (!consumerKey || !consumerSecret) return null;
+
+  // Safaricom's sandbox uses a fixed public Lipa na M-Pesa Online shortcode and
+  // passkey. Bind them atomically to sandbox mode so a stale/production
+  // DARAJA_SHORTCODE or DARAJA_PASSKEY cannot produce a prompt that later dies
+  // with ResultCode 2001 after the customer enters a PIN.
+  const shortcode = env === "sandbox" ? DARAJA_SANDBOX_SHORTCODE : configuredShortcode;
+  const passkey = env === "sandbox" ? DARAJA_SANDBOX_PASSKEY : configuredPasskey;
+  if (!shortcode || !passkey) return null;
+
   return {
     consumerKey,
     consumerSecret,
     shortcode,
     passkey,
-    env: process.env.DARAJA_ENV?.trim() === "production" ? "production" : "sandbox",
+    env,
     callbackUrl,
     source: "platform",
   };
