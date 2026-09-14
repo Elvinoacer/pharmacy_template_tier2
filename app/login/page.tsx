@@ -30,7 +30,7 @@ export default async function LoginPage({
   }
 
   return (
-    <div className={styles.loginSurface}>
+    <div className={`${styles.loginSurface} aether-artwork-surface`}>
       <AuthForm
         action={loginAction}
         title="Welcome back"
