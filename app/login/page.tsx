@@ -5,7 +5,6 @@ import AuthForm, { AuthField } from "@/app/components/AuthForm";
 import PasswordField from "@/app/components/PasswordField";
 import { getSessionUser } from "@/app/lib/auth";
 import { resolvePostLoginPath } from "@/app/lib/session-claim";
-import styles from "./LoginSurface.module.css";
 
 export const metadata = { title: "Sign in" };
 
@@ -30,10 +29,7 @@ export default async function LoginPage({
   }
 
   return (
-    <div
-      className={`${styles.loginSurface} aether-artwork-surface aether-route-surface`}
-      style={{ background: "transparent" }}
-    >
+    <div className="aether-login-page aether-artwork-surface aether-route-surface">
       <AuthForm
         action={loginAction}
         title="Welcome back"
@@ -63,15 +59,15 @@ export default async function LoginPage({
               </Link>
             </p>
             {process.env.SHOW_DEMO_CREDENTIALS === "1" && (
-            <p className="mt-4 rounded-2xl border border-teal-900/8 bg-teal-50/70 px-3 py-2.5 text-xs leading-relaxed text-[#5a6b62]">
-              Demo password for all: <code className="rounded bg-white px-1 py-0.5 text-[11px]">Password123!</code>
-              <br />
-              Super-admin <code className="rounded bg-white px-1 py-0.5 text-[11px]">platform@aether.health</code> → /platform
-              <br />
-              Pharmacy manager <code className="rounded bg-white px-1 py-0.5 text-[11px]">manager@aetherpharmacy.com</code> → /admin
-              <br />
-              Patient <code className="rounded bg-white px-1 py-0.5 text-[11px]">jane@example.com</code> → /portal
-            </p>
+              <p className="mt-4 rounded-2xl border border-teal-900/8 bg-teal-50/70 px-3 py-2.5 text-xs leading-relaxed text-[#5a6b62]">
+                Demo password for all: <code className="rounded bg-white px-1 py-0.5 text-[11px]">Password123!</code>
+                <br />
+                Super-admin <code className="rounded bg-white px-1 py-0.5 text-[11px]">platform@aether.health</code> → /platform
+                <br />
+                Pharmacy manager <code className="rounded bg-white px-1 py-0.5 text-[11px]">manager@aetherpharmacy.com</code> → /admin
+                <br />
+                Patient <code className="rounded bg-white px-1 py-0.5 text-[11px]">jane@example.com</code> → /portal
+              </p>
             )}
           </>
         }
