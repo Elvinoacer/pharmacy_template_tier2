@@ -79,7 +79,7 @@ export default async function PharmacyBillingPage() {
   const paystackBound = Boolean(sub?.externalSubscriptionId?.startsWith("paystack:"));
   const recurringCardActive = Boolean(paystackBound && sub?.status === "active");
   const freePeriodWithoutCard = Boolean(sub?.status === "active" && !paystackBound && grant?.recurringMonths);
-  const billingSuspended = dunning?.status === "suspended" || sub?.status === "unpaid" || pharmacy.lifecycleStatus === "suspended";
+  const billingSuspended = dunning?.status === "suspended" || sub?.status === "unpaid";
   const graceRemaining = dunning?.graceUntil
     ? Math.max(0, Math.ceil((dunning.graceUntil.getTime() - Date.now()) / 86_400_000))
     : SUBSCRIPTION_GRACE_DAYS;
