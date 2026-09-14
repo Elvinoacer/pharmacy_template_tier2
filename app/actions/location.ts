@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSessionUser, writeAuditLog, AuthError } from "@/app/lib/auth";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { requirePermission } from "@/app/lib/platform/policy";
 import { prismaUnscoped } from "@/app/lib/db";
 import { getTenant } from "@/app/lib/tenant";
@@ -40,13 +41,10 @@ export async function savePharmacyLocationAction(
 ): Promise<LocationActionState> {
   try {
     const user = await requirePermission(await getSessionUser(), "settings.manage");
-
-    // Resolve only the request tenant or the validated active tenant. Never
-    // borrow a different membership when the selected workspace is stale.
     const tenant = await getTenant().catch(() => ({ pharmacyId: null as string | null }));
     const pharmacyId = tenant.pharmacyId ?? user.activePharmacyId;
     if (!pharmacyId) {
-      return { error: "No pharmacy selected. Open setup from your approved application first." };
+      return { error: "No pharmacy is selected. Open the pharmacy workspace and try again." };
     }
 
     const latitude = parseCoord(formData.get("latitude"));
@@ -151,8 +149,10 @@ export async function savePharmacyLocationAction(
 
     return { success: "Location and contact saved. You can return to the go-live checklist." };
   } catch (e) {
-    if (e instanceof AuthError) return { error: e.message };
+    if (e instanceof AuthError) {
+      return { error: publicErrorMessage(e, "You do not have permission to change pharmacy location settings.") };
+    }
     console.error("[savePharmacyLocation]", e);
-    return { error: "Could not save location settings. Please try again." };
+    return { error: "We couldn't save the pharmacy location right now. Please try again." };
   }
 }
