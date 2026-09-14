@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getSessionUser, requireStaff, writeAuditLog, AuthError } from "@/app/lib/auth";
 import { getTenant } from "@/app/lib/tenant";
+import { assertPharmacyWorkspaceOperable } from "@/app/lib/platform/tenant-access";
 import { upsertPharmacySettings } from "@/app/lib/services/pharmacy-settings";
 import { prisma } from "@/app/lib/db";
 
@@ -260,6 +261,13 @@ export async function saveStorefrontAction(
     const pharmacyId = tenant.pharmacyId;
     if (!pharmacyId || tenant.bypass) {
       return { error: "No pharmacy selected. Pick your shop from the sidebar switcher." };
+    }
+    if (!user?.platformAdmin) {
+      try {
+        await assertPharmacyWorkspaceOperable(pharmacyId);
+      } catch {
+        return { error: "This pharmacy workspace is paused. Restore access before changing the storefront." };
+      }
     }
 
     // ── Identity block → dedicated PharmacySettings columns ────────────────
