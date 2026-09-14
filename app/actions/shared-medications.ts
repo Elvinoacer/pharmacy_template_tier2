@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessionUser, requireStaff, writeAuditLog } from "@/app/lib/auth";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { assertPharmacyWorkspaceOperable } from "@/app/lib/platform/tenant-access";
 import { parseMedicationFormData } from "@/app/lib/services/medication-form-data";
 import { validateMedication } from "@/app/lib/services/medication-validation";
@@ -56,14 +57,6 @@ function masterInput(parsed: ReturnType<typeof parseMedicationFormData>): Shared
   };
 }
 
-/**
- * Manual-entry write path for the network medicine library.
- *
- * A pharmacy never blindly creates a second clinical master. We first look for
- * a strong canonical match, run the normal clinical validation/review gate, and
- * then atomically either reuse that master or create one shared master plus the
- * pharmacy's own inventory row.
- */
 export async function adminCreateSharedMedicationAction(
   _prev: SharedMedicationActionState,
   formData: FormData,
@@ -156,10 +149,15 @@ export async function adminCreateSharedMedicationAction(
   } catch (error) {
     if (error && typeof error === "object" && "digest" in error) throw error;
     console.error("[adminCreateSharedMedicationAction]", error);
-    const message = error instanceof Error ? error.message : "Could not save medication.";
-    if (message.includes("Unique constraint") || message.includes("P2002")) {
+    const rawMessage = error instanceof Error ? error.message : "";
+    if (rawMessage.includes("Unique constraint") || rawMessage.includes("P2002")) {
       return { error: "This medicine, SKU, or barcode is already present. Search the shared library and reuse it instead." };
     }
-    return { error: message };
+    return {
+      error: publicErrorMessage(
+        error,
+        "We couldn't save this medication right now. Your existing inventory was not changed. Please try again.",
+      ),
+    };
   }
 }
