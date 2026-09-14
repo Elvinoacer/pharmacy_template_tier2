@@ -35,10 +35,10 @@ export function PharmacyPaymentForm({
         <input type="hidden" name="intent" value="activate" />
         <button disabled={pending} className="btn-primary min-h-11 w-full justify-center" type="submit">
           <CreditCard className="h-4 w-4" aria-hidden />
-          {pending ? "Preparing Paystack…" : "Set up monthly card billing"}
+          {pending ? "Preparing secure setup…" : "Set up monthly card billing"}
         </button>
         <p className="text-xs leading-5 text-[var(--muted)]">
-          Paystack handles the card authorization and recurring KES 500 monthly charge. Aether never stores the full card number or CVV.
+          Card authorization happens through a secure hosted checkout. Aether never stores the full card number or CVV.
         </p>
         <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
           {state.error || state.success}
@@ -63,11 +63,11 @@ export function PharmacyPaymentForm({
           <div>
             <h3 className="text-sm font-semibold">Secure card payment</h3>
             <p className="mt-0.5 text-xs leading-5 text-[var(--muted)]">
-              One-time platform charges open Paystack&apos;s hosted checkout.
+              One-time platform charges open a protected hosted checkout.
             </p>
           </div>
         </div>
-        <span className="shrink-0 rounded-full border border-[var(--line-2)] px-2 py-1 text-[10px] font-semibold text-[var(--muted)]">Paystack</span>
+        <span className="shrink-0 rounded-full border border-[var(--line-2)] px-2 py-1 text-[10px] font-semibold text-[var(--muted)]">Secure checkout</span>
       </div>
 
       {checkoutAvailable ? (
@@ -77,7 +77,7 @@ export function PharmacyPaymentForm({
         </button>
       ) : (
         <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
-          Card checkout is not configured yet. Add PAYSTACK_SECRET_KEY before accepting this payment.
+          Secure card checkout is temporarily unavailable. Please try again later or contact support.
         </p>
       )}
 
@@ -95,7 +95,7 @@ export function RecurringCardSetupForm({ pharmacyId, active = false }: { pharmac
       <input type="hidden" name="intent" value="subscription_setup" />
       <button disabled={pending || active} className="btn-ghost min-h-11 w-full justify-center" type="submit">
         <RefreshCw className={`h-4 w-4 ${pending ? "animate-spin" : ""}`} aria-hidden />
-        {active ? "Recurring card active" : pending ? "Checking Paystack…" : "Continue card setup"}
+        {active ? "Recurring card active" : pending ? "Checking secure billing…" : "Continue card setup"}
       </button>
       <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">{state.error || state.success}</p>
     </form>
