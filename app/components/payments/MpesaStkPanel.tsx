@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "@/app/components/Toaster";
+import { publicApiErrorMessage, publicErrorMessage } from "@/app/lib/public-error";
 import { Check, Loader2, RotateCcw, Smartphone, X } from "lucide-react";
 
 type Phase = "idle" | "sending" | "waiting" | "success" | "failed";
@@ -26,17 +27,12 @@ type StkPayload = {
   paymentId?: string;
 };
 
-/**
- * Shared M-Pesa STK UX: send push → long-poll status (webhook + Daraja query) → retry.
- * Used by portal customers, guests, and admin counter sales.
- */
+/** Shared mobile-payment UX for customers, guests, and staff counter sales. */
 export function MpesaStkPanel({
   orderId,
   accessToken,
   defaultPhone = "",
-  /** Staff can forceRetry after timeout. */
   staffMode = false,
-  /** Guest pay must send phone on status polls for authz. */
   guestMode = false,
   autoStart = false,
   onSuccess,
@@ -109,7 +105,12 @@ export function MpesaStkPanel({
         if (payload.paymentStatus === "failed") {
           stopPoll();
           setPhase("failed");
-          setMessage(payload.failureReason || "Payment failed or was cancelled on the phone.");
+          setMessage(
+            publicErrorMessage(
+              payload.failureReason,
+              "Payment failed or was cancelled on the phone. Please try again or choose another payment option.",
+            ),
+          );
         }
       } catch {
         /* keep polling */
@@ -130,7 +131,7 @@ export function MpesaStkPanel({
         if (ticks > 40) {
           stopPoll();
           setPhase("failed");
-          setMessage("Still waiting for confirmation. You can retry STK, or check again in a moment.");
+          setMessage("We are still waiting for confirmation. You can retry the payment request or check again in a moment.");
           return;
         }
         void pollStatus(pid, p);
@@ -161,37 +162,41 @@ export function MpesaStkPanel({
         });
         const payload = (await response.json().catch(() => ({}))) as StkPayload;
         if (!response.ok || payload.ok === false) {
-          if (payload.error === "daraja_not_configured") {
+          if (payload.error === "payment_unavailable" || payload.error === "daraja_not_configured") {
             setPhase("failed");
-            setMessage(payload.message || "M-Pesa is not configured on this environment.");
-            toast.info("M-Pesa not configured — use cash/mark paid.");
+            setMessage("Mobile payment is temporarily unavailable. Please try again later or choose another payment option.");
+            toast.info("Mobile payment is temporarily unavailable.");
             return;
           }
           if (payload.error === "pending_payment_exists" && payload.paymentId) {
             setPaymentId(payload.paymentId);
-            setMessage(payload.message || "Payment already in progress on the phone.");
+            setMessage(payload.message || "A payment request is already in progress on the phone.");
             startPoll(payload.paymentId, phone.trim());
             return;
           }
+          const safeMessage = publicApiErrorMessage(
+            payload,
+            "We couldn't start the M-Pesa payment. Please try again or choose another payment option.",
+          );
           setPhase("failed");
-          setMessage(payload.message || payload.error || "Could not start M-Pesa payment.");
-          toast.error(payload.message || "STK push failed");
+          setMessage(safeMessage);
+          toast.error(safeMessage);
           return;
         }
         if (!payload.paymentId) {
           setPhase("failed");
-          setMessage("M-Pesa did not return a payment reference.");
-          toast.error("STK push failed");
+          setMessage("We couldn't start this payment. Please try again.");
+          toast.error("Could not start payment.");
           return;
         }
         setPaymentId(payload.paymentId);
-        setMessage(payload.message || "STK push sent — enter PIN on the phone.");
-        toast.success("STK push sent");
+        setMessage(payload.message || "Payment request sent — enter your M-Pesa PIN on the phone.");
+        toast.success("Payment request sent");
         startPoll(payload.paymentId, phone.trim());
       } catch {
         setPhase("failed");
-        setMessage("Network error starting payment.");
-        toast.error("Network error starting payment.");
+        setMessage("We couldn't connect to the payment service. Check your connection and try again.");
+        toast.error("Could not start payment.");
       }
     },
     [accessToken, orderId, phone, startPoll],
@@ -283,11 +288,11 @@ export function MpesaStkPanel({
           >
             {phase === "failed" ? (
               <>
-                <RotateCcw className="h-3 w-3" /> Retry STK
+                <RotateCcw className="h-3 w-3" /> Retry payment request
               </>
             ) : (
               <>
-                <Smartphone className="h-3 w-3" /> Send STK push
+                <Smartphone className="h-3 w-3" /> Send payment prompt
               </>
             )}
           </button>
@@ -305,9 +310,9 @@ export function MpesaStkPanel({
             type="button"
             onClick={() => void sendStk(true)}
             className="rounded-full border border-[#e3ebe6] px-2 py-1.5 text-[10px] font-semibold text-[#5a6b62] hover:bg-[#f4f7f4]"
-            title="Force a new STK if the first one timed out"
+            title="Send a new payment request if the first one timed out"
           >
-            Force retry
+            Send again
           </button>
         )}
 
@@ -324,7 +329,7 @@ export function MpesaStkPanel({
 
       {staffMode && (
         <p className="text-[10px] text-[#8a9a92]">
-          Customer only needs to enter their M-Pesa PIN. Confirmation arrives via webhook or status poll.
+          The customer only needs to enter their M-Pesa PIN. Payment confirmation updates automatically.
         </p>
       )}
     </div>
