@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped as db, withPlatformTx } from "@/app/lib/db";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { cancelSubscription } from "@/app/lib/platform/billing";
 import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
@@ -60,11 +61,11 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
 
     if (intent === "cancel") {
       const subscription = await ownedSubscription(pharmacyId);
-      if (!subscription) throw new Error("No current subscription found.");
+      if (!subscription) throw new Error("No current subscription was found.");
       if (subscription.externalSubscriptionId?.startsWith("paystack:")) {
         await cancelPaystackSubscription(subscription.externalSubscriptionId);
       } else if (subscription.externalSubscriptionId) {
-        throw new Error("This is a legacy billing subscription. Contact support before cancelling so the old provider can be disabled safely.");
+        throw new Error("This older subscription needs support assistance before it can be cancelled safely.");
       }
       await withPharmacy(pharmacyId, () => cancelSubscription(subscription.id, true, user.id));
       revalidatePath("/onboard/billing");
@@ -73,7 +74,9 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
 
     if (intent === "manage_card") {
       const subscription = await ownedSubscription(pharmacyId);
-      if (!subscription?.externalSubscriptionId?.startsWith("paystack:")) throw new Error("Finish Paystack card setup first.");
+      if (!subscription?.externalSubscriptionId?.startsWith("paystack:")) {
+        throw new Error("Finish card setup before managing your saved payment method.");
+      }
       return { success: "Opening secure card management…", redirectUrl: await paystackManageSubscriptionLink(subscription.externalSubscriptionId) };
     }
 
@@ -83,16 +86,13 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       revalidatePath("/admin/setup");
       const redirectUrl = "redirectUrl" in result ? result.redirectUrl : undefined;
       if (redirectUrl) {
-        return { success: "Paystack needs you to confirm the card before retrying this payment…", redirectUrl };
+        return { success: "Your bank needs a quick confirmation before this payment can be retried…", redirectUrl };
       }
-      if (result.ok) {
-        return { success: "Payment confirmed. Your pharmacy billing is active again." };
-      }
+      if (result.ok) return { success: "Payment confirmed. Your pharmacy billing is active again." };
       if (["retry_processing", "retry_confirming", "retry_already_processing"].includes(result.note)) {
-        return { success: "The card retry is being confirmed. This page will update when Paystack finishes processing it." };
+        return { success: "The card retry is being confirmed. This page will update when processing finishes." };
       }
-      const message = "message" in result && result.message ? result.message : "The card could not be charged. Update the card and try again.";
-      throw new Error(message);
+      throw new Error("The card could not be charged. Update the payment method and try again.");
     }
 
     if (intent === "activate") {
@@ -100,49 +100,53 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
         throw new Error("Complete verification and your pharmacy profile before starting monthly billing.");
       }
       const invoice = await startPharmacyService(pharmacyId);
-      if (!invoice.subscriptionId) throw new Error("Monthly subscription was not created correctly.");
+      if (!invoice.subscriptionId) throw new Error("Monthly billing could not be started. Please try again.");
       const recurring = await createOrResumePaystackSubscription({ pharmacyId, subscriptionId: invoice.subscriptionId, actorId: user.id });
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
       if (recurring.setupUrl && !recurring.active) {
-        return { success: "Opening Paystack secure card setup for automatic monthly renewal…", redirectUrl: recurring.setupUrl };
+        return { success: "Opening secure card setup for automatic monthly renewal…", redirectUrl: recurring.setupUrl };
       }
       if (recurring.deferred) {
         return { success: "Your free service period is active. Card authorization will be requested before the first paid month." };
       }
-      return { success: "Recurring Paystack card billing is active." };
+      return { success: "Recurring card billing is active." };
     }
 
     if (intent === "subscription_setup") {
       const subscription = await ownedSubscription(pharmacyId);
-      if (!subscription) throw new Error("No monthly subscription found. Start service first.");
+      if (!subscription) throw new Error("No monthly subscription was found. Start service first.");
       const recurring = await createOrResumePaystackSubscription({ pharmacyId, subscriptionId: subscription.id, actorId: user.id });
       revalidatePath("/onboard/billing");
       if (recurring.setupUrl && !recurring.active) {
-        return { success: recurring.resumed ? "Resuming Paystack secure card setup…" : "Opening Paystack secure card setup…", redirectUrl: recurring.setupUrl };
+        return { success: recurring.resumed ? "Resuming secure card setup…" : "Opening secure card setup…", redirectUrl: recurring.setupUrl };
       }
       if (recurring.deferred) return { success: "Your free period is active. No card charge is required yet." };
-      return { success: "Recurring Paystack card billing is active." };
+      return { success: "Recurring card billing is active." };
     }
 
-    if (intent === "pay") throw new Error("M-Pesa STK Push is not used for Aether platform subscription billing. Use Paystack card billing.");
-    if (intent !== "checkout") throw new Error("Unknown billing action.");
+    if (intent === "pay") throw new Error("Platform subscriptions are paid by card. Use the card billing option above.");
+    if (intent !== "checkout") throw new Error("That billing action is not available. Refresh the page and try again.");
 
     const invoice = await resolveOwnedBillingInvoice(pharmacyId, form);
-    if (!invoice) throw new Error("This billing page was stale and the invoice could not be resolved safely. Refresh and try again.");
+    if (!invoice) throw new Error("This billing page is out of date. Refresh it and try again.");
     if (invoice.subscriptionId) {
-      throw new Error("Monthly service invoices are collected by the Paystack recurring-card subscription. Use recurring card setup above.");
+      throw new Error("This monthly invoice is collected automatically from the saved card. Use the recurring billing controls above.");
     }
 
     const result = await withPharmacy(pharmacyId, () => createPaystackInvoiceCheckout({ invoiceId: invoice.id, actorId: user.id }));
     revalidatePath("/onboard/billing");
     if (result.alreadyPaid) return { success: "This invoice is already paid." };
-    if (!result.url) throw new Error("Secure checkout did not return a payment page.");
-    return { success: result.resumed ? "Resuming your Paystack checkout…" : "Opening Paystack secure checkout…", redirectUrl: result.url };
+    if (!result.url) throw new Error("Secure checkout could not be opened. Please try again.");
+    return { success: result.resumed ? "Resuming your secure checkout…" : "Opening secure checkout…", redirectUrl: result.url };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not process billing.";
-    console.error("[billing][onboard] action failed", { message });
-    return { error: message };
+    console.error("[billing][onboard] action failed", error);
+    return {
+      error: publicErrorMessage(
+        error,
+        "We couldn't complete that billing action right now. Your account was not changed. Please try again.",
+      ),
+    };
   }
 }
 
@@ -171,6 +175,12 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
     revalidatePath("/platform/billing");
     return { success: "Promotion saved. Existing allocated benefits are preserved." };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "Could not save promotion." };
+    console.error("[billing][promotion] action failed", error);
+    return {
+      error: publicErrorMessage(
+        error,
+        "We couldn't save this promotion right now. Review the details and try again.",
+      ),
+    };
   }
 }
