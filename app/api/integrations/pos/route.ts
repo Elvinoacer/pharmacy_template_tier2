@@ -26,8 +26,6 @@ const MedicationInput = z.object({
   publicListing: z.boolean().default(false),
   prescriptionRequired: z.boolean().default(true),
   active: z.boolean().default(true),
-  // Optional optimistic platform version returned by the previous integration
-  // snapshot. A mismatch is a conflict rather than a blind overwrite.
   version: z.coerce.number().int().min(1).optional(),
 });
 
@@ -50,7 +48,7 @@ const Body = z.object({
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["medications", i],
-        message: `Duplicate POS medication identity: ${identity}`,
+        message: "This medication appears more than once in the same import.",
       });
     } else {
       seen.add(identity);
@@ -61,7 +59,10 @@ const Body = z.object({
 export async function POST(req: Request) {
   const auth = await authenticatePos(req.headers.get("authorization"));
   if (!auth) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "unauthorized", message: "This POS connection is not authorized." },
+      { status: 401 },
+    );
   }
 
   const idempotencyKey = req.headers.get("idempotency-key")?.trim();
@@ -69,15 +70,28 @@ export async function POST(req: Request) {
   let parsed: z.infer<typeof Body>;
   try {
     parsed = Body.parse(await req.json());
-  } catch (e) {
+  } catch (error) {
+    const issues = error instanceof z.ZodError
+      ? error.issues.slice(0, 12).map((issue) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        }))
+      : undefined;
     return NextResponse.json(
-      { error: "invalid_body", detail: e instanceof Error ? e.message : undefined },
+      {
+        error: "invalid_request",
+        message: "The POS payload is invalid. Check the highlighted fields and try again.",
+        issues,
+      },
       { status: 400 },
     );
   }
 
   if (parsed.tenant && parsed.tenant !== auth.pharmacyId) {
-    return NextResponse.json({ error: "tenant_mismatch" }, { status: 403 });
+    return NextResponse.json(
+      { error: "tenant_mismatch", message: "This connection cannot write to the requested pharmacy." },
+      { status: 403 },
+    );
   }
 
   if (idempotencyKey) {
@@ -88,15 +102,18 @@ export async function POST(req: Request) {
       path: "/api/integrations/pos",
       body: parsed,
     });
-    if (gate.conflict) return NextResponse.json({ error: "idempotency_conflict" }, { status: 409 });
+    if (gate.conflict) {
+      return NextResponse.json(
+        { error: "request_conflict", message: "This request key was already used with different data." },
+        { status: 409 },
+      );
+    }
     if (gate.replay) {
       return NextResponse.json(gate.replay.responseBody ?? { ok: true }, { status: gate.replay.responseCode ?? 200 });
     }
     pendingIdempotencyId = gate.pending?.id ?? null;
   }
 
-  // Large imports are asynchronous so an HTTP/serverless request is never held
-  // open for hundreds of database writes.
   if (parsed.medications.length > 40) {
     const job = await enqueueJob({
       type: "pos.sync",
