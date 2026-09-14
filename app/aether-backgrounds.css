@@ -69,31 +69,6 @@ body {
   background-image: none !important;
 }
 
-/* Remove the previous per-shell/per-section artwork pseudo layers completely. */
-.mesh-bg::before,
-.aether-artwork-surface::before,
-.shell-grid::before,
-.shell-grid-admin::before,
-.platform-shell::before,
-.mesh-bg main > div::before,
-.mesh-bg main > section::before,
-.mesh-bg main > article::before,
-.mesh-bg main > div > section::before,
-.mesh-bg main > div > article::before,
-.mesh-bg main > div > div > section::before,
-.aether-artwork-surface main::before,
-.aether-artwork-surface section::before,
-.shell-grid .shell-main::before,
-.shell-grid .page-container::before,
-.shell-grid-admin .shell-main::before,
-.shell-grid-admin .page-container-admin::before,
-.shell-grid-admin .admin-workspace-content::before,
-.platform-shell main::before,
-.platform-shell main > div::before {
-  content: none !important;
-  background: none !important;
-}
-
 @media (min-width: 768px) {
   :root {
     --aether-artwork: url("/images/aether_bg_pc.webp");
