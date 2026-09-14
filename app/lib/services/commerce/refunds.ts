@@ -2,8 +2,6 @@ import "server-only";
 import { syncRefundFeeCredit } from "./transaction-fees";
 
 import { prisma } from "@/app/lib/db";
-import type { Prisma } from "@/app/generated/prisma/client";
-import type { TxClient } from "@/app/lib/services/stock";
 import { recordCommerceEvent } from "@/app/lib/services/commerce/events";
 import { recomputeOrderFinancials } from "@/app/lib/services/commerce/pricing";
 
@@ -14,6 +12,7 @@ import { recomputeOrderFinancials } from "@/app/lib/services/commerce/pricing";
  * One payment may have multiple partial refunds; we always recompute the
  * parent Order's financials after a refund completes.
  *
+ * Daraja refunds stay pending until Safaricom confirms the Reversal result.
  * Refund does NOT touch stock — that's the fulfillment layer's job.
  */
 
@@ -49,28 +48,34 @@ export async function createRefund(
     return { ok: false, error: "Only completed payments can be refunded." };
   }
 
+  const provider = input.provider ?? (payment.provider === "daraja" ? "daraja" : "cash");
+  if (provider === "daraja" && payment.provider !== "daraja") {
+    return { ok: false, error: "Only a verified Daraja payment can be reversed through M-PESA." };
+  }
+
   const alreadyRefunded = payment.refunds.reduce((s, r) => s + Number(r.amount || 0), 0);
   const maxRefundable = Number(payment.amount) - alreadyRefunded;
-  if (input.amount > maxRefundable) {
+  if (input.amount > maxRefundable + 0.001) {
     return {
       ok: false,
       error: `Refund exceeds available amount. Max refundable: KES ${maxRefundable.toFixed(2)}.`,
     };
   }
 
+  const markCompleted = Boolean(input.markCompleted && provider !== "daraja");
   const refund = await prisma.$transaction(async (tx) => {
     const r = await tx.refund.create({
       data: {
         paymentId: payment.id,
         orderId: payment.order.id,
         amount: input.amount,
-        provider: input.provider ?? "cash",
+        provider,
         providerRef: input.providerRef ?? null,
         reason: input.reason ?? null,
-        status: input.markCompleted ? "completed" : "pending",
+        status: markCompleted ? "completed" : "pending",
         createdById: input.createdById ?? null,
         approvedById: input.approvedById ?? null,
-        processedAt: input.markCompleted ? new Date() : null,
+        processedAt: markCompleted ? new Date() : null,
       },
     });
 
@@ -82,10 +87,10 @@ export async function createRefund(
       customerId: payment.order.customerId ?? null,
       actorId: input.createdById ?? null,
       amount: input.amount,
-      metadata: { refundId: r.id, reason: input.reason ?? null, provider: input.provider ?? "cash" },
+      metadata: { refundId: r.id, reason: input.reason ?? null, provider },
     });
 
-    if (input.markCompleted) {
+    if (markCompleted) {
       await recordCommerceEvent(tx, {
         eventType: "refund_completed",
         entityType: "refund",
@@ -96,42 +101,36 @@ export async function createRefund(
         amount: input.amount,
         metadata: { refundId: r.id, paymentId: payment.id },
       });
+      await syncRefundFeeCredit(tx, payment.order.id);
     }
 
-    if (input.markCompleted) await syncRefundFeeCredit(tx, payment.order.id);
-
-    // Recompute Order totals (amountRefunded, amountDue).
     await recomputeOrderFinancials(tx, payment.order.id);
 
-    // If the refund covers the entire payment, mark Payment.status = refunded.
-    // For partial refunds, keep Payment.status = completed and use Order.paymentStage.
-    if (input.markCompleted) {
-    const totalRefundedAfter = alreadyRefunded + input.amount;
-    if (totalRefundedAfter >= Number(payment.amount) - 0.001) {
-      // Full refund: mark payment as fully refunded
-      await tx.payment.update({
-        where: { id: payment.id },
-        data: { status: "refunded" },
+    if (markCompleted) {
+      const completedRefunds = await tx.refund.aggregate({
+        where: { paymentId: payment.id, status: "completed" },
+        _sum: { amount: true },
       });
-      await tx.order.update({
-        where: { id: payment.order.id },
-        data: { paymentStage: "refunded" },
-      });
-    } else {
-      // Partial refund: keep payment as completed, mark order as partially_refunded
-      await tx.payment.update({
-        where: { id: payment.id },
-        data: { status: "completed" },
-      });
-      await tx.order.update({
-        where: { id: payment.order.id },
-        data: { paymentStage: "partially_refunded" },
-      });
-    }
-
+      const totalCompleted = Number(completedRefunds._sum.amount ?? 0);
+      if (totalCompleted >= Number(payment.amount) - 0.001) {
+        await tx.payment.update({ where: { id: payment.id }, data: { status: "refunded" } });
+        await tx.order.update({ where: { id: payment.order.id }, data: { paymentStage: "refunded" } });
+      } else {
+        await tx.payment.update({ where: { id: payment.id }, data: { status: "completed" } });
+        await tx.order.update({ where: { id: payment.order.id }, data: { paymentStage: "partially_refunded" } });
+      }
     }
     return r;
   });
+
+  if (provider === "daraja") {
+    const { initiateDarajaRefund } = await import("@/app/lib/services/daraja-refunds");
+    const reversal = await initiateDarajaRefund(refund.id);
+    if (!reversal.ok) {
+      await prisma.refund.update({ where: { id: refund.id }, data: { status: "failed" } }).catch(() => undefined);
+      return { ok: false, error: reversal.error };
+    }
+  }
 
   return { ok: true, refundId: refund.id };
 }
@@ -144,13 +143,13 @@ export async function approveRefund(refundId: string, approverId: string): Promi
   });
 }
 
-/** Mark an approved refund as completed (e.g. cash handed back, M-Pesa B2C sent). */
+/** Mark a provider-confirmed refund as completed. Idempotent. */
 export async function completeRefund(refundId: string, opts?: { providerRef?: string | null }): Promise<void> {
   const refund = await prisma.refund.findUnique({
     where: { id: refundId },
-    select: { id: true, orderId: true, paymentId: true, amount: true },
+    select: { id: true, orderId: true, paymentId: true, amount: true, status: true },
   });
-  if (!refund) return;
+  if (!refund || refund.status === "completed") return;
 
   await prisma.$transaction(async (tx) => {
     await tx.refund.update({
@@ -168,10 +167,25 @@ export async function completeRefund(refundId: string, opts?: { providerRef?: st
     });
     await syncRefundFeeCredit(tx, refund.orderId);
     await recomputeOrderFinancials(tx, refund.orderId);
+
+    const payment = await tx.payment.findUnique({ where: { id: refund.paymentId }, select: { amount: true } });
+    if (!payment) return;
+    const completed = await tx.refund.aggregate({
+      where: { paymentId: refund.paymentId, status: "completed" },
+      _sum: { amount: true },
+    });
+    const totalCompleted = Number(completed._sum.amount ?? 0);
+    if (totalCompleted >= Number(payment.amount) - 0.001) {
+      await tx.payment.update({ where: { id: refund.paymentId }, data: { status: "refunded" } });
+      await tx.order.update({ where: { id: refund.orderId }, data: { paymentStage: "refunded" } });
+    } else {
+      await tx.payment.update({ where: { id: refund.paymentId }, data: { status: "completed" } });
+      await tx.order.update({ where: { id: refund.orderId }, data: { paymentStage: "partially_refunded" } });
+    }
   });
 }
 
-/** Total refunded amount for a payment (sum of completed + pending refunds). */
+/** Total refunded amount for a payment (completed + money currently in-flight). */
 export async function totalRefundedForPayment(paymentId: string): Promise<number> {
   const row = await prisma.refund.aggregate({
     where: { paymentId, status: { in: ["completed", "approved", "pending"] } },
