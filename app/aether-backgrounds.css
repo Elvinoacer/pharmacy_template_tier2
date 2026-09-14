@@ -1,121 +1,80 @@
 /*
- * Aether platform-wide artwork background system.
+ * One shared Aether artwork background for the entire application.
  *
- * The artwork is deliberately rendered twice:
- *  1. a persistent viewport backdrop so it never disappears on long pages;
- *  2. subtle section-level artwork layers so opaque/solid page sections cannot
- *     visually swallow the artwork after the hero.
- *
- * Cards, forms, tables and navigation keep their own surfaces above these
- * layers, preserving contrast and usability.
+ * The image belongs to the application canvas only. It is never repeated on
+ * sections, cards, panels, forms or other content surfaces.
  */
 
 :root {
   --aether-artwork: url("/images/aether_bg_mobile.jpg");
   --aether-artwork-position: 50% 18%;
-  --aether-section-position: 50% 42%;
-
-  /* Shell veil: visible artwork without fighting foreground content. */
-  --aether-public-veil:
-    linear-gradient(180deg, rgba(246, 249, 247, 0.48) 0%, rgba(242, 248, 245, 0.56) 48%, rgba(240, 247, 243, 0.64) 100%);
-  --aether-workspace-veil:
-    linear-gradient(180deg, rgba(244, 247, 244, 0.6) 0%, rgba(243, 247, 245, 0.66) 48%, rgba(239, 246, 242, 0.72) 100%);
-
-  /* Section veil: intentionally lighter so the artwork remains noticeable. */
-  --aether-public-section-veil:
-    linear-gradient(180deg, rgba(246, 249, 247, 0.34) 0%, rgba(242, 248, 245, 0.46) 52%, rgba(240, 247, 243, 0.54) 100%);
-  --aether-workspace-section-veil:
-    linear-gradient(180deg, rgba(244, 247, 244, 0.5) 0%, rgba(243, 247, 245, 0.58) 52%, rgba(239, 246, 242, 0.64) 100%);
+  --aether-global-veil:
+    linear-gradient(
+      180deg,
+      rgba(244, 247, 244, 0.82) 0%,
+      rgba(242, 247, 244, 0.84) 48%,
+      rgba(239, 245, 242, 0.87) 100%
+    );
 }
 
 html[data-theme="dark"] {
-  --aether-public-veil:
-    linear-gradient(180deg, rgba(4, 11, 9, 0.4) 0%, rgba(6, 17, 13, 0.5) 48%, rgba(4, 12, 10, 0.58) 100%);
-  --aether-workspace-veil:
-    linear-gradient(180deg, rgba(7, 12, 16, 0.58) 0%, rgba(8, 15, 18, 0.66) 48%, rgba(6, 12, 15, 0.74) 100%);
-  --aether-public-section-veil:
-    linear-gradient(180deg, rgba(4, 11, 9, 0.3) 0%, rgba(6, 17, 13, 0.42) 50%, rgba(4, 12, 10, 0.5) 100%);
-  --aether-workspace-section-veil:
-    linear-gradient(180deg, rgba(7, 12, 16, 0.5) 0%, rgba(8, 15, 18, 0.58) 50%, rgba(6, 12, 15, 0.66) 100%);
+  --aether-global-veil:
+    linear-gradient(
+      180deg,
+      rgba(5, 13, 11, 0.76) 0%,
+      rgba(6, 16, 13, 0.8) 48%,
+      rgba(4, 11, 9, 0.84) 100%
+    );
 }
 
-/* --------------------------------------------------------------------------
-   Persistent backdrop
-   -------------------------------------------------------------------------- */
+/* Admin can resolve its theme independently from the public theme provider. */
+html[data-admin-theme="dark"] {
+  --aether-global-veil:
+    linear-gradient(
+      180deg,
+      rgba(7, 12, 16, 0.78) 0%,
+      rgba(8, 14, 17, 0.82) 48%,
+      rgba(6, 11, 14, 0.86) 100%
+    );
+}
 
+/*
+ * This is the only place the artwork is painted. background-attachment keeps
+ * the same single image in place while routes and long pages scroll above it.
+ */
+body {
+  background-color: var(--background) !important;
+  background-image:
+    var(--aether-global-veil),
+    var(--aether-artwork) !important;
+  background-position:
+    center,
+    var(--aether-artwork-position) !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-size: cover, cover !important;
+  background-attachment: fixed, fixed !important;
+}
+
+/*
+ * Route shells must not paint another full-page background over the shared
+ * application canvas. Their cards, sidebars, headers and panels keep their own
+ * normal surfaces and therefore remain readable.
+ */
 .mesh-bg,
 .aether-artwork-surface,
 .shell-grid,
 .shell-grid-admin,
 .platform-shell {
-  position: relative;
-  isolation: isolate;
+  background-color: transparent !important;
+  background-image: none !important;
 }
 
-/*
- * A fixed pseudo-layer uses the viewport as its painting area. This avoids the
- * old behaviour where background-size: cover stretched one image over the
- * entire document and made it effectively disappear after the hero.
- */
+/* Remove the previous per-shell/per-section artwork pseudo layers completely. */
 .mesh-bg::before,
 .aether-artwork-surface::before,
 .shell-grid::before,
 .shell-grid-admin::before,
-.platform-shell::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    var(--aether-public-veil),
-    var(--aether-artwork);
-  background-position:
-    center,
-    var(--aether-artwork-position);
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, cover;
-}
-
-.shell-grid::before,
-.shell-grid-admin::before,
-.platform-shell::before {
-  background-image:
-    var(--aether-workspace-veil),
-    var(--aether-artwork);
-}
-
-/* Remove the old one-shot shell image. The pseudo-layer now owns the canvas. */
-.mesh-bg,
-.aether-artwork-surface,
-.shell-grid,
-.shell-grid-admin,
-.platform-shell {
-  background-image: none !important;
-}
-
-/* --------------------------------------------------------------------------
-   Section-level artwork continuation
-   -------------------------------------------------------------------------- */
-
-/*
- * Major public page roots/sections get their own artwork layer. A negative
- * z-index inside an isolated stacking context places the image above the
- * section's own solid background but below all real content, so even legacy
- * sections with opaque fills still reveal the artwork safely.
- */
-.mesh-bg main > div,
-.mesh-bg main > section,
-.mesh-bg main > article,
-.mesh-bg main > div > section,
-.mesh-bg main > div > article,
-.mesh-bg main > div > div > section,
-.aether-artwork-surface main,
-.aether-artwork-surface section {
-  position: relative;
-  isolation: isolate;
-}
-
+.platform-shell::before,
 .mesh-bg main > div::before,
 .mesh-bg main > section::before,
 .mesh-bg main > article::before,
@@ -123,45 +82,7 @@ html[data-theme="dark"] {
 .mesh-bg main > div > article::before,
 .mesh-bg main > div > div > section::before,
 .aether-artwork-surface main::before,
-.aether-artwork-surface section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    var(--aether-public-section-veil),
-    var(--aether-artwork);
-  background-position:
-    center,
-    var(--aether-section-position);
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, cover;
-}
-
-/* Vary the crop across consecutive sections so long pages do not look tiled. */
-.mesh-bg main > div > section:nth-of-type(2n)::before,
-.mesh-bg main > section:nth-of-type(2n)::before {
-  background-position: center, 68% 46%;
-}
-
-.mesh-bg main > div > section:nth-of-type(3n)::before,
-.mesh-bg main > section:nth-of-type(3n)::before {
-  background-position: center, 32% 58%;
-}
-
-/* Dense product/workspace canvases get the stronger workspace veil. */
-.shell-grid .shell-main,
-.shell-grid .page-container,
-.shell-grid-admin .shell-main,
-.shell-grid-admin .page-container-admin,
-.shell-grid-admin .admin-workspace-content,
-.platform-shell main,
-.platform-shell main > div {
-  position: relative;
-  isolation: isolate;
-}
-
+.aether-artwork-surface section::before,
 .shell-grid .shell-main::before,
 .shell-grid .page-container::before,
 .shell-grid-admin .shell-main::before,
@@ -169,74 +90,28 @@ html[data-theme="dark"] {
 .shell-grid-admin .admin-workspace-content::before,
 .platform-shell main::before,
 .platform-shell main > div::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    var(--aether-workspace-section-veil),
-    var(--aether-artwork);
-  background-position: center, var(--aether-section-position);
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, cover;
+  content: none !important;
+  background: none !important;
 }
-
-/* Admin shells can resolve theme independently of the root theme provider. */
-.shell-grid-admin[data-theme="dark"],
-.platform-shell[data-theme="dark"],
-html[data-admin-theme="dark"] .shell-grid-admin,
-html[data-admin-theme="dark"] .platform-shell {
-  --aether-workspace-veil:
-    linear-gradient(180deg, rgba(7, 12, 16, 0.58) 0%, rgba(8, 15, 18, 0.66) 48%, rgba(6, 12, 15, 0.74) 100%);
-  --aether-workspace-section-veil:
-    linear-gradient(180deg, rgba(7, 12, 16, 0.5) 0%, rgba(8, 15, 18, 0.58) 50%, rgba(6, 12, 15, 0.66) 100%);
-}
-
-.shell-grid-admin[data-theme="light"],
-.platform-shell[data-theme="light"] {
-  --aether-workspace-veil:
-    linear-gradient(180deg, rgba(244, 247, 244, 0.6) 0%, rgba(243, 247, 245, 0.66) 48%, rgba(239, 246, 242, 0.72) 100%);
-  --aether-workspace-section-veil:
-    linear-gradient(180deg, rgba(244, 247, 244, 0.5) 0%, rgba(243, 247, 245, 0.58) 50%, rgba(239, 246, 242, 0.64) 100%);
-}
-
-/* --------------------------------------------------------------------------
-   Responsive artwork selection
-   -------------------------------------------------------------------------- */
 
 @media (min-width: 768px) {
   :root {
     --aether-artwork: url("/images/aether_bg_pc.webp");
-    --aether-artwork-position: 50% 14%;
-    --aether-section-position: 50% 44%;
+    --aether-artwork-position: 50% 16%;
   }
 }
 
-/* Mobile sections use a little less veil because the portrait asset is denser. */
+/* Fixed body backgrounds are expensive on some mobile browsers. The artwork is
+ * still one shared page background there; only the attachment behavior changes.
+ */
 @media (max-width: 767px) {
-  :root {
-    --aether-public-section-veil:
-      linear-gradient(180deg, rgba(246, 249, 247, 0.3) 0%, rgba(242, 248, 245, 0.42) 52%, rgba(240, 247, 243, 0.5) 100%);
-    --aether-workspace-section-veil:
-      linear-gradient(180deg, rgba(244, 247, 244, 0.46) 0%, rgba(243, 247, 245, 0.54) 52%, rgba(239, 246, 242, 0.6) 100%);
-  }
-
-  html[data-theme="dark"] {
-    --aether-public-section-veil:
-      linear-gradient(180deg, rgba(4, 11, 9, 0.28) 0%, rgba(6, 17, 13, 0.38) 50%, rgba(4, 12, 10, 0.46) 100%);
-    --aether-workspace-section-veil:
-      linear-gradient(180deg, rgba(7, 12, 16, 0.46) 0%, rgba(8, 15, 18, 0.54) 50%, rgba(6, 12, 15, 0.62) 100%);
+  body {
+    background-attachment: scroll, scroll !important;
   }
 }
 
-/* The artwork itself is static; reduced motion needs no special repaint path. */
 @media (prefers-reduced-motion: reduce) {
-  .mesh-bg::before,
-  .aether-artwork-surface::before,
-  .shell-grid::before,
-  .shell-grid-admin::before,
-  .platform-shell::before {
-    transform: none;
+  body {
+    background-attachment: scroll, scroll !important;
   }
 }
