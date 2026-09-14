@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { verifyAndProcessPaystackReference } from "@/app/lib/services/paystack-billing";
+import { processPaystackRetryReference } from "@/app/lib/services/paystack-dunning";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
@@ -16,7 +17,11 @@ export async function GET(req: Request) {
   }
 
   try {
-    const result = await withPlatformBypass(() => verifyAndProcessPaystackReference(reference));
+    const result = await withPlatformBypass(async () => {
+      const retry = await processPaystackRetryReference(reference);
+      if (retry.handled) return { ok: retry.ok, note: retry.note };
+      return verifyAndProcessPaystackReference(reference);
+    });
     destination.searchParams.set("payment", result.ok ? result.note : "confirming");
   } catch (error) {
     console.error("[paystack callback]", error);
