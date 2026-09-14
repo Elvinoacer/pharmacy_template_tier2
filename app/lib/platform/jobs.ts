@@ -122,8 +122,8 @@ async function executeJob(
     return processQueuedDeliveries(pharmacyId, 20);
   }
   if (type === "billing.dunning") {
-    const { applyDunning } = await import("@/app/lib/platform/billing");
-    if (payload.invoiceId) await applyDunning(String(payload.invoiceId));
+    const { processSubscriptionDunningInvoice } = await import("@/app/lib/services/paystack-dunning");
+    if (payload.invoiceId) await processSubscriptionDunningInvoice(String(payload.invoiceId));
     return;
   }
   if (type === "meter.record") {
