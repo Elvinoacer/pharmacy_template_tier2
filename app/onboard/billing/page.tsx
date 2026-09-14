@@ -10,6 +10,7 @@ import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh"
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped as db } from "@/app/lib/db";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { ensureVerificationInvoice } from "@/app/lib/platform/pharmacy-enrolment";
 import { paystackCheckoutConfigured, paystackSubscriptionConfigured } from "@/app/lib/services/paystack-billing";
 import { SUBSCRIPTION_GRACE_DAYS } from "@/app/lib/services/paystack-dunning";
@@ -36,8 +37,19 @@ function isActivePayment(payment: PaymentView | undefined) {
 
 function describeCardOutcome(payment: PaymentView | undefined) {
   if (!payment || !payment.provider.startsWith("paystack")) return null;
-  if (payment.status === "succeeded") return { ok: true, title: "Card payment confirmed", message: "Paystack confirmed this payment." };
-  if (payment.status === "failed") return { ok: false, title: "Card payment needs attention", message: payment.failureReason || "Paystack could not complete this card payment." };
+  if (payment.status === "succeeded") {
+    return { ok: true, title: "Card payment confirmed", message: "Your payment was confirmed successfully." };
+  }
+  if (payment.status === "failed") {
+    return {
+      ok: false,
+      title: "Card payment needs attention",
+      message: publicErrorMessage(
+        payment.failureReason,
+        "We couldn't complete this card payment. Check your payment method and try again.",
+      ),
+    };
+  }
   return null;
 }
 
@@ -100,8 +112,8 @@ export default async function PharmacyBillingPage() {
       <section className={`${styles.notice} ${styles.noticeOk} mt-4`}>
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
         <div>
-          <h2>Recurring billing is handled by Paystack</h2>
-          <p>Authorize your card on Paystack&apos;s hosted checkout. Future monthly charges happen automatically; Aether never stores your full card number or CVV.</p>
+          <h2>Your card details stay protected</h2>
+          <p>Card authorization happens on a secure hosted checkout. Future monthly charges happen automatically; Aether never stores your full card number or CVV.</p>
         </div>
       </section>
 
@@ -150,13 +162,13 @@ export default async function PharmacyBillingPage() {
 
           {!sub.cancelAt && !paystackBound && !freePeriodWithoutCard ? (
             recurringAvailable ? <div className="mt-4"><RecurringCardSetupForm pharmacyId={pharmacy.id} /></div> : (
-              <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">Recurring cards are not configured. Add PAYSTACK_SECRET_KEY and PAYSTACK_SUBSCRIPTION_PLAN_CODE.</p>
+              <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">Automatic card billing is temporarily unavailable. Please try again later or contact support.</p>
             )
           ) : null}
 
           {freePeriodWithoutCard ? (
             <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
-              No charge is due during your free period. If Paystack already has a reusable card authorization it is scheduled for the first paid month; otherwise card setup will be requested before that month begins.
+              No charge is due during your free period. If a reusable card authorization is already available it will be used for the first paid month; otherwise card setup will be requested before that month begins.
             </p>
           ) : null}
 
@@ -193,10 +205,10 @@ export default async function PharmacyBillingPage() {
                       : dunning
                         ? `Service remains available during the ${SUBSCRIPTION_GRACE_DAYS}-day grace period while Aether retries the saved card safely.`
                         : recurringCardActive
-                          ? "No manual payment is needed. Paystack charges the authorized card and Aether reconciles the invoice from signed webhooks."
+                          ? "No manual payment is needed. The authorized card is charged automatically and Aether confirms the invoice after payment."
                           : freePeriodWithoutCard
                             ? "This service period is covered by your promotion."
-                            : "Complete recurring card authorization above. The first successful Paystack subscription charge settles this invoice automatically."}
+                            : "Complete recurring card authorization above. The first successful recurring card charge settles this invoice automatically."}
                   </div>
                 ) : pending ? (
                   <div className="space-y-3">
@@ -227,8 +239,8 @@ export default async function PharmacyBillingPage() {
       ) : readiness.profileReady ? (
         <section className={`${styles.section} mt-4`}>
           <h2 className="font-semibold">Ready to activate</h2>
-          <p className="mb-4 mt-2 text-sm text-[var(--muted)]">Authorize a card once. Paystack handles the recurring KES 500 monthly subscription from then on.</p>
-          {recurringAvailable ? <PharmacyPaymentForm pharmacyId={pharmacy.id} /> : <p className="rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">Recurring card billing is not configured yet.</p>}
+          <p className="mb-4 mt-2 text-sm text-[var(--muted)]">Authorize a card once. Future KES 500 monthly charges happen automatically.</p>
+          {recurringAvailable ? <PharmacyPaymentForm pharmacyId={pharmacy.id} /> : <p className="rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">Automatic card billing is temporarily unavailable. Please try again later or contact support.</p>}
         </section>
       ) : (
         <Link href={pharmacy.verifiedAt ? "/admin/setup" : "/onboard"} className="btn-primary mt-5 inline-flex justify-center">{pharmacy.verifiedAt ? "Continue setup" : "Continue application"}</Link>
