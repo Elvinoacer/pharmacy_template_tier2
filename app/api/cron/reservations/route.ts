@@ -8,21 +8,12 @@ import { isCronAuthorized } from "@/app/lib/cron-auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * Reservation expiry cron (audit §10).
- *
- * Releases all InventoryReservations whose `expiresAt` has passed, restores
- * the physical stock, marks the parent Order as expired/cancelled, and writes
- * a CommerceEvent.reservation_expired entry per affected order.
- *
- * Recommended schedule: every 15–30 minutes.
- *
- *   curl -X POST -H "Authorization: Bearer $CRON_SECRET" \
- *     https://…/api/cron/reservations
- */
 export async function POST(request: NextRequest) {
   if (!isCronAuthorized(request)) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "unauthorized", message: "This scheduled task is not authorized." },
+      { status: 401 },
+    );
   }
   try {
     const result = await withPlatformBypass(async () => releaseExpiredReservations());
@@ -36,7 +27,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("[cron/reservations]", err);
     return NextResponse.json(
-      { error: "expiry_failed", detail: err instanceof Error ? err.message : "unknown" },
+      { error: "expiry_failed", message: "Expired reservations could not be processed." },
       { status: 500 },
     );
   }
