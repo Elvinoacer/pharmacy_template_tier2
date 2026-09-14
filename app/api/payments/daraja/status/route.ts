@@ -1,18 +1,10 @@
 import { withAuthorizedPayment } from "@/app/lib/services/payment-scope";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { resolvePaymentStatus } from "@/app/lib/services/payments";
 
 export const runtime = "nodejs";
-
-/**
- * Poll payment status (webhook fallback / UX long-polling).
- *
- * GET ?paymentId=…&query=1
- * GET ?orderId=…&phone=07…&query=1
- *
- * query=1 hits Daraja STK Query when local status is still pending.
- */
 
 const Query = z.object({
   paymentId: z.string().uuid().optional(),
@@ -38,24 +30,46 @@ export async function GET(req: Request) {
     );
   }
 
-  const response = await withAuthorizedPayment({ orderId: parsed.data.orderId, paymentId: parsed.data.paymentId, accessToken: req.headers.get("x-order-access-token") }, async () => {
-  const queryProvider =
-    parsed.data.query === "1" || parsed.data.query === "true";
+  const response = await withAuthorizedPayment(
+    {
+      orderId: parsed.data.orderId,
+      paymentId: parsed.data.paymentId,
+      accessToken: req.headers.get("x-order-access-token"),
+    },
+    async () => {
+      const queryProvider = parsed.data.query === "1" || parsed.data.query === "true";
+      const view = await resolvePaymentStatus({
+        paymentId: parsed.data.paymentId,
+        orderId: parsed.data.orderId,
+        queryProvider,
+      });
 
-  const view = await resolvePaymentStatus({
-    paymentId: parsed.data.paymentId,
-    orderId: parsed.data.orderId,
-    queryProvider,
-  });
+      if (!view) {
+        return NextResponse.json(
+          { error: "not_found", message: "No payment found for this order yet." },
+          { status: 404 },
+        );
+      }
 
-  if (!view) {
-    return NextResponse.json(
-      { error: "not_found", message: "No payment found for this order yet." },
-      { status: 404 },
-    );
-  }
+      return NextResponse.json({
+        ok: true,
+        paymentId: view.paymentId,
+        orderId: view.orderId,
+        paymentStatus: view.paymentStatus,
+        orderStatus: view.orderStatus,
+        mpesaReceipt: view.mpesaReceipt,
+        failureReason: view.failureReason
+          ? publicErrorMessage(
+              view.failureReason,
+              "Payment was not completed. Please try again or choose another payment option.",
+            )
+          : null,
+        pending: view.pending,
+        settled: view.settled,
+        dispatched: view.dispatched,
+      });
+    },
+  );
 
-  return NextResponse.json({ ok: true, ...view });
-  });
   return response ?? NextResponse.json({ error: "forbidden" }, { status: 403 });
 }
