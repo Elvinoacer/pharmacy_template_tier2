@@ -172,26 +172,29 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
       <body
-        className="flex min-h-full flex-col bg-background font-sans"
+        className="flex min-h-full flex-col font-sans"
         data-tenant-theme={tenantStyle ? "true" : undefined}
         style={tenantStyle}
       >
-        <ThemeProvider>
-          <div className="global-theme-control">
-            <ThemeToggle />
-          </div>
-          <AetherCursor />
-          <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
-          <AppChrome
-            sessionUser={sessionHint}
-            pharmacySlug={storefrontSlug}
-            storefrontBrand={storefrontBrand}
-            platformBrand={platformBrand()}
-          >
-            {children}
-          </AppChrome>
-          <Toaster />
-        </ThemeProvider>
+        <div className="aether-global-backdrop" aria-hidden="true" />
+        <div className="aether-app-layer">
+          <ThemeProvider>
+            <div className="global-theme-control">
+              <ThemeToggle />
+            </div>
+            <AetherCursor />
+            <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
+            <AppChrome
+              sessionUser={sessionHint}
+              pharmacySlug={storefrontSlug}
+              storefrontBrand={storefrontBrand}
+              platformBrand={platformBrand()}
+            >
+              {children}
+            </AppChrome>
+            <Toaster />
+          </ThemeProvider>
+        </div>
       </body>
     </html>
   );
