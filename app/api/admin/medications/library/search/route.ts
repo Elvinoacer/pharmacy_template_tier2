@@ -9,18 +9,13 @@ const Query = z.object({
   q: z.string().min(1).max(200),
 });
 
-/**
- * Phase 3.1 — Shared Medication Library search.
- * Queries MedicationMaster (the cross-pharmacy shared pool) with partial / case-insensitive
- * match on name, genericName, brandName, barcode. Returns enriched results including whether
- * THIS pharmacy already stocks each result (so the UI can show "In stock" vs "Add to pharmacy").
- *
- * Decision D29.
- */
 export async function GET(req: Request) {
   const user = await getSessionUser();
   if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "You do not have permission to search the medication library." },
+      { status: 403 },
+    );
   }
 
   const url = new URL(req.url);
@@ -28,7 +23,8 @@ export async function GET(req: Request) {
   if (!q) return NextResponse.json({ ok: true, results: [] });
 
   try {
-    // Find which masters THIS pharmacy already stocks (single-tenant — all PharmacyInventory rows).
+    Query.parse({ q });
+
     const existingInv = await prisma.pharmacyInventory.findMany({
       select: { medicationMasterId: true },
     });
@@ -76,6 +72,12 @@ export async function GET(req: Request) {
     });
   } catch (e) {
     console.error("[library search GET]", e);
-    return NextResponse.json({ error: "search_failed", message: e instanceof Error ? e.message : "Search failed." }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "search_failed",
+        message: "We couldn't search the medication library right now. Please try again.",
+      },
+      { status: 500 },
+    );
   }
 }
