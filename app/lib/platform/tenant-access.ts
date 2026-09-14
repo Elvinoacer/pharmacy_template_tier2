@@ -38,8 +38,8 @@ const HARD_BLOCKED_LIFECYCLES = new Set([
 
 /**
  * Resolves the current tenant workspace state from fresh database evidence.
- * Never infer a billing suspension from `lifecycleStatus` alone: regulatory
- * suspensions must not be repairable by paying an invoice.
+ * Explicit lifecycle evidence wins over billing state: an unpaid invoice must
+ * never turn a regulatory/admin suspension into a billing-recoverable one.
  */
 export async function getPharmacyWorkspaceAccess(
   pharmacyId: string,
@@ -91,11 +91,23 @@ export async function getPharmacyWorkspaceAccess(
   const dunningStatus = dunning?.status ?? null;
   const suspensionReason = latestSuspension?.reason ?? null;
 
+  if (lifecycle === "regulatory_hold") {
+    return {
+      mode: "regulatory_hold",
+      blocksOperations: true,
+      pharmacy,
+      subscriptionStatus,
+      dunningStatus,
+      graceUntil: dunning?.graceUntil ?? null,
+      reason: "regulatory_hold",
+    };
+  }
+
   const billingSuspended =
     lifecycle === "suspended" &&
-    (subscriptionStatus === "unpaid" ||
-      dunningStatus === "suspended" ||
-      suspensionReason === "billing_nonpayment");
+    (suspensionReason === "billing_nonpayment" ||
+      (!suspensionReason &&
+        (subscriptionStatus === "unpaid" || dunningStatus === "suspended")));
 
   if (billingSuspended) {
     return {
@@ -106,18 +118,6 @@ export async function getPharmacyWorkspaceAccess(
       dunningStatus,
       graceUntil: dunning?.graceUntil ?? null,
       reason: "billing_nonpayment",
-    };
-  }
-
-  if (lifecycle === "regulatory_hold") {
-    return {
-      mode: "regulatory_hold",
-      blocksOperations: true,
-      pharmacy,
-      subscriptionStatus,
-      dunningStatus,
-      graceUntil: dunning?.graceUntil ?? null,
-      reason: "regulatory_hold",
     };
   }
 
