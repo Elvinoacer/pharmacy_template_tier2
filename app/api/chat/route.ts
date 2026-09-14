@@ -89,11 +89,6 @@ function streamText(text: string, extraHeaders: Record<string, string> = {}) {
   });
 }
 
-/**
- * Run tool-calling rounds (non-streaming), then return either:
- * - final assistant text already produced without tools, or
- * - working message list ready for a final streaming completion.
- */
 async function resolveTools(
   client: Groq,
   modelName: string,
@@ -125,17 +120,14 @@ async function resolveTools(
     const toolCalls = (msg.tool_calls ?? []).slice(0, MAX_TOOL_CALLS_PER_ROUND);
 
     if (!toolCalls.length || choice.finish_reason === "stop") {
-      // Model answered directly (or finished after tools on a prior round with content).
       if (!toolCalls.length && msg.content?.trim()) {
         return { kind: "text", content: msg.content };
       }
       if (!toolCalls.length) {
-        // No content and no tools — fall through to a streaming retry without tools.
         return { kind: "continue", messages: working };
       }
     }
 
-    // Append assistant tool-call message, then tool results.
     working.push({
       role: "assistant",
       content: msg.content || null,
@@ -160,16 +152,17 @@ async function resolveTools(
     }
   }
 
-  // Cap reached — let the model summarize with tools disabled.
   return { kind: "continue", messages: working };
 }
 
 export async function POST(request: Request) {
   const apiKey = groqApiKey();
   if (!apiKey) {
+    console.error("[chat] assistant provider is not configured");
     return Response.json(
       {
-        error: "Groq is not configured. Add GROQ_API_KEY to your .env.local file.",
+        error: "assistant_unavailable",
+        message: "The assistant is temporarily unavailable. Please try again later.",
       },
       { status: 503 },
     );
@@ -182,7 +175,10 @@ export async function POST(request: Request) {
   });
   if (!rl.allowed) {
     return Response.json(
-      { error: `Too many chat requests. Try again in ${rl.retryAfterSeconds}s.` },
+      {
+        error: "rate_limited",
+        message: `You're sending messages too quickly. Try again in ${rl.retryAfterSeconds}s.`,
+      },
       { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } },
     );
   }
@@ -191,12 +187,18 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json(
+      { error: "invalid_request", message: "We couldn't read that message. Refresh the page and try again." },
+      { status: 400 },
+    );
   }
 
   const messages = Array.isArray(body.messages) ? body.messages : [];
   if (messages.length === 0) {
-    return Response.json({ error: "messages required" }, { status: 400 });
+    return Response.json(
+      { error: "message_required", message: "Type a message before sending." },
+      { status: 400 },
+    );
   }
 
   const trimmed = messages.slice(-MAX_MESSAGES).map((m) => ({
@@ -206,13 +208,15 @@ export async function POST(request: Request) {
 
   const last = trimmed[trimmed.length - 1];
   if (last.role !== "user" || !last.content.trim()) {
-    return Response.json({ error: "Last message must be from user" }, { status: 400 });
+    return Response.json(
+      { error: "message_required", message: "Type a message before sending." },
+      { status: 400 },
+    );
   }
 
   const session = await getSessionUser();
   const sessionKey = body.sessionKey || `web-${Date.now()}`;
 
-  // Persist AI conversation for CRM analytics (best-effort)
   let conversationId: string | null = null;
   try {
     const existing = body.sessionKey
@@ -289,9 +293,7 @@ export async function POST(request: Request) {
             conversationId,
             reason: "pre_response_guardrail",
           },
-        }).catch(() => {
-          /* best-effort */
-        });
+        }).catch(() => {});
       } catch (err) {
         console.error("[chat persist escalation]", err);
       }
@@ -306,7 +308,6 @@ export async function POST(request: Request) {
   const modelName = groqModelName();
   const client = groqClient(apiKey);
 
-  // Build context with only relevant knowledge for this user turn (not the full KB).
   let systemPrompt = await buildPharmacyContext(last.content);
 
   if (session && (await isCaregiver(session).catch(() => false))) {
@@ -322,7 +323,6 @@ export async function POST(request: Request) {
   try {
     const resolved = await resolveTools(client, modelName, baseMessages);
 
-    // Fast path: model answered without needing a second completion.
     if (resolved.kind === "text") {
       const fullAssistant = resolved.content.trim();
       if (conversationId && fullAssistant) {
@@ -338,8 +338,6 @@ export async function POST(request: Request) {
       });
     }
 
-    // After tools (or empty direct answer): stream a final natural-language reply.
-    // Tools are omitted so the model must answer from tool results already in history.
     const stream = await client.chat.completions.create({
       model: modelName,
       messages: resolved.messages,
@@ -393,31 +391,20 @@ export async function POST(request: Request) {
     });
   } catch (err: unknown) {
     console.error("[chat]", err);
-    const message = err instanceof Error ? err.message : "Failed to reach Groq";
-
-    let errorMessage = "Something went wrong talking to the assistant. Please try again.";
-
-    if (message.includes("API key") || message.includes("API_KEY")) {
-      errorMessage = "Invalid Groq API key. Check GROQ_API_KEY in .env.local.";
-    } else if (
-      message.includes("model_decommissioned") ||
-      message.includes("decommissioned") ||
-      message.includes("does not exist") ||
-      message.includes("model_not_found")
-    ) {
-      errorMessage = `The Groq model "${modelName}" is no longer available. Update GROQ_MODEL in .env.local (see https://console.groq.com/docs/deprecations).`;
-    } else if (message.includes("Rate limit") || message.includes("429")) {
-      errorMessage = `Rate limit exceeded for ${modelName}.`;
-    } else if (message.includes("tool") || message.includes("function")) {
-      errorMessage = "The assistant could not complete a product lookup. Please try again.";
-    }
+    const raw = err instanceof Error ? err.message : "";
+    const rateLimited = /rate limit|429/i.test(raw);
+    const toolFailure = /tool|function/i.test(raw);
 
     return Response.json(
       {
-        error: errorMessage,
-        detail: process.env.NODE_ENV === "development" ? message : undefined,
+        error: rateLimited ? "assistant_busy" : toolFailure ? "lookup_failed" : "assistant_unavailable",
+        message: rateLimited
+          ? "The assistant is busy right now. Please wait a moment and try again."
+          : toolFailure
+            ? "The assistant couldn't complete that pharmacy lookup. Please try again."
+            : "The assistant is temporarily unavailable. Please try again shortly.",
       },
-      { status: 500 },
+      { status: rateLimited ? 429 : 503 },
     );
   }
 }
@@ -471,8 +458,6 @@ async function persistAssistantReply(opts: {
         conversationId,
         reason: "model_response",
       },
-    }).catch(() => {
-      /* best-effort */
-    });
+    }).catch(() => {});
   }
 }
