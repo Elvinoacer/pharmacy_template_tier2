@@ -45,7 +45,11 @@ type ChargeAuthorizationResponse = PaystackTransaction & {
 };
 
 class PaystackRequestError extends Error {
-  constructor(message: string, readonly providerRejected: boolean) {
+  constructor(
+    message: string,
+    readonly providerRejected: boolean,
+    readonly internalDetail?: string,
+  ) {
     super(message);
     this.name = "PaystackRequestError";
   }
@@ -88,7 +92,14 @@ function daysLate(dueAt: Date, now = new Date()) {
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   const key = secretKey();
-  if (!key) throw new Error("Paystack is not configured. Add PAYSTACK_SECRET_KEY.");
+  if (!key) {
+    console.error("[billing retry] payment credential missing");
+    throw new PaystackRequestError(
+      "Payment service is temporarily unavailable. Please try again later.",
+      false,
+      "missing payment credential",
+    );
+  }
 
   let response: Response;
   try {
@@ -104,17 +115,26 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
       signal: AbortSignal.timeout(20_000),
     });
   } catch (error) {
+    console.error("[billing retry] provider request failed", path, error);
     throw new PaystackRequestError(
-      `Paystack could not be reached: ${error instanceof Error ? error.message : "network error"}`,
+      "Payment service is temporarily unavailable. Please try again shortly.",
       false,
+      error instanceof Error ? error.message : "network error",
     );
   }
 
   const body = (await response.json().catch(() => ({}))) as PaystackEnvelope<T>;
   if (!response.ok || body.status === false) {
+    const internalDetail = String(body.message || `HTTP ${response.status}`).slice(0, 220);
+    console.warn("[billing retry] provider rejected request", {
+      path,
+      status: response.status,
+      detail: internalDetail,
+    });
     throw new PaystackRequestError(
-      String(body.message || `Paystack rejected the request (HTTP ${response.status}).`).slice(0, 220),
+      "The payment request could not be completed. Please update your card or try again.",
       true,
+      internalDetail,
     );
   }
   return body.data;
@@ -194,11 +214,16 @@ async function settleRetryPayment(paymentId: string, reference: string, tx: Pays
   if (String(tx.status || "").toLowerCase() !== "success") {
     const terminal = ["failed", "abandoned", "reversed"].includes(String(tx.status || "").toLowerCase());
     if (terminal) {
+      console.warn("[billing retry] terminal card result", {
+        paymentId: payment.id,
+        status: tx.status,
+        detail: tx.gateway_response,
+      });
       await db.billingPayment.update({
         where: { id: payment.id },
         data: {
           status: "failed",
-          failureReason: String(tx.gateway_response || `Paystack transaction ${tx.status}`).slice(0, 250),
+          failureReason: "The card payment was not completed. Update the card or try again.",
         },
       });
     }
@@ -210,9 +235,16 @@ async function settleRetryPayment(paymentId: string, reference: string, tx: Pays
     !amountMatchesKes(Number(payment.amountKes), tx.amount) ||
     String(tx.channel || tx.authorization?.channel || "").toLowerCase() !== "card"
   ) {
+    console.error("[billing retry] payment evidence mismatch", {
+      paymentId: payment.id,
+      expectedKes: Number(payment.amountKes),
+      amount: tx.amount,
+      currency: tx.currency,
+      channel: tx.channel || tx.authorization?.channel,
+    });
     await db.billingPayment.update({
       where: { id: payment.id },
-      data: { status: "failed", failureReason: "Paystack retry evidence did not match the expected KES card payment." },
+      data: { status: "failed", failureReason: "We could not verify this card payment. No additional charge will be attempted until you try again." },
     });
     return { ok: false, note: "retry_evidence_mismatch" };
   }
@@ -257,10 +289,15 @@ export async function processPaystackRetryReference(reference: string) {
     return { handled: true as const, ...result };
   } catch (error) {
     const rejected = error instanceof PaystackRequestError && error.providerRejected;
+    console.error("[billing retry] confirmation failed", {
+      paymentId: payment.id,
+      rejected,
+      error,
+    });
     if (rejected) {
       await db.billingPayment.update({
         where: { id: payment.id },
-        data: { status: "failed", failureReason: String(error instanceof Error ? error.message : error).slice(0, 250) },
+        data: { status: "failed", failureReason: "The card payment could not be completed. Update the card or try again." },
       });
     }
     return { handled: true as const, ok: false, note: rejected ? "retry_failed" : "retry_confirming" };
@@ -302,7 +339,7 @@ async function attemptRetry(invoiceId: string, opts: { manual: boolean; now?: Da
   }
 
   const code = externalCode(invoice.subscription.externalSubscriptionId);
-  if (!code) return { ok: false, note: "paystack_subscription_missing" };
+  if (!code) return { ok: false, note: "payment_method_missing" };
 
   if (opts.manual) {
     const recent = await db.billingPayment.findFirst({
@@ -330,7 +367,12 @@ async function attemptRetry(invoiceId: string, opts: { manual: boolean; now?: Da
   try {
     provider = await fetchProviderSubscription(code);
   } catch (error) {
-    return { ok: false, note: "provider_subscription_unavailable", message: error instanceof Error ? error.message : "Paystack unavailable" };
+    console.error("[billing retry] could not load saved card authorization", error);
+    return {
+      ok: false,
+      note: "payment_method_unavailable",
+      message: "We couldn't access the saved payment method right now. Please try again shortly.",
+    };
   }
 
   const authorization = provider.authorization;
@@ -356,7 +398,7 @@ async function attemptRetry(invoiceId: string, opts: { manual: boolean; now?: Da
   if (!authorizationCode || !reusable || !email) {
     const reason = !authorizationCode || !reusable
       ? "The saved card cannot be retried automatically. Update the card in billing."
-      : "The billing email for the saved Paystack authorization is unavailable.";
+      : "Your billing email is unavailable. Add a billing email and try again.";
     await db.billingPayment.update({ where: { id: payment.id }, data: { status: "failed", failureReason: reason } });
     await queueBillingNotice(
       invoice.pharmacyId,
@@ -378,7 +420,7 @@ async function attemptRetry(invoiceId: string, opts: { manual: boolean; now?: Da
         currency: "KES",
         reference,
         queue: true,
-        ...(origin ? { callback_url: `${origin}/api/payments/paystack/callback` } : {}),
+        ...(origin ? { callback_url: `${origin}/api/payments/card/return` } : {}),
         metadata: JSON.stringify({
           kind: "subscription_dunning_retry",
           pharmacy_id: invoice.pharmacyId,
@@ -393,16 +435,21 @@ async function attemptRetry(invoiceId: string, opts: { manual: boolean; now?: Da
     if (error instanceof PaystackRequestError && error.providerRejected) {
       await db.billingPayment.update({
         where: { id: payment.id },
-        data: { status: "failed", failureReason: error.message.slice(0, 250) },
+        data: { status: "failed", failureReason: "The card payment could not be completed. Update the card or try again." },
       });
-      return { ok: false, note: "retry_failed", message: error.message };
+      return {
+        ok: false,
+        note: "retry_failed",
+        message: "The card could not be charged. Update the payment method and try again.",
+      };
     }
 
+    console.error("[billing retry] charge status uncertain", { paymentId: payment.id, error });
     await db.billingPayment.update({
       where: { id: payment.id },
-      data: { failureReason: "Paystack retry status is uncertain; Aether will verify it before making another attempt." },
+      data: { failureReason: "Payment confirmation is still pending. We will verify it before another attempt." },
     });
-    return { ok: false, note: "retry_confirming", message: "Paystack is still confirming this retry." };
+    return { ok: false, note: "retry_confirming", message: "Your payment is still being confirmed. Please check again shortly." };
   }
 
   if (charge.paused || charge.authorization_url) {
@@ -423,15 +470,15 @@ async function attemptRetry(invoiceId: string, opts: { manual: boolean; now?: Da
         status: opts.manual && redirectUrl ? "processing" : "failed",
         providerRef: redirectUrl || null,
         failureReason: opts.manual && redirectUrl
-          ? "Card authentication is required to complete this retry."
-          : "The card requires customer authentication. Update or confirm the card in billing.",
+          ? "Card confirmation is required to complete this payment."
+          : "The card needs confirmation. Update or confirm the card in billing.",
       },
     });
     if (!opts.manual) {
       await queueBillingNotice(
         invoice.pharmacyId,
         "Your Aether card needs confirmation",
-        `Paystack requested card authentication for invoice ${invoice.number}. Your pharmacy remains available during the grace period. Open Pricing & billing and use Manage payment card.`,
+        `Your card needs confirmation for invoice ${invoice.number}. Your pharmacy remains available during the grace period. Open Pricing & billing and use Manage payment card.`,
       );
     }
     return { ok: false, note: "card_authentication_required", redirectUrl };
@@ -443,12 +490,17 @@ async function attemptRetry(invoiceId: string, opts: { manual: boolean; now?: Da
     return { ok: confirmed.ok, note: confirmed.note };
   }
   if (["failed", "abandoned", "reversed"].includes(chargeStatus)) {
-    const reason = String(charge.gateway_response || `Paystack retry ${chargeStatus}`).slice(0, 250);
+    console.warn("[billing retry] charge did not complete", {
+      paymentId: payment.id,
+      status: chargeStatus,
+      detail: charge.gateway_response,
+    });
+    const reason = "The card payment was not completed. Update the card or try again.";
     await db.billingPayment.update({ where: { id: payment.id }, data: { status: "failed", failureReason: reason } });
     return { ok: false, note: "retry_failed", message: reason };
   }
 
-  return { ok: false, note: "retry_processing", message: "Paystack is processing this retry." };
+  return { ok: false, note: "retry_processing", message: "Your payment is being processed. Please check again shortly." };
 }
 
 async function moveIntoBillingState(invoiceId: string, now = new Date()) {
@@ -552,7 +604,7 @@ async function moveIntoBillingState(invoiceId: string, now = new Date()) {
       await queueBillingNotice(
         invoice.pharmacyId,
         nextStatus === "warning" ? "Aether payment failed — grace period started" : "Aether payment is still due",
-        `We could not collect invoice ${invoice.number}. Your pharmacy remains fully available during the ${SUBSCRIPTION_GRACE_DAYS}-day grace period. ${remaining} day${remaining === 1 ? "" : "s"} remain. Aether retries the saved Paystack card automatically on days 2, 5, 9 and 13; you can update the card at any time from Pricing & billing.`,
+        `We could not collect invoice ${invoice.number}. Your pharmacy remains fully available during the ${SUBSCRIPTION_GRACE_DAYS}-day grace period. ${remaining} day${remaining === 1 ? "" : "s"} remain. Aether retries the saved card automatically on days 2, 5, 9 and 13; you can update the card at any time from Pricing & billing.`,
       );
     }
   }
