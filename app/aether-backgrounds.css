@@ -1,8 +1,8 @@
 /*
  * One shared Aether artwork background for the entire application.
  *
- * The image belongs to the application canvas only. It is never repeated on
- * sections, cards, panels, forms or other content surfaces.
+ * The image belongs to one fixed root layer only. It is never repeated on
+ * sections, cards, panels, forms or route surfaces.
  */
 
 :root {
@@ -38,12 +38,6 @@ html[data-admin-theme="dark"] {
     );
 }
 
-/*
- * Keep the document itself neutral. The artwork is not painted on body because
- * body backgrounds participate in special canvas propagation rules and can be
- * visually swallowed by route-sized surfaces. Instead, one fixed pseudo-layer
- * sits behind the entire application for every route.
- */
 html {
   background-color: var(--background);
 }
@@ -54,11 +48,15 @@ body {
   background: transparent !important;
 }
 
-body::before {
-  content: "";
+/*
+ * Explicit root backdrop. This deliberately uses z-index: 0 instead of a
+ * negative-z pseudo-element so it can never fall behind the html/document
+ * canvas. The complete application is mounted in .aether-app-layer at z: 1.
+ */
+.aether-global-backdrop {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   background-color: var(--background);
   background-image:
@@ -70,6 +68,16 @@ body::before {
   background-repeat: no-repeat, no-repeat;
   background-size: cover, cover;
   transform: translateZ(0);
+}
+
+.aether-app-layer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 100%;
+  flex: 1 1 auto;
+  flex-direction: column;
+  background: transparent;
 }
 
 /* Full-page route shells must expose the shared backdrop. */
