@@ -8,9 +8,10 @@ const FRIENDLY_ERROR_CODES: Record<string, string> = {
   FORBIDDEN: "You do not have permission to do that.",
 };
 
-const INTERNAL_ERROR_PATTERN = /(?:\bP\d{4}\b|Prisma|SQLSTATE|postgres|database|constraint|foreign key|unique constraint|relation .* does not exist|column .* does not exist|ECONN(?:REFUSED|RESET)|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|NEXT_REDIRECT|NEXT_NOT_FOUND|node_modules|\/app\/|\\app\\|TypeError|ReferenceError|SyntaxError|ZodError|Cannot read properties|undefined is not|null is not|AUTH_SECRET|DATABASE_URL|SECRET_KEY|API_KEY|access[_ -]?token|refresh[_ -]?token|private[_ -]?key|stack trace|\bat .+\(.+\:\d+\:\d+\))/i;
+const INTERNAL_ERROR_PATTERN = /(?:\bP\d{4}\b|Prisma|SQLSTATE|postgres|database|constraint|foreign key|unique constraint|relation .* does not exist|column .* does not exist|ECONN(?:REFUSED|RESET|ABORTED)|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|EPIPE|NEXT_REDIRECT|NEXT_NOT_FOUND|node_modules|\/app\/|\\app\\|TypeError|ReferenceError|SyntaxError|ZodError|Cannot read properties|undefined is not|null is not|AUTH_SECRET|DATABASE_URL|SECRET_KEY|API_KEY|access[_ -]?token|refresh[_ -]?token|private[_ -]?key|stack trace|\bat .+\(.+\:\d+\:\d+\)|\bHTTP\s*\d{3}\b|status(?:\s+code)?\s*[:=]?\s*\d{3}\b|Paystack|Daraja|IntaSend|Groq|Cloudflare|Firebase|AWS|S3|R2|gateway[_ -]?response|provider[_ -]?(?:error|rejected|failed)|request[_ -]?(?:id|failed)|checkout_request|authorization_code|subscription_code)/i;
 
 const CODE_LIKE_PATTERN = /^[A-Z][A-Z0-9_:-]{2,80}$/;
+const MACHINE_TOKEN_PATTERN = /^(?:[a-z0-9]+[_:-]){1,}[a-z0-9_-]+$/i;
 
 function textFromUnknown(value: unknown): string | null {
   if (typeof value === "string") return value.trim() || null;
@@ -26,7 +27,7 @@ function textFromUnknown(value: unknown): string | null {
 
 /**
  * Converts unknown/internal errors into copy that is safe to show to end users.
- * Raw provider, database, framework and stack details should stay in server logs.
+ * Raw provider, database, framework and stack details belong in server logs only.
  */
 export function publicErrorMessage(
   error: unknown,
@@ -38,14 +39,19 @@ export function publicErrorMessage(
   const friendly = FRIENDLY_ERROR_CODES[raw];
   if (friendly) return friendly;
 
-  if (raw.length > 240 || INTERNAL_ERROR_PATTERN.test(raw) || CODE_LIKE_PATTERN.test(raw)) {
+  if (
+    raw.length > 240 ||
+    INTERNAL_ERROR_PATTERN.test(raw) ||
+    CODE_LIKE_PATTERN.test(raw) ||
+    MACHINE_TOKEN_PATTERN.test(raw)
+  ) {
     return fallback;
   }
 
   return raw;
 }
 
-/** Prefer a human message returned by an API, but never render internal details. */
+/** Prefer a human API message, but never render internal details or machine codes. */
 export function publicApiErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== "object") return fallback;
   const data = payload as { message?: unknown; error?: unknown; code?: unknown };
