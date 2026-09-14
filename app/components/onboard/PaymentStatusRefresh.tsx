@@ -18,7 +18,7 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
     setChecking(true);
 
     try {
-      const response = await fetch("/api/payments/daraja/billing-status", {
+      const response = await fetch("/api/payments/billing/status", {
         method: "POST",
         headers: { Accept: "application/json" },
         cache: "no-store",
@@ -34,8 +34,6 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
     }
   }, [router]);
 
-  // Always perform one provider check on mount. This recovers payments whose
-  // Daraja callback was delayed or never delivered before the page loaded.
   useEffect(() => {
     void check();
   }, [check]);
@@ -60,7 +58,7 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
     <div className="mt-5">
       {waiting ? (
         <p role="status" className="mb-3 text-sm text-[var(--muted)]">
-          Confirming directly with Safaricom. You can stay on this page; payment status updates automatically.
+          Confirming your payment. You can stay on this page; the status updates automatically.
         </p>
       ) : null}
       <button
@@ -70,7 +68,7 @@ export default function PaymentStatusRefresh({ pending }: { pending: boolean }) 
         onClick={() => void check()}
       >
         <RefreshCw size={14} aria-hidden />
-        {checking || refreshing ? "Checking Safaricom…" : "Check payment status"}
+        {checking || refreshing ? "Checking payment…" : "Check payment status"}
       </button>
     </div>
   );
