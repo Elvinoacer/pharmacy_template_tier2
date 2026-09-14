@@ -60,14 +60,18 @@ function fallbackAnswer(count: number) {
 
 export async function POST(request: Request) {
   if (!groqApiKey()) {
-    return Response.json({ error: "AI directory search is not configured." }, { status: 503 });
+    console.error("[directory assistant] service configuration unavailable");
+    return Response.json(
+      { error: "assistant_unavailable", message: "Smart directory search is temporarily unavailable. You can still use the normal pharmacy search below." },
+      { status: 503 },
+    );
   }
 
   let body: { query?: string };
   try {
     body = await request.json();
   } catch {
-    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "We couldn't read that search. Please try again." }, { status: 400 });
   }
 
   const query = String(body.query || "").trim().slice(0, 300);
@@ -134,15 +138,12 @@ export async function POST(request: Request) {
 
       answer = completion.choices[0]?.message?.content?.trim() || answer;
     } catch (error) {
-      console.error("[directory-ai] Groq request failed", error);
+      console.error("[directory assistant] provider request failed", error);
     }
 
-    return Response.json({
-      answer,
-      results: top,
-    });
+    return Response.json({ answer, results: top });
   } catch (error) {
-    console.error("[directory-ai] request failed", error);
+    console.error("[directory assistant] request failed", error);
     return Response.json(
       {
         error: "I couldn't search the pharmacy directory right now. Please try again.",
