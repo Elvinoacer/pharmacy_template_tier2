@@ -176,7 +176,19 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         data-tenant-theme={tenantStyle ? "true" : undefined}
         style={tenantStyle}
       >
-        <div className="aether-global-backdrop" aria-hidden="true" />
+        <div className="aether-global-backdrop" aria-hidden="true">
+          <picture className="aether-global-picture">
+            <source media="(min-width: 768px)" srcSet="/images/aether_bg_pc.webp" />
+            <img
+              src="/images/aether_bg_mobile.jpg"
+              alt=""
+              className="aether-global-image"
+              decoding="async"
+              fetchPriority="high"
+            />
+          </picture>
+          <div className="aether-global-veil" />
+        </div>
         <div className="aether-app-layer">
           <ThemeProvider>
             <div className="global-theme-control">
