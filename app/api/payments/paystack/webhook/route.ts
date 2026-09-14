@@ -5,6 +5,10 @@ import {
   verifyPaystackWebhookSignature,
   type PaystackWebhookEvent,
 } from "@/app/lib/services/paystack-billing";
+import {
+  processPaystackRetryReference,
+  restoreBillingSuspendedFromPaystackEvent,
+} from "@/app/lib/services/paystack-dunning";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
@@ -24,7 +28,22 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await withPlatformBypass(() => processPaystackWebhookEvent(event));
+    const result = await withPlatformBypass(async () => {
+      if (event.event === "charge.success") {
+        const reference = String(event.data?.reference || "").trim();
+        if (reference) {
+          const retry = await processPaystackRetryReference(reference);
+          if (retry.handled) {
+            return { status: retry.ok ? 200 : 202, note: retry.note };
+          }
+        }
+      }
+
+      const normal = await processPaystackWebhookEvent(event);
+      if (normal.status < 400) await restoreBillingSuspendedFromPaystackEvent(event);
+      return normal;
+    });
+
     // subscription.create and charge.success can arrive in either order. If the
     // provider subscription arrives first, deliberately ask Paystack to retry
     // instead of acknowledging and permanently losing the subscription binding.
