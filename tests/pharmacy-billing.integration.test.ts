@@ -48,7 +48,8 @@ test("pharmacy billing: capped promotions, settlement, isolation and renewals", 
       };
       try {
         const attempts = await Promise.allSettled([collectInvoicePayment(invoices[0].id, { phone: "254712345678" }), collectInvoicePayment(invoices[0].id, { phone: "254712345678" })]);
-        assert.equal(attempts.filter(a => a.status === "fulfilled").length, 1);
+        const successfulStarts = attempts.filter((attempt) => attempt.status === "fulfilled" && attempt.value.ok);
+        assert.equal(successfulStarts.length, 1, "concurrent clicks must start only one successful payment attempt");
         assert.equal(prompts, 1, "concurrent clicks must send only one provider prompt");
       } finally {
         globalThis.fetch = originalFetch;
