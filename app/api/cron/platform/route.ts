@@ -6,7 +6,7 @@ import { processQueuedDeliveries } from "@/app/lib/platform/notifications";
 import { processWebhookDeliveryBatch } from "@/app/lib/platform/webhooks";
 import { recoverStaleJobs } from "@/app/lib/platform/jobs";
 import { processSubscriptionCycle, reconcileBillingPayments } from "@/app/lib/platform/billing";
-import { processSubscriptionDunning } from "@/app/lib/services/paystack-dunning";
+import { processSubscriptionDunning } from "@/app/lib/services/daraja-dunning";
 import { isCronAuthorized } from "@/app/lib/cron-auth";
 import { enforceExpiredPharmacyLicences } from "@/app/lib/services/pharmacy-verification-expiry";
 

@@ -8,7 +8,7 @@ const FRIENDLY_ERROR_CODES: Record<string, string> = {
   FORBIDDEN: "You do not have permission to do that.",
 };
 
-const INTERNAL_ERROR_PATTERN = /(?:\bP\d{4}\b|Prisma|SQLSTATE|postgres|database|constraint|foreign key|unique constraint|relation .* does not exist|column .* does not exist|ECONN(?:REFUSED|RESET|ABORTED)|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|EPIPE|NEXT_REDIRECT|NEXT_NOT_FOUND|node_modules|\/app\/|\\app\\|TypeError|ReferenceError|SyntaxError|ZodError|Cannot read properties|undefined is not|null is not|AUTH_SECRET|DATABASE_URL|SECRET_KEY|API_KEY|process\.env|\.env(?:\.local)?|access[_ -]?token|refresh[_ -]?token|private[_ -]?key|stack trace|\bat .+\(.+\:\d+\:\d+\)|\bHTTP\s*\d{3}\b|status(?:\s+code)?\s*[:=]?\s*\d{3}\b|Paystack|Daraja|IntaSend|Groq|Cloudflare|Firebase|Twilio|Resend|SendGrid|Amazon\s+S3|AWS|\bS3\b|\bR2\b|Google\s+OAuth|OAuth\s+(?:client|secret|configuration)|gateway[_ -]?response|provider[_ -]?(?:error|rejected|failed)|request[_ -]?(?:id|failed)|checkout_request|authorization_code|subscription_code|webhook[_ -]?(?:secret|signature)|\b[A-Z][A-Z0-9_]{2,}_(?:KEY|SECRET|TOKEN|PASSWORD|PASSKEY|CLIENT_ID|CLIENT_SECRET|URL)\b)/i;
+const INTERNAL_ERROR_PATTERN = /(?:\bP\d{4}\b|Prisma|SQLSTATE|postgres|database|constraint|foreign key|unique constraint|relation .* does not exist|column .* does not exist|ECONN(?:REFUSED|RESET|ABORTED)|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|EPIPE|NEXT_REDIRECT|NEXT_NOT_FOUND|node_modules|\/app\/|\\app\\|TypeError|ReferenceError|SyntaxError|ZodError|Cannot read properties|undefined is not|null is not|AUTH_SECRET|DATABASE_URL|SECRET_KEY|API_KEY|process\.env|\.env(?:\.local)?|access[_ -]?token|refresh[_ -]?token|private[_ -]?key|stack trace|\bat .+\(.+\:\d+\:\d+\)|\bHTTP\s*\d{3}\b|status(?:\s+code)?\s*[:=]?\s*\d{3}\b|Daraja|Groq|Cloudflare|Firebase|Twilio|Resend|SendGrid|Amazon\s+S3|AWS|\bS3\b|\bR2\b|Google\s+OAuth|OAuth\s+(?:client|secret|configuration)|gateway[_ -]?response|provider[_ -]?(?:error|rejected|failed)|request[_ -]?(?:id|failed)|checkout_request|authorization_code|subscription_code|webhook[_ -]?(?:secret|signature)|\b[A-Z][A-Z0-9_]{2,}_(?:KEY|SECRET|TOKEN|PASSWORD|PASSKEY|CLIENT_ID|CLIENT_SECRET|URL)\b)/i;
 
 const CODE_LIKE_PATTERN = /^[A-Z][A-Z0-9_:-]{2,80}$/;
 const MACHINE_TOKEN_PATTERN = /^(?:[a-z0-9]+[_:-]){1,}[a-z0-9_-]+$/i;
@@ -25,11 +25,6 @@ function textFromUnknown(value: unknown): string | null {
   return null;
 }
 
-/**
- * Converts unknown/internal errors into copy that is safe to show to end users.
- * Provider names, configuration details, environment variables, database/framework
- * errors and stack information stay in server-side logs only.
- */
 export function publicErrorMessage(
   error: unknown,
   fallback = "Something went wrong. Please try again.",
@@ -52,7 +47,6 @@ export function publicErrorMessage(
   return raw;
 }
 
-/** Prefer a human API message, but never render internal details or machine codes. */
 export function publicApiErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== "object") return fallback;
   const data = payload as { message?: unknown; error?: unknown; code?: unknown };

@@ -48,7 +48,7 @@ export default async function InvoicesPage() {
     <PlatformPage
       eyebrow="Revenue operations"
       title="Invoices"
-      description="Track pharmacy billing and recurring card collection without initiating payments on behalf of pharmacy owners."
+      description="Track pharmacy billing across Daraja STK Push and M-PESA Ratiba standing orders."
     >
       <div className="mb-7 grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
         <PlatformStat label="Open invoices" value={open.length} detail="Awaiting settlement" tone={open.length ? "warning" : "success"} />
@@ -61,14 +61,14 @@ export default async function InvoicesPage() {
         <div className="mb-6 rounded-2xl border border-rose-500/20 bg-rose-500/8 p-3.5 sm:p-4">
           <p className="text-sm font-semibold text-[var(--admin-text)]">Collection priority</p>
           <p className="mt-0.5 text-xs leading-5 text-[var(--admin-text-muted)]">
-            {overdue.length} invoice{overdue.length === 1 ? " is" : "s are"} overdue. Review the pharmacy&apos;s recurring billing status or contact the owner before taking further action.
+            {overdue.length} invoice{overdue.length === 1 ? " is" : "s are"} overdue. Review Ratiba status or ask the owner to trigger an M-PESA STK payment.
           </p>
         </div>
       ) : null}
 
       <PlatformSection
         title="Invoice ledger"
-        description="Monthly service invoices reconcile automatically after recurring card charges. One-time platform invoices are paid by the pharmacy owner through secure hosted checkout."
+        description="Monthly service invoices reconcile from Ratiba callbacks when automatic M-PESA is active. Any unpaid invoice can be collected through Daraja STK Push."
       >
         <PlatformTable
           headers={["Invoice", "Pharmacy", "Total", "Due date", "Status", "Collection"]}
@@ -77,17 +77,22 @@ export default async function InvoicesPage() {
             const isOpen = invoice.status === "open";
             const isOverdue = isOpen && invoice.dueAt < now;
             const latestPayment = invoice.payments[0];
-            const recurringReady = Boolean(invoice.subscription?.externalSubscriptionId?.startsWith("paystack:"));
+            const ratibaActive = Boolean(invoice.subscription?.externalSubscriptionId?.startsWith("daraja_ratiba:"));
+            const ratibaPending = Boolean(invoice.subscription?.externalSubscriptionId?.startsWith("daraja_ratiba_pending:"));
             const collectionLabel = invoice.subscriptionId
-              ? recurringReady
-                ? latestPayment?.provider === "paystack_subscription"
-                  ? `Auto-renew · ${latestPayment.status}`
-                  : "Automatic card renewal"
-                : "Card setup required"
-              : latestPayment?.provider?.startsWith("paystack")
-                ? `Card checkout · ${latestPayment.status}`
+              ? latestPayment?.provider === "daraja_ratiba"
+                ? `Ratiba · ${latestPayment.status}`
+                : ratibaActive
+                  ? "M-PESA Ratiba"
+                  : ratibaPending
+                    ? "Ratiba authorizing"
+                    : latestPayment?.provider === "daraja" || latestPayment?.provider === "mpesa"
+                      ? `M-PESA STK · ${latestPayment.status}`
+                      : "M-PESA STK available"
+              : latestPayment?.provider === "daraja" || latestPayment?.provider === "mpesa"
+                ? `M-PESA STK · ${latestPayment.status}`
                 : isOpen
-                  ? "Owner card checkout"
+                  ? "Owner M-PESA payment"
                   : "No action";
 
             return [
