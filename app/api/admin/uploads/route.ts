@@ -8,27 +8,20 @@ import {
 
 export const runtime = "nodejs";
 
-/**
- * POST /api/admin/uploads
- *
- * Multipart form fields:
- *   file   — image file (required)
- *   folder — optional key prefix (default "uploads"), e.g. "medications", "gallery"
- *
- * Staff-only. Returns { ok, url, key, contentType, size }.
- */
 export async function POST(req: Request) {
   const user = await getSessionUser();
   if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "You do not have permission to upload files." },
+      { status: 403 },
+    );
   }
 
   if (!isR2Configured()) {
     return NextResponse.json(
       {
-        error: "r2_not_configured",
-        message:
-          "Cloudflare R2 is not configured. Add R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, and R2_PUBLIC_URL to .env.local.",
+        error: "upload_unavailable",
+        message: "File uploads are temporarily unavailable. Please try again later.",
       },
       { status: 503 },
     );
@@ -38,13 +31,16 @@ export async function POST(req: Request) {
   try {
     form = await req.formData();
   } catch {
-    return NextResponse.json({ error: "invalid_multipart" }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_request", message: "We couldn't read the upload. Choose the file again and retry." },
+      { status: 400 },
+    );
   }
 
   const file = form.get("file");
   if (!(file instanceof File)) {
     return NextResponse.json(
-      { error: "missing_file", message: "Attach an image as form field \"file\"." },
+      { error: "missing_file", message: "Choose an image to upload." },
       { status: 400 },
     );
   }
@@ -53,7 +49,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error: "file_too_large",
-        message: `Max file size is ${R2_MAX_BYTES / (1024 * 1024)} MB.`,
+        message: `This file is too large. Choose an image smaller than ${R2_MAX_BYTES / (1024 * 1024)} MB.`,
       },
       { status: 413 },
     );
@@ -63,8 +59,6 @@ export async function POST(req: Request) {
 
   try {
     const result = await uploadToR2(file, { folder });
-    // entityId is a UUID column — R2 object keys are paths, not UUIDs.
-    // Store the key/url in details so the audit row still has full context.
     await writeAuditLog(user.id, "image_uploaded", "r2", undefined, {
       key: result.key,
       url: result.url,
@@ -81,17 +75,24 @@ export async function POST(req: Request) {
       size: result.size,
     });
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Upload failed.";
     console.error("[api/admin/uploads]", e);
-    return NextResponse.json({ error: "upload_failed", message }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: "upload_failed",
+        message: "We couldn't upload this file. Check the file type and size, then try again.",
+      },
+      { status: 400 },
+    );
   }
 }
 
-/** Lightweight readiness check for the upload UI. */
 export async function GET() {
   const user = await getSessionUser();
   if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "You do not have permission to view upload settings." },
+      { status: 403 },
+    );
   }
 
   return NextResponse.json({
