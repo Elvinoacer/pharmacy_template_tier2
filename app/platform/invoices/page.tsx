@@ -48,7 +48,7 @@ export default async function InvoicesPage() {
     <PlatformPage
       eyebrow="Revenue operations"
       title="Invoices"
-      description="Track pharmacy billing and recurring Paystack card collection without initiating payments on behalf of pharmacy owners."
+      description="Track pharmacy billing and recurring card collection without initiating payments on behalf of pharmacy owners."
     >
       <div className="mb-7 grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
         <PlatformStat label="Open invoices" value={open.length} detail="Awaiting settlement" tone={open.length ? "warning" : "success"} />
@@ -61,14 +61,14 @@ export default async function InvoicesPage() {
         <div className="mb-6 rounded-2xl border border-rose-500/20 bg-rose-500/8 p-3.5 sm:p-4">
           <p className="text-sm font-semibold text-[var(--admin-text)]">Collection priority</p>
           <p className="mt-0.5 text-xs leading-5 text-[var(--admin-text-muted)]">
-            {overdue.length} invoice{overdue.length === 1 ? " is" : "s are"} overdue. Review the pharmacy&apos;s Paystack subscription status or contact the owner; platform billing should never be collected through an admin-triggered STK prompt.
+            {overdue.length} invoice{overdue.length === 1 ? " is" : "s are"} overdue. Review the pharmacy&apos;s recurring billing status or contact the owner before taking further action.
           </p>
         </div>
       ) : null}
 
       <PlatformSection
         title="Invoice ledger"
-        description="Monthly service invoices reconcile from Paystack subscription webhooks. One-time platform invoices are paid by the pharmacy owner through hosted card checkout."
+        description="Monthly service invoices reconcile automatically after recurring card charges. One-time platform invoices are paid by the pharmacy owner through secure hosted checkout."
       >
         <PlatformTable
           headers={["Invoice", "Pharmacy", "Total", "Due date", "Status", "Collection"]}
@@ -81,11 +81,11 @@ export default async function InvoicesPage() {
             const collectionLabel = invoice.subscriptionId
               ? recurringReady
                 ? latestPayment?.provider === "paystack_subscription"
-                  ? `Paystack · ${latestPayment.status}`
-                  : "Paystack auto-renew"
+                  ? `Auto-renew · ${latestPayment.status}`
+                  : "Automatic card renewal"
                 : "Card setup required"
               : latestPayment?.provider?.startsWith("paystack")
-                ? `Paystack · ${latestPayment.status}`
+                ? `Card checkout · ${latestPayment.status}`
                 : isOpen
                   ? "Owner card checkout"
                   : "No action";
