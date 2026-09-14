@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prismaUnscoped } from "@/app/lib/db";
 import { reviewPharmacyAction, type ReviewActionState } from "@/app/actions/platform";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { provisionTenant } from "@/app/lib/platform/provision";
@@ -67,9 +68,7 @@ async function notifyOwnerPharmacyIsApproved(opts: {
     "The pharmacy stays off the public directory until you finish setup and choose Publish.",
     "",
     "— Aether Network",
-  ]
-    .filter(Boolean)
-    .join("\n");
+  ].filter(Boolean).join("\n");
 
   try {
     const result = await sendDelivery({
@@ -81,10 +80,11 @@ async function notifyOwnerPharmacyIsApproved(opts: {
     });
     return { ...result, recipient: toEmail };
   } catch (error) {
+    console.error("[pharmacy-approval] approval email send failed", error);
     return {
       status: "failed",
       recipient: toEmail,
-      error: error instanceof Error ? error.message : "Approval email could not be sent.",
+      error: "The setup email could not be sent right now.",
     };
   }
 }
@@ -120,9 +120,7 @@ async function approvePharmacyForSetup(formData: FormData): Promise<ReviewAction
   const readiness = await loadApprovalReadiness(pharmacyId);
   if (!readiness.ready) {
     const missing = [...readiness.profileMissing, ...readiness.checklistMissing];
-    return {
-      error: `Approval blocked. Complete mandatory pharmacy verification first: ${missing.join("; ")}.`,
-    };
+    return { error: `Approval blocked. Complete mandatory pharmacy verification first: ${missing.join("; ")}.` };
   }
 
   let pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
@@ -136,9 +134,7 @@ async function approvePharmacyForSetup(formData: FormData): Promise<ReviewAction
     return { error: "Only a submitted, under-review or already-approved pharmacy can be approved." };
   }
 
-  const verificationFee = await prismaUnscoped.invoice.findUnique({
-    where: { number: `KYP-${pharmacyId}` },
-  });
+  const verificationFee = await prismaUnscoped.invoice.findUnique({ where: { number: `KYP-${pharmacyId}` } });
   if (verificationFee?.status !== "paid") {
     return { error: "Verification fee must be paid or waived before approval." };
   }
@@ -197,13 +193,7 @@ async function approvePharmacyForSetup(formData: FormData): Promise<ReviewAction
 
   pharmacy = await prismaUnscoped.pharmacy.update({
     where: { id: pharmacyId },
-    data: {
-      status: "approved",
-      listed: false,
-      goLiveAt: null,
-      setupCompletedAt: null,
-      lifecycleStatus,
-    },
+    data: { status: "approved", listed: false, goLiveAt: null, setupCompletedAt: null, lifecycleStatus },
   });
 
   await recordAuditRequired({
@@ -266,11 +256,10 @@ async function approvePharmacyForSetup(formData: FormData): Promise<ReviewAction
   const emailSummary =
     email.status === "sent" || email.status === "delivered"
       ? ` Setup email sent to ${email.recipient}.`
-      : ` Pharmacy approved, but the setup email is ${email.status}${email.error ? `: ${email.error}` : "."}`;
+      : " Pharmacy approved, but the setup email has not been confirmed yet. The owner can still continue setup from the dashboard.";
 
   return {
-    success:
-      `Approved for guided setup. The pharmacy remains unlisted until the owner completes setup and publishes it.${emailSummary}`,
+    success: `Approved for guided setup. The pharmacy remains unlisted until the owner completes setup and publishes it.${emailSummary}`,
   };
 }
 
@@ -287,7 +276,10 @@ export async function safeReviewPharmacyAction(
   } catch (error) {
     console.error("[pharmacy-approval] approve for setup", error);
     return {
-      error: error instanceof Error ? error.message : "Approval could not unlock pharmacy setup.",
+      error: publicErrorMessage(
+        error,
+        "We couldn't complete pharmacy approval right now. No approval state was changed; refresh and try again.",
+      ),
     };
   }
 }
