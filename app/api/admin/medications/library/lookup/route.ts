@@ -4,22 +4,22 @@ import { prisma } from "@/app/lib/db";
 
 export const runtime = "nodejs";
 
-/**
- * Phase 3.2 — Barcode / QR lookup.
- * Looks up a scanned barcode against MedicationMaster.barcode (unique-indexed).
- * Returns the master + whether this pharmacy already stocks it.
- * 404 if not found — the client then offers the AI Import path (Decision D30).
- */
 export async function GET(req: Request) {
   const user = await getSessionUser();
   if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "You do not have permission to look up medications." },
+      { status: 403 },
+    );
   }
 
   const url = new URL(req.url);
   const barcode = (url.searchParams.get("barcode") || "").trim();
   if (!barcode) {
-    return NextResponse.json({ error: "missing_barcode" }, { status: 400 });
+    return NextResponse.json(
+      { error: "missing_barcode", message: "Scan a barcode or enter one to continue." },
+      { status: 400 },
+    );
   }
 
   try {
@@ -67,10 +67,18 @@ export async function GET(req: Request) {
         requiresRefrigeration: master.requiresRefrigeration,
         pregnancyCategory: master.pregnancyCategory?.value ?? null,
       },
-      alreadyStocked: existingInv ? { id: existingInv.id, slug: existingInv.slug, currentStock: existingInv.currentStock } : null,
+      alreadyStocked: existingInv
+        ? { id: existingInv.id, slug: existingInv.slug, currentStock: existingInv.currentStock }
+        : null,
     });
   } catch (e) {
     console.error("[library lookup GET]", e);
-    return NextResponse.json({ error: "lookup_failed", message: e instanceof Error ? e.message : "Lookup failed." }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "lookup_failed",
+        message: "We couldn't look up that medication right now. Please try again.",
+      },
+      { status: 500 },
+    );
   }
 }
