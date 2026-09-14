@@ -12,16 +12,13 @@ import {
   verifyPassword,
   writeAuditLog,
 } from "@/app/lib/auth";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { validatePassword } from "@/app/lib/password";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getRequestMeta } from "@/app/lib/request-meta";
 
 export type CaregiverActionState = { error?: string; success?: string };
 
-/**
- * Accept a caregiver invitation: create a caregiver account or link the
- * relationship to an existing account without changing that account's role.
- */
 export async function acceptCaregiverInviteAction(
   _prev: CaregiverActionState,
   formData: FormData,
@@ -31,7 +28,7 @@ export async function acceptCaregiverInviteAction(
   const fullName = String(formData.get("fullName") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
 
-  if (!token) return { error: "Missing invitation token." };
+  if (!token) return { error: "This invitation link is incomplete. Ask the patient to send a new one." };
 
   const tokenHash = createHash("sha256").update(token).digest("hex");
   const invite = await prisma.caregiverInvite.findUnique({
@@ -43,24 +40,19 @@ export async function acceptCaregiverInviteAction(
     },
   });
 
-  if (!invite) return { error: "Invalid invitation link." };
+  if (!invite) return { error: "This invitation link is invalid. Ask the patient to send a new one." };
   if (invite.acceptedAt) return { error: "This invitation has already been used." };
   if (invite.expiresAt < new Date()) {
-    return { error: "This invitation has expired. Ask the patient to resend." };
+    return { error: "This invitation has expired. Ask the patient to send a new one." };
   }
 
-  // The invitation is a bearer secret. Once it is known, bound all acceptance
-  // attempts so an exposed link cannot become an unlimited password oracle for
-  // an existing account. Fail closed if the distributed limiter is unavailable.
   const rate = await checkRateLimitAsync(`caregiver-accept:${invite.id}`, {
     limit: 8,
     windowMs: 15 * 60 * 1000,
     failClosed: true,
   });
   if (!rate.allowed) {
-    return {
-      error: `Too many acceptance attempts. Try again in ${rate.retryAfterSeconds}s.`,
-    };
+    return { error: `Too many attempts. Try again in ${rate.retryAfterSeconds}s.` };
   }
 
   const email = invite.email.toLowerCase().trim();
@@ -70,10 +62,6 @@ export async function acceptCaregiverInviteAction(
     select: { id: true, passwordHash: true },
   });
 
-  // A caregiver invitation proves possession of the invitation, not ownership
-  // of an existing application account. Never turn it into a privileged login
-  // token. Existing users must already be signed in as that account or verify
-  // its password. OAuth-only users must sign in with their provider first.
   if (existingUser) {
     const currentSession = await getSessionUser().catch(() => null);
     const alreadyAuthenticated = currentSession?.id === existingUser.id;
@@ -86,8 +74,8 @@ export async function acceptCaregiverInviteAction(
     if (!alreadyAuthenticated && !passwordVerified) {
       return {
         error: existingUser.passwordHash
-          ? "This email already has an account. Enter that account's current password to accept the caregiver invitation."
-          : "This email already has an account. Sign in with its existing sign-in method, then open the caregiver invitation again.",
+          ? "This email already has an account. Enter that account's current password to accept the invitation."
+          : "This email already has an account. Sign in with the existing sign-in method, then open the invitation again.",
       };
     }
   } else {
@@ -100,9 +88,6 @@ export async function acceptCaregiverInviteAction(
       let user = await tx.user.findUnique({ where: { email } });
 
       if (user) {
-        // Preserve the account's existing global role and credentials. The
-        // caregiver relationship itself grants caregiver access, allowing one
-        // account to remain a customer/staff member and a caregiver.
         user = await tx.user.update({
           where: { id: user.id },
           data: { emailVerified: true },
@@ -119,8 +104,6 @@ export async function acceptCaregiverInviteAction(
         });
       }
 
-      // Caregivers don't need a full CustomerProfile, but some portal helpers
-      // expect a profile for display — create a lightweight one if missing.
       const existingProfile = await tx.customerProfile.findUnique({
         where: { userId: user.id },
       });
@@ -133,9 +116,7 @@ export async function acceptCaregiverInviteAction(
             onboardingCompletedAt: new Date(),
           },
         });
-        await tx.customerPreference.create({
-          data: { customerId: profile.id },
-        });
+        await tx.customerPreference.create({ data: { customerId: profile.id } });
       }
 
       await tx.caregiver.update({
@@ -166,15 +147,16 @@ export async function acceptCaregiverInviteAction(
     revalidatePath("/caregiver");
     revalidatePath("/portal/caregivers");
   } catch (e) {
-    if (e instanceof AuthError) return { error: e.message };
+    if (e instanceof AuthError) {
+      return { error: publicErrorMessage(e, "We couldn't complete caregiver access. Please try again.") };
+    }
     console.error("[acceptCaregiverInviteAction]", e);
-    return { error: "Could not complete account setup. Please try again." };
+    return { error: "We couldn't complete caregiver setup right now. Please try again." };
   }
 
   redirect("/caregiver");
 }
 
-/** Unused helper kept for potential re-invite token generation. */
 export async function generateCaregiverToken(): Promise<string> {
   return randomBytes(32).toString("hex");
 }
