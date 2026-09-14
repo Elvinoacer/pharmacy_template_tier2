@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getRequestMeta } from "@/app/lib/request-meta";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { emailVerificationBody, passwordResetBody, sendDelivery } from "@/app/lib/services/delivery";
 import { validateCsrfToken } from "@/app/lib/csrf";
 import {
@@ -29,14 +30,13 @@ export async function registerAction(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
-  // Validate CSRF token for form submissions
   const csrfToken = String(formData.get("csrfToken") || "");
   try {
     await validateCsrfToken(csrfToken);
   } catch {
-    return { error: "Invalid request. Please refresh and try again." };
+    return { error: "This form has expired. Refresh the page and try again." };
   }
-  
+
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
   const fullName = String(formData.get("fullName") || "").trim();
@@ -47,9 +47,7 @@ export async function registerAction(
     return { error: "Name, email, and password are required." };
   }
   const passwordError = validatePassword(password);
-  if (passwordError) {
-    return { error: passwordError };
-  }
+  if (passwordError) return { error: passwordError };
 
   const meta = await getRequestMeta();
   const limited = await checkRateLimitAsync(`register:${meta.ip}:${email.toLowerCase()}`, {
@@ -60,7 +58,7 @@ export async function registerAction(
   if (!limited.allowed) {
     return {
       error: limited.degraded
-        ? "Security service temporarily unavailable. Please try again shortly."
+        ? "Registration is temporarily unavailable. Please try again shortly."
         : `Too many registration attempts. Try again in ${limited.retryAfterSeconds} seconds.`,
     };
   }
@@ -89,13 +87,13 @@ export async function registerAction(
     await recordAudit({ actorId: userId, action: "register", resource: "user", resourceId: userId });
   } catch (e) {
     if (isRedirectError(e)) throw e;
-    if (e instanceof AuthError) return { error: e.message };
+    if (e instanceof AuthError) {
+      return { error: publicErrorMessage(e, "We couldn't create your account. Check the details and try again.") };
+    }
     console.error("[registerAction]", e);
-    return { error: "Could not create account. Please try again." };
+    return { error: "We couldn't create your account right now. Please try again." };
   }
 
-  // redirect() MUST be outside try/catch — it throws a NEXT_REDIRECT error
-  // that Next.js handles at the action boundary. If caught, the redirect is lost.
   redirect(resolvePostLoginPath({ role: "customer", customerId: userId }, String(formData.get("next") || "")));
 }
 
@@ -103,21 +101,18 @@ export async function loginAction(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
-  // Validate CSRF token for form submissions
   const csrfToken = String(formData.get("csrfToken") || "");
   try {
     await validateCsrfToken(csrfToken);
   } catch {
-    return { error: "Invalid request. Please refresh and try again." };
+    return { error: "This sign-in form has expired. Refresh the page and try again." };
   }
-  
+
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
   const next = String(formData.get("next") || "").trim();
 
-  if (!email || !password) {
-    return { error: "Email and password are required." };
-  }
+  if (!email || !password) return { error: "Email and password are required." };
 
   const meta = await getRequestMeta();
   const ipLimit = await checkRateLimitAsync(`login:ip:${meta.ip}`, {
@@ -134,7 +129,7 @@ export async function loginAction(
     const degraded = ipLimit.degraded || accountLimit.degraded;
     return {
       error: degraded
-        ? "Security service temporarily unavailable. Please try again shortly."
+        ? "Sign-in is temporarily unavailable. Please try again shortly."
         : "Too many sign-in attempts. Please wait before trying again.",
     };
   }
@@ -149,13 +144,13 @@ export async function loginAction(
     );
   } catch (e) {
     if (isRedirectError(e)) throw e;
-    if (e instanceof AuthError) return { error: e.message };
+    if (e instanceof AuthError) {
+      return { error: publicErrorMessage(e, "We couldn't sign you in. Check your email and password and try again.") };
+    }
     console.error("[loginAction]", e);
-    return { error: "Login failed. Please try again." };
+    return { error: "We couldn't sign you in right now. Please try again." };
   }
 
-  // redirect() MUST be outside try/catch — it throws a NEXT_REDIRECT error
-  // that Next.js handles at the action boundary. If caught, the redirect is lost.
   redirect(postLoginPath ?? "/portal");
 }
 
@@ -168,14 +163,13 @@ export async function forgotPasswordAction(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
-  // Validate CSRF token for form submissions
   const csrfToken = String(formData.get("csrfToken") || "");
   try {
     await validateCsrfToken(csrfToken);
   } catch {
-    return { error: "Invalid request. Please refresh and try again." };
+    return { error: "This form has expired. Refresh the page and try again." };
   }
-  
+
   const email = String(formData.get("email") || "").trim();
   if (!email) return { error: "Email is required." };
 
@@ -188,7 +182,7 @@ export async function forgotPasswordAction(
   if (!limited.allowed) {
     return {
       error: limited.degraded
-        ? "Security service temporarily unavailable. Please try again shortly."
+        ? "Password recovery is temporarily unavailable. Please try again shortly."
         : "Too many reset requests. Please wait before trying again.",
     };
   }
@@ -201,33 +195,28 @@ export async function forgotPasswordAction(
       subject: "Reset your Aether Pharmacy password",
       body: passwordResetBody(token),
     });
-    if (result.status === "failed") {
-      console.error("[password reset delivery]", result.error);
-    }
+    if (result.status === "failed") console.error("[password reset delivery]", result.error);
   }
 
-  return {
-    success: "If that email exists, a reset link has been sent.",
-  };
+  return { success: "If that email exists, a reset link has been sent." };
 }
 
 export async function resetPasswordAction(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
-  // Validate CSRF token for form submissions
   const csrfToken = String(formData.get("csrfToken") || "");
   try {
     await validateCsrfToken(csrfToken);
   } catch {
-    return { error: "Invalid request. Please refresh and try again." };
+    return { error: "This form has expired. Refresh the page and try again." };
   }
-  
+
   const token = String(formData.get("token") || "");
   const password = String(formData.get("password") || "");
   const confirm = String(formData.get("confirm") || "");
 
-  if (!token || !password) return { error: "Token and password are required." };
+  if (!token || !password) return { error: "The reset link and a new password are required." };
   if (password !== confirm) return { error: "Passwords do not match." };
   const passwordError = validatePassword(password);
   if (passwordError) return { error: passwordError };
@@ -241,13 +230,13 @@ export async function resetPasswordAction(
   if (!limited.allowed) {
     return {
       error: limited.degraded
-        ? "Security service temporarily unavailable. Please try again shortly."
+        ? "Password reset is temporarily unavailable. Please try again shortly."
         : "Too many reset attempts. Please wait before trying again.",
     };
   }
 
   const ok = await resetPasswordWithToken(token, password);
-  if (!ok) return { error: "Invalid or expired reset link." };
+  if (!ok) return { error: "This reset link is invalid or has expired. Request a new one." };
 
   return { success: "Password updated. You can sign in now." };
 }
