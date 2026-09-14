@@ -43,7 +43,10 @@ export function groqVisionModelName(): string {
 }
 
 export function groqClient(apiKey = groqApiKey()): Groq {
-  if (!apiKey) throw new Error("GROQ_API_KEY is not configured");
+  if (!apiKey) {
+    console.error("[ai] service credential is unavailable");
+    throw new Error("AI assistance is temporarily unavailable.");
+  }
 
   const client = new Groq({ apiKey });
   const create = client.chat.completions.create.bind(client.chat.completions);
@@ -53,8 +56,8 @@ export function groqClient(apiKey = groqApiKey()): Groq {
     try {
       return await create(...args);
     } catch (error) {
-      console.error("[groq] provider request failed", error);
-      throw new Error("AI provider unavailable");
+      console.error("[ai] provider request failed", error);
+      throw new Error("AI assistance is temporarily unavailable.");
     }
   }) as typeof client.chat.completions.create;
 
