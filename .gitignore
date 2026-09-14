@@ -22,6 +22,8 @@ tsconfig.tsbuildinfo
 landing_page_designs/
 public/images/*
 !public/images/care/
+!public/images/aether_bg_mobile.jpg
+!public/images/aether_bg_pc.webp
 header_white_bg.png
 
 # Logs
