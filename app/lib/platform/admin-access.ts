@@ -25,6 +25,7 @@ type AdminDynamicAccessRule = {
 const ADMIN_ACCESS_RULES: readonly AdminAccessRule[] = [
   { prefix: "/admin", exact: true },
   { prefix: "/admin/select" },
+  { prefix: "/admin/access-paused" },
 
   { prefix: "/admin/settings/integrations", permissions: ["integrations.manage"] },
   { prefix: "/admin/settings/storefront", permissions: ["settings.manage"] },
@@ -107,8 +108,14 @@ function hasAnyActiveMembership(user: SessionUser): boolean {
 export function canAccessAdminPath(user: SessionUser, pathname: string): boolean {
   if (user.platformAdmin) return true;
 
-  // Keep the tenant picker reachable when the selected workspace is stale.
-  if (pathname === "/admin/select" || pathname.startsWith("/admin/select/")) {
+  // Keep tenant selection and the paused-workspace explanation reachable even
+  // when the selected pharmacy itself is not currently operable.
+  if (
+    pathname === "/admin/select" ||
+    pathname.startsWith("/admin/select/") ||
+    pathname === "/admin/access-paused" ||
+    pathname.startsWith("/admin/access-paused/")
+  ) {
     return hasAnyActiveMembership(user);
   }
 
