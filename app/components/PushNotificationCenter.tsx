@@ -271,7 +271,7 @@ export function PushEnablePanel({ audience = "portal" }: { audience?: Audience }
 
             {status === "unsupported" && (
               <p className={bodyCls}>
-                This browser or device does not support web push (or Firebase is not configured).
+                Push notifications are unavailable on this browser or device right now.
               </p>
             )}
           </div>
