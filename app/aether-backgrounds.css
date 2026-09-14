@@ -70,6 +70,44 @@ body {
   background-image: none !important;
 }
 
+/*
+ * Login combines both artwork marker classes. Its legacy surface still creates
+ * large blurred pseudo-elements that sit above the body artwork, and the auth
+ * split card is almost opaque in dark mode. Remove only those page-level masks
+ * and keep the authentication card as restrained glass so the single shared
+ * artwork remains visibly present around and faintly through the card.
+ */
+.aether-artwork-surface.aether-route-surface::before,
+.aether-artwork-surface.aether-route-surface::after {
+  content: none !important;
+  display: none !important;
+}
+
+.aether-artwork-surface.aether-route-surface > div {
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--glass-fill) 80%, transparent),
+      color-mix(in srgb, var(--card) 76%, transparent)
+    ) !important;
+  backdrop-filter: blur(16px) saturate(112%);
+  -webkit-backdrop-filter: blur(16px) saturate(112%);
+}
+
+html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div {
+  background:
+    linear-gradient(145deg, rgba(13, 34, 27, 0.72), rgba(7, 22, 17, 0.66)) !important;
+}
+
+html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div > aside {
+  background:
+    radial-gradient(circle at 18% 14%, rgba(45, 212, 191, 0.16), transparent 30%),
+    radial-gradient(circle at 85% 82%, rgba(201, 162, 39, 0.1), transparent 34%),
+    linear-gradient(155deg, rgba(6, 59, 49, 0.82), rgba(7, 83, 68, 0.76) 48%, rgba(10, 74, 70, 0.8)) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
 @media (min-width: 768px) {
   :root {
     --aether-artwork: url("/images/aether_bg_pc.webp");
