@@ -41,6 +41,7 @@ export default async function LoginPage({
         submitLabel="Sign in"
         hiddenFields={next ? { next } : undefined}
         showGoogleAuth
+        artworkBackdrop
         initialError={error}
         highlights={[
           "Customers land in the patient portal",
