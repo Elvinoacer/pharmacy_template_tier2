@@ -5,12 +5,6 @@ import { isPushSupported, onForegroundPush, requestFcmToken } from "@/app/lib/fi
 
 type Status = "unsupported" | "default" | "granted" | "denied" | "requesting";
 
-/**
- * React hook that manages FCM token lifecycle for the signed-in user.
- * - Auto-registers the token on mount if permission was previously granted.
- * - Exposes `enable()` to request permission + register the token.
- * - Exposes `lastMessage` for the in-app toast UI when a push arrives in the foreground.
- */
 export function usePushNotifications() {
   const [status, setStatus] = useState<Status>("default");
   const [lastMessage, setLastMessage] = useState<{
@@ -27,14 +21,12 @@ export function usePushNotifications() {
       body: JSON.stringify({ token }),
     });
     if (!res.ok) {
-      throw new Error(`register_failed_${res.status}`);
+      throw new Error("push_registration_failed");
     }
     setRegistered(true);
   }, []);
 
   useEffect(() => {
-    // Defer state updates to a microtask so we don't call setState synchronously
-    // inside the effect body (which React lint flags as a cascading render).
     let cancelled = false;
     let unsubscribe: (() => void) | undefined;
 
@@ -50,19 +42,16 @@ export function usePushNotifications() {
 
       if (perm !== "granted") return;
 
-      // Permission already granted — refresh/register the token quietly.
       requestFcmToken()
         .then(async (token) => {
           if (cancelled || !token) return;
           try {
             await registerToken(token);
           } catch {
-            /* best-effort — user can retry via enable() */
+            /* best effort */
           }
         })
-        .catch(() => {
-          /* swallow */
-        });
+        .catch(() => {});
 
       onForegroundPush((payload) => {
         if (!cancelled) setLastMessage(payload);
@@ -98,10 +87,13 @@ export function usePushNotifications() {
   const sendTest = useCallback(async () => {
     try {
       const r = await fetch("/api/push/test", { method: "POST" });
-      const j = await r.json();
-      return j as { sent?: number; failed?: number; error?: string };
+      const j = (await r.json().catch(() => ({}))) as { sent?: number; failed?: number; error?: string };
+      if (!r.ok || j.error) {
+        return { sent: j.sent, failed: j.failed, error: "Test notification could not be delivered. Please try again." };
+      }
+      return { sent: j.sent, failed: j.failed };
     } catch {
-      return { error: "request_failed" };
+      return { error: "Test notification could not be delivered. Check your connection and try again." };
     }
   }, []);
 
