@@ -38,10 +38,7 @@ html[data-admin-theme="dark"] {
     );
 }
 
-/*
- * This is the only place the artwork is painted. background-attachment keeps
- * the same single image in place while routes and long pages scroll above it.
- */
+/* The artwork is painted once, on the application canvas. */
 body {
   background-color: var(--background) !important;
   background-image:
@@ -55,11 +52,7 @@ body {
   background-attachment: fixed, fixed !important;
 }
 
-/*
- * Route shells must not paint another full-page background over the shared
- * application canvas. Their cards, sidebars, headers and panels keep their own
- * normal surfaces and therefore remain readable.
- */
+/* Full-page route shells must expose the shared canvas. */
 .mesh-bg,
 .aether-artwork-surface,
 .aether-route-surface,
@@ -71,76 +64,99 @@ body {
 }
 
 /*
- * Login is the only route that carries both marker classes. Keep exactly the
- * same body artwork, but expose substantially more of it on this route and crop
- * into the trees/lake so the background reads clearly around the auth shell.
+ * Login uses the same single body artwork, but it intentionally exposes more of
+ * it. The brand copy floats directly on the photograph; only the form side is
+ * a contained glass card. This avoids the old two-pane slab covering the image.
  */
-body:has(.aether-artwork-surface.aether-route-surface) {
+body:has([data-auth-artwork="true"]) {
   --aether-artwork-position: 50% 46%;
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(244, 247, 244, 0.2) 0%,
-      rgba(242, 247, 244, 0.23) 48%,
-      rgba(239, 245, 242, 0.27) 100%
+      rgba(244, 247, 244, 0.16) 0%,
+      rgba(242, 247, 244, 0.19) 48%,
+      rgba(239, 245, 242, 0.22) 100%
     );
 }
 
-html[data-theme="dark"] body:has(.aether-artwork-surface.aether-route-surface) {
+html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(5, 13, 11, 0.1) 0%,
-      rgba(6, 16, 13, 0.13) 48%,
-      rgba(4, 11, 9, 0.17) 100%
+      rgba(5, 13, 11, 0.08) 0%,
+      rgba(6, 16, 13, 0.11) 48%,
+      rgba(4, 11, 9, 0.15) 100%
     );
 }
 
-/*
- * The login card used to occupy nearly the entire viewport. Even when its
- * colours were technically translucent, there was too little uncovered canvas
- * for the shared background to read as the page background. Keep the auth UI
- * compact and glassy so the single body artwork is unmistakable around it.
- */
 .aether-artwork-surface.aether-route-surface {
-  padding: clamp(3.5rem, 8vh, 5.5rem) clamp(2rem, 7vw, 6rem) !important;
+  padding: clamp(3rem, 7vh, 5rem) clamp(1.5rem, 6vw, 5rem) !important;
 }
 
-.aether-artwork-surface.aether-route-surface > div {
-  width: min(56rem, calc(100vw - 8rem)) !important;
-  max-width: 56rem !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+/* AuthForm root: layout only. No card fill, blur, or clipping. */
+[data-auth-artwork="true"] {
+  width: min(64rem, calc(100vw - 5rem)) !important;
+  max-width: 64rem !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  column-gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+
+/* Brand side: content floats directly over the one shared background. */
+[data-auth-artwork="true"] > aside {
+  padding: 0.5rem !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.38);
+}
+
+[data-auth-artwork="true"] > aside > div:first-child > div:last-child {
+  margin-top: 2rem !important;
+}
+
+[data-auth-artwork="true"] > aside > ul {
+  margin-top: 2rem !important;
+}
+
+[data-auth-artwork="true"] > aside > ul > li {
+  padding: 0.7rem 0.85rem !important;
+  background: rgba(3, 28, 21, 0.34) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[data-auth-artwork="true"] > aside > p:last-child {
+  margin-top: 1.4rem !important;
+}
+
+/* Form side: one compact readable surface, not another page-sized canvas. */
+[data-auth-artwork="true"] > div:last-child {
+  padding: clamp(1.6rem, 3vw, 2.25rem) !important;
+  border: 1px solid rgba(180, 235, 211, 0.2) !important;
+  border-radius: 1.8rem !important;
+  background: rgba(248, 252, 249, 0.76) !important;
   box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+    0 24px 72px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(8px) saturate(108%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(108%) !important;
 }
 
-.aether-artwork-surface.aether-route-surface > div > aside {
-  background:
-    linear-gradient(155deg, rgba(6, 91, 74, 0.2), rgba(7, 110, 90, 0.16) 48%, rgba(10, 88, 82, 0.19)) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-.aether-artwork-surface.aether-route-surface > div > div:last-child {
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div {
-  background: rgba(3, 15, 11, 0.08) !important;
-}
-
-html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div > aside {
-  background:
-    linear-gradient(155deg, rgba(6, 59, 49, 0.22), rgba(7, 83, 68, 0.18) 48%, rgba(10, 74, 70, 0.2)) !important;
-}
-
-html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div > div:last-child {
-  background: rgba(3, 15, 11, 0.06) !important;
+html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
+  background: rgba(3, 20, 14, 0.66) !important;
+  border-color: rgba(147, 233, 194, 0.18) !important;
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 @media (min-width: 768px) {
@@ -149,37 +165,12 @@ html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div > div
     --aether-artwork-position: 50% 16%;
   }
 
-  body:has(.aether-artwork-surface.aether-route-surface) {
+  body:has([data-auth-artwork="true"]) {
     --aether-artwork-position: 50% 46%;
   }
 }
 
-@media (min-width: 1024px) {
-  .aether-artwork-surface.aether-route-surface > div > aside,
-  .aether-artwork-surface.aether-route-surface > div > div:last-child {
-    padding: 1.75rem !important;
-  }
-
-  .aether-artwork-surface.aether-route-surface > div > aside > div:first-child > div:last-child {
-    margin-top: 1.5rem !important;
-  }
-
-  .aether-artwork-surface.aether-route-surface > div > aside > ul {
-    margin-top: 1.5rem !important;
-  }
-
-  .aether-artwork-surface.aether-route-surface > div > aside > ul > li {
-    padding: 0.65rem 0.8rem !important;
-  }
-
-  .aether-artwork-surface.aether-route-surface > div > aside > p:last-child {
-    margin-top: 1.25rem !important;
-  }
-}
-
-/* Fixed body backgrounds are expensive on some mobile browsers. The artwork is
- * still one shared page background there; only the attachment behavior changes.
- */
+/* Fixed body backgrounds are expensive on some mobile browsers. */
 @media (max-width: 767px) {
   body {
     background-attachment: scroll, scroll !important;
@@ -189,8 +180,18 @@ html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div > div
     padding: max(1rem, env(safe-area-inset-top)) 0.75rem max(1rem, env(safe-area-inset-bottom)) !important;
   }
 
-  .aether-artwork-surface.aether-route-surface > div {
+  [data-auth-artwork="true"] {
     width: 100% !important;
+    max-width: 31rem !important;
+  }
+
+  [data-auth-artwork="true"] > div:last-child {
+    border-radius: 1.4rem !important;
+    background: rgba(248, 252, 249, 0.82) !important;
+  }
+
+  html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
+    background: rgba(3, 20, 14, 0.7) !important;
   }
 }
 
