@@ -15,7 +15,10 @@ const EnrollSchema = z.object({
 export async function GET(req: Request) {
   const user = await getSessionUser();
   if (!user?.customerId) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "Sign in to view your medication sync plan." },
+      { status: 403 },
+    );
   }
 
   const { searchParams } = new URL(req.url);
@@ -24,7 +27,10 @@ export async function GET(req: Request) {
 
   const plan = await calculateRefillSyncPlan(user.customerId, anchorDay);
   if (!plan) {
-    return NextResponse.json({ error: "not_found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "not_found", message: "No eligible refill sync plan is available yet." },
+      { status: 404 },
+    );
   }
 
   return NextResponse.json(plan);
@@ -33,14 +39,27 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const user = await getSessionUser();
   if (!user?.customerId) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "Sign in to set up medication sync." },
+      { status: 403 },
+    );
   }
 
-  let body;
+  let body: z.infer<typeof EnrollSchema>;
   try {
     body = EnrollSchema.parse(await req.json());
   } catch (err) {
-    return NextResponse.json({ error: "invalid_body", details: err }, { status: 400 });
+    const issues = err instanceof z.ZodError
+      ? err.issues.slice(0, 10).map((issue) => ({ field: issue.path.join("."), message: issue.message }))
+      : undefined;
+    return NextResponse.json(
+      {
+        error: "invalid_request",
+        message: "Some medication sync details are missing or invalid. Review them and try again.",
+        issues,
+      },
+      { status: 400 },
+    );
   }
 
   try {
@@ -54,8 +73,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, enrollment: result });
   } catch (err) {
+    console.error("[api/portal/sync]", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to enroll in Med Sync" },
+      {
+        error: "enrollment_failed",
+        message: "We couldn't set up medication sync right now. Your prescriptions were not changed. Please try again.",
+      },
       { status: 500 },
     );
   }
