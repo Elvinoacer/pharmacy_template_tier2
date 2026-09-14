@@ -16,12 +16,18 @@ export function buildPostgresConfig(connectionString: string): PoolConfig {
   const hostaddr = process.env.DATABASE_HOSTADDR?.trim();
 
   if (!hostaddr) {
+    // pg-connection-string 2.x warns that require/prefer/verify-ca will change
+    // semantics in its next major release. Preserve today's verified TLS
+    // behavior explicitly so production logs stay clean and a future pg upgrade
+    // cannot silently weaken certificate/hostname verification.
+    const sslmode = url.searchParams.get("sslmode");
+    if (sslmode === "require" || sslmode === "prefer" || sslmode === "verify-ca") {
+      url.searchParams.set("sslmode", "verify-full");
+    }
+
     return {
-      connectionString,
+      connectionString: url.toString(),
       connectionTimeoutMillis: 30_000,
-      ssl: connectionString.includes("sslmode=")
-        ? { rejectUnauthorized: false }
-        : undefined,
     };
   }
 
