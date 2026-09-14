@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, isStaff, writeAuditLog } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import {
   createOrReuseMedicationForPharmacy,
   medicationSlug,
@@ -34,23 +35,31 @@ const Body = z.object({
   rows: z.array(ImportRow).min(1).max(500),
 });
 
-/**
- * Bulk acquisition uses exactly the same canonical library decision as manual
- * entry and AI import. Every row either reuses a MedicationMaster or contributes
- * one new shared master; price/stock/SKU remain pharmacy-specific inventory data.
- */
 export async function POST(req: Request) {
   const user = await getSessionUser();
   if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "You do not have permission to import medications." },
+      { status: 403 },
+    );
   }
 
   let body: z.infer<typeof Body>;
   try {
     body = Body.parse(await req.json());
   } catch (error) {
+    const issues = error instanceof z.ZodError
+      ? error.issues.slice(0, 20).map((issue) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        }))
+      : undefined;
     return NextResponse.json(
-      { error: "invalid_body", message: error instanceof Error ? error.message : "Invalid body." },
+      {
+        error: "invalid_import",
+        message: "The import contains missing or invalid fields. Fix the highlighted rows and try again.",
+        issues,
+      },
       { status: 400 },
     );
   }
@@ -66,9 +75,6 @@ export async function POST(req: Request) {
   for (let i = 0; i < body.rows.length; i++) {
     const row = body.rows[i];
     try {
-      // Do not invent a generic/INN for a genuinely new shared medicine. A row
-      // without one may still match an existing master by barcode/name; otherwise
-      // the service returns a clear row-level error for the pharmacy to correct.
       const genericName = row.genericName.trim();
       let dosageFormId: string | null = null;
       if (row.dosageForm) {
@@ -126,9 +132,13 @@ export async function POST(req: Request) {
       }
       if (result.alreadyStocked) summary.alreadyStocked++;
     } catch (error) {
+      console.error(`[medication csv import] row ${i + 1}`, error);
       summary.errors.push({
         row: i + 1,
-        message: error instanceof Error ? error.message : "Unknown error.",
+        message: publicErrorMessage(
+          error,
+          "This row could not be imported. Review the medication details and try it again.",
+        ),
       });
     }
   }
