@@ -7,11 +7,7 @@ import { reconcilePharmacyBillingStk } from "@/app/lib/platform/reconcile-billin
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * Browser-driven fallback reconciliation for pharmacy billing STK payments.
- * The caller must own the pharmacy; provider confirmation is fetched directly
- * from Daraja by the shared reconciliation service.
- */
+/** Browser-driven fallback reconciliation for pharmacy billing payments. */
 export async function POST() {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ ok: false, error: "unauthenticated" }, { status: 401 });
@@ -28,7 +24,19 @@ export async function POST() {
 
   const result = await reconcilePharmacyBillingStk(pharmacy.id);
   if (!result.ok) {
-    return NextResponse.json(result, { status: result.error === "daraja_not_configured" ? 503 : 502 });
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "payment_status_unavailable",
+        message: "We couldn't confirm payment status right now. Please try again shortly.",
+      },
+      { status: 503 },
+    );
   }
-  return NextResponse.json(result);
+  return NextResponse.json({
+    ok: true,
+    reconciled: result.reconciled,
+    pending: result.pending,
+    checked: result.checked,
+  });
 }
