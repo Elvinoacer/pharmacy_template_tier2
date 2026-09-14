@@ -7,23 +7,20 @@ let initialised = false;
 let messagingInstance: messaging.Messaging | null = null;
 
 function resolveServiceAccount(): ServiceAccount | null {
-  // 1) Preferred: full JSON blob pasted into one env var.
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
   if (raw) {
     try {
       return JSON.parse(raw) as ServiceAccount;
     } catch (err) {
-      console.error("[firebase/admin] FIREBASE_SERVICE_ACCOUNT_JSON is set but not valid JSON.", err);
+      console.error("[push/admin] service-account configuration is invalid.", err);
     }
   }
 
-  // 2) Three-piece config (project_id + client_email + private_key).
   const projectId = process.env.FIREBASE_PROJECT_ID?.trim();
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
   let privateKey = process.env.FIREBASE_PRIVATE_KEY?.trim();
 
   if (projectId && clientEmail && privateKey) {
-    // Allow pasting the key with literal "\n" sequences (common when stored in .env).
     if (privateKey.includes("\\n")) privateKey = privateKey.replace(/\\n/g, "\n");
     return {
       projectId,
@@ -45,11 +42,8 @@ function ensureInitialised() {
 
   const creds = resolveServiceAccount();
   if (!creds) {
-    // Soft-fail: app still works, pushes are silently skipped.
     if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        "[firebase/admin] No Firebase service-account credentials found. Push notifications will be skipped.",
-      );
+      console.warn("[push/admin] push delivery configuration is unavailable.");
     }
     initialised = true;
     return;
@@ -62,7 +56,7 @@ function ensureInitialised() {
     });
     messagingInstance = admin.messaging();
   } catch (err) {
-    console.error("[firebase/admin] Failed to initialise firebase-admin:", err);
+    console.error("[push/admin] Failed to initialise push delivery:", err);
   }
   initialised = true;
 }
@@ -77,26 +71,43 @@ export type PushPayload = {
   body: string;
   data?: Record<string, string>;
   url?: string;
-  /** Brand mark (small). Absolute URL preferred for FCM webpush. */
   icon?: string;
-  /** Large rich-notification image (e.g. drug photo). */
   image?: string;
+};
+
+type PushResult = {
+  success: boolean;
+  messageId?: string;
+  error?: string;
+  /** Internal classification only; never render this field to users. */
+  invalidToken?: boolean;
 };
 
 function isDoseActions(data?: Record<string, string>): boolean {
   return data?.actions === "medication_dose" || data?.type === "medication_dose";
 }
 
-export async function sendPush(payload: PushPayload): Promise<{ success: boolean; messageId?: string; error?: string }> {
+function isInvalidPushToken(message: string) {
+  const lower = message.toLowerCase();
+  return (
+    lower.includes("registration-token-not-registered") ||
+    lower.includes("invalid-registration-token") ||
+    lower.includes("mismatched-credential") ||
+    lower.includes("requested-entity-not-found")
+  );
+}
+
+export async function sendPush(payload: PushPayload): Promise<PushResult> {
   ensureInitialised();
-  if (!messagingInstance) return { success: false, error: "Firebase not initialised" };
+  if (!messagingInstance) {
+    return { success: false, error: "Push notifications are temporarily unavailable." };
+  }
 
   const icon = payload.icon || payload.data?.icon || "/icon-192.png";
   const image = payload.image || payload.data?.image || undefined;
   const tag = payload.data?.tag || "aether-pharmacy";
   const dose = isDoseActions(payload.data);
 
-  // FCM data values must be strings.
   const data: Record<string, string> = {
     ...(payload.data || {}),
     title: payload.title,
@@ -111,10 +122,6 @@ export async function sendPush(payload: PushPayload): Promise<{ success: boolean
   }
 
   try {
-    // Dose reminders: data-only so the service worker fully owns showNotification
-    // (action button ids + flat data). A top-level `notification` payload lets
-    // Chrome auto-display without our actions/data, which made every button
-    // click mis-route or no-op.
     if (dose) {
       const messageId = await messagingInstance.send({
         token: payload.token,
@@ -122,11 +129,8 @@ export async function sendPush(payload: PushPayload): Promise<{ success: boolean
         webpush: {
           headers: {
             Urgency: "high",
-            // TTL so a brief offline window still delivers the dose nudge.
             TTL: "3600",
           },
-          // Do NOT set webpush.notification or fcmOptions.link here — those
-          // cause browser auto-display that strips/breaks action handling.
         },
       });
       return { success: true, messageId };
@@ -162,7 +166,12 @@ export async function sendPush(payload: PushPayload): Promise<{ success: boolean
     return { success: true, messageId };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    return { success: false, error: message };
+    console.error("[push/admin] delivery failed", err);
+    return {
+      success: false,
+      error: "Push notification could not be delivered.",
+      invalidToken: isInvalidPushToken(message),
+    };
   }
 }
 
@@ -195,15 +204,7 @@ export async function sendMulticastPush(
       sent++;
     } else {
       failed++;
-      const err = (res.error || "").toLowerCase();
-      if (
-        err.includes("registration-token-not-registered") ||
-        err.includes("invalid-registration-token") ||
-        err.includes("mismatched-credential") ||
-        err.includes("requested-entity-not-found")
-      ) {
-        invalidTokens.push(token);
-      }
+      if (res.invalidToken) invalidTokens.push(token);
     }
   }
 
