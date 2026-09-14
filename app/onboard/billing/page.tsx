@@ -4,6 +4,7 @@ import {
   ManageCardForm,
   PharmacyPaymentForm,
   RecurringCardSetupForm,
+  RetryOverdueForm,
 } from "@/app/components/onboard/BillingForms";
 import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
@@ -11,6 +12,7 @@ import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped as db } from "@/app/lib/db";
 import { ensureVerificationInvoice } from "@/app/lib/platform/pharmacy-enrolment";
 import { paystackCheckoutConfigured, paystackSubscriptionConfigured } from "@/app/lib/services/paystack-billing";
+import { SUBSCRIPTION_GRACE_DAYS } from "@/app/lib/services/paystack-dunning";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { ArrowLeft, CreditCard, RefreshCw, ShieldCheck } from "lucide-react";
@@ -50,7 +52,7 @@ export default async function PharmacyBillingPage() {
   if (!pharmacy) redirect("/onboard");
 
   await ensureVerificationInvoice(pharmacy.id);
-  const [invoices, grant, sub] = await Promise.all([
+  const [invoices, grant, sub, dunning] = await Promise.all([
     withPharmacy(pharmacy.id, () => db.invoice.findMany({
       where: { pharmacyId: pharmacy.id },
       include: { items: true, payments: { orderBy: { createdAt: "desc" }, take: 1 } },
@@ -59,6 +61,10 @@ export default async function PharmacyBillingPage() {
     })),
     withPharmacy(pharmacy.id, () => db.pharmacyPromotionGrant.findUnique({ where: { pharmacyId: pharmacy.id } })),
     withPharmacy(pharmacy.id, () => db.subscription.findFirst({ where: { pharmacyId: pharmacy.id, status: { not: "cancelled" } }, orderBy: { createdAt: "desc" } })),
+    withPharmacy(pharmacy.id, () => db.dunningCase.findFirst({
+      where: { pharmacyId: pharmacy.id, status: { notIn: ["resolved", "written_off"] } },
+      orderBy: { updatedAt: "desc" },
+    })),
   ]);
 
   const readiness = await loadPharmacySetup(pharmacy.id);
@@ -73,6 +79,10 @@ export default async function PharmacyBillingPage() {
   const paystackBound = Boolean(sub?.externalSubscriptionId?.startsWith("paystack:"));
   const recurringCardActive = Boolean(paystackBound && sub?.status === "active");
   const freePeriodWithoutCard = Boolean(sub?.status === "active" && !paystackBound && grant?.recurringMonths);
+  const billingSuspended = dunning?.status === "suspended" || sub?.status === "unpaid" || pharmacy.lifecycleStatus === "suspended";
+  const graceRemaining = dunning?.graceUntil
+    ? Math.max(0, Math.ceil((dunning.graceUntil.getTime() - Date.now()) / 86_400_000))
+    : SUBSCRIPTION_GRACE_DAYS;
 
   return (
     <div className={styles.narrow}>
@@ -95,6 +105,20 @@ export default async function PharmacyBillingPage() {
         </div>
       </section>
 
+      {dunning ? (
+        <section className={`${styles.notice} ${billingSuspended ? styles.noticeWarn : styles.noticeOk} mt-4`} role="status">
+          <RefreshCw className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          <div>
+            <h2>{billingSuspended ? "Service paused — your data is safe" : `${graceRemaining} day${graceRemaining === 1 ? "" : "s"} of grace remaining`}</h2>
+            <p>
+              {billingSuspended
+                ? "Your public listing and new customer activity are paused. Update the card if needed, then retry the KES 500 payment to restore the pharmacy automatically."
+                : `The pharmacy stays fully available during the ${SUBSCRIPTION_GRACE_DAYS}-day grace period. Aether retries the saved card on days 2, 5, 9 and 13.`}
+            </p>
+          </div>
+        </section>
+      ) : null}
+
       {grant ? (
         <section className={`${styles.notice} ${styles.noticeOk} mt-4`}>
           <div>
@@ -113,7 +137,7 @@ export default async function PharmacyBillingPage() {
             <div>
               <p className={styles.kicker}>Monthly service</p>
               <h2 className="mt-1 font-semibold">
-                {recurringCardActive ? "Automatic card renewal active" : freePeriodWithoutCard ? "Free service period active" : paystackBound ? "Card billing needs attention" : "Card authorization required"}
+                {billingSuspended ? "Payment required to restore service" : recurringCardActive ? "Automatic card renewal active" : freePeriodWithoutCard ? "Free service period active" : paystackBound ? "Card billing needs attention" : "Card authorization required"}
               </h2>
               <p className="mt-2 text-sm text-[var(--muted)]">
                 {sub.cancelAt ? `Auto-renewal is off. Access ends ${sub.currentPeriodEnd.toLocaleDateString("en-KE")}.` : `Current period ends ${sub.currentPeriodEnd.toLocaleDateString("en-KE")}.`}
@@ -124,7 +148,7 @@ export default async function PharmacyBillingPage() {
             </span>
           </div>
 
-          {!sub.cancelAt && !recurringCardActive && !freePeriodWithoutCard ? (
+          {!sub.cancelAt && !paystackBound && !freePeriodWithoutCard ? (
             recurringAvailable ? <div className="mt-4"><RecurringCardSetupForm pharmacyId={pharmacy.id} /></div> : (
               <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">Recurring cards are not configured. Add PAYSTACK_SECRET_KEY and PAYSTACK_SUBSCRIPTION_PLAN_CODE.</p>
             )
@@ -137,6 +161,7 @@ export default async function PharmacyBillingPage() {
           ) : null}
 
           {!sub.cancelAt && paystackBound ? <ManageCardForm pharmacyId={pharmacy.id} /> : null}
+          {dunning && paystackBound ? <RetryOverdueForm pharmacyId={pharmacy.id} suspended={billingSuspended} /> : null}
           {!sub.cancelAt && paystackBound ? <CancelServiceForm pharmacyId={pharmacy.id} /> : null}
         </section>
       ) : null}
@@ -163,7 +188,15 @@ export default async function PharmacyBillingPage() {
               {["open", "overdue"].includes(inv.status) ? (
                 isMonthly ? (
                   <div className="rounded-xl border border-[var(--line-2)] p-3 text-sm leading-6 text-[var(--muted)]">
-                    {recurringCardActive ? "No manual payment is needed. Paystack charges the authorized card and Aether reconciles the invoice from signed webhooks." : freePeriodWithoutCard ? "This service period is covered by your promotion." : "Complete recurring card authorization above. The first successful Paystack subscription charge settles this invoice automatically."}
+                    {billingSuspended
+                      ? "This invoice is keeping the pharmacy paused. Update the card if necessary and retry payment above; successful payment restores service automatically."
+                      : dunning
+                        ? `Service remains available during the ${SUBSCRIPTION_GRACE_DAYS}-day grace period while Aether retries the saved card safely.`
+                        : recurringCardActive
+                          ? "No manual payment is needed. Paystack charges the authorized card and Aether reconciles the invoice from signed webhooks."
+                          : freePeriodWithoutCard
+                            ? "This service period is covered by your promotion."
+                            : "Complete recurring card authorization above. The first successful Paystack subscription charge settles this invoice automatically."}
                   </div>
                 ) : pending ? (
                   <div className="space-y-3">
@@ -187,7 +220,7 @@ export default async function PharmacyBillingPage() {
         <p className={styles.fieldHint}>Statements collect whole shillings. Remaining cents carry forward without rounding up.</p>
       </section>
 
-      <PaymentStatusRefresh pending={paymentPending || Boolean(paystackBound && sub?.status === "past_due")} />
+      <PaymentStatusRefresh pending={paymentPending || Boolean(paystackBound && ["past_due", "unpaid"].includes(sub?.status || ""))} />
 
       {sub ? (
         <Link href="/admin/setup" className="btn-primary mt-5 inline-flex justify-center">Continue to launch checklist</Link>
