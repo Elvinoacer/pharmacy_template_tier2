@@ -7,15 +7,12 @@ import { isCronAuthorized } from "@/app/lib/cron-auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * Inventory health cron — low stock, out of stock, expiring/expired lots.
- * Schedule daily (or every few hours). Dedupes notifications within 24h.
- *
- * curl -X POST -H "Authorization: Bearer $CRON_SECRET" https://…/api/cron/inventory
- */
 export async function POST(request: NextRequest) {
   if (!isCronAuthorized(request)) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "unauthorized", message: "This scheduled task is not authorized." },
+      { status: 401 },
+    );
   }
 
   try {
@@ -24,7 +21,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("[cron/inventory]", err);
     return NextResponse.json(
-      { error: "scan_failed", detail: err instanceof Error ? err.message : "unknown" },
+      { error: "scan_failed", message: "The inventory health scan could not be completed." },
       { status: 500 },
     );
   }
