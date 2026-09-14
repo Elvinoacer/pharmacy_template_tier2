@@ -10,6 +10,7 @@ import {
   getSessionUser,
   hashPassword,
 } from "@/app/lib/auth";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { validatePassword } from "@/app/lib/password";
 import { isValidPharmacySlug, slugifyPharmacyName } from "@/app/lib/slug";
 import { getRequestMeta } from "@/app/lib/request-meta";
@@ -91,7 +92,7 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
 
       user = await getSessionUser();
     }
-    if (!user) return { error: "Could not establish a session.", field: "general" };
+    if (!user) return { error: "We couldn't finish signing you in. Please sign in again and continue.", field: "general" };
 
     const taken = await prismaUnscoped.pharmacy.findUnique({ where: { slug } });
     if (taken) return { error: "That public URL is already taken. Try a different URL.", field: "slug" };
@@ -137,7 +138,13 @@ export async function createPharmacyDraftAction(_prev: OnboardState, formData: F
     return { success: "Secure pharmacy profile created. Continue with Know Your Pharmacy verification.", pharmacyId: pharmacy.id, slug: pharmacy.slug };
   } catch (err) {
     console.error("[onboard] create draft", err);
-    return { error: err instanceof Error ? err.message : "Could not save draft.", field: "general" };
+    return {
+      error: publicErrorMessage(
+        err,
+        "We couldn't create the pharmacy profile right now. Your details were not submitted. Please try again.",
+      ),
+      field: "general",
+    };
   }
 }
 
@@ -146,8 +153,8 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
     const user = await requireOwnerSession();
     const pharmacyId = String(formData.get("pharmacyId") || "");
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
-    if (!pharmacy) return { error: "Pharmacy not found.", field: "general" };
-    if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) return { error: "You do not own this application.", field: "general" };
+    if (!pharmacy) return { error: "We couldn't find this pharmacy application. Refresh the page and try again.", field: "general" };
+    if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) return { error: "You do not have permission to edit this application.", field: "general" };
     if (!["draft", "needs_info"].includes(pharmacy.status)) return { error: "This application can no longer be edited.", field: "general" };
 
     const name = String(formData.get("name") || pharmacy.name).trim() || pharmacy.name;
@@ -175,8 +182,6 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
       phone: String(formData.get("phone") || "").trim() || null,
       whatsapp: String(formData.get("whatsapp") || "").trim() || null,
       email: String(formData.get("publicEmail") || "").trim() || pharmacy.email,
-      // Location is controlled exclusively by the browser-geolocation action.
-      // Never accept city/county/country from the onboarding form itself.
       city: pharmacy.city,
       county: pharmacy.county,
       country: pharmacy.country || "Kenya",
@@ -203,7 +208,13 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
     return { success: "Saved.", pharmacyId, slug: data.slug };
   } catch (err) {
     console.error("[onboard] update draft", err);
-    return { error: err instanceof Error ? err.message : "Save failed.", field: "general" };
+    return {
+      error: publicErrorMessage(
+        err,
+        "We couldn't save these pharmacy details right now. Your previous information is unchanged. Please try again.",
+      ),
+      field: "general",
+    };
   }
 }
 
@@ -212,8 +223,8 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
     const user = await requireOwnerSession();
     const pharmacyId = String(formData.get("pharmacyId") || "");
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
-    if (!pharmacy) return { error: "Pharmacy not found.", field: "general" };
-    if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) return { error: "You do not own this application.", field: "general" };
+    if (!pharmacy) return { error: "We couldn't find this pharmacy application. Refresh the page and try again.", field: "general" };
+    if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) return { error: "You do not have permission to submit this application.", field: "general" };
     if (!["draft", "needs_info"].includes(pharmacy.status)) {
       return { error: "This application has already been submitted or reviewed.", field: "general" };
     }
@@ -249,6 +260,13 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
     revalidatePath("/platform/applications");
     return { success: "Submitted for independent verification review.", pharmacyId, slug: pharmacy.slug };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Submit failed.", field: "general" };
+    console.error("[onboard] submit application", err);
+    return {
+      error: publicErrorMessage(
+        err,
+        "We couldn't submit the pharmacy application right now. Nothing was lost; please try again.",
+      ),
+      field: "general",
+    };
   }
 }
