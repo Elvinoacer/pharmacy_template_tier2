@@ -12,28 +12,36 @@ import {
 
 export const runtime = "nodejs";
 
-/**
- * AI-assisted acquisition now feeds the same shared library as manual entry.
- * Existing canonical masters are reused; genuinely new medicines create one
- * shared master and one pharmacy-specific inventory row.
- */
 export async function POST(req: Request) {
   const user = await getSessionUser();
   if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "You do not have permission to import medications." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "invalid_json", message: "Request body must be valid JSON." }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_json", message: "The pasted medication data is not valid JSON. Check the format and try again." },
+      { status: 400 },
+    );
   }
 
   const parsed = MedicationAiSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "schema_validation_failed", issues: parsed.error.issues },
+      {
+        error: "invalid_medication_data",
+        message: "Some medication details are missing or invalid. Review the highlighted fields and try again.",
+        issues: parsed.error.issues.slice(0, 20).map((issue) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        })),
+      },
       { status: 422 },
     );
   }
@@ -141,7 +149,15 @@ export async function POST(req: Request) {
   );
 
   if (validation.counts.fail > 0) {
-    return NextResponse.json({ ok: false, validation, error: "Validation failed." }, { status: 422 });
+    return NextResponse.json(
+      {
+        ok: false,
+        validation,
+        error: "validation_failed",
+        message: "This medication needs review before it can be added. Resolve the failed checks and try again.",
+      },
+      { status: 422 },
+    );
   }
 
   try {
@@ -186,7 +202,10 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("[ai import POST]", error);
     return NextResponse.json(
-      { error: "create_failed", message: error instanceof Error ? error.message : "Could not save medication." },
+      {
+        error: "create_failed",
+        message: "We couldn't save this medication right now. Your existing inventory was not changed. Please try again.",
+      },
       { status: 500 },
     );
   }
