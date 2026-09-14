@@ -36,18 +36,17 @@ export async function GET(request: Request) {
   const next = cookieStore.get('google_oauth_next')?.value;
   cookieStore.delete('google_oauth_next');
   const savedState = cookieStore.get('google_oauth_state')?.value;
-  // Always delete — state is single-use.
   cookieStore.delete('google_oauth_state');
 
-  // Validate OAuth state to prevent CSRF.
   if (!code || !state || !savedState || state !== savedState) {
-    return loginRedirect(origin, 'Invalid OAuth state. Please try again.');
+    return loginRedirect(origin, 'This sign-in request has expired or is invalid. Please try again.');
   }
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
-    return loginRedirect(origin, 'Google OAuth is not configured on the server.');
+    console.error('[external sign-in] provider configuration is unavailable');
+    return loginRedirect(origin, 'This sign-in option is temporarily unavailable. Please use another sign-in method or try again later.');
   }
 
   const redirectUri = `${origin}/api/auth/google/callback`;
@@ -57,7 +56,8 @@ export async function GET(request: Request) {
     const { tokens } = await client.getToken(code);
     const idToken = tokens.id_token;
     if (!idToken) {
-      return loginRedirect(origin, 'Google did not return an ID token.');
+      console.error('[external sign-in] identity token missing');
+      return loginRedirect(origin, 'We could not complete sign-in. Please try again.');
     }
 
     const ticket = await client.verifyIdToken({
@@ -66,13 +66,14 @@ export async function GET(request: Request) {
     });
     const payload = ticket.getPayload();
     if (!payload) {
-      return loginRedirect(origin, 'Google token payload was empty.');
+      console.error('[external sign-in] verified identity payload missing');
+      return loginRedirect(origin, 'We could not complete sign-in. Please try again.');
     }
     if (!payload.email) {
-      return loginRedirect(origin, 'Your Google account has no email address.');
+      return loginRedirect(origin, 'This sign-in account does not provide an email address. Please use another sign-in method.');
     }
     if (!payload.email_verified) {
-      return loginRedirect(origin, 'Please verify your email with Google first.');
+      return loginRedirect(origin, 'Please verify the email address on your sign-in account first.');
     }
 
     const email = payload.email.toLowerCase().trim();
@@ -119,24 +120,18 @@ export async function GET(request: Request) {
       return loginRedirect(origin, 'Your account is not active. Contact support.');
     }
 
-    // Establish the real DB-backed session before any non-essential logging.
-    // Audit failures must never prevent a user from signing in.
     const meta = await getRequestMeta();
     try {
       await createSession(user.id, { ip: meta.ip, userAgent: meta.userAgent });
     } catch (error) {
-      // createSession writes the opaque DB-backed session cookie first. The
-      // signed claim is only a proxy optimization and proxy.ts already falls
-      // back to that opaque session when no valid claim is available. Do not
-      // turn a missing claim-signing secret into a total login outage.
       if (!isSessionClaimConfigurationError(error)) throw error;
-      console.error('[google oauth callback] session claim unavailable; continuing with DB session', error);
+      console.error('[external sign-in] session claim unavailable; continuing with DB session', error);
     }
 
     try {
       await recordAudit({ actorId: user.id, action: auditAction, resource: 'user', resourceId: user.id, details: { provider: 'google' } });
     } catch (error) {
-      console.error('[google oauth callback] audit log failed', error);
+      console.error('[external sign-in] audit log failed', error);
     }
 
     const target = resolvePostLoginPath({
@@ -146,7 +141,7 @@ export async function GET(request: Request) {
     }, next);
     return NextResponse.redirect(new URL(target, origin));
   } catch (error) {
-    console.error('[google oauth callback]', error);
-    return loginRedirect(origin, 'Google authentication failed. Please try again.');
+    console.error('[external sign-in]', error);
+    return loginRedirect(origin, 'We could not complete sign-in. Please try again or use another sign-in method.');
   }
 }
