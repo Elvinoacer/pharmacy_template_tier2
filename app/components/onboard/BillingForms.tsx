@@ -118,6 +118,22 @@ export function ManageCardForm({ pharmacyId }: { pharmacyId: string }) {
   );
 }
 
+export function RetryOverdueForm({ pharmacyId, suspended = false }: { pharmacyId: string; suspended?: boolean }) {
+  const [state, action, pending] = useActionState(pharmacyBillingAction, {});
+  return (
+    <form action={action} className="mt-3 space-y-2" aria-busy={pending}>
+      <RedirectOnSuccess redirectUrl={state.redirectUrl} />
+      <input type="hidden" name="pharmacyId" value={pharmacyId} />
+      <input type="hidden" name="intent" value="retry_overdue" />
+      <button className="btn-primary min-h-11 w-full justify-center" disabled={pending} type="submit">
+        <RefreshCw className={`h-4 w-4 ${pending ? "animate-spin" : ""}`} aria-hidden />
+        {pending ? "Retrying card…" : suspended ? "Retry KES 500 & restore pharmacy" : "Retry payment now"}
+      </button>
+      <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">{state.error || state.success}</p>
+    </form>
+  );
+}
+
 export function PromotionForm({ promotionId }: { promotionId?: string }) {
   const [state, action, pending] = useActionState(promotionAction, {});
   return (
