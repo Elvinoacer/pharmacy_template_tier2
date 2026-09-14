@@ -32,6 +32,7 @@ header_white_bg.png
 # Temporary files
 *.tmp
 *.swp
+/.kyp-*
 
 # IDE files
 .vscode/
