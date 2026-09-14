@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { createService } from "@/app/lib/services/pharmacy-services";
 import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
@@ -188,9 +189,13 @@ export async function saveSetupServiceAction(formData: FormData) {
       }),
     );
   } catch (error) {
+    console.error("[saveSetupServiceAction]", error);
     setupError(
       "services",
-      error instanceof Error ? error.message : "Could not save this service.",
+      publicErrorMessage(
+        error,
+        "We couldn't save this service right now. Review the details and try again.",
+      ),
     );
   }
 
