@@ -56,7 +56,7 @@ export default function AdminMessageForm({
         userPrompt: body,
         onResult: setBody,
         successMessage: "AI drafted a polished version. Review and send.",
-        errorMessage: "AI helper unavailable. Check GROQ_API_KEY.",
+        errorMessage: "AI assistance is temporarily unavailable. Please try again later.",
       });
     } finally {
       setAiLoading(false);
@@ -169,8 +169,7 @@ export default function AdminMessageForm({
           />
         </div>
         <p className="mt-1 text-xs admin-soft">
-          Leave empty to send immediately. Times use the pharmacy timezone. A cron
-          job delivers scheduled messages at the correct local moment.
+          Leave empty to send immediately. Times use the pharmacy timezone; scheduled messages are delivered automatically.
         </p>
       </div>
 
