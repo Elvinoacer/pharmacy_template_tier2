@@ -38,21 +38,41 @@ html[data-admin-theme="dark"] {
     );
 }
 
-/* The artwork is painted once, on the application canvas. */
-body {
-  background-color: var(--background) !important;
-  background-image:
-    var(--aether-global-veil),
-    var(--aether-artwork) !important;
-  background-position:
-    center,
-    var(--aether-artwork-position) !important;
-  background-repeat: no-repeat, no-repeat !important;
-  background-size: cover, cover !important;
-  background-attachment: fixed, fixed !important;
+/*
+ * Keep the document itself neutral. The artwork is not painted on body because
+ * body backgrounds participate in special canvas propagation rules and can be
+ * visually swallowed by route-sized surfaces. Instead, one fixed pseudo-layer
+ * sits behind the entire application for every route.
+ */
+html {
+  background-color: var(--background);
 }
 
-/* Full-page route shells must expose the shared canvas. */
+body {
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--background);
+  background-image:
+    var(--aether-global-veil),
+    var(--aether-artwork);
+  background-position:
+    center,
+    var(--aether-artwork-position);
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, cover;
+  transform: translateZ(0);
+}
+
+/* Full-page route shells must expose the shared backdrop. */
 .mesh-bg,
 .aether-artwork-surface,
 .aether-route-surface,
@@ -64,9 +84,9 @@ body {
 }
 
 /*
- * Login uses the same single body artwork, but it intentionally exposes more of
+ * Login uses the same single global artwork, but intentionally exposes more of
  * it. The brand copy floats directly on the photograph; only the form side is
- * a contained glass card. This avoids the old two-pane slab covering the image.
+ * a contained glass card.
  */
 body:has([data-auth-artwork="true"]) {
   --aether-artwork-position: 50% 46%;
@@ -170,12 +190,7 @@ html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
   }
 }
 
-/* Fixed body backgrounds are expensive on some mobile browsers. */
 @media (max-width: 767px) {
-  body {
-    background-attachment: scroll, scroll !important;
-  }
-
   .aether-artwork-surface.aether-route-surface {
     padding: max(1rem, env(safe-area-inset-top)) 0.75rem max(1rem, env(safe-area-inset-bottom)) !important;
   }
@@ -192,11 +207,5 @@ html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
 
   html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
     background: rgba(3, 20, 14, 0.7) !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body {
-    background-attachment: scroll, scroll !important;
   }
 }
