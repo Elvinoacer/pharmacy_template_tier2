@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@/app/generated/prisma/client";
 import { getSessionUser } from "@/app/lib/auth";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { requirePermission } from "@/app/lib/platform/policy";
 import {
   recordHealthScreening,
@@ -23,10 +24,6 @@ async function clinicalStaff() {
   return requirePermission(await getSessionUser(), "prescriptions.dispense");
 }
 
-function errorMessage(error: unknown, fallback: string): string {
-  return error instanceof Error && error.message ? error.message : fallback;
-}
-
 export async function recordScreeningAction(
   _prev: ScreeningActionState,
   formData: FormData,
@@ -35,7 +32,7 @@ export async function recordScreeningAction(
   try {
     user = await clinicalStaff();
   } catch {
-    return { error: "Unauthorized. Licensed clinical staff permissions required." };
+    return { error: "You need licensed clinical staff access to record a screening." };
   }
 
   const patientName = String(formData.get("patientName") || "").trim();
@@ -170,7 +167,12 @@ export async function recordScreeningAction(
     };
   } catch (error: unknown) {
     console.error("[recordScreeningAction]", error);
-    return { error: errorMessage(error, "Failed to record health screening.") };
+    return {
+      error: publicErrorMessage(
+        error,
+        "We couldn't save this screening right now. Check the details and try again.",
+      ),
+    };
   }
 }
 
@@ -182,7 +184,7 @@ export async function issueReferralAction(
   try {
     user = await clinicalStaff();
   } catch {
-    return { error: "Unauthorized. Licensed clinical staff permissions required." };
+    return { error: "You need licensed clinical staff access to create a referral." };
   }
 
   const patientName = String(formData.get("patientName") || "").trim();
@@ -239,7 +241,12 @@ export async function issueReferralAction(
     };
   } catch (error: unknown) {
     console.error("[issueReferralAction]", error);
-    return { error: errorMessage(error, "Failed to generate clinical referral slip.") };
+    return {
+      error: publicErrorMessage(
+        error,
+        "We couldn't generate the referral right now. Review the details and try again.",
+      ),
+    };
   }
 }
 
