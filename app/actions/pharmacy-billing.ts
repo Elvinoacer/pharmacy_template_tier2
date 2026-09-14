@@ -1,23 +1,22 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped as db, withPlatformTx } from "@/app/lib/db";
 import { publicErrorMessage } from "@/app/lib/public-error";
-import { cancelSubscription } from "@/app/lib/platform/billing";
+import { cancelSubscription, collectInvoicePayment } from "@/app/lib/platform/billing";
 import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
 import {
-  cancelPaystackSubscription,
-  createOrResumePaystackSubscription,
-  createPaystackInvoiceCheckout,
-  paystackManageSubscriptionLink,
-} from "@/app/lib/services/paystack-billing";
-import { retryPaystackOverdueInvoice } from "@/app/lib/services/paystack-dunning";
+  cancelDarajaSubscriptionStandingOrder,
+  createOrResumeDarajaSubscription,
+  saveMpesaBillingPhone,
+} from "@/app/lib/services/daraja-subscriptions";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
 
-export type BillingState = { error?: string; success?: string; redirectUrl?: string };
+export type BillingState = { error?: string; success?: string };
 
 async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
   const invoiceId = String(form.get("invoiceId") || "").trim();
@@ -27,7 +26,9 @@ async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
     ...(invoiceNumber ? [{ number: invoiceNumber }] : []),
   ];
   const exact = identifiers.length
-    ? await withPharmacy(pharmacyId, () => db.invoice.findFirst({ where: { pharmacyId, OR: identifiers } }))
+    ? await withPharmacy(pharmacyId, () =>
+        db.invoice.findFirst({ where: { pharmacyId, OR: identifiers } }),
+      )
     : null;
   if (exact) return exact;
 
@@ -37,14 +38,37 @@ async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
   if (verification) return verification;
 
   const collectible = await withPharmacy(pharmacyId, () =>
-    db.invoice.findMany({ where: { pharmacyId, status: "open", totalKes: { gt: 0 } }, orderBy: { createdAt: "desc" }, take: 2 }),
+    db.invoice.findMany({
+      where: { pharmacyId, status: "open", totalKes: { gt: 0 } },
+      orderBy: { createdAt: "desc" },
+      take: 2,
+    }),
   );
   return collectible.length === 1 ? collectible[0] : null;
 }
 
 async function ownedSubscription(pharmacyId: string) {
   return withPharmacy(pharmacyId, () =>
-    db.subscription.findFirst({ where: { pharmacyId, status: { not: "cancelled" } }, orderBy: { createdAt: "desc" } }),
+    db.subscription.findFirst({
+      where: { pharmacyId, status: { not: "cancelled" } },
+      orderBy: { createdAt: "desc" },
+    }),
+  );
+}
+
+function submittedPhone(form: FormData) {
+  return String(form.get("mpesaPhone") || form.get("phone") || "").trim();
+}
+
+async function collectWithMpesa(input: {
+  pharmacyId: string;
+  invoiceId: string;
+  phone: string;
+  actorId: string;
+}) {
+  const phone = await saveMpesaBillingPhone(input.pharmacyId, input.phone);
+  return withPharmacy(input.pharmacyId, () =>
+    collectInvoicePayment(input.invoiceId, { phone, actorId: input.actorId }),
   );
 }
 
@@ -53,92 +77,107 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
     const user = await getSessionUser();
     if (!user) throw new Error("Sign in to continue.");
 
-    const pharmacyId = String(form.get("pharmacyId") || "");
+    const pharmacyId = String(form.get("pharmacyId") || "").trim();
     const pharmacy = await db.pharmacy.findUnique({ where: { id: pharmacyId } });
-    if (!pharmacy || pharmacy.ownerUserId !== user.id) throw new Error("Only the pharmacy owner can manage billing.");
+    if (!pharmacy || pharmacy.ownerUserId !== user.id) {
+      throw new Error("Only the pharmacy owner can manage billing.");
+    }
 
     const intent = String(form.get("intent") || "");
 
     if (intent === "cancel") {
       const subscription = await ownedSubscription(pharmacyId);
       if (!subscription) throw new Error("No current subscription was found.");
-      if (subscription.externalSubscriptionId?.startsWith("paystack:")) {
-        await cancelPaystackSubscription(subscription.externalSubscriptionId);
-      } else if (subscription.externalSubscriptionId) {
-        throw new Error("This older subscription needs support assistance before it can be cancelled safely.");
+      if (subscription.externalSubscriptionId?.startsWith("daraja_ratiba:")) {
+        await cancelDarajaSubscriptionStandingOrder(subscription.externalSubscriptionId, user.id);
       }
       await withPharmacy(pharmacyId, () => cancelSubscription(subscription.id, true, user.id));
       revalidatePath("/onboard/billing");
-      return { success: "Auto-renewal cancelled. Your current paid period remains available until its end date." };
+      revalidatePath("/admin/setup");
+      return {
+        success: "Auto-renewal cancellation requested. Your current paid period remains available until its end date.",
+      };
     }
 
-    if (intent === "manage_card") {
+    if (intent === "subscription_setup") {
       const subscription = await ownedSubscription(pharmacyId);
-      if (!subscription?.externalSubscriptionId?.startsWith("paystack:")) {
-        throw new Error("Finish card setup before managing your saved payment method.");
-      }
-      return { success: "Opening secure card management…", redirectUrl: await paystackManageSubscriptionLink(subscription.externalSubscriptionId) };
+      if (!subscription) throw new Error("No monthly subscription was found. Start service first.");
+      const phone = submittedPhone(form);
+      if (!phone) throw new Error("Enter the Safaricom number that should authorize M-PESA Ratiba.");
+      const recurring = await createOrResumeDarajaSubscription({
+        pharmacyId,
+        subscriptionId: subscription.id,
+        phone,
+        actorId: user.id,
+      });
+      revalidatePath("/onboard/billing");
+      if (recurring.active) return { success: "Automatic monthly M-PESA billing is already active." };
+      return {
+        success: "Ratiba authorization has been requested. Complete the M-PESA authorization on the phone; this page will update after Safaricom confirms it.",
+      };
     }
 
     if (intent === "retry_overdue") {
-      const result = await withPharmacy(pharmacyId, () => retryPaystackOverdueInvoice(pharmacyId));
+      const phone = submittedPhone(form);
+      if (!phone) throw new Error("Enter the Safaricom number that should receive the M-PESA prompt.");
+      const invoice = await withPharmacy(pharmacyId, () =>
+        db.invoice.findFirst({
+          where: {
+            pharmacyId,
+            subscriptionId: { not: null },
+            status: "open",
+            totalKes: { gt: 0 },
+          },
+          orderBy: { dueAt: "asc" },
+        }),
+      );
+      if (!invoice) throw new Error("There is no unpaid monthly invoice to collect.");
+      const result = await collectWithMpesa({ pharmacyId, invoiceId: invoice.id, phone, actorId: user.id });
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
-      const redirectUrl = "redirectUrl" in result ? result.redirectUrl : undefined;
-      if (redirectUrl) {
-        return { success: "Your bank needs a quick confirmation before this payment can be retried…", redirectUrl };
-      }
-      if (result.ok) return { success: "Payment confirmed. Your pharmacy billing is active again." };
-      if (["retry_processing", "retry_confirming", "retry_already_processing"].includes(result.note)) {
-        return { success: "The card retry is being confirmed. This page will update when processing finishes." };
-      }
-      throw new Error("The card could not be charged. Update the payment method and try again.");
+      if (!result.ok) throw new Error("M-PESA could not start this payment. Confirm the number and try again.");
+      if (result.alreadyPaid) return { success: "This invoice is already paid." };
+      return { success: "M-PESA prompt sent. Complete it on the phone; payment will be confirmed automatically." };
     }
 
     if (intent === "activate") {
       if (!(await loadPharmacySetup(pharmacyId)).profileReady) {
         throw new Error("Complete verification and your pharmacy profile before starting monthly billing.");
       }
+      const phone = submittedPhone(form);
+      if (!phone) throw new Error("Enter the Safaricom number that should receive the M-PESA prompt.");
       const invoice = await startPharmacyService(pharmacyId);
       if (!invoice.subscriptionId) throw new Error("Monthly billing could not be started. Please try again.");
-      const recurring = await createOrResumePaystackSubscription({ pharmacyId, subscriptionId: invoice.subscriptionId, actorId: user.id });
+      await saveMpesaBillingPhone(pharmacyId, phone);
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
-      if (recurring.setupUrl && !recurring.active) {
-        return { success: "Opening secure card setup for automatic monthly renewal…", redirectUrl: recurring.setupUrl };
+
+      if (Number(invoice.totalKes) === 0) {
+        return {
+          success: "Your promotional service period is active. You can authorize M-PESA Ratiba now for automatic collection when the first paid month begins.",
+        };
       }
-      if (recurring.deferred) {
-        return { success: "Your free service period is active. Card authorization will be requested before the first paid month." };
-      }
-      return { success: "Recurring card billing is active." };
+
+      const result = await collectWithMpesa({ pharmacyId, invoiceId: invoice.id, phone, actorId: user.id });
+      if (!result.ok) throw new Error("M-PESA could not start this payment. Confirm the number and try again.");
+      return {
+        success: "M-PESA prompt sent for the first month. Complete it on the phone, then authorize Ratiba for future automatic monthly renewals.",
+      };
     }
 
-    if (intent === "subscription_setup") {
-      const subscription = await ownedSubscription(pharmacyId);
-      if (!subscription) throw new Error("No monthly subscription was found. Start service first.");
-      const recurring = await createOrResumePaystackSubscription({ pharmacyId, subscriptionId: subscription.id, actorId: user.id });
-      revalidatePath("/onboard/billing");
-      if (recurring.setupUrl && !recurring.active) {
-        return { success: recurring.resumed ? "Resuming secure card setup…" : "Opening secure card setup…", redirectUrl: recurring.setupUrl };
-      }
-      if (recurring.deferred) return { success: "Your free period is active. No card charge is required yet." };
-      return { success: "Recurring card billing is active." };
+    if (intent !== "checkout") {
+      throw new Error("That billing action is not available. Refresh the page and try again.");
     }
-
-    if (intent === "pay") throw new Error("Platform subscriptions are paid by card. Use the card billing option above.");
-    if (intent !== "checkout") throw new Error("That billing action is not available. Refresh the page and try again.");
 
     const invoice = await resolveOwnedBillingInvoice(pharmacyId, form);
     if (!invoice) throw new Error("This billing page is out of date. Refresh it and try again.");
-    if (invoice.subscriptionId) {
-      throw new Error("This monthly invoice is collected automatically from the saved card. Use the recurring billing controls above.");
-    }
-
-    const result = await withPharmacy(pharmacyId, () => createPaystackInvoiceCheckout({ invoiceId: invoice.id, actorId: user.id }));
+    const phone = submittedPhone(form);
+    if (!phone) throw new Error("Enter the Safaricom number that should receive the M-PESA prompt.");
+    const result = await collectWithMpesa({ pharmacyId, invoiceId: invoice.id, phone, actorId: user.id });
     revalidatePath("/onboard/billing");
+    if (!result.ok) throw new Error("M-PESA could not start this payment. Confirm the number and try again.");
     if (result.alreadyPaid) return { success: "This invoice is already paid." };
-    if (!result.url) throw new Error("Secure checkout could not be opened. Please try again.");
-    return { success: result.resumed ? "Resuming your secure checkout…" : "Opening secure checkout…", redirectUrl: result.url };
+    return { success: "M-PESA prompt sent. Complete it on the phone; Aether will confirm the payment automatically." };
   } catch (error) {
     console.error("[billing][onboard] action failed", error);
     return {
@@ -157,19 +196,47 @@ export async function promotionAction(_: BillingState, form: FormData): Promise<
       await withPlatformTx(async (tx) => {
         const id = String(form.get("promotionId") || "");
         await tx.pharmacyPromotion.update({ where: { id }, data: { active: false } });
-        await tx.auditLog.create({ data: { actorId: actor.id, action: "promotion.stop", entityType: "PharmacyPromotion", entityId: id } });
+        await tx.auditLog.create({
+          data: { actorId: actor.id, action: "promotion.stop", entityType: "PharmacyPromotion", entityId: id },
+        });
       });
     } else {
       const name = String(form.get("name") || "").trim();
       const capacity = Number(form.get("capacity"));
       const recurringMonths = Number(form.get("months"));
       const scope = String(form.get("scope"));
-      if (name.length < 5 || name.length > 150 || !Number.isInteger(capacity) || capacity < 1 || capacity > 100000 || !Number.isInteger(recurringMonths) || recurringMonths < 1 || recurringMonths > 120 || !["verification", "recurring", "both"].includes(scope)) {
+      if (
+        name.length < 5 ||
+        name.length > 150 ||
+        !Number.isInteger(capacity) ||
+        capacity < 1 ||
+        capacity > 100000 ||
+        !Number.isInteger(recurringMonths) ||
+        recurringMonths < 1 ||
+        recurringMonths > 120 ||
+        !["verification", "recurring", "both"].includes(scope)
+      ) {
         throw new Error("Enter a name, valid capacity, scope and 1–120 promotional months.");
       }
       await withPlatformTx(async (tx) => {
-        const promotion = await tx.pharmacyPromotion.create({ data: { name, capacity, recurringMonths, verification: scope !== "recurring", recurring: scope !== "verification", createdBy: actor.id } });
-        await tx.auditLog.create({ data: { actorId: actor.id, action: "promotion.create", entityType: "PharmacyPromotion", entityId: promotion.id } });
+        const promotion = await tx.pharmacyPromotion.create({
+          data: {
+            name,
+            capacity,
+            recurringMonths,
+            verification: scope !== "recurring",
+            recurring: scope !== "verification",
+            createdBy: actor.id,
+          },
+        });
+        await tx.auditLog.create({
+          data: {
+            actorId: actor.id,
+            action: "promotion.create",
+            entityType: "PharmacyPromotion",
+            entityId: promotion.id,
+          },
+        });
       });
     }
     revalidatePath("/platform/billing");
