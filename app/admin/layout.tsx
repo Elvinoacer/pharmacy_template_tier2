@@ -9,6 +9,7 @@ import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { exitImpersonationAction } from "@/app/actions/platform";
 import { canAccessAdminPath } from "@/app/lib/platform/admin-access";
+import { getPharmacyWorkspaceAccess } from "@/app/lib/platform/tenant-access";
 import { AlertTriangle } from "lucide-react";
 import { AdminRouteUxBoundary } from "./AdminRouteUxBoundary";
 
@@ -44,19 +45,38 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/admin");
   }
 
-  // A newly verified pharmacy stays inside guided setup until the owner finishes it.
-  // Platform staff are excluded so support/review tools never become trapped here.
-  if (!user.platformAdmin && user.activePharmacyId && !pathname.startsWith("/admin/setup")) {
-    const activePharmacy = await prismaUnscoped.pharmacy.findUnique({
-      where: { id: user.activePharmacyId },
-      select: { verifiedAt: true, status: true, setupCompletedAt: true },
-    });
-    if (
-      activePharmacy?.verifiedAt &&
-      ["approved", "active"].includes(activePharmacy.status) &&
-      !activePharmacy.setupCompletedAt
-    ) {
-      redirect("/admin/setup");
+  // Account suspension is a workspace boundary. Keep authentication intact so
+  // the owner can recover billing, but never render the operational admin shell
+  // for a paused tenant. Staff get a dedicated explanation instead of a broken
+  // dashboard; users with several pharmacies can still switch workspaces.
+  if (!user.platformAdmin && user.activePharmacyId) {
+    const access = await getPharmacyWorkspaceAccess(user.activePharmacyId);
+    const isRecoverySurface = pathname.startsWith("/admin/access-paused");
+    const isTenantPicker = pathname.startsWith("/admin/select");
+
+    if (access.blocksOperations && !isRecoverySurface && !isTenantPicker) {
+      const membership = user.memberships.find(
+        (candidate) => candidate.pharmacyId === user.activePharmacyId && candidate.status === "active",
+      );
+      const isOwner = membership?.role === "owner" || access.pharmacy?.ownerUserId === user.id;
+
+      if (access.mode === "billing_suspended" && isOwner) {
+        redirect("/onboard/billing?state=suspended");
+      }
+      redirect("/admin/access-paused");
+    }
+
+    // A newly verified, operable pharmacy stays inside guided setup until the
+    // owner finishes it. Paused tenants are handled by the recovery guard above.
+    if (!access.blocksOperations && !pathname.startsWith("/admin/setup")) {
+      const activePharmacy = access.pharmacy;
+      if (
+        activePharmacy?.verifiedAt &&
+        ["approved", "active"].includes(activePharmacy.status) &&
+        !activePharmacy.setupCompletedAt
+      ) {
+        redirect("/admin/setup");
+      }
     }
   }
 
