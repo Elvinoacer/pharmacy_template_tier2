@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessionUser, requireStaff, writeAuditLog } from "@/app/lib/auth";
+import { assertPharmacyWorkspaceOperable } from "@/app/lib/platform/tenant-access";
 import { parseMedicationFormData } from "@/app/lib/services/medication-form-data";
 import { validateMedication } from "@/app/lib/services/medication-validation";
 import {
@@ -67,7 +68,16 @@ export async function adminCreateSharedMedicationAction(
   _prev: SharedMedicationActionState,
   formData: FormData,
 ): Promise<SharedMedicationActionState> {
-  const user = await requireStaff(await getSessionUser());
+  const user = requireStaff(await getSessionUser());
+  if (!user.platformAdmin) {
+    if (!user.activePharmacyId) return { error: "Choose a pharmacy first." };
+    try {
+      await assertPharmacyWorkspaceOperable(user.activePharmacyId);
+    } catch {
+      return { error: "This pharmacy workspace is paused. Restore access before changing inventory." };
+    }
+  }
+
   const parsed = parseMedicationFormData(formData);
   const confirmed = String(formData.get("confirmed") || "") === "true";
 
