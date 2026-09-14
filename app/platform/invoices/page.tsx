@@ -28,21 +28,15 @@ function InvoiceStatus({ status, overdue }: { status: string; overdue: boolean }
 }
 
 export default async function InvoicesPage() {
-  const rows = await prismaUnscoped.invoice
-    .findMany({
-      orderBy: { createdAt: "desc" },
-      take: 100,
-      include: {
-        pharmacy: { select: { name: true } },
-        subscription: { select: { externalSubscriptionId: true, status: true } },
-        payments: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: { provider: true, status: true },
-        },
-      },
-    })
-    .catch(() => []);
+  const rows = await prismaUnscoped.invoice.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 100,
+    include: {
+      pharmacy: { select: { name: true } },
+      subscription: { select: { externalSubscriptionId: true, status: true } },
+      payments: { orderBy: { createdAt: "desc" }, take: 1, select: { provider: true, status: true } },
+    },
+  }).catch(() => []);
 
   const now = new Date();
   const open = rows.filter((invoice) => invoice.status === "open");
@@ -54,7 +48,7 @@ export default async function InvoicesPage() {
     <PlatformPage
       eyebrow="Revenue operations"
       title="Invoices"
-      description="Track pharmacy billing and recurring IntaSend card collection without initiating payments on behalf of pharmacy owners."
+      description="Track pharmacy billing and recurring Paystack card collection without initiating payments on behalf of pharmacy owners."
     >
       <div className="mb-7 grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
         <PlatformStat label="Open invoices" value={open.length} detail="Awaiting settlement" tone={open.length ? "warning" : "success"} />
@@ -67,14 +61,14 @@ export default async function InvoicesPage() {
         <div className="mb-6 rounded-2xl border border-rose-500/20 bg-rose-500/8 p-3.5 sm:p-4">
           <p className="text-sm font-semibold text-[var(--admin-text)]">Collection priority</p>
           <p className="mt-0.5 text-xs leading-5 text-[var(--admin-text-muted)]">
-            {overdue.length} invoice{overdue.length === 1 ? " is" : "s are"} overdue. Review the pharmacy&apos;s recurring-card status or contact the owner; do not send an M-Pesa prompt for platform subscription fees.
+            {overdue.length} invoice{overdue.length === 1 ? " is" : "s are"} overdue. Review the pharmacy&apos;s Paystack subscription status or contact the owner; platform billing should never be collected through an admin-triggered STK prompt.
           </p>
         </div>
       ) : null}
 
       <PlatformSection
         title="Invoice ledger"
-        description="Monthly service invoices settle from IntaSend subscription webhooks. One-time platform invoices are paid by the pharmacy owner through secure card checkout."
+        description="Monthly service invoices reconcile from Paystack subscription webhooks. One-time platform invoices are paid by the pharmacy owner through hosted card checkout."
       >
         <PlatformTable
           headers={["Invoice", "Pharmacy", "Total", "Due date", "Status", "Collection"]}
@@ -83,15 +77,15 @@ export default async function InvoicesPage() {
             const isOpen = invoice.status === "open";
             const isOverdue = isOpen && invoice.dueAt < now;
             const latestPayment = invoice.payments[0];
-            const recurringReady = Boolean(invoice.subscription?.externalSubscriptionId);
+            const recurringReady = Boolean(invoice.subscription?.externalSubscriptionId?.startsWith("paystack:"));
             const collectionLabel = invoice.subscriptionId
               ? recurringReady
-                ? latestPayment?.provider === "intasend_subscription"
-                  ? `IntaSend · ${latestPayment.status}`
-                  : "IntaSend auto-renew"
+                ? latestPayment?.provider === "paystack_subscription"
+                  ? `Paystack · ${latestPayment.status}`
+                  : "Paystack auto-renew"
                 : "Card setup required"
-              : latestPayment?.provider === "intasend"
-                ? `IntaSend · ${latestPayment.status}`
+              : latestPayment?.provider?.startsWith("paystack")
+                ? `Paystack · ${latestPayment.status}`
                 : isOpen
                   ? "Owner card checkout"
                   : "No action";
@@ -100,13 +94,9 @@ export default async function InvoicesPage() {
               <span key={`${invoice.id}-number`} className="font-mono text-xs font-semibold text-[var(--admin-text)] sm:text-sm">{invoice.number}</span>,
               <span key={`${invoice.id}-pharmacy`} className="font-medium text-[var(--admin-text)]">{invoice.pharmacy.name}</span>,
               <span key={`${invoice.id}-total`} className="whitespace-nowrap font-semibold tabular-nums">KES {Number(invoice.totalKes).toLocaleString("en-KE")}</span>,
-              <span key={`${invoice.id}-due`} className={isOverdue ? "font-semibold text-rose-700" : "text-[var(--admin-text-muted)]"}>
-                {invoice.dueAt.toISOString().slice(0, 10)}
-              </span>,
+              <span key={`${invoice.id}-due`} className={isOverdue ? "font-semibold text-rose-700" : "text-[var(--admin-text-muted)]"}>{invoice.dueAt.toISOString().slice(0, 10)}</span>,
               <InvoiceStatus key={`${invoice.id}-status`} status={invoice.status} overdue={isOverdue} />,
-              <span key={`${invoice.id}-collect`} className="inline-flex min-h-8 items-center rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 text-[11px] font-semibold text-[var(--admin-text-muted)]">
-                {collectionLabel}
-              </span>,
+              <span key={`${invoice.id}-collect`} className="inline-flex min-h-8 items-center rounded-full border border-[var(--admin-border)] bg-[var(--admin-inset)] px-2.5 text-[11px] font-semibold text-[var(--admin-text-muted)]">{collectionLabel}</span>,
             ];
           })}
         />
