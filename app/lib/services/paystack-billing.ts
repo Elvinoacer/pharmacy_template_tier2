@@ -56,6 +56,16 @@ export type PaystackWebhookEvent = { event?: string; data?: any };
 const API_BASE = "https://api.paystack.co";
 const PROVIDER_PREFIX = "paystack:";
 
+class PaymentProviderError extends Error {
+  constructor(
+    publicMessage: string,
+    readonly internalDetail?: string,
+  ) {
+    super(publicMessage);
+    this.name = "PaymentProviderError";
+  }
+}
+
 function secretKey() {
   return process.env.PAYSTACK_SECRET_KEY?.trim() || null;
 }
@@ -87,7 +97,14 @@ function appOrigin() {
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   const key = secretKey();
-  if (!key) throw new Error("Paystack is not configured. Add PAYSTACK_SECRET_KEY.");
+  if (!key) {
+    console.error("[paystack] payment credential is missing");
+    throw new PaymentProviderError(
+      "Payment service is temporarily unavailable. Please try again later.",
+      "missing payment credential",
+    );
+  }
+
   let response: Response;
   try {
     response = await fetch(`${API_BASE}${path}`, {
@@ -103,22 +120,42 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
     });
   } catch (error) {
     console.error("[paystack] request failed", path, error);
-    throw new Error("Paystack could not be reached. Try again shortly.");
+    throw new PaymentProviderError(
+      "Payment service is temporarily unavailable. Please try again shortly.",
+      error instanceof Error ? error.message : String(error),
+    );
   }
 
   const body = (await response.json().catch(() => ({}))) as PaystackEnvelope<T> & { message?: string };
   if (!response.ok || body.status === false) {
-    const message = String(body.message || `HTTP ${response.status}`).slice(0, 220);
-    throw new Error(`Paystack rejected the request: ${message}`);
+    const internalDetail = String(body.message || `HTTP ${response.status}`).slice(0, 220);
+    console.error("[paystack] request rejected", {
+      path,
+      status: response.status,
+      detail: internalDetail,
+    });
+    throw new PaymentProviderError(
+      "The payment service could not complete the request. Please try again.",
+      internalDetail,
+    );
   }
   return body.data;
 }
 
 function validateCheckoutUrl(value: string | null | undefined) {
-  if (!value) throw new Error("Paystack did not return a checkout URL.");
+  if (!value) {
+    throw new PaymentProviderError(
+      "Secure checkout could not be opened. Please try again.",
+      "provider did not return checkout URL",
+    );
+  }
   const parsed = new URL(value);
   if (parsed.protocol !== "https:" || !(parsed.hostname === "paystack.com" || parsed.hostname.endsWith(".paystack.com"))) {
-    throw new Error("Paystack returned an unsafe checkout URL.");
+    console.error("[paystack] rejected checkout URL", { host: parsed.hostname, protocol: parsed.protocol });
+    throw new PaymentProviderError(
+      "Secure checkout could not be opened safely. Please try again.",
+      "unsafe checkout URL",
+    );
   }
   return parsed.toString();
 }
@@ -161,7 +198,13 @@ async function billingEmail(pharmacyId: string) {
 
 async function assertMonthlyPlan() {
   const code = paystackPlanCode();
-  if (!code) throw new Error("PAYSTACK_SUBSCRIPTION_PLAN_CODE is missing.");
+  if (!code) {
+    console.error("[paystack] recurring billing plan is not configured");
+    throw new PaymentProviderError(
+      "Automatic card billing is temporarily unavailable. Please try again later or contact support.",
+      "missing recurring billing plan",
+    );
+  }
   const plan = await requestJson<PaystackPlan>(`/plan/${encodeURIComponent(code)}`);
   if (
     plan.plan_code !== code ||
@@ -169,7 +212,16 @@ async function assertMonthlyPlan() {
     String(plan.currency || "").toUpperCase() !== "KES" ||
     !amountMatchesKes(MONTHLY_FEE_KES, plan.amount)
   ) {
-    throw new Error(`Paystack plan ${code} must be KES ${MONTHLY_FEE_KES}/month before billing can go live.`);
+    console.error("[paystack] recurring plan validation failed", {
+      code,
+      interval: plan.interval,
+      currency: plan.currency,
+      amount: plan.amount,
+    });
+    throw new PaymentProviderError(
+      "Automatic card billing is temporarily unavailable. Please try again later or contact support.",
+      "recurring billing plan validation failed",
+    );
   }
   return plan;
 }
@@ -183,11 +235,11 @@ async function saveCardSummary(pharmacyId: string, authorization?: PaystackAutho
   if (existing) {
     await db.billingPaymentMethod.update({
       where: { id: existing.id },
-      data: { label: `Paystack ${brand}`, last4, mpesaPhone: null, isDefault: true },
+      data: { label: brand, last4, mpesaPhone: null, isDefault: true },
     });
   } else {
     await db.billingPaymentMethod.create({
-      data: { pharmacyId, type: "card", label: `Paystack ${brand}`, last4, isDefault: true },
+      data: { pharmacyId, type: "card", label: brand, last4, isDefault: true },
     });
   }
 }
@@ -209,7 +261,13 @@ async function initializeTransaction(input: {
   plan?: string;
 }) {
   const origin = appOrigin();
-  if (!origin) throw new Error("NEXT_PUBLIC_APP_URL is required for Paystack billing.");
+  if (!origin) {
+    console.error("[paystack] application origin is unavailable for checkout return");
+    throw new PaymentProviderError(
+      "Secure checkout is temporarily unavailable. Please try again later.",
+      "application origin unavailable",
+    );
+  }
   return requestJson<PaystackCheckout>("/transaction/initialize", {
     method: "POST",
     body: JSON.stringify({
@@ -218,7 +276,7 @@ async function initializeTransaction(input: {
       currency: "KES",
       channels: ["card"],
       reference: input.reference,
-      callback_url: `${origin}/api/payments/paystack/callback`,
+      callback_url: `${origin}/api/payments/card/return`,
       ...(input.plan ? { plan: input.plan } : {}),
       metadata: JSON.stringify(input.metadata),
     }),
@@ -229,7 +287,12 @@ export async function createPaystackInvoiceCheckout(input: {
   invoiceId: string;
   actorId?: string | null;
 }) {
-  if (!paystackCheckoutConfigured()) throw new Error("Paystack card checkout is not configured.");
+  if (!paystackCheckoutConfigured()) {
+    throw new PaymentProviderError(
+      "Secure card checkout is temporarily unavailable. Please try again later or contact support.",
+      "card checkout not configured",
+    );
+  }
   const invoice = await db.invoice.findUnique({ where: { id: input.invoiceId }, include: { pharmacy: { include: { owner: { select: { email: true } } } } } });
   if (!invoice) throw new Error("invoice_not_found");
   if (invoice.status === "paid") return { alreadyPaid: true as const, resumed: false as const, url: null };
@@ -262,7 +325,11 @@ export async function createPaystackInvoiceCheckout(input: {
     await recordAuditRequired({ actorId: input.actorId, action: "billing.invoice.paystack.checkout", resource: "invoice", resourceId: invoice.id, tenantId: invoice.pharmacyId, details: { paymentId: payment.id, reference: checkout.reference || reference } });
     return { alreadyPaid: false as const, resumed: false as const, url };
   } catch (error) {
-    await db.billingPayment.update({ where: { id: payment.id }, data: { status: "failed", failureReason: String(error instanceof Error ? error.message : error).slice(0, 250) } });
+    console.error("[paystack] invoice checkout failed", { invoiceId: invoice.id, paymentId: payment.id, error });
+    await db.billingPayment.update({
+      where: { id: payment.id },
+      data: { status: "failed", failureReason: "Card checkout could not be completed. Please try again." },
+    });
     throw error;
   }
 }
@@ -273,18 +340,34 @@ async function fetchProviderSubscription(code: string) {
 
 async function tryCreateDeferredSubscription(input: { subscriptionId: string; pharmacyId: string; email: string; startDate: Date }) {
   const plan = paystackPlanCode();
-  if (!plan) throw new Error("PAYSTACK_SUBSCRIPTION_PLAN_CODE is missing.");
+  if (!plan) {
+    throw new PaymentProviderError(
+      "Automatic card billing is temporarily unavailable. Please try again later.",
+      "missing recurring billing plan",
+    );
+  }
   try {
     const created = await requestJson<PaystackSubscription>("/subscription", {
       method: "POST",
       body: JSON.stringify({ customer: input.email, plan, start_date: input.startDate.toISOString() }),
     });
-    if (!created.subscription_code) throw new Error("Paystack did not return a subscription code.");
+    if (!created.subscription_code) {
+      throw new PaymentProviderError(
+        "Automatic card billing could not be completed. Please try again.",
+        "provider did not return subscription code",
+      );
+    }
     await db.subscription.update({ where: { id: input.subscriptionId }, data: { externalSubscriptionId: providerExternal(created.subscription_code) } });
     await saveCardSummary(input.pharmacyId, created.authorization);
     return { externalSubscriptionId: providerExternal(created.subscription_code), active: String(created.status || "").toLowerCase() === "active", deferred: false };
   } catch (error) {
-    const message = error instanceof Error ? error.message.toLowerCase() : "";
+    const message = (
+      error instanceof PaymentProviderError
+        ? error.internalDetail || error.message
+        : error instanceof Error
+          ? error.message
+          : ""
+    ).toLowerCase();
     if (message.includes("no saved authorizations") || message.includes("no active authorizations") || message.includes("hasn't made") || message.includes("has not made")) {
       return { externalSubscriptionId: null, active: true, deferred: true };
     }
@@ -297,7 +380,12 @@ export async function createOrResumePaystackSubscription(input: {
   subscriptionId: string;
   actorId?: string | null;
 }) {
-  if (!paystackSubscriptionConfigured()) throw new Error("Recurring card billing is not configured. Add PAYSTACK_SECRET_KEY and PAYSTACK_SUBSCRIPTION_PLAN_CODE.");
+  if (!paystackSubscriptionConfigured()) {
+    throw new PaymentProviderError(
+      "Automatic card billing is temporarily unavailable. Please try again later or contact support.",
+      "recurring card billing not configured",
+    );
+  }
   await assertMonthlyPlan();
   const local = await db.subscription.findFirst({ where: { id: input.subscriptionId, pharmacyId: input.pharmacyId }, include: { plan: true } });
   if (!local) throw new Error("subscription_not_found");
@@ -347,23 +435,32 @@ export async function createOrResumePaystackSubscription(input: {
     await recordAuditRequired({ actorId: input.actorId, action: "billing.subscription.paystack.checkout", resource: "subscription", resourceId: local.id, tenantId: input.pharmacyId, details: { paymentId: payment.id, reference: checkout.reference || reference, planCode: paystackPlanCode() } });
     return { active: false, resumed: false, deferred: false, setupUrl: url, externalSubscriptionId: null };
   } catch (error) {
-    await db.billingPayment.update({ where: { id: payment.id }, data: { status: "failed", failureReason: String(error instanceof Error ? error.message : error).slice(0, 250) } });
+    console.error("[paystack] recurring card setup failed", { subscriptionId: local.id, paymentId: payment.id, error });
+    await db.billingPayment.update({
+      where: { id: payment.id },
+      data: { status: "failed", failureReason: "Automatic card setup could not be completed. Please try again." },
+    });
     throw error;
   }
 }
 
 export async function paystackManageSubscriptionLink(externalSubscriptionId: string) {
   const code = externalCode(externalSubscriptionId);
-  if (!code) throw new Error("This subscription is not managed by Paystack.");
+  if (!code) throw new Error("This subscription cannot be managed from this page. Contact support.");
   const result = await requestJson<{ link?: string }>(`/subscription/${encodeURIComponent(code)}/manage/link`);
   return validateCheckoutUrl(result.link);
 }
 
 export async function cancelPaystackSubscription(externalSubscriptionId: string) {
   const code = externalCode(externalSubscriptionId);
-  if (!code) throw new Error("This subscription is not managed by Paystack.");
+  if (!code) throw new Error("This subscription cannot be cancelled from this page. Contact support.");
   const subscription = await fetchProviderSubscription(code);
-  if (!subscription.email_token) throw new Error("Paystack did not return the cancellation token. Try again shortly.");
+  if (!subscription.email_token) {
+    throw new PaymentProviderError(
+      "We couldn't prepare cancellation right now. Please try again shortly.",
+      "provider did not return cancellation token",
+    );
+  }
   await requestJson<unknown>("/subscription/disable", {
     method: "POST",
     body: JSON.stringify({ code, token: subscription.email_token }),
@@ -503,10 +600,18 @@ async function processRecurringInvoice(eventName: string, data: any) {
   const isPaid = eventName === "invoice.update" && (data?.paid === true || String(data?.status || "").toLowerCase() === "success") && String(data?.transaction?.status || "success").toLowerCase() === "success";
   const isFailed = eventName === "invoice.payment_failed" || String(data?.status || "").toLowerCase() === "failed";
   const providerInvoice = String(data?.invoice_code || data?.transaction?.reference || `${code}:${invoice.periodStart.toISOString()}`);
+  const providerFailureDetail = String(data?.description || data?.gateway_response || "recurring card payment failed").slice(0, 250);
+  if (isFailed) {
+    console.warn("[paystack] recurring charge failed", {
+      subscriptionId: local.id,
+      invoiceId: invoice.id,
+      detail: providerFailureDetail,
+    });
+  }
 
   let payment = await db.billingPayment.findFirst({ where: { pharmacyId: local.pharmacyId, provider: "paystack_subscription", providerRef: providerInvoice } });
   const status = isPaid ? "succeeded" : isFailed ? "failed" : "processing";
-  const failureReason = String(data?.description || data?.gateway_response || "Paystack recurring card payment failed").slice(0, 250);
+  const failureReason = "Recurring card payment could not be completed. Update the saved card or try again.";
   if (payment) {
     payment = await db.billingPayment.update({ where: { id: payment.id }, data: { invoiceId: invoice.id, status, amountKes: invoice.totalKes, checkoutRequestId: code, failureReason: isFailed ? failureReason : null, paidAt: isPaid ? new Date() : null } });
   } else {
