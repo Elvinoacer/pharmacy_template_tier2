@@ -12,14 +12,9 @@ export const runtime = "nodejs";
 
 function parseStringList(raw: unknown): string[] | undefined {
   if (raw === undefined) return undefined;
-  if (Array.isArray(raw)) {
-    return raw.map((s) => String(s).trim()).filter(Boolean);
-  }
+  if (Array.isArray(raw)) return raw.map((s) => String(s).trim()).filter(Boolean);
   if (typeof raw === "string") {
-    return raw
-      .split(/\n|,/)
-      .map((s) => s.trim())
-      .filter(Boolean);
+    return raw.split(/\n|,/).map((s) => s.trim()).filter(Boolean);
   }
   return [];
 }
@@ -91,18 +86,17 @@ const MergeBody = z.object({
   toId: z.string().uuid(),
 });
 
-const Body = z.discriminatedUnion("action", [
-  CreateBody,
-  UpdateBody,
-  DeleteBody,
-  MergeBody,
-]);
+const Body = z.discriminatedUnion("action", [CreateBody, UpdateBody, DeleteBody, MergeBody]);
+
+const forbidden = () =>
+  NextResponse.json(
+    { error: "forbidden", message: "You do not have permission to manage medication categories." },
+    { status: 403 },
+  );
 
 export async function GET() {
   const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  if (!user || !isStaff(user.role)) return forbidden();
 
   try {
     const categories = await listCategoriesWithCounts();
@@ -112,8 +106,7 @@ export async function GET() {
     return NextResponse.json(
       {
         error: "load_failed",
-        message:
-          "Could not load categories. Run db:migrate if the table is missing.",
+        message: "We couldn't load medication categories right now. Please try again.",
       },
       { status: 500 },
     );
@@ -122,15 +115,16 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const user = await getSessionUser();
-  if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  if (!user || !isStaff(user.role)) return forbidden();
 
   let parsed: z.infer<typeof Body>;
   try {
     parsed = Body.parse(await req.json());
   } catch {
-    return NextResponse.json({ error: "invalid_body" }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_request", message: "Some category details are missing or invalid. Review them and try again." },
+      { status: 400 },
+    );
   }
 
   try {
@@ -144,24 +138,29 @@ export async function POST(req: Request) {
       case "merge":
         return await handleMerge(user.id, parsed);
       default:
-        return NextResponse.json({ error: "unknown_action" }, { status: 400 });
+        return NextResponse.json(
+          { error: "invalid_action", message: "That category action is not supported." },
+          { status: 400 },
+        );
     }
   } catch (e) {
     console.error("[categories POST]", e);
-    const message = e instanceof Error ? e.message : "Request failed.";
-    return NextResponse.json({ error: "failed", message }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: "category_update_failed",
+        message: "We couldn't save that category change. Refresh the list and try again.",
+      },
+      { status: 400 },
+    );
   }
 }
 
-async function handleCreate(
-  userId: string,
-  body: z.infer<typeof CreateBody>,
-) {
+async function handleCreate(userId: string, body: z.infer<typeof CreateBody>) {
   const name = body.name.trim();
   const slug = slugifyCategory(body.slug || name);
   if (!slug) {
     return NextResponse.json(
-      { error: "invalid_slug", message: "Name must produce a valid slug." },
+      { error: "invalid_slug", message: "Use a category name containing letters or numbers." },
       { status: 400 },
     );
   }
@@ -169,14 +168,12 @@ async function handleCreate(
   const existing = await prisma.medicationCategory.findFirst({ where: { slug } });
   if (existing) {
     return NextResponse.json(
-      { error: "duplicate", message: `Category "${slug}" already exists.` },
+      { error: "duplicate", message: `A category named "${existing.name}" already exists.` },
       { status: 409 },
     );
   }
 
-  const maxSort = await prisma.medicationCategory.aggregate({
-    _max: { sortOrder: true },
-  });
+  const maxSort = await prisma.medicationCategory.aggregate({ _max: { sortOrder: true } });
   const cat = await prisma.medicationCategory.create({
     data: {
       name: name || titleFromSlug(slug),
@@ -196,33 +193,26 @@ async function handleCreate(
     name: cat.name,
   });
 
-  return NextResponse.json({
-    ok: true,
-    category: categoryPayload(cat, 0),
-  });
+  return NextResponse.json({ ok: true, category: categoryPayload(cat, 0) });
 }
 
-async function handleUpdate(
-  userId: string,
-  body: z.infer<typeof UpdateBody>,
-) {
-  const current = await prisma.medicationCategory.findFirst({
-    where: { id: body.id },
-  });
+async function handleUpdate(userId: string, body: z.infer<typeof UpdateBody>) {
+  const current = await prisma.medicationCategory.findFirst({ where: { id: body.id } });
   if (!current) {
-    return NextResponse.json({ error: "not_found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "not_found", message: "That category no longer exists. Refresh the list." },
+      { status: 404 },
+    );
   }
 
   const nextName = body.name?.trim();
   const nextSlug = body.slug ? slugifyCategory(body.slug) : undefined;
 
   if (nextSlug && nextSlug !== current.slug) {
-    const clash = await prisma.medicationCategory.findFirst({
-      where: { slug: nextSlug },
-    });
+    const clash = await prisma.medicationCategory.findFirst({ where: { slug: nextSlug } });
     if (clash) {
       return NextResponse.json(
-        { error: "duplicate", message: `Slug "${nextSlug}" is already taken.` },
+        { error: "duplicate", message: `A category named "${clash.name}" already uses that name.` },
         { status: 409 },
       );
     }
@@ -237,23 +227,16 @@ async function handleUpdate(
       data: {
         ...(nextName !== undefined ? { name: nextName } : {}),
         ...(nextSlug !== undefined ? { slug: nextSlug } : {}),
-        ...(body.description !== undefined
-          ? { description: body.description?.trim() || null }
-          : {}),
-        ...(body.imageUrl !== undefined
-          ? { imageUrl: body.imageUrl?.trim() || null }
-          : {}),
+        ...(body.description !== undefined ? { description: body.description?.trim() || null } : {}),
+        ...(body.imageUrl !== undefined ? { imageUrl: body.imageUrl?.trim() || null } : {}),
         ...(brands !== undefined ? { brands } : {}),
         ...(tips !== undefined ? { tips } : {}),
-        ...(body.publicVisible !== undefined
-          ? { publicVisible: body.publicVisible }
-          : {}),
+        ...(body.publicVisible !== undefined ? { publicVisible: body.publicVisible } : {}),
         ...(body.active !== undefined ? { active: body.active } : {}),
         ...(body.sortOrder !== undefined ? { sortOrder: body.sortOrder } : {}),
       },
     });
 
-    // Keep MedicationMaster free-text category in sync when slug changes.
     if (nextSlug && nextSlug !== current.slug) {
       await tx.medicationMaster.updateMany({
         where: { category: current.slug },
@@ -264,9 +247,7 @@ async function handleUpdate(
     return row;
   });
 
-  const count = await prisma.medicationMaster.count({
-    where: { category: updated.slug },
-  });
+  const count = await prisma.medicationMaster.count({ where: { category: updated.slug } });
 
   await writeAuditLog(userId, "medication_category_updated", "medication_category", updated.id, {
     from: current.slug,
@@ -281,23 +262,18 @@ async function handleUpdate(
   });
 }
 
-async function handleDelete(
-  userId: string,
-  body: z.infer<typeof DeleteBody>,
-) {
-  const current = await prisma.medicationCategory.findFirst({
-    where: { id: body.id },
-  });
+async function handleDelete(userId: string, body: z.infer<typeof DeleteBody>) {
+  const current = await prisma.medicationCategory.findFirst({ where: { id: body.id } });
   if (!current) {
-    return NextResponse.json({ error: "not_found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "not_found", message: "That category no longer exists. Refresh the list." },
+      { status: 404 },
+    );
   }
 
   if (current.slug === "general") {
     return NextResponse.json(
-      {
-        error: "protected",
-        message: 'The default "general" category cannot be deleted.',
-      },
+      { error: "protected", message: 'The default "General" category cannot be deleted.' },
       { status: 400 },
     );
   }
@@ -305,10 +281,7 @@ async function handleDelete(
   const reassignTo = slugifyCategory(body.reassignTo || "general") || "general";
   if (reassignTo === current.slug) {
     return NextResponse.json(
-      {
-        error: "invalid_reassign",
-        message: "Pick a different category to reassign medications to.",
-      },
+      { error: "invalid_reassign", message: "Choose a different category for the medications being moved." },
       { status: 400 },
     );
   }
@@ -342,13 +315,10 @@ async function handleDelete(
   return NextResponse.json({ ok: true, moved, reassignTo });
 }
 
-async function handleMerge(
-  userId: string,
-  body: z.infer<typeof MergeBody>,
-) {
+async function handleMerge(userId: string, body: z.infer<typeof MergeBody>) {
   if (body.fromId === body.toId) {
     return NextResponse.json(
-      { error: "same_category", message: "Pick two different categories." },
+      { error: "same_category", message: "Choose two different categories to merge." },
       { status: 400 },
     );
   }
@@ -359,7 +329,10 @@ async function handleMerge(
   ]);
 
   if (!from || !to) {
-    return NextResponse.json({ error: "not_found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "not_found", message: "One of those categories no longer exists. Refresh the list." },
+      { status: 404 },
+    );
   }
 
   const moved = await prisma.$transaction(async (tx) => {
@@ -371,9 +344,7 @@ async function handleMerge(
     return result.count;
   });
 
-  const count = await prisma.medicationMaster.count({
-    where: { category: to.slug },
-  });
+  const count = await prisma.medicationMaster.count({ where: { category: to.slug } });
 
   await writeAuditLog(userId, "medication_category_merged", "medication_category", to.id, {
     from: from.slug,
@@ -381,9 +352,5 @@ async function handleMerge(
     moved,
   });
 
-  return NextResponse.json({
-    ok: true,
-    moved,
-    category: categoryPayload(to, count),
-  });
+  return NextResponse.json({ ok: true, moved, category: categoryPayload(to, count) });
 }
