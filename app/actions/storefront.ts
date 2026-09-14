@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getSessionUser, requireStaff, writeAuditLog, AuthError } from "@/app/lib/auth";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { getTenant } from "@/app/lib/tenant";
 import { assertPharmacyWorkspaceOperable } from "@/app/lib/platform/tenant-access";
 import { upsertPharmacySettings } from "@/app/lib/services/pharmacy-settings";
@@ -13,17 +14,13 @@ export type StorefrontActionState = {
   success?: string;
 };
 
-// ── Zod contract for the override document ────────────────────────────────
-// Every field is optional; explicit null is allowed anywhere to mean
-// "restore the shared template default". Arrays replace wholesale.
-
 const nullableStr = (max: number) => z.string().max(max).nullable().optional();
 const nullableUrl = (max = 800) =>
   z
     .string()
     .max(max)
     .refine((v) => v === "" || v === null || /^(https?:\/\/)\S+$/i.test(v), {
-      message: "Must be an http(s) URL",
+      message: "Enter a valid web address starting with http:// or https://.",
     })
     .transform((v) => (v === "" ? null : v))
     .nullable()
@@ -31,7 +28,7 @@ const nullableUrl = (max = 800) =>
 
 const hexColor = z
   .string()
-  .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Use a #rrggbb hex colour")
+  .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Use a valid hex colour such as #0f766e.")
   .nullable()
   .optional();
 
@@ -53,11 +50,7 @@ const whyChooseUsSchema = z
   .object({
     eyebrow: nullableStr(120),
     title: nullableStr(200),
-    bullets: z
-      .array(z.string().trim().min(1).max(240))
-      .max(8)
-      .nullable()
-      .optional(),
+    bullets: z.array(z.string().trim().min(1).max(240)).max(8).nullable().optional(),
     imageUrl: nullableUrl(),
   })
   .optional();
@@ -104,7 +97,7 @@ const teamSchema = z
         .string()
         .max(800)
         .refine((v) => v === "" || /^(https?:\/\/)\S+$/i.test(v), {
-          message: "Photo must be an http(s) URL",
+          message: "Enter a valid photo URL starting with http:// or https://.",
         })
         .default(""),
     }),
@@ -120,7 +113,7 @@ const gallerySchema = z
         .string()
         .max(800)
         .refine((v) => /^(https?:\/\/)\S+$/i.test(v), {
-          message: "Each photo needs an http(s) URL",
+          message: "Each gallery photo needs a valid web address.",
         }),
       alt: z.string().trim().max(240).default(""),
       caption: z.string().trim().max(160).default(""),
@@ -163,12 +156,8 @@ const ctaBannerSchema = z
     eyebrow: nullableStr(80),
     title: nullableStr(200),
     description: nullableStr(400),
-    primary: z
-      .object({ label: nullableStr(60), href: nullableStr(160) })
-      .optional(),
-    secondary: z
-      .object({ label: nullableStr(60), href: nullableStr(160) })
-      .optional(),
+    primary: z.object({ label: nullableStr(60), href: nullableStr(160) }).optional(),
+    secondary: z.object({ label: nullableStr(60), href: nullableStr(160) }).optional(),
   })
   .optional();
 
@@ -228,7 +217,6 @@ const storefrontDocSchema = z
   })
   .strict();
 
-/** Drop empty strings / explicit-nulls so the stored doc stays minimal. */
 function pruneDoc(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(pruneDoc);
   if (value && typeof value === "object") {
@@ -260,7 +248,7 @@ export async function saveStorefrontAction(
     const tenant = await getTenant();
     const pharmacyId = tenant.pharmacyId;
     if (!pharmacyId || tenant.bypass) {
-      return { error: "No pharmacy selected. Pick your shop from the sidebar switcher." };
+      return { error: "No pharmacy is selected. Choose a pharmacy workspace and try again." };
     }
     if (!user?.platformAdmin) {
       try {
@@ -270,7 +258,6 @@ export async function saveStorefrontAction(
       }
     }
 
-    // ── Identity block → dedicated PharmacySettings columns ────────────────
     await upsertPharmacySettings({
       tagline: String(formData.get("tagline") || "").trim() || null,
       about: String(formData.get("about") || "").trim() || null,
@@ -283,26 +270,24 @@ export async function saveStorefrontAction(
       updatedById: user!.id,
     });
 
-    // ── Structural block → `storefront` override document ─────────────────
     let rawJson = String(formData.get("storefrontJson") || "{}");
     if (!rawJson.trim()) rawJson = "{}";
     let parsedUnknown: unknown;
     try {
       parsedUnknown = JSON.parse(rawJson);
     } catch {
-      return { error: "Could not read the customisation payload. Refresh the page and try again." };
+      return { error: "We couldn't read the storefront settings. Refresh the page and try again." };
     }
 
     const validation = storefrontDocSchema.safeParse(parsedUnknown);
     if (!validation.success) {
       const issue = validation.error.issues[0];
-      const where = issue.path.length > 0 ? `${issue.path.join(".")}: ` : "";
-      return { error: `Validation failed — ${where}${issue.message}` };
+      return { error: `One storefront setting needs attention: ${issue.message}` };
     }
 
     const pruned = pruneDoc(validation.data);
     if (!pruned || typeof pruned !== "object" || Array.isArray(pruned)) {
-      return { error: "Customisation payload must be an object." };
+      return { error: "The storefront settings are incomplete. Refresh the page and try again." };
     }
 
     await prisma.pharmacySettings.upsert({
@@ -327,8 +312,10 @@ export async function saveStorefrontAction(
 
     return { success: "Storefront saved — your room updates live for every visitor." };
   } catch (e) {
-    if (e instanceof AuthError) return { error: e.message };
+    if (e instanceof AuthError) {
+      return { error: publicErrorMessage(e, "You do not have permission to change storefront settings.") };
+    }
     console.error("[saveStorefront]", e);
-    return { error: "Could not save storefront customisation." };
+    return { error: "We couldn't save the storefront right now. Your existing settings are unchanged. Please try again." };
   }
 }
