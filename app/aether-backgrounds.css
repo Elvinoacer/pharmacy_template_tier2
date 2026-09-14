@@ -71,18 +71,19 @@ body {
 }
 
 /*
- * Login is the only route that carries both marker classes. Keep the same
- * single body artwork, but use a lighter route-specific veil so the forest is
- * recognisable around the authentication card instead of collapsing into a
- * near-solid dark field.
+ * Login is the only route that carries both marker classes. Keep exactly the
+ * same body artwork, but expose substantially more of it on this route and crop
+ * lower into the photograph so the trees/lake remain visible around the card.
+ * The card transparency itself is owned by LoginSurface.module.css.
  */
 body:has(.aether-artwork-surface.aether-route-surface) {
+  --aether-artwork-position: 50% 42%;
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(244, 247, 244, 0.62) 0%,
-      rgba(242, 247, 244, 0.66) 48%,
-      rgba(239, 245, 242, 0.7) 100%
+      rgba(244, 247, 244, 0.4) 0%,
+      rgba(242, 247, 244, 0.44) 48%,
+      rgba(239, 245, 242, 0.48) 100%
     );
 }
 
@@ -90,82 +91,20 @@ html[data-theme="dark"] body:has(.aether-artwork-surface.aether-route-surface) {
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(5, 13, 11, 0.54) 0%,
-      rgba(6, 16, 13, 0.58) 48%,
-      rgba(4, 11, 9, 0.62) 100%
+      rgba(5, 13, 11, 0.24) 0%,
+      rgba(6, 16, 13, 0.28) 48%,
+      rgba(4, 11, 9, 0.32) 100%
     );
-}
-
-/* Remove the login page's legacy decorative masks completely. */
-.aether-artwork-surface.aether-route-surface::before,
-.aether-artwork-surface.aether-route-surface::after {
-  content: none !important;
-  display: none !important;
-  background: none !important;
-}
-
-/*
- * The authentication card is glass, not another background. The previous
- * 16px blur + ~70% opaque fill erased most image detail. Keep enough tint for
- * readability while allowing the single body artwork to remain recognisable.
- */
-.aether-artwork-surface.aether-route-surface > div {
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--glass-fill) 58%, transparent),
-      color-mix(in srgb, var(--card) 52%, transparent)
-    ) !important;
-  backdrop-filter: blur(5px) saturate(106%) !important;
-  -webkit-backdrop-filter: blur(5px) saturate(106%) !important;
-  box-shadow:
-    0 22px 70px color-mix(in srgb, var(--foreground) 14%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 34%, transparent) !important;
-}
-
-.aether-artwork-surface.aether-route-surface > div::before {
-  content: none !important;
-  display: none !important;
-  background: none !important;
-}
-
-/* Form half: keep it readable but do not paint an opaque second canvas. */
-.aether-artwork-surface.aether-route-surface > div > div:last-child {
-  background: color-mix(in srgb, var(--card) 34%, transparent) !important;
-  backdrop-filter: blur(2px) !important;
-  -webkit-backdrop-filter: blur(2px) !important;
-}
-
-/* Brand half: retain the green identity as translucent glass. */
-.aether-artwork-surface.aether-route-surface > div > aside {
-  background:
-    radial-gradient(circle at 18% 14%, rgba(45, 212, 191, 0.12), transparent 30%),
-    radial-gradient(circle at 85% 82%, rgba(201, 162, 39, 0.08), transparent 34%),
-    linear-gradient(155deg, rgba(6, 91, 74, 0.56), rgba(7, 110, 90, 0.5) 48%, rgba(10, 88, 82, 0.54)) !important;
-  backdrop-filter: blur(3px) saturate(108%) !important;
-  -webkit-backdrop-filter: blur(3px) saturate(108%) !important;
-}
-
-html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div {
-  background:
-    linear-gradient(145deg, rgba(13, 34, 27, 0.42), rgba(7, 22, 17, 0.34)) !important;
-}
-
-html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div > div:last-child {
-  background: rgba(4, 18, 13, 0.26) !important;
-}
-
-html[data-theme="dark"] .aether-artwork-surface.aether-route-surface > div > aside {
-  background:
-    radial-gradient(circle at 18% 14%, rgba(45, 212, 191, 0.11), transparent 30%),
-    radial-gradient(circle at 85% 82%, rgba(201, 162, 39, 0.07), transparent 34%),
-    linear-gradient(155deg, rgba(6, 59, 49, 0.54), rgba(7, 83, 68, 0.48) 48%, rgba(10, 74, 70, 0.52)) !important;
 }
 
 @media (min-width: 768px) {
   :root {
     --aether-artwork: url("/images/aether_bg_pc.webp");
     --aether-artwork-position: 50% 16%;
+  }
+
+  body:has(.aether-artwork-surface.aether-route-surface) {
+    --aether-artwork-position: 50% 44%;
   }
 }
 
