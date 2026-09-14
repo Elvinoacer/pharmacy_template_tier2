@@ -3,95 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped as db, withPlatformTx } from "@/app/lib/db";
-import { cancelSubscription, collectInvoicePayment } from "@/app/lib/platform/billing";
-import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
+import { cancelSubscription } from "@/app/lib/platform/billing";
 import { startPharmacyService } from "@/app/lib/platform/pharmacy-enrolment";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
-import { stkQuery } from "@/app/lib/services/daraja";
 import { createIntaSendBillingCheckout } from "@/app/lib/services/intasend-checkout";
+import {
+  cancelIntaSendSubscription,
+  createOrResumeIntaSendSubscription,
+} from "@/app/lib/services/intasend-subscriptions";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
 
 export type BillingState = { error?: string; success?: string; redirectUrl?: string };
-
-const BILLING_STK_RETRY_AFTER_MS = 90_000;
-const DARAJA_TRANSIENT_RESULT_CODES = new Set(["4999"]);
-
-async function clearExpiredBillingStk(invoiceId: string, pharmacyId: string) {
-  const pending = await withPharmacy(pharmacyId, () =>
-    db.billingPayment.findFirst({
-      where: {
-        invoiceId,
-        pharmacyId,
-        status: { in: ["pending", "processing"] },
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-  );
-
-  if (!pending) return;
-
-  // A Daraja callback can reach us before STK Query catches up (sandbox commonly
-  // returns transient 4999 for a short period). If Safaricom has already sent a
-  // failure/cancel reason, actively query the previous checkout before blocking
-  // a retry. A provider-confirmed terminal failure is closed immediately so the
-  // owner can send another prompt without reloading the page.
-  if (pending.failureReason && pending.checkoutRequestId) {
-    const credentials = await resolveDarajaCredentials(null);
-    if (credentials) {
-      const provider = await stkQuery(pending.checkoutRequestId, credentials);
-      if (provider.ok && provider.resultCode) {
-        if (provider.resultCode === "0") {
-          throw new Error(
-            "Safaricom reports the previous payment as successful. Please wait for receipt confirmation before trying again.",
-          );
-        }
-
-        if (!DARAJA_TRANSIENT_RESULT_CODES.has(provider.resultCode)) {
-          await withPharmacy(pharmacyId, () =>
-            db.billingPayment.updateMany({
-              where: {
-                id: pending.id,
-                pharmacyId,
-                status: { in: ["pending", "processing"] },
-              },
-              data: {
-                status: "failed",
-                failureReason: `M-Pesa result ${provider.resultCode}: ${provider.resultDesc || pending.failureReason}`,
-              },
-            }),
-          );
-          return;
-        }
-      }
-    }
-  }
-
-  const ageMs = Date.now() - pending.createdAt.getTime();
-  if (ageMs >= BILLING_STK_RETRY_AFTER_MS) {
-    await withPharmacy(pharmacyId, () =>
-      db.billingPayment.updateMany({
-        where: {
-          id: pending.id,
-          pharmacyId,
-          status: { in: ["pending", "processing"] },
-        },
-        data: {
-          status: "failed",
-          failureReason: "Previous STK request expired before confirmation; superseded by retry.",
-        },
-      }),
-    );
-    return;
-  }
-
-  const remainingSeconds = Math.max(1, Math.ceil((BILLING_STK_RETRY_AFTER_MS - ageMs) / 1000));
-  throw new Error(
-    pending.failureReason
-      ? `Safaricom is still closing the previous M-Pesa request. Try the retry button again in about ${remainingSeconds}s; you do not need to refresh this page.`
-      : `A previous M-Pesa request is still active. Wait about ${remainingSeconds}s, then retry if no prompt appears.`,
-  );
-}
 
 async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
   const invoiceId = String(form.get("invoiceId") || "").trim();
@@ -102,69 +25,37 @@ async function resolveOwnedBillingInvoice(pharmacyId: string, form: FormData) {
     ...(invoiceNumber ? [{ number: invoiceNumber }] : []),
   ];
 
-  // The page that rendered the invoice uses this same explicit tenant scope.
-  // Keep the payment action under the pharmacy RLS context instead of switching
-  // to platform bypass mid-request, which can lose visibility on pooled
-  // connections and make an invoice that was just rendered appear missing.
   const exact = identifiers.length
     ? await withPharmacy(pharmacyId, () =>
-        db.invoice.findFirst({
-          where: { pharmacyId, OR: identifiers },
-        }),
+        db.invoice.findFirst({ where: { pharmacyId, OR: identifiers } }),
       )
     : null;
-
   if (exact) return exact;
 
   const verification = await withPharmacy(pharmacyId, () =>
     db.invoice.findFirst({
-      where: {
-        pharmacyId,
-        number: `KYP-${pharmacyId}`,
-        status: "open",
-      },
+      where: { pharmacyId, number: `KYP-${pharmacyId}`, status: "open" },
     }),
   );
-  if (verification) {
-    console.warn("[billing][onboard] recovered verification invoice", {
-      pharmacyId,
-      submittedInvoiceId: invoiceId || "missing",
-      submittedInvoiceNumber: invoiceNumber || "missing",
-      resolvedInvoiceId: verification.id,
-    });
-    return verification;
-  }
+  if (verification) return verification;
 
   const collectible = await withPharmacy(pharmacyId, () =>
     db.invoice.findMany({
-      where: {
-        pharmacyId,
-        status: "open",
-        totalKes: { gt: 0 },
-      },
+      where: { pharmacyId, status: "open", totalKes: { gt: 0 } },
       orderBy: { createdAt: "desc" },
       take: 2,
     }),
   );
+  return collectible.length === 1 ? collectible[0] : null;
+}
 
-  if (collectible.length === 1) {
-    console.warn("[billing][onboard] recovered sole collectible invoice", {
-      pharmacyId,
-      submittedInvoiceId: invoiceId || "missing",
-      submittedInvoiceNumber: invoiceNumber || "missing",
-      resolvedInvoiceId: collectible[0].id,
-      resolvedInvoiceNumber: collectible[0].number,
-    });
-    return collectible[0];
-  }
-
-  console.error("[billing][onboard] invoice resolution failed", {
-    pharmacyId,
-    submittedInvoiceId: invoiceId || "missing",
-    submittedInvoiceNumber: invoiceNumber || "missing",
-    collectibleCount: collectible.length,
-  });
-  return null;
+async function ownedSubscription(pharmacyId: string) {
+  return withPharmacy(pharmacyId, () =>
+    db.subscription.findFirst({
+      where: { pharmacyId, status: { not: "cancelled" } },
+      orderBy: { createdAt: "desc" },
+    }),
+  );
 }
 
 export async function pharmacyBillingAction(_: BillingState, form: FormData): Promise<BillingState> {
@@ -181,18 +72,19 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
     const intent = String(form.get("intent") || "");
 
     if (intent === "cancel") {
-      const subscription = await withPharmacy(pharmacyId, () =>
-        db.subscription.findFirst({
-          where: { pharmacyId, status: { not: "cancelled" } },
-          orderBy: { createdAt: "desc" },
-        }),
-      );
+      const subscription = await ownedSubscription(pharmacyId);
       if (!subscription) throw new Error("No current subscription found.");
+
+      // Stop the provider first. We only schedule the local cancellation after
+      // IntaSend confirms that future recurring card deductions are disabled.
+      if (subscription.externalSubscriptionId) {
+        await cancelIntaSendSubscription(subscription.externalSubscriptionId);
+      }
       await withPharmacy(pharmacyId, () => cancelSubscription(subscription.id, true, user.id));
       revalidatePath("/onboard/billing");
       return {
         success:
-          "Renewal cancelled. Service ends at the end of your current period; existing invoices remain payable.",
+          "Auto-renewal cancelled. Your current paid period remains available until its end date; no further IntaSend card charges will be scheduled.",
       };
     }
 
@@ -200,85 +92,75 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       if (!(await loadPharmacySetup(pharmacyId)).profileReady) {
         throw new Error("Complete verification and your pharmacy profile before starting monthly billing.");
       }
-      await startPharmacyService(pharmacyId);
+      const invoice = await startPharmacyService(pharmacyId);
+      if (!invoice.subscriptionId) throw new Error("Monthly subscription was not created correctly.");
+      const recurring = await createOrResumeIntaSendSubscription({
+        pharmacyId,
+        subscriptionId: invoice.subscriptionId,
+        actorId: user.id,
+      });
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
-      return { success: "Monthly service invoice created. Any promotion has been applied." };
+      if (recurring.setupUrl && !recurring.active) {
+        return {
+          success: "Opening IntaSend secure card setup for automatic monthly renewal…",
+          redirectUrl: recurring.setupUrl,
+        };
+      }
+      return { success: "Recurring card subscription is already active." };
     }
 
-    if (intent !== "checkout" && intent !== "pay") {
-      throw new Error("Unknown billing action.");
+    if (intent === "subscription_setup") {
+      const subscription = await ownedSubscription(pharmacyId);
+      if (!subscription) throw new Error("No monthly subscription found. Start service first.");
+      const recurring = await createOrResumeIntaSendSubscription({
+        pharmacyId,
+        subscriptionId: subscription.id,
+        actorId: user.id,
+      });
+      revalidatePath("/onboard/billing");
+      if (recurring.setupUrl && !recurring.active) {
+        return {
+          success: recurring.resumed
+            ? "Resuming IntaSend secure recurring-card setup…"
+            : "Opening IntaSend secure recurring-card setup…",
+          redirectUrl: recurring.setupUrl,
+        };
+      }
+      return { success: "Recurring card subscription is active." };
     }
+
+    if (intent === "pay") {
+      throw new Error(
+        "M-Pesa STK Push is no longer used for Aether platform subscription billing. Use the secure IntaSend card flow instead.",
+      );
+    }
+
+    if (intent !== "checkout") throw new Error("Unknown billing action.");
 
     const invoice = await resolveOwnedBillingInvoice(pharmacyId, form);
     if (!invoice) {
       throw new Error("This billing page was stale and the invoice could not be resolved safely. Refresh the page and try once more.");
     }
-
-    if (intent === "checkout") {
-      const result = await withPharmacy(pharmacyId, () =>
-        createIntaSendBillingCheckout({
-          invoiceId: invoice.id,
-          email: pharmacy.email,
-          actorId: user.id,
-        }),
+    if (invoice.subscriptionId) {
+      throw new Error(
+        "Monthly service invoices are collected automatically by the IntaSend recurring-card subscription. Use recurring card setup instead of a one-time checkout.",
       );
-      revalidatePath("/onboard/billing");
-      if (result.alreadyPaid) return { success: "This invoice is already paid." };
-      if (!result.url) throw new Error("Secure checkout did not return a payment page.");
-      return {
-        success: result.resumed ? "Resuming your secure checkout…" : "Opening secure checkout…",
-        redirectUrl: result.url,
-      };
     }
-
-    const phone = String(form.get("phone") || "")
-      .replace(/[\s+]/g, "")
-      .replace(/^0/, "254");
-    if (!/^254[17]\d{8}$/.test(phone)) {
-      throw new Error("Enter a valid Kenyan M-Pesa number.");
-    }
-
-    await clearExpiredBillingStk(invoice.id, pharmacyId);
 
     const result = await withPharmacy(pharmacyId, () =>
-      collectInvoicePayment(invoice.id, { phone, actorId: user.id }),
-    );
-    if (!result.ok) {
-      console.error("[billing][daraja] STK initiation failed", {
-        pharmacyId,
+      createIntaSendBillingCheckout({
         invoiceId: invoice.id,
-        invoiceNumber: invoice.number,
-        error: result.error,
-      });
-      throw new Error(result.error);
-    }
-
-    const daraja = await resolveDarajaCredentials(null);
-    console.info("[billing][daraja] STK accepted", {
-      pharmacyId,
-      invoiceId: invoice.id,
-      invoiceNumber: invoice.number,
-      checkoutRequestId: result.checkoutRequestId,
-      environment: daraja?.env ?? "unknown",
-      shortcode: daraja?.shortcode ?? "unknown",
-    });
-
+        email: pharmacy.email,
+        actorId: user.id,
+      }),
+    );
     revalidatePath("/onboard/billing");
-    revalidatePath("/admin/setup");
-
-    if (daraja?.env === "sandbox") {
-      return {
-        success:
-          `Daraja sandbox accepted the STK request (CheckoutRequestID ${result.checkoutRequestId}). ` +
-          "Sandbox verifies the API request path; switch only the Daraja environment/credentials to production when testing a real handset prompt.",
-      };
-    }
-
+    if (result.alreadyPaid) return { success: "This invoice is already paid." };
+    if (!result.url) throw new Error("Secure checkout did not return a payment page.");
     return {
-      success:
-        `M-Pesa prompt accepted by Safaricom Daraja (CheckoutRequestID ${result.checkoutRequestId}). ` +
-        "Approve it on your phone; this page will confirm the result automatically.",
+      success: result.resumed ? "Resuming your secure card checkout…" : "Opening secure card checkout…",
+      redirectUrl: result.url,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not process billing.";

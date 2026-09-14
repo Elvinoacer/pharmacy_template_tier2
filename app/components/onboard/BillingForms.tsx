@@ -1,152 +1,120 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { CreditCard, ShieldCheck, Smartphone } from "lucide-react";
+import { CreditCard, RefreshCw, ShieldCheck } from "lucide-react";
 import { pharmacyBillingAction, promotionAction } from "@/app/actions/pharmacy-billing";
 
 const input =
   "mt-1 min-h-12 w-full rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 text-base text-[var(--foreground)] sm:text-sm";
 
+function RedirectOnSuccess({ redirectUrl }: { redirectUrl?: string }) {
+  useEffect(() => {
+    if (redirectUrl) window.location.assign(redirectUrl);
+  }, [redirectUrl]);
+  return null;
+}
+
 export function PharmacyPaymentForm({
   pharmacyId,
   invoiceId,
   invoiceNumber,
-  stkAvailable = true,
   checkoutAvailable = false,
 }: {
   pharmacyId: string;
   invoiceId?: string;
   invoiceNumber?: string;
-  stkAvailable?: boolean;
   checkoutAvailable?: boolean;
 }) {
-  const [activateState, activateAction, activating] = useActionState(pharmacyBillingAction, {});
-  const [stkState, stkAction, stkPending] = useActionState(pharmacyBillingAction, {});
-  const [checkoutState, checkoutAction, checkoutPending] = useActionState(pharmacyBillingAction, {});
-
-  useEffect(() => {
-    if (checkoutState.redirectUrl) window.location.assign(checkoutState.redirectUrl);
-  }, [checkoutState.redirectUrl]);
+  const [state, action, pending] = useActionState(pharmacyBillingAction, {});
 
   if (!invoiceId) {
     return (
-      <form action={activateAction} className="space-y-3" aria-busy={activating}>
+      <form action={action} className="space-y-3" aria-busy={pending}>
+        <RedirectOnSuccess redirectUrl={state.redirectUrl} />
         <input type="hidden" name="pharmacyId" value={pharmacyId} />
         <input type="hidden" name="intent" value="activate" />
-        <button disabled={activating} className="btn-primary min-h-11" type="submit">
-          {activating ? "Preparing…" : "Start monthly service"}
+        <button disabled={pending} className="btn-primary min-h-11 w-full justify-center" type="submit">
+          <CreditCard className="h-4 w-4" aria-hidden />
+          {pending ? "Preparing secure card setup…" : "Set up monthly card billing"}
         </button>
-        <p role={activateState.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
-          {activateState.error || activateState.success}
+        <p className="text-xs leading-5 text-[var(--muted)]">
+          IntaSend securely stores the card authorization and handles the KES 500 monthly renewal. Aether never stores your full card number or CVV.
+        </p>
+        <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
+          {state.error || state.success}
         </p>
       </form>
     );
   }
 
-  const invoiceIdentity = (
-    <>
+  return (
+    <form
+      action={action}
+      className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4"
+      aria-busy={pending}
+    >
+      <RedirectOnSuccess redirectUrl={state.redirectUrl} />
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       <input type="hidden" name="invoiceId" value={invoiceId} />
       {invoiceNumber ? <input type="hidden" name="invoiceNumber" value={invoiceNumber} /> : null}
-    </>
-  );
+      <input type="hidden" name="intent" value="checkout" />
 
-  return (
-    <div className="grid gap-3">
-      <form
-        action={stkAction}
-        className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4"
-        aria-busy={stkPending}
-      >
-        {invoiceIdentity}
-        <input type="hidden" name="intent" value="pay" />
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-3">
-            <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
-              <Smartphone className="h-4 w-4" aria-hidden />
-            </span>
-            <div>
-              <h3 className="text-sm font-semibold">M-Pesa prompt</h3>
-              <p className="mt-0.5 text-xs leading-5 text-[var(--muted)]">
-                Sent directly through Safaricom Daraja. IntaSend is never used for STK Push.
-              </p>
-            </div>
-          </div>
-          <span className="shrink-0 rounded-full border border-[var(--line-2)] px-2 py-1 text-[10px] font-semibold text-[var(--muted)]">
-            Daraja
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
+            <CreditCard className="h-4 w-4" aria-hidden />
           </span>
+          <div>
+            <h3 className="text-sm font-semibold">Secure card payment</h3>
+            <p className="mt-0.5 text-xs leading-5 text-[var(--muted)]">
+              One-time charges such as verification open IntaSend&apos;s hosted card checkout.
+            </p>
+          </div>
         </div>
-
-        {stkAvailable ? (
-          <>
-            <label className="mt-4 block text-sm font-medium">
-              M-Pesa number
-              <input
-                className={input}
-                name="phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder="0712 345 678"
-                required
-              />
-            </label>
-            <button disabled={stkPending} className="btn-primary mt-3 min-h-11 w-full justify-center" type="submit">
-              {stkPending ? "Sending prompt…" : "Send M-Pesa prompt"}
-            </button>
-            <p className="mt-2 text-xs text-[var(--muted)]">Approve the prompt on your phone with your M-Pesa PIN.</p>
-          </>
-        ) : (
-          <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
-            Direct M-Pesa prompt is temporarily unavailable because platform Daraja credentials are not ready.
-          </p>
-        )}
-
-        <p role={stkState.error ? "alert" : "status"} className="mt-2 text-sm text-[var(--muted)]">
-          {stkState.error || stkState.success}
-        </p>
-      </form>
+        <span className="shrink-0 rounded-full border border-[var(--line-2)] px-2 py-1 text-[10px] font-semibold text-[var(--muted)]">
+          IntaSend
+        </span>
+      </div>
 
       {checkoutAvailable ? (
-        <form
-          action={checkoutAction}
-          className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4"
-          aria-busy={checkoutPending}
-        >
-          {invoiceIdentity}
-          <input type="hidden" name="intent" value="checkout" />
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex min-w-0 items-start gap-3">
-              <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
-                <CreditCard className="h-4 w-4" aria-hidden />
-              </span>
-              <div>
-                <h3 className="text-sm font-semibold">Secure card checkout</h3>
-                <p className="mt-0.5 text-xs leading-5 text-[var(--muted)]">
-                  Opens IntaSend&apos;s hosted checkout. This route is card-only so all M-Pesa STK prompts remain on Daraja.
-                </p>
-              </div>
-            </div>
-            <span className="shrink-0 rounded-full border border-[var(--line-2)] px-2 py-1 text-[10px] font-semibold text-[var(--muted)]">
-              IntaSend
-            </span>
-          </div>
-          <button disabled={checkoutPending} className="btn-ghost mt-4 min-h-11 w-full justify-center" type="submit">
-            <ShieldCheck className="h-4 w-4" aria-hidden />
-            {checkoutPending ? "Opening checkout…" : "Pay by secure checkout"}
-          </button>
-          <p role={checkoutState.error ? "alert" : "status"} className="mt-2 text-sm text-[var(--muted)]">
-            {checkoutState.error || checkoutState.success}
-          </p>
-        </form>
-      ) : null}
-
-      {!stkAvailable && !checkoutAvailable ? (
-        <p className="rounded-xl border border-[var(--line-2)] p-3 text-sm text-[var(--muted)]">
-          No payment rail is configured for platform billing yet. Your invoice remains safe and unpaid until a verified payment succeeds.
+        <button disabled={pending} className="btn-primary mt-4 min-h-11 w-full justify-center" type="submit">
+          <ShieldCheck className="h-4 w-4" aria-hidden />
+          {pending ? "Opening secure checkout…" : "Pay securely by card"}
+        </button>
+      ) : (
+        <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
+          Card checkout is not configured yet. Add the IntaSend keys and webhook challenge before accepting this payment.
         </p>
-      ) : null}
-    </div>
+      )}
+
+      <p role={state.error ? "alert" : "status"} className="mt-2 text-sm text-[var(--muted)]">
+        {state.error || state.success}
+      </p>
+    </form>
+  );
+}
+
+export function RecurringCardSetupForm({
+  pharmacyId,
+  active = false,
+}: {
+  pharmacyId: string;
+  active?: boolean;
+}) {
+  const [state, action, pending] = useActionState(pharmacyBillingAction, {});
+  return (
+    <form action={action} className="space-y-3" aria-busy={pending}>
+      <RedirectOnSuccess redirectUrl={state.redirectUrl} />
+      <input type="hidden" name="pharmacyId" value={pharmacyId} />
+      <input type="hidden" name="intent" value="subscription_setup" />
+      <button disabled={pending || active} className="btn-ghost min-h-11 w-full justify-center" type="submit">
+        <RefreshCw className={`h-4 w-4 ${pending ? "animate-spin" : ""}`} aria-hidden />
+        {active ? "Recurring card active" : pending ? "Checking subscription…" : "Continue recurring card setup"}
+      </button>
+      <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
+        {state.error || state.success}
+      </p>
+    </form>
   );
 }
 
@@ -196,7 +164,7 @@ export function CancelServiceForm({ pharmacyId }: { pharmacyId: string }) {
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       <input type="hidden" name="intent" value="cancel" />
       <button className="btn-ghost min-h-11" disabled={pending}>
-        {pending ? "Saving…" : "Cancel at period end"}
+        {pending ? "Stopping auto-renewal…" : "Cancel auto-renewal"}
       </button>
       <p role="status" className="text-sm text-[var(--muted)]">
         {state.error || state.success}

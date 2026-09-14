@@ -70,7 +70,7 @@ export async function createIntaSendBillingCheckout(input: {
   const env = intasendEnv();
   const origin = appOrigin();
 
-  if (!key || !challenge) throw new Error("Secure checkout is not configured yet.");
+  if (!key || !challenge) throw new Error("Secure card checkout is not configured yet.");
   if (!origin) throw new Error("The application URL is not configured for secure checkout.");
 
   const invoice = await prismaUnscoped.invoice.findUnique({ where: { id: input.invoiceId } });
@@ -144,7 +144,7 @@ export async function createIntaSendBillingCheckout(input: {
       where: { id: payment.id },
       data: { status: "failed", failureReason: message.slice(0, 250) },
     });
-    throw new Error("Secure checkout could not be reached. Please try the M-Pesa prompt or try again shortly.");
+    throw new Error("Secure card checkout could not be reached. Please try again shortly.");
   }
 
   const body = (await response.json().catch(() => ({}))) as CheckoutResponse;
@@ -183,8 +183,6 @@ export async function createIntaSendBillingCheckout(input: {
     data: {
       status: "processing",
       checkoutRequestId: checkoutId,
-      // Preserve the hosted URL while the checkout is in-flight so a retry resumes
-      // the same checkout instead of creating a second payable session.
       providerRef: parsedUrl.toString(),
     },
   });

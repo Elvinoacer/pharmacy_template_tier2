@@ -1,96 +1,49 @@
 import { createTransactionFeeStatement } from "@/app/actions/transaction-fees";
-import { CancelServiceForm, PharmacyPaymentForm } from "@/app/components/onboard/BillingForms";
-import MpesaRetryForm from "@/app/components/onboard/MpesaRetryForm";
+import {
+  CancelServiceForm,
+  PharmacyPaymentForm,
+  RecurringCardSetupForm,
+} from "@/app/components/onboard/BillingForms";
 import PaymentStatusRefresh from "@/app/components/onboard/PaymentStatusRefresh";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped as db } from "@/app/lib/db";
-import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
 import { ensureVerificationInvoice } from "@/app/lib/platform/pharmacy-enrolment";
 import { intasendCheckoutConfigured } from "@/app/lib/services/intasend-checkout";
+import { intasendSubscriptionConfigured } from "@/app/lib/services/intasend-subscriptions";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CreditCard, RefreshCw, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Pharmacy fees" };
 
-const ACTIVE_STK_WINDOW_MS = 90_000;
-
 type PaymentView = {
   provider: string;
   status: string;
   failureReason: string | null;
   providerRef: string | null;
-  phone: string | null;
   createdAt: Date;
 };
 
-function isActivePayment(payment: PaymentView | undefined, activeStkSince: Date) {
-  if (!payment || !["pending", "processing"].includes(payment.status)) return false;
-  if (payment.provider !== "mpesa") return true;
-  return payment.createdAt >= activeStkSince;
+function isActivePayment(payment: PaymentView | undefined) {
+  return Boolean(payment && ["pending", "processing"].includes(payment.status));
 }
 
-function describeMpesaOutcome(payment: PaymentView) {
-  const reason = payment.failureReason?.trim() || "";
-  const lower = reason.toLowerCase();
-
+function describeCardOutcome(payment: PaymentView | undefined) {
+  if (!payment || !payment.provider.startsWith("intasend")) return null;
   if (payment.status === "succeeded") {
-    return {
-      title: "M-Pesa payment confirmed",
-      message: "Safaricom confirmed the payment and the invoice has been updated.",
-      ok: true,
-    };
+    return { ok: true, title: "Card payment confirmed", message: "IntaSend confirmed this payment." };
   }
-
-  const cancelled = lower.includes("cancel") || lower.includes("1032");
-  const insufficient =
-    lower.includes("insufficient") ||
-    lower.includes("balance") ||
-    lower.includes("result 1:");
-  const timedOut =
-    lower.includes("timeout") ||
-    lower.includes("timed out") ||
-    lower.includes("1037") ||
-    lower.includes("unreachable");
-  const pinProblem =
-    lower.includes("pin") ||
-    lower.includes("2001") ||
-    lower.includes("initiator information is invalid");
-
-  let title = payment.status === "cancelled" ? "M-Pesa request cancelled" : "M-Pesa payment failed";
-  let message = reason || "M-Pesa did not complete the payment. You can try again.";
-
-  if (cancelled) {
-    title = "M-Pesa request cancelled";
-    message = "The M-Pesa prompt was cancelled. No payment was recorded. You can send a new prompt when ready.";
-  } else if (insufficient) {
-    title = "Insufficient M-Pesa balance";
-    message = "Safaricom reported insufficient funds. Top up the M-Pesa account or use another number, then try again.";
-  } else if (timedOut) {
-    title = "M-Pesa request timed out";
-    message = "The phone did not complete the prompt in time. Check network access and send a new prompt.";
-  } else if (pinProblem) {
-    title = "M-Pesa authorization was rejected";
-    message =
-      "Safaricom returned result 2001 after the PIN step. This can mean the PIN response or the STK signing credentials were not accepted. No payment was recorded, so you can retry safely.";
-  }
-
-  if (["pending", "processing"].includes(payment.status) && reason) {
+  if (payment.status === "failed") {
     return {
-      title,
-      message: `${message} Safaricom's final status is still being verified automatically.`,
       ok: false,
+      title: "Card payment needs attention",
+      message: payment.failureReason || "IntaSend could not complete this card payment.",
     };
   }
-
-  if (["failed", "cancelled"].includes(payment.status)) {
-    return { title, message, ok: false };
-  }
-
   return null;
 }
 
@@ -105,17 +58,13 @@ export default async function PharmacyBillingPage() {
   if (!pharmacy) redirect("/onboard");
 
   await ensureVerificationInvoice(pharmacy.id);
-  const activeStkSince = new Date(Date.now() - ACTIVE_STK_WINDOW_MS);
-  const [invoices, grant, sub, platformDaraja] = await Promise.all([
+  const [invoices, grant, sub] = await Promise.all([
     withPharmacy(pharmacy.id, () =>
       db.invoice.findMany({
         where: { pharmacyId: pharmacy.id },
         include: {
           items: true,
-          payments: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-          },
+          payments: { orderBy: { createdAt: "desc" }, take: 1 },
         },
         orderBy: { createdAt: "desc" },
         take: 50,
@@ -130,7 +79,6 @@ export default async function PharmacyBillingPage() {
         orderBy: { createdAt: "desc" },
       }),
     ),
-    resolveDarajaCredentials(null),
   ]);
 
   const readiness = await loadPharmacySetup(pharmacy.id);
@@ -142,10 +90,12 @@ export default async function PharmacyBillingPage() {
   );
   const feeCents = feeBalance._sum.quantity || 0;
   const paymentPending = invoices.some((invoice) =>
-    isActivePayment(invoice.payments[0] as PaymentView | undefined, activeStkSince),
+    isActivePayment(invoice.payments[0] as PaymentView | undefined),
   );
-  const stkAvailable = Boolean(platformDaraja);
   const checkoutAvailable = intasendCheckoutConfigured();
+  const recurringAvailable = intasendSubscriptionConfigured();
+  const recurringCardActive = Boolean(sub?.externalSubscriptionId && sub.status === "active");
+  const recurringSetupStarted = Boolean(sub?.externalSubscriptionId);
 
   return (
     <div className={styles.narrow}>
@@ -159,44 +109,82 @@ export default async function PharmacyBillingPage() {
         className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl"
         style={{ fontFamily: "var(--font-display), serif" }}
       >
-        Your next step, paid simply
+        Simple card billing, automatic each month
       </h1>
       <p className="mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">
-        KES 100 verification. KES 500/month when you activate service.
-      </p>
-      <p className="mt-2 max-w-lg text-xs leading-5 text-[var(--muted)]">
-        M-Pesa prompts use Safaricom Daraja directly. IntaSend is reserved for hosted card checkout, so it never sits in the STK Push path.
+        KES 100 one-time verification. KES 500/month when service is active.
       </p>
 
+      <section className={`${styles.notice} ${styles.noticeOk} mt-4`}>
+        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+        <div>
+          <h2>Recurring billing is handled by IntaSend</h2>
+          <p>
+            You authorize a card once on IntaSend&apos;s secure page. IntaSend then bills the monthly subscription automatically. Aether stores only masked card details, never the full card number or CVV.
+          </p>
+        </div>
+      </section>
+
       {grant ? (
-        <section className={`${styles.notice} ${styles.noticeOk} mt-5`}>
+        <section className={`${styles.notice} ${styles.noticeOk} mt-4`}>
           <div>
             <h2>Promotion applied</h2>
             <p>
               Verification: {grant.verification ? "waived" : "KES 100"}. Monthly:{" "}
               {grant.recurringMonths
-                ? `${grant.recurringMonths} free month${grant.recurringMonths === 1 ? "" : "s"} after launch, then KES 500`
-                : "KES 500 / month"}
+                ? `${grant.recurringMonths} free month${grant.recurringMonths === 1 ? "" : "s"}, then KES 500/month`
+                : "KES 500/month"}
               .
             </p>
           </div>
         </section>
       ) : null}
 
+      {sub ? (
+        <section className={`${styles.section} mt-4`}>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className={styles.kicker}>Monthly service</p>
+              <h2 className="mt-1 font-semibold">
+                {recurringCardActive ? "Automatic card renewal active" : recurringSetupStarted ? "Finish card authorization" : "Card authorization required"}
+              </h2>
+              <p className="mt-2 text-sm text-[var(--muted)]">
+                {sub.cancelAt
+                  ? `Auto-renewal is off. Access ends ${sub.currentPeriodEnd.toLocaleDateString("en-KE")}.`
+                  : `Current period ends ${sub.currentPeriodEnd.toLocaleDateString("en-KE")}.`}
+              </p>
+            </div>
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
+              {recurringCardActive ? <CreditCard className="h-4 w-4" /> : <RefreshCw className="h-4 w-4" />}
+            </span>
+          </div>
+
+          {!sub.cancelAt && !recurringCardActive ? (
+            recurringAvailable ? (
+              <div className="mt-4">
+                <RecurringCardSetupForm pharmacyId={pharmacy.id} />
+              </div>
+            ) : (
+              <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
+                Recurring cards are not configured. Add INTASEND_SECRET_KEY, INTASEND_SUBSCRIPTION_PLAN_ID and the webhook challenge before taking this pharmacy live.
+              </p>
+            )
+          ) : null}
+
+          {!sub.cancelAt && recurringCardActive ? <CancelServiceForm pharmacyId={pharmacy.id} /> : null}
+        </section>
+      ) : null}
+
       <div className="mt-4 grid gap-3">
         {invoices.map((inv) => {
           const latestPayment = inv.payments[0] as PaymentView | undefined;
-          const pending = isActivePayment(latestPayment, activeStkSince) ? latestPayment : undefined;
+          const pending = isActivePayment(latestPayment);
+          const outcome = describeCardOutcome(latestPayment);
           const resumableCheckout =
-            pending?.provider === "intasend" && pending.providerRef?.startsWith("https://")
-              ? pending.providerRef
+            pending && latestPayment?.provider === "intasend" && latestPayment.providerRef?.startsWith("https://")
+              ? latestPayment.providerRef
               : null;
-          const mpesaOutcome =
-            latestPayment?.provider === "mpesa" ? describeMpesaOutcome(latestPayment) : null;
-          const retryableMpesa =
-            latestPayment?.provider === "mpesa" &&
-            Boolean(latestPayment.failureReason) &&
-            ["open", "overdue"].includes(inv.status);
+          const isMonthly = Boolean(inv.subscriptionId);
 
           return (
             <section key={inv.id} className={styles.invoice}>
@@ -204,7 +192,7 @@ export default async function PharmacyBillingPage() {
                 <h2 className="font-semibold">
                   {inv.number.startsWith("TXF-")
                     ? "Transaction fees"
-                    : inv.subscriptionId
+                    : isMonthly
                       ? "Monthly service"
                       : "Verification"}
                 </h2>
@@ -212,11 +200,13 @@ export default async function PharmacyBillingPage() {
                   KES {Number(inv.totalKes).toLocaleString("en-KE")} · {inv.status}
                 </strong>
               </div>
-              {inv.subscriptionId ? (
+
+              {isMonthly ? (
                 <p className="mt-2 text-sm text-[var(--muted)]">
                   {inv.periodStart.toLocaleDateString("en-KE")} – {inv.periodEnd.toLocaleDateString("en-KE")}
                 </p>
               ) : null}
+
               <ul className="my-3 text-sm text-[var(--muted)]">
                 {inv.items.map((item) => (
                   <li key={item.id}>
@@ -225,36 +215,26 @@ export default async function PharmacyBillingPage() {
                 ))}
               </ul>
 
-              {mpesaOutcome ? (
-                <div className={`${styles.notice} ${mpesaOutcome.ok ? styles.noticeOk : styles.noticeWarn} mb-3`} role="status">
+              {outcome ? (
+                <div className={`${styles.notice} ${outcome.ok ? styles.noticeOk : styles.noticeWarn} mb-3`} role="status">
                   <div>
-                    <h3>{mpesaOutcome.title}</h3>
-                    <p>{mpesaOutcome.message}</p>
+                    <h3>{outcome.title}</h3>
+                    <p>{outcome.message}</p>
                   </div>
                 </div>
               ) : null}
 
               {["open", "overdue"].includes(inv.status) ? (
-                retryableMpesa ? (
-                  <div className="space-y-3">
-                    {pending ? (
-                      <p role="status" className="text-sm text-[var(--muted)]">
-                        Safaricom has returned an outcome. You can retry here without refreshing; the server will first verify that the previous prompt is no longer active.
-                      </p>
-                    ) : null}
-                    <MpesaRetryForm
-                      pharmacyId={pharmacy.id}
-                      invoiceId={inv.id}
-                      invoiceNumber={inv.number}
-                      phone={latestPayment?.phone}
-                    />
+                isMonthly ? (
+                  <div className="rounded-xl border border-[var(--line-2)] p-3 text-sm leading-6 text-[var(--muted)]">
+                    {recurringCardActive
+                      ? "No manual payment is needed. IntaSend charges the authorized card and this invoice updates from the subscription webhook."
+                      : "Complete recurring card authorization above. The first successful IntaSend subscription charge settles this invoice automatically."}
                   </div>
                 ) : pending ? (
                   <div className="space-y-3">
                     <p role="status" className="text-sm text-[var(--muted)]">
-                      {pending.provider === "intasend"
-                        ? "Secure checkout is still in progress. Do not start another payment for this invoice."
-                        : "M-Pesa payment is confirming through Daraja. This page checks the status automatically every few seconds."}
+                      Secure card checkout is still in progress. Do not start another payment for this invoice.
                     </p>
                     {resumableCheckout ? (
                       <a href={resumableCheckout} className="btn-ghost inline-flex min-h-11 items-center justify-center">
@@ -267,7 +247,6 @@ export default async function PharmacyBillingPage() {
                     pharmacyId={pharmacy.id}
                     invoiceId={inv.id}
                     invoiceNumber={inv.number}
-                    stkAvailable={stkAvailable}
                     checkoutAvailable={checkoutAvailable}
                   />
                 )
@@ -280,7 +259,7 @@ export default async function PharmacyBillingPage() {
       <section className={`${styles.section} mt-5`}>
         <h2 className="font-semibold">1% transaction fee</h2>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Customers pay the listed total to your connected M-Pesa account. Your 1% platform fee is billed separately.
+          Customer-order collections remain separate from this platform subscription. The 1% platform fee is billed as its own statement.
         </p>
         <p className="mt-3 font-semibold">KES {(feeCents / 100).toFixed(2)} awaiting a statement</p>
         <form action={createTransactionFeeStatement} className="mt-3">
@@ -293,28 +272,25 @@ export default async function PharmacyBillingPage() {
         </p>
       </section>
 
-      <PaymentStatusRefresh pending={paymentPending} />
+      <PaymentStatusRefresh pending={paymentPending || Boolean(sub?.externalSubscriptionId && sub.status === "past_due")} />
+
       {sub ? (
         <Link href="/admin/setup" className="btn-primary mt-5 inline-flex justify-center">
           Continue to launch checklist
         </Link>
-      ) : null}
-      {sub ? (
-        <section className={`${styles.section} mt-4`}>
-          <h2 className="font-semibold capitalize">{sub.status.replaceAll("_", " ")}</h2>
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            {sub.cancelAt ? "Ends" : "Current period ends"}{" "}
-            {sub.currentPeriodEnd.toLocaleDateString("en-KE")}
-          </p>
-          {!sub.cancelAt ? <CancelServiceForm pharmacyId={pharmacy.id} /> : null}
-        </section>
       ) : readiness.profileReady ? (
         <section className={`${styles.section} mt-4`}>
-          <h2 className="font-semibold">Go live when ready</h2>
+          <h2 className="font-semibold">Ready to activate</h2>
           <p className="mb-4 mt-2 text-sm text-[var(--muted)]">
-            Finish verification and setup first. Starting service creates this month’s invoice.
+            Add a card once. IntaSend handles the recurring KES 500 monthly subscription from then on.
           </p>
-          <PharmacyPaymentForm pharmacyId={pharmacy.id} />
+          {recurringAvailable ? (
+            <PharmacyPaymentForm pharmacyId={pharmacy.id} />
+          ) : (
+            <p className="rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
+              Recurring card billing is not configured yet.
+            </p>
+          )}
         </section>
       ) : (
         <Link

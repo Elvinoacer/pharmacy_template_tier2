@@ -5,6 +5,11 @@ import { prismaUnscoped } from "@/app/lib/db";
 import { markInvoicePaid } from "@/app/lib/platform/billing";
 import { markWebhookProcessed, recordInboundWebhook } from "@/app/lib/platform/webhooks";
 import { intasendWebhookChallenge } from "@/app/lib/services/intasend-checkout";
+import {
+  isIntaSendSubscriptionEvent,
+  processIntaSendSubscriptionWebhookEvent,
+  type IntaSendSubscriptionEvent,
+} from "@/app/lib/services/intasend-subscriptions";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 export const runtime = "nodejs";
@@ -36,7 +41,7 @@ function amountMatches(expected: number, received: unknown): boolean {
 export async function POST(req: Request) {
   let inboundId: string | null = null;
   try {
-    const body = (await req.json()) as IntaSendCollectionEvent;
+    const body = (await req.json()) as IntaSendCollectionEvent | IntaSendSubscriptionEvent;
     const expectedChallenge = intasendWebhookChallenge();
     const challenge = String(body.challenge || "");
 
@@ -46,6 +51,17 @@ export async function POST(req: Request) {
     }
     if (!challenge || !constantTimeEqual(challenge, expectedChallenge)) {
       return NextResponse.json({ ok: false, error: "invalid_challenge" }, { status: 401 });
+    }
+
+    // IntaSend recurring-card subscriptions use a different event envelope from
+    // one-time hosted checkout. Both are deliberately handled by the same
+    // challenge-protected endpoint configured in the IntaSend dashboard.
+    if (isIntaSendSubscriptionEvent(body)) {
+      const result = await withPlatformBypass(() => processIntaSendSubscriptionWebhookEvent(body));
+      return NextResponse.json(
+        { ok: result.status < 400, note: result.note },
+        { status: result.status },
+      );
     }
 
     const paymentId = String(body.api_ref || "").trim();
@@ -117,7 +133,7 @@ export async function POST(req: Request) {
           data: {
             status: "failed",
             checkoutRequestId: providerInvoiceId,
-            failureReason: String(body.failed_reason || "IntaSend checkout failed").slice(0, 250),
+            failureReason: String(body.failed_reason || "IntaSend card checkout failed").slice(0, 250),
           },
         });
         await markWebhookProcessed(inbound.event.id);
