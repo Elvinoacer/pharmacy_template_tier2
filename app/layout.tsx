@@ -14,6 +14,7 @@ import { SESSION_CLAIM_COOKIE, verifySessionClaim } from "./lib/session-claim";
 import "./globals.css";
 import "./accessibility-overrides.css";
 import "./performance-overrides.css";
+import "./aether-backgrounds.css";
 import { themeBootstrap } from "./lib/theme-bootstrap";
 import ThemeToggle, { ThemeProvider } from "./components/ThemeProvider";
 
