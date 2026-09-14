@@ -1,0 +1,95 @@
+/*
+ * Aether platform-wide artwork background.
+ *
+ * The mobile and desktop assets are deliberately applied at shared shell level
+ * so public pages, customer/caregiver workspaces, pharmacy admin, platform
+ * admin, onboarding and auth surfaces stay visually consistent without each
+ * route owning its own copy of the background logic.
+ */
+
+:root {
+  --aether-artwork: url("/images/aether_bg_mobile.jpg");
+  --aether-public-veil:
+    linear-gradient(180deg, rgba(246, 249, 247, 0.62) 0%, rgba(242, 248, 245, 0.7) 42%, rgba(240, 247, 243, 0.76) 100%);
+  --aether-workspace-veil:
+    linear-gradient(180deg, rgba(244, 247, 244, 0.78) 0%, rgba(243, 247, 245, 0.82) 48%, rgba(239, 246, 242, 0.86) 100%);
+  --aether-artwork-position: 50% 18%;
+}
+
+html[data-theme="dark"] {
+  --aether-public-veil:
+    linear-gradient(180deg, rgba(4, 11, 9, 0.66) 0%, rgba(6, 17, 13, 0.72) 48%, rgba(4, 12, 10, 0.8) 100%);
+  --aether-workspace-veil:
+    linear-gradient(180deg, rgba(7, 12, 16, 0.8) 0%, rgba(8, 15, 18, 0.84) 48%, rgba(6, 12, 15, 0.88) 100%);
+}
+
+/* Public website and dedicated full-page surfaces. */
+.mesh-bg,
+.aether-artwork-surface {
+  background-image:
+    var(--aether-public-veil),
+    var(--aether-artwork) !important;
+  background-position:
+    center,
+    var(--aether-artwork-position) !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-size: cover, cover !important;
+}
+
+/* Dense product surfaces need a slightly stronger veil for tables and forms. */
+.shell-grid,
+.shell-grid-admin,
+.platform-shell {
+  background-image:
+    var(--aether-workspace-veil),
+    var(--aether-artwork) !important;
+  background-position:
+    center,
+    var(--aether-artwork-position) !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-size: cover, cover !important;
+}
+
+/* Admin shells can resolve theme independently of the root provider. */
+.shell-grid-admin[data-theme="dark"],
+.platform-shell[data-theme="dark"],
+html[data-admin-theme="dark"] .shell-grid-admin,
+html[data-admin-theme="dark"] .platform-shell {
+  --aether-workspace-veil:
+    linear-gradient(180deg, rgba(7, 12, 16, 0.8) 0%, rgba(8, 15, 18, 0.84) 48%, rgba(6, 12, 15, 0.88) 100%);
+}
+
+.shell-grid-admin[data-theme="light"],
+.platform-shell[data-theme="light"] {
+  --aether-workspace-veil:
+    linear-gradient(180deg, rgba(244, 247, 244, 0.78) 0%, rgba(243, 247, 245, 0.82) 48%, rgba(239, 246, 242, 0.86) 100%);
+}
+
+/* Keep the artwork stable while scrolling on pointer-based desktop devices. */
+@media (min-width: 768px) {
+  :root {
+    --aether-artwork: url("/images/aether_bg_pc.webp");
+    --aether-artwork-position: 50% 14%;
+  }
+}
+
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .mesh-bg,
+  .aether-artwork-surface,
+  .shell-grid,
+  .shell-grid-admin,
+  .platform-shell {
+    background-attachment: fixed, fixed !important;
+  }
+}
+
+/* Avoid fixed-background repaint cost and preserve accessibility preferences. */
+@media (prefers-reduced-motion: reduce) {
+  .mesh-bg,
+  .aether-artwork-surface,
+  .shell-grid,
+  .shell-grid-admin,
+  .platform-shell {
+    background-attachment: scroll, scroll !important;
+  }
+}
