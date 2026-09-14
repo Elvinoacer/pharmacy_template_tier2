@@ -27,8 +27,7 @@ export function intasendWebhookChallenge(): string | null {
 }
 
 export function intasendCheckoutConfigured(): boolean {
-  if (!publishableKey() || !intasendWebhookChallenge()) return false;
-  return true;
+  return Boolean(publishableKey() && intasendWebhookChallenge());
 }
 
 function appOrigin(): string | null {
@@ -53,10 +52,8 @@ function checkoutEndpoint(env: IntaSendEnv): string {
     : "https://sandbox.intasend.com/api/v1/checkout/";
 }
 
-function safeProviderMessage(body: CheckoutResponse, status: number): string {
-  const detail = body.detail || body.message;
-  if (detail) return `IntaSend checkout could not start: ${detail.slice(0, 180)}`;
-  return `IntaSend checkout could not start (HTTP ${status}).`;
+function providerDetail(body: CheckoutResponse, status: number): string {
+  return String(body.detail || body.message || `HTTP ${status}`).slice(0, 180);
 }
 
 export async function createIntaSendBillingCheckout(input: {
@@ -70,8 +67,14 @@ export async function createIntaSendBillingCheckout(input: {
   const env = intasendEnv();
   const origin = appOrigin();
 
-  if (!key || !challenge) throw new Error("Secure card checkout is not configured yet.");
-  if (!origin) throw new Error("The application URL is not configured for secure checkout.");
+  if (!key || !challenge) {
+    console.error("[card checkout] payment configuration is unavailable");
+    throw new Error("Secure card checkout is temporarily unavailable. Please try again later.");
+  }
+  if (!origin) {
+    console.error("[card checkout] application origin is unavailable");
+    throw new Error("Secure card checkout is temporarily unavailable. Please try again later.");
+  }
 
   const invoice = await prismaUnscoped.invoice.findUnique({ where: { id: input.invoiceId } });
   if (!invoice) throw new Error("invoice_not_found");
@@ -139,10 +142,10 @@ export async function createIntaSendBillingCheckout(input: {
       signal: AbortSignal.timeout(15_000),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "checkout_request_failed";
+    console.error("[card checkout] provider request failed", error);
     await prismaUnscoped.billingPayment.update({
       where: { id: payment.id },
-      data: { status: "failed", failureReason: message.slice(0, 250) },
+      data: { status: "failed", failureReason: "Secure card checkout could not be reached. Please try again shortly." },
     });
     throw new Error("Secure card checkout could not be reached. Please try again shortly.");
   }
@@ -152,10 +155,14 @@ export async function createIntaSendBillingCheckout(input: {
   const checkoutUrl = body.url;
 
   if (!response.ok || !checkoutId || !checkoutUrl) {
-    const reason = safeProviderMessage(body, response.status);
+    console.warn("[card checkout] provider rejected checkout", {
+      status: response.status,
+      detail: providerDetail(body, response.status),
+    });
+    const reason = "Secure card checkout could not be started. Please try again.";
     await prismaUnscoped.billingPayment.update({
       where: { id: payment.id },
-      data: { status: "failed", failureReason: reason.slice(0, 250) },
+      data: { status: "failed", failureReason: reason },
     });
     throw new Error(reason);
   }
@@ -164,18 +171,20 @@ export async function createIntaSendBillingCheckout(input: {
   try {
     parsedUrl = new URL(checkoutUrl);
   } catch {
+    console.error("[card checkout] invalid provider checkout URL");
     await prismaUnscoped.billingPayment.update({
       where: { id: payment.id },
-      data: { status: "failed", failureReason: "IntaSend returned an invalid checkout URL." },
+      data: { status: "failed", failureReason: "Secure checkout could not be opened safely." },
     });
-    throw new Error("Secure checkout returned an invalid URL.");
+    throw new Error("Secure checkout could not be opened safely. Please try again.");
   }
   if (parsedUrl.protocol !== "https:") {
+    console.error("[card checkout] rejected non-HTTPS checkout URL");
     await prismaUnscoped.billingPayment.update({
       where: { id: payment.id },
-      data: { status: "failed", failureReason: "IntaSend checkout URL was not HTTPS." },
+      data: { status: "failed", failureReason: "Secure checkout could not be opened safely." },
     });
-    throw new Error("Secure checkout returned an unsafe URL.");
+    throw new Error("Secure checkout could not be opened safely. Please try again.");
   }
 
   await prismaUnscoped.billingPayment.update({
