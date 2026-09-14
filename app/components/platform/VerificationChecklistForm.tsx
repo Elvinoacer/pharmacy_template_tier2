@@ -121,6 +121,7 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
 
   const initialChecked = CHECKS.filter(([key]) => checklist?.[key]).map(([key]) => key);
   const [revision, setRevision] = useState(0);
+  const [attemptedRevision, setAttemptedRevision] = useState(0);
   const [persistedRevision, setPersistedRevision] = useState(0);
   const [persistedChecks, setPersistedChecks] = useState(initialChecked.length);
   const [checked, setChecked] = useState(() => new Set(initialChecked));
@@ -162,12 +163,13 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
     // The failed protected save already marked this revision as attempted. Clear
     // that guard, then resubmit the same controlled values after MFA refreshes.
     lastAttemptedRevision.current = -1;
+    setAttemptedRevision(-1);
     window.setTimeout(() => formRef.current?.requestSubmit(), 0);
   }, []);
 
   const hasUnsavedChanges = revision > persistedRevision;
   const stepUpRequired = state.error === "STEP_UP_REQUIRED" || state.error === "MFA_REQUIRED";
-  const saveBlocked = Boolean(state.error) && !stepUpRequired && lastAttemptedRevision.current >= revision && hasUnsavedChanges;
+  const saveBlocked = Boolean(state.error) && !stepUpRequired && attemptedRevision >= revision && hasUnsavedChanges;
 
   return (
     <div className="space-y-5">
@@ -183,6 +185,7 @@ export default function VerificationChecklistForm({ pharmacyId, checklist }: { p
         }}
         onSubmit={() => {
           lastAttemptedRevision.current = revision;
+          setAttemptedRevision(revision);
           submittedRevision.current = revision;
           submittedCheckCount.current = checked.size;
         }}
