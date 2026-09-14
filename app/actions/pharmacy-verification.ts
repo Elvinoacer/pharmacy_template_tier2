@@ -1,11 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import {
-  createEmailVerification,
-  getSessionUser,
-} from "@/app/lib/auth";
+import { createEmailVerification, getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
+import { publicErrorMessage } from "@/app/lib/public-error";
 import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
 import {
   loadApprovalReadiness,
@@ -16,10 +14,7 @@ import {
 } from "@/app/lib/services/pharmacy-verification";
 import { requirePlatformAction } from "@/app/lib/platform/policy";
 import { recordAuditRequired } from "@/app/lib/platform/audit";
-import {
-  reviewPharmacyAction,
-  type ReviewActionState,
-} from "@/app/actions/platform";
+import { reviewPharmacyAction, type ReviewActionState } from "@/app/actions/platform";
 
 export type VerificationActionState = {
   error?: string;
@@ -67,7 +62,7 @@ export async function savePharmacyVerificationProfileAction(
     const pharmacy = await prismaUnscoped.pharmacy.findUnique({ where: { id: pharmacyId } });
     if (!pharmacy) return { error: "Pharmacy application not found." };
     if (pharmacy.ownerUserId !== user.id && !user.platformAdmin) {
-      return { error: "You do not own this pharmacy application." };
+      return { error: "You do not have permission to edit this pharmacy application." };
     }
     if (!["draft", "needs_info"].includes(pharmacy.status)) {
       return { error: "This verification dossier can no longer be edited while the application is in review." };
@@ -122,7 +117,8 @@ export async function savePharmacyVerificationProfileAction(
 
     for (const reference of [licenseDocumentUrl, businessDocumentUrl].filter(Boolean)) {
       const uploaded = await prismaUnscoped.pharmacyOnboardingEvent.findFirst({
-        where: { pharmacyId, type: "verification_document_uploaded", meta: { path: ["reference"], equals: reference } }, select: { id: true },
+        where: { pharmacyId, type: "verification_document_uploaded", meta: { path: ["reference"], equals: reference } },
+        select: { id: true },
       });
       if (!uploaded) return { error: "Document not found in your secure uploads. Please upload it again." };
     }
@@ -144,10 +140,12 @@ export async function savePharmacyVerificationProfileAction(
     }
 
     const declaredAt = new Date().toISOString();
-    await prismaUnscoped.$transaction(async tx => {
+    await prismaUnscoped.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
       const latest = await tx.pharmacy.findUniqueOrThrow({ where: { id: pharmacyId } });
-      if (!["draft", "needs_info"].includes(latest.status)) throw new Error("Application is already in review. Your changes were not saved.");
+      if (!["draft", "needs_info"].includes(latest.status)) {
+        throw new Error("Application is already in review. Your changes were not saved.");
+      }
       await tx.pharmacy.update({
         where: { id: pharmacyId },
         data: {
@@ -186,10 +184,19 @@ export async function savePharmacyVerificationProfileAction(
     revalidatePath("/onboard/verification");
     revalidatePath(`/platform/pharmacies/${pharmacyId}`);
     revalidatePath(`/platform/pharmacies/${pharmacyId}/verification`);
-    return { success: draft ? "Progress saved securely. Return any time to continue." : "Verification dossier saved. Continue to premises details, billing and submission." };
+    return {
+      success: draft
+        ? "Progress saved securely. Return any time to continue."
+        : "Verification dossier saved. Continue to premises details, billing and submission.",
+    };
   } catch (err) {
     console.error("[verification] save owner dossier", err);
-    return { error: err instanceof Error ? err.message : "Could not save the verification dossier." };
+    return {
+      error: publicErrorMessage(
+        err,
+        "We couldn't save the verification dossier right now. Your previous information is unchanged. Please try again.",
+      ),
+    };
   }
 }
 
@@ -218,12 +225,12 @@ export async function resendOwnerVerificationEmailAction(
     });
     if (delivery.status === "failed") {
       console.error("[verification] email delivery failed", delivery.error);
-      return { error: "Could not send the verification email. Try again shortly." };
+      return { error: "We couldn't send the verification email right now. Please try again shortly." };
     }
     return { success: `Verification email sent to ${user.email}.` };
   } catch (err) {
     console.error("[verification] resend owner email", err);
-    return { error: "Could not send the verification email." };
+    return { error: "We couldn't send the verification email right now. Please try again shortly." };
   }
 }
 
@@ -299,7 +306,12 @@ export async function savePharmacyVerificationChecklistAction(
     };
   } catch (err) {
     console.error("[verification] save reviewer checklist", err);
-    return { error: err instanceof Error ? err.message : "Could not save the verification checklist." };
+    return {
+      error: publicErrorMessage(
+        err,
+        "We couldn't save the verification checklist right now. Refresh the application and try again.",
+      ),
+    };
   }
 }
 
@@ -314,9 +326,7 @@ export async function safeReviewPharmacyAction(
     const readiness = await loadApprovalReadiness(pharmacyId);
     if (!readiness.ready) {
       const missing = [...readiness.profileMissing, ...readiness.checklistMissing];
-      return {
-        error: `Approval blocked. Complete mandatory pharmacy verification first: ${missing.join("; ")}.`,
-      };
+      return { error: `Approval blocked. Complete mandatory pharmacy verification first: ${missing.join("; ")}.` };
     }
   }
 
