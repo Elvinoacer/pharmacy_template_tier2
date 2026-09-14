@@ -12,9 +12,7 @@ export type DeliveryRecipient = {
     emailEnabled?: boolean;
     smsEnabled?: boolean;
     whatsappEnabled?: boolean;
-    /** When false, marketing/campaign sends are blocked. */
     marketingConsent?: boolean;
-    /** When false, reminder sends are blocked. */
     reminderConsent?: boolean;
   } | null;
 };
@@ -24,14 +22,15 @@ export type DeliveryPayload = {
   recipient: DeliveryRecipient;
   subject?: string | null;
   body: string;
-  /** "marketing" enforces marketingConsent; "reminder" enforces reminderConsent. */
   purpose?: "transactional" | "marketing" | "reminder";
 };
 
 export type DeliveryResult = {
   status: "sent" | "delivered" | "failed" | "pending";
+  /** Internal delivery metadata. Never render these provider fields to end users. */
   provider?: string;
   providerMessageId?: string;
+  /** Safe, user-readable delivery status. Raw provider errors stay in server logs. */
   error?: string;
 };
 
@@ -39,10 +38,6 @@ function appUrl() {
   return process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "http://localhost:3000";
 }
 
-/**
- * The support email shown in every outbound email footer. Override via
- * SUPPORT_EMAIL env if needed. Default is support@gtss.software.
- */
 function supportEmail() {
   return process.env.SUPPORT_EMAIL?.trim() || "support@gtss.software";
 }
@@ -55,16 +50,6 @@ async function sender(): Promise<SenderIdentity> {
   return resolveSenderIdentity(peekTenant()?.pharmacyId ?? null);
 }
 
-/**
- * Convert a (potentially) Markdown body into safe HTML for email.
- * Implements the same subset as the client-side Markdown component so what
- * staff compose in the campaign/template editor is what customers see in
- * their inbox.
- *
- * Why not pull in `marked`? Adding deps would change package.json + lockfile
- * (and the user explicitly wants .git untouched). This renderer covers:
- * headings, bold, italic, inline code, links, lists, blockquotes, hr, paragraphs.
- */
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -187,9 +172,7 @@ function buildEmailHtml(subject: string, bodyText: string, identity: SenderIdent
     <tr>
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 560px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 24px 48px -24px rgba(12, 26, 20, 0.28); overflow: hidden; border: 1px solid rgba(201, 162, 39, 0.22);">
-          <tr>
-            <td style="height: 3px; background: linear-gradient(90deg, #0d6e5a 0%, #c9a227 50%, #0d6e5a 100%); font-size: 0; line-height: 0;">&nbsp;</td>
-          </tr>
+          <tr><td style="height: 3px; background: linear-gradient(90deg, #0d6e5a 0%, #c9a227 50%, #0d6e5a 100%); font-size: 0; line-height: 0;">&nbsp;</td></tr>
           <tr>
             <td style="padding: 32px 36px 20px 36px; text-align: center; background: linear-gradient(165deg, #0d6e5a 0%, #0a5c4b 55%, #084c3f 100%);">
               <img src="${logoUrl}" width="56" height="56" alt="${escapeHtml(brand)}" style="display: block; margin: 0 auto 14px auto; border-radius: 14px; border: 1px solid rgba(201, 162, 39, 0.45); box-shadow: 0 8px 20px rgba(0,0,0,0.18);" />
@@ -200,20 +183,16 @@ function buildEmailHtml(subject: string, bodyText: string, identity: SenderIdent
           <tr>
             <td style="padding: 32px 36px 28px 36px;">
               <h1 style="margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; color: #0c1a14; line-height: 1.25;">${escapeHtml(subject)}</h1>
-              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.65; color: #3d4f47;">
-                ${renderedBody}
-              </div>
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.65; color: #3d4f47;">${renderedBody}</div>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 36px 28px 36px; background-color: #faf8f4; text-align: center; border-top: 1px solid rgba(201, 162, 39, 0.18);">
-              <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #7a8a82;">
-                &copy; ${year} ${escapeHtml(brand)}
-              </p>
+              <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #7a8a82;">&copy; ${year} ${escapeHtml(brand)}</p>
               <p style="margin: 8px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #94a39b;">
-                <a href="mailto:${support}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${support}</a>
+                <a href="mailto:${support}" style="color:#0d6e5a;text-decoration:none;font-weight:600;">${support}</a>
                 &nbsp;·&nbsp;
-                <a href="tel:${phone.replace(/\s/g, "")}" style="color: #0d6e5a; text-decoration: none; font-weight: 600;">${phone}</a>
+                <a href="tel:${phone.replace(/\s/g, "")}" style="color:#0d6e5a;text-decoration:none;font-weight:600;">${phone}</a>
               </p>
             </td>
           </tr>
@@ -231,7 +210,10 @@ async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
   const identity = await sender();
   const resendKey = identity.resendApiKey;
   const from = identity.emailFrom;
-  if (!resendKey || !from) return { status: "pending", error: "Email provider is not configured" };
+  if (!resendKey || !from) {
+    console.error("[delivery:email] delivery configuration unavailable");
+    return { status: "pending", error: "Email delivery is temporarily unavailable. Please try again later." };
+  }
   const subject = payload.subject || identity.name;
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -245,13 +227,17 @@ async function sendEmail(payload: DeliveryPayload): Promise<DeliveryResult> {
       to: payload.recipient.email,
       subject,
       text: payload.body,
-      html: buildEmailHtml(subject, payload.body, identity)
+      html: buildEmailHtml(subject, payload.body, identity),
     }),
   });
 
   const json = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
   if (!response.ok) {
-    return { status: "failed", provider: "resend", error: json?.message || response.statusText };
+    console.error("[delivery:email] provider rejected message", {
+      status: response.status,
+      detail: json?.message || response.statusText,
+    });
+    return { status: "failed", provider: "resend", error: "Email could not be sent. Please try again later." };
   }
 
   return { status: "sent", provider: "resend", providerMessageId: json?.id };
@@ -264,7 +250,10 @@ async function sendSms(payload: DeliveryPayload): Promise<DeliveryResult> {
   const sid = identity.twilioSid;
   const token = identity.twilioToken;
   const from = identity.twilioFrom;
-  if (!sid || !token || !from) return { status: "pending", error: "SMS provider is not configured" };
+  if (!sid || !token || !from) {
+    console.error("[delivery:sms] delivery configuration unavailable");
+    return { status: "pending", error: "SMS delivery is temporarily unavailable. Please try again later." };
+  }
 
   const params = new URLSearchParams({
     To: payload.recipient.phone,
@@ -283,7 +272,11 @@ async function sendSms(payload: DeliveryPayload): Promise<DeliveryResult> {
 
   const json = (await response.json().catch(() => null)) as { sid?: string; message?: string } | null;
   if (!response.ok) {
-    return { status: "failed", provider: "twilio", error: json?.message || response.statusText };
+    console.error("[delivery:sms] provider rejected message", {
+      status: response.status,
+      detail: json?.message || response.statusText,
+    });
+    return { status: "failed", provider: "twilio", error: "SMS could not be sent. Please try again later." };
   }
 
   return { status: "sent", provider: "twilio", providerMessageId: json?.sid };
@@ -296,7 +289,8 @@ async function sendWhatsapp(payload: DeliveryPayload): Promise<DeliveryResult> {
   const token = identity.whatsappToken;
   const phoneNumberId = identity.whatsappPhoneNumberId;
   if (!token || !phoneNumberId) {
-    return { status: "pending", error: "WhatsApp provider is not configured" };
+    console.error("[delivery:whatsapp] delivery configuration unavailable");
+    return { status: "pending", error: "WhatsApp delivery is temporarily unavailable. Please try again later." };
   }
 
   const response = await fetch(`https://graph.facebook.com/v20.0/${phoneNumberId}/messages`, {
@@ -317,14 +311,17 @@ async function sendWhatsapp(payload: DeliveryPayload): Promise<DeliveryResult> {
     | { messages?: { id?: string }[]; error?: { message?: string } }
     | null;
   if (!response.ok) {
-    return { status: "failed", provider: "whatsapp_cloud", error: json?.error?.message || response.statusText };
+    console.error("[delivery:whatsapp] provider rejected message", {
+      status: response.status,
+      detail: json?.error?.message || response.statusText,
+    });
+    return { status: "failed", provider: "whatsapp_cloud", error: "WhatsApp message could not be sent. Please try again later." };
   }
 
   return { status: "sent", provider: "whatsapp_cloud", providerMessageId: json?.messages?.[0]?.id };
 }
 
 export type SendDeliveryOptions = {
-  /** Queue workers already own a NotificationDelivery row — do not create another. */
   persist?: boolean;
 };
 
@@ -333,9 +330,6 @@ export async function sendDelivery(
   opts?: SendDeliveryOptions,
 ): Promise<DeliveryResult> {
   try {
-    // Consent gates — marketing campaigns and reminders respect opt-out toggles.
-    // Transactional messages (order confirmations, staff replies, etc.) always go through
-    // channel-level opt-outs only.
     if (payload.purpose === "marketing" && payload.recipient.preferences?.marketingConsent === false) {
       return { status: "failed", error: "Customer has opted out of marketing" };
     }
@@ -349,9 +343,6 @@ export async function sendDelivery(
     if (payload.channel === "push") {
       return { status: "sent", provider: "fcm" };
     }
-    // Enforce customer communication preferences — if they've disabled a channel,
-    // we never send via it. Caller is expected to have populated `recipient.preferences`
-    // (we don't fetch it here to keep sendDelivery pure; the calling service does that).
     if (payload.channel === "email" && payload.recipient.preferences?.emailEnabled === false) {
       return { status: "failed", error: "Customer has disabled email" };
     }
@@ -361,11 +352,12 @@ export async function sendDelivery(
     if (payload.channel === "whatsapp" && payload.recipient.preferences?.whatsappEnabled === false) {
       return { status: "failed", error: "Customer has disabled WhatsApp" };
     }
+
     let result: DeliveryResult;
     if (payload.channel === "email") result = await sendEmail(payload);
     else if (payload.channel === "sms") result = await sendSms(payload);
     else if (payload.channel === "whatsapp") result = await sendWhatsapp(payload);
-    else result = { status: "failed", error: `Unsupported channel: ${payload.channel}` };
+    else result = { status: "failed", error: "This delivery channel is unavailable." };
 
     const pharmacyId = peekTenant()?.pharmacyId;
     if (pharmacyId && opts?.persist !== false) {
@@ -391,9 +383,10 @@ export async function sendDelivery(
     }
     return result;
   } catch (error) {
+    console.error("[delivery] unexpected delivery failure", error);
     return {
       status: "failed",
-      error: error instanceof Error ? error.message : "Delivery failed",
+      error: "Message delivery could not be completed. Please try again later.",
     };
   }
 }
