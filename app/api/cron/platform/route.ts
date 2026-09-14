@@ -5,8 +5,8 @@ import { processOutboxBatch } from "@/app/lib/platform/outbox";
 import { processQueuedDeliveries } from "@/app/lib/platform/notifications";
 import { processWebhookDeliveryBatch } from "@/app/lib/platform/webhooks";
 import { recoverStaleJobs } from "@/app/lib/platform/jobs";
-import { applyDunning, processSubscriptionCycle, reconcileBillingPayments } from "@/app/lib/platform/billing";
-import { prismaUnscoped } from "@/app/lib/db";
+import { processSubscriptionCycle, reconcileBillingPayments } from "@/app/lib/platform/billing";
+import { processSubscriptionDunning } from "@/app/lib/services/paystack-dunning";
 import { isCronAuthorized } from "@/app/lib/cron-auth";
 import { enforceExpiredPharmacyLicences } from "@/app/lib/services/pharmacy-verification-expiry";
 
@@ -25,18 +25,9 @@ export async function GET(request: NextRequest) {
     const webhooks = await processWebhookDeliveryBatch(40);
     const billingReconciliation = await reconcileBillingPayments(10);
     const billing = await processSubscriptionCycle();
+    const dunning = await processSubscriptionDunning(50);
     const verificationExpiry = await enforceExpiredPharmacyLicences(100);
 
-    const overdue = await prismaUnscoped.invoice.findMany({
-      where: { status: "open", dueAt: { lt: new Date() } },
-      take: 50,
-      select: { id: true },
-    });
-    let dunning = 0;
-    for (const inv of overdue) {
-      await applyDunning(inv.id);
-      dunning++;
-    }
     return { stale, jobs, outbox, deliveries, webhooks, billing, billingReconciliation, verificationExpiry, dunning };
   });
 
