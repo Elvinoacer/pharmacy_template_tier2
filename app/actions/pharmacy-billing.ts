@@ -12,6 +12,7 @@ import {
   createPaystackInvoiceCheckout,
   paystackManageSubscriptionLink,
 } from "@/app/lib/services/paystack-billing";
+import { retryPaystackOverdueInvoice } from "@/app/lib/services/paystack-dunning";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
 
@@ -74,6 +75,24 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       const subscription = await ownedSubscription(pharmacyId);
       if (!subscription?.externalSubscriptionId?.startsWith("paystack:")) throw new Error("Finish Paystack card setup first.");
       return { success: "Opening secure card management…", redirectUrl: await paystackManageSubscriptionLink(subscription.externalSubscriptionId) };
+    }
+
+    if (intent === "retry_overdue") {
+      const result = await withPharmacy(pharmacyId, () => retryPaystackOverdueInvoice(pharmacyId));
+      revalidatePath("/onboard/billing");
+      revalidatePath("/admin/setup");
+      const redirectUrl = "redirectUrl" in result ? result.redirectUrl : undefined;
+      if (redirectUrl) {
+        return { success: "Paystack needs you to confirm the card before retrying this payment…", redirectUrl };
+      }
+      if (result.ok) {
+        return { success: "Payment confirmed. Your pharmacy billing is active again." };
+      }
+      if (["retry_processing", "retry_confirming", "retry_already_processing"].includes(result.note)) {
+        return { success: "The card retry is being confirmed. This page will update when Paystack finishes processing it." };
+      }
+      const message = "message" in result && result.message ? result.message : "The card could not be charged. Update the card and try again.";
+      throw new Error(message);
     }
 
     if (intent === "activate") {
