@@ -1,19 +1,19 @@
 /*
- * One shared Aether artwork background for the entire application.
+ * One shared Aether artwork backdrop for the entire application.
  *
- * The image belongs to one fixed root layer only. It is never repeated on
- * sections, cards, panels, forms or route surfaces.
+ * The photograph itself is a real <picture>/<img> mounted once in app/layout.
+ * CSS only positions it and paints the readability veil. No route, section,
+ * card or panel owns another copy of the artwork.
  */
 
 :root {
-  --aether-artwork: url("/images/aether_bg_mobile.jpg");
   --aether-artwork-position: 50% 18%;
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(244, 247, 244, 0.82) 0%,
-      rgba(242, 247, 244, 0.84) 48%,
-      rgba(239, 245, 242, 0.87) 100%
+      rgba(244, 247, 244, 0.78) 0%,
+      rgba(242, 247, 244, 0.81) 48%,
+      rgba(239, 245, 242, 0.84) 100%
     );
 }
 
@@ -21,9 +21,9 @@ html[data-theme="dark"] {
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(5, 13, 11, 0.76) 0%,
-      rgba(6, 16, 13, 0.8) 48%,
-      rgba(4, 11, 9, 0.84) 100%
+      rgba(5, 13, 11, 0.64) 0%,
+      rgba(6, 16, 13, 0.68) 48%,
+      rgba(4, 11, 9, 0.72) 100%
     );
 }
 
@@ -32,55 +32,75 @@ html[data-admin-theme="dark"] {
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(7, 12, 16, 0.78) 0%,
-      rgba(8, 14, 17, 0.82) 48%,
-      rgba(6, 11, 14, 0.86) 100%
+      rgba(7, 12, 16, 0.67) 0%,
+      rgba(8, 14, 17, 0.71) 48%,
+      rgba(6, 11, 14, 0.75) 100%
     );
 }
 
 html {
+  min-height: 100%;
   background-color: var(--background);
 }
 
 body {
   position: relative;
+  min-height: 100%;
   isolation: isolate;
   background: transparent !important;
 }
 
 /*
- * Explicit root backdrop. This deliberately uses z-index: 0 instead of a
- * negative-z pseudo-element so it can never fall behind the html/document
- * canvas. The complete application is mounted in .aether-app-layer at z: 1.
+ * This is the only application artwork layer. It is a normal DOM element at
+ * z-index 0, so neither document-canvas propagation nor a negative stacking
+ * context can hide it. All application content is explicitly above it at z: 1.
  */
 .aether-global-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
-  background-color: var(--background);
-  background-image:
-    var(--aether-global-veil),
-    var(--aether-artwork);
-  background-position:
-    center,
-    var(--aether-artwork-position);
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, cover;
-  transform: translateZ(0);
+  background: var(--background);
+  contain: strict;
+}
+
+.aether-global-picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aether-global-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: var(--aether-artwork-position);
+  user-select: none;
+}
+
+.aether-global-veil {
+  position: absolute;
+  inset: 0;
+  background: var(--aether-global-veil);
 }
 
 .aether-app-layer {
   position: relative;
   z-index: 1;
   display: flex;
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
   flex: 1 1 auto;
   flex-direction: column;
-  background: transparent;
+  background: transparent !important;
 }
 
-/* Full-page route shells must expose the shared backdrop. */
+/* Full-page route shells expose the single fixed backdrop. */
 .mesh-bg,
 .aether-artwork-surface,
 .aether-route-surface,
@@ -92,18 +112,17 @@ body {
 }
 
 /*
- * Login uses the same single global artwork, but intentionally exposes more of
- * it. The brand copy floats directly on the photograph; only the form side is
- * a contained glass card.
+ * Login uses the same root picture, with a more revealing veil and crop. The
+ * login route does not own an image of its own.
  */
 body:has([data-auth-artwork="true"]) {
-  --aether-artwork-position: 50% 46%;
+  --aether-artwork-position: 50% 45%;
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(244, 247, 244, 0.16) 0%,
-      rgba(242, 247, 244, 0.19) 48%,
-      rgba(239, 245, 242, 0.22) 100%
+      rgba(244, 247, 244, 0.34) 0%,
+      rgba(242, 247, 244, 0.38) 48%,
+      rgba(239, 245, 242, 0.42) 100%
     );
 }
 
@@ -111,14 +130,24 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(5, 13, 11, 0.08) 0%,
-      rgba(6, 16, 13, 0.11) 48%,
-      rgba(4, 11, 9, 0.15) 100%
+      rgba(5, 13, 11, 0.28) 0%,
+      rgba(6, 16, 13, 0.32) 48%,
+      rgba(4, 11, 9, 0.36) 100%
     );
 }
 
-.aether-artwork-surface.aether-route-surface {
-  padding: clamp(3rem, 7vh, 5rem) clamp(1.5rem, 6vw, 5rem) !important;
+/* Login page layout lives here; no route-specific background stylesheet. */
+.aether-login-page {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  min-height: 100svh;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  padding: clamp(3rem, 7vh, 5rem) clamp(1.5rem, 6vw, 5rem);
+  color: var(--foreground);
+  background: transparent !important;
 }
 
 /* AuthForm root: layout only. No card fill, blur, or clipping. */
@@ -136,14 +165,14 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
   align-items: center;
 }
 
-/* Brand side: content floats directly over the one shared background. */
+/* Brand side floats directly over the one shared photograph. */
 [data-auth-artwork="true"] > aside {
   padding: 0.5rem !important;
   background: transparent !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.38);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.42);
 }
 
 [data-auth-artwork="true"] > aside > div:first-child > div:last-child {
@@ -156,8 +185,8 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
 
 [data-auth-artwork="true"] > aside > ul > li {
   padding: 0.7rem 0.85rem !important;
-  background: rgba(3, 28, 21, 0.34) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: rgba(3, 28, 21, 0.38) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -166,7 +195,7 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
   margin-top: 1.4rem !important;
 }
 
-/* Form side: one compact readable surface, not another page-sized canvas. */
+/* Form side is the only substantial login surface. */
 [data-auth-artwork="true"] > div:last-child {
   padding: clamp(1.6rem, 3vw, 2.25rem) !important;
   border: 1px solid rgba(180, 235, 211, 0.2) !important;
@@ -180,7 +209,7 @@ html[data-theme="dark"] body:has([data-auth-artwork="true"]) {
 }
 
 html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
-  background: rgba(3, 20, 14, 0.66) !important;
+  background: rgba(3, 20, 14, 0.64) !important;
   border-color: rgba(147, 233, 194, 0.18) !important;
   box-shadow:
     0 28px 90px rgba(0, 0, 0, 0.34),
@@ -189,18 +218,21 @@ html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
 
 @media (min-width: 768px) {
   :root {
-    --aether-artwork: url("/images/aether_bg_pc.webp");
     --aether-artwork-position: 50% 16%;
   }
 
   body:has([data-auth-artwork="true"]) {
-    --aether-artwork-position: 50% 46%;
+    --aether-artwork-position: 50% 45%;
   }
 }
 
 @media (max-width: 767px) {
-  .aether-artwork-surface.aether-route-surface {
-    padding: max(1rem, env(safe-area-inset-top)) 0.75rem max(1rem, env(safe-area-inset-bottom)) !important;
+  .aether-login-page {
+    align-items: flex-start;
+    padding:
+      max(1rem, env(safe-area-inset-top))
+      0.75rem
+      max(1rem, env(safe-area-inset-bottom));
   }
 
   [data-auth-artwork="true"] {
@@ -214,6 +246,6 @@ html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
   }
 
   html[data-theme="dark"] [data-auth-artwork="true"] > div:last-child {
-    background: rgba(3, 20, 14, 0.7) !important;
+    background: rgba(3, 20, 14, 0.68) !important;
   }
 }
