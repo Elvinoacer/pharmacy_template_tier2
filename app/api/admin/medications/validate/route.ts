@@ -5,17 +5,13 @@ import { validateMedication } from "@/app/lib/services/medication-validation";
 
 export const runtime = "nodejs";
 
-/**
- * Phase 4 validate endpoint — called by the medication form's review-before-save step.
- * Takes form data, runs the shared validation service, returns the structured result
- * (pass/flag/fail per rule) WITHOUT saving anything.
- *
- * Used by the MedicationForm client component to show a review modal before final submit.
- */
 export async function POST(req: Request) {
   const user = await getSessionUser();
   if (!user || !isStaff(user.role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "forbidden", message: "You do not have permission to validate medications." },
+      { status: 403 },
+    );
   }
 
   try {
@@ -55,6 +51,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, validation: result });
   } catch (e) {
     console.error("[validate POST]", e);
-    return NextResponse.json({ error: "invalid_body", message: e instanceof Error ? e.message : "Parse failed." }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: "invalid_medication",
+        message: "We couldn't validate these medication details. Review the required fields and try again.",
+      },
+      { status: 400 },
+    );
   }
 }
