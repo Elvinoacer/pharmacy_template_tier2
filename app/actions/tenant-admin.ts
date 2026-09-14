@@ -7,6 +7,7 @@ import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { STAFF_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
+import { assertPharmacyWorkspaceOperable } from "@/app/lib/platform/tenant-access";
 
 export async function switchPharmacyAction(formData: FormData) {
   const user = await getSessionUser();
@@ -39,6 +40,14 @@ export async function saveTenantIntegrationsAction(formData: FormData) {
         (membership.role === "owner" || membership.role === "manager"),
     );
   if (!can) redirect("/admin/settings/integrations");
+
+  if (!user.platformAdmin) {
+    try {
+      await assertPharmacyWorkspaceOperable(pharmacyId);
+    } catch {
+      redirect("/admin/access-paused");
+    }
+  }
 
   const { saveTenantDaraja } = await import("@/app/lib/platform/integrations");
   const { recordAuditRequired } = await import("@/app/lib/platform/audit");
@@ -99,6 +108,15 @@ export async function goLiveAction() {
         (membership.role === "owner" || membership.role === "manager"),
     );
   if (!can) redirect("/admin");
+
+  if (!user.platformAdmin) {
+    try {
+      await assertPharmacyWorkspaceOperable(pharmacy.id);
+    } catch {
+      redirect("/admin/access-paused");
+    }
+  }
+
   if (pharmacy.status !== "approved" && pharmacy.status !== "active") redirect("/admin/setup");
 
   const readiness = await loadPharmacySetup(pharmacy.id);
