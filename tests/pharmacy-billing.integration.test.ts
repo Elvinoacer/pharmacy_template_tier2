@@ -7,9 +7,14 @@ import { claimPromotion, ensureVerificationInvoice, startPharmacyService } from 
 import { completeBillingPayment, processSubscriptionCycle, collectInvoicePayment } from "../app/lib/platform/billing";
 import { loadPharmacySetup } from "../app/lib/services/pharmacy-setup";
 
-// Explicit opt-in to an isolated disposable database. Never load .env.local here.
-test("pharmacy billing: capped promotions, settlement, isolation and renewals", { skip: !process.env.KYP_TEST_DATABASE_URL }, async () => {
-  process.env.DATABASE_URL = process.env.KYP_TEST_DATABASE_URL;
+// Explicit opt-in outside CI so this suite can never fall back to a developer's
+// normal database. GitHub CI already provisions a disposable Postgres service
+// and sets CI=true, so its DATABASE_URL is safe and should not silently skip the
+// payment/subscription regression suite.
+const testDatabaseUrl = process.env.KYP_TEST_DATABASE_URL || (process.env.CI === "true" ? process.env.DATABASE_URL : undefined);
+
+test("pharmacy billing: capped promotions, settlement, isolation and renewals", { skip: !testDatabaseUrl }, async () => {
+  process.env.DATABASE_URL = testDatabaseUrl;
   await withPlatformBypass(async () => {
     const owner = await db.user.create({ data: { email: `kyp-${randomUUID()}@example.test`, passwordHash: "test-only", role: "manager" } });
     const promo = await db.pharmacyPromotion.create({ data: { name: "One promotional place", capacity: 1, verification: true, recurring: true, recurringMonths: 1, createdBy: owner.id } });
