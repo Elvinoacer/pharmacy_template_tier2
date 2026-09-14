@@ -77,7 +77,7 @@ export function MpesaStkPanel({
       });
       if (guestMode || staffMode) qs.set("phone", p);
       try {
-        const response = await fetch(`/api/payments/daraja/status?${qs.toString()}`, {
+        const response = await fetch(`/api/payments/mobile/status?${qs.toString()}`, {
           cache: "no-store",
           headers: accessToken ? { "x-order-access-token": accessToken } : undefined,
         });
@@ -150,7 +150,7 @@ export function MpesaStkPanel({
       setMessage("");
       setReceipt(null);
       try {
-        const response = await fetch("/api/payments/daraja/stk", {
+        const response = await fetch("/api/payments/mobile/stk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
