@@ -191,6 +191,11 @@
     min-height: 0 !important;
     margin-inline: auto !important;
     border-radius: 22px !important;
+    /* Large backdrop filters force Chrome to composite the entire signup shell
+       before the LCP heading can paint. Mobile gets the same translucent fill
+       without the expensive real-time blur. */
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 
   .registerSurface :global(.reg-bg) > :global(.z-10) > div {
@@ -226,6 +231,8 @@
     max-width: none !important;
     border-radius: 20px !important;
     padding: 22px 18px 18px !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 
   /* The "join thousands" banner is useful on desktop but redundant on signup mobile. */
