@@ -36,49 +36,49 @@ export function CaregiverAcceptForm({
       )}
 
       <div>
-        <label className="mb-1 block text-xs font-semibold text-[#5a6b62]">Email</label>
+        <label className="mb-1 block text-xs font-semibold text-[var(--foreground)]">Email</label>
         <input
           type="email"
           value={email}
           readOnly
-          className="w-full rounded-xl border border-[#e3ebe6] bg-[#f4f7f4] px-3 py-2.5 text-sm text-[#5a6b62]"
+          className="w-full rounded-xl border border-[var(--care-border)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--muted)]"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-semibold text-[#5a6b62]">Your name</label>
+        <label className="mb-1 block text-xs font-semibold text-[var(--foreground)]">Your name</label>
         <div className="relative">
-          <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a9a92]" />
+          <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
           <input
             name="fullName"
             defaultValue={defaultName}
             required
-            className="w-full rounded-xl border border-[#e3ebe6] bg-white py-2.5 pl-9 pr-3 text-sm text-[#0c1a14] focus:border-[#0d6e5a] focus:outline-none"
+            className="w-full rounded-xl border border-[var(--care-border)] bg-[var(--card)] py-2.5 pl-9 pr-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:outline-none"
           />
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-semibold text-[#5a6b62]">Phone (optional)</label>
+        <label className="mb-1 block text-xs font-semibold text-[var(--foreground)]">Phone (optional)</label>
         <input
           name="phone"
           type="tel"
           placeholder="+254 7XX XXX XXX"
-          className="w-full rounded-xl border border-[#e3ebe6] bg-white px-3 py-2.5 text-sm text-[#0c1a14] focus:border-[#0d6e5a] focus:outline-none"
+          className="w-full rounded-xl border border-[var(--care-border)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:outline-none"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-semibold text-[#5a6b62]">Create a password</label>
+        <label className="mb-1 block text-xs font-semibold text-[var(--foreground)]">Create a password</label>
         <div className="relative">
-          <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a9a92]" />
+          <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
           <input
             name="password"
             type="password"
             required
             minLength={8}
             placeholder="At least 8 characters"
-            className="w-full rounded-xl border border-[#e3ebe6] bg-white py-2.5 pl-9 pr-3 text-sm text-[#0c1a14] focus:border-[#0d6e5a] focus:outline-none"
+            className="w-full rounded-xl border border-[var(--care-border)] bg-[var(--card)] py-2.5 pl-9 pr-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:outline-none"
           />
         </div>
       </div>
@@ -86,7 +86,7 @@ export function CaregiverAcceptForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-[#0d6e5a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#084c3f] disabled:opacity-60"
+        className="w-full rounded-full bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 active:scale-95 disabled:opacity-60"
       >
         {pending ? "Setting up…" : "Accept & create account"}
       </button>

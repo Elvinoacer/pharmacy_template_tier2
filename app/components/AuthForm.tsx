@@ -79,8 +79,8 @@ export default function AuthForm({
       data-auth-artwork={artworkBackdrop ? "true" : undefined}
       className={
         artworkBackdrop
-          ? "mx-auto grid w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/25 bg-transparent shadow-[0_24px_80px_rgba(0,0,0,0.24)] lg:grid-cols-[0.95fr_1.05fr]"
-          : "mx-auto grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 shadow-[0_24px_80px_rgba(8,40,32,0.12)] backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr]"
+          ? "liquid-glass care-glass mx-auto grid w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/25 bg-transparent shadow-[0_24px_80px_rgba(0,0,0,0.24)] lg:grid-cols-[0.95fr_1.05fr]"
+          : "liquid-glass care-glass mx-auto grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 shadow-[0_24px_80px_rgba(8,40,32,0.12)] backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr]"
       }
       style={artworkBackdrop ? { background: "transparent", backdropFilter: "none" } : undefined}
     >

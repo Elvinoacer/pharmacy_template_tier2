@@ -14,8 +14,8 @@
   --care-glass: #ffffffa8;
   --care-border: #ffffffcf;
   background:
-    radial-gradient(ellipse at 95% 8%, #dce9cf80, transparent 38%),
-    var(--background);
+    radial-gradient(ellipse at 95% 8%, #dce9cf45, transparent 38%),
+    transparent;
   color: var(--foreground);
 }
 :global(html[data-theme="dark"]) .experience {
@@ -34,8 +34,8 @@
   --care-glass: #1c3626ad;
   --care-border: #dbeacc27;
   background:
-    radial-gradient(ellipse at 95% 8%, #34523255, transparent 38%),
-    var(--background);
+    radial-gradient(ellipse at 95% 8%, #34523235, transparent 38%),
+    transparent;
 }
 .enter {
   animation: careEnter 0.42s cubic-bezier(0.2, 0.7, 0.25, 1) both;
@@ -115,7 +115,7 @@
   --glass-edge-soft: #ffffff70;
   --glass-glint: #ffffffa3;
   --glass-shadow: #153a2920;
-  background: radial-gradient(ellipse at 90% 15%, #abcdbd75, transparent 40%), radial-gradient(ellipse at 5% 55%, #dad6ad65, transparent 35%), radial-gradient(ellipse at 90% 85%, #b7d6d565, transparent 38%), #f0f3e9;
+  background: radial-gradient(ellipse at 90% 15%, #abcdbd35, transparent 40%), radial-gradient(ellipse at 5% 55%, #dad6ad25, transparent 35%), radial-gradient(ellipse at 90% 85%, #b7d6d525, transparent 38%), transparent;
 }
 :global(html[data-theme="dark"]) .experience {
   color-scheme: dark;
@@ -131,7 +131,7 @@
   --glass-edge-soft: #d5ffee20;
   --glass-glint: #bcefd92e;
   --glass-shadow: #00000045;
-  background: radial-gradient(ellipse at 90% 15%, #23534a90, transparent 42%), radial-gradient(ellipse at 5% 55%, #344e3e75, transparent 35%), radial-gradient(ellipse at 90% 85%, #20485070, transparent 38%), #091a16;
+  background: radial-gradient(ellipse at 90% 15%, #23534a40, transparent 42%), radial-gradient(ellipse at 5% 55%, #344e3e35, transparent 35%), radial-gradient(ellipse at 90% 85%, #20485030, transparent 38%), transparent;
 }
 .experience :global(.theme-toggle) {
   border-color: var(--care-border);

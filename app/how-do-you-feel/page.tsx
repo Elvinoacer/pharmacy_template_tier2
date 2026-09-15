@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function HowDoYouFeelPage() {
   return (
-    <main className="feel-page min-h-screen overflow-hidden bg-gradient-to-b from-emerald-50/45 via-white to-slate-50/70 text-slate-950 transition-colors dark:from-slate-950 dark:via-slate-950 dark:to-emerald-950/20 dark:text-slate-100">
+    <main className="feel-page min-h-screen overflow-hidden bg-transparent text-slate-950 transition-colors dark:text-slate-100">
       <div
         className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[36rem] overflow-hidden"
         aria-hidden="true"
@@ -31,7 +31,7 @@ export default function HowDoYouFeelPage() {
 
         <section className="px-3 pb-16 sm:px-6 sm:pb-24">
           <div className="mx-auto max-w-6xl">
-            <div className="rounded-[1.75rem] border border-slate-200/70 bg-white/55 p-2 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:rounded-[2rem] sm:p-3 dark:border-white/10 dark:bg-white/[0.035] dark:shadow-[0_24px_80px_-42px_rgba(0,0,0,0.8)]">
+            <div className="liquid-glass care-glass rounded-[1.75rem] border border-[var(--care-border)] bg-[var(--care-glass)] p-2 shadow-xl backdrop-blur-xl sm:rounded-[2rem] sm:p-3">
               <HowDoYouFeelStableClient mode="public" />
             </div>
           </div>

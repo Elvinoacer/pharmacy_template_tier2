@@ -3,14 +3,14 @@ import PageHero from "../components/PageHero";
 import SearchPanel, { type SearchCorpus, type SearchResults } from "../components/SearchPanel";
 import ChoosePharmacy from "@/app/components/ChoosePharmacy";
 import { loadStorefront } from "@/app/components/StorefrontGate";
-import { prisma } from "@/app/lib/db";
+import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { listPublicServices } from "@/app/lib/services/pharmacy-services";
 import { listPublicVaccines } from "@/app/lib/services/vaccination-service";
 import { listPublicCategories } from "@/app/lib/medication-categories";
 
 export const metadata: Metadata = {
   title: "Search",
-  description: "Search this pharmacy's live medicines, services, vaccines, and medication categories.",
+  description: "Search live medicines, services, vaccines, and medication categories.",
   alternates: { canonical: "/search" },
   robots: { index: false, follow: true },
 };
@@ -18,16 +18,15 @@ export const metadata: Metadata = {
 type Props = { searchParams: Promise<{ q?: string }> };
 
 export default async function SearchPage({ searchParams }: Props) {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/search" />;
-
-  const base = `/p/${pharmacy.slug}`;
+  const pharmacy = await loadStorefront().catch(() => null);
+  const base = pharmacy ? `/p/${pharmacy.slug}` : "";
   const { q } = await searchParams;
 
+  const db = pharmacy ? prisma : prismaUnscoped;
   const [services, vaccines, medicines, categories] = await Promise.all([
     listPublicServices().catch(() => []),
     listPublicVaccines().catch(() => []),
-    prisma.pharmacyInventory
+    db.pharmacyInventory
       .findMany({
         where: { active: true, publicListing: true },
         select: {
@@ -77,11 +76,15 @@ export default async function SearchPage({ searchParams }: Props) {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
+    <div className="aether-route-surface min-h-screen overflow-x-hidden bg-transparent text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Search"
-        title={`Search ${pharmacy.name}`}
-        description="Search this pharmacy's live medicines, services, vaccines, and medication categories."
+        title={pharmacy ? `Search ${pharmacy.name}` : "Search Medicines & Services"}
+        description={
+          pharmacy
+            ? `Search ${pharmacy.name}'s live medicines, services, vaccines, and medication categories.`
+            : "Search live medicines, services, vaccines, and medication categories across the network."
+        }
         crumbs={[{ label: "Search" }]}
       />
 

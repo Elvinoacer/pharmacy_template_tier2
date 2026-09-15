@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function SelfCareGuidePage() {
   return (
-    <div>
+    <div className="min-h-screen bg-transparent text-[var(--foreground)]">
       <PageHero
         eyebrow="Clinical Triage & Self-Care"
         title="When is a Condition Appropriate for Self-Care?"
@@ -27,32 +27,32 @@ export default function SelfCareGuidePage() {
       <section className="px-4 pb-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 grid gap-6 md:grid-cols-3">
-            <div className="rounded-3xl border border-emerald-200 bg-emerald-50/50 p-6 shadow-sm">
-              <div className="flex items-center gap-2 text-emerald-800">
+            <div className="liquid-glass care-glass rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-6 shadow-sm backdrop-blur-xl">
+              <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">1</span>
-                <h3 className="font-bold text-emerald-950">Self-Care Appropriate</h3>
+                <h3 className="font-bold text-emerald-950 dark:text-emerald-100">Self-Care Appropriate</h3>
               </div>
-              <p className="mt-2 text-xs leading-relaxed text-emerald-900">
+              <p className="mt-2 text-xs leading-relaxed text-emerald-900 dark:text-emerald-200/80">
                 Mild, known, or transient symptoms with clear triggers. Safe to manage at home using over-the-counter (OTC) products, hydration, and rest for 3 to 7 days.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-amber-200 bg-amber-50/50 p-6 shadow-sm">
-              <div className="flex items-center gap-2 text-amber-800">
+            <div className="liquid-glass care-glass rounded-3xl border border-amber-500/30 bg-amber-500/10 p-6 shadow-sm backdrop-blur-xl">
+              <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white">2</span>
-                <h3 className="font-bold text-amber-950">Pharmacist / GP Review</h3>
+                <h3 className="font-bold text-amber-950 dark:text-amber-100">Pharmacist / GP Review</h3>
               </div>
-              <p className="mt-2 text-xs leading-relaxed text-amber-900">
+              <p className="mt-2 text-xs leading-relaxed text-amber-900 dark:text-amber-200/80">
                 Symptoms persisting beyond expected timeframes, moderate discomfort, recurring episodes, or patients on multiple chronic prescription medicines.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-rose-200 bg-rose-50/50 p-6 shadow-sm">
-              <div className="flex items-center gap-2 text-rose-800">
+            <div className="liquid-glass care-glass rounded-3xl border border-rose-500/30 bg-rose-500/10 p-6 shadow-sm backdrop-blur-xl">
+              <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-600 text-xs font-bold text-white">3</span>
-                <h3 className="font-bold text-rose-950">Emergency Red Flags</h3>
+                <h3 className="font-bold text-rose-950 dark:text-rose-100">Emergency Red Flags</h3>
               </div>
-              <p className="mt-2 text-xs leading-relaxed text-rose-900">
+              <p className="mt-2 text-xs leading-relaxed text-rose-900 dark:text-rose-200/80">
                 Severe pain, breathing difficulty, chest tightness, blood in stool/vomit, sudden confusion, or infant fever under 3 months. Requires emergency medical care.
               </p>
             </div>

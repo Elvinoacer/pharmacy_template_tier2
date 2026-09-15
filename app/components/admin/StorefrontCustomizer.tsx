@@ -11,6 +11,7 @@ import { useActionState } from "react";
 import { saveStorefrontAction, type StorefrontActionState } from "@/app/actions/storefront";
 import { ExternalLink, Eye, Loader2, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { STOREFRONT_TEMPLATE } from "@/app/lib/storefront-template";
+import ImageUploadField from "@/app/components/admin/ImageUploadField";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type AnyDoc = Record<string, any>;
@@ -525,9 +526,25 @@ export default function StorefrontCustomizer({
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Tagline" name="tagline" defaultValue={basics.tagline} placeholder={STOREFRONT_TEMPLATE.hero.headlineStart + "…"} />
-              <Field label="Logo image URL" name="logoUrl" defaultValue={basics.logoUrl} placeholder="https://…/logo.png" />
-              <Field label="Cover image URL" name="coverImageUrl" defaultValue={basics.coverImageUrl} placeholder="https://…/interior.webp" />
               <Field label="Careers application email" name="careersEmail" defaultValue={basics.careersEmail} placeholder="jobs@yourpharmacy.co.ke" />
+              <div className="sm:col-span-1">
+                <ImageUploadField
+                  name="logoUrl"
+                  label="Pharmacy logo"
+                  folder="pharmacies"
+                  defaultValue={basics.logoUrl}
+                  hint="Upload logo PNG, WebP or SVG."
+                />
+              </div>
+              <div className="sm:col-span-1">
+                <ImageUploadField
+                  name="coverImageUrl"
+                  label="Cover hero image"
+                  folder="pharmacies"
+                  defaultValue={basics.coverImageUrl}
+                  hint="Upload storefront or interior photo."
+                />
+              </div>
               <label className="sm:col-span-2">
                 <span className="label-admin">About your shop</span>
                 <textarea name="about" rows={5} defaultValue={basics.about} className="input-admin" placeholder="Tell patients what makes your counter worth walking up to…" />
@@ -795,8 +812,14 @@ export default function StorefrontCustomizer({
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                    <div className="mt-2 space-y-2">
-                      <input type="text" value={g.src ?? ""} placeholder="https://…photo.webp" onChange={(e) => setDoc((prev) => ({ ...prev, gallery: patchListItem(prev.gallery as AnyDoc[], i, { src: e.target.value }) }))} className="input-admin" />
+                    <div className="mt-2 space-y-3">
+                      <ImageUploadField
+                        label={`Photo upload or URL`}
+                        folder="gallery"
+                        defaultValue={g.src ?? ""}
+                        hint="Upload an image file or paste URL"
+                        onChange={(url) => setDoc((prev) => ({ ...prev, gallery: patchListItem(prev.gallery as AnyDoc[], i, { src: url }) }))}
+                      />
                       <div className="grid gap-2 sm:grid-cols-2">
                         <input type="text" value={g.alt ?? ""} placeholder="Alt text" onChange={(e) => setDoc((prev) => ({ ...prev, gallery: patchListItem(prev.gallery as AnyDoc[], i, { alt: e.target.value }) }))} className="input-admin" />
                         <input type="text" value={g.caption ?? ""} placeholder="Caption" onChange={(e) => setDoc((prev) => ({ ...prev, gallery: patchListItem(prev.gallery as AnyDoc[], i, { caption: e.target.value }) }))} className="input-admin" />

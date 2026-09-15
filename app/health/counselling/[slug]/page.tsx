@@ -32,7 +32,7 @@ export default async function MedicationCounsellingSlugPage({ params }: Props) {
   if (!profile) notFound();
 
   return (
-    <div>
+    <div className="min-h-screen bg-transparent text-[var(--foreground)]">
       <PageHero
         eyebrow="Digital Medication Counselling"
         title={`${profile.brandNames[0]} Patient Counselling Leaflet`}

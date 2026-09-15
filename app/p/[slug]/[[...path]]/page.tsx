@@ -86,9 +86,16 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
       <header className={styles.header}>
         <Link href={base} className={styles.identity}>
           {p.logoUrl ? <Image src={p.logoUrl} alt="" width={40} height={40} unoptimized /> : <Store size={28} aria-hidden />}
-          <span>{p.name}<small>Pharmacy profile</small></span>
+          <span>{p.name}<small>Dispensary & care storefront</small></span>
         </Link>
-        <Link href="/pharmacies" className={styles.network}>Explore the network <ArrowUpRight size={15} aria-hidden /></Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <Link href={`/pharmacies/${p.slug}`} className={styles.network} title="View full profile and map directions">
+            Pharmacy Profile & Directions <ArrowUpRight size={14} aria-hidden />
+          </Link>
+          <Link href="/pharmacies" className={styles.network}>
+            Explore the network <ArrowUpRight size={14} aria-hidden />
+          </Link>
+        </div>
       </header>
       <a href="#main-content" className="skip-link">Skip to content</a>
       <nav className={styles.nav} aria-label={`${p.name} pages`}>

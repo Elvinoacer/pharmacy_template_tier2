@@ -52,19 +52,19 @@ export default async function CaregiverAcceptPage({
   const state = await getInviteState(token);
 
   return (
-    <main className="min-h-screen bg-[#f4f7f4] px-4 py-16">
-      <section className="mx-auto max-w-lg rounded-3xl border border-[#e3ebe6] bg-white p-8 shadow-sm">
+    <main className="aether-artwork-surface aether-route-surface min-h-screen bg-transparent px-4 py-16">
+      <section className="liquid-glass care-glass mx-auto max-w-lg rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-xl backdrop-blur-xl">
         {state.kind === "valid" ? (
           <div className="text-center">
-            <CheckCircle2 className="mx-auto h-12 w-12 text-[#0d6e5a]" />
-            <h1 className="mt-4 text-2xl font-bold text-[#0c1a14]">Caregiver invitation</h1>
-            <p className="mt-3 text-sm text-[#5a6b62]">
+            <CheckCircle2 className="mx-auto h-12 w-12 text-[var(--brand)]" />
+            <h1 className="mt-4 text-2xl font-bold text-[var(--foreground)]">Caregiver invitation</h1>
+            <p className="mt-3 text-sm text-[var(--muted)]">
               Hi {state.caregiverName}, you&apos;ve been invited to help manage refills and pickup
-              reminders for <strong>{state.patientName}</strong>.
+              reminders for <strong className="text-[var(--foreground)]">{state.patientName}</strong>.
             </p>
-            <div className="mt-5 rounded-2xl bg-[#f0faf6] p-4 text-left text-sm text-[#0c1a14]">
-              <p className="font-semibold">Invite email</p>
-              <p className="mt-1 text-[#5a6b62]">{state.email}</p>
+            <div className="mt-5 rounded-2xl border border-[var(--care-border)] bg-[var(--card)] p-4 text-left text-sm text-[var(--foreground)]">
+              <p className="font-semibold text-[var(--foreground)]">Invite email</p>
+              <p className="mt-1 text-[var(--muted)]">{state.email}</p>
             </div>
             <div className="mt-6 text-left">
               <CaregiverAcceptForm
@@ -81,14 +81,14 @@ export default async function CaregiverAcceptPage({
             ) : (
               <AlertCircle className="mx-auto h-12 w-12 text-rose-600" />
             )}
-            <h1 className="mt-4 text-2xl font-bold text-[#0c1a14]">
+            <h1 className="mt-4 text-2xl font-bold text-[var(--foreground)]">
               {state.kind === "expired"
                 ? "Invite expired"
                 : state.kind === "used"
                   ? "Invite already accepted"
                   : "Invalid invite link"}
             </h1>
-            <p className="mt-3 text-sm text-[#5a6b62]">
+            <p className="mt-3 text-sm text-[var(--muted)]">
               {state.kind === "expired"
                 ? `This caregiver invitation for ${state.email} has expired. Ask the patient to send a new invite from their portal.`
                 : state.kind === "used"
@@ -97,7 +97,7 @@ export default async function CaregiverAcceptPage({
             </p>
             <Link
               href="/login"
-              className="mt-6 inline-flex rounded-full bg-[#0d6e5a] px-4 py-2 text-sm font-semibold text-white"
+              className="mt-6 inline-flex rounded-full bg-[var(--brand)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 active:scale-95"
             >
               Go to sign in
             </Link>

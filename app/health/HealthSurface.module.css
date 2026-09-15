@@ -2,10 +2,7 @@
   position: relative;
   isolation: isolate;
   overflow: clip;
-  background:
-    radial-gradient(circle at 8% 6%, color-mix(in srgb, var(--brand) 10%, transparent) 0, transparent 27rem),
-    radial-gradient(circle at 92% 32%, color-mix(in srgb, #38bdf8 6%, transparent) 0, transparent 24rem),
-    linear-gradient(180deg, color-mix(in srgb, var(--background) 98%, white 2%), var(--background));
+  background: transparent;
   color: var(--foreground);
 }
 
@@ -42,11 +39,7 @@
 }
 
 :global(html[data-theme="dark"]) .healthSurface {
-  background:
-    radial-gradient(circle at 12% 4%, rgba(16, 185, 129, .16) 0, rgba(16, 185, 129, .06) 15rem, transparent 31rem),
-    radial-gradient(circle at 92% 26%, rgba(56, 189, 248, .10) 0, transparent 28rem),
-    radial-gradient(circle at 74% 72%, rgba(201, 162, 39, .075) 0, transparent 25rem),
-    linear-gradient(180deg, #071510 0%, var(--background) 34%, #07120f 100%);
+  background: transparent;
 }
 
 :global(html[data-theme="dark"]) .healthSurface::before {

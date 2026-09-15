@@ -65,7 +65,7 @@ export default function AppChrome({
       ? storefrontBrand ?? unscopedPublicBrand()
       : platformBrand;
   const isLandingPage = pathname === "/";
-  const isCarePage = ["/", "/medicines", "/services", "/prescription", "/refill", "/pharmacies", "/order", "/about"].some((path) => pathname === path || (path !== "/" && pathname.startsWith(`${path}/`)));
+  const isCarePage = true;
   const hasMobileCareDock = shouldShowMobileCareDock(pathname);
 
   return (

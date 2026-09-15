@@ -61,10 +61,10 @@ export function PreventiveHealthHub({
         ].map((c) => {
           const Icon = c.icon;
           return (
-            <div key={c.title} className="rounded-3xl border border-white/60 bg-white p-5 shadow-sm">
-              <Icon className="h-5 w-5 text-teal-700" />
-              <h3 className="mt-3 text-base font-semibold text-[#0c1a14]">{c.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-[#5a6b62]">{c.body}</p>
+            <div key={c.title} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-sm backdrop-blur-xl">
+              <Icon className="h-5 w-5 text-[var(--brand)]" />
+              <h3 className="mt-3 text-base font-semibold text-[var(--foreground)]">{c.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-[var(--muted)]">{c.body}</p>
             </div>
           );
         })}
@@ -82,8 +82,8 @@ export function PreventiveHealthHub({
             key={id}
             type="button"
             onClick={() => setTab(id)}
-            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
-              tab === id ? "bg-[#084c3f] text-white" : "border border-teal-900/10 bg-white text-[#084c3f]"
+            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
+              tab === id ? "bg-[var(--brand)] text-white shadow-sm" : "border border-[var(--care-border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--card-elev)]"
             }`}
           >
             <Icon className="h-4 w-4" /> {label}
@@ -99,17 +99,17 @@ export function PreventiveHealthHub({
                 key={t.slug}
                 type="button"
                 onClick={() => setTopic(t.slug)}
-                className={`w-full rounded-2xl border p-4 text-left ${
-                  topic === t.slug ? "border-teal-700 bg-teal-50/70" : "border-teal-900/10 bg-white"
+                className={`w-full rounded-2xl border p-4 text-left transition ${
+                  topic === t.slug ? "border-[var(--brand)] bg-[var(--brand-soft)]" : "border-[var(--care-border)] bg-[var(--card)] hover:border-[var(--brand)]"
                 }`}
               >
-                <p className="text-sm font-semibold text-[#0c1a14]">{t.title}</p>
-                <p className="mt-1 text-xs leading-relaxed text-[#5a6b62]">{t.summary}</p>
-                <p className="mt-2 text-[11px] font-semibold text-teal-800">{t.durationMinutes} minutes</p>
+                <p className="text-sm font-semibold text-[var(--foreground)]">{t.title}</p>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{t.summary}</p>
+                <p className="mt-2 text-[11px] font-semibold text-[var(--brand-deep)]">{t.durationMinutes} minutes</p>
               </button>
             ))}
           </div>
-          <div className="rounded-3xl border border-white/60 bg-white p-6 shadow-sm lg:sticky lg:top-28 h-fit">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl lg:sticky lg:top-28 h-fit">
             {state?.success ? (
               <div>
                 <CheckCircle2 className="h-8 w-8 text-teal-700" />
@@ -170,21 +170,21 @@ export function PreventiveHealthHub({
       {tab === "campaigns" && (
         <div className="space-y-4">
           {campaigns.length === 0 ? (
-            <div className="rounded-3xl border border-[#e3ebe6] bg-white px-6 py-12 text-center text-sm text-[#5a6b62]">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] px-6 py-12 text-center text-sm text-[var(--muted)] backdrop-blur-xl">
               No active public-health campaigns. Seasonal flu and outbreak drives will appear here.
             </div>
           ) : (
             campaigns.map((c) => (
-              <article key={c.slug} className="rounded-3xl border border-white/60 bg-white p-6 shadow-sm">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">{c.theme} · {c.targetPopulation}</p>
-                <h3 className="mt-1 text-xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>{c.title}</h3>
-                <p className="mt-2 text-sm text-[#5a6b62]">{c.short}</p>
-                <p className="mt-2 text-xs text-[#5a6b62]">
+              <article key={c.slug} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)]">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">{c.theme} · {c.targetPopulation}</p>
+                <h3 className="mt-1 text-xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>{c.title}</h3>
+                <p className="mt-2 text-sm text-[var(--muted)]">{c.short}</p>
+                <p className="mt-2 text-xs text-[var(--muted)]">
                   {new Date(c.startDate).toLocaleDateString()}
                   {c.endDate ? ` – ${new Date(c.endDate).toLocaleDateString()}` : ""}
                   {c.walkInDays ? ` · ${c.walkInDays}` : ""}
                 </p>
-                <Link href="/vaccinations" className="mt-4 inline-flex text-sm font-semibold text-teal-800">
+                <Link href="/vaccinations" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)]">
                   See vaccines in this campaign →
                 </Link>
               </article>
@@ -196,18 +196,18 @@ export function PreventiveHealthHub({
       {tab === "education" && (
         <div className="grid gap-5 md:grid-cols-2">
           {PUBLIC_HEALTH_EDUCATION.map((a) => (
-            <article key={a.slug} id={a.slug} className="rounded-3xl border border-white/60 bg-white p-6 shadow-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
+            <article key={a.slug} id={a.slug} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)]">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">
                 {a.category} · {a.readTime}
               </p>
-              <h3 className="mt-2 text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+              <h3 className="mt-2 text-lg font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
                 {a.title}
               </h3>
-              <p className="mt-2 text-sm text-[#5a6b62]">{a.excerpt}</p>
+              <p className="mt-2 text-sm text-[var(--muted)]">{a.excerpt}</p>
               <ul className="mt-4 space-y-2">
                 {a.points.map((p) => (
-                  <li key={p} className="flex gap-2 text-sm text-[#5a6b62]">
-                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-teal-700" />
+                  <li key={p} className="flex gap-2 text-sm text-[var(--muted)]">
+                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand)]" />
                     {p}
                   </li>
                 ))}

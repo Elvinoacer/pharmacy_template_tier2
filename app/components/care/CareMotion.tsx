@@ -46,8 +46,9 @@ export default function CareMotion() {
         return false;
       };
 
+      const glassSelector = `article, section, .${glass.liquid}, .liquid-glass, .care-glass, .glass-panel, .glass-panel-strong, .glass-tile, .glass-tile-strong, .card-premium, [data-liquid-glass="true"]`;
       // Avoid nested reveals and keep the first viewport immediately usable.
-      const scan = () => root.querySelectorAll<HTMLElement>(`article, section, .${glass.liquid}`).forEach(node => {
+      const scan = () => root.querySelectorAll<HTMLElement>(glassSelector).forEach(node => {
         if (revealed.has(node)) return;
         if (node.closest("header") || hasRevealedAncestor(node)) return;
         if (node.getBoundingClientRect().top < innerHeight - 30) {
@@ -63,7 +64,7 @@ export default function CareMotion() {
       let frame = 0;
       const pointer = (event: PointerEvent) => {
         if (event.pointerType !== "mouse") return;
-        const target = (event.target as Element).closest<HTMLElement>(`.${glass.liquid}`);
+        const target = (event.target as Element).closest<HTMLElement>(`.${glass.liquid}, .liquid-glass, .care-glass, .glass-panel, .glass-panel-strong, .glass-tile, .glass-tile-strong, .card-premium, [data-liquid-glass="true"]`);
         if (!target) return;
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {

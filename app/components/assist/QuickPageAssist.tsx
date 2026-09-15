@@ -6,6 +6,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ArrowRight, LifeBuoy, MapPin, Search, X } from "lucide-react";
 import { useTenantSlug } from "@/app/components/TenantLink";
 import { getPageAssist } from "@/app/lib/assist-catalog";
+import styles from "./QuickPageAssist.module.css";
 
 type LiveMedicine = {
   slug: string;
@@ -190,16 +191,59 @@ export default function QuickPageAssist() {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={open ? "Close Aether assistant" : "Open Aether AI assistant"}
-        title="Aether AI assistant"
-        className="group fixed bottom-24 right-4 z-[55] flex h-12 w-12 items-center justify-center rounded-full border border-[var(--line-2)] bg-[var(--card)] text-[var(--brand)] shadow-[0_8px_24px_rgba(0,0,0,0.16)] transition-[transform,background-color,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-[var(--card-elev)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:bottom-6 sm:right-6"
+        title={open ? "Close Aether AI assistant" : "Say hi to Aether AI assistant"}
+        data-state={open ? "open" : loading ? "thinking" : "idle"}
+        className={styles.robotLauncher}
       >
-        <LifeBuoy className="h-5 w-5" aria-hidden="true" />
-        <span
-          className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-[var(--line-2)] bg-[var(--background)] px-1 text-[8px] font-extrabold leading-none text-[var(--brand)] shadow-sm"
-          aria-hidden="true"
-        >
-          AI
+        <span className={styles.ambientRing} aria-hidden="true" />
+        <span className={styles.greeting} aria-hidden="true">
+          <span>Hi!</span>
         </span>
+        <span className={styles.robot} aria-hidden="true">
+          <span className={`${styles.arm} ${styles.leftArm}`}>
+            <span className={styles.upperArm} />
+            <span className={styles.forearm} />
+            <span className={styles.hand}>
+              <span className={styles.palm} />
+              <span className={`${styles.finger} ${styles.fingerOne}`} />
+              <span className={`${styles.finger} ${styles.fingerTwo}`} />
+            </span>
+          </span>
+          <span className={`${styles.arm} ${styles.rightArm}`}>
+            <span className={styles.upperArm} />
+            <span className={styles.forearm} />
+            <span className={styles.hand}>
+              <span className={styles.palm} />
+              <span className={`${styles.finger} ${styles.fingerOne}`} />
+              <span className={`${styles.finger} ${styles.fingerTwo}`} />
+            </span>
+          </span>
+
+          <span className={styles.antenna}>
+            <span className={styles.antennaTip} />
+          </span>
+          <span className={styles.robotHead}>
+            <span className={`${styles.ear} ${styles.leftEar}`} />
+            <span className={`${styles.ear} ${styles.rightEar}`} />
+            <span className={styles.faceGlow} />
+            <span className={`${styles.eye} ${styles.leftEye}`}>
+              <span className={styles.pupil} />
+            </span>
+            <span className={`${styles.eye} ${styles.rightEye}`}>
+              <span className={styles.pupil} />
+            </span>
+            <span className={styles.nose} />
+            <span className={styles.mouth}>
+              <span className={styles.mouthLight} />
+            </span>
+          </span>
+          <span className={styles.neck} />
+          <span className={styles.robotBody}>
+            <span className={styles.core} />
+            <span className={styles.bodyLine} />
+          </span>
+        </span>
+        <span className={styles.statusBadge} aria-hidden="true">AI</span>
       </button>
 
       {open && (

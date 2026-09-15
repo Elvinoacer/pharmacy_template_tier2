@@ -15,11 +15,8 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function HealthScreeningsPage() {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/screenings" />;
-
   return (
-    <div>
+    <div className="min-h-screen bg-transparent text-[var(--foreground)]">
       <PageHero
         eyebrow="Clinical Care & Prevention"
         title="Health Screenings & Point-of-Care Testing"

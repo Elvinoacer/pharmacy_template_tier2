@@ -300,6 +300,13 @@
   padding: 16px;
   font-size: 11px;
 }
+.gallerySection {
+  margin-top: 50px;
+  scroll-margin-top: 6rem;
+}
+.gallerySection > h2 {
+  margin-bottom: 6px;
+}
 .emptyGallery {
   border: 1px dashed var(--line-2);
   border-radius: 23px;

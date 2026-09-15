@@ -20,9 +20,6 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function VaccinationsPage() {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/vaccinations" />;
-
   const [vaccines, campaigns, policy] = await Promise.all([
     listPublicVaccines().catch(() => []),
     listPublicHealthCampaigns({ activeOnly: true }).catch(() => []),
@@ -30,7 +27,7 @@ export default async function VaccinationsPage() {
   ]);
 
   return (
-    <div>
+    <div className="min-h-screen bg-transparent text-[var(--foreground)]">
       <PageHero
         eyebrow="Vaccination & preventive services"
         title="Immunisation, made accessible"

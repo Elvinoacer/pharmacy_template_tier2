@@ -37,7 +37,7 @@ export default async function VaccineInfoPage({ params }: Props) {
   const price = v.priceKes != null ? Number(v.priceKes) : null;
 
   return (
-    <div>
+    <div className="bg-transparent">
       <PageHero
         eyebrow="Vaccine information sheet"
         title={v.name}
@@ -49,13 +49,13 @@ export default async function VaccineInfoPage({ params }: Props) {
       />
       <section className="px-4 pb-16 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <article className="space-y-6 rounded-3xl border border-white/60 bg-white p-6 shadow-sm sm:p-8">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
+          <article className="liquid-glass care-glass space-y-6 rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl sm:p-8">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">
               {VACCINE_CATEGORY_LABELS[v.category as VaccineCategory] || v.category}
               {v.travelRelated ? " · Travel" : ""}
               {v.seasonLabel ? ` · ${v.seasonLabel}` : ""}
             </p>
-            <p className="text-sm leading-relaxed text-[#5a6b62]">{v.description}</p>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">{v.description}</p>
             <Block title="Who should get it" items={v.whoShouldGet} />
             <Block title="Who should wait" items={v.whoShouldWait} />
             <Block title="Contraindications" items={v.contraindications} />
@@ -63,17 +63,17 @@ export default async function VaccineInfoPage({ params }: Props) {
             <Block title="Common side effects" items={v.commonSideEffects} />
             <Block title="Rare risks" items={v.rareRisks} />
             <div>
-              <h2 className="text-sm font-semibold text-[#0c1a14]">Indications</h2>
-              <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{v.indications}</p>
+              <h2 className="text-sm font-semibold text-[var(--foreground)]">Indications</h2>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{v.indications}</p>
             </div>
             {v.regulatoryNotes && (
-              <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-950">
-                <p className="font-semibold">Regulatory note</p>
-                <p className="mt-1 text-xs leading-relaxed">{v.regulatoryNotes}</p>
+              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-[var(--foreground)]">
+                <p className="font-semibold text-amber-600 dark:text-amber-400">Regulatory note</p>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{v.regulatoryNotes}</p>
               </div>
             )}
           </article>
-          <aside className="h-fit space-y-4 rounded-3xl border border-white/60 bg-white p-6 shadow-sm lg:sticky lg:top-28">
+          <aside className="liquid-glass care-glass h-fit space-y-4 rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl lg:sticky lg:top-28">
             <dl className="space-y-3 text-sm">
               <Row k="Antigen" val={v.antigen} />
               <Row k="Route" val={v.route} />
@@ -91,7 +91,7 @@ export default async function VaccineInfoPage({ params }: Props) {
                 Request counselling / referral
               </Link>
             )}
-            <Link href={`${base}/vaccinations`} className="block text-center text-sm font-semibold text-teal-800">
+            <Link href={`${base}/vaccinations`} className="block text-center text-sm font-semibold text-[var(--brand)]">
               All vaccines
             </Link>
           </aside>
@@ -113,8 +113,8 @@ function Block({ title, items }: { title: string; items: string[] }) {
   if (!items.length) return null;
   return (
     <div>
-      <h2 className="text-sm font-semibold text-[#0c1a14]">{title}</h2>
-      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[#5a6b62]">
+      <h2 className="text-sm font-semibold text-[var(--foreground)]">{title}</h2>
+      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--muted)]">
         {items.map((i) => (
           <li key={i}>{i}</li>
         ))}
@@ -126,8 +126,8 @@ function Block({ title, items }: { title: string; items: string[] }) {
 function Row({ k, val }: { k: string; val: string }) {
   return (
     <div>
-      <dt className="text-[10px] font-bold uppercase tracking-wider text-teal-700">{k}</dt>
-      <dd className="mt-0.5 text-[#0c1a14]">{val}</dd>
+      <dt className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">{k}</dt>
+      <dd className="mt-0.5 text-[var(--foreground)]">{val}</dd>
     </div>
   );
 }

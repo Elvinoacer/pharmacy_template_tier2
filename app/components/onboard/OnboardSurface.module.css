@@ -11,7 +11,7 @@
   background:
     radial-gradient(circle at 8% -4%, color-mix(in srgb, var(--brand-soft) 72%, transparent), transparent 28rem),
     radial-gradient(circle at 92% 6%, color-mix(in srgb, var(--accent-soft) 48%, transparent), transparent 24rem),
-    var(--background);
+    transparent;
 }
 
 .page::before {
@@ -1074,7 +1074,7 @@
 .demoCaption { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-bottom: 0.5rem; font-size: .66rem; font-weight: 650; }
 .demoCaption > span:last-child { margin-left: auto; color: var(--muted); font-size: .6rem; }
 .liveDot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
-.offer { scroll-margin-top: 4rem; display: grid; gap: 1rem; align-items: center; padding: clamp(0.95rem, 1.8vw, 1.35rem); border: 1px solid var(--line-2); border-radius: 1.25rem; background: color-mix(in srgb, var(--card) 82%, transparent); box-shadow: inset 0 1px 0 #ffffff50; }
+.offer { scroll-margin-top: 4rem; display: grid; gap: 1rem; align-items: center; padding: clamp(0.95rem, 1.8vw, 1.35rem); border: 1px solid var(--care-border, var(--line-2)); border-radius: 1.25rem; background: var(--care-glass, color-mix(in srgb, var(--card) 82%, transparent)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: inset 0 1px 0 #ffffff50, 0 16px 45px rgba(0, 0, 0, 0.04); }
 .offer h2, .closing h2 { font-family: var(--font-display), serif; font-size: clamp(1.4rem, 2.2vw, 1.85rem); letter-spacing: -.03em; line-height: 1.12; margin-top: .3rem; text-wrap: balance; }
 .offer p, .closing p { font-size: .74rem; color: var(--muted); margin-top: .3rem; line-height: 1.4; }
 .offerPrice > span { font-size: .56rem; font-weight: 750; letter-spacing: .09em; color: var(--muted); }

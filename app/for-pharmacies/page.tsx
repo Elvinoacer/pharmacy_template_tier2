@@ -22,10 +22,10 @@ export const metadata = {
 
 export default function ForPharmaciesPage() {
   return (
-    <div className={`${styles.page} ${styles.landing}`}>
+    <div className={`${styles.page} ${styles.landing} aether-route-surface aether-artwork-surface bg-transparent`}>
       <div className={styles.frame}>
         {/* Top Trust Notification Bar */}
-        <div className="mb-2.5 sm:mb-3.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-3 py-1.5 text-[11px] text-[var(--muted)] shadow-sm">
+        <div className="liquid-glass care-glass mb-2.5 sm:mb-3.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl px-3 py-1.5 text-[11px] text-[var(--muted)] shadow-sm">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-semibold text-[var(--foreground)]">Community Chemist Network:</span>
@@ -131,7 +131,7 @@ export default function ForPharmaciesPage() {
         {/* WHY THESE FEES - DETAILED TRANSPARENCY */}
         <section className="mt-6 sm:mt-8 grid gap-4 sm:gap-6 md:grid-cols-2" aria-label="Why these fees">
           {/* Card 1: KES 100 Verification Fee */}
-          <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+          <div className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
@@ -175,7 +175,7 @@ export default function ForPharmaciesPage() {
           </div>
 
           {/* Card 2: KES 500/Month Subscription */}
-          <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+          <div className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
@@ -220,7 +220,7 @@ export default function ForPharmaciesPage() {
         </section>
 
         {/* COMPARISON: CUSTOM AGENCY BUILD VS AETHER */}
-        <section className="mt-8 sm:mt-10 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 sm:p-6" aria-label="Comparison with custom build">
+        <section className="liquid-glass care-glass mt-8 sm:mt-10 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-4 sm:p-6 shadow-sm" aria-label="Comparison with custom build">
           <div className="text-center max-w-xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand)]">The Smart Choice</span>
             <h3 className="mt-1 font-serif text-xl sm:text-2xl font-semibold text-[var(--foreground)]">
@@ -291,7 +291,7 @@ export default function ForPharmaciesPage() {
               ["Confirm with KES 100", "Quick STK test links your M-PESA Till or Paybill."],
               ["Set up & launch", "Pick your stocked medicines, set your hours, and welcome patients."],
             ].map(([title, desc], i) => (
-              <div key={title} className="flex flex-col p-3.5 sm:p-4 rounded-xl border border-[var(--line-2)] bg-[var(--card)]">
+              <div key={title} className="liquid-glass care-glass flex flex-col p-3.5 sm:p-4 rounded-xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl shadow-sm">
                 <span className="text-xs font-mono font-bold text-[var(--brand)]">{String(i + 1).padStart(2, "0")}</span>
                 <strong className="mt-1 text-sm font-semibold text-[var(--foreground)]">{title}</strong>
                 <p className="mt-0.5 text-xs text-[var(--muted)] leading-relaxed">{desc}</p>
@@ -308,7 +308,7 @@ export default function ForPharmaciesPage() {
         </section>
 
         {/* CLOSING BANNER */}
-        <div className={`${styles.closing} mt-8 sm:mt-10 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-6 sm:p-7`}>
+        <div className={`liquid-glass care-glass ${styles.closing} mt-8 sm:mt-10 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-6 sm:p-7 shadow-sm`}>
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Zero Risk. Immediate Impact.</span>
             <h2 className="mt-1 font-serif text-2xl sm:text-3xl font-semibold text-[var(--foreground)]">

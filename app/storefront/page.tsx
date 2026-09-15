@@ -21,6 +21,9 @@ import {
   resolveBullets,
 } from "../lib/services/storefront-content";
 
+import { prismaUnscoped } from "../lib/db";
+import NetworkStorefrontShowcase from "./NetworkShowcase";
+
 const R2_FALLBACK = "https://pub-cc07856d657b4a7197710051042b3eda.r2.dev/images/gallery/welcoming_retail_floor.webp";
 
 export default async function StorefrontPage() {
@@ -28,7 +31,32 @@ export default async function StorefrontPage() {
   if (view.status === "unavailable") {
     return <StorefrontUnavailable slug={view.slug} next="/" />;
   }
-  if (view.status !== "active") return <ChoosePharmacy next="/" />;
+  if (view.status !== "active") {
+    const [networkPharmacies, dbServices] = await Promise.all([
+      prismaUnscoped.pharmacy.findMany({
+        where: { status: "active", listed: true },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          tagline: true,
+          city: true,
+          county: true,
+          coverImageUrl: true,
+          logoUrl: true,
+        },
+        take: 6,
+        orderBy: { createdAt: "desc" },
+      }).catch(() => []),
+      listPublicServices().catch(() => []),
+    ]);
+    return (
+      <NetworkStorefrontShowcase
+        pharmacies={networkPharmacies}
+        services={dbServices.slice(0, 6)}
+      />
+    );
+  }
 
   const { resolved, content } = view;
   const base = `/p/${resolved.slug}`;

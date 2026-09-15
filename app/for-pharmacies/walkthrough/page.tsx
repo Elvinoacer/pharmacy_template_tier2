@@ -72,7 +72,7 @@ const steps = [
 
 export default function Walkthrough() {
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} aether-route-surface aether-artwork-surface bg-transparent`}>
       <div className={styles.frame}>
         <div className="flex items-center justify-between">
           <Link href="/for-pharmacies" className={styles.quietLink}>
@@ -117,7 +117,7 @@ export default function Walkthrough() {
               return (
                 <li
                   key={step.num}
-                  className="rounded-xl border border-[var(--line-2)] bg-[var(--card)] p-4 sm:p-5 shadow-sm transition-all hover:border-[var(--brand)]"
+                  className="liquid-glass care-glass rounded-xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-4 sm:p-5 shadow-sm transition-all hover:border-[var(--brand)]"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ export default function Walkthrough() {
         </div>
 
         {/* Final CTA */}
-        <div className={`${styles.closing} mx-auto mt-8 sm:mt-10 max-w-4xl rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-6 sm:p-7`}>
+        <div className={`liquid-glass care-glass ${styles.closing} mx-auto mt-8 sm:mt-10 max-w-4xl rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl p-6 sm:p-7 shadow-sm`}>
           <div>
             <h2 className="font-serif text-2xl sm:text-3xl font-semibold">
               Ready to claim your storefront?

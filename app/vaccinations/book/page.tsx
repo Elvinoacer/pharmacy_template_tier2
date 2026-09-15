@@ -43,7 +43,7 @@ export default async function BookVaccinationPage({ searchParams }: Props) {
   }
 
   return (
-    <div>
+    <div className="bg-transparent">
       <PageHero
         eyebrow="Vaccination clinic"
         title="Book, screen, and consent"

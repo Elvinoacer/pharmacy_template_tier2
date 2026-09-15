@@ -11,9 +11,9 @@
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(244, 247, 244, 0.78) 0%,
-      rgba(242, 247, 244, 0.81) 48%,
-      rgba(239, 245, 242, 0.84) 100%
+      rgba(244, 247, 244, 0.36) 0%,
+      rgba(242, 247, 244, 0.44) 48%,
+      rgba(239, 245, 242, 0.50) 100%
     );
 }
 
@@ -21,9 +21,9 @@ html[data-theme="dark"] {
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(5, 13, 11, 0.64) 0%,
-      rgba(6, 16, 13, 0.68) 48%,
-      rgba(4, 11, 9, 0.72) 100%
+      rgba(5, 13, 11, 0.32) 0%,
+      rgba(6, 16, 13, 0.38) 48%,
+      rgba(4, 11, 9, 0.46) 100%
     );
 }
 
@@ -32,9 +32,9 @@ html[data-admin-theme="dark"] {
   --aether-global-veil:
     linear-gradient(
       180deg,
-      rgba(7, 12, 16, 0.67) 0%,
-      rgba(8, 14, 17, 0.71) 48%,
-      rgba(6, 11, 14, 0.75) 100%
+      rgba(7, 12, 16, 0.45) 0%,
+      rgba(8, 14, 17, 0.50) 48%,
+      rgba(6, 11, 14, 0.56) 100%
     );
 }
 
@@ -106,9 +106,19 @@ body {
 .aether-route-surface,
 .shell-grid,
 .shell-grid-admin,
-.platform-shell {
+.platform-shell,
+main#main-content,
+main#main-content > div,
+.aether-app-layer,
+.feel-page,
+.caregiver-surface,
+[data-aether-transparent="true"] {
   background-color: transparent !important;
-  background-image: none !important;
+}
+
+/* Ensure inner main route containers do not obscure the fixed artwork */
+.aether-app-layer main .min-h-screen[class*="bg-"] {
+  background-color: transparent !important;
 }
 
 /*

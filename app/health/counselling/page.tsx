@@ -40,7 +40,7 @@ export default async function DigitalCounsellingHubPage() {
   const allMedications = await getAllCounsellingMedications();
 
   return (
-    <div>
+    <div className="min-h-screen bg-transparent text-[var(--foreground)]">
       <PageHero
         eyebrow="Digital Pharmacy Standard"
         title="Digital Patient Medication Counselling Hub"
@@ -345,14 +345,14 @@ function PillarSummaryCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-[#e3ebe6] bg-white p-4 shadow-xs hover:border-teal-300 transition">
+    <div className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl hover:border-[var(--brand)] transition">
       <div className="flex items-center gap-2">
-        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-50 text-[11px] font-extrabold text-teal-800 border border-teal-200">
+        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[11px] font-extrabold text-[var(--brand)] border border-[var(--care-border)]">
           {number}
         </span>
-        <h4 className="font-bold text-[#0c1a14] text-xs">{title}</h4>
+        <h4 className="font-bold text-[var(--foreground)] text-xs">{title}</h4>
       </div>
-      <p className="mt-2 text-[11px] leading-relaxed text-[#5a6b62]">{desc}</p>
+      <p className="mt-2 text-[11px] leading-relaxed text-[var(--muted)]">{desc}</p>
     </div>
   );
 }

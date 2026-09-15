@@ -8,8 +8,8 @@ import {
   MedicineCatalogGrid,
   type MedicineCatalogItem,
 } from "../../components/MedicineCatalogCard";
-import { prisma } from "../../lib/db";
-import { getPublicCategoryBySlug } from "../../lib/medication-categories";
+import { prisma, prismaUnscoped } from "../../lib/db";
+import { getPublicCategoryBySlug, type PublicCategory } from "../../lib/medication-categories";
 import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
 import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
 import {
@@ -19,8 +19,10 @@ import {
   Clock3,
   HelpCircle,
   PackageSearch,
+  Pill,
   ShieldAlert,
   Sparkles,
+  Zap,
 } from "lucide-react";
 
 const CATEGORY_SLUG = "topical-treatments";
@@ -36,19 +38,22 @@ export const metadata: Metadata = {
 
 export default async function TopicalTreatmentsPage() {
   const pharmacy = await getResolvedPharmacyOrNull().catch(() => null);
-  if (!pharmacy) {
-    return <ChoosePharmacy next={`/medicines/${CATEGORY_SLUG}`} />;
-  }
-
-  const base = `/p/${pharmacy.slug}`;
-  const cat = await getPublicCategoryBySlug(CATEGORY_SLUG).catch(() => null);
+  const base = pharmacy ? `/p/${pharmacy.slug}` : "/medicines";
+  const cat: PublicCategory = (await getPublicCategoryBySlug(CATEGORY_SLUG).catch(() => null)) || {
+    id: "topical-treatments",
+    slug: CATEGORY_SLUG,
+    name: "Topical Treatments",
+    description: "Skin creams, ointments, lotions and targeted therapies.",
+    imageUrl: null,
+    brands: [],
+    tips: [],
+    sortOrder: 0,
+    publicMedCount: 0,
+  };
   const otcGuidance = getOtcCategoryGuidance(CATEGORY_SLUG);
 
-  if (!cat) {
-    return <ChoosePharmacy next="/medicines" />;
-  }
-
-  const products = await prisma.pharmacyInventory
+  const db = pharmacy ? prisma : prismaUnscoped;
+  const products = await db.pharmacyInventory
     .findMany({
       where: {
         publicListing: true,
@@ -197,7 +202,7 @@ export default async function TopicalTreatmentsPage() {
                   </div>
                   <div className="col-span-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3 sm:col-span-1">
                     <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Pharmacy</span>
-                    <p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)]">{pharmacy.name}</p>
+                    <p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)]">{pharmacy?.name || "Across network"}</p>
                     <p className="text-[10px] text-[var(--muted)]">live catalogue</p>
                   </div>
                 </div>
@@ -226,7 +231,7 @@ export default async function TopicalTreatmentsPage() {
                       Common brands
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {cat.brands.map((brand) => (
+                      {cat.brands.map((brand: string) => (
                         <span
                           key={brand}
                           className="rounded-full border border-[var(--line-2)] bg-[var(--card)] px-2.5 py-1 text-[10px] font-semibold text-[var(--foreground)] sm:text-xs"
@@ -265,7 +270,7 @@ export default async function TopicalTreatmentsPage() {
           <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs">
-                Live stock · {pharmacy.name}
+                Live stock · {pharmacy?.name || "Across network"}
               </p>
               <h2
                 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl"
@@ -288,8 +293,8 @@ export default async function TopicalTreatmentsPage() {
           {catalogItems.length > 0 ? (
             <MedicineCatalogGrid items={catalogItems} />
           ) : (
-            <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-6 text-center shadow-sm sm:p-8">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--card-elev)] text-[var(--brand)]">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 text-center shadow-sm backdrop-blur-xl sm:p-8">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--card)] text-[var(--brand)]">
                 <PackageSearch className="h-5 w-5" />
               </div>
               <h3 className="mt-3 text-sm font-bold text-[var(--foreground)]">No topical products are listed right now</h3>

@@ -21,10 +21,10 @@ const pageShell =
   "aether-route-surface min-h-screen overflow-x-hidden text-[var(--foreground)] transition-colors duration-300";
 
 const adaptiveCard =
-  "care-glass rounded-[1.35rem] transition-colors duration-300 sm:rounded-3xl";
+  "liquid-glass care-glass rounded-[1.35rem] transition-colors duration-300 sm:rounded-3xl";
 
 const storyPanel =
-  "care-glass mx-auto grid max-w-6xl gap-6 rounded-[1.5rem] p-4 sm:gap-8 sm:rounded-[2rem] sm:p-6 lg:grid-cols-2 lg:items-center lg:gap-10 lg:p-8";
+  "liquid-glass care-glass mx-auto grid max-w-6xl gap-6 rounded-[1.5rem] p-4 sm:gap-8 sm:rounded-[2rem] sm:p-6 lg:grid-cols-2 lg:items-center lg:gap-10 lg:p-8";
 
 function NetworkAbout() {
   return (

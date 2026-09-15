@@ -99,14 +99,14 @@ export function VaccinationHub({
           return (
             <div
               key={s.label}
-              className="rounded-2xl border border-white/60 bg-white p-4 shadow-[0_12px_40px_rgba(8,40,32,0.06)]"
+              className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-[0_12px_40px_rgba(8,40,32,0.06)] backdrop-blur-xl"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#0d6e5a] to-[#084c3f] text-white shadow-md">
                 <Icon className="h-5 w-5" />
               </span>
-              <p className="mt-3 text-2xl font-semibold tracking-tight text-[#0c1a14]">{s.value}</p>
-              <p className="mt-0.5 text-sm font-medium text-[#0c1a14]">{s.label}</p>
-              <p className="mt-1 text-xs text-[#5a6b62]">{s.hint}</p>
+              <p className="mt-3 text-2xl font-semibold tracking-tight text-[var(--foreground)]">{s.value}</p>
+              <p className="mt-0.5 text-sm font-medium text-[var(--foreground)]">{s.label}</p>
+              <p className="mt-1 text-xs text-[var(--muted)]">{s.hint}</p>
             </div>
           );
         })}
@@ -179,42 +179,42 @@ export function VaccinationHub({
             {filtered.map((v) => (
               <article
                 key={v.slug}
-                className="flex h-full flex-col rounded-3xl border border-white/60 bg-white p-6 shadow-[0_16px_50px_rgba(8,40,32,0.07)]"
+                className="liquid-glass care-glass flex h-full flex-col rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-[0_16px_50px_rgba(8,40,32,0.07)] backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-lg"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">
                       {VACCINE_CATEGORY_LABELS[v.category as VaccineCategory] || v.category}
                       {v.seasonLabel ? ` · ${v.seasonLabel}` : ""}
                     </p>
                     <h3
-                      className="mt-1 text-xl font-semibold text-[#0c1a14]"
+                      className="mt-1 text-xl font-semibold text-[var(--foreground)]"
                       style={{ fontFamily: "var(--font-display), serif" }}
                     >
                       {v.name}
                     </h3>
-                    <p className="mt-1 text-xs text-[#5a6b62]">{v.antigen}</p>
+                    <p className="mt-1 text-xs text-[var(--muted)]">{v.antigen}</p>
                   </div>
                   {v.priceKes != null && v.priceKes > 0 ? (
-                    <span className="shrink-0 rounded-full bg-teal-50 px-2.5 py-1 text-xs font-bold text-teal-900">
+                    <span className="shrink-0 rounded-full border border-[var(--care-border)] bg-[var(--card)] px-2.5 py-1 text-xs font-bold text-[var(--foreground)]">
                       KES {v.priceKes.toLocaleString()}
                     </span>
                   ) : v.pharmacyAdministered ? (
-                    <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800">
+                    <span className="shrink-0 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
                       Campaign / MoH
                     </span>
                   ) : (
-                    <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
+                    <span className="shrink-0 rounded-full border border-[var(--care-border)] bg-[var(--card)] px-2.5 py-1 text-xs font-bold text-[var(--muted)]">
                       Info
                     </span>
                   )}
                 </div>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-[#5a6b62]">{v.description}</p>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-[var(--muted)]">{v.description}</p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {v.diseasesPrevented.slice(0, 3).map((d) => (
                     <span
                       key={d}
-                      className="rounded-full border border-teal-900/10 bg-[#f4f7f4] px-2 py-0.5 text-[11px] text-[#084c3f]"
+                      className="rounded-full border border-[var(--care-border)] bg-[var(--card)] px-2 py-0.5 text-[11px] text-[var(--brand)]"
                     >
                       {d}
                     </span>
@@ -244,33 +244,33 @@ export function VaccinationHub({
 
       {tab === "schedules" && (
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-white/60 bg-white p-6 shadow-sm">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-teal-700" />
-              <h3 className="text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+              <Users className="h-5 w-5 text-[var(--brand)]" />
+              <h3 className="text-lg font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
                 Adult & travel schedule
               </h3>
             </div>
             <ul className="mt-4 space-y-4">
               {ADULT_IMMUNIZATION_SCHEDULE.map((row) => (
-                <li key={row.ageOrTrigger} className="border-b border-teal-900/5 pb-3 last:border-0">
-                  <p className="text-xs font-bold uppercase tracking-wider text-teal-700">{row.ageOrTrigger}</p>
-                  <p className="mt-1 text-sm font-medium text-[#0c1a14]">{row.vaccines.join(" · ")}</p>
-                  <p className="mt-1 text-xs text-[#5a6b62]">{row.note}</p>
+                <li key={row.ageOrTrigger} className="border-b border-[var(--line-2)] pb-3 last:border-0">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--brand)]">{row.ageOrTrigger}</p>
+                  <p className="mt-1 text-sm font-medium text-[var(--foreground)]">{row.vaccines.join(" · ")}</p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">{row.note}</p>
                 </li>
               ))}
             </ul>
-            <TenantLink href="/vaccinations/schedule" className="mt-4 inline-flex text-sm font-semibold text-teal-800">
+            <TenantLink href="/vaccinations/schedule" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)]">
               Full schedule →
             </TenantLink>    </div>
-          <div className="rounded-3xl border border-white/60 bg-white p-6 shadow-sm">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
             <div className="flex items-center gap-2">
-              <Baby className="h-5 w-5 text-teal-700" />
-              <h3 className="text-lg font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+              <Baby className="h-5 w-5 text-[var(--brand)]" />
+              <h3 className="text-lg font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
                 KEPI childhood schedule (information)
               </h3>
             </div>
-            <p className="mt-2 text-xs leading-relaxed text-[#5a6b62]">
+            <p className="mt-2 text-xs leading-relaxed text-[var(--muted)]">
               Childhood vaccines in Kenya are given at public immunisation / MCH clinics. Bring the mother-child booklet.
               We review overdue doses and refer — we do not replace KEPI.
             </p>
@@ -312,22 +312,22 @@ export function VaccinationHub({
           ].map((c) => {
             const Icon = c.icon;
             return (
-              <div key={c.title} className="rounded-3xl border border-white/60 bg-white p-6 shadow-sm">
-                <Icon className="h-5 w-5 text-teal-700" />
-                <h3 className="mt-3 text-base font-semibold text-[#0c1a14]">{c.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{c.body}</p>
+              <div key={c.title} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl">
+                <Icon className="h-5 w-5 text-[var(--brand)]" />
+                <h3 className="mt-3 text-base font-semibold text-[var(--foreground)]">{c.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{c.body}</p>
               </div>
             );
           })}
-          <div className="md:col-span-2 rounded-3xl border border-teal-900/10 bg-[#f4fbf8] p-6">
-            <p className="flex items-center gap-2 text-sm font-semibold text-[#084c3f]">
+          <div className="md:col-span-2 rounded-3xl border border-[var(--care-border)] bg-[var(--card)] p-6 shadow-sm backdrop-blur-xl">
+            <p className="flex items-center gap-2 text-sm font-semibold text-[var(--brand-deep)]">
               <Info className="h-4 w-4" /> When we will not vaccinate today
             </p>
-            <ul className="mt-3 grid gap-2 text-sm text-[#5a6b62] sm:grid-cols-2">
-              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-700" /> Previous anaphylaxis to the same vaccine</li>
-              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-700" /> Moderate/severe acute illness with fever</li>
-              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-700" /> Live vaccine in pregnancy (we refer)</li>
-              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-700" /> Antigen not authorised for pharmacy administration</li>
+            <ul className="mt-3 grid gap-2 text-sm text-[var(--muted)] sm:grid-cols-2">
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--brand)]" /> Previous anaphylaxis to the same vaccine</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--brand)]" /> Moderate/severe acute illness with fever</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--brand)]" /> Live vaccine in pregnancy (we refer)</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--brand)]" /> Antigen not authorised for pharmacy administration</li>
             </ul>
           </div>
         </section>
@@ -336,10 +336,10 @@ export function VaccinationHub({
       {tab === "campaigns" && (
         <section className="space-y-4">
           {campaigns.length === 0 ? (
-            <div className="rounded-3xl border border-[#e3ebe6] bg-white px-6 py-12 text-center">
-              <Megaphone className="mx-auto h-8 w-8 text-teal-700" />
-              <p className="mt-3 text-sm font-semibold text-[#0c1a14]">No public campaigns right now</p>
-              <p className="mt-1 text-sm text-[#5a6b62]">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] px-6 py-12 text-center backdrop-blur-xl">
+              <Megaphone className="mx-auto h-8 w-8 text-[var(--brand)]" />
+              <p className="mt-3 text-sm font-semibold text-[var(--foreground)]">No public campaigns right now</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">
                 Seasonal flu, outbreak, and awareness drives appear here when the pharmacy publishes them.
               </p>
             </div>
@@ -352,13 +352,13 @@ export function VaccinationHub({
               return (
                 <article
                   key={c.slug}
-                  className="rounded-3xl border border-white/60 bg-white p-6 shadow-sm"
+                  className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md"
                 >
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">
                     {c.theme.replace(/_/g, " ")} · {c.targetPopulation}
                   </p>
                   <h3
-                    className="mt-1 text-xl font-semibold text-[#0c1a14]"
+                    className="mt-1 text-xl font-semibold text-[var(--foreground)]"
                     style={{ fontFamily: "var(--font-display), serif" }}
                   >
                     {c.title}

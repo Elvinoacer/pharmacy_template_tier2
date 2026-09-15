@@ -22,11 +22,11 @@ const sections = [
 ] as const;
 
 const sectionClass =
-  "glass-panel scroll-mt-28 rounded-2xl p-4 transition-colors duration-300 sm:rounded-3xl sm:p-6";
+  "liquid-glass care-glass scroll-mt-28 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm transition-colors duration-300 sm:rounded-3xl sm:p-6";
 
 export default function TermsPage() {
   return (
-    <div className="aether-route-surface min-h-screen overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
+    <div className="aether-route-surface aether-artwork-surface min-h-screen bg-transparent overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Legal"
         title="Terms of Service"
@@ -36,7 +36,7 @@ export default function TermsPage() {
 
       <section className="px-3 pb-16 sm:px-6 sm:pb-20">
         <div className="mx-auto w-full max-w-4xl">
-          <div className="glass-panel-strong mb-5 flex flex-col gap-3 rounded-2xl p-4 sm:mb-7 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="liquid-glass care-glass mb-5 flex flex-col gap-3 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:mb-7 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <p className="text-xs text-[var(--muted-2)]">Last updated: August 24, 2026</p>
             <Link
               href="/privacy"

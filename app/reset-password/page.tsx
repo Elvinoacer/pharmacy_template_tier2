@@ -14,12 +14,13 @@ export default async function ResetPasswordPage({
   const token = sp.token || "";
 
   return (
-    <div className="mesh-bg flex min-h-screen items-center justify-center px-4 py-10 sm:py-14">
+    <div className="flex min-h-screen items-center justify-center bg-transparent px-4 py-10 sm:py-14 aether-artwork-surface aether-route-surface">
       <AuthForm
         action={resetPasswordAction}
         title="Choose a new password"
         subtitle="Your reset link is single-use and expires after two hours."
         submitLabel="Update password"
+        artworkBackdrop
         hiddenFields={{ token }}
         highlights={[
           "Meet every password requirement in real time",

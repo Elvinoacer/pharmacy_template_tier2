@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import {
   Activity,
   Bell,
+  BriefcaseBusiness,
   ClipboardCheck,
   CreditCard,
   FileText,
@@ -27,6 +28,7 @@ import { logoutAction } from "@/app/actions/auth";
 export const PLATFORM_NAV = [
   { href: "/platform", label: "Overview", icon: LayoutDashboard },
   { href: "/platform/applications", label: "Applications", icon: ClipboardCheck },
+  { href: "/platform/careers", label: "Careers", icon: BriefcaseBusiness },
   { href: "/platform/pharmacies", label: "Pharmacies", icon: Store },
   { href: "/platform/billing", label: "Billing", icon: CreditCard },
   { href: "/platform/plans", label: "Plans", icon: Layers3 },
@@ -42,7 +44,7 @@ export const PLATFORM_NAV = [
 ] as const;
 
 const groups = [
-  { label: "Daily work", paths: ["/platform", "/platform/applications", "/platform/pharmacies", "/platform/users"] },
+  { label: "Daily work", paths: ["/platform", "/platform/applications", "/platform/careers", "/platform/pharmacies", "/platform/users"] },
   { label: "Operations", paths: ["/platform/billing", "/platform/plans", "/platform/jobs", "/platform/notifications", "/platform/integrations", "/platform/webhooks"] },
   { label: "Security & settings", paths: ["/platform/security", "/platform/audit", "/platform/compliance", "/platform/feature-flags"] },
 ];

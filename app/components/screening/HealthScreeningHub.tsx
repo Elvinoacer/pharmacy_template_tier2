@@ -318,7 +318,7 @@ export function HealthScreeningHub() {
             {filteredServices.map((service, idx) => (
               <div
                 key={idx}
-                className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xs hover:border-teal-800/30 hover:shadow-md transition space-y-4 flex flex-col justify-between"
+                className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-xs hover:border-[var(--brand)] hover:shadow-md transition space-y-4 flex flex-col justify-between backdrop-blur-xl"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -391,7 +391,7 @@ export function HealthScreeningHub() {
       {/* ── TAB 2: INTERACTIVE VITALS SCREENER & METERS ── */}
       {activeTab === "calculator" && (
         <div className="space-y-8">
-          <div className="rounded-3xl border border-gray-100 bg-white p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 sm:p-8 shadow-sm space-y-6 backdrop-blur-xl">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-4">
               <div>
                 <h2 className="text-xl font-bold text-[#0c1a14]">Interactive Vitals Screener &amp; BMI Monitor</h2>
@@ -652,7 +652,7 @@ export function HealthScreeningHub() {
       {/* ── TAB 3: SCREENING VS DIAGNOSIS CLINICAL PRINCIPLES ── */}
       {activeTab === "principles" && (
         <div className="space-y-8">
-          <div className="rounded-3xl border border-teal-900/15 bg-white p-6 sm:p-10 shadow-sm space-y-6">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 sm:p-10 shadow-sm space-y-6 backdrop-blur-xl">
             <div className="max-w-3xl space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3.5 py-1 text-xs font-bold text-amber-950">
                 <Info className="h-4 w-4 text-amber-800" />
@@ -763,7 +763,7 @@ export function HealthScreeningHub() {
           </div>
 
           {/* Tertiary & County Referral Hospitals */}
-          <div className="rounded-3xl border border-gray-100 bg-white p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 sm:p-8 shadow-sm space-y-6 backdrop-blur-xl">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h3 className="text-lg font-bold text-[#0c1a14]">Referral Hospitals &amp; Medical Centres</h3>
@@ -802,7 +802,7 @@ export function HealthScreeningHub() {
           {/* Laboratories & Specialists Grid */}
           <div className="grid gap-6 md:grid-cols-2">
             {/* Laboratories */}
-            <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm space-y-4 backdrop-blur-xl">
               <div className="flex items-center gap-2">
                 <Microscope className="h-5 w-5 text-teal-800" />
                 <h4 className="font-bold text-sm text-[#0c1a14]">Accredited Diagnostic Laboratories</h4>
@@ -819,7 +819,7 @@ export function HealthScreeningHub() {
             </div>
 
             {/* Specialists */}
-            <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4">
+            <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm space-y-4 backdrop-blur-xl">
               <div className="flex items-center gap-2">
                 <Stethoscope className="h-5 w-5 text-teal-800" />
                 <h4 className="font-bold text-sm text-[#0c1a14]">Specialist Referral Disciplines</h4>

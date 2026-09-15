@@ -1,81 +1,90 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MessageCircle, Phone } from "lucide-react";
-import CtaBanner from "../components/CtaBanner";
+import { MessageCircle, Phone, Store } from "lucide-react";
 import FaqAccordion from "../components/FaqAccordion";
 import PageHero from "../components/PageHero";
 import { platform } from "../lib/data";
-import ShopPageChooser from "@/app/components/ShopPageChooser";
 import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { getStorefrontView } from "@/app/lib/services/storefront-content";
+import { STOREFRONT_TEMPLATE } from "@/app/lib/storefront-template";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
-  description: `Answers about hours, refills, delivery, insurance, and services at ${platform.name}.`,
+  description: `Answers about prescriptions, refills, delivery, insurance, and clinical pharmacy services at ${platform.name}.`,
   alternates: { canonical: "/faq" },
 };
 
 export default async function FaqPage() {
-  const view = await getStorefrontView();
-  if (view.status === "unavailable") {
+  const view = await getStorefrontView().catch(() => null);
+  if (view && view.status === "unavailable") {
     return <StorefrontUnavailable slug={view.slug} next="/faq" />;
   }
-  if (view.status !== "active") return <ShopPageChooser next="/faq" />;
 
-  const { resolved: pharmacy, content } = view;
+  const pharmacy = view?.status === "active" ? view.resolved : null;
+  const isTenant = Boolean(pharmacy);
+  const faqItems = view?.status === "active" ? view.content.faq : STOREFRONT_TEMPLATE.faq;
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
+    <div className="min-h-screen overflow-x-hidden bg-transparent text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="FAQ"
-        title="Answers to common questions"
-        description="Search or filter by topic. Still stuck? Contact us — we are happy to help."
+        title={pharmacy ? `Questions & Answers — ${pharmacy.name}` : "Frequently Asked Questions"}
+        description="Search common questions about medicine ordering, prescription uploads, refills, and delivery."
         crumbs={[{ label: "FAQ" }]}
       />
 
       <section className="px-3 pb-12 sm:px-6 sm:pb-16">
         <div className="mx-auto w-full max-w-3xl">
-          <FaqAccordion items={content.faq} />
+          {!isTenant && (
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 text-xs backdrop-blur-xl sm:text-sm">
+              <span className="text-[var(--foreground)]">
+                Looking for specific questions and operating policies of a local pharmacy?
+              </span>
+              <Link
+                href="/pharmacies"
+                className="inline-flex items-center gap-1.5 font-semibold text-[var(--brand)] underline underline-offset-2"
+              >
+                <Store size={14} />
+                Find your pharmacy branch →
+              </Link>
+            </div>
+          )}
 
-          <div className="mt-7 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:mt-8 sm:rounded-3xl sm:p-5">
+          <div className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl sm:rounded-3xl sm:p-6">
+            <FaqAccordion items={faqItems} />
+          </div>
+
+          <div className="liquid-glass care-glass mt-7 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl sm:mt-8 sm:rounded-3xl sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-[var(--foreground)]">Still need help?</p>
                 <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-                  Send the pharmacy a message or call directly and we&apos;ll point you in the right direction.
+                  {pharmacy
+                    ? `Send ${pharmacy.name} a message or call directly and our team will assist you.`
+                    : "Reach out to our support team or connect with any community pharmacy in the network."}
                 </p>
               </div>
 
               <div className="grid w-full grid-cols-1 gap-2 sm:w-auto sm:grid-cols-2">
                 <Link
-                  href={`/p/${pharmacy.slug}/contact`}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-4 text-xs font-semibold text-[var(--foreground)] transition-colors hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+                  href={pharmacy ? `/p/${pharmacy.slug}/contact` : "/contact"}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--care-border)] bg-[var(--card-elev)] px-4 text-xs font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
                 >
                   <MessageCircle className="h-4 w-4 text-[var(--brand)]" aria-hidden="true" />
                   Send message
                 </Link>
                 <a
-                  href={pharmacy.phoneHref}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-xs font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+                  href={pharmacy ? pharmacy.phoneHref : `tel:${platform.phone}`}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-xs font-semibold text-white shadow-sm transition hover:opacity-90"
                 >
                   <Phone className="h-4 w-4" aria-hidden="true" />
-                  Call pharmacy
+                  Call {pharmacy ? pharmacy.phone : platform.phone}
                 </a>
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      <CtaBanner
-        eyebrow={content.ctaBanner.eyebrow}
-        title={content.ctaBanner.title}
-        description={content.ctaBanner.description}
-        primaryHref={content.ctaBanner.primary.href}
-        primaryLabel={content.ctaBanner.primary.label}
-        secondaryHref={content.ctaBanner.secondary.href}
-        secondaryLabel={content.ctaBanner.secondary.label}
-      />
     </div>
   );
 }

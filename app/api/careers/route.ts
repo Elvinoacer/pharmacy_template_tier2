@@ -5,6 +5,7 @@ import {
   isActiveListed,
   withPharmacy,
 } from "@/app/lib/tenant";
+import { recordCareerApplication } from "@/app/lib/services/platform-careers";
 
 export async function POST(request: Request) {
   try {
@@ -18,41 +19,62 @@ export async function POST(request: Request) {
     const email = String(body.email || "").trim();
     const phone = String(body.phone || "").trim();
     const role = String(body.role || "").trim();
+    const message = body.message ? String(body.message).trim() : undefined;
+    const experience = body.experience ? String(body.experience).trim() : undefined;
+    const cvFileName = body.cvFileName ? String(body.cvFileName).trim() : undefined;
+    const pharmacySlug = body.pharmacySlug ? String(body.pharmacySlug).trim() : undefined;
 
     if (!name || !email || !phone || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     const pharmacy =
-      typeof body.pharmacySlug === "string"
-        ? await findPharmacyBySlug(body.pharmacySlug)
+      pharmacySlug
+        ? await findPharmacyBySlug(pharmacySlug)
         : null;
-    if (body.pharmacySlug && (!pharmacy || !isActiveListed(pharmacy))) {
+    if (pharmacySlug && (!pharmacy || !isActiveListed(pharmacy))) {
       return NextResponse.json(
         { error: "This pharmacy is unavailable." },
         { status: 409 },
       );
     }
 
-    const submit = () =>
-      createEnquiry({
-        name,
-        email,
-        phone,
-        type: "careers",
-        subject: `Career application — ${role}`,
-        message: [
-          `Role: ${role}`,
-          body.message ? `Cover note: ${body.message}` : null,
-          body.experience ? `Experience: ${body.experience}` : null,
-        ]
-          .filter(Boolean)
-          .join("\n"),
-        source: "website",
-      });
+    // Always record application in platform database
+    await recordCareerApplication({
+      role,
+      name,
+      email,
+      phone,
+      message,
+      experience,
+      cvFileName,
+      pharmacySlug: pharmacy?.slug ?? undefined,
+    });
 
-    if (pharmacy) await withPharmacy(pharmacy.id, submit, pharmacy.slug);
-    else await submit();
+    // If assigned to a pharmacy, also record as a pharmacy CRM enquiry
+    if (pharmacy) {
+      await withPharmacy(
+        pharmacy.id,
+        () =>
+          createEnquiry({
+            name,
+            email,
+            phone,
+            type: "careers",
+            subject: `Career application — ${role}`,
+            message: [
+              `Role: ${role}`,
+              message ? `Cover note: ${message}` : null,
+              experience ? `Experience: ${experience}` : null,
+              cvFileName ? `CV: ${cvFileName}` : null,
+            ]
+              .filter(Boolean)
+              .join("\n"),
+            source: "website",
+          }),
+        pharmacy.slug
+      );
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

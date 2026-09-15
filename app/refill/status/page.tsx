@@ -25,11 +25,11 @@ export default async function RefillStatusPage({
 
   if (!claims) {
     return (
-      <main className="mx-auto w-full max-w-2xl px-5 py-20">
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <main className="mx-auto w-full max-w-2xl px-5 py-20 bg-transparent">
+        <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-sm backdrop-blur-xl">
           <ShieldCheck className="h-9 w-9 text-slate-500" aria-hidden="true" />
-          <h1 className="mt-5 text-2xl font-bold text-slate-950">This tracking link is invalid or expired</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <h1 className="mt-5 text-2xl font-bold text-[var(--foreground)]">This tracking link is invalid or expired</h1>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
             For privacy, guest refill tracking links expire automatically. Contact the pharmacy or sign in to view refills linked to your account.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -65,11 +65,11 @@ export default async function RefillStatusPage({
 
   if (!result.refill) {
     return (
-      <main className="mx-auto w-full max-w-2xl px-5 py-20">
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <main className="mx-auto w-full max-w-2xl px-5 py-20 bg-transparent">
+        <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-sm backdrop-blur-xl">
           <FileText className="h-9 w-9 text-slate-500" aria-hidden="true" />
-          <h1 className="mt-5 text-2xl font-bold text-slate-950">Refill request unavailable</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <h1 className="mt-5 text-2xl font-bold text-[var(--foreground)]">Refill request unavailable</h1>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
             This request may have been removed under the pharmacy&apos;s retention policy. Contact the pharmacy if you still need help.
           </p>
         </div>
@@ -82,39 +82,39 @@ export default async function RefillStatusPage({
   const pharmacyHref = result.pharmacy?.slug ? `/p/${result.pharmacy.slug}` : "/pharmacies";
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-5 py-16 sm:py-20">
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <main className="mx-auto w-full max-w-2xl px-5 py-16 sm:py-20 bg-transparent">
+      <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-6 shadow-sm backdrop-blur-xl sm:p-8">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
             <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
           </div>
           <div>
             <p className="text-sm font-semibold text-emerald-700">{reference(refill.id)}</p>
-            <h1 className="mt-1 text-2xl font-bold text-slate-950">Refill status</h1>
-            <p className="mt-1 text-sm text-slate-600">{result.pharmacy?.name || "Your pharmacy"}</p>
+            <h1 className="mt-1 text-2xl font-bold text-[var(--foreground)]">Refill status</h1>
+            <p className="mt-1 text-sm text-[var(--muted)]">{result.pharmacy?.name || "Your pharmacy"}</p>
           </div>
         </div>
 
         <dl className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Medicine</dt>
-            <dd className="mt-1 text-sm font-semibold text-slate-900">{refill.medicineName}</dd>
+          <div className="rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Medicine</dt>
+            <dd className="mt-1 text-sm font-semibold text-[var(--foreground)]">{refill.medicineName}</dd>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Status</dt>
+          <div className="rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Status</dt>
             <dd className="mt-2"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${meta.color}`}>{meta.label}</span></dd>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Collection</dt>
-            <dd className="mt-1 text-sm text-slate-800">{refill.pickupPreference === "delivery" ? "Delivery" : "Pickup"}{refill.preferredDate ? ` · ${refill.preferredDate.toLocaleDateString("en-KE")}` : ""}</dd>
+          <div className="rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Collection</dt>
+            <dd className="mt-1 text-sm text-[var(--foreground)]">{refill.pickupPreference === "delivery" ? "Delivery" : "Pickup"}{refill.preferredDate ? ` · ${refill.preferredDate.toLocaleDateString("en-KE")}` : ""}</dd>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <dt className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500"><Clock3 className="h-3.5 w-3.5" aria-hidden="true" />Last updated</dt>
-            <dd className="mt-1 text-sm text-slate-800">{refill.statusUpdatedAt.toLocaleString("en-KE")}</dd>
+          <div className="rounded-2xl border border-[var(--care-border)] bg-[var(--card-elev)]/80 p-4 backdrop-blur-md">
+            <dt className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]"><Clock3 className="h-3.5 w-3.5" aria-hidden="true" />Last updated</dt>
+            <dd className="mt-1 text-sm text-[var(--foreground)]">{refill.statusUpdatedAt.toLocaleString("en-KE")}</dd>
           </div>
         </dl>
 
-        <p className="mt-6 text-xs leading-5 text-slate-500">
+        <p className="mt-6 text-xs leading-5 text-[var(--muted)]">
           This link only reveals the minimum information needed to track this refill and expires automatically. It does not provide access to your wider health record.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">

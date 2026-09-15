@@ -3,7 +3,6 @@
 import { useState, type FormEvent } from "react";
 import TenantLink, { useTenantSlug } from "./TenantLink";
 import { FormSuccess, SelectInput, TextArea, TextInput } from "./FormField";
-import { jobs } from "../lib/data";
 
 type CareerRole = { id: string; title: string };
 
@@ -20,7 +19,7 @@ export default function CareerForm({
   const [fileName, setFileName] = useState("");
   const tenantSlug = useTenantSlug();
   const pharmacySlug = pharmacySlugProp || tenantSlug || undefined;
-  const roleOptions = roles?.length ? roles : jobs.map((job) => ({ id: job.id, title: job.title }));
+  const roleOptions = roles ?? [];
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

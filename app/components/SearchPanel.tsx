@@ -104,7 +104,7 @@ export default function SearchPanel({
           e.preventDefault();
           setTouched(true);
         }}
-        className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-3 shadow-sm sm:rounded-3xl sm:p-4"
+        className="liquid-glass care-glass rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-3 shadow-sm backdrop-blur-xl sm:rounded-3xl sm:p-4"
       >
         <div className="flex min-w-0 flex-col gap-2.5 sm:flex-row sm:items-center">
           <div className="relative min-w-0 flex-1">
@@ -130,7 +130,7 @@ export default function SearchPanel({
                 setTouched(true);
               }}
               placeholder="Search medicines, services, vaccines…"
-              className="min-h-12 w-full min-w-0 rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] py-3 pl-10 pr-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
+              className="min-h-12 w-full min-w-0 rounded-xl border border-[var(--care-border)] bg-[var(--card)] py-3 pl-10 pr-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
               aria-label="Search this pharmacy"
             />
           </div>
@@ -155,7 +155,7 @@ export default function SearchPanel({
                   setQuery(suggestion);
                   setTouched(true);
                 }}
-                className="min-h-9 shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold capitalize text-[var(--foreground)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
+                className="min-h-9 shrink-0 rounded-full border border-[var(--care-border)] bg-[var(--care-glass)] px-3.5 text-xs font-semibold capitalize text-[var(--foreground)] backdrop-blur-md transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
               >
                 {suggestion}
               </button>
@@ -274,7 +274,7 @@ function ResultCard({
   return (
     <Link
       href={href}
-      className="group block min-w-0 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-5"
+      className="liquid-glass care-glass group block min-w-0 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 shadow-sm backdrop-blur-xl transition hover:border-[var(--brand)] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-5"
     >
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0 flex-1">

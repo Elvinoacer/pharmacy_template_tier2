@@ -2700,9 +2700,15 @@ textarea.input-admin, textarea.input-premium { padding-top: 0.75rem; }
 
 /* Shared glass system. Solid fields keep long forms readable over the ambient canvas. */
 :root {
-  --glass-fill: rgba(255, 255, 255, .8);
+  --glass-fill: rgba(255, 255, 255, .74);
   --glass-edge: rgba(255, 255, 255, .88);
-  --glass-shadow: 0 12px 40px rgba(20, 66, 49, .075), inset 0 1px 0 rgba(255,255,255,.7);
+  --glass-edge-soft: rgba(255, 255, 255, .50);
+  --glass-shine: rgba(255, 255, 255, .65);
+  --glass-tint: rgba(185, 215, 204, .20);
+  --glass-glint: rgba(255, 255, 255, .80);
+  --glass-shadow: 0 12px 40px rgba(20, 66, 49, .085), inset 0 1px 0 rgba(255,255,255,.8);
+  --care-glass: rgba(255, 255, 255, .74);
+  --care-border: rgba(255, 255, 255, .82);
   --canvas-glow: rgba(71, 177, 135, .12);
   color-scheme: light;
 }
@@ -2721,9 +2727,15 @@ html[data-theme="dark"] {
   --brand-tint: #10291f;
   --line: rgba(175, 219, 198, .15);
   --line-2: rgba(175, 219, 198, .24);
-  --glass-fill: rgba(18, 37, 29, .84);
-  --glass-edge: rgba(181, 232, 208, .16);
-  --glass-shadow: 0 12px 40px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.055);
+  --glass-fill: rgba(18, 37, 29, .78);
+  --glass-edge: rgba(181, 232, 208, .22);
+  --glass-edge-soft: rgba(213, 255, 238, .15);
+  --glass-shine: rgba(212, 255, 234, .14);
+  --glass-tint: rgba(107, 169, 165, .12);
+  --glass-glint: rgba(188, 239, 217, .28);
+  --glass-shadow: 0 16px 45px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+  --care-glass: rgba(18, 37, 29, .78);
+  --care-border: rgba(181, 232, 208, .22);
   --canvas-glow: rgba(52, 160, 118, .12);
 }
 body { background: var(--background); color: var(--foreground); }
@@ -2731,15 +2743,35 @@ body { background: var(--background); color: var(--foreground); }
   background: radial-gradient(ellipse at 0 0, var(--canvas-glow), transparent 60%),
     radial-gradient(ellipse at 100% 80%, rgba(201,162,39,.065), transparent 55%), var(--background);
 }
-:where(.glass, .glass-panel, .glass-panel-strong, .card-premium, .card-stat, .page-hero-glass) {
-  background: var(--glass-fill);
+:where(.glass, .glass-panel, .glass-panel-strong, .glass-tile, .glass-tile-strong, .card-premium, .card-stat, .page-hero-glass, .liquid-glass, .care-glass) {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(135deg, var(--glass-shine), transparent 38%, var(--glass-tint) 100%), var(--glass-fill);
   border: 1px solid var(--glass-edge);
   box-shadow: var(--glass-shadow);
-  backdrop-filter: blur(18px) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+}
+:where(.glass, .glass-panel, .glass-panel-strong, .glass-tile, .glass-tile-strong, .card-premium, .card-stat, .liquid-glass, .care-glass)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(ellipse at var(--glass-x, 22%) var(--glass-y, 0%), var(--glass-glint), transparent 58%);
+  opacity: .65;
+  transition: opacity .4s ease;
+}
+:where(.glass, .glass-panel, .glass-panel-strong, .glass-tile, .glass-tile-strong, .card-premium, .card-stat, .liquid-glass, .care-glass):hover::before {
+  opacity: 1;
 }
 /* Match the specificity of the existing component rules. */
-.glass, .glass-panel, .glass-panel-strong, .card-premium, .card-stat { background: var(--glass-fill); border-color: var(--glass-edge); box-shadow: var(--glass-shadow); }
+.glass, .glass-panel, .glass-panel-strong, .card-premium, .card-stat, .liquid-glass, .care-glass {
+  background: linear-gradient(135deg, var(--glass-shine), transparent 38%, var(--glass-tint) 100%), var(--glass-fill);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-shadow);
+}
 .page-hero-glass { padding: clamp(1.25rem, 4vw, 3rem); border-radius: 1.75rem; }
 .admin-card { background: color-mix(in srgb, var(--admin-card) 86%, transparent); backdrop-filter: blur(16px); }
 .shell-header { background: var(--glass-fill); border-color: var(--line); backdrop-filter: blur(20px); }

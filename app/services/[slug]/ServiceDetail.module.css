@@ -1,10 +1,15 @@
+.sectionCard { composes: liquid from "../../components/care/LiquidGlass.module.css"; }
+.bookingCard { composes: liquid from "../../components/care/LiquidGlass.module.css"; }
+.contactCard { composes: liquid from "../../components/care/LiquidGlass.module.css"; }
+.detailCard { composes: liquid from "../../components/care/LiquidGlass.module.css"; }
+.relatedCard { composes: liquid from "../../components/care/LiquidGlass.module.css"; }
+.talkCard { composes: liquid from "../../components/care/LiquidGlass.module.css"; }
 .page {
   min-height: 100vh;
   overflow-x: hidden;
   background:
     radial-gradient(circle at 12% 6%, color-mix(in srgb, var(--brand-soft) 64%, transparent), transparent 26rem),
-    radial-gradient(circle at 92% 28%, color-mix(in srgb, var(--accent-soft) 30%, transparent), transparent 22rem),
-    var(--background);
+    radial-gradient(circle at 92% 28%, color-mix(in srgb, var(--accent-soft) 30%, transparent), transparent 22rem);
   color: var(--foreground);
 }
 

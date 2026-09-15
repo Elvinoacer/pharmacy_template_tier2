@@ -70,30 +70,30 @@ export function VaccinationBookingForm({
 
   if (bookable.length === 0) {
     return (
-      <div className="rounded-3xl border border-[#e3ebe6] bg-white p-8 text-center">
-        <p className="text-sm font-semibold text-[#0c1a14]">Online booking is not open for pharmacy-administered vaccines right now.</p>
-        <p className="mt-2 text-sm text-[#5a6b62]">Call us or request preventive counselling and referral.</p>
+      <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 text-center shadow-lg backdrop-blur-xl">
+        <p className="text-sm font-semibold text-[var(--foreground)]">Online booking is not open for pharmacy-administered vaccines right now.</p>
+        <p className="mt-2 text-sm text-[var(--muted)]">Call us or request preventive counselling and referral.</p>
         <TenantLink href="/preventive" className="btn-primary mt-5 inline-flex text-sm">Preventive services</TenantLink></div>
     );
   }
 
   if (state?.success || state?.appointmentId) {
     return (
-      <div className="rounded-3xl border border-white/60 bg-white p-8 shadow-sm">
-        <CheckCircle2 className="h-10 w-10 text-teal-700" />
-        <h2 className="mt-3 text-2xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+      <div className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-8 shadow-lg backdrop-blur-xl">
+        <CheckCircle2 className="h-10 w-10 text-[var(--brand)]" />
+        <h2 className="mt-3 text-2xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
           Request received
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">
+        <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
           {state.success || state.error}
         </p>
         {state.outcome && (
-          <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-teal-700">
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">
             Screening outcome: {state.outcome}
           </p>
         )}
         <div className="mt-6 flex flex-wrap gap-3">
-          <TenantLink href="/vaccinations" className="btn-primary inline-flex text-sm">Back to vaccines</TenantLink>    <Link href="/portal/vaccinations" className="inline-flex items-center rounded-full border border-teal-900/15 px-5 py-2.5 text-sm font-semibold text-[#084c3f]">
+          <TenantLink href="/vaccinations" className="btn-primary inline-flex text-sm">Back to vaccines</TenantLink>    <Link href="/portal/vaccinations" className="inline-flex items-center rounded-full border border-[var(--care-border)] bg-[var(--card)] px-5 py-2.5 text-sm font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]">
             View my immunisation record
           </Link>
         </div>
@@ -104,7 +104,7 @@ export function VaccinationBookingForm({
   const steps = ["Vaccine", "Your details", "Screening", "Consent"];
 
   return (
-    <form action={formAction} className="rounded-3xl border border-white/60 bg-white p-5 shadow-[0_16px_50px_rgba(8,40,32,0.08)] sm:p-8">
+    <form action={formAction} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-[0_16px_50px_rgba(8,40,32,0.08)] backdrop-blur-xl sm:p-8">
       <input type="hidden" name="vaccineSlug" value={slug} />
       <input type="hidden" name="campaignSlug" value={defaultCampaign || ""} />
 

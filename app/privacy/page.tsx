@@ -24,14 +24,14 @@ const sections = [
 ] as const;
 
 const sectionClass =
-  "glass-panel scroll-mt-28 rounded-2xl p-4 sm:rounded-3xl sm:p-6";
+  "liquid-glass care-glass scroll-mt-28 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:rounded-3xl sm:p-6";
 const headingClass =
   "text-base font-semibold leading-snug text-[var(--foreground)] sm:text-lg";
 const bodyClass = "mt-2 text-[13px] leading-6 text-[var(--muted)] sm:text-sm sm:leading-7";
 
 export default function PrivacyPage() {
   return (
-    <div className="aether-route-surface min-h-screen overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
+    <div className="aether-route-surface aether-artwork-surface min-h-screen bg-transparent overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Legal"
         title="Privacy Policy"
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
 
       <section className="px-3 pb-16 sm:px-6 sm:pb-20">
         <div className="mx-auto w-full max-w-4xl">
-          <div className="glass-panel-strong mb-5 rounded-2xl p-4 sm:mb-7 sm:p-5">
+          <div className="liquid-glass care-glass mb-5 rounded-2xl border border-[var(--care-border)] bg-[var(--care-glass)] p-4 backdrop-blur-xl shadow-sm sm:mb-7 sm:p-5">
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
                 <ShieldCheck className="h-5 w-5" aria-hidden="true" />

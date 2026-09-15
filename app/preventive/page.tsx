@@ -18,9 +18,6 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function PreventivePage() {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/preventive" />;
-
   const [campaigns, session] = await Promise.all([
     listPublicHealthCampaigns({ activeOnly: true }).catch(() => []),
     getSessionUser().catch(() => null),
