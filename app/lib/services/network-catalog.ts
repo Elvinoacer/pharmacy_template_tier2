@@ -95,6 +95,7 @@ export async function listNetworkMedicineListings(opts?: {
     const pharmacyFilter = pharmacyWhere(pharmacySlug);
 
     const medicationMaster = {
+      status: "active",
       ...(category && category !== "all" ? { category } : {}),
       ...(q
         ? {
@@ -113,7 +114,7 @@ export async function listNetworkMedicineListings(opts?: {
       publicListing: true,
       ...(opts?.inStock ? { currentStock: { gt: 0 } } : {}),
       pharmacy: pharmacyFilter,
-      ...(Object.keys(medicationMaster).length > 0 ? { medicationMaster } : {}),
+      medicationMaster,
     };
 
     const origin = opts?.origin;
@@ -174,6 +175,7 @@ export async function listNetworkMedicineListings(opts?: {
       }),
       prismaUnscoped.medicationMaster.findMany({
         where: {
+          status: "active",
           pharmacyInventory: {
             some: {
               active: true,

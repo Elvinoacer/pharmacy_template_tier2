@@ -158,6 +158,7 @@ export async function POST(request: Request) {
                   : {}),
               },
               medicationMaster: {
+                status: "active",
                 OR: [
                   { name: { contains: term, mode: "insensitive" } },
                   { genericName: { contains: term, mode: "insensitive" } },

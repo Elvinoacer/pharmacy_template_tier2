@@ -154,6 +154,8 @@ const CATEGORY_ALIAS_MAP: Record<string, string> = {
   vitamins: "nutritional-products",
 };
 
+import { QUALIFYING_PHARMACY_WHERE } from "@/app/lib/services/public-medication-visibility";
+
 /**
  * Public-facing categories for /medicines browse cards.
  * Active + publicVisible only, ordered by sortOrder.
@@ -165,9 +167,17 @@ export async function listPublicCategories(): Promise<PublicCategory[]> {
   });
 
   // Count public inventory per category slug (master.category).
+  // Strictly requires canonical master status=active and qualifying pharmacy inventory.
   const publicMasters = await prisma.medicationMaster.findMany({
     where: {
-      pharmacyInventory: { some: { publicListing: true, active: true } },
+      status: "active",
+      pharmacyInventory: {
+        some: {
+          publicListing: true,
+          active: true,
+          pharmacy: QUALIFYING_PHARMACY_WHERE,
+        },
+      },
     },
     select: { category: true },
   });
@@ -227,7 +237,14 @@ export async function getPublicCategoryBySlug(
   const publicMedCount = await prisma.medicationMaster.count({
     where: {
       category: c.slug,
-      pharmacyInventory: { some: { publicListing: true, active: true } },
+      status: "active",
+      pharmacyInventory: {
+        some: {
+          publicListing: true,
+          active: true,
+          pharmacy: QUALIFYING_PHARMACY_WHERE,
+        },
+      },
     },
   });
 

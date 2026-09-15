@@ -13,10 +13,15 @@ export async function publicStorefrontMedicines(slug: string, q = "", page = 1, 
     where: {
       pharmacyId, active: true, publicListing: true,
       ...(detail ? { slug: detail } : {}),
-      ...(q.trim() ? { medicationMaster: { OR: [
-        { name: { contains: q.trim().slice(0, 120), mode: "insensitive" as const } },
-        { genericName: { contains: q.trim().slice(0, 120), mode: "insensitive" as const } },
-      ] } } : {}),
+      medicationMaster: {
+        status: "active",
+        ...(q.trim() ? {
+          OR: [
+            { name: { contains: q.trim().slice(0, 120), mode: "insensitive" as const } },
+            { genericName: { contains: q.trim().slice(0, 120), mode: "insensitive" as const } },
+          ],
+        } : {}),
+      },
     },
     select: {
       id: true, slug: true, price: true, prescriptionRequired: true,

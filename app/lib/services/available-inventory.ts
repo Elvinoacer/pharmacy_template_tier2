@@ -11,6 +11,7 @@ export async function findAvailableInventory(ids: string[]) {
         publicListing: true,
         currentStock: { gt: 0 },
         pharmacy: { status: "active", listed: true, verifiedAt: { not: null } },
+        medicationMaster: { status: "active" },
       },
       select: {
         id: true,

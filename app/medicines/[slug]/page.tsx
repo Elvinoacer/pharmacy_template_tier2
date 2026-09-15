@@ -36,6 +36,10 @@ import { getPublicCategoryBySlug } from "../../lib/medication-categories";
 import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
 import { getMedicationCounsellingBySlug } from "../../lib/services/medication-counselling-db";
 import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
+import {
+  buildPublicInventoryWhere,
+  getPublicMedicineRelated,
+} from "../../lib/services/public-medication-visibility";
 
 type Props = { params: Promise<{ slug: string; pharmacySlug?: string }> };
 
@@ -60,10 +64,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const med = await prisma.pharmacyInventory
     .findFirst({
-      where: {
+      where: buildPublicInventoryWhere({
         slug,
-        ...(pharmacy?.id ? { pharmacyId: pharmacy.id } : {}),
-      },
+        pharmacyId: pharmacy?.id,
+        pharmacySlug: propPharmacySlug,
+      }),
       include: {
         pharmacy: { select: { name: true, city: true, county: true, latitude: true, longitude: true } },
         medicationMaster: {
@@ -73,7 +78,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     })
     .catch(() => null);
 
-  if (!med) return { title: "Medicine" };
+  if (!med) return { title: "Medicine Not Found", robots: { index: false, follow: false } };
 
   const locationStr = [med.pharmacy?.city, med.pharmacy?.county, "Kenya"].filter(Boolean).join(", ");
   const coordinates =
@@ -122,12 +127,10 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
     const otcGuidance = getOtcCategoryGuidance(cat.slug);
     const rows = await prisma.pharmacyInventory
       .findMany({
-        where: {
+        where: buildPublicInventoryWhere({
           pharmacyId,
-          publicListing: true,
-          active: true,
-          medicationMaster: { category: cat.slug },
-        },
+          category: cat.slug,
+        }),
         include: {
           medicationMaster: {
             select: {
@@ -389,7 +392,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
   // ── INDIVIDUAL MEDICINE PRODUCT DETAIL ──
   const med = await prisma.pharmacyInventory
     .findFirst({
-      where: { pharmacyId, slug, active: true },
+      where: buildPublicInventoryWhere({ pharmacyId, slug }),
       include: {
         medicationMaster: {
           select: {
@@ -415,26 +418,13 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
   if (!med) notFound();
 
   const altIds = (med.medicationMaster.alternativeIds || "").split(/[,\s]+/).map((value) => value.trim()).filter(Boolean);
-  const alternatives = altIds.length
-    ? await prisma.pharmacyInventory.findMany({
-        where: { pharmacyId, medicationMasterId: { in: altIds }, active: true },
-        include: { medicationMaster: { select: { name: true, imageUrl: true } } },
-        take: 6,
-      }).catch(() => [])
-    : [];
-  const related = alternatives.length
-    ? alternatives
-    : await prisma.pharmacyInventory.findMany({
-        where: {
-          pharmacyId,
-          medicationMaster: { category: med.medicationMaster.category },
-          id: { not: med.id },
-          active: true,
-          OR: [{ publicListing: true }, { overTheCounter: true }],
-        },
-        include: { medicationMaster: { select: { name: true, imageUrl: true } } },
-        take: 4,
-      }).catch(() => []);
+  const related = await getPublicMedicineRelated({
+    pharmacyId,
+    category: med.medicationMaster.category,
+    currentInventoryId: med.id,
+    alternativeMasterIds: altIds,
+    take: 4,
+  }).catch(() => []);
 
   const categoryLabel = med.medicationMaster.category.replace(/-/g, " ");
   const categoryHref = `${base}/medicines?category=${encodeURIComponent(med.medicationMaster.category)}`;

@@ -795,6 +795,7 @@ model User {
   sensitiveAccessLogs   SensitiveAccessLog[]
   dataExportRequests    DataExportRequest[]     @relation("DataExportActor")
   dataDeletionRequests  DataDeletionRequest[]   @relation("DataDeletionActor")
+  medicationImports     MedicationImportBatch[] @relation("MedicationImportActor")
 
   @@index([platformRole])
   @@map("users")
@@ -1877,6 +1878,10 @@ model MedicationMaster {
   enrichedAt      DateTime? @map("enriched_at")
   /// Phase 6 acquisition tracking (Decision D15).
   acquisitionMethod String @default("unknown") @map("acquisition_method")
+  /// Canonical lifecycle: active | needs_review | deprecated | archived
+  status          String   @default("active")
+  /// Pointer if this record was merged into another master
+  mergedIntoId    String?  @map("merged_into_id") @db.Uuid
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
@@ -1889,12 +1894,19 @@ model MedicationMaster {
   interactionsA   MedicationInteraction[] @relation("InteractionA")
   interactionsB   MedicationInteraction[] @relation("InteractionB")
   pharmacyInventory PharmacyInventory[]
+  mergedInto      MedicationMaster? @relation("MedicationMerge", fields: [mergedIntoId], references: [id], onDelete: SetNull)
+  mergedDuplicates MedicationMaster[] @relation("MedicationMerge")
 
   @@index([genericName])
   @@index([category])
   @@index([controlledDrug])
   @@index([enrichmentStatus])
   @@index([acquisitionMethod])
+  @@index([status])
+  @@index([name])
+  @@index([dosageFormId])
+  @@index([manufacturerId])
+  @@index([createdAt(sort: Desc)])
   @@map("medication_masters")
 }
 
@@ -1929,7 +1941,7 @@ model PharmacyInventory {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  medicationMaster MedicationMaster @relation(fields: [medicationMasterId], references: [id], onDelete: Cascade)
+  medicationMaster MedicationMaster @relation(fields: [medicationMasterId], references: [id], onDelete: Restrict)
   lots            InventoryLot[]
   movements       StockMovement[]
   orderItems      OrderItem[]
@@ -2134,6 +2146,26 @@ model MedicationLookup {
   @@unique([kind, slug])
   @@index([kind, active])
   @@map("medication_lookups")
+}
+
+// ── Shared medication platform import batches ─────────────────
+model MedicationImportBatch {
+  id            String   @id @default(uuid()) @db.Uuid
+  actorId       String?  @map("actor_id") @db.Uuid
+  filename      String?
+  totalRows     Int      @default(0) @map("total_rows")
+  createdCount  Int      @default(0) @map("created_count")
+  matchedCount  Int      @default(0) @map("matched_count")
+  reviewCount   Int      @default(0) @map("review_count")
+  errorCount    Int      @default(0) @map("error_count")
+  errors        Json?    @default("[]")
+  summary       Json?    @default("{}")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  actor         User?    @relation("MedicationImportActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt(sort: Desc)])
+  @@map("medication_import_batches")
 }
 
 // ── Orders & Payments (POS / OTC / Refills) ──────────────────

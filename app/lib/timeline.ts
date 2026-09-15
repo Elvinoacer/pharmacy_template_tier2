@@ -1,5 +1,6 @@
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/app/lib/db";
+import { withPlatformBypass, peekTenant } from "@/app/lib/tenant-context";
 
 /** Loose UUID check — AuditLog.entityId is @db.Uuid, so non-UUIDs must not be written there. */
 const UUID_RE =
@@ -38,8 +39,6 @@ export async function addTimelineEvent(
  *
  * `entityId` must be a UUID when provided — the column is `@db.Uuid`.
  * Non-UUID identifiers (R2 keys, slugs, free-text refs) belong in `details`.
- * Invalid values are dropped (and optionally preserved under details.entityRef)
- * so a bad call never crashes the parent action.
  */
 export async function writeAuditLog(
   actorId: string | null,
@@ -55,13 +54,21 @@ export async function writeAuditLog(
     safeDetails.entityRef = entityId;
   }
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: asUuidOrUndefined(actorId) ?? null,
-      action,
-      entityType: entityType ?? null,
-      entityId: safeEntityId ?? null,
-      details: safeDetails as Prisma.InputJsonValue,
-    },
-  });
+  const run = () =>
+    prisma.auditLog.create({
+      data: {
+        actorId: asUuidOrUndefined(actorId) ?? null,
+        action,
+        entityType: entityType ?? null,
+        entityId: safeEntityId ?? null,
+        details: safeDetails as Prisma.InputJsonValue,
+      },
+    });
+
+  const tenant = peekTenant();
+  if (!tenant?.pharmacyId && !tenant?.bypass) {
+    await withPlatformBypass(run);
+  } else {
+    await run();
+  }
 }

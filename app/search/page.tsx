@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
+import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-visibility";
+
 type Props = { searchParams: Promise<{ q?: string }> };
 
 export default async function SearchPage({ searchParams }: Props) {
@@ -22,13 +24,15 @@ export default async function SearchPage({ searchParams }: Props) {
   const base = pharmacy ? `/p/${pharmacy.slug}` : "";
   const { q } = await searchParams;
 
-  const db = pharmacy ? prisma : prismaUnscoped;
   const [services, vaccines, medicines, categories] = await Promise.all([
     listPublicServices().catch(() => []),
     listPublicVaccines().catch(() => []),
-    db.pharmacyInventory
+    prismaUnscoped.pharmacyInventory
       .findMany({
-        where: { active: true, publicListing: true },
+        where: buildPublicInventoryWhere({
+          pharmacyId: pharmacy?.id,
+          pharmacySlug: pharmacy?.slug,
+        }),
         select: {
           slug: true,
           overTheCounter: true,

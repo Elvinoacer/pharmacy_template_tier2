@@ -3,6 +3,7 @@ import "server-only";
 import { prismaUnscoped } from "@/app/lib/db/prisma";
 import { formatPrice } from "@/app/lib/format";
 import { listPharmacyDirectory } from "@/app/lib/services/pharmacy-directory";
+import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-visibility";
 
 export type AssistMedicineMatch = {
   slug: string;
@@ -64,10 +65,9 @@ export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatc
     const [inventoryRows, directoryRows] = await Promise.all([
       prismaUnscoped.pharmacyInventory.findMany({
         where: {
-          active: true,
-          publicListing: true,
-          pharmacy: { status: "active", listed: true },
+          ...buildPublicInventoryWhere(),
           medicationMaster: {
+            status: "active",
             OR: [
               { name: { contains: query, mode: "insensitive" } },
               { genericName: { contains: query, mode: "insensitive" } },

@@ -27,9 +27,15 @@ const DEFAULT_LIMIT = 5;
 const HARD_LIMIT = 8;
 const DESC_MAX = 160;
 
+import {
+  QUALIFYING_PHARMACY_WHERE,
+  QUALIFYING_MEDICATION_MASTER_WHERE,
+} from "@/app/lib/services/public-medication-visibility";
+
 const PUBLIC_INVENTORY_WHERE = {
   publicListing: true,
   active: true,
+  pharmacy: QUALIFYING_PHARMACY_WHERE,
 } as const;
 
 function normalizeQuery(raw: string): string {
@@ -122,6 +128,7 @@ export async function searchPublicMedications(
     where: {
       ...PUBLIC_INVENTORY_WHERE,
       medicationMaster: {
+        ...QUALIFYING_MEDICATION_MASTER_WHERE,
         OR: [
           { name: { contains: query, mode: "insensitive" } },
           { genericName: { contains: query, mode: "insensitive" } },
@@ -166,6 +173,7 @@ export async function getPublicMedicationBySlug(
     where: {
       ...PUBLIC_INVENTORY_WHERE,
       slug,
+      medicationMaster: QUALIFYING_MEDICATION_MASTER_WHERE,
     },
     select: {
       slug: true,

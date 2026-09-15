@@ -13,6 +13,7 @@ import {
   RotateCcw,
   Upload,
 } from "lucide-react";
+import { MAX_PHARMACY_CSV_IMPORT_ROWS } from "@/app/lib/medication-import-limits";
 
 type SystemField = {
   key: string;
@@ -128,8 +129,8 @@ export function CsvImportFlow() {
         setError("The CSV file appears to be empty.");
         return;
       }
-      if (parsed.rows.length > 1000) {
-        setError("This importer accepts up to 1000 rows per batch. Split the file and try again.");
+      if (parsed.rows.length > MAX_PHARMACY_CSV_IMPORT_ROWS) {
+        setError(`This importer accepts up to ${MAX_PHARMACY_CSV_IMPORT_ROWS} rows per batch. Split the file and try again.`);
         return;
       }
 

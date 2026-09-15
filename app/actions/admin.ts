@@ -1520,35 +1520,84 @@ export async function adminCreateMedicationAction(
     if (masterId && inventoryId) {
       // Update both models in a transaction.
       await prisma.$transaction(async (tx) => {
-        await tx.medicationMaster.update({ where: { id: masterId }, data: masterData });
+        const currentMaster = await tx.medicationMaster.findUnique({ where: { id: masterId } });
+        const sharedInventoryCount = await tx.pharmacyInventory.count({ where: { medicationMasterId: masterId } });
+        const isSharedOrPlatform =
+          sharedInventoryCount > 1 ||
+          currentMaster?.acquisitionMethod === "platform_csv_import" ||
+          currentMaster?.status === "active";
+
+        if (isSharedOrPlatform && currentMaster) {
+          // Shared or platform canonical master: only enrich missing/blank fields.
+          // Never overwrite existing clinical fields or change status/acquisition.
+          const enrichData: Record<string, unknown> = {};
+          for (const [k, v] of Object.entries(masterData)) {
+            if (["acquisitionMethod", "status", "mergedIntoId"].includes(k)) continue;
+            const existingVal = (currentMaster as Record<string, unknown>)[k];
+            if ((existingVal == null || existingVal === "") && v != null && v !== "") {
+              enrichData[k] = v;
+            }
+          }
+          if (Object.keys(enrichData).length > 0) {
+            await tx.medicationMaster.update({ where: { id: masterId }, data: enrichData });
+          }
+
+          // Append relational links without deleting existing ingredients/tags
+          if (parsed.activeIngredientIds.length > 0) {
+            for (const ingId of parsed.activeIngredientIds) {
+              const exists = await tx.medicationActiveIngredient.findFirst({
+                where: { medicationMasterId: masterId, activeIngredientId: ingId },
+              });
+              if (!exists) {
+                await tx.medicationActiveIngredient.create({
+                  data: {
+                    medicationMasterId: masterId,
+                    activeIngredientId: ingId,
+                  },
+                });
+              }
+            }
+          }
+
+          if (parsed.clinicalTagIds.length > 0) {
+            await tx.medicationClinicalTag.createMany({
+              data: parsed.clinicalTagIds.map((id) => ({
+                medicationMasterId: masterId,
+                clinicalTagId: id,
+              })),
+              skipDuplicates: true,
+            });
+          }
+        } else {
+          // Dedicated pharmacy custom master: full update allowed
+          await tx.medicationMaster.update({ where: { id: masterId }, data: masterData });
+
+          // Sync relational fields (replace strategy).
+          await tx.medicationActiveIngredient.deleteMany({ where: { medicationMasterId: masterId } });
+          if (parsed.activeIngredientIds.length > 0) {
+            await tx.medicationActiveIngredient.createMany({
+              data: parsed.activeIngredientIds.map((id) => ({
+                medicationMasterId: masterId,
+                activeIngredientId: id,
+              })),
+              skipDuplicates: true,
+            });
+          }
+
+          await tx.medicationClinicalTag.deleteMany({ where: { medicationMasterId: masterId } });
+          if (parsed.clinicalTagIds.length > 0) {
+            await tx.medicationClinicalTag.createMany({
+              data: parsed.clinicalTagIds.map((id) => ({
+                medicationMasterId: masterId,
+                clinicalTagId: id,
+              })),
+              skipDuplicates: true,
+            });
+          }
+        }
+
+        // Always update pharmacy's own inventory row
         await tx.pharmacyInventory.update({ where: { id: inventoryId }, data: inventoryData });
-
-        // Sync relational fields (replace strategy).
-        if (parsed.activeIngredientIds.length > 0) {
-          await tx.medicationActiveIngredient.deleteMany({ where: { medicationMasterId: masterId } });
-          await tx.medicationActiveIngredient.createMany({
-            data: parsed.activeIngredientIds.map((id) => ({
-              medicationMasterId: masterId,
-              activeIngredientId: id,
-            })),
-            skipDuplicates: true,
-          });
-        } else {
-          await tx.medicationActiveIngredient.deleteMany({ where: { medicationMasterId: masterId } });
-        }
-
-        if (parsed.clinicalTagIds.length > 0) {
-          await tx.medicationClinicalTag.deleteMany({ where: { medicationMasterId: masterId } });
-          await tx.medicationClinicalTag.createMany({
-            data: parsed.clinicalTagIds.map((id) => ({
-              medicationMasterId: masterId,
-              clinicalTagId: id,
-            })),
-            skipDuplicates: true,
-          });
-        } else {
-          await tx.medicationClinicalTag.deleteMany({ where: { medicationMasterId: masterId } });
-        }
       });
       await writeAuditLog(user.id, "medication_updated", "medication_master", masterId, {
         inventoryId,
@@ -1629,17 +1678,10 @@ export async function adminDeleteMedicationAction(formData: FormData) {
         linkedPrescriptions,
       });
     } else {
-      // Hard delete: remove inventory + master (master cascades via FK ON DELETE CASCADE).
-      const inv = await prisma.pharmacyInventory.findUnique({
-        where: { id: inventoryId },
-        select: { medicationMasterId: true },
-      });
-      if (inv) {
-        await prisma.pharmacyInventory.delete({ where: { id: inventoryId } });
-        // Delete the master too (only this pharmacy stocked it).
-        await prisma.medicationMaster.deleteMany({ where: { id: inv.medicationMasterId } }).catch(() => {});
-        await writeAuditLog(user.id, "medication_deleted", "pharmacy_inventory", inventoryId);
-      }
+      // Hard delete: remove only the pharmacy inventory record.
+      // The shared MedicationMaster belongs to the canonical platform library and must never be deleted here.
+      await prisma.pharmacyInventory.delete({ where: { id: inventoryId } });
+      await writeAuditLog(user.id, "medication_deleted", "pharmacy_inventory", inventoryId);
     }
   } catch (e) {
     console.error("[adminDeleteMedicationAction]", e);

@@ -22,11 +22,13 @@ import {
   Users,
   Webhook,
   X,
+  Pill,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 
 export const PLATFORM_NAV = [
   { href: "/platform", label: "Overview", icon: LayoutDashboard },
+  { href: "/platform/medications", label: "Medications", icon: Pill },
   { href: "/platform/applications", label: "Applications", icon: ClipboardCheck },
   { href: "/platform/careers", label: "Careers", icon: BriefcaseBusiness },
   { href: "/platform/pharmacies", label: "Pharmacies", icon: Store },
@@ -44,7 +46,7 @@ export const PLATFORM_NAV = [
 ] as const;
 
 const groups = [
-  { label: "Daily work", paths: ["/platform", "/platform/applications", "/platform/careers", "/platform/pharmacies", "/platform/users"] },
+  { label: "Daily work", paths: ["/platform", "/platform/medications", "/platform/applications", "/platform/careers", "/platform/pharmacies", "/platform/users"] },
   { label: "Operations", paths: ["/platform/billing", "/platform/plans", "/platform/jobs", "/platform/notifications", "/platform/integrations", "/platform/webhooks"] },
   { label: "Security & settings", paths: ["/platform/security", "/platform/audit", "/platform/compliance", "/platform/feature-flags"] },
 ];

@@ -15,6 +15,8 @@ import { Store, MapPin, ArrowUpRight, Phone, Camera } from "lucide-react";
 import { publicPharmacyProfile } from "@/app/lib/services/public-pharmacy-profile";
 import { publicStorefrontMedicines, publicStorefrontServices } from "@/app/lib/services/public-storefront-catalog";
 import { publicStorefrontRoute } from "@/app/lib/public-storefront";
+import { prismaUnscoped } from "@/app/lib/db";
+import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-visibility";
 import styles from "../Storefront.module.css";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +45,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await publicPharmacyProfile(slug);
   if (!data) notFound();
   const p = data.profile;
+
+  if (route.section === "medicines" && route.detail) {
+    const med = await prismaUnscoped.pharmacyInventory.findFirst({
+      where: buildPublicInventoryWhere({
+        slug: route.detail,
+        pharmacyId: p.id,
+      }),
+      include: {
+        medicationMaster: { select: { name: true, description: true, imageUrl: true } },
+      },
+    });
+    if (!med) notFound();
+    const medTitle = `${med.medicationMaster.name} · ${p.name}`;
+    const medDesc = med.medicationMaster.description || `Buy ${med.medicationMaster.name} online at ${p.name}.`;
+    const medImages = med.medicationMaster.imageUrl ? [med.medicationMaster.imageUrl] : p.coverImageUrl ? [p.coverImageUrl] : [];
+    return {
+      title: { absolute: medTitle },
+      description: medDesc,
+      alternates: { canonical: `/p/${p.slug}/medicines/${encodeURIComponent(med.slug)}` },
+      openGraph: { title: medTitle, description: medDesc, images: medImages },
+      twitter: { title: medTitle, description: medDesc, images: medImages },
+    };
+  }
+
   const title = `${route.section === "home" ? "Overview" : route.section[0].toUpperCase() + route.section.slice(1)} · ${p.name}`;
   const description = p.description || `Explore medicines, services and visiting information published by ${p.name}.`;
   const images = p.coverImageUrl ? [p.coverImageUrl] : [];

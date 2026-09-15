@@ -9,6 +9,7 @@ import { getSessionUser } from "@/app/lib/auth";
 import { ShoppingBag, ShieldCheck, Clock } from "lucide-react";
 import ChoosePharmacy from "@/app/components/ChoosePharmacy";
 import { loadStorefront } from "@/app/components/StorefrontGate";
+import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-visibility";
 
 export const metadata: Metadata = {
   title: "Order OTC medication",
@@ -32,20 +33,22 @@ export default async function GuestOrderPage({
   const preselected = sp.medicationId
     ? await prisma.pharmacyInventory.findFirst({
         where: {
-          id: sp.medicationId,
-          active: true,
+          ...buildPublicInventoryWhere({
+            id: sp.medicationId,
+            pharmacyId: pharmacy.id,
+          }),
           overTheCounter: true,
-          publicListing: true,
         },
         include: { medicationMaster: { select: { name: true } } },
       })
     : sp.slug
       ? await prisma.pharmacyInventory.findFirst({
           where: {
-            slug: sp.slug,
-            active: true,
+            ...buildPublicInventoryWhere({
+              slug: sp.slug,
+              pharmacyId: pharmacy.id,
+            }),
             overTheCounter: true,
-            publicListing: true,
           },
           include: { medicationMaster: { select: { name: true } } },
         })
@@ -53,10 +56,11 @@ export default async function GuestOrderPage({
 
   const otcMeds = await prisma.pharmacyInventory.findMany({
     where: {
-      active: true,
+      ...buildPublicInventoryWhere({
+        pharmacyId: pharmacy.id,
+        inStock: true,
+      }),
       overTheCounter: true,
-      publicListing: true,
-      currentStock: { gt: 0 },
     },
     include: { medicationMaster: { select: { name: true } } },
     orderBy: { medicationMaster: { name: "asc" } },

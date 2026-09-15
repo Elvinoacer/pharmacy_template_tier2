@@ -8,6 +8,7 @@ import {
   medicationSlug,
   type SharedMedicationMasterInput,
 } from "@/app/lib/services/shared-medication-library";
+import { MAX_PHARMACY_CSV_IMPORT_ROWS } from "@/app/lib/medication-import-limits";
 
 export const runtime = "nodejs";
 
@@ -32,7 +33,7 @@ const ImportRow = z.object({
 });
 
 const Body = z.object({
-  rows: z.array(ImportRow).min(1).max(500),
+  rows: z.array(ImportRow).min(1).max(MAX_PHARMACY_CSV_IMPORT_ROWS),
 });
 
 export async function POST(req: Request) {
