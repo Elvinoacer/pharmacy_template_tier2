@@ -123,6 +123,39 @@ async function main() {
     await prisma.user.deleteMany().catch(() => {});
   }
 
+  // Seed default medication lookups
+  const DEFAULT_LOOKUPS = [
+    { kind: "dosage_form", value: "Tablet", slug: "tablet", sortOrder: 10 },
+    { kind: "dosage_form", value: "Capsule", slug: "capsule", sortOrder: 20 },
+    { kind: "dosage_form", value: "Syrup", slug: "syrup", sortOrder: 30 },
+    { kind: "dosage_form", value: "Injection", slug: "injection", sortOrder: 40 },
+    { kind: "dosage_form", value: "Cream", slug: "cream", sortOrder: 50 },
+    { kind: "dosage_form", value: "Ointment", slug: "ointment", sortOrder: 60 },
+    { kind: "dosage_form", value: "Eye Drops", slug: "eye-drops", sortOrder: 70 },
+    { kind: "dosage_form", value: "Ear Drops", slug: "ear-drops", sortOrder: 80 },
+    { kind: "dosage_form", value: "Nasal Spray", slug: "nasal-spray", sortOrder: 90 },
+    { kind: "dosage_form", value: "Suspension", slug: "suspension", sortOrder: 100 },
+    { kind: "dosage_form", value: "Inhaler", slug: "inhaler", sortOrder: 110 },
+    { kind: "dosage_form", value: "Sachet", slug: "sachet", sortOrder: 120 },
+    { kind: "route", value: "Oral", slug: "oral", sortOrder: 10 },
+    { kind: "route", value: "Topical", slug: "topical", sortOrder: 20 },
+    { kind: "route", value: "Intravenous", slug: "intravenous", sortOrder: 30 },
+    { kind: "route", value: "Intramuscular", slug: "intramuscular", sortOrder: 40 },
+    { kind: "route", value: "Inhalation", slug: "inhalation", sortOrder: 50 },
+    { kind: "pregnancy_category", value: "A", slug: "a", sortOrder: 10 },
+    { kind: "pregnancy_category", value: "B", slug: "b", sortOrder: 20 },
+    { kind: "pregnancy_category", value: "C", slug: "c", sortOrder: 30 },
+    { kind: "pregnancy_category", value: "D", slug: "d", sortOrder: 40 },
+    { kind: "pregnancy_category", value: "X", slug: "x", sortOrder: 50 },
+  ];
+  for (const l of DEFAULT_LOOKUPS) {
+    await prisma.medicationLookup.upsert({
+      where: { kind_slug: { kind: l.kind as any, slug: l.slug } },
+      create: { kind: l.kind as any, value: l.value, slug: l.slug, sortOrder: l.sortOrder, active: true },
+      update: {},
+    });
+  }
+
   const password = await hash("Password123!");
 
   const AETHER_ID = "00000000-0000-4000-a000-000000000001";

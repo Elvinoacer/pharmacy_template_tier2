@@ -141,14 +141,7 @@
   transition: transform .5s cubic-bezier(.2,.8,.2,1), background .3s;
 }
 .experience :global(.theme-toggle:hover) { transform: rotate(12deg); }
-.experience :global([data-care-reveal="waiting"]) { opacity: 0; transform: translateY(22px); }
-.experience :global([data-care-reveal="visible"]) { animation: liquidArrive .85s var(--reveal-delay, 0ms) cubic-bezier(.16,1,.3,1) both; }
-@keyframes liquidArrive {
-  from { opacity: 0; transform: translateY(22px) scale(.985); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
 @media (prefers-reduced-motion: reduce) {
-  .experience :global([data-care-reveal]) { opacity: 1; transform: none; animation: none; }
   .experience :global(.theme-toggle) { transition: none; }
   .experience :global(.theme-toggle:hover) { transform: none; }
 }

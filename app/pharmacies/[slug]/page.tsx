@@ -15,13 +15,45 @@ import {
 } from "lucide-react";
 import ContactForm from "@/app/components/ContactForm";
 import { publicPharmacyProfile } from "@/app/lib/services/public-pharmacy-profile";
+import type { Metadata } from "next";
 import styles from "./PharmacyProfile.module.css";
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "About your pharmacy",
-  description:
-    "Explore pharmacy contact details, directions, opening hours, enquiries and photographs.",
-};
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await publicPharmacyProfile(slug);
+  if (!data) return { title: "Pharmacy" };
+  const p = data.profile;
+  const locationStr = [p.address.city, p.address.state, "Kenya"].filter(Boolean).join(", ");
+  const title = `${p.name} — Pharmacy, Medicines & Care Services in ${locationStr}`;
+  const description = `${p.name}: Licensed local pharmacy in ${locationStr}. Browse in-stock medicines, clinical services, prescription refills, and home delivery.`;
+  const coordinates = p.latitude != null && p.longitude != null ? `${p.latitude};${p.longitude}` : undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/pharmacies/${slug}` },
+    openGraph: {
+      title,
+      description,
+      images: p.coverImageUrl ? [p.coverImageUrl] : undefined,
+      type: "website",
+    },
+    other: coordinates
+      ? {
+          "geo.position": coordinates,
+          "geo.region": "KE",
+          "geo.placename": p.address.city || "Kenya",
+          "ICBM": `${p.latitude}, ${p.longitude}`,
+        }
+      : undefined,
+  };
+}
+
 export default async function PharmacyProfilePage({
   params,
 }: {
@@ -43,8 +75,56 @@ export default async function PharmacyProfilePage({
   const hasLocation = Boolean(
     p.address.street || p.address.city || p.latitude != null,
   );
+
+  const pharmacyJsonLd = {
+    "@context": "https://schema.org",
+    "@type": ["Pharmacy", "MedicalBusiness"],
+    name: p.name,
+    description: p.description || p.tagline,
+    image: p.coverImageUrl || p.logoUrl || undefined,
+    telephone: p.phone || undefined,
+    email: p.email || undefined,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: p.address.street || undefined,
+      addressLocality: p.address.city || undefined,
+      addressRegion: p.address.state || undefined,
+      addressCountry: "KE",
+    },
+    ...(p.latitude != null && p.longitude != null
+      ? {
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: p.latitude,
+            longitude: p.longitude,
+          },
+        }
+      : {}),
+    priceRange: "KES",
+    openingHours: p.hours?.map((h: { day: string; time: string }) => `${h.day} ${h.time}`).join(", "),
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `${p.name} Catalogue`,
+      itemListElement: [
+        {
+          "@type": "OfferCatalog",
+          name: "Pharmacy Care Services",
+          url: `/p/${slug}/services`,
+        },
+        {
+          "@type": "OfferCatalog",
+          name: "In-Stock Medicines & OTC Healthcare",
+          url: `/p/${slug}/medicines`,
+        },
+      ],
+    },
+  };
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacyJsonLd) }}
+      />
       <Link href="/medicines" className={styles.back}>
         <ArrowLeft size={15} aria-hidden /> Back to medicines
       </Link>

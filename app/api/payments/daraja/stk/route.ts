@@ -35,7 +35,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_body", message: "Invalid request." }, { status: 400 });
   }
 
-  const response = await withAuthorizedPayment({ orderId: parsed.orderId, accessToken: parsed.accessToken }, async () => {
+  const response = await withAuthorizedPayment(
+    { orderId: parsed.orderId, accessToken: parsed.accessToken, phone: parsed.phone },
+    async () => {
     const session = await getSessionUser().catch(() => null);
     const staff = session ? isStaff(session.role) : false;
 

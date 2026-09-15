@@ -18,10 +18,13 @@ export const metadata: Metadata = {
 };
 
 const pageShell =
-  "overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300";
+  "aether-route-surface min-h-screen overflow-x-hidden text-[var(--foreground)] transition-colors duration-300";
 
 const adaptiveCard =
-  "rounded-[1.35rem] border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition-colors duration-300 sm:rounded-3xl";
+  "care-glass rounded-[1.35rem] transition-colors duration-300 sm:rounded-3xl";
+
+const storyPanel =
+  "care-glass mx-auto grid max-w-6xl gap-6 rounded-[1.5rem] p-4 sm:gap-8 sm:rounded-[2rem] sm:p-6 lg:grid-cols-2 lg:items-center lg:gap-10 lg:p-8";
 
 function NetworkAbout() {
   return (
@@ -34,7 +37,7 @@ function NetworkAbout() {
       />
 
       <section className="px-3 pb-10 sm:px-6 sm:pb-16">
-        <div className="mx-auto grid max-w-6xl gap-6 sm:gap-8 lg:grid-cols-2 lg:items-center lg:gap-10">
+        <div className={storyPanel}>
           <Reveal>
             <div className="relative aspect-[16/11] overflow-hidden rounded-[1.4rem] shadow-lg ring-1 ring-[var(--line-2)] sm:aspect-[4/3] sm:rounded-[2rem] sm:shadow-xl">
               <Image
@@ -158,7 +161,7 @@ export default async function AboutPage() {
       />
 
       <section className="px-3 pb-10 sm:px-6 sm:pb-16">
-        <div className="mx-auto grid max-w-6xl gap-6 sm:gap-8 lg:grid-cols-2 lg:items-center lg:gap-10">
+        <div className={storyPanel}>
           <Reveal>
             <div className="relative aspect-[16/11] overflow-hidden rounded-[1.4rem] shadow-lg ring-1 ring-[var(--line-2)] sm:aspect-[4/3] sm:rounded-[2rem] sm:shadow-xl">
               <Image
@@ -217,7 +220,7 @@ export default async function AboutPage() {
               {content.team.map((m) => (
                 <article
                   key={m.id}
-                  className="glass-tile-strong min-w-0 overflow-hidden rounded-[1.25rem] border border-[var(--line-2)] bg-[var(--card)] transition-colors duration-300 sm:rounded-3xl"
+                  className="care-glass min-w-0 overflow-hidden rounded-[1.25rem] transition-colors duration-300 sm:rounded-3xl"
                 >
                   {m.photo && (
                     <div className="relative aspect-[4/5]">
@@ -250,7 +253,7 @@ export default async function AboutPage() {
       {content.sections.insuranceStrip && content.certifications.length > 0 && (
         <section className="px-3 pb-8 sm:px-6">
           <div className="mx-auto max-w-6xl">
-            <div className="glass-panel flex flex-col items-start gap-3 rounded-[1.35rem] border border-[var(--line-2)] bg-[var(--card)] p-4 transition-colors duration-300 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-3 sm:rounded-3xl sm:p-6">
+            <div className="care-glass flex flex-col items-start gap-3 rounded-[1.35rem] p-4 transition-colors duration-300 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-3 sm:rounded-3xl sm:p-6">
               <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs sm:tracking-[0.18em]">
                 <ShieldCheck className="h-4 w-4" aria-hidden /> Credentials
               </span>

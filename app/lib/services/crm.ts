@@ -95,7 +95,7 @@ export async function createRefillRequest(data: {
   } });
   return saved;
   });
-  await notifyCareRequest({ ...refill, relatedType: "refill_request",
+  await notifyCareRequest({ ...refill, relatedType: "refill_request", staff: true,
     title: "Refill request received", body: "Your refill request has been received. The pharmacy will review it and confirm availability." });
 
 

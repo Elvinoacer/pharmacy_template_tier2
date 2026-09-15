@@ -24,6 +24,11 @@ import {
   MedicineCatalogGrid,
   type MedicineCatalogItem,
 } from "@/app/components/MedicineCatalogCard";
+import { UploadFeedback } from "@/app/components/prescription/UploadFeedback";
+import {
+  packPhotoFeedback,
+  type UploadFeedbackModel,
+} from "@/app/lib/prescription-upload-feedback";
 import { platform } from "@/app/lib/data";
 
 type MatchItem = MedicineCatalogItem & {
@@ -95,6 +100,7 @@ export default function MedicineImageSearch({
   const [file, setFile] = useState<File | null>(null);
   const [stageLine, setStageLine] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<UploadFeedbackModel | null>(null);
   const [result, setResult] = useState<ApiOk | null>(null);
 
   useEffect(() => {
@@ -111,6 +117,7 @@ export default function MedicineImageSearch({
     setFile(null);
     setPhase("idle");
     setError(null);
+    setFeedback(null);
     setResult(null);
     setStageLine("");
     if (fileRef.current) fileRef.current.value = "";
@@ -126,6 +133,7 @@ export default function MedicineImageSearch({
     setFile(next);
     setPhase("preview");
     setError(null);
+    setFeedback(null);
     setResult(null);
     onOpenChange(true);
   }, [onOpenChange]);
@@ -143,6 +151,7 @@ export default function MedicineImageSearch({
   const runSearch = async () => {
     if (!file) return;
     setError(null);
+    setFeedback(null);
     setResult(null);
     setPhase("reading");
     setStageLine(pickStage("reading"));
@@ -164,11 +173,12 @@ export default function MedicineImageSearch({
       window.clearTimeout(shelvesTimer);
 
       if (!res.ok || !data.ok) {
-        const msg =
-          !data.ok && "message" in data
-            ? data.message
-            : "We couldn’t finish that photo search. Try again in a moment.";
-        setError(msg);
+        const code =
+          !data.ok && "error" in data && data.error
+            ? data.error
+            : "search_failed";
+        setError(null);
+        setFeedback(packPhotoFeedback({ code }));
         setPhase("error");
         return;
       }
@@ -180,9 +190,8 @@ export default function MedicineImageSearch({
       });
     } catch {
       window.clearTimeout(shelvesTimer);
-      setError(
-        "Network hiccup — please try again, or type the medicine name in the search box.",
-      );
+      setError(null);
+      setFeedback(packPhotoFeedback({ code: "search_failed" }));
       setPhase("error");
     }
   };
@@ -378,7 +387,17 @@ export default function MedicineImageSearch({
               </div>
             )}
 
-            {error && (
+            {feedback && (
+              <UploadFeedback
+                feedback={feedback}
+                onAction={(id) => {
+                  if (id === "retry_pack") void runSearch();
+                  if (id === "retry_photo") fileRef.current?.click();
+                  if (id === "focus_names") onOpenChange(false);
+                }}
+              />
+            )}
+            {error && !feedback && (
               <p
                 className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800"
                 role="alert"
@@ -445,6 +464,12 @@ export default function MedicineImageSearch({
                         <MessageCircle size={14} aria-hidden />
                         WhatsApp
                       </a>
+                      <Link
+                        href="/prescription"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[#0d6e5a]/30 bg-white px-4 py-2 text-xs font-semibold text-[#0d6e5a] transition hover:bg-[#e6f4ef]"
+                      >
+                        Upload a prescription
+                      </Link>
                       <Link
                         href={refillHref}
                         className="inline-flex items-center gap-1.5 rounded-full border border-[#e3ebe6] bg-white px-4 py-2 text-xs font-semibold text-[#5a6b62] transition hover:bg-[#f4f7f4]"

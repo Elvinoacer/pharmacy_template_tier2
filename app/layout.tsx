@@ -165,6 +165,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}
     >

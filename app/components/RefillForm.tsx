@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { CheckCircle2, FileText, Loader2, MapPin, Pill, ShieldCheck, UserRound } from "lucide-react";
 import { FormSuccess, TextArea, TextInput } from "./FormField";
+import { UploadFeedback } from "@/app/components/prescription/UploadFeedback";
 
 type RefillResult = {
   reference: string;
@@ -15,6 +16,7 @@ export default function RefillForm({ pharmacyName, pharmacySlug, initialMedicine
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [result, setResult] = useState<RefillResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const formRef = useRef<HTMLFormElement>(null);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -76,7 +78,7 @@ export default function RefillForm({ pharmacyName, pharmacySlug, initialMedicine
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form ref={formRef} onSubmit={onSubmit} className="space-y-6">
       <div className="flex items-start gap-3 rounded-2xl border border-[var(--line-2)] bg-[var(--brand-soft)] p-4">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0d6e5a] text-white">
           <Pill className="h-5 w-5" aria-hidden="true" />
@@ -130,7 +132,29 @@ export default function RefillForm({ pharmacyName, pharmacySlug, initialMedicine
 
       <div className="absolute left-[-9999px]" aria-hidden="true"><input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" /></div>
 
-      {status === "error" && <p className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{errorMessage || "Something went wrong. Please try again or contact the pharmacy directly."}</p>}
+      {status === "error" && (
+        <UploadFeedback
+          feedback={{
+            code: "request_failed",
+            tone: "error",
+            title: "We couldn’t send this request",
+            message: `${errorMessage || "Something went wrong."} Try again, or contact the pharmacy so this doesn’t stop here.`,
+            actions: [
+              { id: "retry_submit", label: "Try sending again", variant: "primary" },
+              {
+                id: "pharmacy",
+                label: "About this pharmacy",
+                href: pharmacySlug ? `/pharmacies/${pharmacySlug}` : "/pharmacies",
+                variant: "ghost",
+              },
+              { id: "browse", label: "Browse medicines", href: "/medicines", variant: "ghost" },
+            ],
+          }}
+          onAction={(id) => {
+            if (id === "retry_submit") formRef.current?.requestSubmit();
+          }}
+        />
+      )}
 
       <div className="rounded-2xl bg-[var(--card-elev)] p-4">
         <div className="flex gap-3">

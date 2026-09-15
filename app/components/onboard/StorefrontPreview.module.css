@@ -1,0 +1,1123 @@
+/* StorefrontPreview.module.css - Compact interactive storefront simulation */
+
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 19.5rem;
+  margin-inline: auto;
+  user-select: none;
+}
+
+.containerFlush {
+  max-width: 100%;
+}
+
+/* Ambient backlight glow */
+.ambientGlow {
+  position: absolute;
+  inset: 5% -4% -3%;
+  z-index: 0;
+  border-radius: 2rem;
+  background: radial-gradient(
+    circle at 50% 25%,
+    color-mix(in srgb, var(--brand) 32%, transparent),
+    color-mix(in srgb, var(--accent) 15%, transparent) 55%,
+    transparent 80%
+  );
+  filter: blur(28px);
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 300ms ease;
+}
+
+/* ==========================================================================
+   SLEEK COMPACT CHAPTER BAR (Replaces bulky video HUD)
+   ========================================================================== */
+.chapterBar {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 0.4rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--card) 94%, #04211a 6%);
+  border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--line-2));
+  padding: 0.22rem 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--foreground) 6%, transparent);
+}
+
+.chapterBarControls {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.playBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.18rem 0.4rem;
+  border-radius: 0.4rem;
+  font-size: 0.58rem;
+  font-weight: 750;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.playBtn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.playBtnActive {
+  background: var(--brand) !important;
+  color: #ffffff !important;
+  border-color: var(--brand) !important;
+}
+
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.resetBtn:hover {
+  color: var(--foreground);
+  background: var(--card-elev);
+}
+
+.chapterChips {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.chapterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.32rem;
+  border-radius: 0.35rem;
+  font-size: 0.5rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 150ms ease;
+}
+
+.chapterChip:hover {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.chapterChipActive {
+  background: color-mix(in srgb, var(--brand-soft) 85%, var(--card));
+  color: var(--brand);
+  border-color: color-mix(in srgb, var(--brand) 40%, transparent);
+  font-weight: 800;
+}
+
+.chapterPip {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Fallbacks for previous classes */
+.videoFrame { display: none; }
+
+/* ==========================================================================
+   PHONE HARDWARE BEZEL (Realistic 3D Smartphone Product Mock)
+   ========================================================================== */
+.bezel {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 1.5px solid color-mix(in srgb, var(--brand) 28%, #1f2937);
+  border-radius: 1.7rem;
+  background: linear-gradient(165deg, #072620, #02110e);
+  padding: 0.32rem;
+  box-shadow:
+    0 16px 40px -8px color-mix(in srgb, var(--foreground) 14%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.22),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.5);
+  transition: all 250ms ease;
+}
+
+:global(html[data-theme="dark"]) .bezel {
+  border-color: color-mix(in srgb, var(--brand) 35%, #374151);
+  background: #020705;
+  box-shadow:
+    0 20px 50px -10px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.16);
+}
+
+/* Glass glare reflection overlay */
+.glassReflection {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+  background: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.03) 22%,
+    transparent 45%
+  );
+  border-radius: 1.7rem;
+}
+
+/* Screen viewport */
+.screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.4rem;
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 19rem;
+  display: flex;
+  flex-direction: column;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+/* Hardware notch / carrier status bar */
+.statusBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0.65rem 0.1rem;
+  font-size: 0.52rem;
+  font-weight: 750;
+  color: var(--foreground);
+  opacity: 0.9;
+}
+
+.dynamicIsland {
+  width: 3.6rem;
+  height: 0.65rem;
+  border-radius: 99px;
+  background: #000000;
+  margin-inline: auto;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.18);
+}
+
+/* Browser Chrome */
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.12rem 0.45rem 0.22rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line-2) 65%, transparent);
+}
+
+.chromeDots {
+  display: flex;
+  gap: 0.16rem;
+}
+
+.chromeDots i {
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+}
+
+.chromeDots i:nth-child(1) { background: #ff5f56; }
+.chromeDots i:nth-child(2) { background: #ffbd2e; }
+.chromeDots i:nth-child(3) { background: #27c93f; }
+
+.urlPill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.2rem;
+  padding: 0.14rem 0.45rem;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  color: var(--muted);
+  font-size: 0.52rem;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.urlPill svg {
+  color: var(--brand);
+  flex-shrink: 0;
+}
+
+/* Screen Content Area */
+.screenBody {
+  flex: 1;
+  position: relative;
+  overflow-y: auto;
+  padding: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* Animated Simulated Finger / Touch Cursor (Live video visual guide) */
+.simulatedTouchCursor {
+  position: absolute;
+  z-index: 30;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.8) 25%, rgba(5, 150, 105, 0.45) 70%, transparent 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8), 0 2px 6px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: all 450ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: cursor-breathe 2s infinite ease-in-out;
+}
+
+@keyframes cursor-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 0 20px rgba(16, 185, 129, 1), 0 3px 10px rgba(0, 0, 0, 0.5); }
+}
+
+.touchRippleRing {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(52, 211, 153, 0.7);
+  animation: tap-ripple 1.2s infinite ease-out;
+}
+
+@keyframes tap-ripple {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Live Toast Notification (Simulated inbound event) */
+.toastNotice {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  z-index: 25;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.8rem;
+  background: #04261e;
+  color: #ffffff;
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  animation: toast-slide 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes toast-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toastNotice strong {
+  display: block;
+  font-size: 0.64rem;
+  color: #34d399;
+  font-weight: 800;
+}
+
+.toastNotice p {
+  margin-top: 0.08rem;
+  font-size: 0.56rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   STOREFRONT CARD (The Core Card Specified by User)
+   ========================================================================== */
+.storeHead {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #0b6b57, #063830);
+  padding: 0.42rem 0.55rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(6, 56, 48, 0.24);
+  position: relative;
+  overflow: hidden;
+  transition: transform 200ms ease;
+}
+
+.storeHead::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.storeIconBox {
+  display: inline-flex;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.storeHeadInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.storeHeadTitle {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.storeHeadBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 0.08rem;
+  font-size: 0.52rem;
+  font-weight: 750;
+  color: #a7f3d0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  transition: color 150ms ease;
+}
+
+.storeHeadBadge:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.storeHeadDistance {
+  margin-left: auto;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.14);
+  padding: 0.12rem 0.4rem;
+  font-size: 0.5rem;
+  font-weight: 800;
+}
+
+/* Search Bar */
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 0.55rem;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line-2) 80%, transparent);
+  padding: 0.32rem 0.5rem;
+  color: var(--muted);
+  font-size: 0.6rem;
+  font-weight: 600;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--foreground) 3%, transparent);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.searchBar:hover {
+  border-color: var(--brand);
+  background: var(--card-elev);
+  color: var(--foreground);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--brand) 12%, transparent);
+}
+
+.searchBar:active {
+  transform: scale(0.98);
+}
+
+/* Quick Action Tiles (Catalogue, Refills, Services, Messages) */
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.28rem;
+  margin-top: 0.25rem;
+}
+
+.tileBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.85rem;
+  border-radius: 0.55rem;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line-2) 80%, transparent);
+  padding: 0.25rem 0.4rem;
+  color: var(--foreground);
+  font-size: 0.6rem;
+  font-weight: 800;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--foreground) 3%, transparent);
+  cursor: pointer;
+  text-align: left;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tileBtn:hover {
+  transform: translateY(-1px);
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand-soft) 45%, var(--card));
+  color: var(--brand);
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--brand) 15%, transparent);
+}
+
+.tileBtn:active {
+  transform: scale(0.96);
+}
+
+.tileIconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 0.4rem;
+  background: var(--brand-soft);
+  color: var(--brand);
+  flex-shrink: 0;
+  transition: all 180ms ease;
+}
+
+.tileBtn:hover .tileIconWrap {
+  background: var(--brand);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.tileBadge {
+  margin-left: auto;
+  padding: 0.08rem 0.3rem;
+  border-radius: 99px;
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font-size: 0.48rem;
+  font-weight: 800;
+}
+
+:global(html[data-theme="dark"]) .tileBadge {
+  color: #34d399;
+}
+
+/* Sample Activity Card (Specified by User) */
+.activityCard {
+  border-radius: 0.65rem;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line-2) 80%, transparent);
+  padding: 0.42rem 0.55rem;
+  margin-top: 0.25rem;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+
+.activityHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.activityTitle {
+  color: var(--muted);
+  font-size: 0.54rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.livePulseDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+  animation: pulse-dot 1.8s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.6;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.activityInteractiveHint {
+  font-size: 0.5rem;
+  color: var(--brand);
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.42rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--brand-soft) 25%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand) 12%, transparent);
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  width: 100%;
+}
+
+.activityItem:hover {
+  background: var(--brand-soft);
+  border-color: color-mix(in srgb, var(--brand) 38%, transparent);
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand) 10%, transparent);
+}
+
+.activityItem:active {
+  transform: scale(0.98);
+}
+
+.activityIconWrap {
+  display: inline-flex;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.4rem;
+  background: var(--brand-soft);
+  color: var(--brand);
+  transition: all 180ms ease;
+}
+
+.activityItem:hover .activityIconWrap {
+  background: var(--brand);
+  color: #ffffff;
+}
+
+.activityItemContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.activityPrimaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+
+.activityItemContent strong {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.activityBadge {
+  font-size: 0.46rem;
+  font-weight: 750;
+  padding: 0.08rem 0.3rem;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--brand) 15%, transparent);
+  color: var(--brand-deep);
+  white-space: nowrap;
+}
+
+:global(html[data-theme="dark"]) .activityBadge {
+  color: #34d399;
+}
+
+.activityItemContent small {
+  display: block;
+  margin-top: 0.05rem;
+  color: var(--muted);
+  font-size: 0.52rem;
+}
+
+.activityItemChevron {
+  color: var(--muted);
+  font-size: 0.65rem;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   SUB-SCREEN VIEWS (Catalogue, Refills, Services, Messages, Search)
+   ========================================================================== */
+.subScreen {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  animation: screen-slide-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes screen-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.subScreenHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 0.55rem;
+  font-size: 0.64rem;
+  font-weight: 750;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border: 1px solid color-mix(in srgb, var(--brand) 24%, transparent);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.backBtn:hover {
+  background: var(--brand);
+  color: #ffffff;
+  transform: translateX(-1px);
+}
+
+.backBtn:active {
+  transform: scale(0.96);
+}
+
+.subScreenTitle {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+/* Items inside catalogue / refills / services */
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.miniCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.38rem 0.55rem;
+  border-radius: 0.65rem;
+  background: var(--card);
+  border: 1px solid var(--line-2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 150ms ease;
+}
+
+.miniCard:hover {
+  border-color: var(--brand);
+  background: var(--card-elev);
+}
+
+.miniCardTitle {
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.miniCardMeta {
+  margin-top: 0.08rem;
+  font-size: 0.54rem;
+  color: var(--muted);
+}
+
+.miniCardAction {
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.45rem;
+  font-size: 0.56rem;
+  font-weight: 750;
+  border: 1px solid var(--brand);
+  color: var(--brand);
+  background: var(--brand-soft);
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.miniCardAction:hover {
+  background: var(--brand);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--brand) 25%, transparent);
+}
+
+.miniCardAction:active {
+  transform: scale(0.95);
+}
+
+/* Chat bubble styling for Messages view */
+.chatList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-block: 0.2rem;
+}
+
+.chatBubble {
+  max-width: 85%;
+  padding: 0.4rem 0.55rem;
+  border-radius: 0.75rem;
+  font-size: 0.58rem;
+  line-height: 1.35;
+  animation: bubble-pop 200ms ease both;
+}
+
+@keyframes bubble-pop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.chatPatient {
+  align-self: flex-start;
+  background: color-mix(in srgb, var(--card) 90%, #000);
+  border: 1px solid var(--line-2);
+  color: var(--foreground);
+  border-bottom-left-radius: 0.2rem;
+}
+
+.chatPharmacy {
+  align-self: flex-end;
+  background: #0d6e5a;
+  color: #ffffff;
+  border-bottom-right-radius: 0.2rem;
+  box-shadow: 0 2px 8px rgba(13, 110, 90, 0.25);
+}
+
+/* ==========================================================================
+   SAFARICOM M-PESA STK PUSH PHONE SIMULATION MODAL
+   ========================================================================== */
+.stkModalOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  animation: overlay-fade 180ms ease both;
+}
+
+.stkPromptCard {
+  width: 100%;
+  max-width: 15.5rem;
+  border-radius: 0.85rem;
+  background: #ffffff;
+  color: #1f2937;
+  border: 2px solid #00a651;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  animation: stk-pop 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes stk-pop {
+  from { opacity: 0; transform: scale(0.92) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.stkHeader {
+  background: #00a651;
+  padding: 0.4rem 0.55rem;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stkHeaderTitle {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stkBody {
+  padding: 0.55rem 0.65rem;
+}
+
+.stkMessage {
+  font-size: 0.6rem;
+  line-height: 1.35;
+  color: #374151;
+  font-weight: 600;
+}
+
+.stkAmountHighlight {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 850;
+  color: #00a651;
+}
+
+.stkPinBox {
+  margin-top: 0.4rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.45rem;
+  background: #f9fafb;
+  padding: 0.3rem;
+  text-align: center;
+  font-family: monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  font-weight: 800;
+  color: #111827;
+}
+
+.stkActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+}
+
+.stkCancelBtn {
+  padding: 0.38rem;
+  border-radius: 0.45rem;
+  font-size: 0.58rem;
+  font-weight: 750;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.stkCancelBtn:hover {
+  background: #f3f4f6;
+}
+
+.stkConfirmBtn {
+  padding: 0.38rem;
+  border-radius: 0.45rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  border: 0;
+  background: #00a651;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 166, 81, 0.35);
+  transition: all 150ms ease;
+}
+
+.stkConfirmBtn:hover {
+  background: #008741;
+  transform: translateY(-1px);
+}
+
+.stkConfirmBtn:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   INTERACTIVE FLY-UP DRAWER / SHEET
+   ========================================================================== */
+.drawerOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: overlay-fade 180ms ease both;
+}
+
+@keyframes overlay-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.drawerSheet {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  background: var(--card);
+  border-top: 1px solid var(--line-2);
+  padding: 0.65rem 0.75rem;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.2);
+  animation: drawer-up 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes drawer-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.drawerPill {
+  width: 1.8rem;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--line-2);
+  margin: -0.25rem auto 0.4rem;
+}
+
+.drawerTitle {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.drawerSub {
+  margin-top: 0.15rem;
+  font-size: 0.56rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.drawerActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.55rem;
+}
+
+.drawerBtnPrimary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.38rem;
+  border-radius: 0.5rem;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  border: 0;
+  cursor: pointer;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--brand) 30%, transparent);
+}
+
+.drawerBtnPrimary:hover {
+  background: var(--brand-deep);
+  transform: translateY(-1px);
+}
+
+.drawerBtnPrimary:active {
+  transform: scale(0.97);
+}
+
+.drawerBtnSecondary {
+  padding: 0.32rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.56rem;
+  font-weight: 700;
+  border: 1px solid var(--line-2);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.drawerBtnSecondary:hover {
+  background: var(--card-elev);
+}
+
+/* Bottom Bar / Home Indicator */
+.homeIndicator {
+  width: 4.8rem;
+  height: 3px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--foreground) 25%, transparent);
+  margin: 0.25rem auto 0.15rem;
+}
+
+/* ==========================================================================
+   REDUCED MOTION ACCESSIBILITY OVERRIDES
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .subScreen,
+  .toastNotice,
+  .drawerSheet,
+  .drawerOverlay,
+  .livePulseDot,
+  .recDot,
+  .simulatedTouchCursor,
+  .touchRippleRing,
+  .stkPromptCard {
+    animation: none !important;
+    transition: none !important;
+  }
+}

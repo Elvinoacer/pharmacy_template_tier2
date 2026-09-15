@@ -19,61 +19,144 @@ export type LookupOption = {
 
 export type LookupKind = "dosage_form" | "route" | "pregnancy_category";
 
-const FALLBACK_DOSAGE_FORMS: LookupOption[] = [
-  { id: "df-tablet", value: "Tablet", slug: "tablet" },
-  { id: "df-capsule", value: "Capsule", slug: "capsule" },
-  { id: "df-syrup", value: "Syrup", slug: "syrup" },
-  { id: "df-injection", value: "Injection", slug: "injection" },
-  { id: "df-cream", value: "Cream", slug: "cream" },
-  { id: "df-ointment", value: "Ointment", slug: "ointment" },
-  { id: "df-eye-drops", value: "Eye Drops", slug: "eye-drops" },
-  { id: "df-ear-drops", value: "Ear Drops", slug: "ear-drops" },
-  { id: "df-nasal-spray", value: "Nasal Spray", slug: "nasal-spray" },
-  { id: "df-suspension", value: "Suspension", slug: "suspension" },
-  { id: "df-inhaler", value: "Inhaler", slug: "inhaler" },
-  { id: "df-sachet", value: "Sachet", slug: "sachet" },
+const DEFAULT_DOSAGE_FORMS = [
+  { value: "Tablet", slug: "tablet", sortOrder: 10 },
+  { value: "Capsule", slug: "capsule", sortOrder: 20 },
+  { value: "Syrup", slug: "syrup", sortOrder: 30 },
+  { value: "Injection", slug: "injection", sortOrder: 40 },
+  { value: "Cream", slug: "cream", sortOrder: 50 },
+  { value: "Ointment", slug: "ointment", sortOrder: 60 },
+  { value: "Eye Drops", slug: "eye-drops", sortOrder: 70 },
+  { value: "Ear Drops", slug: "ear-drops", sortOrder: 80 },
+  { value: "Nasal Spray", slug: "nasal-spray", sortOrder: 90 },
+  { value: "Suspension", slug: "suspension", sortOrder: 100 },
+  { value: "Inhaler", slug: "inhaler", sortOrder: 110 },
+  { value: "Sachet", slug: "sachet", sortOrder: 120 },
+  { value: "Drops", slug: "drops", sortOrder: 130 },
+  { value: "Gel", slug: "gel", sortOrder: 140 },
+  { value: "Solution", slug: "solution", sortOrder: 150 },
+  { value: "Suppository", slug: "suppository", sortOrder: 160 },
 ];
 
-const FALLBACK_ROUTES: LookupOption[] = [
-  { id: "rt-oral", value: "Oral", slug: "oral" },
-  { id: "rt-topical", value: "Topical", slug: "topical" },
-  { id: "rt-intravenous", value: "Intravenous", slug: "intravenous" },
-  { id: "rt-intramuscular", value: "Intramuscular", slug: "intramuscular" },
-  { id: "rt-inhalation", value: "Inhalation", slug: "inhalation" },
-  { id: "rt-rectal", value: "Rectal", slug: "rectal" },
-  { id: "rt-ophthalmic", value: "Ophthalmic", slug: "ophthalmic" },
-  { id: "rt-nasal", value: "Nasal", slug: "nasal" },
+const DEFAULT_ROUTES = [
+  { value: "Oral", slug: "oral", sortOrder: 10 },
+  { value: "Topical", slug: "topical", sortOrder: 20 },
+  { value: "Intravenous", slug: "intravenous", sortOrder: 30 },
+  { value: "Intramuscular", slug: "intramuscular", sortOrder: 40 },
+  { value: "Inhalation", slug: "inhalation", sortOrder: 50 },
+  { value: "Rectal", slug: "rectal", sortOrder: 60 },
+  { value: "Ophthalmic", slug: "ophthalmic", sortOrder: 70 },
+  { value: "Nasal", slug: "nasal", sortOrder: 80 },
+  { value: "Sublingual", slug: "sublingual", sortOrder: 90 },
+  { value: "Transdermal", slug: "transdermal", sortOrder: 100 },
 ];
 
-const FALLBACK_PREGNANCY: LookupOption[] = [
-  { id: "pc-a", value: "A", slug: "a" },
-  { id: "pc-b", value: "B", slug: "b" },
-  { id: "pc-c", value: "C", slug: "c" },
-  { id: "pc-d", value: "D", slug: "d" },
-  { id: "pc-x", value: "X", slug: "x" },
+const DEFAULT_PREGNANCY = [
+  { value: "A", slug: "a", sortOrder: 10 },
+  { value: "B", slug: "b", sortOrder: 20 },
+  { value: "C", slug: "c", sortOrder: 30 },
+  { value: "D", slug: "d", sortOrder: 40 },
+  { value: "X", slug: "x", sortOrder: 50 },
 ];
+
+export async function ensureLookupsSeeded(kind?: LookupKind): Promise<void> {
+  try {
+    const kindsToSeed: LookupKind[] = kind ? [kind] : ["dosage_form", "route", "pregnancy_category"];
+    for (const k of kindsToSeed) {
+      const count = await prisma.medicationLookup.count({ where: { kind: k } });
+      if (count === 0) {
+        const defaults =
+          k === "dosage_form"
+            ? DEFAULT_DOSAGE_FORMS
+            : k === "route"
+              ? DEFAULT_ROUTES
+              : DEFAULT_PREGNANCY;
+        await prisma.medicationLookup.createMany({
+          data: defaults.map((d) => ({
+            kind: k,
+            value: d.value,
+            slug: d.slug,
+            sortOrder: d.sortOrder,
+            active: true,
+          })),
+          skipDuplicates: true,
+        });
+      }
+    }
+  } catch (err) {
+    console.error("[ensureLookupsSeeded] failed:", err);
+  }
+}
+
+export async function findOrCreateLookup(kind: LookupKind, rawValue: string): Promise<string | null> {
+  const clean = rawValue.trim();
+  if (!clean) return null;
+
+  try {
+    // 1. Exact case-insensitive match
+    let hit = await prisma.medicationLookup.findFirst({
+      where: { kind, value: { equals: clean, mode: "insensitive" } },
+      select: { id: true },
+    });
+    if (hit) return hit.id;
+
+    // 2. Contains match (e.g. "Oral tablet" -> "Tablet")
+    hit = await prisma.medicationLookup.findFirst({
+      where: { kind, value: { contains: clean, mode: "insensitive" } },
+      select: { id: true },
+    });
+    if (hit) return hit.id;
+
+    // Or the lookup value is contained in the input
+    const all = await prisma.medicationLookup.findMany({
+      where: { kind, active: true },
+      select: { id: true, value: true },
+    });
+    const found = all.find((opt) => clean.toLowerCase().includes(opt.value.toLowerCase()));
+    if (found) return found.id;
+
+    // 3. Create novel lookup entry with a clean slug
+    const slug = clean
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 50) || `lookup-${Date.now().toString(36)}`;
+
+    const created = await prisma.medicationLookup.create({
+      data: {
+        kind,
+        value: clean.charAt(0).toUpperCase() + clean.slice(1),
+        slug,
+        sortOrder: 200,
+        active: true,
+      },
+      select: { id: true },
+    });
+    return created.id;
+  } catch (err) {
+    console.error(`[findOrCreateLookup] failed for ${kind} ${rawValue}:`, err);
+    return null;
+  }
+}
 
 export async function listLookups(kind: LookupKind): Promise<LookupOption[]> {
   try {
-    const rows = await prisma.medicationLookup.findMany({
+    let rows = await prisma.medicationLookup.findMany({
       where: { kind, active: true },
       orderBy: [{ sortOrder: "asc" }, { value: "asc" }],
       select: { id: true, value: true, slug: true },
     });
     if (rows.length === 0) {
-      return kind === "dosage_form"
-        ? FALLBACK_DOSAGE_FORMS
-        : kind === "route"
-          ? FALLBACK_ROUTES
-          : FALLBACK_PREGNANCY;
+      await ensureLookupsSeeded(kind);
+      rows = await prisma.medicationLookup.findMany({
+        where: { kind, active: true },
+        orderBy: [{ sortOrder: "asc" }, { value: "asc" }],
+        select: { id: true, value: true, slug: true },
+      });
     }
     return rows;
   } catch {
-    return kind === "dosage_form"
-      ? FALLBACK_DOSAGE_FORMS
-      : kind === "route"
-        ? FALLBACK_ROUTES
-        : FALLBACK_PREGNANCY;
+    return [];
   }
 }
 

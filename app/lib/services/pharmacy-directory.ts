@@ -72,6 +72,14 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
                       { tagline: { contains: q, mode: "insensitive" as const } },
                       { city: { contains: q, mode: "insensitive" as const } },
                       { county: { contains: q, mode: "insensitive" as const } },
+                      {
+                        services: {
+                          some: {
+                            active: true,
+                            title: { contains: q, mode: "insensitive" as const },
+                          },
+                        },
+                      },
                     ]
                   : []),
                 {
@@ -220,7 +228,8 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
         searchedMedicineCount: searchedItems.length,
       };
     });
-  } catch {
+  } catch (error) {
+    console.error("[pharmacy-directory] listing query failed", error);
     return [];
   }
 }
@@ -256,7 +265,8 @@ export async function getDirectoryFacets() {
       counties: counties.map((item) => item.county).filter(Boolean) as string[],
       categories,
     };
-  } catch {
+  } catch (error) {
+    console.error("[pharmacy-directory] facet query failed", error);
     return { cities: [], counties: [], categories: [] };
   }
 }

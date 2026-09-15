@@ -4,7 +4,7 @@ import { Check, Phone, Truck } from "lucide-react";
 import DeliveryForm from "../components/DeliveryForm";
 import PageHero from "../components/PageHero";
 import { platform } from "../lib/data";
-import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import ShopPageChooser from "@/app/components/ShopPageChooser";
 import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { getStorefrontView } from "@/app/lib/services/storefront-content";
 
@@ -22,7 +22,7 @@ export default async function DeliveryPage() {
   if (view.status === "unavailable") {
     return <StorefrontUnavailable slug={view.slug} next="/delivery" />;
   }
-  if (view.status !== "active") return <ChoosePharmacy next="/delivery" />;
+  if (view.status !== "active") return <ShopPageChooser next="/delivery" />;
 
   const pharmacy = view.resolved;
   const deliverySteps = view.content.deliverySteps;
@@ -128,7 +128,7 @@ export default async function DeliveryPage() {
               Tell us where you are. The pharmacy will confirm coverage, delivery cost, and timing before anything is arranged.
             </p>
             <div className="relative mt-5 min-w-0 sm:mt-6">
-              <DeliveryForm />
+              <DeliveryForm pharmacySlug={pharmacy.slug ?? undefined} />
             </div>
           </div>
         </div>

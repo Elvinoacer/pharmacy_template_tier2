@@ -56,6 +56,7 @@ export default async function AdminRefillsPage({
       include: {
         customer: true,
         assignedTo: { select: { email: true } },
+        prescription: { select: { id: true, attachmentUrls: true } },
       },
       orderBy: { createdAt: "desc" },
       take: 100,
@@ -96,6 +97,8 @@ export default async function AdminRefillsPage({
     customerId: r.customerId,
     phone: r.phone,
     email: r.email,
+    notes: r.notes,
+    attachmentUrls: r.prescription?.attachmentUrls || [],
     createdAt: r.createdAt ? r.createdAt.toISOString() : new Date().toISOString(),
   }));
 

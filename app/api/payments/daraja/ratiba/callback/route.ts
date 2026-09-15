@@ -56,7 +56,14 @@ export async function POST(request: Request) {
       await markWebhookProcessed(inbound.event.id);
     }
 
-    return NextResponse.json({ ok: true, note: result.note });
+    return NextResponse.json({
+      ok: true,
+      note: result.note,
+      ResponseCode: "00000000",
+      ResponseDesc: "success",
+      ResultCode: 0,
+      ResultDesc: "Accepted",
+    });
   } catch (error) {
     console.error("[daraja ratiba callback]", error);
     return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });

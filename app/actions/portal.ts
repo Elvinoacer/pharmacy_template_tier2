@@ -14,7 +14,7 @@ import { createRefillRequest, createFeedback, updateRefillStatus } from "@/app/l
 import { ageSegmentFromDob, isFuture, parseLocalDateInput } from "@/app/lib/time";
 import { PUBLIC_PHARMACY_COOKIE } from "@/app/lib/tenant-context";
 
-export type ActionState = { error?: string; success?: string };
+export type ActionState = { error?: string; success?: string; code?: string };
 
 export async function portalRefillAction(
   _prev: ActionState,
@@ -605,6 +605,7 @@ export async function portalCreateOrderAction(
 
       const o = await tx.order.create({
         data: {
+          pharmacyId: med.pharmacyId,
           customerId: user.customerId!,
           source: "portal",
           status: "pending",
@@ -785,6 +786,7 @@ export async function portalPayRefillAction(
 
   const order = await prisma.order.create({
     data: {
+      pharmacyId: refill.pharmacyId,
       customerId: user.customerId!,
       source: "refill",
       refillId,
@@ -890,12 +892,16 @@ export async function portalUploadPrescriptionAction(
   try {
     const user = await getSessionUser();
     if (!user || !user.customerId) {
-      return { error: "Please sign in to upload prescriptions." };
+      return {
+        error: "Please sign in to upload prescriptions.",
+        code: "sign_in_required",
+      };
     }
     const customerId: string = user.customerId;
-    const medicineName = String(formData.get("medicineName") || "").trim();
+    const medicineNameRaw = String(formData.get("medicineName") || "").trim();
     const prescriber = String(formData.get("prescriber") || "").trim() || null;
     const notes = String(formData.get("notes") || "").trim() || null;
+    const pharmacyIdRaw = String(formData.get("pharmacyId") || "").trim();
     const rawUrls = String(formData.get("attachmentUrls") || "").trim();
     const attachmentUrls = rawUrls
       ? rawUrls
@@ -904,8 +910,36 @@ export async function portalUploadPrescriptionAction(
           .filter(Boolean)
       : [];
 
-    if (!medicineName) {
-      return { error: "Medication name or description is required." };
+    if (!medicineNameRaw && attachmentUrls.length === 0) {
+      return {
+        error: "Add a medicine name or attach the prescription photo.",
+        code: "validation",
+      };
+    }
+    const medicineName =
+      medicineNameRaw || "Prescription photo — pharmacist to confirm names";
+
+    let targetPharmacyId =
+      pharmacyIdRaw && z.string().uuid().safeParse(pharmacyIdRaw).success
+        ? pharmacyIdRaw
+        : null;
+
+    if (!targetPharmacyId) {
+      const pref = await prisma.customerPharmacy.findFirst({
+        where: { customerId, preferred: true },
+        select: { pharmacyId: true },
+      });
+      if (pref) {
+        targetPharmacyId = pref.pharmacyId;
+      } else {
+        const defaultPharm = await prisma.pharmacy.findFirst({
+          where: { status: "active", listed: true, verifiedAt: { not: null } },
+          select: { id: true },
+        });
+        if (defaultPharm) {
+          targetPharmacyId = defaultPharm.id;
+        }
+      }
     }
 
     const { PrescriptionIntakeChannel, PrescriptionLifecycleStatus } = await import(
@@ -916,6 +950,7 @@ export async function portalUploadPrescriptionAction(
       const created = await tx.prescription.create({
         data: {
           customerId,
+          pharmacyId: targetPharmacyId || undefined,
           medicineName,
           prescriber,
           notes,
@@ -928,10 +963,11 @@ export async function portalUploadPrescriptionAction(
 
       await tx.adminNotification.create({
         data: {
+          pharmacyId: targetPharmacyId || undefined,
           type: "prescription_upload",
           title: `New Patient Prescription Upload: ${medicineName}`,
           body: `Uploaded by patient via portal. Clinical verification required.`,
-          severity: "info",
+          severity: "warning",
           relatedType: "prescription",
           relatedId: created.id,
         },
@@ -939,6 +975,20 @@ export async function portalUploadPrescriptionAction(
 
       return created;
     });
+
+    if (targetPharmacyId) {
+      try {
+        const { dispatchPushToStaff } = await import("@/app/lib/services/push");
+        await dispatchPushToStaff({
+          title: "New Prescription Uploaded",
+          body: `${medicineName} submitted by patient for clinical review.`,
+          url: `/admin/prescriptions/${rx.id}`,
+          data: { prescriptionId: rx.id },
+        });
+      } catch {
+        /* best-effort push */
+      }
+    }
 
     await addTimelineEvent(
       customerId,
@@ -953,10 +1003,17 @@ export async function portalUploadPrescriptionAction(
     revalidatePath("/portal/prescriptions");
     revalidatePath("/admin/prescriptions");
 
-    return { success: "Prescription uploaded successfully. Our pharmacy team will review it shortly." };
+    return {
+      success:
+        "Prescription uploaded successfully. Our pharmacy team will review it shortly.",
+      code: "upload_ok",
+    };
   } catch (e) {
     console.error("[portalUploadPrescriptionAction]", e);
-    return { error: e instanceof Error ? e.message : "Failed to upload prescription." };
+    return {
+      error: e instanceof Error ? e.message : "Failed to upload prescription.",
+      code: "upload_failed",
+    };
   }
 }
 

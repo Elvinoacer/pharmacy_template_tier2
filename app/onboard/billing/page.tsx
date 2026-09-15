@@ -16,7 +16,7 @@ import { SUBSCRIPTION_GRACE_DAYS } from "@/app/lib/services/daraja-dunning";
 import { ratibaConfigured } from "@/app/lib/services/daraja-ratiba";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
-import { ArrowLeft, RefreshCw, ShieldCheck, Smartphone } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Lock, RefreshCw, ShieldCheck, Smartphone, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -112,18 +112,70 @@ export default async function PharmacyBillingPage() {
       </Link>
 
       <p className={`${styles.kicker} mt-5`}>{pharmacy.name}</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl" style={{ fontFamily: "var(--font-display), serif" }}>
-        M-PESA now. Ratiba every month.
+      <h1 className="mt-1 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl" style={{ fontFamily: "var(--font-display), serif" }}>
+        Simple M-PESA billing.
       </h1>
-      <p className="mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">
-        KES 100 one-time verification. KES 500/month when service is active. All collections run through Safaricom Daraja.
+      <p className="mt-1.5 max-w-md text-xs sm:text-sm leading-relaxed text-[var(--muted)]">
+        KES 100 one-time PPB verification. KES 500/month only after you launch. Powered by Safaricom Daraja.
       </p>
 
-      <section className={`${styles.notice} ${styles.noticeOk} mt-4`}>
+      <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
+        <section className={styles.section}>
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
+            <ShieldCheck className="h-4 w-4" />
+            <span>KES 100 Verification Fee</span>
+          </div>
+          <h2 className="mt-1 text-sm font-semibold">One-time PPB check &amp; anti-clone lock</h2>
+          <ul className="mt-2 space-y-1.5 text-xs text-[var(--muted)]">
+            <li className="flex items-start gap-1.5">
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
+              <span><strong>PPB Check:</strong> Quick check of premises &amp; superintendent licence on the national register.</span>
+            </li>
+            <li className="flex items-start gap-1.5">
+              <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
+              <span><strong>Anti-Clone Lock:</strong> Locks your pharmacy name &amp; location so nobody can copy you.</span>
+            </li>
+            <li className="flex items-start gap-1.5">
+              <Smartphone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
+              <span><strong>M-PESA Handshake:</strong> Links your Till or Paybill for instant patient payouts.</span>
+            </li>
+          </ul>
+          <p className="mt-2 rounded-lg bg-[var(--brand-soft)] p-2 text-[11px] font-semibold text-[var(--brand)]">
+            💰 Paid once. Price of chai &amp; mandazi to secure your verified badge.
+          </p>
+        </section>
+
+        <section className={styles.section}>
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
+            <Sparkles className="h-4 w-4" />
+            <span>KES 500 / Month Subscription</span>
+          </div>
+          <h2 className="mt-1 text-sm font-semibold">~KES 17 a day · Only after you launch</h2>
+          <ul className="mt-2 space-y-1.5 text-xs text-[var(--muted)]">
+            <li className="flex items-start gap-1.5">
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
+              <span><strong>KES 0 During Setup:</strong> Free while setting up. Billing only starts when you take live orders.</span>
+            </li>
+            <li className="flex items-start gap-1.5">
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
+              <span><strong>Keep Chronic Regulars:</strong> Automated WhatsApp refill reminders protect your repeat sales.</span>
+            </li>
+            <li className="flex items-start gap-1.5">
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
+              <span><strong>Everything Included:</strong> Storefront, AI intake, 1,400+ Kenyan medicines pre-loaded.</span>
+            </li>
+          </ul>
+          <p className="mt-2 rounded-lg bg-[var(--brand-soft)] p-2 text-[11px] font-semibold text-[var(--brand)]">
+            💡 Just 1 saved refill (KES 2,500) covers 5 full months of Aether.
+          </p>
+        </section>
+      </div>
+
+      <section className={`${styles.notice} ${styles.noticeOk} mt-3.5`}>
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
         <div>
-          <h2>Your M-PESA PIN stays on your phone</h2>
-          <p>STK Push and Ratiba authorization are completed inside M-PESA. Aether receives transaction references and status from Safaricom, never your PIN.</p>
+          <h2>Your M-PESA PIN is never shared</h2>
+          <p>STK Push and Ratiba authorization prompts happen securely on your phone. Safaricom sends us confirmation, never your PIN.</p>
         </div>
       </section>
 

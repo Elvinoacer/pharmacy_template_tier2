@@ -35,6 +35,7 @@ export async function GET(req: Request) {
       orderId: parsed.data.orderId,
       paymentId: parsed.data.paymentId,
       accessToken: req.headers.get("x-order-access-token"),
+      phone: parsed.data.phone,
     },
     async () => {
       const queryProvider = parsed.data.query === "1" || parsed.data.query === "true";

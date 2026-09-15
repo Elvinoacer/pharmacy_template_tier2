@@ -75,15 +75,9 @@ export async function POST(req: Request) {
   for (let i = 0; i < body.rows.length; i++) {
     const row = body.rows[i];
     try {
-      const genericName = row.genericName.trim();
-      let dosageFormId: string | null = null;
-      if (row.dosageForm) {
-        const dosageForm = await prisma.medicationLookup.findFirst({
-          where: { kind: "dosage_form", value: { equals: row.dosageForm, mode: "insensitive" } },
-          select: { id: true },
-        });
-        dosageFormId = dosageForm?.id ?? null;
-      }
+      const genericName = (row.genericName || "").trim() || row.name.trim();
+      const { findOrCreateLookup } = await import("@/app/lib/medication-lookups");
+      const dosageFormId = await findOrCreateLookup("dosage_form", row.dosageForm || "Tablet");
 
       let manufacturerId: string | null = null;
       if (row.manufacturer) {

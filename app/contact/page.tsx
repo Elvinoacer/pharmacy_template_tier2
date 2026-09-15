@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import ContactForm from "../components/ContactForm";
 import PageHero from "../components/PageHero";
-import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import ShopPageChooser from "@/app/components/ShopPageChooser";
+import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { platform } from "../lib/data";
-import { getResolvedPharmacyOrNull } from "../lib/services/pharmacy-settings";
+import { getStorefrontView } from "../lib/services/storefront-content";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -19,8 +20,13 @@ const actionCardClass =
   "group flex min-w-0 items-start gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3.5 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:p-4";
 
 export default async function ContactPage() {
-  const pharmacy = await getResolvedPharmacyOrNull();
-  if (!pharmacy) return <ChoosePharmacy next="/contact" />;
+  const view = await getStorefrontView();
+  if (view.status === "unavailable") {
+    return <StorefrontUnavailable slug={view.slug} next="/contact" />;
+  }
+  if (view.status !== "active") return <ShopPageChooser next="/contact" />;
+
+  const pharmacy = view.resolved;
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
@@ -175,7 +181,7 @@ export default async function ContactPage() {
               guided check-in.
             </p>
             <div className="relative mt-5 min-w-0 sm:mt-6">
-              <ContactForm />
+              <ContactForm pharmacySlug={pharmacy.slug ?? undefined} />
             </div>
           </div>
         </div>

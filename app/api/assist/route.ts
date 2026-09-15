@@ -1,4 +1,4 @@
-import { groqApiKey, groqClient, groqModelName, GROQ_NO_REASONING } from "@/app/lib/groq";
+import { groqApiKey, groqClient, groqModelName, GROQ_LOW_REASONING } from "@/app/lib/groq";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { searchAssistLive, type AssistLiveMatches } from "@/app/lib/services/assist-live-lookup";
 import {
@@ -223,7 +223,7 @@ export async function POST(request: Request) {
       top_p: 0.9,
       stream: false,
       response_format: { type: "json_object" },
-      ...GROQ_NO_REASONING,
+      ...GROQ_LOW_REASONING,
     });
 
     const raw = completion.choices[0]?.message?.content || "";

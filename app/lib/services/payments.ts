@@ -230,6 +230,7 @@ export async function initiateStkPayment(opts: {
   if (!creds || creds.source !== "tenant" || !(await darajaConfiguredFor(pharmacyId))) {
     const payment = await prisma.payment.create({
       data: {
+        pharmacyId: pharmacyId || order.pharmacyId,
         orderId: order.id,
         customerId: order.customerId,
         amount,
@@ -256,6 +257,7 @@ export async function initiateStkPayment(opts: {
 
   const payment = await prisma.payment.create({
     data: {
+      pharmacyId: pharmacyId || order.pharmacyId,
       orderId: order.id,
       customerId: order.customerId,
       amount,

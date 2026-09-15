@@ -77,19 +77,80 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // Tenant rooms — every live pharmacy gets an indexable /p/{slug} entry.
+  // Tenant storefronts and public pharmacy profile pages
   let storefrontRoutes: MetadataRoute.Sitemap = [];
+  let medicineRoutes: MetadataRoute.Sitemap = [];
+  let tenantServiceRoutes: MetadataRoute.Sitemap = [];
+
   try {
     const tenants = await prismaUnscoped.pharmacy.findMany({
       where: { status: "active", listed: true },
-      select: { slug: true },
+      select: { slug: true, updatedAt: true },
       orderBy: [{ featured: "desc" }, { name: "asc" }],
     });
-    storefrontRoutes = tenants.map((t) => ({
-      url: `${base}/p/${t.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.9,
+
+    storefrontRoutes = tenants.flatMap((t) => [
+      {
+        url: `${base}/pharmacies/${t.slug}`,
+        lastModified: t.updatedAt || now,
+        changeFrequency: "weekly" as const,
+        priority: 0.9,
+      },
+      {
+        url: `${base}/p/${t.slug}`,
+        lastModified: t.updatedAt || now,
+        changeFrequency: "weekly" as const,
+        priority: 0.9,
+      },
+    ]);
+
+    const medicines = await prismaUnscoped.pharmacyInventory.findMany({
+      where: {
+        active: true,
+        publicListing: true,
+        pharmacy: { status: "active", listed: true },
+      },
+      select: {
+        slug: true,
+        updatedAt: true,
+        pharmacy: { select: { slug: true } },
+      },
+      take: 1000,
+    });
+
+    medicineRoutes = medicines.flatMap((m) => [
+      {
+        url: `${base}/medicines/${m.slug}`,
+        lastModified: m.updatedAt || now,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      },
+      {
+        url: `${base}/p/${m.pharmacy.slug}/medicines/${m.slug}`,
+        lastModified: m.updatedAt || now,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      },
+    ]);
+
+    const tenantServices = await prismaUnscoped.pharmacyService.findMany({
+      where: {
+        active: true,
+        pharmacy: { status: "active", listed: true },
+      },
+      select: {
+        slug: true,
+        updatedAt: true,
+        pharmacy: { select: { slug: true } },
+      },
+      take: 500,
+    });
+
+    tenantServiceRoutes = tenantServices.map((s) => ({
+      url: `${base}/p/${s.pharmacy.slug}/services/${s.slug}`,
+      lastModified: s.updatedAt || now,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
     }));
   } catch {
     // DB unavailable during build — network routes still emit.
@@ -99,7 +160,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticRoutes,
     ...storefrontRoutes,
     ...serviceRoutes,
+    ...tenantServiceRoutes,
     ...categoryRoutes,
+    ...medicineRoutes,
     ...articleRoutes,
     ...vaccineRoutes,
   ];

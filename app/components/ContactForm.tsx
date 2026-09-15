@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import Link from "next/link";
+import TenantLink from "./TenantLink";
 import { FormSuccess, SelectInput, TextArea, TextInput } from "./FormField";
 
 export default function ContactForm({ pharmacySlug }: { pharmacySlug?: string } = {}) {
@@ -34,12 +34,12 @@ export default function ContactForm({ pharmacySlug }: { pharmacySlug?: string } 
         message="Thank you for contacting the pharmacy. A team member will respond within one business day. For urgent medication needs, please call us directly."
         actions={
           <>
-            <Link href="/" className="btn-primary w-full justify-center !py-2.5 text-sm sm:w-auto">
+            <TenantLink href="/" className="btn-primary w-full justify-center !py-2.5 text-sm sm:w-auto">
               Back to home
-            </Link>
-            <Link href="/faq" className="btn-ghost w-full justify-center !py-2.5 text-sm sm:w-auto">
+            </TenantLink>
+            <TenantLink href="/faq" className="btn-ghost w-full justify-center !py-2.5 text-sm sm:w-auto">
               Browse FAQ
-            </Link>
+            </TenantLink>
           </>
         }
       />

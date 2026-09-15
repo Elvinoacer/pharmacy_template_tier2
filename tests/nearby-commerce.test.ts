@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { distanceKm, proximityOrder, validCoordinates } from "../app/lib/proximity";
 import { availabilityOffer } from "../app/lib/care-availability";
 import { transactionFeeCents, billableFeeKes } from "../app/lib/transaction-fee";
-import { publicStorefrontRoute, publicImageUrl } from "../app/lib/public-storefront";
+import { publicStorefrontRoute, publicImageUrl, isPublicIdentityPath } from "../app/lib/public-storefront";
 
 test("nearby sorting puts unknown pins last and measures realistic distances", () => {
   const origin = { latitude: -1.286389, longitude: 36.817223 };
@@ -34,6 +34,14 @@ test("storefront routes exclude private rooms and accept checkout and published 
   assert.equal(publicStorefrontRoute(["admin"]), null);
   assert.equal(publicStorefrontRoute(["about", "private"]), null);
   assert.deepEqual(publicStorefrontRoute(["order"]), { section: "order", detail: undefined });
+  assert.deepEqual(publicStorefrontRoute(["careers"]), { section: "careers", detail: undefined });
+  assert.deepEqual(publicStorefrontRoute(["delivery"]), { section: "delivery", detail: undefined });
+  assert.deepEqual(publicStorefrontRoute(["faq"]), { section: "faq", detail: undefined });
+  assert.deepEqual(publicStorefrontRoute(["contact"]), { section: "contact", detail: undefined });
+  assert.equal(publicStorefrontRoute(["careers", "extra"]), null);
+  assert.equal(isPublicIdentityPath("/careers"), true);
+  assert.equal(isPublicIdentityPath("/api/delivery"), true);
+  assert.equal(isPublicIdentityPath("/medicines"), false);
   assert.equal(publicImageUrl("javascript:alert(1)"), null);
   assert.equal(publicImageUrl("//evil.example/photo"), null);
   assert.equal(publicImageUrl("/images/pharmacy.png"), "/images/pharmacy.png");

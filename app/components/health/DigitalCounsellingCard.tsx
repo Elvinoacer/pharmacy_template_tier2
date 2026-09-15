@@ -64,14 +64,19 @@ export default function DigitalCounsellingCard({
   };
 
   const handleShare = () => {
-    const text = `📋 Digital Medication Counselling Leaflet for ${counselling.brandNames[0]} (${counselling.genericName})\n\n💊 How to take: ${counselling.howToTake.technique}\n⏰ When: ${counselling.whenToTake.bestTimeOfDay}\n🍽️ Food: ${counselling.foodAndDrink.summary}\n🌡️ Storage: ${counselling.storage.temperatureRange}\n⚠️ Key side effects: ${counselling.sideEffects.expected.map((s) => s.effect).join(", ")}\n🔄 Missed dose: ${counselling.missedDose.neverDoubleUpRule}\n\nFull guide: https://aetherpharmacy.com/health/counselling/${counselling.medicineKey}`;
+    const fullGuideUrl =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/health/counselling/${counselling.medicineKey}`
+        : `/health/counselling/${counselling.medicineKey}`;
+
+    const text = `📋 Digital Medication Counselling Leaflet for ${counselling.brandNames[0]} (${counselling.genericName})\n\n💊 How to take: ${counselling.howToTake.technique}\n⏰ When: ${counselling.whenToTake.bestTimeOfDay}\n🍽️ Food: ${counselling.foodAndDrink.summary}\n🌡️ Storage: ${counselling.storage.temperatureRange}\n⚠️ Key side effects: ${counselling.sideEffects.expected.map((s) => s.effect).join(", ")}\n🔄 Missed dose: ${counselling.missedDose.neverDoubleUpRule}\n\nFull guide: ${fullGuideUrl}`;
 
     if (navigator.share) {
       navigator
         .share({
           title: `${counselling.brandNames[0]} Counselling Leaflet`,
           text: text,
-          url: window.location.href,
+          url: typeof window !== "undefined" ? window.location.href : fullGuideUrl,
         })
         .catch(() => {
           navigator.clipboard?.writeText(text);
@@ -115,7 +120,7 @@ export default function DigitalCounsellingCard({
     : null;
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[#cfe0d8] bg-white shadow-md transition-all print:border-none print:shadow-none">
+    <div className="overflow-hidden rounded-3xl border border-[var(--line-2)] bg-[var(--card)] text-[var(--foreground)] shadow-sm transition-all print:border-none print:shadow-none">
       {/* Luxury Hero Banner */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#063b31] via-[#0d6e5a] to-[#128a71] p-6 sm:p-8 text-white">
         {/* Subtle decorative background circles */}
@@ -193,7 +198,7 @@ export default function DigitalCounsellingCard({
       </div>
 
       {/* Interactive Toolbar & View Switcher */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e3ebe6] bg-[#f8faf9] px-6 py-3.5 text-xs print:hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line-2)] bg-[var(--card-elev)] px-6 py-3.5 text-xs print:hidden">
         {/* Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -201,8 +206,8 @@ export default function DigitalCounsellingCard({
             onClick={() => setActiveTab("pillars")}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
               activeTab === "pillars"
-                ? "bg-teal-800 text-white shadow-xs"
-                : "bg-white border border-[#cfe0d8] text-[#2c3e35] hover:bg-[#eef5f1]"
+                ? "bg-[var(--brand)] text-white shadow-xs"
+                : "bg-[var(--card)] border border-[var(--line-2)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
             }`}
           >
             <ShieldCheck className="h-3.5 w-3.5" />
@@ -215,8 +220,8 @@ export default function DigitalCounsellingCard({
               onClick={() => setActiveTab("form")}
               className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
                 activeTab === "form"
-                  ? "bg-teal-800 text-white shadow-xs"
-                  : "bg-white border border-[#cfe0d8] text-[#2c3e35] hover:bg-[#eef5f1]"
+                  ? "bg-[var(--brand)] text-white shadow-xs"
+                  : "bg-[var(--card)] border border-[var(--line-2)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
               }`}
             >
               <Pill className="h-3.5 w-3.5" />
@@ -230,8 +235,8 @@ export default function DigitalCounsellingCard({
               onClick={() => setActiveTab("device")}
               className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition ${
                 activeTab === "device"
-                  ? "bg-teal-800 text-white shadow-xs"
-                  : "bg-white border border-[#cfe0d8] text-[#2c3e35] hover:bg-[#eef5f1]"
+                  ? "bg-[var(--brand)] text-white shadow-xs"
+                  : "bg-[var(--card)] border border-[var(--line-2)] text-[var(--muted)] hover:bg-[var(--card-elev)] hover:text-[var(--foreground)]"
               }`}
             >
               <Sparkles className="h-3.5 w-3.5" />
@@ -242,14 +247,14 @@ export default function DigitalCounsellingCard({
 
         {/* View Mode Toggle (Grid vs Leaflet) */}
         {activeTab === "pillars" && (
-          <div className="flex items-center gap-1 rounded-xl bg-[#e3ebe6] p-1">
+          <div className="flex items-center gap-1 rounded-xl bg-[var(--line)] p-1">
             <button
               type="button"
               onClick={() => setViewMode("grid")}
               className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
                 viewMode === "grid"
-                  ? "bg-white text-teal-900 shadow-xs"
-                  : "text-[#5a6b62] hover:text-[#0c1a14]"
+                  ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
               <LayoutGrid className="h-3 w-3" />
@@ -260,8 +265,8 @@ export default function DigitalCounsellingCard({
               onClick={() => setViewMode("leaflet")}
               className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
                 viewMode === "leaflet"
-                  ? "bg-white text-teal-900 shadow-xs"
-                  : "text-[#5a6b62] hover:text-[#0c1a14]"
+                  ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
               <FileText className="h-3 w-3" />
@@ -275,23 +280,23 @@ export default function DigitalCounsellingCard({
       {activeTab === "pillars" && (
         <div className="p-6 sm:p-8 space-y-8">
           {/* Golden Rule Callout Banner */}
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 via-amber-50/60 to-white p-4 text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-amber-500/40 bg-amber-500/10 p-4 text-xs">
             <div className="flex items-start gap-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white font-bold shadow-xs">
                 ⚠️
               </span>
               <div>
-                <strong className="text-amber-950 font-bold text-sm block">
+                <strong className="text-amber-950 dark:text-amber-200 font-bold text-sm block">
                   Golden Safety Rule: {counselling.missedDose.neverDoubleUpRule}
                 </strong>
-                <p className="mt-0.5 text-amber-900 leading-relaxed text-[11px]">
+                <p className="mt-0.5 text-amber-900 dark:text-amber-300 leading-relaxed text-[11px]">
                   {counselling.missedDose.ruleOfThumb}
                 </p>
               </div>
             </div>
             <Link
               href="/health/counselling"
-              className="inline-flex items-center gap-1 rounded-full bg-amber-200/80 px-3 py-1 text-[11px] font-extrabold text-amber-950 hover:bg-amber-300 transition"
+              className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-3 py-1 text-[11px] font-extrabold text-amber-900 dark:text-amber-200 hover:bg-amber-500/30 transition border border-amber-500/30"
             >
               Missed Dose Calculator →
             </Link>
@@ -590,17 +595,17 @@ export default function DigitalCounsellingCard({
             </div>
           ) : (
             /* View Mode 2: Clean Formal Patient Leaflet Document */
-            <div className="max-w-4xl mx-auto space-y-6 text-xs text-[#2c3e35] leading-relaxed bg-[#fbfdfb] p-6 sm:p-8 rounded-3xl border border-[#d2dfd8]">
-              <div className="border-b border-[#cfe0d8] pb-4">
-                <h3 className="text-lg font-bold text-[#0c1a14]">
+            <div className="max-w-4xl mx-auto space-y-6 text-xs text-[var(--foreground)] leading-relaxed bg-[var(--card-elev)] p-6 sm:p-8 rounded-3xl border border-[var(--line-2)]">
+              <div className="border-b border-[var(--line-2)] pb-4">
+                <h3 className="text-lg font-bold text-[var(--foreground)]">
                   Clinical Patient Leaflet: {counselling.brandNames[0]} ({counselling.genericName})
                 </h3>
-                <p className="text-xs text-[#5a6b62] mt-0.5">
+                <p className="text-xs text-[var(--muted)] mt-0.5">
                   Standard 12-Pillar Medication Administration Protocol · Aether Pharmacy
                 </p>
               </div>
 
-              <div className="space-y-4 divide-y divide-[#e3ebe6]">
+              <div className="space-y-4 divide-y divide-[var(--line-2)]">
                 <LeafletRow title="1. How to take" content={counselling.howToTake.technique} />
                 <LeafletRow title="2. When to take" content={`${counselling.whenToTake.bestTimeOfDay} — ${counselling.whenToTake.circadianRationale}`} />
                 <LeafletRow title="3. Frequency" content={`${counselling.howOftenToTake.frequencySchedule}. Maximum daily cap: ${counselling.howOftenToTake.maxDailyDose}`} />
@@ -622,30 +627,30 @@ export default function DigitalCounsellingCard({
       {/* Special Dosage Form Tab */}
       {activeTab === "form" && specialFormGuide && (
         <div className="p-6 sm:p-8 space-y-6">
-          <div className="rounded-2xl border border-teal-200 bg-teal-50/60 p-5">
-            <div className="flex items-center gap-2 text-teal-900 font-bold text-base">
-              <Pill className="h-5 w-5 text-teal-800" />
+          <div className="rounded-2xl border border-teal-500/30 bg-teal-500/10 p-5">
+            <div className="flex items-center gap-2 text-[var(--foreground)] font-bold text-base">
+              <Pill className="h-5 w-5 text-[var(--brand)]" />
               {specialFormGuide.title}
             </div>
-            <p className="mt-1 text-xs text-teal-800 leading-relaxed">
+            <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">
               {specialFormGuide.shortDescription}
             </p>
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-bold text-sm text-[#0c1a14]">Step-by-Step Technique:</h4>
+            <h4 className="font-bold text-sm text-[var(--foreground)]">Step-by-Step Technique:</h4>
             <div className="grid gap-3 sm:grid-cols-2">
               {specialFormGuide.steps.map((st) => (
-                <div key={st.stepNumber} className="rounded-2xl border border-[#e3ebe6] bg-[#fbfdfb] p-4">
+                <div key={st.stepNumber} className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-800 text-xs font-bold text-white">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--brand)] text-xs font-bold text-white">
                       {st.stepNumber}
                     </span>
-                    <h5 className="font-bold text-xs text-[#0c1a14]">{st.title}</h5>
+                    <h5 className="font-bold text-xs text-[var(--foreground)]">{st.title}</h5>
                   </div>
-                  <p className="mt-2 text-xs text-[#2c3e35] leading-relaxed">{st.instruction}</p>
+                  <p className="mt-2 text-xs text-[var(--muted)] leading-relaxed">{st.instruction}</p>
                   {st.keyNote && (
-                    <p className="mt-2 rounded-lg bg-teal-50 px-2 py-1 text-[11px] font-semibold text-teal-900 border border-teal-100">
+                    <p className="mt-2 rounded-lg bg-teal-500/10 px-2 py-1 text-[11px] font-semibold text-[var(--foreground)] border border-teal-500/20">
                       💡 {st.keyNote}
                     </p>
                   )}
@@ -655,11 +660,11 @@ export default function DigitalCounsellingCard({
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
-              <h5 className="font-bold text-xs text-emerald-950 flex items-center gap-1.5">
-                <CheckCircle2 className="h-4 w-4 text-emerald-700" /> Essential Do&apos;s
+            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+              <h5 className="font-bold text-xs text-emerald-800 dark:text-emerald-200 flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Essential Do&apos;s
               </h5>
-              <ul className="mt-2 space-y-1 text-xs text-emerald-900">
+              <ul className="mt-2 space-y-1 text-xs text-[var(--foreground)]">
                 {specialFormGuide.crucialDoList.map((d, i) => (
                   <li key={i} className="flex items-start gap-1.5">
                     <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
@@ -669,11 +674,11 @@ export default function DigitalCounsellingCard({
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-rose-200 bg-rose-50/50 p-4">
-              <h5 className="font-bold text-xs text-rose-950 flex items-center gap-1.5">
-                <AlertOctagon className="h-4 w-4 text-rose-700" /> Crucial Don&apos;ts
+            <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
+              <h5 className="font-bold text-xs text-rose-800 dark:text-rose-200 flex items-center gap-1.5">
+                <AlertOctagon className="h-4 w-4 text-rose-600" /> Crucial Don&apos;ts
               </h5>
-              <ul className="mt-2 space-y-1 text-xs text-rose-900">
+              <ul className="mt-2 space-y-1 text-xs text-[var(--foreground)]">
                 {specialFormGuide.crucialDontList.map((d, i) => (
                   <li key={i} className="flex items-start gap-1.5">
                     <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-600" />
@@ -689,30 +694,30 @@ export default function DigitalCounsellingCard({
       {/* Device Tab */}
       {activeTab === "device" && deviceGuide && (
         <div className="p-6 sm:p-8 space-y-6">
-          <div className="rounded-2xl border border-cyan-200 bg-cyan-50/60 p-5">
-            <div className="flex items-center gap-2 text-cyan-950 font-bold text-base">
-              <Sparkles className="h-5 w-5 text-cyan-800" />
+          <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-5">
+            <div className="flex items-center gap-2 text-[var(--foreground)] font-bold text-base">
+              <Sparkles className="h-5 w-5 text-cyan-600" />
               {deviceGuide.title}
             </div>
-            <p className="mt-1 text-xs text-cyan-800 leading-relaxed">
+            <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">
               {deviceGuide.shortDescription}
             </p>
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-bold text-sm text-[#0c1a14]">Device Step-by-Step Instructions:</h4>
+            <h4 className="font-bold text-sm text-[var(--foreground)]">Device Step-by-Step Instructions:</h4>
             <div className="grid gap-3 sm:grid-cols-2">
               {deviceGuide.steps.map((st) => (
-                <div key={st.stepNumber} className="rounded-2xl border border-[#e3ebe6] bg-[#fbfdfb] p-4">
+                <div key={st.stepNumber} className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-800 text-xs font-bold text-white">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-700 text-xs font-bold text-white">
                       {st.stepNumber}
                     </span>
-                    <h5 className="font-bold text-xs text-[#0c1a14]">{st.title}</h5>
+                    <h5 className="font-bold text-xs text-[var(--foreground)]">{st.title}</h5>
                   </div>
-                  <p className="mt-2 text-xs text-[#2c3e35] leading-relaxed">{st.instruction}</p>
+                  <p className="mt-2 text-xs text-[var(--muted)] leading-relaxed">{st.instruction}</p>
                   {st.keyNote && (
-                    <p className="mt-2 rounded-lg bg-cyan-50 px-2 py-1 text-[11px] font-semibold text-cyan-900 border border-cyan-100">
+                    <p className="mt-2 rounded-lg bg-cyan-500/10 px-2 py-1 text-[11px] font-semibold text-[var(--foreground)] border border-cyan-500/20">
                       💡 {st.keyNote}
                     </p>
                   )}
@@ -740,12 +745,12 @@ function PillarCard({
   children: React.ReactNode;
 }) {
   const accentStyles = {
-    teal: "border-teal-200/80 bg-gradient-to-b from-teal-50/40 to-white hover:border-teal-400",
-    indigo: "border-indigo-200/80 bg-gradient-to-b from-indigo-50/40 to-white hover:border-indigo-400",
-    amber: "border-amber-200/80 bg-gradient-to-b from-amber-50/40 to-white hover:border-amber-400",
-    cyan: "border-cyan-200/80 bg-gradient-to-b from-cyan-50/40 to-white hover:border-cyan-400",
-    rose: "border-rose-200/80 bg-gradient-to-b from-rose-50/40 to-white hover:border-rose-400",
-    purple: "border-purple-200/80 bg-gradient-to-b from-purple-50/40 to-white hover:border-purple-400",
+    teal: "border-teal-500/30 bg-teal-500/5 hover:border-teal-500/60",
+    indigo: "border-indigo-500/30 bg-indigo-500/5 hover:border-indigo-500/60",
+    amber: "border-amber-500/30 bg-amber-500/5 hover:border-amber-500/60",
+    cyan: "border-cyan-500/30 bg-cyan-500/5 hover:border-cyan-500/60",
+    rose: "border-rose-500/30 bg-rose-500/5 hover:border-rose-500/60",
+    purple: "border-purple-500/30 bg-purple-500/5 hover:border-purple-500/60",
   };
 
   const badgeStyles = {
@@ -764,11 +769,11 @@ function PillarCard({
           <span className={`flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black shadow-xs ${badgeStyles[accent]}`}>
             {pillarNumber}
           </span>
-          <h3 className="font-bold text-[#0c1a14] text-xs sm:text-sm">{title}</h3>
+          <h3 className="font-bold text-[var(--foreground)] text-xs sm:text-sm">{title}</h3>
         </div>
-        <span className="text-[#8a9a92] group-hover:scale-110 transition">{icon}</span>
+        <span className="text-[var(--muted-2)] group-hover:scale-110 transition">{icon}</span>
       </div>
-      <div className="mt-3">{children}</div>
+      <div className="mt-3 text-[var(--muted)]">{children}</div>
     </div>
   );
 }
@@ -776,8 +781,8 @@ function PillarCard({
 function LeafletRow({ title, content }: { title: string; content: string }) {
   return (
     <div className="grid gap-2 pt-3 sm:grid-cols-12">
-      <div className="font-bold text-teal-950 sm:col-span-4">{title}</div>
-      <div className="text-[#2c3e35] sm:col-span-8">{content}</div>
+      <div className="font-bold text-[var(--brand)] sm:col-span-4">{title}</div>
+      <div className="text-[var(--foreground)] sm:col-span-8">{content}</div>
     </div>
   );
 }

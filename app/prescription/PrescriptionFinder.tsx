@@ -6,24 +6,36 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
+  Building2,
+  Camera,
   Check,
   FileUp,
   Loader2,
   MapPin,
   PackageSearch,
   Search,
+  Send,
+  Split,
 } from "lucide-react";
 import RefillForm from "@/app/components/RefillForm";
 import CareHero from "@/app/components/care/CareHero";
+import { UploadFeedback } from "@/app/components/prescription/UploadFeedback";
 import {
   MAX_PRESCRIPTION_MEDICINES,
   prescriptionNames,
 } from "@/app/lib/prescription-discovery";
 import {
   availabilityOffer,
+  splitAvailabilityOffers,
   type CareOffer,
   type CareResult,
 } from "@/app/lib/care-availability";
+import {
+  availabilitySearchFeedback,
+  feedbackFromApiPayload,
+  photoReadFeedback,
+  type UploadFeedbackModel,
+} from "@/app/lib/prescription-upload-feedback";
 import pageStyles from "@/app/components/care/CarePages.module.css";
 import styles from "./PrescriptionFinder.module.css";
 
@@ -32,38 +44,110 @@ export default function PrescriptionFinder({
   initialResults = null,
   initialError = "",
   nearby = false,
+  pharmacies = [],
 }: {
   mode?: "prescription" | "refill";
   initialResults?: CareResult[] | null;
   initialError?: string;
   nearby?: boolean;
+  pharmacies?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    city: string | null;
+    county: string | null;
+  }>;
 }) {
   const [names, setNames] = useState(
     initialResults?.map((r) => r.name).join("\n") || "",
   );
   const [area, setArea] = useState("");
   const [busy, setBusy] = useState<"reading" | "searching" | null>(null);
-  const [error, setError] = useState(initialError);
-  const [notice, setNotice] = useState("");
+  const [feedback, setFeedback] = useState<UploadFeedbackModel | null>(
+    initialError
+      ? {
+          code: "initial",
+          tone: "warning",
+          title: "This listing needs another look",
+          message: initialError,
+          actions: [
+            { id: "focus_names", label: "Search another medicine", variant: "primary" },
+            { id: "browse", label: "Browse medicines", href: "/medicines", variant: "ghost" },
+            { id: "refer", label: "Send to a pharmacist", variant: "secondary" },
+          ],
+        }
+      : null,
+  );
   const [results, setResults] = useState<CareResult[] | null>(initialResults);
   const [request, setRequest] = useState<CareOffer | null>(null);
+  const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
+  const [showReferral, setShowReferral] = useState(false);
+  const [referralName, setReferralName] = useState("");
+  const [referralPhone, setReferralPhone] = useState("");
+  const [referralPharmacySlug, setReferralPharmacySlug] = useState(pharmacies[0]?.slug || "");
+  const [referralBusy, setReferralBusy] = useState(false);
+  const [referralSuccess, setReferralSuccess] = useState<string | null>(null);
+  const [referralFeedback, setReferralFeedback] = useState<UploadFeedbackModel | null>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
   const namesInput = useRef<HTMLTextAreaElement>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
+  const referralSection = useRef<HTMLElement>(null);
+
+  function openReferral() {
+    setShowReferral(true);
+    requestAnimationFrame(() => {
+      referralSection.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  }
+
+  function handleFeedbackAction(id: string) {
+    if (id === "retry_photo") {
+      fileInput.current?.click();
+      return;
+    }
+    if (id === "focus_names") {
+      namesInput.current?.focus();
+      namesInput.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+      return;
+    }
+    if (id === "search" || id === "retry_search") {
+      void search();
+      return;
+    }
+    if (id === "retry_submit") {
+      const form = referralSection.current?.querySelector("form");
+      if (form instanceof HTMLFormElement) form.requestSubmit();
+      return;
+    }
+    if (id === "refer") openReferral();
+  }
+
   async function readPhoto(file?: File) {
     if (!file) return;
-    setError("");
-    setNotice("");
     setResults(null);
     setRequest(null);
-    if (
-      !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-      file.size === 0 ||
-      file.size > 5 * 1024 * 1024
-    ) {
-      setError("Choose a JPEG, PNG or WebP photo up to 5 MB.");
+    if (file.size === 0) {
+      setFeedback(photoReadFeedback({ code: "missing_file" }));
+      return;
+    }
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setFeedback(photoReadFeedback({ code: "invalid_type" }));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setFeedback(photoReadFeedback({ code: "file_too_large" }));
       return;
     }
     setBusy("reading");
+    setFeedback(photoReadFeedback({ code: "reading" }));
+    const reader = new FileReader();
+    reader.onload = () => setUploadedPhoto(reader.result as string);
+    reader.onerror = () => {
+      setFeedback(photoReadFeedback({ code: "read_failed" }));
+      setBusy(null);
+    };
+    reader.readAsDataURL(file);
     try {
       const body = new FormData();
       body.set("image", file);
@@ -71,29 +155,38 @@ export default function PrescriptionFinder({
         method: "POST",
         body,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not read this photo.");
-      setNames(data.names.join("\n"));
-      setNotice(
-        data.names.length
-          ? "Review every name and strength. Correct any reading mistakes before checking availability."
-          : "We couldn’t read the medicine names. Try a clearer photo or enter them below.",
+      const data = await res.json().catch(() => ({}));
+      const names = Array.isArray(data.names)
+        ? data.names.filter((name: unknown) => typeof name === "string")
+        : [];
+      if (names.length) setNames(names.join("\n"));
+      const next = feedbackFromApiPayload(
+        data,
+        photoReadFeedback({
+          code: !res.ok
+            ? res.status === 429
+              ? "rate_limited"
+              : "read_failed"
+            : names.length
+              ? "read_ok"
+              : "unreadable",
+          nameCount: names.length,
+        }),
       );
+      setFeedback(next);
+      if (next.code === "unreadable" || next.tone === "error") {
+        setShowReferral(true);
+      }
       requestAnimationFrame(() => namesInput.current?.focus());
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Photo reading failed. Enter medicine names to continue.",
-      );
+    } catch {
+      setFeedback(photoReadFeedback({ code: "network" }));
+      setShowReferral(true);
     } finally {
       setBusy(null);
     }
   }
-  async function search(event: FormEvent) {
-    event.preventDefault();
-    setError("");
-    setNotice("");
+  async function search(event?: FormEvent) {
+    event?.preventDefault();
     setRequest(null);
     const list = prescriptionNames(names);
     if (
@@ -101,9 +194,8 @@ export default function PrescriptionFinder({
       list.length > MAX_PRESCRIPTION_MEDICINES ||
       list.some((n) => n.length < 2 || n.length > 120)
     ) {
-      setError(
-        "Enter 1–12 medicine names, one per line, with up to 120 characters each.",
-      );
+      setFeedback(availabilitySearchFeedback({ code: "validation" }));
+      namesInput.current?.focus();
       return;
     }
     setBusy("searching");
@@ -114,10 +206,21 @@ export default function PrescriptionFinder({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ names: list, area }),
       });
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.error || "Could not check availability.");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setFeedback(
+          feedbackFromApiPayload(
+            data,
+            availabilitySearchFeedback({
+              code: res.status === 429 ? "rate_limited" : "search_failed",
+            }),
+          ),
+        );
+        setShowReferral(true);
+        return;
+      }
       setResults(data.results);
+      setFeedback(null);
       requestAnimationFrame(() => {
         resultHeading.current?.focus();
         resultHeading.current?.scrollIntoView({
@@ -125,15 +228,84 @@ export default function PrescriptionFinder({
           behavior: "instant",
         });
       });
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Search failed. Please try again.",
-      );
+    } catch {
+      setFeedback(availabilitySearchFeedback({ code: "search_failed" }));
+      setShowReferral(true);
     } finally {
       setBusy(null);
     }
   }
+
   const offer = results ? availabilityOffer(results) : null;
+  const splitPlan = results ? splitAvailabilityOffers(results) : null;
+
+  async function handleReferralSubmit(e: FormEvent) {
+    e.preventDefault();
+    setReferralBusy(true);
+    setReferralFeedback(null);
+    setReferralSuccess(null);
+    try {
+      const today = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Africa/Nairobi",
+      }).format(new Date());
+      const targetSlug = referralPharmacySlug || pharmacies[0]?.slug;
+      if (!targetSlug) {
+        throw new Error("Please choose a pharmacy to refer your prescription to.");
+      }
+      const res = await fetch("/api/refill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pharmacySlug: targetSlug,
+          fullName: referralName.trim(),
+          phone: referralPhone.trim(),
+          medicine: names.trim() || "Prescription Referral",
+          pickupDate: today,
+          pickupPreference: "pickup",
+          prescriptionPhoto: uploadedPhoto || undefined,
+          notes: uploadedPhoto
+            ? `[Attached Prescription Photo]\nRequested Items:\n${names}`
+            : `Prescription referral for clinical review and sourcing.\nRequested Items:\n${names}`,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(
+          data.error === "validation_failed"
+            ? Object.values(data.fields || {}).flat()[0] || "Check form details."
+            : data.error || "Could not submit referral.",
+        );
+      }
+      setReferralSuccess(data.reference || "RF-RECEIVED");
+      setReferralFeedback({
+        code: "referral_ok",
+        tone: "success",
+        title: "Prescription sent to the pharmacy",
+        message: `Reference ${data.reference || "RF-RECEIVED"}. The team will review the details${uploadedPhoto ? " and the photo" : ""} and contact you. You can keep checking public listings while you wait.`,
+        actions: [
+          { id: "browse", label: "Browse medicines", href: "/medicines", variant: "ghost" },
+          { id: "pharmacies", label: "Find a pharmacy", href: "/pharmacies", variant: "ghost" },
+        ],
+      });
+    } catch (err) {
+      setReferralFeedback({
+        code: "referral_failed",
+        tone: "error",
+        title: "We couldn’t send this to the pharmacy",
+        message:
+          err instanceof Error
+            ? `${err.message} You can try again, check availability yourself, or pick another pharmacy.`
+            : "Try submitting again, check availability yourself, or pick another pharmacy.",
+        actions: [
+          { id: "retry_submit", label: "Try sending again", variant: "primary" },
+          { id: "retry_search", label: "Check availability", variant: "secondary" },
+          { id: "pharmacies", label: "Find a pharmacy", href: "/pharmacies", variant: "ghost" },
+        ],
+      });
+    } finally {
+      setReferralBusy(false);
+    }
+  }
   return (
     <div className={pageStyles.page}>
       <CareHero
@@ -217,18 +389,42 @@ export default function PrescriptionFinder({
                 A clear photo of the medicine names and strengths is all you
                 need to begin.
               </p>
-              <label className={styles.fileLabel}>
-                <FileUp size={17} aria-hidden /> Upload prescription
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  disabled={!!busy}
-                  onChange={(e) => {
-                    void readPhoto(e.target.files?.[0]);
-                    e.target.value = "";
-                  }}
-                />
-              </label>
+              {uploadedPhoto && (
+                <div className={styles.preview}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- local data URL preview */}
+                  <img src={uploadedPhoto} alt="Uploaded prescription preview" />
+                </div>
+              )}
+              <div className={styles.fileRow}>
+                <label className={styles.fileLabel}>
+                  <FileUp size={17} aria-hidden />{" "}
+                  {uploadedPhoto ? "Replace photo" : "Upload prescription"}
+                  <input
+                    ref={fileInput}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    disabled={!!busy}
+                    onChange={(e) => {
+                      void readPhoto(e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                <label className={styles.fileLabel}>
+                  <Camera size={17} aria-hidden /> Take photo
+                  <input
+                    ref={cameraInput}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    disabled={!!busy}
+                    onChange={(e) => {
+                      void readPhoto(e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
               <small>JPEG, PNG or WebP · Up to 5 MB</small>
               <p className={styles.privacy}>
                 Photo reading uses our AI provider. Crop out personal details
@@ -302,19 +498,11 @@ export default function PrescriptionFinder({
               </button>
             </form>
           </div>
-          <div aria-live="polite">
-            {notice && <p className={styles.notice}>{notice}</p>}
-            {busy === "reading" && (
-              <p className={styles.notice}>
-                Reading your prescription. You can review and correct the names
-                next.
-              </p>
-            )}
-          </div>
-          {error && (
-            <p className={styles.error} role="alert">
-              {error}
-            </p>
+          {feedback && (
+            <UploadFeedback
+              feedback={feedback}
+              onAction={handleFeedbackAction}
+            />
           )}
           {results && (
             <section className={styles.results}>
@@ -402,18 +590,176 @@ export default function PrescriptionFinder({
                   <PackageSearch size={34} aria-hidden />
                   <h3>No matching stock listings yet.</h3>
                   <p>
-                    Try the exact name and strength, another area, or explore
-                    all medicine listings. Nothing has been sent.
+                    Try the exact name and strength, another area, or send this
+                    prescription to a pharmacist. Nothing has been sent.
                   </p>
-                  <Link
-                    href="/medicines?stock=all"
-                    className={pageStyles.primary}
-                  >
-                    Explore medicines <ArrowRight size={16} aria-hidden />
-                  </Link>
+                  <div className={styles.emptyActions}>
+                    <button
+                      type="button"
+                      className={pageStyles.primary}
+                      onClick={() => namesInput.current?.focus()}
+                    >
+                      Edit names <ArrowRight size={16} aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.secondaryBtn}
+                      onClick={openReferral}
+                    >
+                      Send to a pharmacist <ArrowRight size={16} aria-hidden />
+                    </button>
+                    <Link
+                      href="/medicines?stock=all"
+                      className={pageStyles.primary}
+                    >
+                      Explore medicines <ArrowRight size={16} aria-hidden />
+                    </Link>
+                  </div>
                 </div>
               )}
+
+              {splitPlan && splitPlan.offers.length > 1 && (
+                <article className="mt-6 rounded-3xl border border-teal-500/30 bg-teal-500/5 p-5 shadow-xs dark:bg-[#0c1f19]">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-teal-500/15 pb-3">
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-600/10 px-2.5 py-1 text-xs font-bold text-teal-700 dark:text-teal-300">
+                        <Split className="h-3.5 w-3.5" /> Multi-Pharmacy Split Fulfillment
+                      </span>
+                      <h4 className="mt-1 text-sm font-bold text-[var(--foreground)]">
+                        Fulfill {splitPlan.totalCovered} of {results.length} medicines across {splitPlan.offers.length} pharmacies
+                      </h4>
+                    </div>
+                    <span className="text-sm font-extrabold text-[var(--foreground)]">
+                      Total: KES {splitPlan.totalPrice.toLocaleString("en-KE")}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-[var(--muted)]">
+                    When no single pharmacy has every medicine, our split coverage plan pairs your items with the closest pharmacies in stock.
+                  </p>
+                  <div className="mt-4 space-y-3">
+                    {splitPlan.offers.map((planOffer, idx) => (
+                      <div key={planOffer.pharmacy.id} className="rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-3.5 shadow-xs">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand)]">Pharmacy #{idx + 1}</span>
+                            <h5 className="text-xs font-bold text-[var(--foreground)]">{planOffer.pharmacy.name}</h5>
+                            <p className="text-[11px] text-[var(--muted)]">
+                              {[planOffer.pharmacy.city, planOffer.pharmacy.county].filter(Boolean).join(", ")}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setRequest(planOffer);
+                              window.scrollTo({ top: 0, behavior: "instant" });
+                            }}
+                            className="inline-flex items-center gap-1 rounded-xl bg-[#0d6e5a] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-[#084c3f]"
+                          >
+                            Request {planOffer.lines.length} med{planOffer.lines.length === 1 ? "" : "s"} <ArrowRight className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                        <ul className="mt-2.5 divide-y divide-[var(--line)] border-t border-[var(--line)] pt-2 text-xs">
+                          {planOffer.lines.map((l) => (
+                            <li key={l.requested} className="flex items-center justify-between py-1 text-[11px]">
+                              <span className="text-[var(--foreground)] font-medium">{l.requested}</span>
+                              <span className="font-semibold text-[var(--muted)]">KES {l.match.price.toLocaleString("en-KE")}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              )}
+
             </section>
+          )}
+          {(showReferral || (results && (!offer || offer.missing.length > 0))) && (
+            <article
+              ref={referralSection}
+              className="mt-6 rounded-3xl border border-amber-500/25 bg-amber-500/5 p-5 shadow-xs dark:bg-amber-950/10"
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-700 dark:text-amber-400">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-sm font-bold text-[var(--foreground)]">
+                    {results
+                      ? "Missing medicines? Send this prescription to a pharmacist"
+                      : "Keep going — a pharmacist can take this from here"}
+                  </h4>
+                  <p className="mt-0.5 text-xs text-[var(--muted)]">
+                    {uploadedPhoto
+                      ? "We’ll include the photo you uploaded. The pharmacy can read the names, check back-office stock, or clarify with your doctor."
+                      : "Verified pharmacies can check back-office inventory, source from certified distributors, or clarify with your doctor."}
+                  </p>
+                </div>
+              </div>
+
+              {referralFeedback && (
+                <UploadFeedback
+                  feedback={referralFeedback}
+                  onAction={handleFeedbackAction}
+                />
+              )}
+
+              {referralSuccess ? null : (
+                <form onSubmit={handleReferralSubmit} className="mt-4 space-y-3 text-xs">
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div>
+                      <label className="mb-1 block font-semibold text-[var(--foreground)]">Your full name *</label>
+                      <input
+                        required
+                        value={referralName}
+                        onChange={(e) => setReferralName(e.target.value)}
+                        placeholder="e.g. Jane Kamau"
+                        className="input-admin w-full text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block font-semibold text-[var(--foreground)]">Phone number *</label>
+                      <input
+                        required
+                        value={referralPhone}
+                        onChange={(e) => setReferralPhone(e.target.value)}
+                        placeholder="07XX XXX XXX"
+                        className="input-admin w-full text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block font-semibold text-[var(--foreground)]">Target Pharmacy *</label>
+                      <select
+                        value={referralPharmacySlug}
+                        onChange={(e) => setReferralPharmacySlug(e.target.value)}
+                        className="input-admin w-full text-xs"
+                        required
+                      >
+                        {pharmacies.length > 0 ? (
+                          pharmacies.map((p) => (
+                            <option key={p.id} value={p.slug}>
+                              {p.name} ({p.city || "Kenya"})
+                            </option>
+                          ))
+                        ) : (
+                          <option value="">Nearby verified pharmacy</option>
+                        )}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="submit"
+                      disabled={referralBusy}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#0d6e5a] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#084c3f] disabled:opacity-60"
+                    >
+                      {referralBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                      {referralBusy ? "Submitting referral…" : "Submit prescription to pharmacy"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </article>
           )}
         </>
       )}

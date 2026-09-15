@@ -15,6 +15,11 @@ import {
   MAX_PRESCRIPTION_MEDICINES,
   matchesPrescriptionName,
 } from "@/app/lib/prescription-discovery";
+import {
+  availabilitySearchFeedback,
+  photoReadFeedback,
+  type UploadFeedbackModel,
+} from "@/app/lib/prescription-upload-feedback";
 
 export const runtime = "nodejs";
 const schema = z.object({
@@ -26,75 +31,96 @@ const schema = z.object({
 });
 const headers = { "Cache-Control": "private, no-store" };
 
+function payload(
+  feedback: UploadFeedbackModel,
+  extra: Record<string, unknown> = {},
+  status = 200,
+) {
+  return NextResponse.json(
+    {
+      ok: status < 400,
+      error: feedback.message,
+      ...feedback,
+      ...extra,
+    },
+    {
+      status,
+      headers:
+        status === 429 && typeof extra.retryAfterSeconds === "number"
+          ? { ...headers, "Retry-After": String(extra.retryAfterSeconds) }
+          : headers,
+    },
+  );
+}
+
 export async function POST(request: Request) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const isPhoto = Boolean(
+    request.headers.get("content-type")?.includes("multipart/form-data"),
+  );
   const limit = await checkRateLimitAsync(`prescription-search:${ip}`, {
     limit: 12,
     windowMs: 60_000,
     failClosed: true,
   });
-  if (!limit.allowed)
-    return NextResponse.json(
-      { error: "Too many searches. Please try again shortly." },
-      {
-        status: 429,
-        headers: { ...headers, "Retry-After": String(limit.retryAfterSeconds) },
-      },
-    );
+  if (!limit.allowed) {
+    const feedback = isPhoto
+      ? photoReadFeedback({
+          code: "rate_limited",
+          retryAfterSeconds: limit.retryAfterSeconds,
+        })
+      : availabilitySearchFeedback({
+          code: "rate_limited",
+          retryAfterSeconds: limit.retryAfterSeconds,
+        });
+    return payload(feedback, { retryAfterSeconds: limit.retryAfterSeconds }, 429);
+  }
   try {
-    if (request.headers.get("content-type")?.includes("multipart/form-data")) {
+    if (isPhoto) {
       const form = await request.formData();
       const file = form.get("image");
       if (!(file instanceof File))
-        return NextResponse.json(
-          { error: "Choose a prescription photo." },
-          { status: 400, headers },
-        );
+        return payload(photoReadFeedback({ code: "missing_file" }), { names: [] }, 400);
       const invalid = validateMedicationImage(file);
       if (invalid)
-        return NextResponse.json(
-          { error: invalid.message },
-          { status: 400, headers },
+        return payload(
+          photoReadFeedback({ code: invalid.error }),
+          { names: [] },
+          invalid.error === "file_too_large" ? 413 : 400,
         );
       if (!process.env.GROQ_API_KEY?.trim())
-        return NextResponse.json(
-          {
-            error:
-              "Photo reading is unavailable. Enter the medicine names below to check availability.",
-          },
-          { status: 503, headers },
+        return payload(
+          photoReadFeedback({ code: "ai_unavailable" }),
+          { names: [] },
+          503,
         );
       const identified = await identifyMedicationFromImage(
         await fileToDataUrl(file),
         "prescription",
       );
-      return NextResponse.json(
-        {
-          names: identified.map((item) =>
-            [
-              item.name,
-              item.strength &&
-              !item.name.toLowerCase().includes(item.strength.toLowerCase())
-                ? item.strength
-                : null,
-            ]
-              .filter(Boolean)
-              .join(" "),
-          ),
-        },
-        { headers },
+      const names = identified.map((item) =>
+        [
+          item.name,
+          item.strength &&
+          !item.name.toLowerCase().includes(item.strength.toLowerCase())
+            ? item.strength
+            : null,
+        ]
+          .filter(Boolean)
+          .join(" "),
+      );
+      return payload(
+        photoReadFeedback({
+          code: names.length ? "read_ok" : "unreadable",
+          nameCount: names.length,
+        }),
+        { names },
       );
     }
     const parsed = schema.safeParse(await request.json());
     if (!parsed.success)
-      return NextResponse.json(
-        {
-          error:
-            "Enter 1–12 medicine names, one per line (up to 120 characters each).",
-        },
-        { status: 400, headers },
-      );
+      return payload(availabilitySearchFeedback({ code: "validation" }), {}, 400);
     const { names, area } = parsed.data;
     const origin = await getBrowseLocation();
     const results = await withPlatformBypass(async () =>
@@ -191,11 +217,14 @@ export async function POST(request: Request) {
         }),
       ),
     );
-    return NextResponse.json({ results }, { headers });
+    return NextResponse.json({ results, ok: true }, { headers });
   } catch {
-    return NextResponse.json(
-      { error: "We couldn’t check availability right now. Please try again." },
-      { status: 503, headers },
+    return payload(
+      isPhoto
+        ? photoReadFeedback({ code: "read_failed" })
+        : availabilitySearchFeedback({ code: "search_failed" }),
+      isPhoto ? { names: [] } : {},
+      503,
     );
   }
 }

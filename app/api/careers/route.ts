@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { createEnquiry } from "@/app/lib/services/crm";
+import {
+  findPharmacyBySlug,
+  isActiveListed,
+  withPharmacy,
+} from "@/app/lib/tenant";
 
 export async function POST(request: Request) {
   try {
@@ -18,21 +23,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    await createEnquiry({
-      name,
-      email,
-      phone,
-      type: "careers",
-      subject: `Career application — ${role}`,
-      message: [
-        `Role: ${role}`,
-        body.message ? `Cover note: ${body.message}` : null,
-        body.experience ? `Experience: ${body.experience}` : null,
-      ]
-        .filter(Boolean)
-        .join("\n"),
-      source: "website",
-    });
+    const pharmacy =
+      typeof body.pharmacySlug === "string"
+        ? await findPharmacyBySlug(body.pharmacySlug)
+        : null;
+    if (body.pharmacySlug && (!pharmacy || !isActiveListed(pharmacy))) {
+      return NextResponse.json(
+        { error: "This pharmacy is unavailable." },
+        { status: 409 },
+      );
+    }
+
+    const submit = () =>
+      createEnquiry({
+        name,
+        email,
+        phone,
+        type: "careers",
+        subject: `Career application — ${role}`,
+        message: [
+          `Role: ${role}`,
+          body.message ? `Cover note: ${body.message}` : null,
+          body.experience ? `Experience: ${body.experience}` : null,
+        ]
+          .filter(Boolean)
+          .join("\n"),
+        source: "website",
+      });
+
+    if (pharmacy) await withPharmacy(pharmacy.id, submit, pharmacy.slug);
+    else await submit();
 
     return NextResponse.json({ ok: true });
   } catch (err) {

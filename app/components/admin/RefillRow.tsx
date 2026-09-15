@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition, useState } from "react";
-import { Phone, Mail, Clock, Save, Check, ChevronRight, ShieldCheck, MessageSquare } from "lucide-react";
+import { Phone, Mail, Clock, Save, Check, ChevronRight, ShieldCheck, MessageSquare, FileText } from "lucide-react";
 import { toast } from "@/app/components/Toaster";
 import { REFILL_STATUSES, refillStatusMeta } from "@/app/lib/types";
 import { formatDateTime } from "@/app/lib/time";
@@ -20,6 +20,8 @@ export type RefillRowData = {
   customerId: string | null;
   phone: string | null;
   email: string | null;
+  notes?: string | null;
+  attachmentUrls?: string[];
   createdAt: Date | string;
 };
 
@@ -110,7 +112,22 @@ export function RefillRow({
 
         {/* Medicine */}
         <td>
-          <p className="font-medium admin-text">{refill.medicineName}</p>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <p className="font-medium admin-text">{refill.medicineName}</p>
+            {refill.attachmentUrls && refill.attachmentUrls.length > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/15 px-2 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-400">
+                <FileText className="h-2.5 w-2.5" /> Rx Scan ({refill.attachmentUrls.length})
+              </span>
+            )}
+            {refill.notes && (
+              <span
+                title={refill.notes}
+                className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:text-amber-400"
+              >
+                <MessageSquare className="h-2.5 w-2.5" /> Notes
+              </span>
+            )}
+          </div>
           <p className="font-mono text-xs admin-soft">{refill.rxReference || "—"}</p>
         </td>
 

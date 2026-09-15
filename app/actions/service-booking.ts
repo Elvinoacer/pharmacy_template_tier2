@@ -133,11 +133,17 @@ export async function bookServiceAction(
           body: `Your ${serviceTitle} request is held. Pay KES ${amount?.toLocaleString() ?? ""} via M-Pesa to confirm.`,
           url: `/services/${booking.service.slug}`,
         }
-      : {
-          title: "Booking received",
-          body: `We've received your ${serviceTitle} request. Our team will follow up on ${booking.phone}.`,
-          url: `/services/${booking.service.slug}`,
-        },
+      : result.isPayableAfter
+        ? {
+            title: "Booking confirmed (Pay at visit)",
+            body: `Your appointment for ${serviceTitle} is confirmed. Fee: KES ${amount?.toLocaleString() ?? ""} payable at the pharmacy.`,
+            url: `/services/${booking.service.slug}`,
+          }
+        : {
+            title: "Booking received",
+            body: `We've received your ${serviceTitle} request. Our team will follow up on ${booking.phone}.`,
+            url: `/services/${booking.service.slug}`,
+          },
   ).catch(() => {});
 
   revalidatePath("/admin/services");
@@ -147,11 +153,14 @@ export async function bookServiceAction(
   return {
     success: requiresPayment
       ? `Request received. Pay KES ${amount?.toLocaleString() ?? ""} via M-Pesa to confirm your ${serviceTitle} booking.`
-      : `You're booked for ${serviceTitle}. We'll reach you on ${phone} to confirm timing.`,
+      : result.isPayableAfter
+        ? `You're booked for ${serviceTitle}! Fee: KES ${amount?.toLocaleString() ?? ""} payable at the pharmacy during your appointment.`
+        : `You're booked for ${serviceTitle}. We'll reach you on ${phone} to confirm timing.`,
     bookingId: booking.id,
     orderId: orderId ?? null,
     accessToken: orderId ? await issueOrderAccessToken(orderId) : undefined,
     requiresPayment,
+    isPayableAfter: result.isPayableAfter,
     amount: amount ?? null,
     phone: booking.phone,
     serviceTitle,

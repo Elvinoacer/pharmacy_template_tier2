@@ -244,9 +244,24 @@ export type BookingInput = {
   customerId?: string | null;
 };
 
+export function isServicePayableAfter(service: {
+  eligibility?: string | null;
+  description?: string | null;
+}): boolean {
+  const text = `${service.eligibility || ""} ${service.description || ""}`.toLowerCase();
+  return (
+    text.includes("[payable:after]") ||
+    text.includes("payable after") ||
+    text.includes("pay at visit") ||
+    text.includes("pay at clinic") ||
+    text.includes("pay at pharmacy")
+  );
+}
+
 /**
  * Create a service booking.
- * - Priced service → status=awaiting_payment + linked Order for M-Pesa
+ * - Priced service with online payment → status=awaiting_payment + linked Order for M-Pesa
+ * - Priced service payable after visit → status=confirmed + linked Order for counter settlement
  * - Unpriced → status=confirmed immediately
  */
 export async function createServiceBooking(input: BookingInput) {
@@ -274,21 +289,24 @@ export async function createServiceBooking(input: BookingInput) {
   }
   const priceNum =
     service.price == null ? null : Number(service.price.toString());
-  const requiresPayment =
+  const hasPrice =
     priceNum != null && Number.isFinite(priceNum) && priceNum > 0;
+  const isPayAfter = isServicePayableAfter(service);
+  const requiresOnlinePayment = hasPrice && !isPayAfter;
 
   const result = await prisma.$transaction(async (tx) => {
     let orderId: string | null = null;
 
-    if (requiresPayment) {
+    if (hasPrice) {
       const order = await tx.order.create({
         data: {
+          pharmacyId: service.pharmacyId,
           customerId: input.customerId || null,
           source: "service_booking",
           status: "pending",
           total: priceNum!,
           notes: [
-            `Service booking: ${service.title}`,
+            `Service booking: ${service.title} (${isPayAfter ? "Pay at visit" : "Pay online"})`,
             `Name: ${fullName}`,
             `Phone: ${phoneRaw}`,
             input.email ? `Email: ${input.email}` : null,
@@ -315,6 +333,7 @@ export async function createServiceBooking(input: BookingInput) {
 
     const booking = await tx.serviceBooking.create({
       data: {
+        pharmacyId: service.pharmacyId,
         serviceId: service.id,
         customerId: input.customerId || null,
         fullName,
@@ -323,9 +342,9 @@ export async function createServiceBooking(input: BookingInput) {
         notes: input.notes?.trim() || null,
         preferredDate: input.preferredDate?.trim() || null,
         preferredTime: input.preferredTime?.trim() || null,
-        status: requiresPayment ? "awaiting_payment" : "confirmed",
-        paymentStatus: requiresPayment ? "unpaid" : "none",
-        amount: requiresPayment ? priceNum! : null,
+        status: requiresOnlinePayment ? "awaiting_payment" : "confirmed",
+        paymentStatus: hasPrice ? "unpaid" : "none",
+        amount: hasPrice ? priceNum! : null,
         orderId,
         pushToken: input.pushToken?.trim() || null,
       },
@@ -336,10 +355,10 @@ export async function createServiceBooking(input: BookingInput) {
 
     await tx.adminNotification.create({ data: {
       type: "booking_new", title: "New service booking",
-      body: `${fullName} requested ${service.title}. Status: ${booking.status.replaceAll("_", " ")}.`,
+      body: `${fullName} requested ${service.title}. Status: ${booking.status.replaceAll("_", " ")} (${isPayAfter ? "Pay at visit" : hasPrice ? "Pay online" : "Free"}).`,
       relatedType: "service_booking", relatedId: booking.id,
     } });
-    return { booking, requiresPayment, orderId, amount: priceNum };
+    return { booking, requiresPayment: requiresOnlinePayment, isPayableAfter: isPayAfter, orderId, amount: priceNum };
   });
 
   return result;

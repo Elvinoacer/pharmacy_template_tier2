@@ -22,11 +22,11 @@ const sections = [
 ] as const;
 
 const sectionClass =
-  "scroll-mt-28 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm transition-colors duration-300 sm:rounded-3xl sm:p-6";
+  "glass-panel scroll-mt-28 rounded-2xl p-4 transition-colors duration-300 sm:rounded-3xl sm:p-6";
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
+    <div className="aether-route-surface min-h-screen overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Legal"
         title="Terms of Service"
@@ -36,11 +36,11 @@ export default function TermsPage() {
 
       <section className="px-3 pb-16 sm:px-6 sm:pb-20">
         <div className="mx-auto w-full max-w-4xl">
-          <div className="mb-5 flex flex-col gap-3 sm:mb-7 sm:flex-row sm:items-center sm:justify-between">
+          <div className="glass-panel-strong mb-5 flex flex-col gap-3 rounded-2xl p-4 sm:mb-7 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <p className="text-xs text-[var(--muted-2)]">Last updated: August 24, 2026</p>
             <Link
               href="/privacy"
-              className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[var(--line-2)] bg-[var(--card-elev)] px-4 py-2 text-xs font-semibold text-[var(--brand)] transition hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:w-auto"
+              className="glass inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-xs font-semibold text-[var(--brand)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:w-auto"
             >
               View Privacy Policy
             </Link>
@@ -52,7 +52,7 @@ export default function TermsPage() {
                 <a
                   key={section.id}
                   href={`#${section.id}`}
-                  className="inline-flex min-h-10 shrink-0 items-center rounded-full border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-2 text-xs font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+                  className="glass inline-flex min-h-10 shrink-0 items-center rounded-full px-3.5 py-2 text-xs font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
                 >
                   {index + 1}. {section.label}
                 </a>
@@ -150,7 +150,7 @@ export default function TermsPage() {
               </p>
             </section>
 
-            <section id="contact" className={`${sectionClass} bg-[var(--card-elev)]`}>
+            <section id="contact" className={`${sectionClass} glass-panel-strong`}>
               <h2 className="text-base font-semibold text-[var(--foreground)] sm:text-lg" style={{ fontFamily: "var(--font-display), serif" }}>
                 9. Contact
               </h2>

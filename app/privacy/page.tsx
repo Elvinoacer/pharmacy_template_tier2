@@ -24,14 +24,14 @@ const sections = [
 ] as const;
 
 const sectionClass =
-  "scroll-mt-28 rounded-2xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:rounded-3xl sm:p-6";
+  "glass-panel scroll-mt-28 rounded-2xl p-4 sm:rounded-3xl sm:p-6";
 const headingClass =
   "text-base font-semibold leading-snug text-[var(--foreground)] sm:text-lg";
 const bodyClass = "mt-2 text-[13px] leading-6 text-[var(--muted)] sm:text-sm sm:leading-7";
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
+    <div className="aether-route-surface min-h-screen overflow-x-hidden text-[var(--foreground)] transition-colors duration-300">
       <PageHero
         eyebrow="Legal"
         title="Privacy Policy"
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
 
       <section className="px-3 pb-16 sm:px-6 sm:pb-20">
         <div className="mx-auto w-full max-w-4xl">
-          <div className="mb-5 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4 sm:mb-7 sm:p-5">
+          <div className="glass-panel-strong mb-5 rounded-2xl p-4 sm:mb-7 sm:p-5">
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)]">
                 <ShieldCheck className="h-5 w-5" aria-hidden="true" />
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
                 <a
                   key={id}
                   href={`#${id}`}
-                  className="inline-flex min-h-9 shrink-0 items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3 text-[11px] font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:text-xs"
+                  className="glass inline-flex min-h-9 shrink-0 items-center rounded-full px-3 text-[11px] font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] sm:text-xs"
                 >
                   {index + 1}. {label}
                 </a>

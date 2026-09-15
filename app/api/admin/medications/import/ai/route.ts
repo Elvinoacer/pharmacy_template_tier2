@@ -47,25 +47,21 @@ export async function POST(req: Request) {
   }
   const data = parsed.data;
 
-  const [dosageForm, route, pregnancyCategory, manufacturer] = await Promise.all([
-    data.dosageForm
-      ? prisma.medicationLookup.findFirst({ where: { kind: "dosage_form", value: { equals: data.dosageForm, mode: "insensitive" } }, select: { id: true } })
-      : Promise.resolve(null),
-    data.route
-      ? prisma.medicationLookup.findFirst({ where: { kind: "route", value: { equals: data.route, mode: "insensitive" } }, select: { id: true } })
-      : Promise.resolve(null),
-    data.pregnancyCategory
-      ? prisma.medicationLookup.findFirst({ where: { kind: "pregnancy_category", value: { equals: data.pregnancyCategory, mode: "insensitive" } }, select: { id: true } })
-      : Promise.resolve(null),
-    data.manufacturer
-      ? prisma.manufacturer.upsert({
-          where: { name: data.manufacturer },
-          create: { name: data.manufacturer, active: true },
-          update: {},
-          select: { id: true },
-        })
-      : Promise.resolve(null),
-  ]);
+  const { findOrCreateLookup } = await import("@/app/lib/medication-lookups");
+  const dosageFormId = await findOrCreateLookup("dosage_form", data.dosageForm || "Tablet");
+  const routeId = data.route ? await findOrCreateLookup("route", data.route) : null;
+  const pregnancyCategoryId = data.pregnancyCategory
+    ? await findOrCreateLookup("pregnancy_category", data.pregnancyCategory)
+    : null;
+
+  const manufacturer = data.manufacturer
+    ? await prisma.manufacturer.upsert({
+        where: { name: data.manufacturer },
+        create: { name: data.manufacturer, active: true },
+        update: {},
+        select: { id: true },
+      })
+    : null;
 
   const activeIngredientIds: string[] = [];
   for (const name of data.activeIngredients || []) {
@@ -99,9 +95,9 @@ export async function POST(req: Request) {
     strengthUnit: data.strengthUnit ?? null,
     strengthDisplay: data.strengthDisplay ?? null,
     packSize: data.packSize ?? null,
-    dosageFormId: dosageForm?.id ?? null,
-    routeId: route?.id ?? null,
-    pregnancyCategoryId: pregnancyCategory?.id ?? null,
+    dosageFormId: dosageFormId ?? null,
+    routeId: routeId ?? null,
+    pregnancyCategoryId: pregnancyCategoryId ?? null,
     manufacturerId: manufacturer?.id ?? null,
     countryOfOrigin: data.countryOfOrigin ?? null,
     barcode: data.barcode ?? null,
@@ -132,8 +128,8 @@ export async function POST(req: Request) {
       strengthValue: data.strengthValue ?? null,
       strengthUnit: data.strengthUnit ?? null,
       strengthDisplay: data.strengthDisplay ?? null,
-      dosageFormId: dosageForm?.id ?? null,
-      routeId: route?.id ?? null,
+      dosageFormId: dosageFormId ?? null,
+      routeId: routeId ?? null,
       barcode: data.barcode ?? null,
       controlledDrug: data.controlledDrug ?? false,
       controlledDrugSchedule: data.controlledDrugSchedule ?? null,

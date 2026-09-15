@@ -79,6 +79,27 @@ export async function saveServiceAction(
   if (!short) return { error: "Short description is required." };
   if (!description) return { error: "Full description is required." };
 
+  if (user.activePharmacyId) {
+    const pharmacy = await prisma.pharmacy.findUnique({
+      where: { id: user.activePharmacyId },
+      select: { verifiedAt: true, status: true },
+    });
+    if (!pharmacy?.verifiedAt) {
+      return {
+        error:
+          "Pharmacy regulatory verification required. Your pharmacy must be verified before publishing care services.",
+      };
+    }
+  }
+
+  const paymentTiming = String(formData.get("paymentTiming") || "").trim();
+  let cleanEligibility = eligibility.replace(/\[payable:(?:before|after)\]/gi, "").trim();
+  if (paymentTiming === "after") {
+    cleanEligibility = `[payable:after] ${cleanEligibility}`.trim();
+  } else if (paymentTiming === "before") {
+    cleanEligibility = `[payable:before] ${cleanEligibility}`.trim();
+  }
+
   try {
     if (id) {
       const updated = await updateService(id, {
@@ -87,7 +108,7 @@ export async function saveServiceAction(
         short,
         description,
         benefits,
-        eligibility: eligibility || null,
+        eligibility: cleanEligibility || null,
         duration: duration || null,
         imageUrl: imageUrl || null,
         icon: icon || null,
@@ -113,7 +134,7 @@ export async function saveServiceAction(
       short,
       description,
       benefits,
-      eligibility: eligibility || null,
+      eligibility: cleanEligibility || null,
       duration: duration || null,
       imageUrl: imageUrl || null,
       icon: icon || null,

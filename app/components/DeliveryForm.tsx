@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import TenantLink from "./TenantLink";
+import TenantLink, { useTenantSlug } from "./TenantLink";
 import { FormSuccess, TextArea, TextInput } from "./FormField";
 
-export default function DeliveryForm() {
+export default function DeliveryForm({ pharmacySlug: pharmacySlugProp }: { pharmacySlug?: string } = {}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const tenantSlug = useTenantSlug();
+  const pharmacySlug = pharmacySlugProp || tenantSlug || undefined;
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -17,7 +19,7 @@ export default function DeliveryForm() {
       const res = await fetch("/api/delivery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, ...(pharmacySlug ? { pharmacySlug } : {}) }),
       });
       if (!res.ok) throw new Error("Failed");
       setStatus("success");

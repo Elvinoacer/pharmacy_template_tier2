@@ -60,3 +60,77 @@ export function availabilityOffer(results: CareResult[]): CareOffer | null {
     .map((r) => r.name);
   return best;
 }
+
+export type SplitFulfillmentPlan = {
+  offers: CareOffer[];
+  totalPrice: number;
+  totalCovered: number;
+  unfulfillable: string[];
+};
+
+/**
+ * Multi-pharmacy split availability solver.
+ * When a single pharmacy cannot fulfill all medications, this finds the minimal set
+ * of optimal pharmacies that together provide maximum coverage across the requested medicines.
+ */
+export function splitAvailabilityOffers(results: CareResult[]): SplitFulfillmentPlan {
+  const unfulfilled = new Set(results.map((r) => r.name));
+  const planOffers: CareOffer[] = [];
+
+  while (unfulfilled.size > 0) {
+    const candidates = new Map<string, CareOffer>();
+    for (const result of results) {
+      if (!unfulfilled.has(result.name)) continue;
+      for (const match of result.matches) {
+        if (!Number.isFinite(match.price) || match.price < 0) continue;
+        let offer = candidates.get(match.pharmacy.id);
+        if (!offer) {
+          offer = { pharmacy: match.pharmacy, lines: [], missing: [] };
+          candidates.set(match.pharmacy.id, offer);
+        }
+        const line = offer.lines.find((l) => l.requested === result.name);
+        if (!line) offer.lines.push({ requested: result.name, match });
+        else if (
+          match.price < line.match.price ||
+          (match.price === line.match.price && match.id < line.match.id)
+        )
+          line.match = match;
+      }
+    }
+
+    const candidateList = [...candidates.values()];
+    if (candidateList.length === 0) break;
+
+    candidateList.sort(
+      (a, b) =>
+        b.lines.length - a.lines.length ||
+        proximityOrder(a.pharmacy, b.pharmacy) ||
+        a.lines.reduce((n, l) => n + l.match.price, 0) -
+          b.lines.reduce((n, l) => n + l.match.price, 0) ||
+        a.pharmacy.slug.localeCompare(b.pharmacy.slug),
+    );
+
+    const chosen = candidateList[0];
+    chosen.missing = results
+      .filter((r) => !chosen.lines.some((l) => l.requested === r.name))
+      .map((r) => r.name);
+    planOffers.push(chosen);
+    for (const line of chosen.lines) {
+      unfulfilled.delete(line.requested);
+    }
+  }
+
+  const totalPrice = planOffers.reduce(
+    (sum, o) => sum + o.lines.reduce((lSum, l) => lSum + l.match.price, 0),
+    0,
+  );
+  const totalCovered = planOffers.reduce((sum, o) => sum + o.lines.length, 0);
+  const unfulfillable = [...unfulfilled];
+
+  return {
+    offers: planOffers,
+    totalPrice,
+    totalCovered,
+    unfulfillable,
+  };
+}

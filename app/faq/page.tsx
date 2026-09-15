@@ -5,7 +5,7 @@ import CtaBanner from "../components/CtaBanner";
 import FaqAccordion from "../components/FaqAccordion";
 import PageHero from "../components/PageHero";
 import { platform } from "../lib/data";
-import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import ShopPageChooser from "@/app/components/ShopPageChooser";
 import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { getStorefrontView } from "@/app/lib/services/storefront-content";
 
@@ -20,7 +20,7 @@ export default async function FaqPage() {
   if (view.status === "unavailable") {
     return <StorefrontUnavailable slug={view.slug} next="/faq" />;
   }
-  if (view.status !== "active") return <ChoosePharmacy next="/faq" />;
+  if (view.status !== "active") return <ShopPageChooser next="/faq" />;
 
   const { resolved: pharmacy, content } = view;
 

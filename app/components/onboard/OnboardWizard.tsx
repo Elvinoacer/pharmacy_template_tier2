@@ -9,8 +9,6 @@ import {
   Building2,
   CheckCircle2,
   CircleAlert,
-  Mail,
-  MessageCircle,
   Phone,
   ShieldCheck,
   UserRound,
@@ -25,6 +23,7 @@ import { slugifyPharmacyName } from "@/app/lib/slug";
 import PharmacyLocationCapture from "@/app/components/location/PharmacyLocationCapture";
 import PasswordField from "@/app/components/PasswordField";
 import OnboardStepper from "./OnboardStepper";
+import VerificationTrustPreview from "./VerificationTrustPreview";
 import styles from "./OnboardSurface.module.css";
 import polish from "./OnboardFormPolish.module.css";
 
@@ -121,6 +120,20 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
   useEffect(() => {
     if (createState.pharmacyId) router.refresh();
   }, [createState.pharmacyId, router]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("aether-onboard-sync", {
+          detail: {
+            name,
+            city: city || "Nearby",
+            slug: liveSlug,
+          },
+        })
+      );
+    }
+  }, [name, city, liveSlug]);
 
   useEffect(() => {
     if (updateState.success && nextStepAfterUpdate.current !== null) {
@@ -471,10 +484,12 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
           </div>
 
           {!verificationFeePaid ? (
-            <div className={polish.feeNote}>
-              <ShieldCheck className="h-4 w-4" aria-hidden />
-              <span>KES 100 once before review. Any allocated waiver is applied automatically on the payment page.</span>
-            </div>
+            <VerificationTrustPreview
+              pharmacyName={name}
+              city={city}
+              ppbPremisesNumber={existing?.ppbPremisesNumber}
+              licenseNumber={licenseNumber}
+            />
           ) : null}
 
           {submitState.error ? (
@@ -494,7 +509,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
               </button>
             ) : (
               <Link href="/onboard/billing" className={`btn-primary justify-center ${polish.primaryAction}`}>
-                Pay verification fee <ArrowRight className="h-4 w-4" aria-hidden />
+                Pay KES 100 verification fee <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             )}
           </div>

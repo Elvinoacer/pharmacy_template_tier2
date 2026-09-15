@@ -9,7 +9,16 @@ import {
   HelpCircle,
   PackageSearch,
   ShieldAlert,
+  ShieldCheck,
   Sparkles,
+  Pill,
+  Thermometer,
+  FileText,
+  Phone,
+  MessageCircle,
+  Truck,
+  ArrowRight,
+  ChevronRight,
 } from "lucide-react";
 import CtaBanner from "../../components/CtaBanner";
 import ChoosePharmacy from "../../components/ChoosePharmacy";
@@ -28,12 +37,12 @@ import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
 import { getMedicationCounsellingBySlug } from "../../lib/services/medication-counselling-db";
 import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ slug: string; pharmacySlug?: string }> };
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, pharmacySlug: propPharmacySlug } = await params;
   const cat = await getPublicCategoryBySlug(slug).catch(() => null);
   if (cat) {
     return {
@@ -45,30 +54,60 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const pharmacy = await getResolvedPharmacyOrNull(
+    propPharmacySlug ? { slug: propPharmacySlug } : undefined,
+  ).catch(() => null);
+
   const med = await prisma.pharmacyInventory
     .findFirst({
-      where: { slug },
+      where: {
+        slug,
+        ...(pharmacy?.id ? { pharmacyId: pharmacy.id } : {}),
+      },
       include: {
+        pharmacy: { select: { name: true, city: true, county: true, latitude: true, longitude: true } },
         medicationMaster: {
-          select: { name: true, description: true, dosage: true },
+          select: { name: true, genericName: true, brandName: true, description: true, dosage: true, imageUrl: true },
         },
       },
     })
     .catch(() => null);
 
   if (!med) return { title: "Medicine" };
+
+  const locationStr = [med.pharmacy?.city, med.pharmacy?.county, "Kenya"].filter(Boolean).join(", ");
+  const coordinates =
+    med.pharmacy?.latitude != null && med.pharmacy?.longitude != null
+      ? `${med.pharmacy.latitude};${med.pharmacy.longitude}`
+      : undefined;
+
   return {
-    title: med.medicationMaster.name,
+    title: `${med.medicationMaster.name} — Price, Stock & Delivery in ${med.pharmacy?.city || "Kenya"} | ${med.pharmacy?.name || "Aether"}`,
     description:
       med.medicationMaster.description ||
-      `${med.medicationMaster.name} — price, availability, safety and counselling information`,
+      `Buy ${med.medicationMaster.name} (${med.medicationMaster.genericName}) online in ${locationStr} at ${med.pharmacy?.name}. Check real-time stock, pricing, and fast delivery or pickup.`,
     alternates: { canonical: `/medicines/${med.slug}` },
+    openGraph: {
+      title: `${med.medicationMaster.name} — ${med.pharmacy?.name || "Pharmacy"}`,
+      description: med.medicationMaster.description || `In stock at ${med.pharmacy?.name} in ${locationStr}.`,
+      images: med.medicationMaster.imageUrl ? [med.medicationMaster.imageUrl] : undefined,
+    },
+    other: coordinates
+      ? {
+          "geo.position": coordinates,
+          "geo.region": "KE",
+          "geo.placename": med.pharmacy?.city || "Kenya",
+          "ICBM": `${med.pharmacy?.latitude}, ${med.pharmacy?.longitude}`,
+        }
+      : undefined,
   };
 }
 
 export default async function CategoryOrMedicinePage({ params }: Props) {
-  const { slug } = await params;
-  const pharmacy = await getResolvedPharmacyOrNull().catch(() => null);
+  const { slug, pharmacySlug: propPharmacySlug } = await params;
+  const pharmacy = await getResolvedPharmacyOrNull(
+    propPharmacySlug ? { slug: propPharmacySlug } : undefined,
+  ).catch(() => null);
   const pharmacyId = pharmacy?.id;
   const pharmacySlug = pharmacy?.slug;
 
@@ -135,7 +174,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
           title={cat.name}
           description={
             cat.description ||
-            "Browse current stock, then review concise self-care and safety guidance before choosing a treatment."
+            "Browse current verified stock, then review concise self-care and safety guidance before choosing your treatment."
           }
           crumbs={[
             { label: "Medicines", href: `${base}/medicines` },
@@ -147,22 +186,22 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
           <div className="mx-auto max-w-6xl">
             <nav
               aria-label={`${cat.name} sections`}
-              className="mb-4 flex max-w-full gap-2 overflow-x-auto pb-1 text-xs font-semibold"
+              className="mb-4 flex max-w-full gap-2 overflow-x-auto pb-1 text-xs font-semibold print:hidden"
             >
-              <a href="#products" className="shrink-0 rounded-full bg-[var(--brand)] px-3.5 py-2 text-white shadow-sm">
-                Browse products
+              <a href="#products" className="shrink-0 rounded-full bg-[var(--brand)] px-4 py-2 text-white shadow-sm transition hover:brightness-105">
+                Browse products ({items.length})
               </a>
-              <a href="#overview" className="shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 py-2 text-[var(--brand-deep)]">
-                Category guide
+              <a href="#overview" className="shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 py-2 text-[var(--foreground)] transition hover:bg-[var(--card-elev)]">
+                Category guidance
               </a>
               {otcGuidance && (
-                <a href="#safety" className="shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 py-2 text-[var(--brand-deep)]">
+                <a href="#safety" className="shrink-0 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 py-2 text-[var(--foreground)] transition hover:bg-[var(--card-elev)]">
                   Safety first
                 </a>
               )}
             </nav>
 
-            <div id="overview" className="scroll-mt-32 overflow-hidden rounded-3xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm">
+            <div id="overview" className="scroll-mt-32 overflow-hidden rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/90 backdrop-blur-xl shadow-[var(--glass-shadow)] transition-all">
               <div className="grid min-w-0 lg:grid-cols-[minmax(0,.88fr)_minmax(0,1.12fr)]">
                 <div className="relative min-h-52 overflow-hidden bg-[var(--card-elev)] sm:min-h-64 lg:min-h-[360px]">
                   {cat.imageUrl ? (
@@ -170,8 +209,8 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                   ) : (
                     <div className="flex h-full min-h-52 items-center justify-center text-6xl opacity-40">💊</div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-                  <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-black/45 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.12em] text-white backdrop-blur-md sm:bottom-4 sm:left-4 sm:text-xs">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-black/50 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-white backdrop-blur-md sm:bottom-4 sm:left-4 sm:text-xs">
                     {cat.name}
                   </span>
                 </div>
@@ -190,19 +229,19 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                   </div>
 
                   <h2 className="mt-4 text-xl font-semibold leading-tight text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
-                    Find products first, with safety guidance close by
+                    Compare genuine products with clear pharmacist guidance
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)] sm:text-base sm:leading-7">
-                    {cat.description || "Compare products from the selected pharmacy and review the category guidance before self-treating."}
+                    {cat.description || "Review available medicines from this pharmacy and check safety guidance before starting home treatment."}
                   </p>
 
                   <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {[
                       ["Listed", String(items.length), "products"],
-                      ["Available", String(available), "in stock"],
+                      ["Available", String(available), "in stock now"],
                       ["Pharmacy", pharmacy.name, "live catalogue"],
                     ].map(([label, value, note], index) => (
-                      <div key={label} className={`rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3 ${index === 2 ? "col-span-2 sm:col-span-1" : ""}`}>
+                      <div key={label} className={`rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)]/80 backdrop-blur-md p-3 ${index === 2 ? "col-span-2 sm:col-span-1" : ""}`}>
                         <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">{label}</span>
                         <p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)] sm:text-base">{value}</p>
                         <p className="text-[10px] text-[var(--muted)]">{note}</p>
@@ -228,53 +267,45 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                       <p className="text-[10px] font-bold uppercase tracking-[.14em] text-[var(--muted-2)] sm:text-xs">Common brands</p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {cat.brands.map((brand) => (
-                          <span key={brand} className="rounded-full border border-[var(--line-2)] bg-[var(--card)] px-2.5 py-1 text-[10px] font-semibold text-[var(--foreground)] sm:text-xs">
+                          <span key={brand} className="rounded-full border border-[var(--line-2)] bg-[var(--card-elev)] px-2.5 py-1 text-[10px] font-semibold text-[var(--foreground)] sm:text-xs">
                             {brand}
                           </span>
                         ))}
                       </div>
                     </div>
                   )}
-
-                  <div className="mt-6 grid gap-2 sm:grid-cols-2">
-                    <Link href={`${base}/health/self-care-guide`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-95">
-                      <HelpCircle className="h-4 w-4" /> Self-care guide
-                    </Link>
-                    <Link href={`${base}/how-do-you-feel?category=${encodeURIComponent(cat.slug)}`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] px-4 py-2.5 text-xs font-semibold text-[var(--brand-deep)] hover:bg-[var(--brand-soft)]">
-                      <Sparkles className="h-4 w-4" /> AI symptom check
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        <section id="products" className="scroll-mt-32 px-4 pb-10 sm:px-6 sm:pb-14">
-          <div className="mx-auto max-w-6xl">
-            <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Live stock · {pharmacy.name}</p>
-                <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
-                  {cat.name} available now
-                </h2>
-                <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">Check stock, prescription requirements and prices before opening a product.</p>
+            {/* Products Anchor Section with ID fixed */}
+            <div id="products" className="scroll-mt-32 mt-8 sm:mt-12">
+              <div className="mb-4 flex flex-col gap-2 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Current verified inventory</p>
+                  <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
+                    {cat.name} available at {pharmacy.name}
+                  </h2>
+                  <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
+                    Live stock and direct pricing verified by the pharmacy.
+                  </p>
+                </div>
+                <Link href={`${base}/medicines?category=${encodeURIComponent(cat.slug)}`} className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition">
+                  Full catalogue filter →
+                </Link>
               </div>
-              <Link href={`${base}/medicines?category=${encodeURIComponent(cat.slug)}`} className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--brand-deep)] hover:bg-[var(--card-elev)]">
-                Full catalogue
-              </Link>
+
+              {items.length > 0 ? (
+                <MedicineCatalogGrid items={items} />
+              ) : (
+                <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/90 backdrop-blur-xl p-6 text-center shadow-sm sm:p-8">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--card-elev)] text-[var(--brand)]"><PackageSearch className="h-5 w-5" /></div>
+                  <h3 className="mt-3 text-sm font-bold text-[var(--foreground)]">No products currently listed in this category</h3>
+                  <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-[var(--muted)]">Browse the wider catalogue or contact our pharmacist to check warehouse availability.</p>
+                  <Link href={`${base}/medicines`} className="mt-4 inline-flex min-h-10 items-center rounded-full bg-[var(--brand)] px-4 text-xs font-semibold text-white">Browse all medicines</Link>
+                </div>
+              )}
             </div>
-
-            {items.length > 0 ? (
-              <MedicineCatalogGrid items={items} />
-            ) : (
-              <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-6 text-center shadow-sm sm:p-8">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--card-elev)] text-[var(--brand)]"><PackageSearch className="h-5 w-5" /></div>
-                <h3 className="mt-3 text-sm font-bold text-[var(--foreground)]">No products are listed in this category right now</h3>
-                <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-[var(--muted)]">Browse the wider catalogue or ask the pharmacy to help locate a suitable option.</p>
-                <Link href={`${base}/medicines`} className="mt-4 inline-flex min-h-10 items-center rounded-full bg-[var(--brand)] px-4 text-xs font-semibold text-white">Browse all medicines</Link>
-              </div>
-            )}
           </div>
         </section>
 
@@ -283,44 +314,65 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
             <div className="mx-auto max-w-6xl">
               <div className="mb-4 sm:mb-5">
                 <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Safety before self-treatment</p>
-                <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>Know when self-care is reasonable</h2>
-                <p className="mt-1 max-w-3xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">Use this as a safety screen, not a diagnosis. Seek clinical advice for severe, rapidly worsening or concerning symptoms.</p>
+                <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>Know when self-care is appropriate</h2>
+                <p className="mt-1 max-w-3xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">Use this safety guide as a helpful reference, not a diagnosis. Always consult a licensed clinician for severe, rapidly worsening, or concerning symptoms.</p>
               </div>
 
               <div className="grid gap-3 lg:grid-cols-2 lg:gap-4">
-                <article className="rounded-3xl border border-emerald-500/30 bg-[var(--card)] p-4 shadow-sm sm:p-5">
+                <article className="rounded-3xl border border-emerald-500/30 bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-sm">
                   <div className="flex items-start gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white"><CheckCircle2 className="h-5 w-5" /></span>
-                    <div><p className="text-[10px] font-bold uppercase tracking-[.14em] text-emerald-600 sm:text-xs">Usually suitable for self-care</p><h3 className="mt-0.5 text-base font-bold text-[var(--foreground)]">Mild, familiar problems</h3></div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[.14em] text-emerald-700 dark:text-emerald-300 sm:text-xs">Safe for home care</p>
+                      <h3 className="mt-0.5 text-base font-bold text-[var(--foreground)]">Mild, familiar symptoms</h3>
+                    </div>
                   </div>
                   <ul className="mt-4 space-y-2.5">
                     {otcGuidance.selfCareAppropriate.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2.5 text-xs leading-relaxed text-[var(--muted)] sm:text-sm"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" /><span>{item}</span></li>
+                      <li key={index} className="flex items-start gap-2.5 text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                        <span>{item}</span>
+                      </li>
                     ))}
                   </ul>
-                  <div className="mt-4 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3 text-xs text-[var(--muted)]"><strong className="text-[var(--foreground)]">Reassess:</strong> if symptoms are not improving within {otcGuidance.maxSelfCareDuration}.</div>
+                  <div className="mt-4 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3 text-xs text-[var(--muted)]">
+                    <strong className="text-[var(--foreground)]">When to check in:</strong> If symptoms do not improve within {otcGuidance.maxSelfCareDuration}, seek clinical evaluation.
+                  </div>
                 </article>
 
-                <article className="rounded-3xl border border-rose-500/30 bg-[var(--card)] p-4 shadow-sm sm:p-5">
+                <article className="rounded-3xl border border-rose-500/30 bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-sm">
                   <div className="flex items-start gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-600 text-white"><AlertOctagon className="h-5 w-5" /></span>
-                    <div><p className="text-[10px] font-bold uppercase tracking-[.14em] text-rose-600 sm:text-xs">Seek medical advice</p><h3 className="mt-0.5 text-base font-bold text-[var(--foreground)]">Red flags and warning signs</h3></div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[.14em] text-rose-700 dark:text-rose-300 sm:text-xs">Seek medical care</p>
+                      <h3 className="mt-0.5 text-base font-bold text-[var(--foreground)]">Red flags and warning signs</h3>
+                    </div>
                   </div>
                   <ul className="mt-4 space-y-2.5">
                     {otcGuidance.medicalAttentionCriteria.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2.5 text-xs font-medium leading-relaxed text-[var(--foreground)] sm:text-sm"><ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" /><span>{item}</span></li>
+                      <li key={index} className="flex items-start gap-2.5 text-xs font-medium leading-relaxed text-[var(--foreground)] sm:text-sm">
+                        <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+                        <span>{item}</span>
+                      </li>
                     ))}
                   </ul>
-                  {otcGuidance.emergencyWarning && <div className="mt-4 rounded-2xl border border-rose-500/30 bg-[var(--card-elev)] p-3 text-xs font-semibold leading-relaxed text-[var(--foreground)]">{otcGuidance.emergencyWarning}</div>}
+                  {otcGuidance.emergencyWarning && (
+                    <div className="mt-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs font-semibold leading-relaxed text-rose-900 dark:text-rose-200">
+                      {otcGuidance.emergencyWarning}
+                    </div>
+                  )}
                 </article>
               </div>
 
               {otcGuidance.pharmacistTips.length > 0 && (
-                <div className="mt-4 rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5 lg:p-6">
+                <div className="mt-4 rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-sm sm:p-6">
                   <h3 className="text-lg font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>Pharmacist tips for {cat.name}</h3>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     {otcGuidance.pharmacistTips.map((tip, index) => (
-                      <div key={index} className="flex items-start gap-2.5 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3 text-xs leading-relaxed text-[var(--muted)]"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--brand)]" /><span>{tip}</span></div>
+                      <div key={index} className="flex items-start gap-2.5 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3 text-xs leading-relaxed text-[var(--muted)]">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--brand)]" />
+                        <span>{tip}</span>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -329,11 +381,12 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
           </section>
         )}
 
-        <CtaBanner title={`Not sure which ${cat.name.toLowerCase()} product fits?`} description="Ask a pharmacist to confirm suitability, interactions and whether your symptoms need clinical assessment instead of self-treatment." />
+        <CtaBanner title={`Need help finding the right ${cat.name.toLowerCase()} treatment?`} description="Our pharmacists are on call to verify suitability, drug interactions, and whether your symptoms require a doctor's examination." />
       </div>
     );
   }
 
+  // ── INDIVIDUAL MEDICINE PRODUCT DETAIL ──
   const med = await prisma.pharmacyInventory
     .findFirst({
       where: { pharmacyId, slug, active: true },
@@ -384,7 +437,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
       }).catch(() => []);
 
   const categoryLabel = med.medicationMaster.category.replace(/-/g, " ");
-  const categoryHref = `${base}/medicines/${med.medicationMaster.category}`;
+  const categoryHref = `${base}/medicines?category=${encodeURIComponent(med.medicationMaster.category)}`;
   const inStock = med.currentStock > 0;
   const gallery = (med.medicationMaster.imageUrls || "").split(/[\n,]+/).map((value) => value.trim()).filter(Boolean).filter((url) => url !== med.medicationMaster.imageUrl).slice(0, 8);
   const counselling = (await getMedicationCounsellingBySlug(med.slug)) || generateDynamicCounsellingProfile(
@@ -397,12 +450,40 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
     med.medicationMaster.sideEffects
   );
 
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": ["Product", "MedicalWebPage"],
+    name: med.medicationMaster.name,
+    description: med.medicationMaster.description || `${med.medicationMaster.name} available at ${pharmacy.name}`,
+    image: med.medicationMaster.imageUrl || undefined,
+    category: categoryLabel,
+    offers: {
+      "@type": "Offer",
+      price: Number(med.price),
+      priceCurrency: "KES",
+      availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      seller: {
+        "@type": "Pharmacy",
+        name: pharmacy.name,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: pharmacy.address.city || undefined,
+          addressCountry: "KE",
+        },
+      },
+    },
+  };
+
   return (
     <div className="min-w-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <PageHero
         eyebrow={categoryLabel}
         title={med.medicationMaster.name}
-        description={med.medicationMaster.description || med.medicationMaster.dosage || `Available from ${pharmacy.name}`}
+        description={med.medicationMaster.description || med.medicationMaster.dosage || `Dispensed and verified by ${pharmacy.name}`}
         crumbs={[
           { label: "Medicines", href: `${base}/medicines` },
           { label: categoryLabel, href: categoryHref },
@@ -410,114 +491,320 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
         ]}
       />
 
+      {/* Main Product Showcase Section with Glassmorphic Panels */}
       <section className="px-4 pb-10 sm:px-6 sm:pb-14">
-        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] lg:gap-10">
-          <div className="min-w-0 space-y-3">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[var(--line-2)] bg-[var(--card-elev)] shadow-sm sm:rounded-[2rem]">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-12">
+          {/* Left Column: Product Imagery + Authenticity Badges */}
+          <div className="min-w-0 space-y-4">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/80 backdrop-blur-xl shadow-[var(--glass-shadow)] sm:rounded-[2rem]">
+              {/* Top Floating Badges */}
+              <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/60 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                  Verified Stock
+                </span>
+              </div>
+
+              <div className="absolute right-3 top-3 z-10 sm:right-4 sm:top-4">
+                <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold backdrop-blur-md ${inStock ? "border-emerald-500/40 bg-emerald-950/70 text-emerald-300" : "border-rose-500/40 bg-rose-950/70 text-rose-300"}`}>
+                  <span className={`h-2 w-2 rounded-full ${inStock ? "bg-emerald-400 animate-pulse" : "bg-rose-400"}`} />
+                  {inStock ? `${med.currentStock} in stock` : "Out of stock"}
+                </div>
+              </div>
+
               {med.medicationMaster.imageUrl ? (
-                <Image src={med.medicationMaster.imageUrl} alt={med.medicationMaster.name} fill priority className="object-contain p-4 sm:p-6" sizes="(max-width:1024px) 100vw,44vw" />
+                <Image src={med.medicationMaster.imageUrl} alt={med.medicationMaster.name} fill priority className="object-contain p-6 sm:p-8" sizes="(max-width:1024px) 100vw,45vw" />
               ) : (
                 <Image src="/images/care/medicine-still-life.png" alt="Illustrative medicine supplies; product photo not provided" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
               )}
             </div>
+
             {gallery.length > 0 && (
               <div className="grid grid-cols-4 gap-2 sm:gap-3">
                 {gallery.map((src, index) => (
-                  <div key={`${src}-${index}`} className="relative aspect-square overflow-hidden rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] sm:rounded-2xl">
-                    <Image src={src} alt={`${med.medicationMaster.name} view ${index + 2}`} fill className="object-contain p-1.5 sm:p-2" sizes="140px" />
+                  <div key={`${src}-${index}`} className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)]/80 backdrop-blur-md transition hover:border-[var(--brand)]">
+                    <Image src={src} alt={`${med.medicationMaster.name} view ${index + 2}`} fill className="object-contain p-2" sizes="140px" />
                   </div>
                 ))}
               </div>
             )}
+
+            {/* Quality & Trust Highlights */}
+            <div className="grid grid-cols-3 gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)]/80 backdrop-blur-md p-3 text-center text-xs">
+              <div className="p-1">
+                <ShieldCheck className="mx-auto h-4 w-4 text-[var(--brand)]" />
+                <p className="mt-1 font-bold text-[var(--foreground)] text-[11px]">100% Genuine</p>
+                <p className="text-[10px] text-[var(--muted)]">Certified supplier</p>
+              </div>
+              <div className="border-x border-[var(--line-2)] p-1">
+                <Clock3 className="mx-auto h-4 w-4 text-[var(--brand)]" />
+                <p className="mt-1 font-bold text-[var(--foreground)] text-[11px]">15-Min Ready</p>
+                <p className="text-[10px] text-[var(--muted)]">Express dispensing</p>
+              </div>
+              <div className="p-1">
+                <Truck className="mx-auto h-4 w-4 text-[var(--brand)]" />
+                <p className="mt-1 font-bold text-[var(--foreground)] text-[11px]">Fast Delivery</p>
+                <p className="text-[10px] text-[var(--muted)]">Discreet & sealed</p>
+              </div>
+            </div>
           </div>
 
-          <div className="min-w-0">
+          {/* Right Column: Pricing, Ordering & Clear Actions */}
+          <div className="min-w-0 space-y-4">
             <div className="flex flex-wrap items-center gap-2">
-              <Link href={categoryHref} className="rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3 py-1.5 text-[10px] font-semibold capitalize text-[var(--brand-deep)] hover:bg-[var(--card-elev)] sm:text-xs">{categoryLabel}</Link>
-              {med.overTheCounter && <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-bold text-[var(--foreground)] sm:text-xs">Over-the-counter</span>}
-              {med.prescriptionRequired && <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[10px] font-bold text-[var(--foreground)] sm:text-xs">Prescription required</span>}
+              <Link href={categoryHref} className="rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 py-1.5 text-xs font-semibold capitalize text-[var(--foreground)] hover:bg-[var(--card-elev)] transition">
+                {categoryLabel}
+              </Link>
+              {med.overTheCounter && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                  No Prescription Needed (Over-The-Counter)
+                </span>
+              )}
+              {med.prescriptionRequired && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1.5 text-xs font-bold text-amber-800 dark:text-amber-300">
+                  <FileText className="h-3.5 w-3.5 text-amber-600" />
+                  Prescription Required
+                </span>
+              )}
             </div>
 
-            <div className="mt-4 rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            {/* Price Card */}
+            <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-[var(--glass-shadow)] sm:p-6">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[.14em] text-[var(--muted-2)] sm:text-xs">Current price</p>
-                  <p className="mt-1 text-3xl font-extrabold tracking-tight text-[var(--foreground)] sm:text-4xl">KES {formatPrice(Number(med.price))}</p>
-                  <p className="mt-1 text-[10px] text-[var(--muted)] sm:text-xs">Inclusive of applicable taxes</p>
+                  <span className="text-[10px] font-bold uppercase tracking-[.14em] text-[var(--muted-2)]">Pharmacy price</span>
+                  <p className="mt-1 text-3xl font-extrabold tracking-tight text-[var(--foreground)] sm:text-4xl">
+                    KES {formatPrice(Number(med.price))}
+                  </p>
                 </div>
-                <div className={`inline-flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold text-[var(--foreground)] ${inStock ? "border-emerald-500/30 bg-emerald-500/10" : "border-rose-500/30 bg-rose-500/10"}`}>
-                  <span className={`h-2 w-2 rounded-full ${inStock ? "bg-emerald-500" : "bg-rose-500"}`} />
-                  {inStock ? `${med.currentStock} in stock` : "Out of stock"}
-                </div>
+                <span className="rounded-full border border-[var(--line-2)] bg-[var(--card-elev)] px-3 py-1 text-[11px] font-semibold text-[var(--muted)]">
+                  All taxes & dispensing fees included
+                </span>
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3"><span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Pharmacy</span><Link href={`/pharmacies/${pharmacySlug}`} className="mt-1 block text-sm font-bold text-[var(--brand)]">About {pharmacy.name} ↗</Link></div>
-                <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3"><span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Supply</span><p className="mt-1 text-sm font-bold text-[var(--foreground)]">{med.prescriptionRequired ? "Prescription" : "Direct purchase"}</p></div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2 border-t border-[var(--line-2)] pt-4 text-xs">
+                <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Dispensing pharmacy</span>
+                  <Link href={`${base}/about`} className="mt-1 block font-bold text-[var(--brand)] hover:underline truncate">
+                    {pharmacy.name} ↗
+                  </Link>
+                </div>
+                <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Supply method</span>
+                  <p className="mt-1 font-bold text-[var(--foreground)]">
+                    {med.prescriptionRequired ? "Prescription review" : "Direct purchase / Pickup"}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="mt-4 rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[.16em] text-[var(--brand)] sm:text-xs">Next step</p>
-              <h2 className="mt-1 text-lg font-semibold text-[var(--foreground)] sm:text-xl" style={{ fontFamily: "var(--font-display), serif" }}>{med.prescriptionRequired ? "Request this medication safely" : "Reserve this medicine"}</h2>
-              <p className="mt-1 text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
-                {med.prescriptionRequired ? "A valid prescription is required. Start a refill request for pharmacy review before dispensing." : "Reserve without creating an account, then pay by M-Pesa or at collection. Patient accounts can also use portal checkout."}
-              </p>
-              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {/* Clear Customer Order Actions */}
+            <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-[var(--glass-shadow)] sm:p-6 space-y-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-[.16em] text-[var(--brand)]">
+                  {med.prescriptionRequired ? "Prescription Dispensing" : "Fast Order Options"}
+                </span>
+                <h2 className="mt-1 text-lg font-semibold text-[var(--foreground)] sm:text-xl" style={{ fontFamily: "var(--font-display), serif" }}>
+                  {med.prescriptionRequired ? "Order this medication with your prescription" : "Order now with M-Pesa or reserve for pickup"}
+                </h2>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
+                  {med.prescriptionRequired
+                    ? "A valid prescription from a registered doctor or clinic is required. Submit your prescription online — our licensed pharmacist will inspect it, confirm your dosage, and contact you immediately."
+                    : "No account required. Fast checkout in under a minute — pay now with M-Pesa or pay at the counter when you collect your medicine."}
+                </p>
+              </div>
+
+              <div className="grid gap-2.5 sm:grid-cols-2 pt-1">
                 {med.prescriptionRequired ? (
-                  <Link href={`/refill?inventoryId=${med.id}`} className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--brand)] px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:brightness-95">Request prescription refill</Link>
+                  <Link
+                    href={`${base}/refill?inventoryId=${med.id}`}
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] px-5 py-3 text-center text-sm font-bold text-white shadow-md transition hover:brightness-105"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Upload Prescription & Order
+                  </Link>
                 ) : (
-                  <Link href={`${base}/order?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`} className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--brand)] px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:brightness-95">Reserve or pay</Link>
+                  <Link
+                    href={`${base}/order?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}`}
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] px-5 py-3 text-center text-sm font-bold text-white shadow-md transition hover:brightness-105"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Order Now with M-Pesa ⚡
+                  </Link>
                 )}
-                <Link href={`${base}/contact`} className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] px-4 py-3 text-center text-sm font-semibold text-[var(--brand-deep)] hover:bg-[var(--brand-soft)]">Ask pharmacist</Link>
+
+                <a
+                  href={pharmacy.whatsappHref || pharmacy.phoneHref || `${base}/contact`}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] px-4 py-3 text-center text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--card)]"
+                >
+                  <MessageCircle className="h-4 w-4 text-[var(--brand)]" />
+                  Ask Pharmacist a Question
+                </a>
               </div>
-              {!med.prescriptionRequired && <Link href={`/portal/orders/new?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}&pharmacy=${pharmacySlug}`} className="mt-3 inline-flex min-h-10 items-center text-xs font-semibold text-[var(--brand-deep)] hover:underline">Already have an account? Use patient portal checkout →</Link>}
+
+              {!med.prescriptionRequired && (
+                <div className="pt-1">
+                  <Link
+                    href={`/portal/orders/new?medicationId=${med.id}&slug=${encodeURIComponent(med.slug)}&pharmacy=${pharmacySlug}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--brand)] hover:underline"
+                  >
+                    Have a registered patient account? Sign in for portal checkout →
+                  </Link>
+                </div>
+              )}
+
+              {med.overTheCounter && (
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-3.5 text-xs leading-relaxed text-[var(--foreground)]">
+                  <strong className="text-emerald-800 dark:text-emerald-300">Self-care note:</strong> OTC medicines are intended for short-term symptom relief. If symptoms worsen or do not resolve, consult a pharmacist or clinician.
+                </div>
+              )}
             </div>
 
-            {med.overTheCounter && <div className="mt-4 rounded-2xl border border-[var(--line-2)] bg-[var(--brand-soft)] p-4 text-xs leading-relaxed text-[var(--muted)]"><strong className="text-[var(--foreground)]">Self-care reminder:</strong> OTC medicines are intended for short-term symptom relief. If symptoms worsen or fail to improve, ask a pharmacist or clinician for advice.</div>}
+            {/* Pharmacy Contact & Location Snapshot */}
+            <div className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)]/80 backdrop-blur-md p-4 text-xs">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-bold text-[var(--foreground)] truncate">{pharmacy.name}</p>
+                  <p className="text-[11px] text-[var(--muted)] mt-0.5 truncate">{pharmacy.address.full || "Local licensed pharmacy"}</p>
+                </div>
+                {pharmacy.phone && (
+                  <a href={`tel:${pharmacy.phone}`} className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-[var(--card)] border border-[var(--line-2)] px-2.5 py-1.5 text-xs font-semibold text-[var(--brand)]">
+                    <Phone className="h-3 w-3" /> Call
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Structured Clinical Information Section */}
       <section className="px-4 pb-10 sm:px-6 sm:pb-14">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-4 sm:mb-5">
-            <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Medicine information</p>
-            <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>Key information before use</h2>
-            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">Review this information alongside the product label and pharmacist instructions.</p>
+          <div className="mb-6">
+            <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Clinical summary</p>
+            <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
+              Essential usage & safety information
+            </h2>
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
+              Review verified clinical guidelines before taking this medication. Always follow the label instructions and pharmacist guidance.
+            </p>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            {med.medicationMaster.dosage && <article className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-[var(--brand)] sm:text-xs">Dosage & administration</p><p className="mt-2 text-xs leading-relaxed text-[var(--muted)] sm:text-sm">{med.medicationMaster.dosage}</p></article>}
-            {med.medicationMaster.indications && <article className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-[var(--brand)] sm:text-xs">Uses & indications</p><div className="mt-2 text-xs leading-relaxed text-[var(--muted)] sm:text-sm"><Markdown>{med.medicationMaster.indications}</Markdown></div></article>}
-            {med.medicationMaster.sideEffects && <article className="rounded-3xl border border-amber-500/30 bg-[var(--card)] p-4 shadow-sm sm:p-5"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-amber-600 sm:text-xs">Side effects & precautions</p><div className="mt-2 text-xs leading-relaxed text-[var(--muted)] sm:text-sm"><Markdown>{med.medicationMaster.sideEffects}</Markdown></div></article>}
-            {med.medicationMaster.contraindications && <article className="rounded-3xl border border-rose-500/30 bg-[var(--card)] p-4 shadow-sm sm:p-5"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-rose-600 sm:text-xs">Contraindications</p><div className="mt-2 text-xs leading-relaxed text-[var(--foreground)] sm:text-sm"><Markdown>{med.medicationMaster.contraindications}</Markdown></div></article>}
-            {med.medicationMaster.storage && <article className="rounded-3xl border border-[var(--line-2)] bg-[var(--card)] p-4 shadow-sm sm:p-5 md:col-span-2"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-[var(--muted-2)] sm:text-xs">Storage instructions</p><p className="mt-2 text-xs leading-relaxed text-[var(--muted)] sm:text-sm">{med.medicationMaster.storage}</p></article>}
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {med.medicationMaster.dosage && (
+              <article className="rounded-3xl border border-teal-500/30 bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-sm transition hover:shadow-md">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-teal-500/10 text-[var(--brand)]"><Pill className="h-4 w-4" /></span>
+                  <p className="text-xs font-bold uppercase tracking-wide text-[var(--brand)]">How to Take</p>
+                </div>
+                <p className="mt-3 text-xs leading-relaxed text-[var(--foreground)] sm:text-sm">{med.medicationMaster.dosage}</p>
+              </article>
+            )}
+
+            {med.medicationMaster.indications && (
+              <article className="rounded-3xl border border-emerald-500/30 bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-sm transition hover:shadow-md">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600"><CheckCircle2 className="h-4 w-4" /></span>
+                  <p className="text-xs font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">What It Treats</p>
+                </div>
+                <div className="mt-3 text-xs leading-relaxed text-[var(--muted)] sm:text-sm"><Markdown>{med.medicationMaster.indications}</Markdown></div>
+              </article>
+            )}
+
+            {med.medicationMaster.sideEffects && (
+              <article className="rounded-3xl border border-amber-500/30 bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-sm transition hover:shadow-md">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600"><AlertOctagon className="h-4 w-4" /></span>
+                  <p className="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">Precautions</p>
+                </div>
+                <div className="mt-3 text-xs leading-relaxed text-[var(--muted)] sm:text-sm"><Markdown>{med.medicationMaster.sideEffects}</Markdown></div>
+              </article>
+            )}
+
+            {med.medicationMaster.storage && (
+              <article className="rounded-3xl border border-cyan-500/30 bg-[var(--card)]/90 backdrop-blur-xl p-5 shadow-sm transition hover:shadow-md">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600"><Thermometer className="h-4 w-4" /></span>
+                  <p className="text-xs font-bold uppercase tracking-wide text-cyan-700 dark:text-cyan-300">Safe Storage</p>
+                </div>
+                <p className="mt-3 text-xs leading-relaxed text-[var(--muted)] sm:text-sm">{med.medicationMaster.storage}</p>
+              </article>
+            )}
           </div>
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <Link href={`${base}/medicines`} className="inline-flex min-h-10 items-center text-xs font-semibold text-[var(--brand-deep)] hover:underline">← Back to all medicines</Link>
-            <Link href={`${base}/health/self-care-guide`} className="inline-flex min-h-10 items-center text-xs font-semibold text-[var(--brand-deep)] hover:underline">Self-care vs doctor guide →</Link>
+
+          {med.medicationMaster.contraindications && (
+            <div className="mt-4 rounded-3xl border border-rose-500/30 bg-rose-500/10 p-5 shadow-sm">
+              <div className="flex items-center gap-2 text-rose-800 dark:text-rose-200">
+                <ShieldAlert className="h-5 w-5 text-rose-600" />
+                <h4 className="font-bold text-sm">Contraindications — Do Not Take If:</h4>
+              </div>
+              <div className="mt-2 text-xs leading-relaxed text-[var(--foreground)] sm:text-sm">
+                <Markdown>{med.medicationMaster.contraindications}</Markdown>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Links with Dead Links Fixed */}
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <Link href={`${base}/medicines`} className="inline-flex min-h-10 items-center text-xs font-semibold text-[var(--brand)] hover:underline">
+              ← Back to all medicines at {pharmacy.name}
+            </Link>
+            <Link href="/health/self-care-guide" className="inline-flex min-h-10 items-center text-xs font-semibold text-[var(--brand)] hover:underline">
+              Self-care vs when to see a doctor guide →
+            </Link>
           </div>
         </div>
       </section>
 
+      {/* Digital Pharmacist Advice & Counselling Section */}
       <section className="px-4 pb-10 sm:px-6 sm:pb-14">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
-            <div><span className="inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-[var(--foreground)] sm:text-xs">Digital counselling</span><h2 className="mt-2 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>Medication counselling & administration guide</h2><p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">Detailed guidance covering administration, precautions and practical medicine-use information.</p></div>
-            <Link href={`${base}/health/counselling/${med.slug}`} className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-semibold text-[var(--brand-deep)] hover:bg-[var(--card-elev)]">Full counselling guide</Link>
+            <div>
+              <span className="inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-emerald-800 dark:text-emerald-300 sm:text-xs">
+                Digital Clinical Leaflet
+              </span>
+              <h2 className="mt-2 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
+                Pharmacist advice & administration leaflet
+              </h2>
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
+                Interactive clinical guidance covering safe administration, food interactions, missed dose rules, and patient advice.
+              </p>
+            </div>
+            <Link href={`/health/counselling/${med.slug}`} className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition">
+              Full counselling reference ↗
+            </Link>
           </div>
           <DigitalCounsellingCard counselling={counselling} />
         </div>
       </section>
 
+      {/* Related & Equivalent Medicines */}
       {related.length > 0 && (
         <section className="px-4 pb-10 sm:px-6 sm:pb-14">
           <div className="mx-auto max-w-6xl">
-            <div className="mb-4"><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Keep exploring</p><h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>{altIds.length ? "Equivalent or alternative medicines" : `Related in ${categoryLabel}`}</h2></div>
+            <div className="mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Keep exploring</p>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
+                {altIds.length ? "Equivalent or alternative medicines" : `Related medicines in ${categoryLabel}`}
+              </h2>
+            </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
               {related.map((item) => (
-                <Link key={item.id} href={`${base}/medicines/${item.slug}`} className="group min-w-0 overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:rounded-3xl">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-[var(--card-elev)]">{item.medicationMaster.imageUrl ? <Image src={item.medicationMaster.imageUrl} alt={item.medicationMaster.name} fill className="object-contain p-2 transition duration-300 group-hover:scale-[1.02] sm:p-3" sizes="(max-width:640px) 50vw,25vw" /> : <div className="flex h-full items-center justify-center text-3xl opacity-50">💊</div>}</div>
-                  <div className="min-w-0 p-3 sm:p-4"><p className="line-clamp-2 text-xs font-semibold leading-snug text-[var(--foreground)] sm:text-sm">{item.medicationMaster.name}</p><p className="mt-1.5 text-xs font-bold text-[var(--brand)] sm:text-sm">KES {formatPrice(Number(item.price))}</p></div>
+                <Link key={item.id} href={`${base}/medicines/${item.slug}`} className="group min-w-0 overflow-hidden rounded-2xl border border-[var(--line-2)] bg-[var(--card)]/90 backdrop-blur-md shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:rounded-3xl">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-[var(--card-elev)]">
+                    {item.medicationMaster.imageUrl ? (
+                      <Image src={item.medicationMaster.imageUrl} alt={item.medicationMaster.name} fill className="object-contain p-2 transition duration-300 group-hover:scale-[1.02] sm:p-3" sizes="(max-width:640px) 50vw,25vw" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-3xl opacity-50">💊</div>
+                    )}
+                  </div>
+                  <div className="min-w-0 p-3 sm:p-4">
+                    <p className="line-clamp-2 text-xs font-semibold leading-snug text-[var(--foreground)] sm:text-sm">{item.medicationMaster.name}</p>
+                    <p className="mt-1.5 text-xs font-bold text-[var(--brand)] sm:text-sm">KES {formatPrice(Number(item.price))}</p>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -525,7 +812,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
         </section>
       )}
 
-      <CtaBanner title={`Need help with ${med.medicationMaster.name}?`} description="Ask the pharmacy about suitability, interactions, prescription requirements, stock or how to use this medicine correctly." />
+      <CtaBanner title={`Have questions about ${med.medicationMaster.name}?`} description="Speak directly with our pharmacy team to confirm availability, dosages, drug interactions, or prescription requirements." />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { ArrowDownRight, BriefcaseBusiness, CheckCircle2, Clock3, MapPin } from 
 import CareerForm from "../components/CareerForm";
 import PageHero from "../components/PageHero";
 import { platform } from "../lib/data";
-import ChoosePharmacy from "@/app/components/ChoosePharmacy";
+import ShopPageChooser from "@/app/components/ShopPageChooser";
 import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { getStorefrontView } from "@/app/lib/services/storefront-content";
 
@@ -18,7 +18,7 @@ export default async function CareersPage() {
   if (view.status === "unavailable") {
     return <StorefrontUnavailable slug={view.slug} next="/careers" />;
   }
-  if (view.status !== "active") return <ChoosePharmacy next="/careers" />;
+  if (view.status !== "active") return <ShopPageChooser next="/careers" />;
 
   const pharmacy = view.resolved;
   const careers = view.content.careers;
@@ -123,7 +123,7 @@ export default async function CareersPage() {
               Upload your CV and tell us which role interests you. We review applications regularly.
             </p>
             <div className="relative mt-5 min-w-0 sm:mt-6">
-              <CareerForm roles={roles} />
+              <CareerForm roles={roles} pharmacySlug={pharmacy.slug ?? undefined} />
             </div>
             <p className="mt-5 break-words border-t border-[var(--line)] pt-4 text-xs leading-5 text-[var(--muted)]">
               Prefer email? Send your CV to{" "}

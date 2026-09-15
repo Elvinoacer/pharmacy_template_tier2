@@ -84,6 +84,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
   const [imageUrl, setImageUrl] = useState("");
   const [icon, setIcon] = useState("");
   const [price, setPrice] = useState("");
+  const [paymentTiming, setPaymentTiming] = useState<"before" | "after">("before");
   const [bookable, setBookable] = useState(true);
   const [active, setActive] = useState(true);
   const [sortOrder, setSortOrder] = useState("");
@@ -150,6 +151,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
     setImageUrl("");
     setIcon("");
     setPrice("");
+    setPaymentTiming("before");
     setBookable(true);
     setActive(true);
     setSortOrder("");
@@ -164,7 +166,9 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
     setShort(row.short);
     setDescription(row.description);
     setBenefits(row.benefits.join("\n"));
-    setEligibility(row.eligibility || "");
+    const isPayAfter = (row.eligibility || "").toLowerCase().includes("[payable:after]");
+    setPaymentTiming(isPayAfter ? "after" : "before");
+    setEligibility((row.eligibility || "").replace(/\[payable:(?:before|after)\]/gi, "").trim());
     setDuration(row.duration || "");
     setImageUrl(row.imageUrl || "");
     setIcon(row.icon || "");
@@ -428,7 +432,7 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
               hint="Upload to R2 or keep a relative path like /images/services/…"
             />
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label className="label-admin">Price (KES, optional)</label>
               <input
@@ -438,11 +442,26 @@ export function ServiceManager({ initial }: { initial: ServiceRow[] }) {
                 step="1"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder="Leave blank = no paywall"
+                placeholder="Leave blank = no fee"
                 className="input-admin"
               />
               <p className="mt-1 text-xs admin-soft">
-                When set, customers must pay to confirm online bookings.
+                Fixed service price in KES.
+              </p>
+            </div>
+            <div>
+              <label className="label-admin">Payment Timing</label>
+              <select
+                name="paymentTiming"
+                value={paymentTiming}
+                onChange={(e) => setPaymentTiming(e.target.value as "before" | "after")}
+                className="input-admin"
+              >
+                <option value="before">Payable Before (Online STK)</option>
+                <option value="after">Payable After (At visit)</option>
+              </select>
+              <p className="mt-1 text-xs admin-soft">
+                When customer pays for this service.
               </p>
             </div>
             <div>

@@ -1261,9 +1261,38 @@ async function main() {
   }
   console.log(`Upserted ${CATEGORIES.length} medication categories.`);
 
+  // Ensure default lookups exist
+  const DEFAULT_LOOKUPS = [
+    { kind: "dosage_form", value: "Tablet", slug: "tablet", sortOrder: 10 },
+    { kind: "dosage_form", value: "Capsule", slug: "capsule", sortOrder: 20 },
+    { kind: "dosage_form", value: "Syrup", slug: "syrup", sortOrder: 30 },
+    { kind: "dosage_form", value: "Cream", slug: "cream", sortOrder: 40 },
+    { kind: "dosage_form", value: "Gel", slug: "gel", sortOrder: 50 },
+    { kind: "dosage_form", value: "Eye Drops", slug: "eye-drops", sortOrder: 60 },
+    { kind: "dosage_form", value: "Nasal Spray", slug: "nasal-spray", sortOrder: 70 },
+    { kind: "dosage_form", value: "Suspension", slug: "suspension", sortOrder: 80 },
+    { kind: "dosage_form", value: "Sachet", slug: "sachet", sortOrder: 90 },
+    { kind: "dosage_form", value: "Ointment", slug: "ointment", sortOrder: 100 },
+    { kind: "dosage_form", value: "Inhaler", slug: "inhaler", sortOrder: 110 },
+  ];
+  for (const l of DEFAULT_LOOKUPS) {
+    await prisma.medicationLookup.upsert({
+      where: { kind_slug: { kind: l.kind as any, slug: l.slug } },
+      create: { kind: l.kind as any, value: l.value, slug: l.slug, sortOrder: l.sortOrder, active: true },
+      update: {},
+    });
+  }
+  const allDosageForms = await prisma.medicationLookup.findMany({ where: { kind: "dosage_form" } });
+  const tabletDf = allDosageForms.find((d) => d.slug === "tablet");
+
   // 2. Upsert master products and pharmacy inventory
   let createdCount = 0;
   for (const p of PRODUCTS) {
+    // Determine dosageFormId from packSize/name/indications
+    const desc = `${p.name} ${p.packSize} ${p.description}`.toLowerCase();
+    const matchedDf = allDosageForms.find((df) => desc.includes(df.value.toLowerCase()) || desc.includes(df.slug)) || tabletDf;
+    const dosageFormId = matchedDf?.id ?? null;
+
     // Check if master exists by barcode or slug
     let master = await prisma.medicationMaster.findFirst({
       where: { OR: [{ barcode: p.barcode }, { slug: p.slug }] },
@@ -1278,6 +1307,7 @@ async function main() {
           brandName: p.brandName || null,
           packSize: p.packSize,
           category: p.category,
+          dosageFormId,
           description: p.description,
           indications: p.indications,
           dosage: p.dosage,

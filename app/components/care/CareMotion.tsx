@@ -21,17 +21,39 @@ export default function CareMotion() {
         entries.forEach((entry, index) => {
           if (!entry.isIntersecting) return;
           const node = entry.target as HTMLElement;
-          node.style.setProperty("--reveal-delay", `${Math.min(index, 3) * 65}ms`);
-          node.dataset.careReveal = "visible";
           observer.unobserve(node);
+          if (!node.animate) return;
+          const animation = node.animate([
+            { opacity: 0, transform: "translateY(22px) scale(.985)" },
+            { opacity: 1, transform: "translateY(0) scale(1)" },
+          ], {
+            duration: 850,
+            delay: Math.min(index, 3) * 65,
+            easing: "cubic-bezier(.16,1,.3,1)",
+            fill: "both",
+          });
+          animations.add(animation);
+          animation.onfinish = () => animations.delete(animation);
         });
       }, { threshold: 0.08 });
+
+      const hasRevealedAncestor = (node: HTMLElement) => {
+        let parent = node.parentElement;
+        while (parent && parent !== root) {
+          if (revealed.has(parent)) return true;
+          parent = parent.parentElement;
+        }
+        return false;
+      };
+
       // Avoid nested reveals and keep the first viewport immediately usable.
       const scan = () => root.querySelectorAll<HTMLElement>(`article, section, .${glass.liquid}`).forEach(node => {
         if (revealed.has(node)) return;
-        if (node.closest("header") || node.parentElement?.closest("[data-care-reveal]")) return;
-        if (node.getBoundingClientRect().top < innerHeight - 30) return;
-        node.dataset.careReveal = "waiting";
+        if (node.closest("header") || hasRevealedAncestor(node)) return;
+        if (node.getBoundingClientRect().top < innerHeight - 30) {
+          revealed.add(node);
+          return;
+        }
         revealed.add(node);
         observer.observe(node);
       });
@@ -69,7 +91,6 @@ export default function CareMotion() {
         root.removeEventListener("pointermove", pointer);
         root.removeEventListener("pointerdown", press);
         animations.forEach(animation => animation.cancel());
-        revealed.forEach(node => { delete node.dataset.careReveal; });
       };
     }
     setup();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import Link from "next/link";
+import TenantLink, { useTenantSlug } from "./TenantLink";
 import { FormSuccess, SelectInput, TextArea, TextInput } from "./FormField";
 import { jobs } from "../lib/data";
 
@@ -10,12 +10,16 @@ type CareerRole = { id: string; title: string };
 export default function CareerForm({
   defaultRole,
   roles,
+  pharmacySlug: pharmacySlugProp,
 }: {
   defaultRole?: string;
   roles?: CareerRole[];
+  pharmacySlug?: string;
 }) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [fileName, setFileName] = useState("");
+  const tenantSlug = useTenantSlug();
+  const pharmacySlug = pharmacySlugProp || tenantSlug || undefined;
   const roleOptions = roles?.length ? roles : jobs.map((job) => ({ id: job.id, title: job.title }));
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -33,6 +37,7 @@ export default function CareerForm({
       message: formData.get("message"),
       cvFileName: fileName || "not-provided",
       company: formData.get("company"),
+      ...(pharmacySlug ? { pharmacySlug } : {}),
     };
 
     try {
@@ -56,9 +61,9 @@ export default function CareerForm({
         title="Application received"
         message="Thank you for your interest in joining the pharmacy team. Applications are reviewed regularly and shortlisted candidates will be contacted."
         actions={
-          <Link href="/careers" className="btn-primary w-full justify-center !py-2.5 text-sm sm:w-auto">
+          <TenantLink href="/careers" className="btn-primary w-full justify-center !py-2.5 text-sm sm:w-auto">
             Back to careers
-          </Link>
+          </TenantLink>
         }
       />
     );

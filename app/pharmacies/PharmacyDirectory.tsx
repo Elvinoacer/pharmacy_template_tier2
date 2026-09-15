@@ -9,17 +9,20 @@ import {
   ArrowRight,
   CheckCircle2,
   ChevronDown,
+  LayoutGrid,
   LocateFixed,
   MapPin,
   MessageCircle,
   Navigation,
   PackageCheck,
   PhoneCall,
+  Radio,
   Search,
   SlidersHorizontal,
   Truck,
   X,
 } from "lucide-react";
+import CareRadar, { type RadarItem } from "@/app/components/radar/CareRadar";
 import type { DirectoryPharmacy } from "@/app/lib/services/pharmacy-directory";
 
 const FALLBACK_COVERS = [
@@ -76,6 +79,7 @@ export default function PharmacyDirectory({
   const [sort, setSort] = useState<"near" | "featured" | "name">(initialLocation ? "near" : "featured");
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(initialLocation ? { lat: initialLocation.latitude, lng: initialLocation.longitude } : null);
   const [locationState, setLocationState] = useState<"idle" | "loading" | "denied">("idle");
+  const [viewMode, setViewMode] = useState<"grid" | "radar">("grid");
 
   useEffect(() => {
     if (searchParams.get("focus") !== "search") return;
@@ -157,6 +161,24 @@ export default function PharmacyDirectory({
           return a.name.localeCompare(b.name);
         }),
     [filtered, position, sort],
+  );
+
+  const radarItems: RadarItem[] = useMemo(
+    () =>
+      sorted.map((pharmacy) => ({
+        id: pharmacy.id,
+        name: pharmacy.name,
+        type: "pharmacy" as const,
+        latitude: pharmacy.latitude,
+        longitude: pharmacy.longitude,
+        distanceKm: pharmacy.distance,
+        detail: [pharmacy.city, pharmacy.county].filter(Boolean).join(", "),
+        subDetail:
+          pharmacy.services?.slice(0, 2).join(" • ") ||
+          (pharmacy.hasDelivery ? "Delivery Available" : undefined),
+        href: `/pharmacies/${pharmacy.slug}`,
+      })),
+    [sorted],
   );
 
   const requestLocation = useCallback(() => {
@@ -303,12 +325,12 @@ export default function PharmacyDirectory({
         {(activeFilterCount > 0 || position || locationState === "denied") && (
           <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--line)] pt-3">
             {position && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1.5 text-[10px] font-bold text-emerald-500">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-bold text-[var(--brand-deep)]">
                 <Navigation className="h-3 w-3" aria-hidden /> Distance enabled
               </span>
             )}
             {locationState === "denied" && (
-              <span className="rounded-full bg-amber-500/10 px-2.5 py-1.5 text-[10px] font-semibold text-amber-500">
+              <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--brand-deep)]">
                 Location unavailable
               </span>
             )}
@@ -340,18 +362,51 @@ export default function PharmacyDirectory({
           </p>
         </div>
 
-        <label className="flex shrink-0 items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--muted-2)]">
-          <span className="hidden sm:inline">Sort</span>
-          <select
-            value={sort}
-            onChange={(event) => setSort(event.target.value as typeof sort)}
-            className="h-10 rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-3 text-[11px] font-semibold normal-case tracking-normal text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
-          >
-            <option value="featured">Recommended</option>
-            <option value="near" disabled={!position}>Nearest{position ? "" : " · enable location"}</option>
-            <option value="name">Name A–Z</option>
-          </select>
-        </label>
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="care-glass flex items-center rounded-xl p-1">
+            <button
+              type="button"
+              onClick={() => setViewMode("grid")}
+              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+                viewMode === "grid"
+                  ? "bg-[#0d6e5a] text-white shadow-xs"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+              aria-label="Grid view"
+              aria-pressed={viewMode === "grid"}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Grid</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("radar")}
+              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+                viewMode === "radar"
+                  ? "bg-[#0d6e5a] text-white shadow-xs"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+              aria-label="Radar proximity view"
+              aria-pressed={viewMode === "radar"}
+            >
+              <Radio className="h-3.5 w-3.5 animate-pulse" aria-hidden="true" />
+              <span className="hidden sm:inline">Radar</span>
+            </button>
+          </div>
+
+          <label className="flex shrink-0 items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--muted-2)]">
+            <span className="hidden sm:inline">Sort</span>
+            <select
+              value={sort}
+              onChange={(event) => setSort(event.target.value as typeof sort)}
+              className="h-10 rounded-xl border border-[var(--line-2)] bg-[var(--card)] px-3 text-[11px] font-semibold normal-case tracking-normal text-[var(--foreground)] outline-none focus:border-[var(--brand)]"
+            >
+              <option value="featured">Recommended</option>
+              <option value="near" disabled={!position}>Nearest{position ? "" : " · enable location"}</option>
+              <option value="name">Name A–Z</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       {query && sorted.some((pharmacy) => pharmacy.hasSearchedMedicine) && (
@@ -365,8 +420,18 @@ export default function PharmacyDirectory({
         </div>
       )}
 
-      {sorted.length === 0 ? (
-        <div className="mt-5 rounded-[28px] border border-dashed border-[var(--line-2)] bg-[var(--glass-fill)] p-7 text-center sm:p-12">
+      {viewMode === "radar" ? (
+        <div className="mt-5">
+          <CareRadar
+            items={radarItems}
+            userLocation={position}
+            onRequestLocation={requestLocation}
+            title="Nearby Pharmacies Radar"
+            subtitle="Geographic proximity scan of verified pharmacies in relation to your position."
+          />
+        </div>
+      ) : sorted.length === 0 ? (
+        <div className="care-glass mt-5 rounded-[28px] border-dashed p-7 text-center sm:p-12">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-[var(--brand)]">
             <PackageCheck className="h-5 w-5" aria-hidden />
           </div>
@@ -480,7 +545,7 @@ function PharmacyCard({
   ];
 
   return (
-    <article className="group flex min-w-0 flex-col overflow-hidden rounded-[26px] border border-[var(--line)] bg-[var(--card)] shadow-[var(--glass-shadow)] transition duration-300 hover:-translate-y-0.5 hover:border-[var(--line-2)]">
+    <article className="care-glass group flex min-w-0 flex-col overflow-hidden rounded-[26px] transition duration-300 hover:-translate-y-0.5 hover:border-[var(--line-2)]">
       <div className="relative h-40 overflow-hidden bg-[#084c3f] sm:h-44">
         <Image
           src={cover}
@@ -534,7 +599,7 @@ function PharmacyCard({
                 className={`max-w-[145px] truncate rounded-full px-2.5 py-1 text-[9px] font-semibold ${
                   tag.tone === "teal"
                     ? "bg-[var(--brand-tint)] text-[var(--brand-deep)]"
-                    : "bg-amber-500/10 text-amber-500"
+                    : "bg-[var(--brand-soft)] text-[var(--brand-deep)]"
                 }`}
               >
                 {tag.label}
@@ -557,12 +622,12 @@ function PharmacyCard({
         {(pharmacy.hasDelivery || pharmacy.hasSearchedMedicine) && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {pharmacy.hasDelivery && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[9px] font-bold text-emerald-500">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
                 <Truck className="h-3 w-3" aria-hidden /> Delivery
               </span>
             )}
             {pharmacy.hasSearchedMedicine && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-1 text-[9px] font-bold text-blue-500">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
                 <PackageCheck className="h-3 w-3" aria-hidden /> {pharmacy.searchedMedicineCount} stock match
                 {pharmacy.searchedMedicineCount === 1 ? "" : "es"}
               </span>

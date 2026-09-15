@@ -45,10 +45,10 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
   ]);
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+    <div className="aether-route-surface min-h-screen overflow-hidden text-[var(--foreground)]">
       <section className="px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-32">
         <div className="mx-auto max-w-7xl">
-          <header className="mb-4 sm:mb-5">
+          <header className="page-hero-glass mb-4 sm:mb-5">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div className="min-w-0">
                 <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)] sm:text-xs">
@@ -68,13 +68,13 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
               <div className="flex flex-wrap gap-2">
                 <Link
                   href="/medicines"
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
+                  className="glass inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-3.5 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
                 >
                   <Pill className="h-3.5 w-3.5" aria-hidden /> Browse medicines
                 </Link>
                 <Link
                   href="/refill"
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-3.5 text-xs font-bold text-white shadow-sm transition hover:brightness-95"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-3.5 text-xs font-bold text-[var(--background)] shadow-sm transition hover:brightness-95"
                 >
                   <PackageSearch className="h-3.5 w-3.5" aria-hidden /> Request refill
                 </Link>
@@ -90,7 +90,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
           </div>
 
           <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start xl:grid-cols-[minmax(0,1fr)_370px]">
-            <main className="min-w-0">
+            <div className="min-w-0">
               <PharmacyDirectory
                 pharmacies={pharmacies}
                 initialLocation={origin}
@@ -103,7 +103,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
                 initialCategory={category}
                 initialDelivery={delivery}
               />
-            </main>
+            </div>
 
             <aside className="min-w-0 lg:sticky lg:top-28" aria-label="Optional pharmacy search assistant">
               <div className="mb-2 flex items-center justify-between gap-3 px-1">
@@ -116,7 +116,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
             </aside>
           </div>
 
-          <section className="mt-8 border-t border-[var(--line)] pt-5 sm:mt-10" aria-label="More pharmacy actions">
+          <section className="care-glass mt-8 rounded-3xl p-4 sm:mt-10 sm:p-5" aria-label="More pharmacy actions">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <p className="text-xs font-bold text-[var(--foreground)]">Still not finding the right option?</p>
@@ -126,7 +126,7 @@ export default async function PharmaciesPage({ searchParams }: { searchParams: P
               </div>
               <Link
                 href="/contact"
-                className="inline-flex min-h-10 w-fit shrink-0 items-center gap-2 rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-bold text-[var(--brand-deep)] transition hover:bg-[var(--card-elev)]"
+                className="glass inline-flex min-h-10 w-fit shrink-0 items-center gap-2 rounded-full px-4 text-xs font-bold text-[var(--brand-deep)] transition hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
               >
                 Get help <ArrowRight className="h-3.5 w-3.5" aria-hidden />
               </Link>
@@ -142,9 +142,9 @@ function QuickAction({ href, icon, label }: { href: string; icon: React.ReactNod
   return (
     <Link
       href={href}
-      className="group flex min-h-12 min-w-0 items-center gap-2.5 rounded-2xl border border-[var(--line)] bg-[var(--card)] px-3 py-2.5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
+      className="care-glass group flex min-h-12 min-w-0 items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-[var(--card-elev)]"
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)] transition group-hover:bg-[var(--brand)] group-hover:text-white">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-[var(--brand)] transition group-hover:bg-[var(--brand)] group-hover:text-[var(--background)]">
         {icon}
       </span>
       <span className="min-w-0 text-[11px] font-bold leading-4 text-[var(--foreground)] sm:text-xs">{label}</span>

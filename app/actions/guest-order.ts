@@ -136,6 +136,7 @@ export async function guestCreateOrderAction(
 
       const o = await tx.order.create({
         data: {
+          pharmacyId: med.pharmacyId,
           customerId,
           source: "website",
           status: "pending",

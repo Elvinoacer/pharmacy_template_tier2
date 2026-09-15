@@ -317,9 +317,49 @@ export default async function AdminSetupPage({ searchParams }: PageProps) {
             <div className="mx-auto max-w-2xl text-center">
               <CreditCard className="mx-auto h-9 w-9 text-emerald-600" />
               <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300">Step 5</p>
-              <h2 className="mt-1 text-2xl font-bold">Activate your plan</h2>
-              <div className="mx-auto mt-5 max-w-sm rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/[0.04]"><p className="text-3xl font-bold">KES 500<span className="text-sm font-medium text-slate-500"> / month</span></p><p className="mt-2 text-xs text-slate-500">{subscription ? `Status: ${subscription.status.replaceAll("_", " ")}` : "Ready for activation"}</p></div>
-              {check("subscription") ? <Link href="/admin/setup?step=launch" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-emerald-600 px-5 text-sm font-semibold text-white">Continue <ArrowRight className="h-4 w-4" /></Link> : <Link href="/onboard/billing" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-emerald-600 px-5 text-sm font-semibold text-white">Open secure billing <ArrowRight className="h-4 w-4" /></Link>}
+              <h2 className="mt-1 text-2xl font-bold">Activate your monthly service</h2>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                Setup and cataloging are complete. Activate monthly service to publish your storefront and turn on patient requests.
+              </p>
+
+              <div className="mx-auto mt-5 max-w-md rounded-3xl border border-slate-200 bg-slate-50 p-6 text-left shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="flex items-baseline justify-between">
+                  <p className="text-3xl font-bold">KES 500<span className="text-sm font-medium text-slate-500"> / month</span></p>
+                  <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                    ~KES 17 / day
+                  </span>
+                </div>
+                <p className="mt-2 text-xs text-slate-500">{subscription ? `Status: ${subscription.status.replaceAll("_", " ")}` : "Ready for activation via Safaricom Daraja"}</p>
+
+                <div className="mt-4 rounded-xl bg-emerald-500/10 p-3 text-xs font-semibold text-emerald-800 dark:text-emerald-200">
+                  💡 Retaining just 1 chronic patient refill (avg KES 2,500) covers 5 months of platform fees.
+                </div>
+
+                <ul className="mt-4 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                    <span><strong>Patient Retention:</strong> Automated WhatsApp refill reminders before medicine runs out</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                    <span><strong>Digital Front Door:</strong> Mobile storefront (/p/slug) with direct prescription upload</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                    <span><strong>Kenyan Medicines:</strong> 1,400+ pre-loaded medicines with standard doses</span>
+                  </li>
+                </ul>
+              </div>
+
+              {check("subscription") ? (
+                <Link href="/admin/setup?step=launch" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-emerald-600 px-6 text-sm font-semibold text-white hover:bg-emerald-700">
+                  Continue to launch <ArrowRight className="h-4 w-4" />
+                </Link>
+              ) : (
+                <Link href="/onboard/billing" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-emerald-600 px-6 text-sm font-semibold text-white hover:bg-emerald-700">
+                  Open secure M-PESA billing <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
             </div>
           ) : null}
 

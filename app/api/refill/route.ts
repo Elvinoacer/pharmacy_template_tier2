@@ -26,6 +26,7 @@ const RefillSchema = z.object({
   pickupPreference: z.enum(["pickup", "delivery"]),
   preferredTime: z.string().trim().max(40).optional(),
   notes: z.string().trim().max(1500).optional(),
+  prescriptionPhoto: z.string().optional(),
 });
 
 function clientIp(request: Request): string {
@@ -149,6 +150,7 @@ async function submitRefill(raw: Record<string, unknown>) {
         : "pickup",
     preferredTime: raw.preferredTime,
     notes: raw.notes,
+    prescriptionPhoto: typeof raw.prescriptionPhoto === "string" ? raw.prescriptionPhoto : undefined,
   });
 
   if (!parsed.success) {
@@ -218,8 +220,57 @@ async function submitRefill(raw: Record<string, unknown>) {
     });
   }
 
+  let prescriptionId: string | undefined = undefined;
+  if (parsed.data.prescriptionPhoto) {
+    let targetCustomerId = session?.customerId ?? null;
+    if (!targetCustomerId) {
+      const byPhone = await prisma.customerProfile.findFirst({
+        where: { phone: { contains: phone.slice(-9) } },
+        select: { id: true },
+      });
+      if (byPhone) {
+        targetCustomerId = byPhone.id;
+      } else {
+        const u = await prisma.user.create({
+          data: {
+            email: parsed.data.email && parsed.data.email.length > 3 ? parsed.data.email : `guest-${Date.now()}@pharmacy.internal`,
+            role: "customer",
+            emailVerified: false,
+          },
+        });
+        const prof = await prisma.customerProfile.create({
+          data: {
+            userId: u.id,
+            fullName: parsed.data.fullName,
+            phone,
+          },
+        });
+        targetCustomerId = prof.id;
+      }
+    }
+
+    const { PrescriptionIntakeChannel, PrescriptionLifecycleStatus } = await import(
+      "@/app/generated/prisma/enums"
+    );
+    const createdRx = await prisma.prescription.create({
+      data: {
+        pharmacyId: tenant.pharmacyId,
+        customerId: targetCustomerId,
+        medicineName: parsed.data.medicine,
+        rxReference: parsed.data.rxReference || `RX-${Date.now().toString(36).toUpperCase()}`,
+        attachmentUrls: [parsed.data.prescriptionPhoto],
+        intakeChannel: PrescriptionIntakeChannel.patient_upload,
+        lifecycleStatus: PrescriptionLifecycleStatus.received,
+        notes: parsed.data.notes || null,
+        status: "active",
+      },
+    });
+    prescriptionId = createdRx.id;
+  }
+
   const refill = await createRefillRequest({
     customerId: session?.customerId ?? null,
+    prescriptionId,
     medicineName: parsed.data.medicine,
     rxReference: parsed.data.rxReference || undefined,
     customerName: parsed.data.fullName,

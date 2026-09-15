@@ -2,6 +2,10 @@ import MedicineDetailPage from "@/app/medicines/[slug]/page";
 import ServiceDetailPage from "@/app/services/[slug]/page";
 import GuestOrderPage from "@/app/order/page";
 import RefillPage from "@/app/refill/page";
+import CareersPage from "@/app/careers/page";
+import ContactPage from "@/app/contact/page";
+import DeliveryPage from "@/app/delivery/page";
+import FaqPage from "@/app/faq/page";
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Image from "next/image";
@@ -18,7 +22,18 @@ type Props = {
   params: Promise<{ slug: string; path?: string[] }>;
   searchParams: Promise<{ q?: string; page?: string; medicationId?: string; slug?: string }>;
 };
-const sections = [["", "Overview"], ["about", "About"], ["medicines", "Medicines"], ["services", "Services"], ["gallery", "Gallery"], ["location", "Visit & contact"]];
+const sections = [
+  ["", "Overview"],
+  ["about", "About"],
+  ["medicines", "Medicines"],
+  ["services", "Services"],
+  ["delivery", "Delivery"],
+  ["faq", "FAQ"],
+  ["careers", "Careers"],
+  ["gallery", "Gallery"],
+  ["location", "Visit"],
+  ["contact", "Contact"],
+];
 const money = (value: unknown) => new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", maximumFractionDigits: 2 }).format(Number(value));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -47,10 +62,14 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
   const q = typeof search.q === "string" ? search.q.trim().slice(0, 120) : "";
   const parsedPage = Number(search.page);
   const page = Number.isSafeInteger(parsedPage) && parsedPage > 0 && parsedPage <= 10000 ? parsedPage : 1;
-  if (section === "medicines" && detail) return MedicineDetailPage({ params: Promise.resolve({ slug: detail }) });
+  if (section === "medicines" && detail) return MedicineDetailPage({ params: Promise.resolve({ slug: detail, pharmacySlug: slug }) });
   if (section === "services" && detail) return ServiceDetailPage({ params: Promise.resolve({ slug: detail }) });
   if (section === "order") return GuestOrderPage({ searchParams: Promise.resolve(search) });
   if (section === "refill") return RefillPage({ searchParams: Promise.resolve({}) });
+  if (section === "careers") return CareersPage();
+  if (section === "contact") return ContactPage();
+  if (section === "delivery") return DeliveryPage();
+  if (section === "faq") return FaqPage();
   const medicines = section === "medicines" ? await publicStorefrontMedicines(slug, detail ? "" : q, page, detail) : null;
   const services = section === "services" ? await publicStorefrontServices(slug, detail) : null;
   if (detail && !(medicines?.length || services?.length)) notFound();
@@ -73,11 +92,11 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
       </header>
       <a href="#main-content" className="skip-link">Skip to content</a>
       <nav className={styles.nav} aria-label={`${p.name} pages`}>
-        {sections.map(([part, label]) => <Link key={part} href={`${base}${part ? `/${part}` : ""}`} aria-current={(part || "home") === section || (part === "location" && section === "contact") ? "page" : undefined}>{label}</Link>)}
+        {sections.map(([part, label]) => <Link key={part} href={`${base}${part ? `/${part}` : ""}`} aria-current={(part || "home") === section ? "page" : undefined}>{label}</Link>)}
       </nav>
       <main id="main-content" className={styles.main} tabIndex={-1}>
         <p className={styles.eyebrow}>{p.name} / {detail ? section : section === "home" ? "Welcome" : section}</p>
-        <h1>{detail ? medicines?.[0]?.medicationMaster.name || services?.[0]?.title : section === "home" ? p.name : section === "location" || section === "contact" ? "Plan your visit." : `${section[0].toUpperCase()}${section.slice(1)} at ${p.name}`}</h1>
+        <h1>{detail ? medicines?.[0]?.medicationMaster.name || services?.[0]?.title : section === "home" ? p.name : section === "location" ? "Plan your visit." : `${section[0].toUpperCase()}${section.slice(1)} at ${p.name}`}</h1>
         {section === "home" && <section className={styles.hero}>
           <div><p className={styles.lead}>{p.tagline || p.description || "Explore this pharmacy’s medicines, services and visiting information."}</p>
             {hasLocation && <p className={styles.location}><MapPin size={17} aria-hidden />{p.address.full}</p>}
@@ -95,7 +114,7 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
         </>}
         {section === "services" && <><p className={styles.lead}>Services published by {p.name}. Contact the team to arrange a visit.</p><div className={styles.grid}>{services?.map(item => <article key={item.id} className={styles.panel}><h2>{detail ? item.title : <Link href={`${base}/services/${encodeURIComponent(item.slug)}`}>{item.title} ↗</Link>}</h2><p className={styles.copy}>{detail ? item.description : item.short}</p>{item.duration && <p className={styles.note}>{item.duration}</p>}<p className={styles.price}>{item.price != null ? money(item.price) : "Ask pharmacy for price"}</p>{detail && item.eligibility && <p className={styles.copy}>{item.eligibility}</p>}</article>)}</div>{!services?.length && <p className={styles.empty}>This pharmacy hasn’t published services yet.</p>}</>}
         {section === "gallery" && <><p className={styles.lead}>A look inside, through this pharmacy’s own photos.</p>{gallery.length ? <div className={styles.gallery}>{gallery.map((photo, index) => <figure key={`${photo.src}-${index}`}><a href={photo.src} target="_blank" rel="noopener noreferrer" aria-label={`Open ${photo.caption || `photo ${index + 1}`}`}><Image src={photo.src} alt={photo.alt} width={720} height={540} unoptimized /></a>{photo.caption && <figcaption>{photo.caption}</figcaption>}</figure>)}</div> : <div className={styles.empty}><Camera size={28} aria-hidden /><p>This pharmacy hasn’t published photos yet.</p></div>}</>}
-        {(section === "location" || section === "contact") && <section className={styles.grid}>
+        {section === "location" && <section className={styles.grid}>
           <div className={styles.panel}><h2>Find us</h2><p className={styles.copy}>{hasLocation ? p.address.full : "Address details haven’t been published yet."}</p>{hasLocation && <a className={styles.textLink} href={p.mapsDirections} target="_blank" rel="noopener noreferrer">Get directions ↗</a>}{hasLocation && p.latitude == null && <p className={styles.note}>Directions use the published address; an exact map pin hasn’t been provided.</p>}{mapsEmbed && <iframe className={styles.map} src={mapsEmbed} title={`Map of ${p.name}`} loading="lazy" referrerPolicy="no-referrer" />}</div>
           <div className={styles.panel}><h2>Opening hours</h2>{p.hours.length ? <dl className={styles.hours}>{p.hours.map((hour, index) => <div key={`${hour.day}-${index}`}><dt>{hour.day}</dt><dd>{hour.time}</dd></div>)}</dl> : <p className={styles.copy}>Hours haven’t been published yet. Check with the pharmacy before you visit.</p>}</div>
         </section>}

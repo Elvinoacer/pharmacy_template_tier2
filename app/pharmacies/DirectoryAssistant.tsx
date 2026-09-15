@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  AlertCircle,
   ArrowRight,
   MapPin,
   PackageSearch,
@@ -32,7 +33,9 @@ const SUGGESTIONS = [
 export default function DirectoryAssistant() {
   const [query, setQuery] = useState("");
   const [answer, setAnswer] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [results, setResults] = useState<Result[]>([]);
+  const [source, setSource] = useState<"ai" | "directory">("directory");
   const [loading, setLoading] = useState(false);
 
   async function ask(raw = query) {
@@ -42,22 +45,38 @@ export default function DirectoryAssistant() {
     setQuery(value);
     setLoading(true);
     setAnswer("");
+    setErrorMessage("");
     setResults([]);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 25000);
 
     try {
       const response = await fetch("/api/directory-ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: value }),
+        signal: controller.signal,
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Search failed");
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(
+          typeof data.message === "string" ? data.message : "I couldn't search the directory right now.",
+        );
+      }
       setAnswer(data.answer || "I found some public pharmacy matches.");
       setResults(Array.isArray(data.results) ? data.results : []);
+      setSource(data.source === "ai" ? "ai" : "directory");
     } catch (error) {
-      setAnswer(error instanceof Error ? error.message : "I couldn't search the directory right now.");
+      setErrorMessage(
+        error instanceof DOMException && error.name === "AbortError"
+          ? "The search took too long. Please try again or use the directory filters."
+          : error instanceof Error
+            ? error.message
+            : "I couldn't search the directory right now.",
+      );
       setResults([]);
     } finally {
+      window.clearTimeout(timeout);
       setLoading(false);
     }
   }
@@ -65,7 +84,7 @@ export default function DirectoryAssistant() {
   return (
     <section
       aria-busy={loading}
-      className="relative overflow-hidden rounded-[26px] border border-[var(--line-2)] bg-[var(--card)] p-4 text-[var(--foreground)] shadow-sm sm:p-5"
+      className="care-glass relative overflow-hidden rounded-[26px] p-4 text-[var(--foreground)] sm:p-5"
     >
       <div className="pointer-events-none absolute -right-14 -top-16 h-36 w-36 rounded-full bg-[var(--brand-soft)] opacity-70 blur-3xl" aria-hidden />
 
@@ -78,7 +97,7 @@ export default function DirectoryAssistant() {
             <h2 className="mt-1 text-lg font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-xl">Ask Aether</h2>
           </div>
           <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--brand-soft)] px-2.5 py-1 text-[9px] font-bold text-[var(--brand-deep)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" aria-hidden /> Live
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" aria-hidden /> Live listings
           </span>
         </div>
 
@@ -87,7 +106,13 @@ export default function DirectoryAssistant() {
         </p>
       </div>
 
-      <div className="relative mt-4">
+      <form
+        className="relative mt-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void ask();
+        }}
+      >
         <label htmlFor="aether-directory-query" className="sr-only">
           Ask Aether about pharmacies
         </label>
@@ -97,9 +122,6 @@ export default function DirectoryAssistant() {
             id="aether-directory-query"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") void ask();
-            }}
             placeholder="Panadol near Westlands"
             autoComplete="off"
             className="block min-h-12 w-full appearance-none rounded-xl border border-[var(--line-2)] bg-[var(--background)] py-3 pl-10 pr-10 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card-elev)] focus:ring-2 focus:ring-[var(--brand-soft)]"
@@ -110,6 +132,7 @@ export default function DirectoryAssistant() {
               onClick={() => {
                 setQuery("");
                 setAnswer("");
+                setErrorMessage("");
                 setResults([]);
               }}
               aria-label="Clear Aether search"
@@ -121,15 +144,14 @@ export default function DirectoryAssistant() {
         </div>
 
         <button
-          type="button"
-          onClick={() => void ask()}
+          type="submit"
           disabled={loading || query.trim().length < 2}
           className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-[var(--background)] shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Sparkles className={`h-4 w-4 ${loading ? "animate-pulse" : ""}`} aria-hidden />
           {loading ? "Checking the network…" : "Ask Aether"}
         </button>
-      </div>
+      </form>
 
       {!answer && !loading && (
         <div className="relative mt-4">
@@ -161,12 +183,27 @@ export default function DirectoryAssistant() {
         </div>
       )}
 
+      {errorMessage && (
+        <div
+          role="alert"
+          className="relative mt-4 flex items-start gap-2.5 rounded-2xl border border-[var(--line-2)] bg-[var(--brand-soft)] p-3.5 text-[var(--brand-deep)]"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em]">Search unavailable</p>
+            <p className="mt-1 text-xs leading-5 sm:text-sm">{errorMessage}</p>
+          </div>
+        </div>
+      )}
+
       {answer && (
         <div
           aria-live="polite"
           className="relative mt-4 rounded-2xl border border-[var(--line)] bg-[var(--card-elev)] p-3.5"
         >
-          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">Aether found</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--brand-deep)]">
+            {source === "ai" ? "Aether summary" : "Live directory result"}
+          </p>
           <p className="mt-1.5 text-xs leading-5 text-[var(--foreground)] sm:text-sm">{answer}</p>
         </div>
       )}
@@ -176,7 +213,7 @@ export default function DirectoryAssistant() {
           {results.slice(0, 6).map((result) => (
             <Link
               key={result.slug}
-              href={`/p/${result.slug}`}
+              href={`/pharmacies/${result.slug}`}
               role="listitem"
               className="group flex min-w-0 items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card)] p-3 transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-[var(--card-elev)] hover:shadow-sm"
             >
@@ -192,12 +229,12 @@ export default function DirectoryAssistant() {
                 </span>
                 <span className="mt-1 flex flex-wrap gap-1.5">
                   {result.medicineMatch && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[8px] font-bold text-blue-500">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2 py-0.5 text-[8px] font-bold text-[var(--brand-deep)]">
                       <PackageSearch className="h-2.5 w-2.5" aria-hidden /> {result.medicineMatches} stock match{result.medicineMatches === 1 ? "" : "es"}
                     </span>
                   )}
                   {result.delivery && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[8px] font-bold text-emerald-500">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-soft)] px-2 py-0.5 text-[8px] font-bold text-[var(--brand-deep)]">
                       <Truck className="h-2.5 w-2.5" aria-hidden /> Delivery
                     </span>
                   )}

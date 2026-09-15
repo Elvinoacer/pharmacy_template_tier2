@@ -37,12 +37,44 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const service = await getPublicServiceBySlug(slug).catch(() => null);
-  if (!service) return { title: "Service" };
+  const service = await prismaUnscoped.pharmacyService
+    .findFirst({
+      where: { slug, active: true },
+      include: {
+        pharmacy: {
+          select: { name: true, city: true, county: true, latitude: true, longitude: true },
+        },
+      },
+    })
+    .catch(() => null);
+
+  if (!service) return { title: "Pharmacy Service" };
+
+  const locationStr = [service.pharmacy?.city, service.pharmacy?.county, "Kenya"]
+    .filter(Boolean)
+    .join(", ");
+  const coordinates =
+    service.pharmacy?.latitude != null && service.pharmacy?.longitude != null
+      ? `${service.pharmacy.latitude};${service.pharmacy.longitude}`
+      : undefined;
+
   return {
-    title: service.title,
-    description: service.short,
+    title: `${service.title} — ${service.pharmacy?.name || "Local Pharmacy"} in ${locationStr}`,
+    description: `${service.short} Book online or visit ${service.pharmacy?.name || "the pharmacy"} in ${locationStr}.`,
     alternates: { canonical: `/services/${service.slug}` },
+    openGraph: {
+      title: `${service.title} — ${service.pharmacy?.name || "Care Service"}`,
+      description: service.short,
+      images: service.imageUrl ? [service.imageUrl] : undefined,
+    },
+    other: coordinates
+      ? {
+          "geo.position": coordinates,
+          "geo.region": "KE",
+          "geo.placename": service.pharmacy?.city || "Kenya",
+          "ICBM": `${service.pharmacy?.latitude}, ${service.pharmacy?.longitude}`,
+        }
+      : undefined,
   };
 }
 
@@ -85,8 +117,35 @@ export default async function ServiceDetailPage({ params }: Props) {
     }
   }
 
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": ["MedicalService", "Service"],
+    name: service.title,
+    description: service.description || service.short,
+    image: service.imageUrl || undefined,
+    provider: {
+      "@type": "Pharmacy",
+      name: pharmacy.name,
+      telephone: pharmacy.phone || undefined,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: pharmacy.address.city || undefined,
+        addressCountry: "KE",
+      },
+    },
+    offers: {
+      "@type": "Offer",
+      price: service.price != null ? Number(service.price) : 0,
+      priceCurrency: "KES",
+    },
+  };
+
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+      />
       <section className={styles.hero}>
         <div className={styles.container}>
           <nav aria-label="Breadcrumb" className={styles.breadcrumb}>

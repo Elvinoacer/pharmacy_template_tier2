@@ -1,13 +1,26 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { verifySessionClaim, claimIsStaff, isSafeInternalPath } from '@/app/lib/session-claim'
+import { isPublicIdentityPath } from '@/app/lib/public-storefront'
+
+const PUBLIC_PHARMACY_COOKIE = 'aether_pharmacy'
+const PUBLIC_SLUG_RE = /^[a-z0-9][a-z0-9-]{1,60}$/i
+
+function publicPharmacyCookie() {
+  return {
+    path: '/',
+    sameSite: 'lax' as const,
+    maxAge: 60 * 60 * 24 * 30,
+    secure: process.env.NODE_ENV === 'production',
+  }
+}
 
 const TENANT_HEADERS = ['x-platform-bypass', 'x-pharmacy-id', 'x-pharmacy-slug'] as const
 
 const EXTERNAL_API_PREFIXES = [
   '/api/cron/',
   '/api/webhooks/',
-  '/api/payments/daraja/callback',
+  '/api/payments/daraja/',
   '/api/integrations/',
   '/api/v1/',
 ] as const
@@ -58,14 +71,19 @@ export async function proxy(request: NextRequest) {
     return new NextResponse('Cross-origin request rejected', { status: 403 })
   }
 
-  // Public storefronts resolve their tenant from route params, never a
-  // remembered selection. Keep every subpage under its explicit /p/{slug}
-  // address; unknown/private paths are rejected by the public route itself.
+  // Public storefronts resolve their tenant from /p/{slug}. Remember the
+  // shop so later visits to /careers, /contact, /delivery and /faq can show
+  // that pharmacy's content without requiring the prefixed URL.
   if (pathname === '/p' || pathname.startsWith('/p/')) {
-    const slug = pathname.split('/')[2];
-    if (slug && /^[a-z0-9][a-z0-9-]{1,60}$/i.test(slug)) requestHeaders.set('x-pharmacy-slug', slug.toLowerCase())
+    const slug = pathname.split('/')[2]
+    if (slug && PUBLIC_SLUG_RE.test(slug)) {
+      requestHeaders.set('x-pharmacy-slug', slug.toLowerCase())
+    }
     const response = NextResponse.next({ request: { headers: requestHeaders } })
     response.headers.set('Cache-Control', 'no-store')
+    if (slug && PUBLIC_SLUG_RE.test(slug)) {
+      response.cookies.set(PUBLIC_PHARMACY_COOKIE, slug.toLowerCase(), publicPharmacyCookie())
+    }
     return response
   }
 
@@ -88,6 +106,12 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/platform')
 
   if (!needsAuth) {
+    if (isPublicIdentityPath(pathname)) {
+      const cookieSlug = request.cookies.get(PUBLIC_PHARMACY_COOKIE)?.value?.trim().toLowerCase()
+      if (cookieSlug && PUBLIC_SLUG_RE.test(cookieSlug)) {
+        requestHeaders.set('x-pharmacy-slug', cookieSlug)
+      }
+    }
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 

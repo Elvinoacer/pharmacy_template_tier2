@@ -1,7 +1,14 @@
-import { Check } from "lucide-react";
+import { Check, ShieldCheck } from "lucide-react";
 import styles from "./OnboardSurface.module.css";
 
-const included = ["Your storefront", "Catalogue & stock", "Patient requests", "Follow-ups"];
+const included = [
+  "24/7 Digital storefront (/p/your-name)",
+  "WhatsApp refill reminders (keep chronic regulars)",
+  "AI prescription intake & photo upload",
+  "1,400+ Kenyan medicines with standard doses",
+  "M-PESA Till & Paybill payouts",
+  "KES 0 monthly until you review and launch",
+];
 
 export default function PriceCard({ full = false }: { full?: boolean }) {
   return (
@@ -13,21 +20,32 @@ export default function PriceCard({ full = false }: { full?: boolean }) {
           <b>500</b>
           <em>/ month</em>
         </div>
-        <p>About KES 17 a day. Nothing monthly until you launch.</p>
+        <p>About KES 17 a day. Zero monthly charges until your pharmacy launches.</p>
+        <p style={{ marginTop: "0.4rem", fontSize: "0.72rem", color: "var(--brand)", fontWeight: 650 }}>
+          💡 Just 1 saved refill (avg KES 2,500) covers 5 months of platform fees.
+        </p>
       </div>
+
       <div className={styles.verify}>
         <strong>KES 100</strong>
-        <span>once, to verify the pharmacy</span>
+        <span>one-time PPB check &amp; anti-clone lock</span>
+        <span style={{ display: "block", marginTop: "0.2rem", fontSize: "0.62rem", color: "var(--brand)" }}>
+          <ShieldCheck style={{ display: "inline", width: "0.75rem", height: "0.75rem", marginRight: "2px" }} />
+          Verified premises badge
+        </span>
       </div>
+
       {full ? (
-        <ul className={styles.includes} style={{ gridColumn: "1 / -1" }}>
-          {included.map((item) => (
-            <li key={item}>
-              <Check className="h-3.5 w-3.5" aria-hidden />
-              {item}
-            </li>
-          ))}
-        </ul>
+        <div style={{ gridColumn: "1 / -1", marginTop: "0.75rem", paddingTop: "0.75rem", borderTop: "1px solid var(--line-2)" }}>
+          <ul className={styles.includes}>
+            {included.map((item) => (
+              <li key={item}>
+                <Check className="h-3.5 w-3.5" aria-hidden />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
     </section>
   );

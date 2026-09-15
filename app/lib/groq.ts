@@ -8,7 +8,7 @@ import Groq from "groq-sdk";
  * cannot take the public assistant offline.
  */
 export const DEFAULT_GROQ_MODEL = "openai/gpt-oss-20b";
-export const DEFAULT_GROQ_VISION_MODEL = "qwen/qwen3.6-27b";
+export const DEFAULT_GROQ_VISION_MODEL = "qwen/qwen3.8-27b";
 
 const RETIRED_TEXT_MODELS = new Set([
   "llama-3.1-8b-instant",
@@ -19,6 +19,8 @@ const RETIRED_VISION_MODELS = new Set([
   "llama-3.2-11b-vision-preview",
   "llama-3.2-90b-vision-preview",
   "llama-4-scout-17b-16e-instruct",
+  "meta-llama/llama-4-scout-17b-16e-instruct",
+  "qwen/qwen3.6-27b",
 ]);
 
 export function groqApiKey(): string | undefined {
@@ -66,3 +68,6 @@ export function groqClient(apiKey = groqApiKey()): Groq {
 
 /** Qwen defaults to thinking mode; disable it for chat/JSON responses. */
 export const GROQ_NO_REASONING = { reasoning_effort: "none" as const };
+
+/** GPT-OSS on Groq requires low/medium/high; `none` is rejected with HTTP 400. */
+export const GROQ_LOW_REASONING = { reasoning_effort: "low" as const };

@@ -1,0 +1,309 @@
+.wrapper {
+  margin-top: 0.65rem;
+  margin-bottom: 0.35rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 24%, var(--line-2));
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  padding: 0.75rem 0.85rem;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+
+.topBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.iconShield {
+  display: inline-flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.55rem;
+  background: color-mix(in srgb, var(--brand-soft) 80%, var(--card));
+  color: var(--brand);
+}
+
+.titleText {
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: var(--foreground);
+  letter-spacing: -0.01em;
+}
+
+.titleSub {
+  font-size: 0.64rem;
+  color: var(--muted);
+}
+
+.switchToggle {
+  display: inline-flex;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 65%, var(--card-elev));
+  padding: 0.15rem;
+  border: 1px solid color-mix(in srgb, var(--line-2) 90%, transparent);
+  gap: 0.15rem;
+}
+
+.switchBtn {
+  border: none;
+  background: transparent;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 650;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.switchBtnActive {
+  background: var(--card);
+  color: var(--brand);
+  font-weight: 750;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+.cardComparison {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+@media (min-width: 640px) {
+  .cardComparison {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.previewCard {
+  border-radius: 0.8rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line-2);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 200ms ease;
+}
+
+.previewCardUnverified {
+  border-color: color-mix(in srgb, #e11d48 24%, var(--line-2));
+  background: color-mix(in srgb, #e11d48 3%, var(--card));
+  opacity: 0.88;
+}
+
+.previewCardVerified {
+  border-color: color-mix(in srgb, var(--brand) 38%, var(--line-2));
+  background: radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--brand-soft) 40%, transparent), transparent 12rem),
+    color-mix(in srgb, var(--card) 95%, transparent);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--brand) 12%, transparent);
+}
+
+.badgeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.statusPillUnverified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, #e11d48 12%, transparent);
+  color: #be123c;
+  border: 1px solid color-mix(in srgb, #e11d48 25%, transparent);
+}
+
+.statusPillVerified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.58rem;
+  font-weight: 750;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-soft) 85%, transparent);
+  color: var(--brand);
+  border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
+}
+
+.trustScore {
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
+.trustScoreRed {
+  color: #e11d48;
+}
+
+.trustScoreGreen {
+  color: var(--brand);
+}
+
+.pharmacyName {
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: var(--foreground);
+  margin-top: 0.2rem;
+}
+
+.pharmacyMeta {
+  font-size: 0.64rem;
+  color: var(--muted);
+  line-height: 1.35;
+  margin-top: 0.1rem;
+}
+
+.patientWarning {
+  margin-top: 0.35rem;
+  font-size: 0.62rem;
+  color: #9f1239;
+  line-height: 1.35;
+  background: color-mix(in srgb, #e11d48 8%, transparent);
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.patientBenefit {
+  margin-top: 0.35rem;
+  font-size: 0.62rem;
+  color: var(--brand);
+  line-height: 1.35;
+  background: color-mix(in srgb, var(--brand-soft) 55%, transparent);
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
+.mockButtonRow {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.mockBtnDisabled {
+  flex: 1;
+  font-size: 0.58rem;
+  padding: 0.3rem;
+  border-radius: 0.45rem;
+  border: 1px dashed color-mix(in srgb, var(--muted) 40%, transparent);
+  background: color-mix(in srgb, var(--background) 50%, transparent);
+  color: var(--muted);
+  text-align: center;
+  opacity: 0.7;
+}
+
+.mockBtnActive {
+  flex: 1;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 0.3rem;
+  border-radius: 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
+  background: var(--brand);
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--brand) 25%, transparent);
+}
+
+.valuePillars {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid color-mix(in srgb, var(--brand) 12%, var(--line-2));
+}
+
+@media (min-width: 640px) {
+  .valuePillars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.pillar {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--brand-soft) 22%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--brand) 12%, var(--line-2));
+}
+
+.pillarIcon {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--brand-soft) 80%, var(--card));
+  color: var(--brand);
+  margin-top: 0.05rem;
+}
+
+.pillar strong {
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 720;
+  color: var(--foreground);
+}
+
+.pillar span {
+  display: block;
+  font-size: 0.58rem;
+  color: var(--muted);
+  line-height: 1.3;
+  margin-top: 0.08rem;
+}
+
+.costAnchor {
+  margin-top: 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--brand-soft) 40%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--brand) 18%, var(--line-2));
+  font-size: 0.64rem;
+}
+
+.costAnchorHighlight {
+  font-weight: 750;
+  color: var(--brand);
+}
+
+.costAnchorText {
+  color: var(--muted);
+}
