@@ -64,7 +64,20 @@ export default async function PlatformBillingPage() {
         <h2 className="text-xl font-semibold">Joining pharmacy promotions</h2>
         <p className="my-3 text-sm">KES 100 verification once · KES 500/month platform service. Allocate a limited number of places to new pharmacies. Oldest eligible promotion applies first; offers do not stack. Stopping an offer preserves already allocated waivers.</p>
         <PromotionForm/>
-        {promotions.map(p => <div key={p.id} className="mt-4 border-t border-teal-500/20 pt-4"><h3 className="font-semibold">{p.name} · {p.claimed}/{p.capacity} allocated</h3><p className="my-2 text-sm">Verification {p.verification ? "waived" : "payable"} · {p.recurring ? `${p.recurringMonths} free monthly periods` : "monthly service payable"} · {p.active ? "Open" : "Stopped"}</p>{p.active && <PromotionForm promotionId={p.id}/>}</div>)}
+        {promotions.map(p => (
+          <div key={p.id} className="mt-4 border-t border-teal-500/20 pt-4">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold">{p.name} · {p.claimed}/{p.capacity} allocated</h3>
+              {p.code ? (
+                <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-200 border border-teal-300 dark:border-teal-700">
+                  Code: {p.code}
+                </span>
+              ) : null}
+            </div>
+            <p className="my-2 text-sm">Verification {p.verification ? "waived (saves KES 100)" : "payable"} · {p.recurring ? `${p.recurringMonths} free monthly periods (saves KES ${p.recurringMonths * 500})` : "monthly service payable"} · {p.active ? "Open" : "Stopped"}</p>
+            {p.active && <PromotionForm promotionId={p.id}/>}
+          </div>
+        ))}
       </section>
       {unresolved.length > 0 && <section className="mb-6 rounded-2xl border border-amber-500/30 p-5"><h2 className="font-semibold">Payments needing reconciliation</h2><p className="my-2 text-sm">Check platform M-Pesa merchant records for payments without complete receipt evidence. Do not request a second payment while a result is uncertain.</p><PlatformTable headers={["Pharmacy", "Invoice", "Amount", "Evidence status"]} empty="No unresolved payments" rows={unresolved.map(p => [p.pharmacy.name, p.invoice.number, `KES ${Number(p.amountKes)}`, p.failureReason || "Awaiting provider callback"])} /></section>}
       <section aria-label="Billing summary" className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">

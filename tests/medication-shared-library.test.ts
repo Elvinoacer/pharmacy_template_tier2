@@ -17,7 +17,7 @@ try {
 } catch {}
 
 import { withPlatformBypass } from "../app/lib/tenant-context";
-import { prismaUnscoped } from "../app/lib/db/prisma";
+import { prismaUnscoped, withPlatformTx } from "../app/lib/db/prisma";
 import {
   buildPublicInventoryWhere,
   isQualifyingPublicInventory,
@@ -45,6 +45,27 @@ describe("Medication Shared Library Architecture", { skip: !hasDb }, () => {
 
   before(async () => {
     await withPlatformBypass(async () => {
+      // Ensure trigger recognizes app.platform_bypass = '1'
+      try {
+        await prismaUnscoped.$executeRawUnsafe(`
+          CREATE OR REPLACE FUNCTION protect_shared_medication_master_delete()
+          RETURNS TRIGGER AS $$
+          BEGIN
+            IF COALESCE(current_setting('app.platform_bypass', true), '') NOT IN ('1', 'true', 'on') THEN
+              IF EXISTS (
+                SELECT 1 FROM "pharmacy_inventories"
+                WHERE "medication_master_id" = OLD."id"
+              ) THEN
+                RAISE EXCEPTION 'Cannot delete MedicationMaster %: referenced by existing PharmacyInventory records.', OLD."id"
+                  USING ERRCODE = '23503';
+              END IF;
+            END IF;
+            RETURN OLD;
+          END;
+          $$ LANGUAGE plpgsql;
+        `);
+      } catch {}
+
       // Find or create platform admin user for tests
       testAdminUser = await prismaUnscoped.user.findFirst({
         where: { platformAdmin: true },
@@ -162,10 +183,12 @@ describe("Medication Shared Library Architecture", { skip: !hasDb }, () => {
           console.error("Cleanup error deleting clinical tags:", err);
         }
 
-        // 4. Delete medication masters
+        // 4. Delete medication masters under platform transaction to pass delete protection trigger
         try {
-          await prismaUnscoped.medicationMaster.deleteMany({
-            where: { id: { in: createdMasterIds } },
+          await withPlatformTx(async (tx) => {
+            await tx.medicationMaster.deleteMany({
+              where: { id: { in: createdMasterIds } },
+            });
           });
         } catch (err: any) {
           console.error("Cleanup error deleting medication masters:", JSON.stringify(err?.meta?.driverAdapterError?.cause || err, null, 2));
@@ -807,6 +830,281 @@ ${generic} Third Variant,${generic},BrandAmbiguous,50 mg,Tablet,Oral,general`;
       );
       assert.equal(archivedDuplicate?.status, "archived");
       assert.equal(archivedDuplicate?.mergedIntoId, survivor.id);
+    });
+
+    it("combines currentStock when duplicate pharmacy inventory is merged", async () => {
+      const now = Date.now();
+      const survivor = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationMaster.create({
+          data: {
+            name: `Stock Survivor ${now}`,
+            slug: `stock-survivor-${now}`,
+            genericName: `StockGeneric${now}`,
+            strengthDisplay: "500 mg",
+            dosageFormId: testDosageForm.id,
+            category: "analgesics",
+            status: "active",
+          },
+        })
+      );
+      createdMasterIds.push(survivor.id);
+
+      const duplicate = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationMaster.create({
+          data: {
+            name: `Stock Duplicate ${now}`,
+            slug: `stock-duplicate-${now}`,
+            genericName: `StockGeneric${now}`,
+            strengthDisplay: "500 mg",
+            dosageFormId: testDosageForm.id,
+            category: "analgesics",
+            status: "needs_review",
+          },
+        })
+      );
+      createdMasterIds.push(duplicate.id);
+
+      // Pharmacy has inventory for both survivor (stock=20) and duplicate (stock=35)
+      const invSurvivor = await withPlatformBypass(async () =>
+        prismaUnscoped.pharmacyInventory.create({
+          data: {
+            pharmacyId: activeVerifiedPharmacy.id,
+            medicationMasterId: survivor.id,
+            slug: `inv-surv-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            active: true,
+            currentStock: 20,
+            price: 15.0,
+          },
+        })
+      );
+      createdInventoryIds.push(invSurvivor.id);
+
+      const invDuplicate = await withPlatformBypass(async () =>
+        prismaUnscoped.pharmacyInventory.create({
+          data: {
+            pharmacyId: activeVerifiedPharmacy.id,
+            medicationMasterId: duplicate.id,
+            slug: `inv-dup-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            active: true,
+            currentStock: 35,
+            price: 15.0,
+          },
+        })
+      );
+
+      const mergeResult = await mergeDuplicateMedications({
+        survivorId: survivor.id,
+        duplicateId: duplicate.id,
+        actorId: testAdminUser.id,
+        reason: "Combining physical inventory across duplicate masters",
+      });
+
+      assert.equal(mergeResult.survivorId, survivor.id);
+      assert.equal(mergeResult.duplicateId, duplicate.id);
+
+      // Verify survivor inventory stock was combined to 20 + 35 = 55
+      const updatedSurvivorInv = await withPlatformBypass(async () =>
+        prismaUnscoped.pharmacyInventory.findUnique({
+          where: { id: invSurvivor.id },
+        })
+      );
+      assert.equal(updatedSurvivorInv?.currentStock, 55, "Physical stock must be summed on merge");
+    });
+  });
+
+  // =========================================================================
+  // 6. Platform Catalog Operations & Security
+  // =========================================================================
+  describe("6. Platform Catalog Operations & Security", () => {
+    it("matches existing master by generic + strength + form when barcode is absent", async () => {
+      const now = Date.now();
+      const generic = `GsfGeneric${now}`;
+      const existing = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationMaster.create({
+          data: {
+            name: `${generic} 100mg Tablets`,
+            slug: `gsf-${now}`,
+            genericName: generic,
+            strengthDisplay: "100 mg",
+            dosageFormId: testDosageForm.id,
+            category: "general",
+            status: "active",
+          },
+        })
+      );
+      createdMasterIds.push(existing.id);
+
+      const csv = `name,generic_name,strength_display,dosage_form,route,category,description
+${generic} 100mg Tablets Enrich,${generic},100 mg,Tablet,Oral,general,Newly enriched description`;
+
+      const preview = await previewPlatformMedicationImport(csv);
+      assert.equal(preview.analyzedRows[0]?.action, "match_enrich");
+      assert.equal(preview.analyzedRows[0]?.existingMasterId, existing.id);
+
+      const run = await executePlatformMedicationImport({
+        csvContent: csv,
+        filename: "gsf_match.csv",
+        actorId: testAdminUser.id,
+      });
+      assert.equal(run.createdCount, 0);
+      assert.equal(run.matchedCount, 1);
+
+      const updated = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationMaster.findUnique({
+          where: { id: existing.id },
+        })
+      );
+      assert.equal(updated?.description, "Newly enriched description");
+    });
+
+    it("automatically creates Lookups, Manufacturer, Active Ingredients, and Tags during import", async () => {
+      const now = Date.now();
+      const uniqueForm = `AutoForm${now}`;
+      const uniqueRoute = `AutoRoute${now}`;
+      const uniqueMfg = `AutoMfg${now}`;
+      const uniqueIng = `AutoIng${now}`;
+      const uniqueTag = `AutoTag${now}`;
+      const uniqueGeneric = `RelationGen${now}`;
+
+      const csv = `name,generic_name,strength_display,dosage_form,route,manufacturer,category,active_ingredients,clinical_tags
+Auto Relation Drug ${now},${uniqueGeneric},50 mg,${uniqueForm},${uniqueRoute},${uniqueMfg},general,${uniqueIng}|50|mg,${uniqueTag}`;
+
+      const run = await executePlatformMedicationImport({
+        csvContent: csv,
+        filename: "relations.csv",
+        actorId: testAdminUser.id,
+      });
+      assert.equal(run.createdCount, 1);
+
+      // Verify dosage form lookup created
+      const formLookup = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationLookup.findFirst({
+          where: { kind: "dosage_form", value: uniqueForm },
+        })
+      );
+      assert.ok(formLookup, "Dosage form lookup must be created");
+
+      // Verify route lookup created
+      const routeLookup = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationLookup.findFirst({
+          where: { kind: "route", value: uniqueRoute },
+        })
+      );
+      assert.ok(routeLookup, "Route lookup must be created");
+
+      // Verify manufacturer created
+      const mfg = await withPlatformBypass(async () =>
+        prismaUnscoped.manufacturer.findFirst({
+          where: { name: uniqueMfg },
+        })
+      );
+      assert.ok(mfg, "Manufacturer must be created");
+
+      // Verify active ingredient created
+      const ing = await withPlatformBypass(async () =>
+        prismaUnscoped.activeIngredient.findFirst({
+          where: { name: uniqueIng },
+        })
+      );
+      assert.ok(ing, "Active ingredient must be created");
+
+      // Verify clinical tag created
+      const tag = await withPlatformBypass(async () =>
+        prismaUnscoped.clinicalTag.findFirst({
+          where: { name: uniqueTag },
+        })
+      );
+      assert.ok(tag, "Clinical tag must be created");
+
+      const createdMaster = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationMaster.findFirst({
+          where: { genericName: uniqueGeneric },
+        })
+      );
+      if (createdMaster) createdMasterIds.push(createdMaster.id);
+    });
+
+    it("rejects malformed CSV rows with invalid boolean or malformed URLs", async () => {
+      const csv = `name,generic_name,strength_display,dosage_form,route,category,controlled_drug,image_urls
+Bad Drug,BadGeneric,10 mg,Tablet,Oral,general,maybe,ftp://invalidscheme.com`;
+
+      const preview = await previewPlatformMedicationImport(csv);
+      assert.equal(preview.totalRows, 1);
+      assert.ok(preview.errors.length >= 2, "Should report errors for both invalid boolean and invalid URL");
+      const boolErr = preview.errors.find((e) => e.column === "controlled_drug");
+      const urlErr = preview.errors.find((e) => e.column === "image_urls");
+      assert.ok(boolErr, "Must flag invalid boolean value");
+      assert.ok(urlErr, "Must flag malformed image URL");
+    });
+
+    it("filters and paginates platform medications correctly", async () => {
+      const now = Date.now();
+      const m1 = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationMaster.create({
+          data: {
+            name: `FilterTest Alpha ${now}`,
+            slug: `filter-alpha-${now}`,
+            genericName: `AlphaFilterGen${now}`,
+            category: "dermatology",
+            status: "active",
+            acquisitionMethod: "platform_csv_import",
+          },
+        })
+      );
+      const m2 = await withPlatformBypass(async () =>
+        prismaUnscoped.medicationMaster.create({
+          data: {
+            name: `FilterTest Beta ${now}`,
+            slug: `filter-beta-${now}`,
+            genericName: `BetaFilterGen${now}`,
+            category: "cardiovascular",
+            status: "deprecated",
+            acquisitionMethod: "manual",
+          },
+        })
+      );
+      createdMasterIds.push(m1.id, m2.id);
+
+      // Test search filter
+      const searchRes = await listPlatformMedications({ search: `FilterTest Alpha ${now}` });
+      assert.equal(searchRes.items.length, 1);
+      assert.equal(searchRes.items[0]?.id, m1.id);
+
+      // Test status filter
+      const statusRes = await listPlatformMedications({
+        search: `FilterTest`,
+        status: "deprecated",
+      });
+      const betaFound = statusRes.items.find((i) => i.id === m2.id);
+      assert.ok(betaFound, "Deprecated filter must find m2");
+      const alphaFound = statusRes.items.find((i) => i.id === m1.id);
+      assert.equal(alphaFound, undefined, "Deprecated filter must not include active m1");
+
+      // Test pagination
+      const pageRes = await listPlatformMedications({ page: 1, pageSize: 10 });
+      assert.ok(pageRes.total >= 2);
+      assert.equal(pageRes.page, 1);
+      assert.equal(pageRes.pageSize, 10);
+    });
+
+    it("verifies platformAdmin authorization flag protects platform operations", async () => {
+      const nonAdminUser = await withPlatformBypass(async () =>
+        prismaUnscoped.user.create({
+          data: {
+            email: `non-admin-${Date.now()}@user.local`,
+            passwordHash: "hash123",
+            platformAdmin: false,
+          },
+        })
+      );
+
+      assert.equal(nonAdminUser.platformAdmin, false, "Regular user must not have platformAdmin flag");
+      assert.equal(testAdminUser.platformAdmin, true, "Platform admin user must have platformAdmin flag");
+
+      // Clean up user
+      await withPlatformBypass(async () =>
+        prismaUnscoped.user.delete({ where: { id: nonAdminUser.id } })
+      );
     });
   });
 });

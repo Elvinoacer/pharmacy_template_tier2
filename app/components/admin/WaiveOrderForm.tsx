@@ -135,7 +135,7 @@ export function OrderSettleActions({
             onClick={() => setStkOpen((v) => !v)}
             className="block w-full text-xs font-semibold text-teal-700 hover:underline"
           >
-            {stkOpen ? "Hide M-Pesa" : "M-Pesa STK…"}
+            {stkOpen ? "Hide payment panel" : "IntaSend payment (M-Pesa / Card)…"}
           </button>
           {stkOpen && (
             <div className="mt-1 text-left">

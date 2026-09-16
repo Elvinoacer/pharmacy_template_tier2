@@ -882,49 +882,52 @@ export async function executePlatformMedicationImport(options: {
             let masterId: string | null =
               item.action === "match_enrich" && item.existingMasterId ? item.existingMasterId : null;
 
-            // Re-check under lock in case created by another chunk or concurrent import
-            if (!masterId && row.barcode) {
-              const existingBarcode = await tx.medicationMaster.findUnique({
-                where: { barcode: row.barcode },
-                select: { id: true },
-              });
-              if (existingBarcode) {
-                masterId = existingBarcode.id;
+            // Re-check under lock in case created by another chunk or concurrent import.
+            // Items flagged as needs_review must NEVER be automatically matched.
+            if (item.action !== "needs_review") {
+              if (!masterId && row.barcode) {
+                const existingBarcode = await tx.medicationMaster.findUnique({
+                  where: { barcode: row.barcode },
+                  select: { id: true },
+                });
+                if (existingBarcode) {
+                  masterId = existingBarcode.id;
+                }
               }
-            }
 
-            if (!masterId && row.genericName && dosageFormId) {
-              const genericMatches = await tx.medicationMaster.findMany({
-                where: {
-                  genericName: { equals: row.genericName, mode: "insensitive" },
-                  dosageFormId: dosageFormId,
-                },
-                select: { id: true, strengthDisplay: true, strengthValue: true, strengthUnit: true },
-              });
-              const strengthKey = normalizeForMatch(
-                row.strengthDisplay || (row.strengthValue ? `${row.strengthValue} ${row.strengthUnit || ""}` : "")
-              );
-              const exact = genericMatches.find((m) => {
-                const existingStr = normalizeForMatch(
-                  m.strengthDisplay || (m.strengthValue ? `${m.strengthValue} ${m.strengthUnit || ""}` : "")
+              if (!masterId && row.genericName && dosageFormId) {
+                const genericMatches = await tx.medicationMaster.findMany({
+                  where: {
+                    genericName: { equals: row.genericName, mode: "insensitive" },
+                    dosageFormId: dosageFormId,
+                  },
+                  select: { id: true, strengthDisplay: true, strengthValue: true, strengthUnit: true },
+                });
+                const strengthKey = normalizeForMatch(
+                  row.strengthDisplay || (row.strengthValue ? `${row.strengthValue} ${row.strengthUnit || ""}` : "")
                 );
-                return existingStr && strengthKey && existingStr === strengthKey;
-              });
-              if (exact) {
-                masterId = exact.id;
+                const exact = genericMatches.filter((m) => {
+                  const existingStr = normalizeForMatch(
+                    m.strengthDisplay || (m.strengthValue ? `${m.strengthValue} ${m.strengthUnit || ""}` : "")
+                  );
+                  return existingStr && strengthKey && existingStr === strengthKey;
+                });
+                if (exact.length === 1) {
+                  masterId = exact[0].id;
+                }
               }
-            }
 
-            if (!masterId) {
-              const nameMatches = await tx.medicationMaster.findMany({
-                where: { name: { equals: row.name, mode: "insensitive" } },
-                select: { id: true, genericName: true },
-              });
-              const exactName = nameMatches.find(
-                (m) => normalizeForMatch(m.genericName) === normalizeForMatch(row.genericName)
-              );
-              if (exactName) {
-                masterId = exactName.id;
+              if (!masterId) {
+                const nameMatches = await tx.medicationMaster.findMany({
+                  where: { name: { equals: row.name, mode: "insensitive" } },
+                  select: { id: true, genericName: true },
+                });
+                const exactName = nameMatches.filter(
+                  (m) => normalizeForMatch(m.genericName) === normalizeForMatch(row.genericName)
+                );
+                if (exactName.length === 1) {
+                  masterId = exactName[0].id;
+                }
               }
             }
 

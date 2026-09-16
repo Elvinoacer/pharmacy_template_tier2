@@ -375,6 +375,7 @@ enum OutboxStatus {
 
 enum IntegrationKind {
   daraja
+  intasend
   twilio_sms
   whatsapp
   email
@@ -2346,6 +2347,7 @@ enum PaymentStatus {
 
 enum PaymentProvider {
   daraja
+  intasend
   cash
   card
   other
@@ -4202,6 +4204,7 @@ model BillingPayment {
   status            BillingPaymentStatus @default(pending)
   amountKes         Decimal              @map("amount_kes") @db.Decimal(12, 2)
   phone             String?
+  checkoutUrl       String?              @map("checkout_url")
   checkoutRequestId String?              @map("checkout_request_id")
   merchantRequestId String?              @map("merchant_request_id")
   providerRef       String?              @map("provider_ref")
@@ -4368,6 +4371,7 @@ model GoodsReceipt {
 model PharmacyPromotion {
   id String @id @default(uuid()) @db.Uuid
   name String
+  code String? @unique
   capacity Int
   claimed Int @default(0)
   verification Boolean @default(false)

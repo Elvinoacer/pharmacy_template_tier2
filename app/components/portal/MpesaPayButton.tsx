@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Smartphone } from "lucide-react";
+import { CreditCard, Loader2, Smartphone } from "lucide-react";
 import { MpesaStkPanel } from "@/app/components/payments/MpesaStkPanel";
 
 export function MpesaPayButton({
@@ -18,6 +18,7 @@ export function MpesaPayButton({
 }) {
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   if (done) {
     return (
@@ -27,14 +28,59 @@ export function MpesaPayButton({
     );
   }
 
+  const handlePayClick = async () => {
+    setLoading(true);
+    try {
+      const redirectUrl =
+        typeof window !== "undefined"
+          ? `${window.location.origin}${window.location.pathname}?order=${orderId}&payment=success`
+          : undefined;
+
+      const res = await fetch("/api/payments/intasend/order-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          accessToken,
+          phone: defaultPhone,
+          redirectUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.ok && data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+    } catch (err) {
+      console.warn("[MpesaPayButton] checkout redirect failed, opening panel:", err);
+    } finally {
+      setLoading(false);
+      setOpen(true);
+    }
+  };
+
   if (!open) {
     return (
       <button
         type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#0d6e5a] px-4 py-2 text-sm font-semibold text-white hover:bg-[#084c3f]"
+        disabled={loading}
+        onClick={() => void handlePayClick()}
+        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#0d6e5a] px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-[#084c3f] disabled:opacity-75"
       >
-        <Smartphone className="h-3 w-3" /> Pay with M-Pesa
+        {loading ? (
+          <>
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <span>Connecting IntaSend…</span>
+          </>
+        ) : (
+          <>
+            <Smartphone className="h-3.5 w-3.5 text-emerald-200" />
+            <span className="text-white/40">/</span>
+            <CreditCard className="h-3.5 w-3.5 text-emerald-200" />
+            <span>Pay with M-Pesa / Card</span>
+          </>
+        )}
       </button>
     );
   }

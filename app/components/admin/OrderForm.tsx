@@ -157,7 +157,7 @@ export default function OrderForm({
       {stkOrder && (
         <div className="rounded-xl border border-teal-200 bg-teal-50/60 p-3">
           <p className="mb-2 text-xs font-semibold text-teal-900">
-            Order {stkOrder.orderId.slice(0, 8).toUpperCase()} — complete M-Pesa
+            Order {stkOrder.orderId.slice(0, 8).toUpperCase()} — complete IntaSend payment
           </p>
           <MpesaStkPanel
             orderId={stkOrder.orderId}
@@ -533,8 +533,8 @@ export default function OrderForm({
               {(
                 [
                   { value: "cash", label: "Cash (mark paid)" },
-                  { value: "daraja", label: "M-Pesa STK Push" },
-                  { value: "card", label: "Card (pending settlement)" },
+                  { value: "daraja", label: "IntaSend (M-Pesa / Card)" },
+                  { value: "card", label: "Card (counter pos)" },
                 ] as const
               ).map((m) => (
                 <label
@@ -560,21 +560,20 @@ export default function OrderForm({
 
           {paymentMethod === "daraja" && (
             <div>
-              <label htmlFor={`${fieldPrefix}-18`} className="label-admin">M-Pesa Phone (Customer)</label>
+              <label htmlFor={`${fieldPrefix}-18`} className="label-admin">Customer Phone (for IntaSend M-Pesa)</label>
               <div className="relative">
                 <Phone className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 admin-soft" />
                 <input id={`${fieldPrefix}-18`}
                   name="mpesaPhone"
                   type="tel"
-                  required
                   value={mpesaPhone}
                   onChange={(e) => setMpesaPhone(e.target.value)}
-                  placeholder="07XX XXX XXX — customer enters PIN"
+                  placeholder="07XX XXX XXX (optional, can also pay by Card or Link)"
                   className="input-admin pl-9 text-xs"
                 />
               </div>
               <p className="mt-1 text-xs admin-soft">
-                Staff triggers the push; customer confirms with PIN on handset.
+                IntaSend generates a multi-rail session supporting M-PESA STK prompt, Card, or Link.
               </p>
             </div>
           )}

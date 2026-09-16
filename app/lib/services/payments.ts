@@ -11,6 +11,7 @@ import {
   stkQuery,
 } from "@/app/lib/services/daraja";
 import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
+import { createIntasendCheckout, queryIntasendPaymentStatus } from "@/app/lib/services/intasend";
 import { peekTenant } from "@/app/lib/tenant-context";
 
 /** How long a pending STK is considered "in flight" before allowing a retry. */
@@ -109,9 +110,16 @@ async function loadOrder(orderId: string) {
     where: { id: orderId },
     include: {
       items: true,
-      customer: { select: { id: true, phone: true, fullName: true } },
+      customer: {
+        select: {
+          id: true,
+          phone: true,
+          fullName: true,
+          user: { select: { email: true } },
+        },
+      },
       payments: {
-        where: { provider: "daraja" },
+        where: { provider: { in: ["intasend", "daraja"] } },
         orderBy: { createdAt: "desc" },
         take: 5,
       },
@@ -330,6 +338,287 @@ export async function initiateStkPayment(opts: {
   };
 }
 
+export async function createIntasendOrderCheckout(opts: {
+  orderId: string;
+  phone?: string;
+  email?: string;
+  name?: string;
+  initiatedById?: string | null;
+  redirectUrl?: string;
+}): Promise<{
+  ok: boolean;
+  checkoutUrl?: string;
+  paymentId?: string;
+  invoiceId?: string;
+  error?: string;
+  message?: string;
+}> {
+  const order = await loadOrder(opts.orderId);
+  if (!order) {
+    return { ok: false, error: "order_not_found", message: "Order not found." };
+  }
+  if (order.status === "paid" || order.status === "fulfilled" || order.status === "waived") {
+    return { ok: false, error: "order_already_settled", message: "This order is already settled." };
+  }
+  if (order.status === "cancelled") {
+    return { ok: false, error: "order_cancelled", message: "Order was cancelled." };
+  }
+
+  const amount = Number(order.total);
+  if (!(amount > 0)) {
+    return { ok: false, error: "zero_amount", message: "Order total is zero." };
+  }
+
+  const appBaseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "http://localhost:3000";
+  const redirectUrl =
+    opts.redirectUrl ||
+    `${appBaseUrl}/portal/orders?order=${order.id}&payment=success`;
+
+  const apiRef = `ORD_${order.id}`;
+
+  const checkoutRes = await createIntasendCheckout({
+    amount,
+    currency: "KES",
+    apiRef,
+    email:
+      opts.email ||
+      order.customer?.user?.email ||
+      (order.customer as unknown as { email?: string })?.email ||
+      "customer@aether.co.ke",
+    firstName: opts.name || order.customer?.fullName || "Valued Customer",
+    phone: opts.phone || order.customer?.phone || order.guestPhone || undefined,
+    redirectUrl,
+    comment: `Payment for Order ${order.id.slice(0, 8)}`,
+  });
+
+  if (!checkoutRes.ok) {
+    return { ok: false, error: checkoutRes.error, message: checkoutRes.message };
+  }
+
+  const payment = await prisma.payment.create({
+    data: {
+      pharmacyId: order.pharmacyId,
+      orderId: order.id,
+      customerId: order.customerId,
+      amount,
+      provider: "intasend",
+      status: "pending",
+      phone: opts.phone || order.customer?.phone || order.guestPhone || null,
+      initiatedById: opts.initiatedById ?? null,
+      expectedAmount: amount,
+      checkoutRequestId: checkoutRes.invoiceId,
+      providerRef: checkoutRes.url,
+      currency: "KES",
+    },
+  });
+
+  return {
+    ok: true,
+    checkoutUrl: checkoutRes.url,
+    paymentId: payment.id,
+    invoiceId: checkoutRes.invoiceId,
+  };
+}
+
+export async function completeIntasendOrderPayment(opts: {
+  apiRef: string;
+  intasendInvoiceId?: string;
+  providerAmount: number;
+  provider?: string;
+}) {
+  const orderId = opts.apiRef.startsWith("ORD_")
+    ? opts.apiRef.split("_")[1]
+    : opts.apiRef;
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { payments: true },
+  });
+  if (!order) {
+    console.warn("[completeIntasendOrderPayment] order not found:", orderId);
+    return null;
+  }
+
+  if (order.status === "paid" || order.status === "fulfilled") {
+    return { orderId: order.id, status: order.status, alreadyDone: true };
+  }
+
+  const providerAmount = Number(opts.providerAmount);
+  const expectedAmount = Number(order.total);
+  if (Math.abs(providerAmount - expectedAmount) > 0.05) {
+    console.error("[completeIntasendOrderPayment] amount mismatch:", {
+      expected: expectedAmount,
+      received: providerAmount,
+    });
+    throw new Error("payment_amount_mismatch");
+  }
+
+  let payment = await prisma.payment.findFirst({
+    where: {
+      orderId: order.id,
+      provider: "intasend",
+      status: { in: ["pending", "completed"] },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const receipt = opts.intasendInvoiceId || `IS-${Date.now()}`;
+  const shouldAutoDispatch = order.fulfillment === "immediate" && !order.dispatchedAt;
+  const { markOrderPaid, markOrderFulfilled } = await import("@/app/lib/services/commerce/orders");
+
+  await prisma.$transaction(async (tx) => {
+    if (payment) {
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: "completed",
+          providerRef: receipt,
+          paidAt: new Date(),
+          reconciledAt: new Date(),
+          reconciliationNotes: `Settled via IntaSend (${opts.provider || "INTASEND"})`,
+        },
+      });
+    } else {
+      payment = await tx.payment.create({
+        data: {
+          pharmacyId: order.pharmacyId,
+          orderId: order.id,
+          customerId: order.customerId,
+          amount: providerAmount,
+          provider: "intasend",
+          status: "completed",
+          providerRef: receipt,
+          paidAt: new Date(),
+          reconciledAt: new Date(),
+          reconciliationNotes: `Settled via IntaSend (${opts.provider || "INTASEND"})`,
+        },
+      });
+    }
+
+    await tx.payment.updateMany({
+      where: {
+        orderId: order.id,
+        id: { not: payment.id },
+        status: "pending",
+      },
+      data: {
+        status: "failed",
+        failureReason: "Superseded by successful IntaSend payment",
+      },
+    });
+
+    await tx.usageRecord.upsert({
+      where: { pharmacyId_eventId: { pharmacyId: order.pharmacyId, eventId: `sale-fee:${order.id}` } },
+      create: {
+        pharmacyId: order.pharmacyId,
+        metric: "transaction_fee_cents",
+        quantity: transactionFeeCents(providerAmount),
+        unit: "KES_cent",
+        eventId: `sale-fee:${order.id}`,
+        period: new Date().toISOString().slice(0, 7),
+        meta: {
+          paymentId: payment.id,
+          orderId: order.id,
+          grossKes: providerAmount,
+          ratePercent: 1,
+          provider: opts.provider || "INTASEND",
+          receipt,
+        },
+      },
+      update: {},
+    });
+
+    await markOrderPaid(tx, {
+      orderId: order.id,
+      actorId: payment.initiatedById ?? null,
+      amount: providerAmount,
+      currency: "KES",
+    });
+
+    if (shouldAutoDispatch) {
+      await markOrderFulfilled(tx, {
+        orderId: order.id,
+        actorId: payment.initiatedById ?? null,
+        dispatchedById: payment.initiatedById ?? null,
+      });
+    }
+  });
+
+  if (!shouldAutoDispatch) {
+    try {
+      const { recordAdminNotification } = await import(
+        "@/app/lib/services/admin-notifications"
+      );
+      await recordAdminNotification({
+        type: "enquiry_new",
+        title: "IntaSend payment received",
+        body: `Order ${order.id.slice(0, 8).toUpperCase()} paid — ready to dispatch / prepare.`,
+        severity: "info",
+        relatedType: "order",
+        relatedId: order.id,
+      });
+    } catch {
+      /* non-fatal */
+    }
+  }
+
+  try {
+    const { confirmServiceBookingPayment, notifyBookingCustomer } = await import(
+      "@/app/lib/services/pharmacy-services"
+    );
+    const confirmed = await confirmServiceBookingPayment({
+      orderId: order.id,
+      paidVia: "intasend",
+      paymentRef: receipt,
+    });
+    if (confirmed && !confirmed.alreadyDone) {
+      const booking = await prisma.serviceBooking.findUnique({
+        where: { id: confirmed.bookingId },
+        include: { service: { select: { title: true, slug: true } } },
+      });
+      if (booking) {
+        await notifyBookingCustomer(booking, {
+          title: "Booking confirmed",
+          body: `Payment received for ${booking.service.title}. You're all set.`,
+          url: `/services/${booking.service.slug}`,
+        }).catch(() => {});
+      }
+    }
+  } catch (err) {
+    console.error("[completeIntasendOrderPayment] service booking hook:", err);
+  }
+
+  return {
+    orderId: order.id,
+    status: shouldAutoDispatch ? "fulfilled" : "paid",
+    alreadyDone: false,
+  };
+}
+
+export async function failIntasendOrderPayment(opts: {
+  apiRef: string;
+  reason: string;
+}) {
+  const orderId = opts.apiRef.startsWith("ORD_")
+    ? opts.apiRef.split("_")[1]
+    : opts.apiRef;
+
+  await prisma.payment.updateMany({
+    where: {
+      orderId,
+      provider: "intasend",
+      status: "pending",
+    },
+    data: {
+      status: "failed",
+      failureReason: opts.reason.slice(0, 500),
+    },
+  });
+}
+
 /**
  * Apply a verified successful M-Pesa result to payment + order.
  *
@@ -536,7 +825,7 @@ export async function resolvePaymentStatus(opts: {
       })
     : opts.orderId
       ? await prisma.payment.findFirst({
-          where: { orderId: opts.orderId, provider: "daraja" },
+          where: { orderId: opts.orderId, provider: { in: ["intasend", "daraja"] } },
           orderBy: { createdAt: "desc" },
           include: { order: true },
         })
@@ -544,36 +833,65 @@ export async function resolvePaymentStatus(opts: {
 
   if (!payment) return null;
 
-  if (
-    opts.queryProvider &&
-    payment.status === "pending" &&
-    payment.checkoutRequestId &&
-    (await darajaConfiguredFor(payment.pharmacyId))
-  ) {
-    const creds = await resolveDarajaCredentials(payment.pharmacyId);
-    const q = await stkQuery(payment.checkoutRequestId, creds);
-    if (q.ok) {
-      if (q.resultCode === "0") {
-        await prisma.payment.update({
-          where: { id: payment.id },
-          data: {
-            reconciliationNotes:
-              "provider_reports_success: awaiting verified callback amount and receipt",
-          },
-        });
-        payment = await prisma.payment.findUnique({
-          where: { id: payment.id },
-          include: { order: true },
-        });
-      } else if (["1032", "1037", "1", "2001", "1001"].includes(q.resultCode)) {
-        await failDarajaPayment({
-          paymentId: payment.id,
-          reason: q.resultDesc || `STK result ${q.resultCode}`,
-        });
-        payment = await prisma.payment.findUnique({
-          where: { id: payment.id },
-          include: { order: true },
-        });
+  if (opts.queryProvider && payment.status === "pending") {
+    if (payment.provider === "intasend" && payment.checkoutRequestId) {
+      const invoiceId = payment.checkoutRequestId;
+      if (!invoiceId.startsWith("is_mock_") && !invoiceId.startsWith("is_fallback_")) {
+        const isStatus = await queryIntasendPaymentStatus(invoiceId).catch(() => null);
+        if (isStatus) {
+          if (isStatus.state === "COMPLETE") {
+            await completeIntasendOrderPayment({
+              apiRef: `ORD_${payment.orderId}`,
+              intasendInvoiceId: isStatus.invoiceId,
+              providerAmount: Number(isStatus.value || payment.amount),
+              provider: isStatus.provider || "INTASEND",
+            }).catch((err) => console.error("[resolvePaymentStatus][intasend] complete error:", err));
+            payment = await prisma.payment.findUnique({
+              where: { id: payment.id },
+              include: { order: true },
+            });
+          } else if (isStatus.state === "FAILED") {
+            await failIntasendOrderPayment({
+              apiRef: `ORD_${payment.orderId}`,
+              reason: isStatus.failedReason || "Payment failed on IntaSend",
+            }).catch((err) => console.error("[resolvePaymentStatus][intasend] fail error:", err));
+            payment = await prisma.payment.findUnique({
+              where: { id: payment.id },
+              include: { order: true },
+            });
+          }
+        }
+      }
+    } else if (
+      payment.provider === "daraja" &&
+      payment.checkoutRequestId &&
+      (await darajaConfiguredFor(payment.pharmacyId))
+    ) {
+      const creds = await resolveDarajaCredentials(payment.pharmacyId);
+      const q = await stkQuery(payment.checkoutRequestId, creds);
+      if (q.ok) {
+        if (q.resultCode === "0") {
+          await prisma.payment.update({
+            where: { id: payment.id },
+            data: {
+              reconciliationNotes:
+                "provider_reports_success: awaiting verified callback amount and receipt",
+            },
+          });
+          payment = await prisma.payment.findUnique({
+            where: { id: payment.id },
+            include: { order: true },
+          });
+        } else if (["1032", "1037", "1", "2001", "1001"].includes(q.resultCode)) {
+          await failDarajaPayment({
+            paymentId: payment.id,
+            reason: q.resultDesc || `STK result ${q.resultCode}`,
+          });
+          payment = await prisma.payment.findUnique({
+            where: { id: payment.id },
+            include: { order: true },
+          });
+        }
       }
     }
   }

@@ -2212,7 +2212,7 @@ export async function adminCreateOrderAction(
 export async function adminMarkOrderPaidAction(formData: FormData) {
   const user = await staff();
   const id = String(formData.get("id") || "");
-  const provider = (String(formData.get("provider") || "cash") as "cash" | "card" | "other" | "daraja");
+  const provider = (String(formData.get("provider") || "cash") as "cash" | "card" | "other" | "daraja" | "intasend");
   const autoDispatch = formData.get("autoDispatch") !== "off";
   const dispenserNote = String(formData.get("dispenserNote") || "").trim() || null;
   if (!id) return { error: "Order id required." };
@@ -2425,7 +2425,7 @@ export async function adminRefundOrderAction(
     const paymentId = String(formData.get("paymentId") || "");
     const amountStr = String(formData.get("amount") || "0");
     const reason = String(formData.get("reason") || "") || null;
-    const provider = String(formData.get("provider") || "cash") as "cash" | "daraja" | "card" | "other";
+    const provider = String(formData.get("provider") || "cash") as "cash" | "daraja" | "intasend" | "card" | "other";
 
     if (!orderId || !paymentId) return { error: "Order and payment are required." };
     const amount = Number(amountStr);
@@ -2771,7 +2771,7 @@ export async function adminApproveRefillAction(
 
     const markPreparing = formData.get("markPreparing") === "true";
     const markPaid = formData.get("markPaid") === "true";
-    const paymentMethod = (String(formData.get("paymentMethod") || "cash") as "cash" | "daraja" | "card" | "other");
+    const paymentMethod = (String(formData.get("paymentMethod") || "cash") as "cash" | "intasend" | "daraja" | "card" | "other");
     const notes = String(formData.get("notes") || "").trim() || undefined;
     const overrideUnitPrice = formData.get("overrideUnitPrice") ? Number(formData.get("overrideUnitPrice")) : undefined;
 

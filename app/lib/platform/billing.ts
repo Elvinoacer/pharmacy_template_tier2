@@ -9,6 +9,7 @@ import { recordAuditRequired } from "@/app/lib/platform/audit";
 import { recordLifecycle } from "@/app/lib/platform/lifecycle";
 import { stkPush } from "@/app/lib/services/daraja";
 import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
+import { createIntasendCheckout } from "@/app/lib/services/intasend";
 
 export async function ensureDefaultPlans() {
   await prismaUnscoped.plan.updateMany({ where: { slug: { in: ["professional", "enterprise"] } }, data: { active: false, priceKes: MONTHLY_FEE_KES } });
@@ -344,6 +345,245 @@ export async function resumeSubscription(subscriptionId: string, actorId?: strin
   if (sub.status === "cancelled" && sub.currentPeriodEnd < new Date()) throw new Error("period_ended");
   await prismaUnscoped.subscription.update({ where: { id: sub.id }, data: { cancelAt: null, cancelledAt: null, status: sub.status === "cancelled" ? "active" : sub.status } });
   await recordLifecycle(sub.pharmacyId, "plan_changed", { reason: "resumed", actorId: actorId ?? undefined });
+}
+
+export async function createIntasendBillingCheckout(
+  invoiceId: string,
+  opts?: {
+    actorId?: string | null;
+    redirectUrl?: string;
+  },
+) {
+  const invoice = await prismaUnscoped.invoice.findUnique({
+    where: { id: invoiceId },
+    include: {
+      pharmacy: {
+        include: {
+          owner: { select: { email: true } },
+        },
+      },
+    },
+  });
+  if (!invoice) throw new Error("invoice_not_found");
+  if (invoice.status === "paid") {
+    return { ok: true as const, alreadyPaid: true, invoiceId };
+  }
+  if (invoice.status !== "open") {
+    throw new Error("invoice_not_collectible");
+  }
+
+  // If total is 0 (waived by promo card/waiver), settle immediately with zero friction!
+  if (Number(invoice.totalKes) === 0) {
+    await prismaUnscoped.$transaction(async (tx) => {
+      await settleInvoice(tx, invoice.id, opts?.actorId);
+    });
+    return { ok: true as const, alreadyPaid: true, waived: true, invoiceId };
+  }
+
+  const existing = await prismaUnscoped.billingPayment.findFirst({
+    where: {
+      invoiceId,
+      provider: "intasend",
+      status: { in: ["pending", "processing"] },
+      createdAt: { gte: new Date(Date.now() - 30 * 60 * 1000) },
+    },
+  });
+
+  const appBaseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "http://localhost:3000";
+  const redirectUrl =
+    opts?.redirectUrl ||
+    `${appBaseUrl}/onboard/billing?invoice=${invoice.id}&status=returned`;
+
+  if (existing?.checkoutUrl) {
+    return {
+      ok: true as const,
+      alreadyPaid: false,
+      checkoutUrl: existing.checkoutUrl,
+      paymentId: existing.id,
+      invoiceId: invoice.id,
+    };
+  }
+
+  const apiRef = invoice.number;
+
+  const checkoutRes = await createIntasendCheckout({
+    amount: Number(invoice.totalKes),
+    currency: "KES",
+    apiRef,
+    email: invoice.pharmacy.owner?.email || invoice.pharmacy.email || "billing@aether.co.ke",
+    firstName: invoice.pharmacy.name,
+    phone: invoice.pharmacy.phone || undefined,
+    redirectUrl,
+    comment: `Invoice ${invoice.number} for ${invoice.pharmacy.name}`,
+  });
+
+  if (!checkoutRes.ok) {
+    return {
+      ok: false as const,
+      error: checkoutRes.error,
+      message: checkoutRes.message,
+    };
+  }
+
+  const payment = await prismaUnscoped.billingPayment.create({
+    data: {
+      pharmacyId: invoice.pharmacyId,
+      invoiceId: invoice.id,
+      provider: "intasend",
+      status: "pending",
+      amountKes: invoice.totalKes,
+      phone: invoice.pharmacy.phone,
+      checkoutUrl: checkoutRes.url,
+      checkoutRequestId: checkoutRes.id || checkoutRes.invoiceId,
+      providerRef: checkoutRes.invoiceId,
+    },
+  });
+
+  await recordAuditRequired({
+    actorId: opts?.actorId,
+    action: "billing.invoice.intasend_checkout",
+    resource: "invoice",
+    resourceId: invoiceId,
+    tenantId: invoice.pharmacyId,
+    details: { paymentId: payment.id, provider: "intasend", checkoutUrl: checkoutRes.url },
+  });
+
+  return {
+    ok: true as const,
+    alreadyPaid: false,
+    checkoutUrl: checkoutRes.url,
+    paymentId: payment.id,
+    invoiceId: invoice.id,
+  };
+}
+
+export async function completeIntasendBillingPayment(opts: {
+  apiRef: string;
+  intasendInvoiceId?: string;
+  amount: number;
+  provider?: string;
+}) {
+  return prismaUnscoped.$transaction(async (tx) => {
+    let invoice = await tx.invoice.findFirst({
+      where: {
+        OR: [
+          { number: opts.apiRef },
+          { id: opts.apiRef.startsWith("SUBINV_") ? opts.apiRef.replace("SUBINV_", "") : undefined },
+        ],
+      },
+    });
+
+    if (!invoice) {
+      const paymentRow = await tx.billingPayment.findFirst({
+        where: {
+          OR: [
+            { checkoutRequestId: opts.apiRef },
+            { checkoutRequestId: opts.intasendInvoiceId },
+            { providerRef: opts.intasendInvoiceId },
+          ],
+        },
+      });
+      if (paymentRow) {
+        invoice = await tx.invoice.findUnique({ where: { id: paymentRow.invoiceId } });
+      }
+    }
+
+    if (!invoice) {
+      console.warn("[intasend][completeBillingPayment] invoice not found for apiRef:", opts.apiRef);
+      return null;
+    }
+
+    const expected = Number(invoice.totalKes);
+    if (Math.abs(expected - opts.amount) > 0.05) {
+      console.error("[intasend] billing amount mismatch:", { expected, received: opts.amount });
+      throw new Error("billing_amount_mismatch");
+    }
+
+    const payment = await tx.billingPayment.findFirst({
+      where: {
+        invoiceId: invoice.id,
+        provider: "intasend",
+        status: { in: ["pending", "processing", "succeeded"] },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (payment) {
+      await tx.billingPayment.update({
+        where: { id: payment.id },
+        data: {
+          status: "succeeded",
+          paidAt: new Date(),
+          providerRef: opts.intasendInvoiceId || payment.providerRef,
+        },
+      });
+    } else {
+      await tx.billingPayment.create({
+        data: {
+          pharmacyId: invoice.pharmacyId,
+          invoiceId: invoice.id,
+          provider: "intasend",
+          status: "succeeded",
+          amountKes: invoice.totalKes,
+          providerRef: opts.intasendInvoiceId,
+          paidAt: new Date(),
+        },
+      });
+    }
+
+    const settled = await settleInvoice(tx, invoice.id);
+
+    // If this was a bundled invoice (BUNDLE-...)
+    if (invoice.number.startsWith("BUNDLE-")) {
+      await tx.invoice.updateMany({
+        where: { pharmacyId: invoice.pharmacyId, number: `KYP-${invoice.pharmacyId}` },
+        data: { status: "paid", paidAt: new Date(), totalKes: 0 },
+      });
+
+      const existingSub = await tx.subscription.findFirst({
+        where: { pharmacyId: invoice.pharmacyId, status: { not: "cancelled" } },
+      });
+      if (!existingSub) {
+        const plan = await tx.plan.findUniqueOrThrow({ where: { slug: "starter" } });
+        const start = new Date();
+        await tx.subscription.create({
+          data: {
+            pharmacyId: invoice.pharmacyId,
+            planId: plan.id,
+            status: "active",
+            startedAt: start,
+            currentPeriodStart: start,
+            currentPeriodEnd: nextBillingMonth(start),
+          },
+        });
+      } else if (existingSub.status === "past_due") {
+        await tx.subscription.update({
+          where: { id: existingSub.id },
+          data: { status: "active" },
+        });
+      }
+    }
+
+    return settled;
+  });
+}
+
+export async function failIntasendBillingPayment(opts: {
+  apiRef: string;
+  reason: string;
+}) {
+  const invoice = await prismaUnscoped.invoice.findFirst({
+    where: { number: opts.apiRef },
+  });
+  if (!invoice) return;
+
+  await prismaUnscoped.billingPayment.updateMany({
+    where: { invoiceId: invoice.id, provider: "intasend", status: "pending" },
+    data: { status: "failed", failureReason: opts.reason.slice(0, 500) },
+  });
 }
 
 export async function collectInvoicePayment(invoiceId: string, opts?: { phone?: string; actorId?: string | null }) {

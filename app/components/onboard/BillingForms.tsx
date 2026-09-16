@@ -1,30 +1,325 @@
 "use client";
 
-import { useActionState } from "react";
-import { Phone, RefreshCw, ShieldCheck } from "lucide-react";
+import { useActionState, useEffect, useState } from "react";
+import {
+  Check,
+  CheckCircle2,
+  CreditCard,
+  ExternalLink,
+  Layers,
+  Loader2,
+  RefreshCw,
+  ShieldCheck,
+  Smartphone,
+  Sparkles,
+  Tag,
+} from "lucide-react";
 import { pharmacyBillingAction, promotionAction } from "@/app/actions/pharmacy-billing";
 
 const input =
   "mt-1 min-h-12 w-full rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 text-base text-[var(--foreground)] sm:text-sm";
 
-function MpesaPhoneField({ defaultPhone }: { defaultPhone?: string | null }) {
+export function PromoCardForm({ pharmacyId }: { pharmacyId: string }) {
+  const [state, action, pending] = useActionState(pharmacyBillingAction, {});
+  const [code, setCode] = useState("");
+
   return (
-    <label className="block text-sm font-medium text-[var(--foreground)]">
-      Safaricom M-PESA number
-      <input
-        className={input}
-        name="mpesaPhone"
-        type="tel"
-        inputMode="tel"
-        autoComplete="tel"
-        placeholder="07XX XXX XXX"
-        defaultValue={defaultPhone || ""}
-        required
-      />
-      <span className="mt-1 block text-xs leading-5 text-[var(--muted)]">
-        The payment or Ratiba authorization prompt is sent to this number.
-      </span>
-    </label>
+    <form
+      action={action}
+      className="rounded-2xl border border-teal-500/20 bg-teal-50/40 dark:bg-teal-950/20 p-4"
+    >
+      <input type="hidden" name="pharmacyId" value={pharmacyId} />
+      <input type="hidden" name="intent" value="apply_promo" />
+
+      <div className="flex items-center gap-2 mb-2">
+        <Tag className="h-4 w-4 text-[var(--brand)]" />
+        <h3 className="text-sm font-semibold text-[var(--foreground)]">
+          Have a promotional card or voucher?
+        </h3>
+      </div>
+      <p className="text-xs text-[var(--muted)] mb-3">
+        Enter your promotional card or coupon code to waive your verification fee, recurring fees, or both.
+      </p>
+
+      <div className="flex gap-2">
+        <input
+          className={`${input} mt-0 flex-1 uppercase tracking-wider font-mono`}
+          name="code"
+          type="text"
+          placeholder="e.g. WELCOME2026"
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          required
+          disabled={pending}
+        />
+        <button
+          type="submit"
+          disabled={pending || !code.trim()}
+          className="btn-primary min-h-12 px-5 shrink-0 flex items-center justify-center gap-2"
+        >
+          {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply Code"}
+        </button>
+      </div>
+
+      {state.error ? (
+        <p role="alert" className="mt-2.5 text-xs font-medium text-rose-600 dark:text-rose-400">
+          {state.error}
+        </p>
+      ) : null}
+
+      {state.success ? (
+        <div role="status" className="mt-2.5 flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <span>{state.success}</span>
+        </div>
+      ) : null}
+    </form>
+  );
+}
+
+export function PharmacyEnrolmentPricingSelector({
+  pharmacyId,
+  grant,
+  verificationPaid = false,
+  subscriptionActive = false,
+  defaultPhone,
+}: {
+  pharmacyId: string;
+  grant?: {
+    verification: boolean;
+    recurringMonths: number;
+  } | null;
+  verificationPaid?: boolean;
+  subscriptionActive?: boolean;
+  defaultPhone?: string | null;
+}) {
+  const [selectedPlan, setSelectedPlan] = useState<"bundle" | "verification" | "recurring">(
+    verificationPaid ? "recurring" : "bundle",
+  );
+  const [state, action, pending] = useActionState(pharmacyBillingAction, {});
+
+  useEffect(() => {
+    if (state.checkoutUrl) {
+      window.location.href = state.checkoutUrl;
+    }
+  }, [state.checkoutUrl]);
+
+  const verificationWaived = Boolean(grant?.verification);
+  const recurringWaived = Boolean(grant?.recurringMonths && grant.recurringMonths > 0);
+
+  // Price calculations
+  const effectiveVerification = verificationPaid || verificationWaived ? 0 : 100;
+  const effectiveMonthly = recurringWaived ? 0 : 500;
+  const effectiveBundle = effectiveVerification + effectiveMonthly;
+
+  const activeCost =
+    selectedPlan === "bundle"
+      ? effectiveBundle
+      : selectedPlan === "verification"
+        ? effectiveVerification
+        : effectiveMonthly;
+
+  const isFree = activeCost === 0;
+
+  return (
+    <div className="space-y-4">
+      {/* Plan selection tabs */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {/* Launch-Ready Bundle Card */}
+        {!verificationPaid ? (
+          <button
+            type="button"
+            onClick={() => setSelectedPlan("bundle")}
+            className={`text-left rounded-2xl p-4 border transition-all relative ${
+              selectedPlan === "bundle"
+                ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
+                : "border-[var(--line-2)] bg-[var(--card-elev)] hover:border-[var(--line-1)]"
+            }`}
+          >
+            <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)] text-white">
+              Recommended
+            </span>
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
+              <Sparkles className="h-4 w-4" />
+              <span>Launch-Ready Bundle</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-[var(--foreground)]">
+                KES {effectiveBundle}
+              </span>
+              {(verificationWaived || recurringWaived) && (
+                <span className="text-sm text-[var(--muted)] line-through">KES 600</span>
+              )}
+            </div>
+            <p className="mt-1 text-xs font-medium text-[var(--foreground)]">
+              KES 100 verification + KES 500 first month platform subscription
+            </p>
+            <ul className="mt-2.5 space-y-1 text-xs text-[var(--muted)]">
+              <li className="flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
+                <span>One-time PPB premises verification &amp; anti-clone lock</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
+                <span>First month full platform access (Storefront, AI intake, 1,400+ meds)</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
+                <span>Zero launch delay: opens to patients immediately upon approval</span>
+              </li>
+            </ul>
+          </button>
+        ) : null}
+
+        {/* Verification Only Card */}
+        {!verificationPaid ? (
+          <button
+            type="button"
+            onClick={() => setSelectedPlan("verification")}
+            className={`text-left rounded-2xl p-4 border transition-all ${
+              selectedPlan === "verification"
+                ? "border-[var(--brand)] bg-[var(--brand-soft)]/30 ring-2 ring-[var(--brand)]/20 shadow-sm"
+                : "border-[var(--line-2)] bg-[var(--card-elev)] hover:border-[var(--line-1)]"
+            }`}
+          >
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
+              <ShieldCheck className="h-4 w-4" />
+              <span>Verification Only</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-[var(--foreground)]">
+                KES {effectiveVerification}
+              </span>
+              {verificationWaived && (
+                <span className="text-sm text-[var(--muted)] line-through">KES 100</span>
+              )}
+            </div>
+            <p className="mt-1 text-xs font-medium text-[var(--foreground)]">
+              One-time PPB check only
+            </p>
+            <ul className="mt-2.5 space-y-1 text-xs text-[var(--muted)]">
+              <li className="flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
+                <span>Get verified and anti-clone locked first</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-[var(--brand)] shrink-0" />
+                <span>Pay KES 500 monthly service later when ready to go live</span>
+              </li>
+            </ul>
+          </button>
+        ) : null}
+
+        {/* Monthly Subscription Only Card */}
+        {verificationPaid && !subscriptionActive ? (
+          <div className="sm:col-span-2 rounded-2xl p-4 border border-[var(--brand)] bg-[var(--brand-soft)]/20">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--brand)]">
+              <Sparkles className="h-4 w-4" />
+              <span>First Month Platform Service</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-[var(--foreground)]">
+                KES {effectiveMonthly}
+              </span>
+              {recurringWaived && (
+                <span className="text-sm text-[var(--muted)] line-through">KES 500</span>
+              )}
+            </div>
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              Verification is already completed. Activate your digital pharmacy storefront.
+            </p>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Payment Action Form */}
+      <form action={action} className="rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-4">
+        <input type="hidden" name="pharmacyId" value={pharmacyId} />
+        <input
+          type="hidden"
+          name="intent"
+          value={
+            selectedPlan === "bundle"
+              ? "bundle_checkout"
+              : selectedPlan === "verification"
+                ? "verification_checkout"
+                : "activate"
+          }
+        />
+
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <h4 className="text-sm font-semibold text-[var(--foreground)]">
+              {isFree
+                ? "100% Promotional Waiver Active"
+                : `Total Payable: KES ${activeCost}`}
+            </h4>
+            <p className="text-xs text-[var(--muted)]">
+              {isFree
+                ? "All required fees have been waived. Activate immediately with zero charges."
+                : "Powered by IntaSend: Pay with M-PESA, Visa, Mastercard, or Bank."}
+            </p>
+          </div>
+          {!isFree && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f1f5f9] dark:bg-[#1e293b] text-[10px] font-semibold text-[#475569] dark:text-[#94a3b8]">
+              <Smartphone className="h-3 w-3 text-emerald-600" />
+              <span>M-PESA</span>
+              <span className="text-slate-300">·</span>
+              <CreditCard className="h-3 w-3 text-blue-600" />
+              <span>Card</span>
+            </div>
+          )}
+        </div>
+
+        <button
+          disabled={pending}
+          type="submit"
+          className={`btn-primary min-h-12 w-full justify-center text-sm font-semibold flex items-center gap-2 ${
+            isFree ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""
+          }`}
+        >
+          {pending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Processing...</span>
+            </>
+          ) : isFree ? (
+            <>
+              <CheckCircle2 className="h-4 w-4" />
+              <span>Activate Immediately (KES 0)</span>
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="h-4 w-4" />
+              <span>Pay KES {activeCost} with IntaSend</span>
+            </>
+          )}
+        </button>
+
+        {state.checkoutUrl && (
+          <div className="mt-3 p-2 text-center text-xs text-[var(--brand)]">
+            <span>Taking you to IntaSend... </span>
+            <a
+              href={state.checkoutUrl}
+              className="underline font-semibold inline-flex items-center gap-1"
+            >
+              Click here if not redirected automatically <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        )}
+
+        {state.error && (
+          <p role="alert" className="mt-2.5 text-xs text-rose-600 dark:text-rose-400">
+            {state.error}
+          </p>
+        )}
+        {state.success && (
+          <p role="status" className="mt-2.5 text-xs text-emerald-700 dark:text-emerald-400">
+            {state.success}
+          </p>
+        )}
+      </form>
+    </div>
   );
 }
 
@@ -32,8 +327,7 @@ export function PharmacyPaymentForm({
   pharmacyId,
   invoiceId,
   invoiceNumber,
-  checkoutAvailable = false,
-  defaultPhone,
+  checkoutAvailable = true,
 }: {
   pharmacyId: string;
   invoiceId?: string;
@@ -44,6 +338,12 @@ export function PharmacyPaymentForm({
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
   const activation = !invoiceId;
 
+  useEffect(() => {
+    if (state.checkoutUrl) {
+      window.location.href = state.checkoutUrl;
+    }
+  }, [state.checkoutUrl]);
+
   return (
     <form
       action={action}
@@ -53,38 +353,53 @@ export function PharmacyPaymentForm({
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       {invoiceId ? <input type="hidden" name="invoiceId" value={invoiceId} /> : null}
       {invoiceNumber ? <input type="hidden" name="invoiceNumber" value={invoiceNumber} /> : null}
-      <input type="hidden" name="intent" value={activation ? "activate" : "checkout"} />
+      <input type="hidden" name="intent" value={activation ? "activate" : "intasend_checkout"} />
 
       {!activation ? (
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-3">
             <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
-              <Phone className="h-4 w-4" aria-hidden />
+              <CreditCard className="h-4 w-4" aria-hidden />
             </span>
             <div>
-              <h3 className="text-sm font-semibold">Pay with M-PESA</h3>
+              <h3 className="text-sm font-semibold">Pay Invoice with IntaSend</h3>
               <p className="mt-0.5 text-xs leading-5 text-[var(--muted)]">
-                We send an STK Push and confirm the transaction directly with Safaricom.
+                Secure checkout supporting M-PESA, Visa, Mastercard, and Bank.
               </p>
             </div>
           </div>
           <span className="shrink-0 rounded-full border border-[var(--line-2)] px-2 py-1 text-[10px] font-semibold text-[var(--muted)]">
-            Daraja
+            IntaSend
           </span>
         </div>
       ) : null}
 
-      <MpesaPhoneField defaultPhone={defaultPhone} />
-
       {checkoutAvailable ? (
-        <button disabled={pending} className="btn-primary mt-4 min-h-11 w-full justify-center" type="submit">
-          <ShieldCheck className="h-4 w-4" aria-hidden />
-          {pending ? "Sending M-PESA prompt…" : activation ? "Start service with M-PESA" : "Send M-PESA prompt"}
+        <button disabled={pending} className="btn-primary mt-3 min-h-11 w-full justify-center" type="submit">
+          {pending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <span>Connecting to IntaSend…</span>
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="h-4 w-4 mr-2" aria-hidden />
+              <span>{activation ? "Start Service with IntaSend" : "Pay with IntaSend"}</span>
+            </>
+          )}
         </button>
       ) : (
         <p className="mt-4 rounded-xl border border-[var(--line-2)] p-3 text-xs leading-5 text-[var(--muted)]">
-          M-PESA payments are temporarily unavailable because the platform Daraja connection is not configured.
+          Payment is temporarily unavailable. Please try again shortly.
         </p>
+      )}
+
+      {state.checkoutUrl && (
+        <div className="mt-2 text-center text-xs text-[var(--brand)]">
+          <a href={state.checkoutUrl} className="underline font-semibold inline-flex items-center gap-1">
+            Proceeding to payment... Click here if not redirected <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
       )}
 
       <p role={state.error ? "alert" : "status"} className="mt-2 text-sm text-[var(--muted)]">
@@ -110,7 +425,6 @@ export function RecurringMpesaSetupForm({
     <form action={action} className="space-y-3" aria-busy={pending}>
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       <input type="hidden" name="intent" value="subscription_setup" />
-      {!active && !authorising ? <MpesaPhoneField defaultPhone={defaultPhone} /> : null}
       <button
         disabled={pending || active || authorising}
         className="btn-ghost min-h-11 w-full justify-center"
@@ -118,18 +432,11 @@ export function RecurringMpesaSetupForm({
       >
         <RefreshCw className={`h-4 w-4 ${pending ? "animate-spin" : ""}`} aria-hidden />
         {active
-          ? "Automatic M-PESA active"
-          : authorising
-            ? "Waiting for Ratiba authorization"
-            : pending
-              ? "Requesting Ratiba…"
-              : "Authorize automatic monthly M-PESA"}
+          ? "Monthly Auto-Billing Active"
+          : pending
+            ? "Setting up Renewal…"
+            : "Manage Monthly Renewal"}
       </button>
-      {!active ? (
-        <p className="text-xs leading-5 text-[var(--muted)]">
-          M-PESA Ratiba creates a standing order on your phone. Future monthly fees are collected by Safaricom according to that authorization; Aether never sees your M-PESA PIN.
-        </p>
-      ) : null}
       <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
         {state.error || state.success}
       </p>
@@ -139,7 +446,6 @@ export function RecurringMpesaSetupForm({
 
 export function RetryOverdueForm({
   pharmacyId,
-  defaultPhone,
   suspended = false,
 }: {
   pharmacyId: string;
@@ -147,15 +453,28 @@ export function RetryOverdueForm({
   suspended?: boolean;
 }) {
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
+
+  useEffect(() => {
+    if (state.checkoutUrl) {
+      window.location.href = state.checkoutUrl;
+    }
+  }, [state.checkoutUrl]);
+
   return (
     <form action={action} className="mt-3 space-y-3" aria-busy={pending}>
       <input type="hidden" name="pharmacyId" value={pharmacyId} />
       <input type="hidden" name="intent" value="retry_overdue" />
-      <MpesaPhoneField defaultPhone={defaultPhone} />
       <button className="btn-primary min-h-11 w-full justify-center" disabled={pending} type="submit">
         <RefreshCw className={`h-4 w-4 ${pending ? "animate-spin" : ""}`} aria-hidden />
-        {pending ? "Sending M-PESA prompt…" : suspended ? "Pay with M-PESA & restore pharmacy" : "Pay invoice with M-PESA"}
+        {pending ? "Opening IntaSend…" : suspended ? "Pay with IntaSend & Restore Pharmacy" : "Pay Overdue with IntaSend"}
       </button>
+      {state.checkoutUrl && (
+        <p className="text-xs text-center text-[var(--brand)]">
+          <a href={state.checkoutUrl} className="underline font-semibold">
+            Click here to open checkout if not redirected
+          </a>
+        </p>
+      )}
       <p role={state.error ? "alert" : "status"} className="text-sm text-[var(--muted)]">
         {state.error || state.success}
       </p>
@@ -172,14 +491,36 @@ export function PromotionForm({ promotionId }: { promotionId?: string }) {
         <input type="hidden" name="promotionId" value={promotionId} />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
-          <label>Promotion name / reason<input className={input} name="name" required minLength={5} maxLength={150} /></label>
-          <label>Number of joining pharmacies<input className={input} name="capacity" type="number" min={1} max={100000} required /></label>
-          <label>Waive<select className={input} name="scope"><option value="both">Both fees</option><option value="verification">Verification fee only</option><option value="recurring">Monthly service only</option></select></label>
-          <label>Free service months<input className={input} name="months" type="number" min={1} max={120} defaultValue={1} required /></label>
+          <label className="text-sm font-medium">
+            Promotion Name / Reason
+            <input className={input} name="name" required minLength={5} maxLength={150} placeholder="e.g. Early Partner Chemist" />
+          </label>
+          <label className="text-sm font-medium">
+            Promo Code / Coupon (for pharmacies to redeem)
+            <input className={`${input} uppercase font-mono tracking-wider`} name="code" placeholder="e.g. PARTNER2026 (optional)" />
+          </label>
+          <label className="text-sm font-medium">
+            Redemption Capacity
+            <input className={input} name="capacity" type="number" min={1} max={100000} defaultValue={50} required />
+          </label>
+          <label className="text-sm font-medium">
+            Waive Scope
+            <select className={input} name="scope">
+              <option value="both">Both (Verification KES 100 + Monthly Service)</option>
+              <option value="verification">Verification fee only (KES 100)</option>
+              <option value="recurring">Monthly service only (KES 500/mo)</option>
+            </select>
+          </label>
+          <label className="text-sm font-medium sm:col-span-2">
+            Free Service Months
+            <input className={input} name="months" type="number" min={1} max={120} defaultValue={3} required />
+          </label>
         </div>
       )}
-      <button className="btn-primary min-h-11" disabled={pending}>{pending ? "Saving…" : promotionId ? "Stop new allocations" : "Create capped promotion"}</button>
-      <p role="status">{state.error || state.success}</p>
+      <button className="btn-primary min-h-11" disabled={pending}>
+        {pending ? "Saving…" : promotionId ? "Stop new allocations" : "Create Promotional Card / Coupon"}
+      </button>
+      <p role="status" className="text-sm text-[var(--muted)]">{state.error || state.success}</p>
     </form>
   );
 }

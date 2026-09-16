@@ -1,9 +1,10 @@
 import "server-only";
 
 import { prismaUnscoped } from "@/app/lib/db";
-import { completeBillingPayment, markInvoicePaid } from "@/app/lib/platform/billing";
+import { completeBillingPayment, markInvoicePaid, completeIntasendBillingPayment, failIntasendBillingPayment } from "@/app/lib/platform/billing";
 import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
 import { stkQuery } from "@/app/lib/services/daraja";
+import { queryIntasendPaymentStatus } from "@/app/lib/services/intasend";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
 
 function providerStillProcessing(resultCode: string, resultDesc: string) {
@@ -19,14 +20,80 @@ function providerStillProcessing(resultCode: string, resultDesc: string) {
 }
 
 /**
- * Reconcile pending platform-billing STK requests directly against Daraja.
- * The STK query endpoint is authenticated, so ResultCode=0 is authoritative
- * even when Safaricom's asynchronous callback is delayed or omitted.
+ * Reconcile pending platform-billing payments directly against IntaSend (and fallback to Daraja).
+ * Ensures instant settlement when customer returns to the onboarding billing page.
  */
 export async function reconcilePharmacyBillingStk(pharmacyId: string) {
+  let reconciled = 0;
+  let stillPending = 0;
+  let checked = 0;
+
+  // 1. Reconcile IntaSend billing payments
+  const intasendRows = await withPlatformBypass(async () =>
+    prismaUnscoped.billingPayment.findMany({
+      where: {
+        pharmacyId,
+        provider: "intasend",
+        status: { in: ["pending", "processing"] },
+      },
+      include: { invoice: true },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    }),
+  );
+
+  checked += intasendRows.length;
+
+  for (const row of intasendRows) {
+    if (row.invoice.status === "paid") {
+      await withPlatformBypass(async () =>
+        prismaUnscoped.billingPayment.update({
+          where: { id: row.id },
+          data: { status: "succeeded", paidAt: new Date() },
+        }),
+      );
+      reconciled++;
+      continue;
+    }
+
+    const queryRef = row.checkoutRequestId || row.providerRef;
+    if (queryRef && !queryRef.startsWith("is_mock_") && !queryRef.startsWith("is_fallback_")) {
+      const status = await queryIntasendPaymentStatus(queryRef).catch(() => null);
+      if (status) {
+        if (status.state === "COMPLETE") {
+          await completeIntasendBillingPayment({
+            apiRef: row.invoice.number,
+            intasendInvoiceId: status.invoiceId,
+            amount: Number(status.value || row.invoice.totalKes),
+            provider: status.provider || "INTASEND",
+          }).catch((err) => console.error("[reconcile][intasend] complete error:", err));
+          reconciled++;
+          continue;
+        } else if (status.state === "FAILED") {
+          await failIntasendBillingPayment({
+            apiRef: row.invoice.number,
+            reason: status.failedReason || "Payment marked failed by IntaSend",
+          }).catch((err) => console.error("[reconcile][intasend] fail error:", err));
+          reconciled++;
+          continue;
+        }
+      }
+    }
+    stillPending++;
+  }
+
+  // 2. Legacy Daraja M-Pesa reconciliation (if configured)
   const credentials = await resolveDarajaCredentials(null);
   if (!credentials) {
-    return { ok: false as const, error: "daraja_not_configured", checked: 0, reconciled: 0, pending: 0 };
+    const pending = await withPlatformBypass(async () =>
+      prismaUnscoped.billingPayment.count({
+        where: {
+          pharmacyId,
+          status: { in: ["pending", "processing"] },
+        },
+      }),
+    );
+    return { ok: true as const, checked, reconciled, pending, stillPending };
   }
 
   const rows = await withPlatformBypass(async () =>
@@ -42,8 +109,7 @@ export async function reconcilePharmacyBillingStk(pharmacyId: string) {
     }),
   );
 
-  let reconciled = 0;
-  let stillPending = 0;
+  checked += rows.length;
 
   for (const row of rows) {
     const checkoutRequestId = row.checkoutRequestId;
@@ -144,3 +210,5 @@ export async function reconcilePharmacyBillingStk(pharmacyId: string) {
 
   return { ok: true as const, reconciled, pending, checked: rows.length, stillPending };
 }
+
+export { reconcilePharmacyBillingStk as reconcilePharmacyBilling };

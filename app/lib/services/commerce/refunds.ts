@@ -20,7 +20,7 @@ export type RefundInput = {
   paymentId: string;
   amount: number;
   reason?: string;
-  provider?: "daraja" | "cash" | "card" | "other";
+  provider?: "daraja" | "intasend" | "cash" | "card" | "other";
   providerRef?: string | null;
   createdById?: string | null;
   approvedById?: string | null;
@@ -48,7 +48,7 @@ export async function createRefund(
     return { ok: false, error: "Only completed payments can be refunded." };
   }
 
-  const provider = input.provider ?? (payment.provider === "daraja" ? "daraja" : "cash");
+  const provider = input.provider ?? (payment.provider === "intasend" ? "intasend" : payment.provider === "daraja" ? "daraja" : "cash");
   if (provider === "daraja" && payment.provider !== "daraja") {
     return { ok: false, error: "Only a verified Daraja payment can be reversed through M-PESA." };
   }
