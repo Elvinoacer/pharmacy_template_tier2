@@ -16,6 +16,7 @@ import { SUBSCRIPTION_GRACE_DAYS } from "@/app/lib/services/daraja-dunning";
 import { loadPharmacySetup } from "@/app/lib/services/pharmacy-setup";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { isIntasendConfigured } from "@/app/lib/services/intasend";
+import { isPharmacyCommissionEnabled } from "@/app/lib/transaction-fee";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -114,13 +115,16 @@ export default async function PharmacyBillingPage() {
   ]);
 
   const readiness = await loadPharmacySetup(pharmacy.id);
-  const feeBalance = await withPharmacy(pharmacy.id, () =>
-    db.usageRecord.aggregate({
-      where: { pharmacyId: pharmacy.id, metric: "transaction_fee_cents" },
-      _sum: { quantity: true },
-    }),
-  );
-  const feeCents = feeBalance._sum.quantity || 0;
+  const commissionEnabled = isPharmacyCommissionEnabled();
+  const feeBalance = commissionEnabled
+    ? await withPharmacy(pharmacy.id, () =>
+        db.usageRecord.aggregate({
+          where: { pharmacyId: pharmacy.id, metric: "transaction_fee_cents" },
+          _sum: { quantity: true },
+        }),
+      )
+    : null;
+  const feeCents = feeBalance?._sum?.quantity || 0;
   const paymentPending = invoices.some((invoice) =>
     isActivePayment(invoice.payments[0] as PaymentView | undefined),
   );
@@ -381,21 +385,23 @@ export default async function PharmacyBillingPage() {
         })}
       </div>
 
-      <section className={`${styles.section} mt-5`}>
-        <h2 className="font-semibold">1% transaction fee</h2>
-        <p className="mt-2 text-sm text-[var(--muted)]">
-          Customer-order collections remain separate from the platform subscription ledger. The 1% platform fee is billed as its own statement.
-        </p>
-        <p className="mt-3 font-semibold">KES {(feeCents / 100).toFixed(2)} awaiting a statement</p>
-        <form action={createTransactionFeeStatement} className="mt-3">
-          <button disabled={feeCents < 100} className="btn-ghost" type="submit">
-            Create fee statement
-          </button>
-        </form>
-        <p className={styles.fieldHint}>
-          Statements collect whole shillings. Remaining cents carry forward without rounding up.
-        </p>
-      </section>
+      {commissionEnabled ? (
+        <section className={`${styles.section} mt-5`}>
+          <h2 className="font-semibold">1% transaction fee</h2>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            Customer-order collections remain separate from the platform subscription ledger. The 1% platform fee is billed as its own statement.
+          </p>
+          <p className="mt-3 font-semibold">KES {(feeCents / 100).toFixed(2)} awaiting a statement</p>
+          <form action={createTransactionFeeStatement} className="mt-3">
+            <button disabled={feeCents < 100} className="btn-ghost" type="submit">
+              Create fee statement
+            </button>
+          </form>
+          <p className={styles.fieldHint}>
+            Statements collect whole shillings. Remaining cents carry forward without rounding up.
+          </p>
+        </section>
+      ) : null}
 
       <PaymentStatusRefresh pending={paymentPending} />
 

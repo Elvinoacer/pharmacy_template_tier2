@@ -6,7 +6,8 @@ import { getSessionUser, requireStaff } from "@/app/lib/auth";
 import { getTenant } from "@/app/lib/tenant";
 import { prismaUnscoped } from "@/app/lib/db";
 import { saveTenantIntegrationsAction } from "@/app/actions/tenant-admin";
-import { Banknote, MessageCircle, RefreshCw, ShieldCheck } from "lucide-react";
+import { getPharmacyPaymentSettings } from "@/app/lib/platform/integrations";
+import { Banknote, MessageCircle, RefreshCw, ShieldCheck, ArrowRight } from "lucide-react";
 
 export const metadata = { title: "Integrations" };
 export const dynamic = "force-dynamic";
@@ -19,26 +20,75 @@ export default async function AdminIntegrationsPage() {
   }
 
   const row = await prismaUnscoped.pharmacyIntegration.findUnique({ where: { pharmacyId: tenant.pharmacyId } });
+  const paymentSettings = await getPharmacyPaymentSettings(tenant.pharmacyId);
   const membership = user.memberships.find((m) => m.pharmacyId === tenant.pharmacyId);
   const canManage = user.platformAdmin || membership?.role === "owner" || membership?.role === "manager";
-  const mpesaReady = Boolean(row?.darajaShortcode);
+  const mpesaReady = paymentSettings.connected;
   const messagingReady = Boolean(row?.twilioSmsFrom || row?.whatsappPhoneNumberId);
   const posReady = Boolean(row?.posLastSyncAt) && !row?.posLastError;
+
+  const mpesaCardLabel =
+    paymentSettings.status === "live_confirmed"
+      ? "Live confirmed"
+      : paymentSettings.status === "auth_verified"
+        ? "Auth verified"
+        : paymentSettings.connected
+          ? "Credentials saved"
+          : paymentSettings.status === "error"
+            ? "Error"
+            : "Needs setup";
+
+  const mpesaAccent =
+    paymentSettings.status === "live_confirmed"
+      ? "accent"
+      : paymentSettings.status === "auth_verified" || paymentSettings.connected
+        ? "info"
+        : paymentSettings.status === "error"
+          ? "danger"
+          : "danger";
 
   return (
     <AdminShell user={user} title="Connected services" subtitle="Keep payment, messaging, and operational integrations healthy from one focused workspace.">
       <div className="integrations-ux max-w-5xl space-y-4 sm:space-y-6">
         <section aria-label="Integration health" className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
-          <AdminCard label="M-Pesa" value={mpesaReady ? "Configured" : "Needs setup"} hint={row?.darajaLastSuccessAt ? "Recent success recorded" : "No success recorded yet"} icon={Banknote} accent={mpesaReady ? "accent" : "danger"} />
+          <Link href="/admin/settings/payments" className="block focus:outline-hidden">
+            <AdminCard
+              label="M-Pesa"
+              value={mpesaCardLabel}
+              hint={paymentSettings.lastSuccessfulPaymentAt ? "Live settlement confirmed" : paymentSettings.lastVerifiedAt ? "OAuth authenticated" : "Manage M-Pesa setup →"}
+              icon={Banknote}
+              accent={mpesaAccent}
+            />
+          </Link>
           <AdminCard label="Messaging" value={messagingReady ? "Configured" : "Fallback"} hint="SMS / WhatsApp routing" icon={MessageCircle} accent={messagingReady ? "info" : "neutral"} />
           <div className="col-span-2 sm:col-span-1"><AdminCard label="POS sync" value={posReady ? "Healthy" : row?.posLastError ? "Attention" : "Not synced"} hint={row?.posLastSyncAt ? "Sync history available" : "No sync recorded"} icon={RefreshCw} accent={posReady ? "accent" : row?.posLastError ? "danger" : "neutral"} /></div>
         </section>
 
+        {/* Dedicated payment settings CTA */}
+        <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-panel)] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40">
+              <Banknote className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold admin-text">Customer Payment Collection</p>
+              <p className="text-xs admin-muted mt-0.5">
+                Configure PayBill / Till, environment, credentials encryption, and test connection with Safaricom.
+              </p>
+            </div>
+          </div>
+          <Link href="/admin/settings/payments" className="btn-primary min-h-10 text-xs px-4 shrink-0 flex items-center justify-center gap-1.5 font-semibold">
+            <span>Manage M-Pesa setup</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
         <AdminPanel title="Connection status" description="Operational identifiers only. Secrets are never shown back after saving." className="!p-4 sm:!p-6">
           <dl className="integration-status-grid grid gap-2.5 text-sm sm:grid-cols-2">
             {[
-              ["M-Pesa shortcode", row?.darajaShortcode || "Not set"],
-              ["Last M-Pesa success", row?.darajaLastSuccessAt?.toISOString() || "No success yet"],
+              ["M-Pesa shortcode", paymentSettings.shortcode ? `${paymentSettings.shortcode} (${paymentSettings.shortcodeType.toUpperCase()}, ${paymentSettings.environment})` : "Not set"],
+              ["M-Pesa status", mpesaCardLabel],
+              ["Last M-Pesa success", paymentSettings.lastSuccessfulPaymentAt || "No success yet"],
               ["SMS sender", row?.twilioSmsFrom || "Platform fallback"],
               ["WhatsApp number ID", row?.whatsappPhoneNumberId || "Platform fallback"],
               ["POS last sync", row?.posLastSyncAt?.toISOString() || "Not synced"],

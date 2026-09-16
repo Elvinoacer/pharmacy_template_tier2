@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "@/app/components/Toaster";
 import { publicApiErrorMessage, publicErrorMessage } from "@/app/lib/public-error";
-import { Check, Copy, CreditCard, ExternalLink, Loader2, RotateCcw, ShieldCheck, Smartphone, X } from "lucide-react";
+import { Check, Loader2, RotateCcw, Smartphone, X } from "lucide-react";
 
 type Phase = "idle" | "sending" | "waiting" | "success" | "failed";
 
@@ -25,11 +25,11 @@ type StkPayload = {
   error?: string;
   message?: string;
   paymentId?: string;
-  checkoutUrl?: string;
-  invoiceId?: string;
+  phone?: string;
+  attemptCount?: number;
 };
 
-/** Shared payment UX for customers, guests, and staff counter sales powered by IntaSend. */
+/** Direct M-Pesa STK payment UX for customers, guests, and staff counter sales. */
 export function MpesaStkPanel({
   orderId,
   accessToken,
@@ -56,9 +56,9 @@ export function MpesaStkPanel({
   const [phone, setPhone] = useState(defaultPhone);
   const [phase, setPhase] = useState<Phase>(autoStart && defaultPhone ? "sending" : "idle");
   const [paymentId, setPaymentId] = useState<string | null>(null);
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
   const [receipt, setReceipt] = useState<string | null>(null);
+  const [notConfigured, setNotConfigured] = useState<boolean>(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const attemptsRef = useRef(0);
   const startedRef = useRef(false);
@@ -102,7 +102,7 @@ export function MpesaStkPanel({
             orderStatus: payload.orderStatus || "paid",
             receipt: payload.mpesaReceipt,
           });
-          toast.success("Payment confirmed via IntaSend");
+          toast.success("M-Pesa payment confirmed");
           return;
         }
 
@@ -135,7 +135,9 @@ export function MpesaStkPanel({
         if (ticks > 50) {
           stopPoll();
           setPhase("failed");
-          setMessage("Waiting for confirmation timed out. You can retry the payment request or check again in a moment.");
+          setMessage(
+            "Waiting for confirmation timed out. You can retry the payment request or check again in a moment.",
+          );
           return;
         }
         void pollStatus(pid, p);
@@ -149,12 +151,8 @@ export function MpesaStkPanel({
       setPhase("sending");
       setMessage("");
       setReceipt(null);
+      setNotConfigured(false);
       try {
-        const redirectUrl =
-          typeof window !== "undefined"
-            ? `${window.location.origin}${window.location.pathname}?order=${orderId}&payment=success`
-            : undefined;
-
         const response = await fetch("/api/payments/mobile/stk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -163,14 +161,24 @@ export function MpesaStkPanel({
             accessToken,
             phone: phone.trim() || undefined,
             forceRetry: Boolean(forceRetry),
-            redirectUrl,
           }),
         });
         const payload = (await response.json().catch(() => ({}))) as StkPayload;
         if (!response.ok || payload.ok === false) {
+          if (payload.error === "daraja_not_configured" || response.status === 503) {
+            setNotConfigured(true);
+            setPhase("failed");
+            const notReadyMsg =
+              payload.message ||
+              "Online payment isn't available for this pharmacy yet. Please pay in person at collection.";
+            setMessage(notReadyMsg);
+            toast.error(notReadyMsg);
+            return;
+          }
+
           const safeMessage = publicApiErrorMessage(
             payload,
-            "Could not initiate payment session. Please check connection and try again.",
+            "Could not initiate M-Pesa prompt. Please check your phone number and try again.",
           );
           setPhase("failed");
           setMessage(safeMessage);
@@ -178,25 +186,13 @@ export function MpesaStkPanel({
           return;
         }
 
-        if (payload.checkoutUrl) {
-          setCheckoutUrl(payload.checkoutUrl);
-        }
-
         if (payload.paymentId) {
           setPaymentId(payload.paymentId);
         }
 
-        if (!staffMode && payload.checkoutUrl) {
-          // Direct customer or guest: redirect immediately to IntaSend checkout
-          setMessage("Redirecting to IntaSend secure payment...");
-          window.location.href = payload.checkoutUrl;
-          return;
-        }
-
-        // Staff mode: provide link and start status listener
         setPhase("waiting");
-        setMessage("IntaSend payment session active. Customer can pay with M-PESA, Visa, Mastercard, or Bank.");
-        toast.success("Payment session created");
+        setMessage(payload.message || "Enter your M-Pesa PIN on your phone to complete payment.");
+        toast.success("M-Pesa prompt sent to phone");
         if (payload.paymentId) {
           startPoll(payload.paymentId, phone.trim());
         }
@@ -206,7 +202,7 @@ export function MpesaStkPanel({
         toast.error("Could not start payment.");
       }
     },
-    [accessToken, orderId, phone, staffMode, startPoll],
+    [accessToken, orderId, phone, startPoll],
   );
 
   useEffect(() => {
@@ -262,38 +258,44 @@ export function MpesaStkPanel({
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
-          <ShieldCheck className="h-4 w-4 text-[#0d6e5a]" />
+          <Smartphone className="h-4 w-4 text-[#0d6e5a]" />
           <p className={`font-semibold text-[#0c1a14] ${compact ? "text-xs" : "text-sm"}`}>
-            {staffMode ? "IntaSend Counter Collection" : "Pay with IntaSend"}
+            {staffMode ? "Counter M-Pesa" : "Pay with M-Pesa"}
           </p>
         </div>
         <div className="flex items-center gap-1 text-[10px] font-medium text-[#5a6b62]">
           <span className="inline-flex items-center gap-0.5 rounded-md bg-emerald-50 px-1.5 py-0.5 text-emerald-800">
-            <Smartphone className="h-2.5 w-2.5" /> M-PESA
-          </span>
-          <span className="inline-flex items-center gap-0.5 rounded-md bg-blue-50 px-1.5 py-0.5 text-blue-800">
-            <CreditCard className="h-2.5 w-2.5" /> Card
+            Direct to Pharmacy Till / PayBill
           </span>
         </div>
         {onClose && phase === "idle" && (
-          <button type="button" onClick={onClose} className="text-[#5a6b62] hover:text-[#0c1a14]" aria-label="Close payment panel">
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-[#5a6b62] hover:text-[#0c1a14]"
+            aria-label="Close payment panel"
+          >
             <X className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
 
-      <label className="sr-only" htmlFor={`payment-phone-${orderId}`}>
-        Customer phone number
-      </label>
-      <input
-        id={`payment-phone-${orderId}`}
-        type="tel"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        placeholder="Customer phone (e.g. 07XX XXX XXX)"
-        disabled={phase === "sending" || phase === "waiting"}
-        className="w-full rounded-lg border border-[#e3ebe6] px-2.5 py-1.5 text-xs text-[#0c1a14] placeholder:text-[#8a9a92] disabled:opacity-60"
-      />
+      {!notConfigured && (
+        <>
+          <label className="sr-only" htmlFor={`mpesa-phone-${orderId}`}>
+            M-Pesa phone number
+          </label>
+          <input
+            id={`mpesa-phone-${orderId}`}
+            type="tel"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            placeholder="07XX XXX XXX"
+            disabled={phase === "sending" || phase === "waiting"}
+            className="w-full rounded-lg border border-[#e3ebe6] px-2.5 py-1.5 text-xs text-[#0c1a14] placeholder:text-[#8a9a92] disabled:opacity-60"
+          />
+        </>
+      )}
 
       {message && (
         <p
@@ -305,35 +307,8 @@ export function MpesaStkPanel({
         </p>
       )}
 
-      {checkoutUrl && (
-        <div className="flex flex-wrap gap-2 pt-1">
-          <a
-            href={checkoutUrl}
-            target={staffMode ? "_blank" : "_self"}
-            rel="noopener noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[#0d6e5a] px-3 py-2 text-xs font-semibold text-white hover:bg-[#084c3f]"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-            {staffMode ? "Open Customer Checkout" : "Continue to IntaSend"}
-          </a>
-          {staffMode && (
-            <button
-              type="button"
-              onClick={() => {
-                void navigator.clipboard.writeText(checkoutUrl);
-                toast.success("Payment link copied to clipboard");
-              }}
-              className="inline-flex items-center gap-1 rounded-lg border border-[#e3ebe6] px-2.5 py-2 text-xs font-semibold text-[#5a6b62] hover:bg-[#f4f7f4]"
-              title="Copy checkout link to send via SMS or WhatsApp"
-            >
-              <Copy className="h-3.5 w-3.5" /> Link
-            </button>
-          )}
-        </div>
-      )}
-
       <div className="flex flex-wrap gap-1.5">
-        {(phase === "idle" || phase === "failed") && !checkoutUrl && (
+        {(phase === "idle" || (phase === "failed" && !notConfigured)) && (
           <button
             type="button"
             onClick={() => void initiatePayment(phase === "failed")}
@@ -341,20 +316,26 @@ export function MpesaStkPanel({
           >
             {phase === "failed" ? (
               <>
-                <RotateCcw className="h-3 w-3" /> Retry IntaSend Checkout
+                <RotateCcw className="h-3 w-3" /> Retry M-Pesa Prompt
               </>
             ) : (
               <>
-                <Smartphone className="h-3 w-3" /> Pay with M-Pesa / Card
+                <Smartphone className="h-3 w-3" /> Send M-Pesa Prompt
               </>
             )}
           </button>
         )}
 
+        {notConfigured && (
+          <p className="rounded-lg bg-amber-50 p-2 text-xs font-medium text-amber-800 border border-amber-200 w-full">
+            Online payment is not yet connected for this pharmacy. You can pay with cash or card upon collection.
+          </p>
+        )}
+
         {phase === "sending" && (
           <div className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#e6f4ef] px-3 py-1.5 text-[11px] font-semibold text-[#0d6e5a]">
             <Loader2 className="h-3 w-3 animate-spin" />
-            Creating secure checkout…
+            Sending M-Pesa prompt…
           </div>
         )}
 
@@ -362,7 +343,7 @@ export function MpesaStkPanel({
           <div className="flex w-full items-center justify-between gap-2 rounded-lg bg-[#f0faf6] px-2.5 py-1.5 text-[11px] text-[#0d6e5a]">
             <span className="flex items-center gap-1.5 font-medium">
               <Loader2 className="h-3 w-3 animate-spin text-[#0d6e5a]" />
-              Awaiting customer payment…
+              Check phone for M-Pesa PIN prompt…
             </span>
             {paymentId && (
               <button
@@ -379,7 +360,7 @@ export function MpesaStkPanel({
 
       {staffMode && (
         <p className="text-[10px] text-[#8a9a92]">
-          IntaSend allows the customer to pay using M-Pesa STK push, Debit/Credit Card, or PesaLink. Confirmation updates automatically.
+          The customer only needs to enter their M-Pesa PIN on their phone. Funds settle directly into your pharmacy shortcode.
         </p>
       )}
     </div>

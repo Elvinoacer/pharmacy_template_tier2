@@ -14,7 +14,10 @@ import type { CommerceEventType } from "@/app/generated/prisma/client";
  * Keep writes inside the calling transaction so the ledger is consistent
  * with the rest of the mutation. Best-effort: never throw out of here.
  */
+import { peekTenant } from "@/app/lib/tenant-context";
+
 export type CommerceEventInput = {
+  pharmacyId?: string | null;
   eventType: CommerceEventType;
   entityType: string;
   entityId: string;
@@ -32,8 +35,22 @@ export async function recordCommerceEvent(
   input: CommerceEventInput,
 ): Promise<void> {
   try {
+    let pharmacyId = input.pharmacyId || peekTenant()?.pharmacyId;
+    if (!pharmacyId && input.orderId) {
+      const ord = await tx.order.findUnique({
+        where: { id: input.orderId },
+        select: { pharmacyId: true },
+      });
+      pharmacyId = ord?.pharmacyId ?? null;
+    }
+    if (!pharmacyId) {
+      // Cannot insert without a valid pharmacyId due to strict FK constraint
+      return;
+    }
+
     await tx.commerceEvent.create({
       data: {
+        pharmacyId,
         eventType: input.eventType,
         entityType: input.entityType,
         entityId: input.entityId,
@@ -55,8 +72,21 @@ export async function recordCommerceEvent(
 /** Standalone (non-tx) wrapper for callers that aren't in a transaction. */
 export async function recordCommerceEventStandalone(input: CommerceEventInput): Promise<void> {
   try {
+    let pharmacyId = input.pharmacyId || peekTenant()?.pharmacyId;
+    if (!pharmacyId && input.orderId) {
+      const ord = await prisma.order.findUnique({
+        where: { id: input.orderId },
+        select: { pharmacyId: true },
+      });
+      pharmacyId = ord?.pharmacyId ?? null;
+    }
+    if (!pharmacyId) {
+      return;
+    }
+
     await prisma.commerceEvent.create({
       data: {
+        pharmacyId,
         eventType: input.eventType,
         entityType: input.entityType,
         entityId: input.entityId,

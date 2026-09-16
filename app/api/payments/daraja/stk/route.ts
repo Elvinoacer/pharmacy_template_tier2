@@ -12,16 +12,22 @@ export const runtime = "nodejs";
 /** Start or retry a mobile payment request for an order. */
 const Body = z.object({
   orderId: z.string().uuid(),
-  phone: z.string().min(9).max(20),
+  phone: z.string().min(9).max(20).optional(),
   forceRetry: z.boolean().optional(),
   accessToken: z.string().optional(),
 });
 
 function publicPaymentFailure(error: string, message: string) {
-  if (error === "daraja_not_configured" || error === "stk_failed") {
+  if (error === "daraja_not_configured") {
     return {
-      error: "payment_unavailable",
-      message: "Mobile payment is temporarily unavailable. Please try again later or choose another payment option.",
+      error: "daraja_not_configured",
+      message: "This pharmacy hasn’t connected its M-Pesa account yet. Please pay at collection.",
+    };
+  }
+  if (error === "stk_failed") {
+    return {
+      error: "stk_failed",
+      message: "Mobile payment request could not be sent. Please check your phone number and try again.",
     };
   }
   return { error, message };

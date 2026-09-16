@@ -29,7 +29,7 @@ export type CreateFillInput = {
   /// If true, the customer has paid cash at counter; create a completed Payment too.
   markPaid?: boolean;
   /// Payment method when markPaid.
-  paymentMethod?: "cash" | "intasend" | "daraja" | "card" | "other";
+  paymentMethod?: "cash" | "daraja" | "card" | "other";
   notes?: string | null;
 };
 

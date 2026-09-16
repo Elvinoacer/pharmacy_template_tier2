@@ -2771,7 +2771,9 @@ export async function adminApproveRefillAction(
 
     const markPreparing = formData.get("markPreparing") === "true";
     const markPaid = formData.get("markPaid") === "true";
-    const paymentMethod = (String(formData.get("paymentMethod") || "cash") as "cash" | "intasend" | "daraja" | "card" | "other");
+    const rawMethod = String(formData.get("paymentMethod") || "cash");
+    const paymentMethod: "cash" | "daraja" | "card" | "other" =
+      rawMethod === "daraja" || rawMethod === "card" || rawMethod === "other" ? rawMethod : "cash";
     const notes = String(formData.get("notes") || "").trim() || undefined;
     const overrideUnitPrice = formData.get("overrideUnitPrice") ? Number(formData.get("overrideUnitPrice")) : undefined;
 

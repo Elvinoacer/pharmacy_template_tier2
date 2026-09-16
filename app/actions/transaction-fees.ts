@@ -4,8 +4,11 @@ import { getSessionUser } from "@/app/lib/auth";
 import { prismaUnscoped } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { revalidatePath } from "next/cache";
-import { billableFeeKes } from "@/app/lib/transaction-fee";
+import { billableFeeKes, isPharmacyCommissionEnabled } from "@/app/lib/transaction-fee";
 export async function createTransactionFeeStatement() {
+  if (!isPharmacyCommissionEnabled()) {
+    throw new Error("Pharmacy transaction commission is currently disabled on this platform.");
+  }
   const user = await getSessionUser();
   if (!user) throw new Error("Sign in first.");
   const pharmacy = await prismaUnscoped.pharmacy.findFirst({ where: { ownerUserId: user.id, ...(user.activePharmacyId ? { id: user.activePharmacyId } : {}) }, orderBy: { createdAt: "desc" }, select: { id: true } });

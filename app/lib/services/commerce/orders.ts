@@ -48,7 +48,7 @@ export async function markOrderPaid(
 ): Promise<void> {
   const order = await tx.order.findUnique({
     where: { id: opts.orderId },
-    select: { id: true, status: true, fulfillmentStage: true, paymentStage: true, customerId: true, paymentInitiatedAt: true, lifecycleStatus: true },
+    select: { id: true, pharmacyId: true, status: true, fulfillmentStage: true, paymentStage: true, customerId: true, paymentInitiatedAt: true, lifecycleStatus: true },
   });
   if (!order) return;
 
@@ -65,6 +65,7 @@ export async function markOrderPaid(
   });
 
   await recordCommerceEvent(tx, {
+    pharmacyId: order.pharmacyId,
     eventType: "payment_completed",
     entityType: "order",
     entityId: opts.orderId,

@@ -6,6 +6,9 @@ import type { DarajaEnv } from "@/app/lib/services/daraja";
 
 import { getPlatformConfig } from "@/app/lib/platform-settings";
 
+export type DarajaShortcodeType = "paybill" | "till";
+export type DarajaTransactionType = "CustomerPayBillOnline" | "CustomerBuyGoodsOnline";
+
 export type DarajaCredentials = {
   consumerKey: string;
   consumerSecret: string;
@@ -14,6 +17,9 @@ export type DarajaCredentials = {
   env: DarajaEnv;
   callbackUrl: string;
   source: "tenant" | "platform";
+  shortcodeType: DarajaShortcodeType;
+  transactionType: DarajaTransactionType;
+  pharmacyId?: string;
 };
 
 export type SenderIdentity = {
@@ -37,6 +43,27 @@ const DARAJA_SANDBOX_SHORTCODE = "174379";
 const DARAJA_SANDBOX_PASSKEY =
   "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 
+export function getTenantDarajaCallbackUrl(): string {
+  const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (configuredAppUrl) {
+    try {
+      const url = new URL("/api/payments/daraja/callback", configuredAppUrl);
+      if (url.protocol === "https:" || process.env.NODE_ENV !== "production") return url.toString();
+    } catch {
+      /* fall through */
+    }
+  }
+
+  const vercelHost =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() ||
+    process.env.VERCEL_URL?.trim();
+  if (vercelHost) {
+    return `https://${vercelHost.replace(/^https?:\/\//, "")}/api/payments/daraja/callback`;
+  }
+
+  return process.env.DARAJA_CALLBACK_URL?.trim() || "https://aether.co.ke/api/payments/daraja/callback";
+}
+
 function platformDaraja(): DarajaCredentials | null {
   const consumerKey = process.env.DARAJA_CONSUMER_KEY?.trim();
   const consumerSecret = process.env.DARAJA_CONSUMER_SECRET?.trim();
@@ -46,17 +73,18 @@ function platformDaraja(): DarajaCredentials | null {
     : "sandbox";
   const configuredShortcode = process.env.DARAJA_SHORTCODE?.trim();
   const configuredPasskey = process.env.DARAJA_PASSKEY?.trim();
-  const callbackUrl = process.env.DARAJA_CALLBACK_URL?.trim() || "";
+  const callbackUrl = process.env.DARAJA_CALLBACK_URL?.trim() || getTenantDarajaCallbackUrl();
 
   if (!consumerKey || !consumerSecret) return null;
 
-  // Safaricom's sandbox uses a fixed public Lipa na M-Pesa Online shortcode and
-  // passkey. Bind them atomically to sandbox mode so a stale/production
-  // DARAJA_SHORTCODE or DARAJA_PASSKEY cannot produce a prompt that later dies
-  // with ResultCode 2001 after the customer enters a PIN.
   const shortcode = env === "sandbox" ? DARAJA_SANDBOX_SHORTCODE : configuredShortcode;
   const passkey = env === "sandbox" ? DARAJA_SANDBOX_PASSKEY : configuredPasskey;
   if (!shortcode || !passkey) return null;
+
+  const configuredTransactionType: DarajaTransactionType =
+    process.env.DARAJA_TRANSACTION_TYPE?.trim() === "CustomerBuyGoodsOnline"
+      ? "CustomerBuyGoodsOnline"
+      : "CustomerPayBillOnline";
 
   return {
     consumerKey,
@@ -66,51 +94,107 @@ function platformDaraja(): DarajaCredentials | null {
     env,
     callbackUrl,
     source: "platform",
+    shortcodeType: configuredTransactionType === "CustomerBuyGoodsOnline" ? "till" : "paybill",
+    transactionType: configuredTransactionType,
   };
 }
 
-export async function resolveDarajaCredentials(pharmacyId: string | null): Promise<DarajaCredentials | null> {
-  if (pharmacyId) {
-    // Check IntegrationAccount first (canonical source)
-    const account = await prismaUnscoped.integrationAccount.findUnique({
-      where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
-    }).catch(() => null);
+/**
+ * Resolve tenant-specific Daraja credentials for customer commerce.
+ * STRICT INVARIANT: FAILS CLOSED. NEVER FALLS BACK TO PLATFORM CREDENTIALS.
+ * If the pharmacy has not configured complete credentials, returns null.
+ */
+export async function resolveTenantDarajaCredentials(
+  pharmacyId: string,
+): Promise<DarajaCredentials | null> {
+  if (!pharmacyId) return null;
 
-    if (account?.secretsEnc) {
-      try {
-        const decrypted = JSON.parse(decryptSecret(account.secretsEnc) || "{}");
-        const cfg = (account.config ?? {}) as { shortcode?: string; env?: string };
-        if (decrypted.consumerKey && decrypted.consumerSecret && decrypted.passkey && cfg.shortcode) {
-          return {
-            consumerKey: decrypted.consumerKey,
-            consumerSecret: decrypted.consumerSecret,
-            shortcode: cfg.shortcode,
-            passkey: decrypted.passkey,
-            env: cfg.env === "production" ? "production" : "sandbox",
-            callbackUrl: process.env.DARAJA_CALLBACK_URL?.trim() || "",
-            source: "tenant",
-          };
-        }
-      } catch {
-        // Fall back to legacy PharmacyIntegration
-      }
-    }
+  const callbackUrl = getTenantDarajaCallbackUrl();
 
-    const row = await prismaUnscoped.pharmacyIntegration.findUnique({ where: { pharmacyId } });
-    const key = decryptSecret(row?.darajaConsumerKeyEnc);
-    const secret = decryptSecret(row?.darajaConsumerSecretEnc);
-    const passkey = decryptSecret(row?.darajaPasskeyEnc);
-    if (key && secret && passkey && row?.darajaShortcode) {
-      return {
-        consumerKey: key,
-        consumerSecret: secret,
-        shortcode: row.darajaShortcode,
-        passkey,
-        env: row.darajaEnv === "production" ? "production" : "sandbox",
-        callbackUrl: process.env.DARAJA_CALLBACK_URL?.trim() || "",
-        source: "tenant",
+  // 1. Check IntegrationAccount first (canonical source)
+  const account = await prismaUnscoped.integrationAccount.findUnique({
+    where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
+  }).catch(() => null);
+
+  if (account?.secretsEnc) {
+    try {
+      const decrypted = JSON.parse(decryptSecret(account.secretsEnc) || "{}");
+      const cfg = (account.config ?? {}) as {
+        shortcode?: string;
+        shortcodeType?: DarajaShortcodeType;
+        env?: string;
+        transactionType?: DarajaTransactionType;
       };
+
+      const shortcode = String(cfg.shortcode || "").trim();
+      const consumerKey = String(decrypted.consumerKey || "").trim();
+      const consumerSecret = String(decrypted.consumerSecret || "").trim();
+      const passkey = String(decrypted.passkey || "").trim();
+
+      if (consumerKey && consumerSecret && passkey && shortcode) {
+        const env: DarajaEnv = cfg.env === "production" ? "production" : "sandbox";
+        const shortcodeType: DarajaShortcodeType =
+          cfg.shortcodeType === "till" || cfg.transactionType === "CustomerBuyGoodsOnline"
+            ? "till"
+            : "paybill";
+        const transactionType: DarajaTransactionType =
+          shortcodeType === "till" ? "CustomerBuyGoodsOnline" : "CustomerPayBillOnline";
+
+        return {
+          consumerKey,
+          consumerSecret,
+          shortcode,
+          passkey,
+          env,
+          callbackUrl,
+          source: "tenant",
+          shortcodeType,
+          transactionType,
+          pharmacyId,
+        };
+      }
+    } catch {
+      // Fall through to legacy PharmacyIntegration
     }
+  }
+
+  // 2. Fall back to legacy PharmacyIntegration
+  const row = await prismaUnscoped.pharmacyIntegration.findUnique({ where: { pharmacyId } });
+  const key = decryptSecret(row?.darajaConsumerKeyEnc)?.trim();
+  const secret = decryptSecret(row?.darajaConsumerSecretEnc)?.trim();
+  const passkey = decryptSecret(row?.darajaPasskeyEnc)?.trim();
+  const shortcode = row?.darajaShortcode?.trim();
+
+  if (key && secret && passkey && shortcode) {
+    const env: DarajaEnv = row?.darajaEnv === "production" ? "production" : "sandbox";
+    return {
+      consumerKey: key,
+      consumerSecret: secret,
+      shortcode,
+      passkey,
+      env,
+      callbackUrl,
+      source: "tenant",
+      shortcodeType: "paybill",
+      transactionType: "CustomerPayBillOnline",
+      pharmacyId,
+    };
+  }
+
+  // Fail closed. Never return platform credentials for a tenant sale.
+  return null;
+}
+
+/**
+ * Resolve Daraja credentials.
+ * If pharmacyId is supplied: resolves ONLY that pharmacy's credentials (fails closed).
+ * If pharmacyId is null: resolves platform Daraja credentials for internal Aether platform use.
+ */
+export async function resolveDarajaCredentials(
+  pharmacyId: string | null,
+): Promise<DarajaCredentials | null> {
+  if (pharmacyId) {
+    return resolveTenantDarajaCredentials(pharmacyId);
   }
   return platformDaraja();
 }
@@ -168,25 +252,293 @@ export async function resolveSenderIdentity(pharmacyId: string | null): Promise<
   };
 }
 
+export type PharmacyPaymentCapability = {
+  onlinePaymentsEnabled: boolean;
+  provider: "daraja" | null;
+  reason:
+    | "ready"
+    | "not_configured"
+    | "credentials_incomplete"
+    | "credentials_invalid"
+    | "sandbox_only"
+    | "integration_error";
+};
+
+export type PharmacyPaymentSettingsView = {
+  connected: boolean;
+  environment: "sandbox" | "production";
+  shortcodeType: "paybill" | "till";
+  shortcode: string;
+  maskedShortcode: string;
+  credentialsConfigured: boolean;
+  hasConsumerKey: boolean;
+  hasConsumerSecret: boolean;
+  hasPasskey: boolean;
+  lastVerifiedAt: string | null;
+  lastSuccessfulPaymentAt: string | null;
+  status: "not_configured" | "credentials_saved" | "auth_verified" | "live_confirmed" | "error";
+  lastError: string | null;
+  callbackUrl: string;
+};
+
+export function maskShortcode(sc: string): string {
+  const clean = sc.replace(/\D/g, "");
+  if (!clean) return "";
+  if (clean.length <= 4) return clean;
+  return `****${clean.slice(-4)}`;
+}
+
+/**
+ * Authoritative payment capability check for customer checkout.
+ * Used by all customer checkout routes, order forms, and buttons.
+ */
+export async function getPharmacyPaymentCapability(
+  pharmacyId: string | null | undefined,
+): Promise<PharmacyPaymentCapability> {
+  if (!pharmacyId) {
+    return { onlinePaymentsEnabled: false, provider: null, reason: "not_configured" };
+  }
+
+  const [account, legacyRow] = await Promise.all([
+    prismaUnscoped.integrationAccount.findUnique({
+      where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
+      select: { status: true, config: true, secretsEnc: true, lastError: true },
+    }).catch(() => null),
+    prismaUnscoped.pharmacyIntegration.findUnique({
+      where: { pharmacyId },
+      select: {
+        darajaShortcode: true,
+        darajaConsumerKeyEnc: true,
+        darajaConsumerSecretEnc: true,
+        darajaPasskeyEnc: true,
+        darajaLastError: true,
+        darajaEnv: true,
+      },
+    }).catch(() => null),
+  ]);
+
+  const hasAnyAccountConfig = Boolean(
+    account?.secretsEnc ||
+    (account?.config && typeof account.config === "object" && Object.keys(account.config).length > 0)
+  );
+  const hasAnyLegacyConfig = Boolean(
+    legacyRow?.darajaShortcode ||
+    legacyRow?.darajaConsumerKeyEnc ||
+    legacyRow?.darajaConsumerSecretEnc ||
+    legacyRow?.darajaPasskeyEnc
+  );
+
+  if (!hasAnyAccountConfig && !hasAnyLegacyConfig) {
+    return { onlinePaymentsEnabled: false, provider: null, reason: "not_configured" };
+  }
+
+  const creds = await resolveTenantDarajaCredentials(pharmacyId);
+  if (!creds) {
+    if (account?.status === "error" || legacyRow?.darajaLastError) {
+      return { onlinePaymentsEnabled: false, provider: null, reason: "integration_error" };
+    }
+    if (account?.secretsEnc || legacyRow?.darajaConsumerKeyEnc) {
+      const dec = account?.secretsEnc
+        ? decryptSecret(account.secretsEnc)
+        : decryptSecret(legacyRow?.darajaConsumerKeyEnc);
+      if (!dec) {
+        return { onlinePaymentsEnabled: false, provider: null, reason: "credentials_invalid" };
+      }
+    }
+    return { onlinePaymentsEnabled: false, provider: null, reason: "credentials_incomplete" };
+  }
+
+  if (account?.status === "error") {
+    return { onlinePaymentsEnabled: false, provider: "daraja", reason: "integration_error" };
+  }
+
+  return {
+    onlinePaymentsEnabled: true,
+    provider: "daraja",
+    reason: "ready",
+  };
+}
+
+/**
+ * Safe integration settings view for frontend / admin components.
+ * NEVER returns raw or decrypted Consumer Secret, Passkey, or ciphertext!
+ */
+export async function getPharmacyPaymentSettings(
+  pharmacyId: string,
+): Promise<PharmacyPaymentSettingsView> {
+  const callbackUrl = getTenantDarajaCallbackUrl();
+
+  const [account, legacyRow] = await Promise.all([
+    prismaUnscoped.integrationAccount.findUnique({
+      where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
+      select: {
+        status: true,
+        config: true,
+        secretsEnc: true,
+        lastSuccessAt: true,
+        lastError: true,
+      },
+    }).catch(() => null),
+    prismaUnscoped.pharmacyIntegration.findUnique({
+      where: { pharmacyId },
+      select: {
+        darajaShortcode: true,
+        darajaConsumerKeyEnc: true,
+        darajaConsumerSecretEnc: true,
+        darajaPasskeyEnc: true,
+        darajaLastSuccessAt: true,
+        darajaLastError: true,
+        darajaEnv: true,
+      },
+    }).catch(() => null),
+  ]);
+
+  const cfg = (account?.config && typeof account.config === "object")
+    ? (account.config as Record<string, unknown>)
+    : {};
+
+  let shortcode = String(cfg.shortcode || legacyRow?.darajaShortcode || "").trim();
+  const environment: "sandbox" | "production" =
+    cfg.env === "production" || legacyRow?.darajaEnv === "production" ? "production" : "sandbox";
+  const shortcodeType: "paybill" | "till" =
+    cfg.shortcodeType === "till" || cfg.transactionType === "CustomerBuyGoodsOnline"
+      ? "till"
+      : "paybill";
+
+  let hasConsumerKey = false;
+  let hasConsumerSecret = false;
+  let hasPasskey = false;
+
+  if (account?.secretsEnc) {
+    try {
+      const dec = JSON.parse(decryptSecret(account.secretsEnc) || "{}");
+      hasConsumerKey = Boolean(dec.consumerKey);
+      hasConsumerSecret = Boolean(dec.consumerSecret);
+      hasPasskey = Boolean(dec.passkey);
+    } catch {
+      /* non-fatal */
+    }
+  }
+
+  if (!hasConsumerKey && legacyRow?.darajaConsumerKeyEnc) {
+    hasConsumerKey = Boolean(decryptSecret(legacyRow.darajaConsumerKeyEnc));
+  }
+  if (!hasConsumerSecret && legacyRow?.darajaConsumerSecretEnc) {
+    hasConsumerSecret = Boolean(decryptSecret(legacyRow.darajaConsumerSecretEnc));
+  }
+  if (!hasPasskey && legacyRow?.darajaPasskeyEnc) {
+    hasPasskey = Boolean(decryptSecret(legacyRow.darajaPasskeyEnc));
+  }
+
+  const credentialsConfigured = Boolean(
+    shortcode && hasConsumerKey && hasConsumerSecret && hasPasskey,
+  );
+
+  const lastVerifiedAt = typeof cfg.credentialsVerifiedAt === "string" ? cfg.credentialsVerifiedAt : null;
+  const lastSuccessfulPaymentAt =
+    account?.lastSuccessAt?.toISOString() || legacyRow?.darajaLastSuccessAt?.toISOString() || null;
+  const lastError = account?.lastError || legacyRow?.darajaLastError || null;
+
+  let status: PharmacyPaymentSettingsView["status"] = "not_configured";
+  if (lastError && !credentialsConfigured) {
+    status = "error";
+  } else if (lastSuccessfulPaymentAt) {
+    status = "live_confirmed";
+  } else if (lastVerifiedAt && credentialsConfigured) {
+    status = "auth_verified";
+  } else if (credentialsConfigured) {
+    status = "credentials_saved";
+  } else if (lastError) {
+    status = "error";
+  }
+
+  return {
+    connected: credentialsConfigured,
+    environment,
+    shortcodeType,
+    shortcode,
+    maskedShortcode: maskShortcode(shortcode),
+    credentialsConfigured,
+    hasConsumerKey,
+    hasConsumerSecret,
+    hasPasskey,
+    lastVerifiedAt,
+    lastSuccessfulPaymentAt,
+    status,
+    lastError,
+    callbackUrl,
+  };
+}
+
 export async function saveTenantDaraja(
   pharmacyId: string,
-  input: { consumerKey: string; consumerSecret: string; passkey: string; shortcode: string; env?: string },
+  input: {
+    consumerKey?: string;
+    consumerSecret?: string;
+    passkey?: string;
+    shortcode: string;
+    shortcodeType?: "paybill" | "till";
+    env?: "sandbox" | "production" | string;
+  },
 ) {
-  const env = input.env === "production" ? "production" : "sandbox";
+  const env: "sandbox" | "production" = input.env === "production" ? "production" : "sandbox";
+  const shortcodeType: "paybill" | "till" = input.shortcodeType === "till" ? "till" : "paybill";
+  const transactionType: DarajaTransactionType =
+    shortcodeType === "till" ? "CustomerBuyGoodsOnline" : "CustomerPayBillOnline";
+
+  // Check existing credentials to support keeping saved values when left blank
+  const existing = await resolveTenantDarajaCredentials(pharmacyId).catch(() => null);
+
+  const consumerKey = (input.consumerKey?.trim() || existing?.consumerKey || "").trim();
+  const consumerSecret = (input.consumerSecret?.trim() || existing?.consumerSecret || "").trim();
+  const passkey = (input.passkey?.trim() || existing?.passkey || "").trim();
+  const shortcode = (input.shortcode?.trim() || existing?.shortcode || "").trim();
+
+  if (!shortcode) {
+    throw new Error("Shortcode is required.");
+  }
+  if (!consumerKey || !consumerSecret || !passkey) {
+    throw new Error(
+      "Consumer Key, Consumer Secret, and Passkey are all required to accept online payments.",
+    );
+  }
+
   const secretsPayload = JSON.stringify({
-    consumerKey: input.consumerKey,
-    consumerSecret: input.consumerSecret,
-    passkey: input.passkey,
+    consumerKey,
+    consumerSecret,
+    passkey,
   });
+
+  const encryptedSecrets = encryptSecret(secretsPayload);
+
+  // Preserve existing account config fields (such as credentialsVerifiedAt)
+  const existingAccount = await prismaUnscoped.integrationAccount.findUnique({
+    where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
+    select: { config: true },
+  }).catch(() => null);
+
+  const prevConfig = (existingAccount?.config && typeof existingAccount.config === "object")
+    ? (existingAccount.config as Record<string, unknown>)
+    : {};
+
+  const config = {
+    ...prevConfig,
+    shortcode,
+    shortcodeType,
+    env,
+    transactionType,
+    updatedAt: new Date().toISOString(),
+  };
 
   // Upsert canonical IntegrationAccount
   await prismaUnscoped.integrationAccount.upsert({
     where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
     update: {
       status: "connected",
-      config: { shortcode: input.shortcode, env },
-      secretsEnc: encryptSecret(secretsPayload),
+      config,
+      secretsEnc: encryptedSecrets,
       rotatedAt: new Date(),
+      lastError: null,
       secretsVersion: { increment: 1 },
     },
     create: {
@@ -194,8 +546,8 @@ export async function saveTenantDaraja(
       kind: "daraja",
       provider: "daraja",
       status: "connected",
-      config: { shortcode: input.shortcode, env },
-      secretsEnc: encryptSecret(secretsPayload),
+      config,
+      secretsEnc: encryptedSecrets,
       rotatedAt: new Date(),
     },
   }).catch(() => {});
@@ -204,22 +556,118 @@ export async function saveTenantDaraja(
   await prismaUnscoped.pharmacyIntegration.upsert({
     where: { pharmacyId },
     update: {
-      darajaConsumerKeyEnc: encryptSecret(input.consumerKey),
-      darajaConsumerSecretEnc: encryptSecret(input.consumerSecret),
-      darajaPasskeyEnc: encryptSecret(input.passkey),
-      darajaShortcode: input.shortcode,
+      darajaConsumerKeyEnc: encryptSecret(consumerKey),
+      darajaConsumerSecretEnc: encryptSecret(consumerSecret),
+      darajaPasskeyEnc: encryptSecret(passkey),
+      darajaShortcode: shortcode,
       darajaEnv: env,
+      darajaLastError: null,
       secretsRotatedAt: new Date(),
       secretsVersion: { increment: 1 },
     },
     create: {
       pharmacyId,
-      darajaConsumerKeyEnc: encryptSecret(input.consumerKey),
-      darajaConsumerSecretEnc: encryptSecret(input.consumerSecret),
-      darajaPasskeyEnc: encryptSecret(input.passkey),
-      darajaShortcode: input.shortcode,
+      darajaConsumerKeyEnc: encryptSecret(consumerKey),
+      darajaConsumerSecretEnc: encryptSecret(consumerSecret),
+      darajaPasskeyEnc: encryptSecret(passkey),
+      darajaShortcode: shortcode,
       darajaEnv: env,
       secretsRotatedAt: new Date(),
+    },
+  });
+}
+
+/**
+ * Server-side OAuth test to verify Consumer Key and Consumer Secret with Safaricom.
+ * Distinguishes authentication validity from shortcode/passkey live transaction confirmation.
+ */
+export async function testTenantDarajaConnection(
+  pharmacyId: string,
+): Promise<{ ok: boolean; message?: string; error?: string }> {
+  const creds = await resolveTenantDarajaCredentials(pharmacyId);
+  if (!creds) {
+    return {
+      ok: false,
+      error: "Credentials incomplete or missing. Please provide shortcode, Consumer Key, Consumer Secret, and Passkey.",
+    };
+  }
+
+  try {
+    const { getDarajaToken } = await import("@/app/lib/services/daraja");
+    await getDarajaToken(creds);
+
+    const account = await prismaUnscoped.integrationAccount.findUnique({
+      where: { pharmacyId_kind_provider: { pharmacyId, kind: "daraja", provider: "daraja" } },
+      select: { config: true },
+    }).catch(() => null);
+
+    const cfg = (account?.config && typeof account.config === "object")
+      ? (account.config as Record<string, unknown>)
+      : {};
+
+    await prismaUnscoped.integrationAccount.updateMany({
+      where: { pharmacyId, kind: "daraja", provider: "daraja" },
+      data: {
+        status: "connected",
+        lastError: null,
+        config: {
+          ...cfg,
+          credentialsVerifiedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    await prismaUnscoped.pharmacyIntegration.updateMany({
+      where: { pharmacyId },
+      data: { darajaLastError: null },
+    });
+
+    return {
+      ok: true,
+      message:
+        "OAuth authentication verified successfully! Safaricom confirmed your Daraja application credentials work.",
+    };
+  } catch (err) {
+    const rawError = err instanceof Error ? err.message : "Authentication failed";
+    const sanitized =
+      rawError.includes("401") || rawError.includes("invalid_client")
+        ? "Safaricom rejected your Consumer Key or Consumer Secret. Please verify them in the Daraja portal."
+        : `Could not authenticate with Safaricom Daraja: ${rawError.slice(0, 120)}`;
+
+    await prismaUnscoped.integrationAccount.updateMany({
+      where: { pharmacyId, kind: "daraja", provider: "daraja" },
+      data: { lastError: sanitized },
+    });
+
+    await prismaUnscoped.pharmacyIntegration.updateMany({
+      where: { pharmacyId },
+      data: { darajaLastError: sanitized },
+    });
+
+    return { ok: false, error: sanitized };
+  }
+}
+
+export async function disconnectTenantDaraja(pharmacyId: string) {
+  await prismaUnscoped.integrationAccount.updateMany({
+    where: { pharmacyId, kind: "daraja", provider: "daraja" },
+    data: {
+      status: "unconfigured",
+      config: {},
+      secretsEnc: null,
+      lastError: null,
+    },
+  });
+
+  await prismaUnscoped.pharmacyIntegration.updateMany({
+    where: { pharmacyId },
+    data: {
+      darajaShortcode: null,
+      darajaConsumerKeyEnc: null,
+      darajaConsumerSecretEnc: null,
+      darajaPasskeyEnc: null,
+      darajaEnv: null,
+      darajaLastError: null,
     },
   });
 }

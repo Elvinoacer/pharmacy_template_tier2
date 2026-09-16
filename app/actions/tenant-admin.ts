@@ -56,12 +56,17 @@ export async function saveTenantIntegrationsAction(formData: FormData) {
   const key = String(formData.get("darajaConsumerKey") || "").trim();
   const secret = String(formData.get("darajaConsumerSecret") || "").trim();
   const passkey = String(formData.get("darajaPasskey") || "").trim();
-  if (shortcode && key && secret && passkey) {
+  const env = String(formData.get("darajaEnv") || "sandbox").trim();
+  const shortcodeType = String(formData.get("darajaShortcodeType") || "paybill").trim() === "till" ? "till" : "paybill";
+
+  if (shortcode) {
     await saveTenantDaraja(pharmacyId, {
-      consumerKey: key,
-      consumerSecret: secret,
-      passkey,
+      consumerKey: key || undefined,
+      consumerSecret: secret || undefined,
+      passkey: passkey || undefined,
       shortcode,
+      shortcodeType,
+      env,
     });
   }
 
@@ -88,7 +93,169 @@ export async function saveTenantIntegrationsAction(formData: FormData) {
     reason: "tenant credentials updated",
   });
   revalidatePath("/admin/settings/integrations");
+  revalidatePath("/admin/settings/payments");
   redirect("/admin/settings/integrations");
+}
+
+export type PaymentSettingsActionState = {
+  error?: string;
+  success?: string;
+};
+
+export async function saveTenantPaymentSettingsAction(
+  _prev: PaymentSettingsActionState,
+  formData: FormData,
+): Promise<PaymentSettingsActionState> {
+  const user = await getSessionUser();
+  if (!user) return { error: "You must be signed in." };
+
+  const pharmacyId = String(formData.get("pharmacyId") || user.activePharmacyId || "");
+  if (!pharmacyId) return { error: "Active pharmacy not found." };
+
+  const can =
+    user.platformAdmin ||
+    user.memberships.some(
+      (membership) =>
+        membership.pharmacyId === pharmacyId &&
+        (membership.role === "owner" || membership.role === "manager"),
+    );
+  if (!can) return { error: "Only owners and managers can modify payment credentials." };
+
+  if (!user.platformAdmin) {
+    try {
+      await assertPharmacyWorkspaceOperable(pharmacyId);
+    } catch {
+      return { error: "Pharmacy workspace is currently restricted or paused." };
+    }
+  }
+
+  const shortcode = String(formData.get("shortcode") || "").trim();
+  const shortcodeType = String(formData.get("shortcodeType") || "paybill").trim() === "till" ? "till" : "paybill";
+  const env = String(formData.get("environment") || "sandbox").trim() === "production" ? "production" : "sandbox";
+  const consumerKey = String(formData.get("consumerKey") || "").trim();
+  const consumerSecret = String(formData.get("consumerSecret") || "").trim();
+  const passkey = String(formData.get("passkey") || "").trim();
+
+  if (!shortcode) return { error: "Please enter your shortcode." };
+
+  try {
+    const { saveTenantDaraja } = await import("@/app/lib/platform/integrations");
+    const { recordAuditRequired } = await import("@/app/lib/platform/audit");
+
+    await saveTenantDaraja(pharmacyId, {
+      shortcode,
+      shortcodeType,
+      env,
+      consumerKey: consumerKey || undefined,
+      consumerSecret: consumerSecret || undefined,
+      passkey: passkey || undefined,
+    });
+
+    await recordAuditRequired({
+      actorId: user.id,
+      action: "integrations.payments.update",
+      resource: "pharmacy_payment_settings",
+      tenantId: pharmacyId,
+      reason: `M-Pesa payment integration updated (${shortcodeType.toUpperCase()}, ${env})`,
+    });
+
+    revalidatePath("/admin/settings/payments");
+    revalidatePath("/admin/settings/integrations");
+    revalidatePath("/admin/setup");
+    revalidatePath(`/pharmacies`);
+
+    return { success: "Payment settings saved securely." };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Failed to save payment settings." };
+  }
+}
+
+export async function testTenantPaymentConnectionAction(
+  _prev: PaymentSettingsActionState,
+  formData: FormData,
+): Promise<PaymentSettingsActionState> {
+  const user = await getSessionUser();
+  if (!user) return { error: "You must be signed in." };
+
+  const pharmacyId = String(formData.get("pharmacyId") || user.activePharmacyId || "");
+  if (!pharmacyId) return { error: "Active pharmacy not found." };
+
+  const can =
+    user.platformAdmin ||
+    user.memberships.some(
+      (membership) =>
+        membership.pharmacyId === pharmacyId &&
+        (membership.role === "owner" || membership.role === "manager"),
+    );
+  if (!can) return { error: "Only owners and managers can test payment connections." };
+
+  try {
+    const { testTenantDarajaConnection } = await import("@/app/lib/platform/integrations");
+    const { recordAuditRequired } = await import("@/app/lib/platform/audit");
+
+    const result = await testTenantDarajaConnection(pharmacyId);
+
+    await recordAuditRequired({
+      actorId: user.id,
+      action: "integrations.payments.test",
+      resource: "pharmacy_payment_settings",
+      tenantId: pharmacyId,
+      reason: result.ok ? "Daraja connection test passed" : `Daraja connection test failed: ${result.error}`,
+    });
+
+    revalidatePath("/admin/settings/payments");
+    revalidatePath("/admin/settings/integrations");
+
+    if (result.ok) {
+      return { success: result.message || "Connection tested successfully." };
+    }
+    return { error: result.error || "Connection test failed." };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not test connection." };
+  }
+}
+
+export async function disconnectTenantPaymentAction(
+  _prev: PaymentSettingsActionState,
+  formData: FormData,
+): Promise<PaymentSettingsActionState> {
+  const user = await getSessionUser();
+  if (!user) return { error: "You must be signed in." };
+
+  const pharmacyId = String(formData.get("pharmacyId") || user.activePharmacyId || "");
+  if (!pharmacyId) return { error: "Active pharmacy not found." };
+
+  const can =
+    user.platformAdmin ||
+    user.memberships.some(
+      (membership) =>
+        membership.pharmacyId === pharmacyId &&
+        (membership.role === "owner" || membership.role === "manager"),
+    );
+  if (!can) return { error: "Only owners and managers can disconnect payment integrations." };
+
+  try {
+    const { disconnectTenantDaraja } = await import("@/app/lib/platform/integrations");
+    const { recordAuditRequired } = await import("@/app/lib/platform/audit");
+
+    await disconnectTenantDaraja(pharmacyId);
+
+    await recordAuditRequired({
+      actorId: user.id,
+      action: "integrations.payments.disconnect",
+      resource: "pharmacy_payment_settings",
+      tenantId: pharmacyId,
+      reason: "M-Pesa payment integration disconnected",
+    });
+
+    revalidatePath("/admin/settings/payments");
+    revalidatePath("/admin/settings/integrations");
+    revalidatePath("/admin/setup");
+
+    return { success: "Online payments have been disconnected." };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not disconnect payments." };
+  }
 }
 
 export async function goLiveAction() {

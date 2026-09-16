@@ -654,7 +654,7 @@ export async function approveRefillRequest(
   options?: {
     markPreparing?: boolean;
     markPaid?: boolean;
-    paymentMethod?: "cash" | "intasend" | "daraja" | "card" | "other";
+    paymentMethod?: "cash" | "daraja" | "card" | "other";
     notes?: string;
     overrideUnitPrice?: number;
   },

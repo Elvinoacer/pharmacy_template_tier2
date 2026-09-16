@@ -169,7 +169,7 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
       });
     }
     return waived ? settleInvoice(tx, invoice.id) : invoice;
-  });
+  }, { timeout: 30000, maxWait: 15000 });
 }
 
 async function settleInvoice(tx: Prisma.TransactionClient, invoiceId: string, actorId?: string | null) {
@@ -568,7 +568,7 @@ export async function completeIntasendBillingPayment(opts: {
     }
 
     return settled;
-  });
+  }, { timeout: 30000, maxWait: 15000 });
 }
 
 export async function failIntasendBillingPayment(opts: {

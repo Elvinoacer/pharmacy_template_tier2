@@ -28,7 +28,10 @@ export type AdminNotifType =
 
 export type AdminNotifSeverity = "info" | "warning" | "critical";
 
+import { peekTenant } from "@/app/lib/tenant-context";
+
 export async function recordAdminNotification(input: {
+  pharmacyId?: string | null;
   type: AdminNotifType;
   title: string;
   body: string;
@@ -39,6 +42,9 @@ export async function recordAdminNotification(input: {
   retryPayload?: Record<string, unknown>;
 }): Promise<void> {
   try {
+    const pharmacyId = input.pharmacyId || peekTenant()?.pharmacyId;
+    if (!pharmacyId) return;
+
     const severity =
       input.severity ??
       (input.type === "payment_failed" ||
@@ -56,6 +62,7 @@ export async function recordAdminNotification(input: {
           : "info");
     await prisma.adminNotification.create({
       data: {
+        pharmacyId,
         type: input.type,
         title: input.title,
         body: input.body,

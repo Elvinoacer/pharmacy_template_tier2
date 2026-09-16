@@ -1,6 +1,6 @@
 import "server-only";
 
-import { resolveDarajaCredentials } from "@/app/lib/platform/integrations";
+import { resolveDarajaCredentials, resolveTenantDarajaCredentials } from "@/app/lib/platform/integrations";
 import { stkQuery } from "@/app/lib/services/daraja";
 
 export type DarajaCallbackItem = {
@@ -90,7 +90,9 @@ export async function verifyDarajaCallback(opts: {
     return { ok: false, error: "payment_amount_mismatch" };
   }
 
-  const credentials = await resolveDarajaCredentials(opts.pharmacyId);
+  const credentials = opts.pharmacyId
+    ? await resolveTenantDarajaCredentials(opts.pharmacyId)
+    : await resolveDarajaCredentials(null);
   if (!credentials) {
     return { ok: false, error: "daraja_credentials_unavailable" };
   }

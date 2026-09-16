@@ -146,10 +146,13 @@ export async function ensureVerificationInvoice(pharmacyId: string) {
     const pharmacy = await db.pharmacy.findUniqueOrThrow({ where: { id: pharmacyId } });
     return db.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT id FROM pharmacies WHERE id = ${pharmacyId}::uuid FOR UPDATE`;
-      return tx.invoice.upsert({
+      const existing = await tx.invoice.findFirst({
         where: { number: `KYP-${pharmacyId}` },
-        update: {},
-        create: {
+      });
+      if (existing) return existing;
+
+      return tx.invoice.create({
+        data: {
           pharmacyId,
           number: `KYP-${pharmacyId}`,
           periodStart: pharmacy.createdAt,
@@ -181,7 +184,7 @@ export async function ensureVerificationInvoice(pharmacyId: string) {
           },
         },
       });
-    });
+    }, { timeout: 30000, maxWait: 15000 });
   });
 }
 
@@ -294,7 +297,7 @@ export async function ensureBundleInvoice(pharmacyId: string) {
       }
 
       return invoice;
-    });
+    }, { timeout: 30000, maxWait: 15000 });
   });
 }
 
@@ -320,7 +323,7 @@ export async function startPharmacyService(pharmacyId: string) {
           currentPeriodEnd: nextBillingMonth(start),
         },
       });
-    });
+    }, { timeout: 30000, maxWait: 15000 });
     await syncEntitlementsFromPlan(pharmacyId, plan.id);
     return issueSubscriptionInvoice(sub.id);
   });

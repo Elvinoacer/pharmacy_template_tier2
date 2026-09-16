@@ -3,6 +3,7 @@ import "server-only";
 import { prismaUnscoped as db } from "@/app/lib/db";
 import { withPharmacy } from "@/app/lib/tenant-context";
 import { loadLatestVerificationProfile } from "@/app/lib/services/pharmacy-verification";
+import { getPharmacyPaymentCapability } from "@/app/lib/platform/integrations";
 
 export const SETUP_MEDICINES_DEFERRED_EVENT = "setup_medicines_deferred";
 
@@ -16,7 +17,8 @@ export type PharmacySetupCheckKey =
   | "about"
   | "photos"
   | "gallery"
-  | "subscription";
+  | "subscription"
+  | "payments";
 
 export type PharmacySetupCheck = {
   key: PharmacySetupCheckKey;
@@ -183,6 +185,14 @@ export async function loadPharmacySetup(pharmacyId: string) {
         label: "Monthly platform service",
         hint: "KES 500/month active",
         href: "/onboard/billing",
+      },
+      {
+        key: "payments",
+        ok: (await getPharmacyPaymentCapability(pharmacyId)).onlinePaymentsEnabled,
+        required: false,
+        label: "Online payments",
+        hint: "Connect M-Pesa to accept online customer payments directly to your business",
+        href: "/admin/settings/payments",
       },
     ];
 

@@ -43,7 +43,9 @@ function validHttpsUrl(value: string | null | undefined): string | null {
   if (!value?.trim()) return null;
   try {
     const url = new URL(value.trim());
-    return url.protocol === "https:" ? url.toString() : null;
+    if (url.protocol === "https:") return url.toString();
+    if (process.env.NODE_ENV !== "production" && url.protocol === "http:") return url.toString();
+    return null;
   } catch {
     return null;
   }
@@ -54,7 +56,9 @@ function derivedDarajaCallbackUrl(): string | null {
   if (configuredAppUrl) {
     try {
       const url = new URL("/api/payments/daraja/callback", configuredAppUrl);
-      if (url.protocol === "https:") return url.toString();
+      if (url.protocol === "https:" || (process.env.NODE_ENV !== "production" && url.protocol === "http:")) {
+        return url.toString();
+      }
     } catch {
       // Fall through to Vercel's deployment host.
     }

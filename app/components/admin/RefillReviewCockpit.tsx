@@ -123,7 +123,7 @@ export function RefillReviewCockpit({
 
   const [markPreparing, setMarkPreparing] = useState(true);
   const [markPaid, setMarkPaid] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "intasend" | "daraja" | "card">("cash");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "daraja" | "card">("cash");
   const [approvalNotes, setApprovalNotes] = useState("");
 
   useEffect(() => {
@@ -471,7 +471,7 @@ export function RefillReviewCockpit({
                     className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card)] px-2.5 py-1 text-xs admin-text"
                   >
                     <option value="cash">Cash Counter</option>
-                    <option value="intasend">IntaSend (M-Pesa / Card)</option>
+                    <option value="daraja">M-Pesa (Till / PayBill)</option>
                     <option value="card">Card / Terminal</option>
                   </select>
                 </div>

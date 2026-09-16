@@ -94,7 +94,7 @@ export function PharmacyEnrolmentPricingSelector({
   defaultPhone?: string | null;
 }) {
   const [selectedPlan, setSelectedPlan] = useState<"bundle" | "verification" | "recurring">(
-    verificationPaid ? "recurring" : "bundle",
+    verificationPaid ? "recurring" : "verification",
   );
   const [state, action, pending] = useActionState(pharmacyBillingAction, {});
 
