@@ -12,27 +12,32 @@ import { SETUP_MEDICINES_DEFERRED_EVENT } from "@/app/lib/services/pharmacy-setu
 
 type SetupPharmacy = NonNullable<Awaited<ReturnType<typeof loadSetupPharmacy>>>;
 
-async function loadSetupPharmacy() {
+async function loadSetupPharmacy(explicitPharmacyId?: string | null) {
   const user = await getSessionUser();
-  if (!user) redirect("/login?next=/admin/setup");
+  if (!user) redirect("/login?next=/onboard");
 
-  const pharmacyId = user.activePharmacyId || user.memberships[0]?.pharmacyId;
+  const pharmacyId =
+    explicitPharmacyId ||
+    user.activePharmacyId ||
+    user.memberships.find((m) => m.role === "owner" || m.role === "manager")?.pharmacyId;
   if (!pharmacyId) redirect("/onboard");
-
-  const canManage =
-    user.platformAdmin ||
-    user.memberships.some(
-      (membership) =>
-        membership.pharmacyId === pharmacyId &&
-        (membership.role === "owner" || membership.role === "manager"),
-    );
-  if (!canManage) redirect("/admin/setup");
 
   const pharmacy = await prismaUnscoped.pharmacy.findUnique({
     where: { id: pharmacyId },
     include: { owner: { select: { email: true } } },
   });
   if (!pharmacy) redirect("/onboard");
+
+  const canManage =
+    user.platformAdmin ||
+    pharmacy.ownerUserId === user.id ||
+    user.memberships.some(
+      (membership) =>
+        membership.pharmacyId === pharmacyId &&
+        (membership.role === "owner" || membership.role === "manager"),
+    );
+  if (!canManage) redirect("/onboard");
+
   if (!["approved", "active"].includes(pharmacy.status) || !pharmacy.verifiedAt) {
     redirect("/onboard");
   }
@@ -94,21 +99,26 @@ function range(open: string, close: string) {
   return `${formatClock(open)} – ${formatClock(close)}`;
 }
 
-function setupError(step: string, message: string): never {
+function setupError(step: string, message: string, source?: string): never {
+  if (source === "onboard") {
+    redirect(`/onboard?stage=setup&setupStep=${step}&error=${encodeURIComponent(message)}`);
+  }
   redirect(`/admin/setup?step=${step}&error=${encodeURIComponent(message)}`);
 }
 
 export async function saveSetupHoursAction(formData: FormData) {
-  const pharmacy = await loadSetupPharmacy();
+  const source = clean(formData, "source");
+  const pharmacyId = clean(formData, "pharmacyId");
+  const pharmacy = await loadSetupPharmacy(pharmacyId);
   const weekday = range(clean(formData, "weekdayOpen"), clean(formData, "weekdayClose"));
   const saturday = range(clean(formData, "saturdayOpen"), clean(formData, "saturdayClose"));
   const sunday = range(clean(formData, "sundayOpen"), clean(formData, "sundayClose"));
 
   if (!weekday || weekday === "Closed") {
-    setupError("hours", "Add your normal Monday to Friday opening hours.");
+    setupError("hours", "Add your normal Monday to Friday opening hours.", source);
   }
   if (!saturday || !sunday) {
-    setupError("hours", "For weekend hours, enter both opening and closing time or leave both blank.");
+    setupError("hours", "For weekend hours, enter both opening and closing time or leave both blank.", source);
   }
 
   await syncVerifiedIdentity(pharmacy);
@@ -123,15 +133,21 @@ export async function saveSetupHoursAction(formData: FormData) {
     },
   });
 
+  revalidatePath("/onboard");
   revalidatePath("/admin/setup");
   revalidatePath(`/p/${pharmacy.slug}`);
+  if (source === "onboard") {
+    redirect(`/onboard?stage=setup&setupStep=medicines&pharmacyId=${pharmacy.id}`);
+  }
   redirect("/admin/setup?step=medicines");
 }
 
-export async function deferSetupMedicinesAction() {
-  const pharmacy = await loadSetupPharmacy();
+export async function deferSetupMedicinesAction(formData?: FormData) {
+  const pharmacyId = formData ? clean(formData, "pharmacyId") : "";
+  const pharmacy = await loadSetupPharmacy(pharmacyId);
   const user = await getSessionUser();
-  if (!user) redirect("/login?next=/admin/setup");
+  if (!user) redirect("/login?next=/onboard");
+  const source = formData ? clean(formData, "source") : "";
 
   const existing = await prismaUnscoped.pharmacyOnboardingEvent.findFirst({
     where: { pharmacyId: pharmacy.id, type: SETUP_MEDICINES_DEFERRED_EVENT },
@@ -159,21 +175,27 @@ export async function deferSetupMedicinesAction() {
     });
   }
 
+  revalidatePath("/onboard");
   revalidatePath("/admin/setup");
+  if (source === "onboard") {
+    redirect(`/onboard?stage=setup&setupStep=services&pharmacyId=${pharmacy.id}`);
+  }
   redirect("/admin/setup?step=services");
 }
 
 export async function saveSetupServiceAction(formData: FormData) {
-  const pharmacy = await loadSetupPharmacy();
+  const source = clean(formData, "source");
+  const pharmacyId = clean(formData, "pharmacyId");
+  const pharmacy = await loadSetupPharmacy(pharmacyId);
   const title = clean(formData, "title");
   const description = clean(formData, "description");
   const priceRaw = clean(formData, "price");
   const price = priceRaw ? Number(priceRaw) : null;
 
-  if (title.length < 3) setupError("services", "Enter a service name.");
-  if (description.length < 12) setupError("services", "Add a short description of the service.");
+  if (title.length < 3) setupError("services", "Enter a service name.", source);
+  if (description.length < 12) setupError("services", "Add a short description of the service.", source);
   if (price != null && (!Number.isFinite(price) || price <= 0)) {
-    setupError("services", "Enter a valid price or leave it blank.");
+    setupError("services", "Enter a valid price or leave it blank.", source);
   }
 
   const short = description.length > 120 ? `${description.slice(0, 117).trimEnd()}…` : description;
@@ -196,21 +218,28 @@ export async function saveSetupServiceAction(formData: FormData) {
         error,
         "We couldn't save this service right now. Review the details and try again.",
       ),
+      source,
     );
   }
 
+  revalidatePath("/onboard");
   revalidatePath("/admin/setup");
   revalidatePath("/services");
+  if (source === "onboard") {
+    redirect(`/onboard?stage=setup&setupStep=profile&pharmacyId=${pharmacy.id}`);
+  }
   redirect("/admin/setup?step=profile");
 }
 
 export async function saveSetupProfileAction(formData: FormData) {
-  const pharmacy = await loadSetupPharmacy();
+  const source = clean(formData, "source");
+  const pharmacyId = clean(formData, "pharmacyId");
+  const pharmacy = await loadSetupPharmacy(pharmacyId);
   const about = clean(formData, "about");
   const tagline = clean(formData, "tagline");
 
   if (about.length < 50) {
-    setupError("profile", "Tell patients a little more about the pharmacy — at least 50 characters.");
+    setupError("profile", "Tell patients a little more about the pharmacy — at least 50 characters.", source);
   }
 
   await syncVerifiedIdentity(pharmacy);
@@ -222,7 +251,11 @@ export async function saveSetupProfileAction(formData: FormData) {
     },
   });
 
+  revalidatePath("/onboard");
   revalidatePath("/admin/setup");
   revalidatePath(`/p/${pharmacy.slug}`);
+  if (source === "onboard") {
+    redirect(`/onboard?stage=service&pharmacyId=${pharmacy.id}`);
+  }
   redirect("/admin/setup?step=billing");
 }

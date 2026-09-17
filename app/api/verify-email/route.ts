@@ -48,7 +48,10 @@ async function loadVerificationContext(token: string): Promise<VerificationConte
     prismaUnscoped.pharmacy.findFirst({
       where: {
         ownerUserId: verification.userId,
-        status: { in: ["draft", "needs_info"] },
+        OR: [
+          { status: { in: ["draft", "needs_info", "submitted", "under_review", "approved"] } },
+          { listed: false },
+        ],
       },
       select: { id: true },
     }),
@@ -62,7 +65,7 @@ async function loadVerificationContext(token: string): Promise<VerificationConte
 }
 
 function onboardingDestination() {
-  return "/onboard?verified=1#pharmacy-application";
+  return "/onboard?verified=1";
 }
 
 function customerDestination() {

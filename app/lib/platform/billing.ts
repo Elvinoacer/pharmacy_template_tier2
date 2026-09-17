@@ -172,7 +172,7 @@ export async function issueSubscriptionInvoice(subscriptionId: string, period?: 
   }, { timeout: 30000, maxWait: 15000 });
 }
 
-async function settleInvoice(tx: Prisma.TransactionClient, invoiceId: string, actorId?: string | null) {
+export async function settleInvoice(tx: Prisma.TransactionClient, invoiceId: string, actorId?: string | null) {
   await tx.$queryRaw`SELECT id FROM invoices WHERE id = ${invoiceId}::uuid FOR UPDATE`;
   const current = await tx.invoice.findUniqueOrThrow({ where: { id: invoiceId } });
   if (!["open", "paid"].includes(current.status)) throw new Error("invoice_not_collectible");
@@ -347,6 +347,110 @@ export async function resumeSubscription(subscriptionId: string, actorId?: strin
   await recordLifecycle(sub.pharmacyId, "plan_changed", { reason: "resumed", actorId: actorId ?? undefined });
 }
 
+export async function handleBundleSettlement(
+  tx: Prisma.TransactionClient,
+  invoice: { id: string; pharmacyId: string; number: string },
+  actorId?: string | null,
+) {
+  if (!invoice.number.startsWith("BUNDLE-")) return;
+
+  await tx.invoice.updateMany({
+    where: { pharmacyId: invoice.pharmacyId, number: `KYP-${invoice.pharmacyId}` },
+    data: { status: "paid", paidAt: new Date(), totalKes: 0 },
+  });
+
+  const pharmacy = await tx.pharmacy.findUnique({
+    where: { id: invoice.pharmacyId },
+    select: { status: true, ownerUserId: true },
+  });
+
+  const priorGrant = await tx.pharmacyPromotionGrant.findUnique({
+    where: { pharmacyId: invoice.pharmacyId },
+  });
+  if (priorGrant) {
+    if ((priorGrant.recurringMonths || 0) < 1) {
+      await tx.pharmacyPromotionGrant.update({
+        where: { pharmacyId: invoice.pharmacyId },
+        data: { recurringMonths: 1, verification: true },
+      });
+    }
+  } else {
+    let promo = await tx.pharmacyPromotion.findFirst({
+      where: { active: true },
+      orderBy: { createdAt: "asc" },
+    });
+    if (!promo) {
+      const creatorId =
+        pharmacy?.ownerUserId ??
+        actorId ??
+        (await tx.user.findFirst({ select: { id: true } }))?.id;
+      if (creatorId) {
+        promo = await tx.pharmacyPromotion.create({
+          data: {
+            name: "Standard Bundle Prepaid Month",
+            capacity: 999999,
+            verification: true,
+            recurring: true,
+            recurringMonths: 1,
+            active: true,
+            createdBy: creatorId,
+          },
+        });
+      }
+    } else {
+      await tx.pharmacyPromotion.update({
+        where: { id: promo.id },
+        data: { claimed: { increment: 1 } },
+      });
+    }
+    if (promo) {
+      await tx.pharmacyPromotionGrant.create({
+        data: {
+          pharmacyId: invoice.pharmacyId,
+          promotionId: promo.id,
+          verification: true,
+          recurringMonths: 1,
+        },
+      });
+    }
+  }
+
+  await tx.pharmacyOnboardingEvent.create({
+    data: {
+      pharmacyId: invoice.pharmacyId,
+      actorId: actorId ?? pharmacy?.ownerUserId ?? undefined,
+      type: "bundle_prepaid_credit_granted",
+      message: "Prepaid first-month subscription credited; will activate at post-approval service activation",
+    },
+  });
+
+  // If the pharmacy is already approved/active, activate the subscription now.
+  if (pharmacy && ["approved", "active"].includes(pharmacy.status)) {
+    const existingSub = await tx.subscription.findFirst({
+      where: { pharmacyId: invoice.pharmacyId, status: { not: "cancelled" } },
+    });
+    if (!existingSub) {
+      const plan = await tx.plan.findUniqueOrThrow({ where: { slug: "starter" } });
+      const start = new Date();
+      await tx.subscription.create({
+        data: {
+          pharmacyId: invoice.pharmacyId,
+          planId: plan.id,
+          status: "active",
+          startedAt: start,
+          currentPeriodStart: start,
+          currentPeriodEnd: nextBillingMonth(start),
+        },
+      });
+    } else if (existingSub.status === "past_due") {
+      await tx.subscription.update({
+        where: { id: existingSub.id },
+        data: { status: "active" },
+      });
+    }
+  }
+}
+
 export async function createIntasendBillingCheckout(
   invoiceId: string,
   opts?: {
@@ -376,6 +480,9 @@ export async function createIntasendBillingCheckout(
   if (Number(invoice.totalKes) === 0) {
     await prismaUnscoped.$transaction(async (tx) => {
       await settleInvoice(tx, invoice.id, opts?.actorId);
+      if (invoice.number.startsWith("BUNDLE-")) {
+        await handleBundleSettlement(tx, invoice, opts?.actorId);
+      }
     });
     return { ok: true as const, alreadyPaid: true, waived: true, invoiceId };
   }
@@ -393,9 +500,13 @@ export async function createIntasendBillingCheckout(
     process.env.NEXT_PUBLIC_APP_URL ||
     process.env.NEXT_PUBLIC_SITE_URL ||
     "http://localhost:3000";
-  const redirectUrl =
-    opts?.redirectUrl ||
-    `${appBaseUrl}/onboard/billing?invoice=${invoice.id}&status=returned`;
+
+  let defaultRedirect = `${appBaseUrl}/onboard?stage=payment&status=returned&invoice=${invoice.id}`;
+  if (invoice.subscriptionId || invoice.number.startsWith("SUB-")) {
+    defaultRedirect = `${appBaseUrl}/onboard?stage=service&status=returned&invoice=${invoice.id}`;
+  }
+
+  const redirectUrl = opts?.redirectUrl || defaultRedirect;
 
   if (existing?.checkoutUrl) {
     return {
@@ -536,36 +647,7 @@ export async function completeIntasendBillingPayment(opts: {
 
     const settled = await settleInvoice(tx, invoice.id);
 
-    // If this was a bundled invoice (BUNDLE-...)
-    if (invoice.number.startsWith("BUNDLE-")) {
-      await tx.invoice.updateMany({
-        where: { pharmacyId: invoice.pharmacyId, number: `KYP-${invoice.pharmacyId}` },
-        data: { status: "paid", paidAt: new Date(), totalKes: 0 },
-      });
-
-      const existingSub = await tx.subscription.findFirst({
-        where: { pharmacyId: invoice.pharmacyId, status: { not: "cancelled" } },
-      });
-      if (!existingSub) {
-        const plan = await tx.plan.findUniqueOrThrow({ where: { slug: "starter" } });
-        const start = new Date();
-        await tx.subscription.create({
-          data: {
-            pharmacyId: invoice.pharmacyId,
-            planId: plan.id,
-            status: "active",
-            startedAt: start,
-            currentPeriodStart: start,
-            currentPeriodEnd: nextBillingMonth(start),
-          },
-        });
-      } else if (existingSub.status === "past_due") {
-        await tx.subscription.update({
-          where: { id: existingSub.id },
-          data: { status: "active" },
-        });
-      }
-    }
+    await handleBundleSettlement(tx, invoice);
 
     return settled;
   }, { timeout: 30000, maxWait: 15000 });

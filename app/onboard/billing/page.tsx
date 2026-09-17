@@ -68,15 +68,39 @@ function describePaymentOutcome(payment: PaymentView | undefined) {
   return null;
 }
 
-export default async function PharmacyBillingPage() {
+type PageProps = {
+  searchParams?: Promise<Record<string, string | undefined>>;
+};
+
+export default async function PharmacyBillingPage(props: PageProps) {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/onboard/billing");
 
+  const searchParams = props.searchParams ? await props.searchParams : {};
+
+  const explicitPharmacyId = searchParams.pharmacyId;
   const pharmacy = await db.pharmacy.findFirst({
-    where: { ownerUserId: user.id, ...(user.activePharmacyId ? { id: user.activePharmacyId } : {}) },
+    where: {
+      ownerUserId: user.id,
+      ...(explicitPharmacyId ? { id: explicitPharmacyId } : user.activePharmacyId ? { id: user.activePharmacyId } : {}),
+    },
     orderBy: { createdAt: "desc" },
   });
   if (!pharmacy) redirect("/onboard");
+
+  // If the pharmacy is still in onboarding and not yet published live,
+  // keep them in the canonical onboarding journey rather than mature accounting.
+  if (pharmacy.status !== "active" || !pharmacy.listed) {
+    const isPostApproval = pharmacy.status === "approved" || pharmacy.status === "active";
+    const targetStage = isPostApproval ? "service" : "payment";
+    const query = new URLSearchParams();
+    query.set("stage", targetStage);
+    query.set("pharmacyId", pharmacy.id);
+    if (searchParams.status) query.set("status", searchParams.status);
+    if (searchParams.payment) query.set("payment", searchParams.payment);
+    if (searchParams.invoice) query.set("invoice", searchParams.invoice);
+    redirect(`/onboard?${query.toString()}`);
+  }
 
   await ensureVerificationInvoice(pharmacy.id);
   const [invoices, grant, sub, dunning, paymentMethod] = await Promise.all([

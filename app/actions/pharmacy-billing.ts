@@ -9,6 +9,8 @@ import {
   cancelSubscription,
   collectInvoicePayment,
   createIntasendBillingCheckout,
+  handleBundleSettlement,
+  settleInvoice,
 } from "@/app/lib/platform/billing";
 import {
   applyPromoCode,
@@ -135,6 +137,13 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       revalidatePath("/onboard");
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
+        if (invoice.status !== "paid") {
+          await db.$transaction(async (tx) => {
+            await settleInvoice(tx, invoice.id, user.id);
+            await handleBundleSettlement(tx, invoice, user.id);
+          });
+          revalidatePath("/onboard");
+        }
         return {
           success: "All fees waived by promotion! Your pharmacy verification and first month are active.",
           settled: true,
@@ -157,6 +166,12 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       revalidatePath("/onboard");
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
+        if (invoice.status !== "paid") {
+          await db.$transaction(async (tx) => {
+            await settleInvoice(tx, invoice.id, user.id);
+          });
+          revalidatePath("/onboard");
+        }
         return {
           success: "Verification fee is already waived by promotion.",
           settled: true,
@@ -215,10 +230,19 @@ export async function pharmacyBillingAction(_: BillingState, form: FormData): Pr
       }
       const invoice = await startPharmacyService(pharmacyId);
       if (!invoice.subscriptionId) throw new Error("Monthly billing could not be started. Please try again.");
+      revalidatePath("/onboard");
       revalidatePath("/onboard/billing");
       revalidatePath("/admin/setup");
 
       if (Number(invoice.totalKes) === 0 || invoice.status === "paid") {
+        if (invoice.status !== "paid") {
+          await db.$transaction(async (tx) => {
+            await settleInvoice(tx, invoice.id, user.id);
+          });
+          revalidatePath("/onboard");
+          revalidatePath("/onboard/billing");
+          revalidatePath("/admin/setup");
+        }
         return {
           success: "Your promotional service period is active! No payment required.",
           settled: true,

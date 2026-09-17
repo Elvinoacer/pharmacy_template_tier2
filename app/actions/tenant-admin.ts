@@ -258,23 +258,31 @@ export async function disconnectTenantPaymentAction(
   }
 }
 
-export async function goLiveAction() {
+export async function goLiveAction(formData?: FormData) {
   const user = await getSessionUser();
-  if (!user?.activePharmacyId) redirect("/admin");
+  if (!user) redirect("/login?next=/onboard");
+
+  const formPharmacyId = formData?.get("pharmacyId") ? String(formData.get("pharmacyId")) : null;
+  const pharmacyId =
+    formPharmacyId ||
+    user.activePharmacyId ||
+    user.memberships.find((m) => m.role === "owner" || m.role === "manager")?.pharmacyId;
+  if (!pharmacyId) redirect("/onboard");
 
   const pharmacy = await prismaUnscoped.pharmacy.findUnique({
-    where: { id: user.activePharmacyId },
+    where: { id: pharmacyId },
   });
-  if (!pharmacy) redirect("/admin");
+  if (!pharmacy) redirect("/onboard");
 
   const can =
     user.platformAdmin ||
+    pharmacy.ownerUserId === user.id ||
     user.memberships.some(
       (membership) =>
         membership.pharmacyId === pharmacy.id &&
         (membership.role === "owner" || membership.role === "manager"),
     );
-  if (!can) redirect("/admin");
+  if (!can) redirect("/onboard");
 
   if (!user.platformAdmin) {
     try {
@@ -284,10 +292,14 @@ export async function goLiveAction() {
     }
   }
 
-  if (pharmacy.status !== "approved" && pharmacy.status !== "active") redirect("/admin/setup");
+  if (pharmacy.status !== "approved" && pharmacy.status !== "active") {
+    redirect(`/onboard?stage=setup&pharmacyId=${pharmacy.id}`);
+  }
 
   const readiness = await loadPharmacySetup(pharmacy.id);
-  if (!readiness.ready) redirect("/admin/setup");
+  if (!readiness.ready) {
+    redirect(`/onboard?stage=setup&pharmacyId=${pharmacy.id}`);
+  }
 
   const completedAt = pharmacy.setupCompletedAt ?? new Date();
   await prismaUnscoped.$transaction([
@@ -320,5 +332,6 @@ export async function goLiveAction() {
   revalidatePath("/services");
   revalidatePath("/admin");
   revalidatePath("/admin/setup");
-  redirect("/admin");
+  revalidatePath("/onboard");
+  redirect(`/onboard?stage=complete&pharmacyId=${pharmacy.id}`);
 }

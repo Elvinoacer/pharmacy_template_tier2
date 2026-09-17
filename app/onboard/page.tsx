@@ -1,175 +1,119 @@
-import Link from "next/link";
-import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
-import { withPharmacy } from "@/app/lib/tenant-context";
+import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/lib/auth";
-import { prismaUnscoped } from "@/app/lib/db";
-import { loadOwnerSubmissionReadiness } from "@/app/lib/services/pharmacy-verification";
-import { loadLatestVerificationDocumentDrafts } from "@/app/lib/services/pharmacy-verification-documents";
-import OnboardWizard from "@/app/components/onboard/OnboardWizard";
-import VerificationDossierForm from "@/app/components/onboard/VerificationDossierForm";
+import {
+  loadPharmacyOnboardingSnapshot,
+  resolveActiveJourneyView,
+} from "@/app/lib/services/pharmacy-onboarding-journey";
+import { OnboardingJourneyShell } from "@/app/components/onboard/journey/OnboardingJourneyShell";
+import { AccountStep } from "@/app/components/onboard/journey/AccountStep";
+import { EmailVerificationStep } from "@/app/components/onboard/journey/EmailVerificationStep";
+import { PharmacyDetailsStep } from "@/app/components/onboard/journey/PharmacyDetailsStep";
+import { VerificationInformationStep } from "@/app/components/onboard/journey/VerificationInformationStep";
+import { VerificationPaymentStep } from "@/app/components/onboard/journey/VerificationPaymentStep";
+import { FinalReviewStep } from "@/app/components/onboard/journey/FinalReviewStep";
+import { AdminReviewStatusStep } from "@/app/components/onboard/journey/AdminReviewStatusStep";
+import { PharmacySetupStep } from "@/app/components/onboard/journey/PharmacySetupStep";
+import { ServiceActivationStep } from "@/app/components/onboard/journey/ServiceActivationStep";
+import { ReadyToLaunchStep } from "@/app/components/onboard/journey/ReadyToLaunchStep";
 import JoinValuePanel from "@/app/components/onboard/JoinValuePanel";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Join as a pharmacy",
-  description: "A digital storefront, organised requests, and patients who come back — from KES 500 a month after you go live.",
+  title: "Join as a pharmacy | Aether",
+  description: "One clear journey from registration to verified pharmacy launch.",
 };
 
-const PREMISES_CONTACT_ITEMS = new Set(["pharmacy city", "public phone number", "precise premises map pin"]);
+type PageProps = {
+  searchParams: Promise<{
+    stage?: string;
+    setupStep?: "hours" | "medicines" | "services" | "profile";
+    status?: string;
+    payment?: string;
+    verified?: string;
+    pharmacyId?: string;
+  }>;
+};
 
-export default async function OnboardPage() {
+export default async function OnboardPage({ searchParams }: PageProps) {
+  const params = await searchParams;
   const user = await getSessionUser().catch(() => null);
-  let existing = null;
-  let verificationFeePaid = false;
-  let verificationReadiness: Awaited<ReturnType<typeof loadOwnerSubmissionReadiness>> | null = null;
-  let verificationPharmacy = null;
-  let ownerEmailVerified = false;
-  let ownerEmail = user?.email || "";
-  let initialLicenseDocumentUrl: string | null = null;
-  let initialBusinessDocumentUrl: string | null = null;
 
-  if (user) {
-    const [owned, owner] = await Promise.all([
-      prismaUnscoped.pharmacy.findFirst({
-        where: { ownerUserId: user.id },
-        orderBy: { createdAt: "desc" },
-      }),
-      prismaUnscoped.user.findUnique({
-        where: { id: user.id },
-        select: { email: true, emailVerified: true },
-      }),
-    ]);
+  const snapshot = await loadPharmacyOnboardingSnapshot({
+    userId: user?.id,
+    pharmacyId: params.pharmacyId,
+  });
 
-    ownerEmail = owner?.email || user.email;
-    ownerEmailVerified = Boolean(owner?.emailVerified);
+  const { stage, isReviewEdit } = resolveActiveJourneyView(
+    snapshot,
+    params.stage,
+  );
 
-    if (owned) {
-      const [invoice, documentDrafts] = await Promise.all([
-        withPharmacy(owned.id, () => prismaUnscoped.invoice.findUnique({
-          where: { number: `KYP-${owned.id}` },
-          select: { status: true },
-        })),
-        loadLatestVerificationDocumentDrafts(owned.id),
-      ]);
-      verificationFeePaid = invoice?.status === "paid";
-      initialLicenseDocumentUrl = documentDrafts.license?.reference ?? owned.licenseDocumentUrl;
-      initialBusinessDocumentUrl = documentDrafts.business?.reference ?? null;
-
-      existing = {
-        id: owned.id,
-        slug: owned.slug,
-        name: owned.name,
-        legalName: owned.legalName,
-        tagline: owned.tagline,
-        description: owned.description,
-        licenseNumber: owned.licenseNumber,
-        ppbPremisesNumber: owned.ppbPremisesNumber,
-        phone: owned.phone,
-        whatsapp: owned.whatsapp,
-        email: owned.email,
-        city: owned.city,
-        county: owned.county,
-        latitude: owned.latitude,
-        longitude: owned.longitude,
-        status: owned.status,
-        verificationNotes: owned.verificationNotes,
-        rejectionReason: owned.rejectionReason,
-      };
-
-      verificationPharmacy = {
-        id: owned.id,
-        name: owned.name,
-        legalName: owned.legalName,
-        licenseNumber: owned.licenseNumber,
-        ppbPremisesNumber: owned.ppbPremisesNumber,
-        licenseDocumentUrl: owned.licenseDocumentUrl,
-        kraPin: owned.kraPin,
-        status: owned.status,
-      };
-
-      if (["draft", "needs_info"].includes(owned.status)) {
-        verificationReadiness = await loadOwnerSubmissionReadiness(owned.id);
-        initialBusinessDocumentUrl = documentDrafts.business?.reference
-          ?? verificationReadiness.profile?.businessDocumentUrl
-          ?? null;
-      }
-    }
+  // If already live and setup complete, take owner directly to admin dashboard
+  if (stage === "COMPLETE") {
+    redirect("/admin");
   }
 
-  const kypCoreMissing = verificationReadiness
-    ? verificationReadiness.missing.filter((item) => !PREMISES_CONTACT_ITEMS.has(item))
-    : [];
-  const requiresKyp = Boolean(
-    existing && verificationPharmacy && ["draft", "needs_info"].includes(existing.status) && kypCoreMissing.length > 0,
-  );
-  const showPitch = !existing;
-
-  return (
-    <div className={showPitch ? styles.frame : styles.narrow}>
-      {showPitch ? (
+  // Stage 1 (New visitor with no pharmacy draft yet): render conversion pitch split
+  if (stage === "ACCOUNT" && !snapshot.pharmacy) {
+    return (
+      <div className={styles.frame}>
         <div className={styles.split}>
           <JoinValuePanel />
           <div id="pharmacy-application" className={styles.work}>
-            <OnboardWizard signedIn={Boolean(user)} existing={existing} verificationFeePaid={verificationFeePaid} />
+            <AccountStep snapshot={snapshot} />
           </div>
         </div>
-      ) : (
-        <div id="pharmacy-application" className={styles.work}>
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className={styles.kicker}>{existing?.name}</p>
-              <p className="mt-1 text-sm text-[var(--muted)]">Continue your application</p>
-            </div>
-            <Link href="/onboard/billing" className={styles.quietLink}>
-              Fees <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-            </Link>
-          </div>
+      </div>
+    );
+  }
 
-          {existing?.status === "needs_info" ? (
-            <section role="status" className={`${styles.notice} ${styles.noticeAmber}`}>
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden />
-              <div>
-                <h2>A correction is needed</h2>
-                <p>{existing.verificationNotes || "Review the dossier and resubmit the missing evidence."}</p>
-              </div>
-            </section>
-          ) : null}
+  // Unified canonical journey container
+  return (
+    <OnboardingJourneyShell
+      snapshot={snapshot}
+      activeStage={stage}
+      isReviewEdit={isReviewEdit}
+    >
+      {stage === "ACCOUNT" ? (
+        <AccountStep snapshot={snapshot} />
+      ) : null}
 
-          {requiresKyp && verificationPharmacy && verificationReadiness ? (
-            <VerificationDossierForm
-              pharmacy={verificationPharmacy}
-              profile={verificationReadiness.profile}
-              initialLicenseDocumentUrl={initialLicenseDocumentUrl}
-              initialBusinessDocumentUrl={initialBusinessDocumentUrl}
-              ownerEmail={ownerEmail}
-              ownerEmailVerified={ownerEmailVerified}
-              embedded
-            />
-          ) : (
-            <>
-              {verificationReadiness ? (
-                <section
-                  className={`${styles.notice} ${verificationReadiness.ready ? styles.noticeOk : styles.noticeWarn}`}
-                >
-                  {verificationReadiness.ready ? (
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand)]" aria-hidden />
-                  ) : (
-                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-                  )}
-                  <div>
-                    <h2>{verificationReadiness.ready ? "Ready to submit" : "Almost there"}</h2>
-                    {!verificationReadiness.ready ? (
-                      <p>{verificationReadiness.missing.join(" · ")}</p>
-                    ) : null}
-                  </div>
-                </section>
-              ) : null}
-              <OnboardWizard signedIn={Boolean(user)} existing={existing} verificationFeePaid={verificationFeePaid} />
-            </>
-          )}
-        </div>
-      )}
-    </div>
+      {stage === "EMAIL_VERIFICATION" ? (
+        <EmailVerificationStep snapshot={snapshot} />
+      ) : null}
+
+      {stage === "PHARMACY_DETAILS" ? (
+        <PharmacyDetailsStep snapshot={snapshot} isReviewEdit={isReviewEdit} />
+      ) : null}
+
+      {stage === "VERIFICATION_INFORMATION" ? (
+        <VerificationInformationStep snapshot={snapshot} isReviewEdit={isReviewEdit} />
+      ) : null}
+
+      {stage === "VERIFICATION_PAYMENT" ? (
+        <VerificationPaymentStep snapshot={snapshot} isReviewEdit={isReviewEdit} />
+      ) : null}
+
+      {stage === "FINAL_REVIEW" ? (
+        <FinalReviewStep snapshot={snapshot} />
+      ) : null}
+
+      {stage === "AWAITING_ADMIN_REVIEW" || stage === "NEEDS_INFORMATION" || stage === "REJECTED" ? (
+        <AdminReviewStatusStep snapshot={snapshot} />
+      ) : null}
+
+      {stage === "POST_APPROVAL_SETUP" ? (
+        <PharmacySetupStep snapshot={snapshot} initialStep={params.setupStep} />
+      ) : null}
+
+      {stage === "SERVICE_ACTIVATION" ? (
+        <ServiceActivationStep snapshot={snapshot} />
+      ) : null}
+
+      {stage === "READY_TO_LAUNCH" ? (
+        <ReadyToLaunchStep snapshot={snapshot} />
+      ) : null}
+    </OnboardingJourneyShell>
   );
 }
