@@ -71,12 +71,6 @@ function booleanValue(value: unknown): boolean {
   return value === true;
 }
 
-function licenceExpired(dateInput: string | null) {
-  if (!dateInput) return false;
-  const parsed = new Date(`${dateInput}T23:59:59+03:00`);
-  return Number.isNaN(parsed.getTime()) || parsed.getTime() < Date.now();
-}
-
 function latestDate(values: Array<Date | null | undefined>) {
   return values
     .filter((value): value is Date => value instanceof Date)
@@ -165,6 +159,12 @@ export async function loadLatestVerificationChecklist(pharmacyId: string) {
   };
 }
 
+/**
+ * Intake intentionally stays permissive for regulatory paperwork. A pharmacy
+ * may not yet have every PPB/licence/business document available, but it must
+ * still provide a traceable owner, premises/contact information and an
+ * authorization declaration before it can enter platform review.
+ */
 export function profileMissingItems(input: {
   pharmacy: {
     licenseNumber: string | null;
@@ -181,29 +181,16 @@ export function profileMissingItems(input: {
   const missing: string[] = [];
   const { pharmacy, profile } = input;
 
-  if (!pharmacy.licenseNumber) missing.push("PPB / premises licence number");
-  if (!pharmacy.ppbPremisesNumber) missing.push("PPB premises/facility number");
-  if (!pharmacy.licenseDocumentUrl) missing.push("current PPB licence image");
   if (!pharmacy.city) missing.push("pharmacy city");
   if (!pharmacy.phone) missing.push("public phone number");
   if (!validCoordinates(pharmacy.latitude, pharmacy.longitude)) missing.push("precise premises map pin");
   if (!input.ownerEmailVerified) missing.push("verified owner email address");
 
   if (!profile) {
-    missing.push("regulatory verification dossier");
+    missing.push("verification intake details");
     return missing;
   }
 
-  if (!profile.facilityType) missing.push("facility type");
-  if (!profile.physicalAddress) missing.push("physical premises address");
-  if (!profile.licenseExpiryDate) missing.push("licence expiry date");
-  else if (licenceExpired(profile.licenseExpiryDate)) missing.push("current unexpired PPB premises licence");
-  if (!profile.superintendentName) missing.push("superintendent / responsible professional name");
-  if (!profile.superintendentRegistrationNumber) missing.push("professional PPB registration/enrolment number");
-  if (!profile.superintendentPracticeLicenseNumber) missing.push("current professional practice licence number");
-  if (!profile.ownershipType) missing.push("business ownership type");
-  if (!profile.businessRegistrationNumber) missing.push("business registration number");
-  if (!profile.businessDocumentUrl) missing.push("business registration evidence");
   if (!profile.applicantAuthorityConfirmed) missing.push("applicant authority declaration");
 
   return missing;
@@ -249,13 +236,15 @@ export async function loadOwnerSubmissionReadiness(pharmacyId: string): Promise<
   };
 }
 
+/**
+ * These are the mandatory human-review checks required for approval. PPB and
+ * licence checks remain captured on the checklist as supporting regulatory
+ * evidence, but they are not automatic blockers when the applicant cannot
+ * provide those documents during intake.
+ */
 export const REQUIRED_REVIEW_CHECKS: Array<{
   key: keyof Pick<
     VerificationChecklist,
-    | "ppbRegistryMatched"
-    | "licenceActive"
-    | "licenceDocumentMatched"
-    | "practitionerMatched"
     | "locationMatched"
     | "ownershipVerified"
     | "applicantAuthorityVerified"
@@ -264,22 +253,18 @@ export const REQUIRED_REVIEW_CHECKS: Array<{
   >;
   label: string;
 }> = [
-  { key: "ppbRegistryMatched", label: "PPB facility register match" },
-  { key: "licenceActive", label: "PPB premises licence is current/active" },
-  { key: "licenceDocumentMatched", label: "Uploaded licence matches submitted facility/licence data" },
-  { key: "practitionerMatched", label: "Responsible professional is found and current on the PPB register" },
-  { key: "locationMatched", label: "Physical address and map pin are consistent with the licensed premises" },
-  { key: "ownershipVerified", label: "Business registration / ownership evidence is consistent" },
+  { key: "locationMatched", label: "Physical premises/location is consistent with the application" },
+  { key: "ownershipVerified", label: "Reviewer is satisfied with ownership / operating-entity evidence" },
   { key: "applicantAuthorityVerified", label: "Applicant is authorized to represent the pharmacy" },
   { key: "contactVerified", label: "Owner/contact identity is verified" },
-  { key: "noCriticalMismatch", label: "No unresolved critical identity or regulatory mismatch" },
+  { key: "noCriticalMismatch", label: "No unresolved critical identity, safety or regulatory mismatch" },
 ];
 
 export function checklistMissingItems(checklist: VerificationChecklist | null) {
   if (!checklist) return ["reviewer verification checklist"];
   const missing = REQUIRED_REVIEW_CHECKS.filter(({ key }) => !checklist[key]).map(({ label }) => label);
-  if (!checklist.ppbRegistrySource) missing.push("PPB facility-register evidence source");
-  if (!checklist.practitionerRegistrySource) missing.push("PPB practitioner-register evidence source");
+  if (checklist.ppbRegistryMatched && !checklist.ppbRegistrySource) missing.push("PPB facility-register evidence source");
+  if (checklist.practitionerMatched && !checklist.practitionerRegistrySource) missing.push("PPB practitioner-register evidence source");
   if (!checklist.checkedAt) missing.push("review timestamp");
   if (!checklist.notes) missing.push("reviewer evidence notes");
   return missing;
