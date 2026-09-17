@@ -27,6 +27,7 @@ export default function VerificationTrustPreview({
   licenseNumber,
 }: Props) {
   const [activeTab, setActiveTab] = useState<"both" | "verified" | "unverified">("both");
+  const regulatoryReference = ppbPremisesNumber || licenseNumber;
 
   return (
     <div className={styles.wrapper}>
@@ -87,7 +88,7 @@ export default function VerificationTrustPreview({
 
               <h4 className={styles.pharmacyName}>{pharmacyName}</h4>
               <p className={styles.pharmacyMeta}>
-                📍 {city} · ⚠️ PPB Licence Unconfirmed
+                📍 {city} · ⚠️ Platform verification pending
               </p>
 
               <div className={styles.patientWarning}>
@@ -110,19 +111,19 @@ export default function VerificationTrustPreview({
               <div className={styles.badgeRow}>
                 <span className={styles.statusPillVerified}>
                   <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
-                  PPB Verified Chemist
+                  Platform Verified Pharmacy
                 </span>
-                <span className={`${styles.trustScore} ${styles.trustScoreGreen}`}>Patient Trust: 🟢 99%</span>
+                <span className={`${styles.trustScore} ${styles.trustScoreGreen}`}>Patient Trust: 🟢 High</span>
               </div>
 
               <h4 className={styles.pharmacyName}>{pharmacyName}</h4>
               <p className={styles.pharmacyMeta}>
-                📍 {city} · ✓ PPB Reg #{ppbPremisesNumber || licenseNumber || "Verified"}
+                📍 {city} · {regulatoryReference ? `✓ Regulatory ref #${regulatoryReference}` : "✓ Admin review completed"}
               </p>
 
               <div className={styles.patientBenefit}>
                 <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                <span>Official neighborhood chemist badge. Patients trust you with chronic refills & send M-PESA upfront.</span>
+                <span>Identity, premises, ownership and available regulatory evidence have been reviewed before the pharmacy is allowed to operate publicly.</span>
               </div>
             </div>
 
@@ -144,8 +145,8 @@ export default function VerificationTrustPreview({
             <CheckCircle2 className="h-3 w-3" aria-hidden />
           </span>
           <div>
-            <strong>PPB Licence Check</strong>
-            <span>Quick check of your premises & superintendent licence against the official register.</span>
+            <strong>Regulatory Evidence Review</strong>
+            <span>Share PPB and licensing details when available. Missing paperwork does not stop intake; the admin reviews the evidence before approval.</span>
           </div>
         </div>
 
@@ -155,7 +156,7 @@ export default function VerificationTrustPreview({
           </span>
           <div>
             <strong>Anti-Clone Lock</strong>
-            <span>Locks your pharmacy name & location so copycats and unlicensed quacks can&apos;t pretend to be you.</span>
+            <span>Locks your pharmacy name & location so copycats can&apos;t pretend to be you.</span>
           </div>
         </div>
 
@@ -175,7 +176,7 @@ export default function VerificationTrustPreview({
           💰 KES 100 once · Price of chai &amp; mandazi
         </span>
         <span className={styles.costAnchorText}>
-          Keeps you verified for life. KES 0 monthly until you choose to turn on live orders.
+          Covers the verification review. KES 0 monthly until you choose to turn on live orders.
         </span>
       </div>
     </div>
