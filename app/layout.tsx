@@ -162,12 +162,25 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     sessionHint = null;
   }
 
+  let initialTheme: "light" | "dark" | undefined = undefined;
+  try {
+    const jar = await cookies();
+    const cookieTheme = jar.get("aether-theme")?.value;
+    if (cookieTheme === "dark" || cookieTheme === "light") {
+      initialTheme = cookieTheme;
+    }
+  } catch {
+    /* fallback to script bootstrap */
+  }
+
   return (
     <html
       lang="en"
       data-scroll-behavior="smooth"
+      data-theme={initialTheme}
+      data-admin-theme={initialTheme}
       suppressHydrationWarning
-      className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${fraunces.variable} ${jetbrains.variable} ${initialTheme === "dark" ? "dark " : ""}h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />

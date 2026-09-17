@@ -82,9 +82,10 @@ export function WorkspaceShell({
     <TenantBrandProvider value={defaultBrand}>
       <NavigationProgressProvider>
         <div
-          className="aether-workspace-root min-h-screen"
+          className="aether-workspace-root min-h-screen shell-grid-admin admin-workspace"
           data-role={role}
           data-theme={theme.hydrated ? theme.resolved : undefined}
+          data-admin-theme={theme.hydrated ? theme.resolved : undefined}
         >
           {/* Top Thin Layered Navigation Progress Bar */}
           <NavigationProgressBar />
@@ -260,32 +261,33 @@ export function WorkspaceShell({
    SUBCOMPONENTS
    ============================================================ */
 
-function WorkspaceThemeToggle({
+export function WorkspaceThemeToggle({
   mode,
   resolved,
   onCycle,
+  className = "",
 }: {
   mode: ThemeMode;
   resolved: "light" | "dark";
   onCycle: () => void;
+  className?: string;
 }) {
+  const next = mode === "system" ? "light" : mode === "light" ? "dark" : "system";
   const label =
     mode === "system"
-      ? `Theme: system (${resolved})`
-      : mode === "dark"
-      ? "Theme: dark"
-      : "Theme: light";
+      ? `Theme: system (${resolved}). Switch to ${next} theme`
+      : `Theme: ${mode}. Switch to ${next} theme`;
   const Icon = mode === "system" ? Monitor : resolved === "dark" ? Moon : Sun;
 
   return (
     <button
       type="button"
       onClick={onCycle}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]"
+      className={`theme-toggle inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card)] text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)] ${className}`}
       aria-label={label}
-      title={`${label} — click to cycle`}
+      title={label}
     >
-      <Icon size={16} />
+      <Icon size={16} aria-hidden="true" />
     </button>
   );
 }

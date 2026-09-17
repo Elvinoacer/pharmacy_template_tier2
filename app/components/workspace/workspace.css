@@ -11,21 +11,164 @@
   --aether-dock-height: 62px;
 }
 
+@import "../../workspace-compat.css";
+
 /* Base Workspace Layout Container */
 .aether-workspace-root {
-  display: flex;
+  display: flex !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  grid-template-areas: none !important;
   min-height: 100vh;
   min-height: 100dvh;
   width: 100%;
   background: var(--admin-bg, #f4f7f4);
   color: var(--admin-text, #0c1a14);
   overflow-x: hidden;
+  overflow-y: visible;
 }
 
+/* Light theme definition for workspace root */
+html[data-theme="light"] .aether-workspace-root,
+html[data-admin-theme="light"] .aether-workspace-root,
+.aether-workspace-root[data-theme="light"] {
+  --admin-bg: #f3f6f4;
+  --admin-panel: #ffffff;
+  --admin-card: #ffffff;
+  --admin-card-2: #f8faf9;
+  --admin-border: rgba(12, 26, 20, 0.08);
+  --admin-border-2: rgba(12, 26, 20, 0.14);
+  --admin-text: #0c1a14;
+  --admin-text-muted: #5a6b62;
+  --admin-text-soft: #8a9a92;
+  --admin-accent: #0d6e5a;
+  --admin-accent-2: #0f766e;
+  --admin-accent-soft: rgba(13, 110, 90, 0.1);
+  --admin-accent-text: #084c3f;
+  --admin-gold: #c9a227;
+  --admin-gold-soft: rgba(201, 162, 39, 0.14);
+  --admin-inset: rgba(12, 26, 20, 0.035);
+  --admin-inset-2: rgba(12, 26, 20, 0.06);
+  --admin-hover: rgba(13, 110, 90, 0.08);
+  --admin-shadow: 0 1px 2px rgba(8, 40, 32, 0.04), 0 4px 16px rgba(8, 40, 32, 0.06);
+  --admin-shadow-md: 0 8px 28px rgba(8, 40, 32, 0.1);
+  --admin-input-bg: #ffffff;
+  --admin-nav-active-bg: linear-gradient(135deg, rgba(13, 110, 90, 0.1), rgba(45, 212, 191, 0.08));
+  --admin-nav-active-bar: linear-gradient(180deg, #0d6e5a, #2dd4bf);
+  --admin-stat-bar: linear-gradient(90deg, #0d6e5a, #c9a227);
+  --admin-btn-fg: #ffffff;
+  --admin-scrollbar: rgba(13, 110, 90, 0.22);
+  --admin-mesh-1: rgba(13, 110, 90, 0.08);
+  --admin-mesh-2: rgba(201, 162, 39, 0.06);
+  --admin-danger-soft: rgba(239, 68, 68, 0.1);
+  --admin-success-soft: rgba(16, 185, 129, 0.1);
+  background: var(--admin-bg, #f3f6f4);
+  color: var(--admin-text, #0c1a14);
+  color-scheme: light;
+}
+
+/* Dark theme definition for workspace root */
 html[data-theme="dark"] .aether-workspace-root,
-html[data-admin-theme="dark"] .aether-workspace-root {
-  background: var(--admin-bg, #0b1118);
+html[data-admin-theme="dark"] .aether-workspace-root,
+html.dark .aether-workspace-root,
+.aether-workspace-root[data-theme="dark"] {
+  --admin-bg: #0b0f14;
+  --admin-panel: #11161e;
+  --admin-card: #161d27;
+  --admin-card-2: #1b2430;
+  --admin-border: rgba(148, 163, 184, 0.12);
+  --admin-border-2: rgba(148, 163, 184, 0.2);
+  --admin-text: #f1f5f9;
+  --admin-text-muted: #94a3b8;
+  --admin-text-soft: #64748b;
+  --admin-accent: #2dd4bf;
+  --admin-accent-2: #14b8a6;
+  --admin-accent-soft: rgba(45, 212, 191, 0.14);
+  --admin-accent-text: #99f6e4;
+  --admin-gold: #e4c65a;
+  --admin-gold-soft: rgba(228, 198, 90, 0.14);
+  --admin-inset: rgba(255, 255, 255, 0.04);
+  --admin-inset-2: rgba(255, 255, 255, 0.08);
+  --admin-hover: rgba(45, 212, 191, 0.12);
+  --admin-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+  --admin-shadow-md: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --admin-input-bg: rgba(255, 255, 255, 0.05);
+  --admin-nav-active-bg: linear-gradient(135deg, rgba(45, 212, 191, 0.14), rgba(201, 162, 39, 0.08));
+  --admin-nav-active-bar: linear-gradient(180deg, #2dd4bf, #e4c65a);
+  --admin-stat-bar: linear-gradient(90deg, #2dd4bf, #e4c65a);
+  --admin-btn-fg: #042f2e;
+  --admin-scrollbar: rgba(148, 163, 184, 0.28);
+  --admin-mesh-1: rgba(45, 212, 191, 0.07);
+  --admin-mesh-2: rgba(99, 102, 241, 0.06);
+  --admin-danger-soft: rgba(239, 68, 68, 0.14);
+  --admin-success-soft: rgba(16, 185, 129, 0.14);
+  background: var(--admin-bg, #0b0f14);
   color: var(--admin-text, #f1f5f9);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-workspace-root:not([data-theme="light"]) {
+    --admin-bg: #0b0f14;
+    --admin-panel: #11161e;
+    --admin-card: #161d27;
+    --admin-card-2: #1b2430;
+    --admin-border: rgba(148, 163, 184, 0.12);
+    --admin-border-2: rgba(148, 163, 184, 0.2);
+    --admin-text: #f1f5f9;
+    --admin-text-muted: #94a3b8;
+    --admin-text-soft: #64748b;
+    --admin-accent: #2dd4bf;
+    --admin-accent-2: #14b8a6;
+    --admin-accent-soft: rgba(45, 212, 191, 0.14);
+    --admin-accent-text: #99f6e4;
+    --admin-gold: #e4c65a;
+    --admin-gold-soft: rgba(228, 198, 90, 0.14);
+    --admin-inset: rgba(255, 255, 255, 0.04);
+    --admin-inset-2: rgba(255, 255, 255, 0.08);
+    --admin-hover: rgba(45, 212, 191, 0.12);
+    --admin-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+    --admin-shadow-md: 0 12px 40px rgba(0, 0, 0, 0.45);
+    --admin-input-bg: rgba(255, 255, 255, 0.05);
+    --admin-nav-active-bg: linear-gradient(135deg, rgba(45, 212, 191, 0.14), rgba(201, 162, 39, 0.08));
+    --admin-nav-active-bar: linear-gradient(180deg, #2dd4bf, #e4c65a);
+    --admin-stat-bar: linear-gradient(90deg, #2dd4bf, #e4c65a);
+    --admin-btn-fg: #042f2e;
+    --admin-scrollbar: rgba(148, 163, 184, 0.28);
+    --admin-mesh-1: rgba(45, 212, 191, 0.07);
+    --admin-mesh-2: rgba(99, 102, 241, 0.06);
+    --admin-danger-soft: rgba(239, 68, 68, 0.14);
+    --admin-success-soft: rgba(16, 185, 129, 0.14);
+    background: var(--admin-bg, #0b0f14);
+    color: var(--admin-text, #f1f5f9);
+    color-scheme: dark;
+  }
+}
+
+/* Workspace Theme Toggle Button Geometry Safeguards */
+.aether-workspace-root .theme-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--admin-border) !important;
+  background: var(--admin-card) !important;
+  color: var(--admin-text-muted) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: all 150ms ease;
+  padding: 0 !important;
+}
+
+.aether-workspace-root .theme-toggle:hover {
+  background: var(--admin-hover) !important;
+  color: var(--admin-text) !important;
 }
 
 /* ============================================================
@@ -957,6 +1100,66 @@ html[data-admin-theme="dark"] .aether-workspace-root {
   padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--admin-border, rgba(29, 64, 49, 0.12));
   background: var(--admin-card, #ffffff);
+}
+
+html[data-theme="dark"] .aether-command-dialog,
+html[data-admin-theme="dark"] .aether-command-dialog,
+html.dark .aether-command-dialog,
+[data-theme="dark"] .aether-command-dialog {
+  background: var(--admin-panel, #11161e);
+  color: var(--admin-text, #f1f5f9);
+  border-color: var(--admin-border-2, rgba(148, 163, 184, 0.2));
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] .aether-mobile-sheet,
+html[data-admin-theme="dark"] .aether-mobile-sheet,
+html.dark .aether-mobile-sheet,
+[data-theme="dark"] .aether-mobile-sheet {
+  background: var(--admin-panel, #11161e);
+  color: var(--admin-text, #f1f5f9);
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] .aether-mobile-sheet-footer,
+html[data-admin-theme="dark"] .aether-mobile-sheet-footer,
+html.dark .aether-mobile-sheet-footer,
+[data-theme="dark"] .aether-mobile-sheet-footer {
+  background: var(--admin-card, #161d27);
+  border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
+}
+
+html[data-theme="dark"] .aether-command-footer,
+html[data-admin-theme="dark"] .aether-command-footer,
+html.dark .aether-command-footer,
+[data-theme="dark"] .aether-command-footer {
+  background: var(--admin-inset, rgba(255, 255, 255, 0.03));
+  border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-command-dialog {
+    background: var(--admin-panel, #11161e);
+    color: var(--admin-text, #f1f5f9);
+    border-color: var(--admin-border-2, rgba(148, 163, 184, 0.2));
+    color-scheme: dark;
+  }
+
+  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-mobile-sheet {
+    background: var(--admin-panel, #11161e);
+    color: var(--admin-text, #f1f5f9);
+    color-scheme: dark;
+  }
+
+  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-mobile-sheet-footer {
+    background: var(--admin-card, #161d27);
+    border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
+  }
+
+  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-command-footer {
+    background: var(--admin-inset, rgba(255, 255, 255, 0.03));
+    border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
+  }
 }
 
 /* Reduced motion preference */

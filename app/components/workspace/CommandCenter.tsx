@@ -34,6 +34,7 @@ import {
 } from "@/app/lib/navigation/workspace-registry";
 import { WorkspaceIcon } from "./WorkspaceIcons";
 import { useNavigationProgress } from "./NavigationProgress";
+import { useAppTheme } from "../ThemeProvider";
 
 type RecentItem = {
   href: string;
@@ -56,6 +57,7 @@ export function CommandCenter({
   triggerClassName?: string;
 }) {
   const router = useRouter();
+  const theme = useAppTheme();
   const { startNavigation, stage, targetHref } = useNavigationProgress();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -204,6 +206,54 @@ export function CommandCenter({
   const actionableItems: ActionableItem[] = [];
 
   if (query.trim()) {
+    const q = query.trim().toLowerCase();
+    const isThemeQuery =
+      q === "theme" ||
+      q === "dark" ||
+      q === "light" ||
+      q === "mode" ||
+      q.includes("theme") ||
+      q.includes("dark mode") ||
+      q.includes("light mode") ||
+      q.includes("toggle theme") ||
+      q.includes("switch theme");
+
+    if (isThemeQuery) {
+      if (theme.resolved === "dark") {
+        actionableItems.push({
+          id: "cmd-theme-light",
+          label: "Switch to Light Theme",
+          description: "Change workspace appearance to clean clinical light theme",
+          href: "#switch-theme-light",
+          icon: "Sun",
+          category: "context",
+          badge: "Appearance",
+        });
+      } else {
+        actionableItems.push({
+          id: "cmd-theme-dark",
+          label: "Switch to Dark Theme",
+          description: "Change workspace appearance to cool charcoal dark theme",
+          href: "#switch-theme-dark",
+          icon: "Moon",
+          category: "context",
+          badge: "Appearance",
+        });
+      }
+
+      if (theme.mode !== "system") {
+        actionableItems.push({
+          id: "cmd-theme-system",
+          label: "Use System Theme",
+          description: "Sync workspace appearance automatically with your OS preference",
+          href: "#switch-theme-system",
+          icon: "Monitor",
+          category: "context",
+          badge: "Appearance",
+        });
+      }
+    }
+
     // Show search results first
     for (const match of searchResults) {
       actionableItems.push({
@@ -310,6 +360,22 @@ export function CommandCenter({
   const handleSelectItem = (item: ActionableItem) => {
     if (item.category === "ai" || item.href === "#ask-aether") {
       void handleAskAether(query);
+      return;
+    }
+
+    if (item.href === "#switch-theme-light") {
+      theme.setTheme("light");
+      closeDialog();
+      return;
+    }
+    if (item.href === "#switch-theme-dark") {
+      theme.setTheme("dark");
+      closeDialog();
+      return;
+    }
+    if (item.href === "#switch-theme-system") {
+      theme.setTheme("system");
+      closeDialog();
       return;
     }
 
@@ -512,7 +578,7 @@ export function CommandCenter({
                     </div>
 
                     <div className="aether-command-item-actions">
-                      {item.href !== "#ask-aether" && (
+                      {item.href !== "#ask-aether" && !item.href.startsWith("#switch-theme") && (
                         <button
                           type="button"
                           onClick={(e) => togglePin(item.href, e)}

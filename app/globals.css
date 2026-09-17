@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *, [data-admin-theme="dark"], [data-admin-theme="dark"] *));
+
 /* ============================================================
    Aether Pharmacy — Design System
    Premium teal + gold palette, fixed-layout shells, premium cards
@@ -84,8 +86,17 @@
 
 
 /* Admin dark mode — cool charcoal + teal/gold accents (not green monochrome) */
+html[data-theme="dark"],
+html[data-admin-theme="dark"],
+html.dark,
+:root[data-theme="dark"],
+:root[data-admin-theme="dark"],
 .shell-grid-admin[data-theme="dark"],
-html[data-admin-theme="dark"] .shell-grid-admin {
+html[data-admin-theme="dark"] .shell-grid-admin,
+html[data-theme="dark"] .aether-workspace-root,
+html[data-admin-theme="dark"] .aether-workspace-root,
+html.dark .aether-workspace-root,
+.aether-workspace-root[data-theme="dark"] {
   --admin-bg: #0b0f14;
   --admin-panel: #11161e;
   --admin-card: #161d27;
@@ -120,7 +131,8 @@ html[data-admin-theme="dark"] .shell-grid-admin {
 }
 
 @media (prefers-color-scheme: dark) {
-  .shell-grid-admin:not([data-theme="light"]) {
+  .shell-grid-admin:not([data-theme="light"]),
+  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-workspace-root:not([data-theme="light"]) {
     --admin-bg: #0b0f14;
     --admin-panel: #11161e;
     --admin-card: #161d27;
@@ -157,7 +169,14 @@ html[data-admin-theme="dark"] .shell-grid-admin {
 
 
 /* Force light tokens when staff picks light (overrides system dark preference) */
-.shell-grid-admin[data-theme="light"] {
+html[data-theme="light"],
+html[data-admin-theme="light"],
+:root[data-theme="light"],
+:root[data-admin-theme="light"],
+.shell-grid-admin[data-theme="light"],
+html[data-theme="light"] .aether-workspace-root,
+html[data-admin-theme="light"] .aether-workspace-root,
+.aether-workspace-root[data-theme="light"] {
   --admin-bg: #f3f6f4;
   --admin-panel: #ffffff;
   --admin-card: #ffffff;
@@ -2782,7 +2801,7 @@ body { background: var(--background); color: var(--foreground); }
 .theme-toggle { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border: 1px solid var(--line-2); border-radius: 50%; background: var(--glass-fill); color: var(--foreground); cursor: pointer; backdrop-filter: blur(16px); }
 .theme-toggle:hover { background: var(--brand-soft); }
 .global-theme-control { position: fixed; right: 1rem; top: 1rem; z-index: 60; }
-body:has(header .theme-toggle, .shell-grid-admin) .global-theme-control { display: none; }
+body:has(header .theme-toggle, .shell-grid-admin, .aether-workspace-root) .global-theme-control { display: none; }
 .skip-link { position: fixed; left: 1rem; top: -6rem; z-index: 200; padding: .8rem 1.2rem; border-radius: 1rem; background: var(--card); color: var(--foreground); }
 .skip-link:focus { top: 1rem; }
 :where(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid #23b791; outline-offset: 4px; }

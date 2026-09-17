@@ -23,19 +23,28 @@
  * legacy fixed two-column .shell-grid-admin geometry from globals.css.
  */
 .platform-shell.shell-grid-admin,
-.platform-security-shell.shell-grid-admin {
-  display: block;
-  grid-template-columns: none;
-  grid-template-rows: none;
-  grid-template-areas: none;
+.platform-security-shell.shell-grid-admin,
+.aether-workspace-root,
+.aether-workspace-root.shell-grid-admin {
+  display: flex !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  grid-template-areas: none !important;
   width: 100%;
   height: auto;
   min-height: 100dvh;
-  overflow: visible;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
 }
 
 html[data-admin-theme="dark"] .shell-grid-admin,
-.shell-grid-admin[data-theme="dark"] {
+html[data-theme="dark"] .shell-grid-admin,
+html.dark .shell-grid-admin,
+.shell-grid-admin[data-theme="dark"],
+html[data-admin-theme="dark"] .aether-workspace-root,
+html[data-theme="dark"] .aether-workspace-root,
+html.dark .aether-workspace-root,
+.aether-workspace-root[data-theme="dark"] {
   --workspace-rose-text: #fda4af;
   --workspace-amber-text: #fcd34d;
   --workspace-emerald-text: #6ee7b7;
