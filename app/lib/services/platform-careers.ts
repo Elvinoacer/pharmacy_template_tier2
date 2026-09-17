@@ -25,6 +25,7 @@ export type PlatformCareerApplication = {
   message?: string;
   experience?: string;
   cvFileName?: string;
+  cvUrl?: string;
   pharmacySlug?: string;
   createdAt: string;
 };
@@ -158,6 +159,7 @@ export async function recordCareerApplication(input: {
   message?: string;
   experience?: string;
   cvFileName?: string;
+  cvUrl?: string;
   pharmacySlug?: string;
 }): Promise<PlatformCareerApplication> {
   const data = await getPlatformCareersData();
@@ -173,6 +175,7 @@ export async function recordCareerApplication(input: {
     message: input.message?.trim(),
     experience: input.experience?.trim(),
     cvFileName: input.cvFileName?.trim(),
+    cvUrl: input.cvUrl?.trim(),
     pharmacySlug: input.pharmacySlug?.trim(),
     createdAt: new Date().toISOString(),
   };

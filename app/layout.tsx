@@ -205,9 +205,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </div>
         <div className="aether-app-layer">
           <ThemeProvider>
-            <div className="global-theme-control">
-              <ThemeToggle />
-            </div>
             <AetherCursor />
             <JsonLd pharmacy={onStorefrontRewrite ? resolved : null} />
             <AppChrome

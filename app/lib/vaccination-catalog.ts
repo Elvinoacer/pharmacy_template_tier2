@@ -690,6 +690,23 @@ export function evaluatePreVaccinationScreening(answers: ScreeningAnswers): {
     anticoagulantFlag: boolean;
   };
 } {
+  for (const q of PRE_VACCINATION_QUESTIONS) {
+    if (!answers[q.id] || !["yes", "no", "unsure"].includes(answers[q.id])) {
+      return {
+        outcome: "refer",
+        reason: "Incomplete pre-vaccination screening questionnaire. Every safety question must be answered.",
+        flags: {
+          allergyFlag: false,
+          pregnancyFlag: false,
+          immunocompromisedFlag: false,
+          recentIllnessFlag: false,
+          previousReactionFlag: false,
+          anticoagulantFlag: false,
+        },
+      };
+    }
+  }
+
   const yes = (id: string) => answers[id] === "yes";
   const flags = {
     allergyFlag: yes("allergy_vaccine") || yes("allergy_components"),

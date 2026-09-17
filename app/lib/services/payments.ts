@@ -6,7 +6,6 @@ import { prisma, prismaUnscoped } from "@/app/lib/db";
 import {
   darajaConfiguredFor,
   formatMpesaPhone,
-  phoneLast9,
   stkPush,
   stkQuery,
 } from "@/app/lib/services/daraja";
@@ -93,17 +92,6 @@ export async function canInitiatePayment(opts: {
 
   if (await verifyOrderAccessToken(opts.orderId, opts.accessToken)) {
     return { allowed: true, order };
-  }
-
-  const phone = opts.phone ? phoneLast9(opts.phone) : "";
-  if (phone && order.guestPhone && phoneLast9(order.guestPhone) === phone) {
-    return { allowed: true, order };
-  }
-  if (phone && order.source === "website") {
-    const notes = order.notes || "";
-    if (notes.includes(phone) || notes.replace(/\D/g, "").includes(phone)) {
-      return { allowed: true, order };
-    }
   }
 
   return { allowed: false, reason: "forbidden", order };

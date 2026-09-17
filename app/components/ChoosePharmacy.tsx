@@ -1,7 +1,7 @@
-import { getSessionUser } from "@/app/lib/auth";
-import CareHero from "./care/CareHero";
-import CareIntentNavigator, { type CareIntent } from "./care/CareIntentNavigator";
-import styles from "./care/CarePages.module.css";
+import PageHero from "./PageHero";
+import PharmacyChooser, { type ChooserPharmacy } from "./PharmacyChooser";
+import { listMarketplacePharmacies } from "@/app/lib/tenant";
+import type { CareIntent } from "./care/CareIntentNavigator";
 
 function intentFromNext(next: string): CareIntent | undefined {
   if (next.startsWith("/prescription")) return "prescription";
@@ -47,6 +47,58 @@ export default async function ChoosePharmacy({
   title?: string;
   description?: string;
 }) {
+  const isDeepIntent =
+    next !== "/" &&
+    (next.includes("?") ||
+      next.startsWith("/vaccinations") ||
+      next.startsWith("/order") ||
+      next.startsWith("/refill") ||
+      next.startsWith("/services") ||
+      next.startsWith("/delivery") ||
+      next.startsWith("/careers") ||
+      next.startsWith("/faq") ||
+      next.startsWith("/contact"));
+
+  if (isDeepIntent) {
+    const rawPharmacies = await listMarketplacePharmacies();
+    const pharmacies: ChooserPharmacy[] = rawPharmacies.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      tagline: p.tagline,
+      city: p.city,
+      county: p.county,
+      country: p.country,
+      latitude: p.latitude,
+      longitude: p.longitude,
+      logoUrl: p.logoUrl,
+      coverImageUrl: p.coverImageUrl,
+      featured: p.featured,
+    }));
+
+    return (
+      <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
+        <PageHero
+          eyebrow="Choose pharmacy"
+          title={title || "Choose a pharmacy to continue"}
+          description={
+            description ||
+            "Select a licensed pharmacy near you to continue with your exact request and preserved options."
+          }
+          crumbs={[{ label: "Pharmacies", href: "/pharmacies" }, { label: "Choose" }]}
+        />
+        <section className="px-3 pb-16 sm:px-6 sm:pb-20">
+          <PharmacyChooser pharmacies={pharmacies} next={next} />
+        </section>
+      </div>
+    );
+  }
+
+  const { getSessionUser } = await import("@/app/lib/auth");
+  const CareHero = (await import("./care/CareHero")).default;
+  const CareIntentNavigator = (await import("./care/CareIntentNavigator")).default;
+  const styles = (await import("./care/CarePages.module.css")).default;
+
   const session = await getSessionUser().catch(() => null);
   const initialIntent = intentFromNext(next);
   const initialQuery = queryFromNext(next);

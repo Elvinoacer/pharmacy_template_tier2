@@ -18,10 +18,16 @@ export const dynamic = "force-dynamic";
 type Props = { searchParams: Promise<{ vaccine?: string; campaign?: string }> };
 
 export default async function BookVaccinationPage({ searchParams }: Props) {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/vaccinations/book" />;
-
   const { vaccine, campaign } = await searchParams;
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) {
+    const qStr = new URLSearchParams();
+    if (vaccine) qStr.set("vaccine", vaccine);
+    if (campaign) qStr.set("campaign", campaign);
+    const nextWithParams = `/vaccinations/book${qStr.toString() ? `?${qStr.toString()}` : ""}`;
+    return <ChoosePharmacy next={nextWithParams} />;
+  }
+
   const [vaccines, session] = await Promise.all([
     listPublicVaccines().catch(() => []),
     getSessionUser().catch(() => null),
@@ -74,6 +80,7 @@ export default async function BookVaccinationPage({ searchParams }: Props) {
             defaultName={defaultName}
             defaultPhone={defaultPhone}
             defaultEmail={defaultEmail}
+            pharmacySlug={pharmacy.slug || undefined}
           />
         </div>
       </section>

@@ -14,6 +14,7 @@ import { publicErrorMessage } from "@/app/lib/public-error";
 import { validatePassword } from "@/app/lib/password";
 import { isValidPharmacySlug, slugifyPharmacyName } from "@/app/lib/slug";
 import { getRequestMeta } from "@/app/lib/request-meta";
+import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
 import { loadOwnerSubmissionReadiness } from "@/app/lib/services/pharmacy-verification";
 
@@ -41,6 +42,20 @@ function validateSlug(slug: string) {
 
 export async function createPharmacyDraftAction(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
   try {
+    const meta = await getRequestMeta();
+    const rateKey = `onboard-draft:${meta.ip || "unknown"}`;
+    const rl = await checkRateLimitAsync(rateKey, {
+      limit: 6,
+      windowMs: 60 * 60 * 1000,
+      failClosed: true,
+    });
+    if (!rl.allowed) {
+      return {
+        error: `Too many pharmacy registration attempts. Please try again in ${rl.retryAfterSeconds}s.`,
+        field: "general",
+      };
+    }
+
     let user = await getSessionUser();
     const email = String(formData.get("email") || "").toLowerCase().trim();
     const password = String(formData.get("password") || "");
@@ -183,6 +198,7 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
     const legalName = String(formData.get("legalName") || pharmacy.legalName || "").trim() || name;
     const slug = String(formData.get("slug") || pharmacy.slug).trim().toLowerCase();
     const licenseNumber = String(formData.get("licenseNumber") || pharmacy.licenseNumber || "").trim();
+    const ppbPremisesNumber = String(formData.get("ppbPremisesNumber") || formData.get("licenseNumber") || pharmacy.ppbPremisesNumber || "").trim();
 
     if (!name) return { error: "Enter the pharmacy trading name.", field: "name" };
     const slugError = validateSlug(slug);
@@ -218,6 +234,7 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
       tagline: String(formData.get("tagline") || "").trim() || null,
       description: String(formData.get("description") || "").trim() || null,
       licenseNumber: licenseNumber || null,
+      ppbPremisesNumber: ppbPremisesNumber || null,
       phone: String(formData.get("phone") || "").trim() || null,
       whatsapp: String(formData.get("whatsapp") || "").trim() || null,
       email: String(formData.get("publicEmail") || "").trim() || pharmacy.email,

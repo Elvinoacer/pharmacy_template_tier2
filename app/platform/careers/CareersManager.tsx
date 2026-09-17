@@ -363,7 +363,18 @@ export default function CareersManager({
                         })}
                       </td>
                       <td className="px-4 py-3">
-                        {app.cvFileName ? (
+                        {app.cvUrl ? (
+                          <a
+                            href={app.cvUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download={app.cvFileName || "resume"}
+                            className="inline-flex items-center gap-1 rounded-md bg-teal-50 px-2 py-0.5 text-xs font-mono text-teal-800 hover:bg-teal-100 hover:underline dark:bg-teal-900/30 dark:text-teal-300 dark:hover:bg-teal-900/50"
+                          >
+                            <FileText className="h-3 w-3" />
+                            {app.cvFileName || "Download CV"}
+                          </a>
+                        ) : app.cvFileName ? (
                           <span className="inline-flex items-center gap-1 rounded-md bg-teal-50 px-2 py-0.5 text-xs font-mono text-teal-800 dark:bg-teal-900/30 dark:text-teal-300">
                             <FileText className="h-3 w-3" />
                             {app.cvFileName}

@@ -8,7 +8,7 @@ import {
   assertSessionAccess,
 } from "@/app/lib/services/symptom-triage";
 import { getSessionUser } from "@/app/lib/auth";
-import { prisma } from "@/app/lib/db";
+import { prismaUnscoped } from "@/app/lib/db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
   try {
     const user = await getSessionUser();
     if (user?.customerId) {
-      const sessions = await prisma.symptomSession.findMany({
+      const sessions = await prismaUnscoped.symptomSession.findMany({
         where: { customerId: user.customerId },
         orderBy: { lastMessageAt: "desc" },
         take: 30,
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
     }
 
     if (guestKey) {
-      const sessions = await prisma.symptomSession.findMany({
+      const sessions = await prismaUnscoped.symptomSession.findMany({
         where: { guestKey },
         orderBy: { lastMessageAt: "desc" },
         take: 20,
@@ -128,7 +128,13 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { guestKey?: string; category?: string; chiefComplaint?: string };
+  let body: {
+    guestKey?: string;
+    category?: string;
+    chiefComplaint?: string;
+    pharmacySlug?: string;
+    pharmacyId?: string;
+  };
   try {
     body = await request.json();
   } catch {
@@ -138,9 +144,17 @@ export async function POST(request: Request) {
   const guestKey = String(body.guestKey || "").trim().slice(0, 80) || undefined;
   const category = String(body.category || "").trim().slice(0, 40) || undefined;
   const chiefComplaint = String(body.chiefComplaint || "").trim().slice(0, 500) || undefined;
+  const pharmacySlug = String(body.pharmacySlug || "").trim().slice(0, 100) || undefined;
+  const pharmacyId = String(body.pharmacyId || "").trim().slice(0, 50) || undefined;
 
   try {
-    const session = await createSymptomSession({ guestKey, category, chiefComplaint });
+    const session = await createSymptomSession({
+      guestKey,
+      category,
+      chiefComplaint,
+      pharmacySlug,
+      pharmacyId,
+    });
     const detail = await getSymptomSessionDetail(session.id);
     return json({
       session: detail ? serializeSession(detail) : null,

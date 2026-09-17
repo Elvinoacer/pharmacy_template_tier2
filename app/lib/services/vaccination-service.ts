@@ -8,6 +8,7 @@ import {
   CONSENT_TEXT,
   DEFAULT_IMMUNIZATION_POLICY,
   VACCINE_CATALOG,
+  PRE_VACCINATION_QUESTIONS,
   evaluatePreVaccinationScreening,
   type ScreeningAnswers,
 } from "@/app/lib/vaccination-catalog";
@@ -142,6 +143,7 @@ export type BookVaccinationInput = {
   consenterName: string;
   consenterRelationship?: string | null;
   signatureName: string;
+  pharmacyId?: string;
 };
 
 export async function bookVaccination(input: BookVaccinationInput) {
@@ -165,6 +167,41 @@ export async function bookVaccination(input: BookVaccinationInput) {
     throw new Error("Please type your name to sign the consent.");
   }
 
+  for (const q of PRE_VACCINATION_QUESTIONS) {
+    if (!input.answers?.[q.id] || !["yes", "no", "unsure"].includes(input.answers[q.id])) {
+      throw new Error(`Screening question "${q.prompt}" must be answered.`);
+    }
+  }
+
+  if (input.dateOfBirth) {
+    const dob = new Date(input.dateOfBirth);
+    if (Number.isNaN(dob.getTime()) || dob > new Date()) {
+      throw new Error("Enter a valid date of birth.");
+    }
+    const today = new Date();
+    const ageInMonths =
+      (today.getFullYear() - dob.getFullYear()) * 12 +
+      (today.getMonth() - dob.getMonth());
+    if (vaccine.minAgeMonths != null && ageInMonths < vaccine.minAgeMonths) {
+      const minYears = Math.floor(vaccine.minAgeMonths / 12);
+      throw new Error(
+        `Patient does not meet the minimum age requirement (${minYears > 0 ? `${minYears} years` : `${vaccine.minAgeMonths} months`}) for this vaccine.`,
+      );
+    }
+    if (vaccine.maxAgeMonths != null && ageInMonths > vaccine.maxAgeMonths) {
+      throw new Error("Patient exceeds the maximum recommended age for this vaccine.");
+    }
+  }
+
+  if (input.preferredDate) {
+    const pref = new Date(`${input.preferredDate}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (Number.isNaN(pref.getTime()) || pref < today) {
+      throw new Error("Preferred appointment date must be today or a future date.");
+    }
+  }
+
   const evaluation = evaluatePreVaccinationScreening(input.answers || {});
   const phone = formatMpesaPhone(phoneRaw);
 
@@ -179,15 +216,22 @@ export async function bookVaccination(input: BookVaccinationInput) {
 
   const status =
     evaluation.outcome === "eligible"
-      ? "screened"
+      ? "requested"
       : evaluation.outcome === "defer"
         ? "deferred"
         : evaluation.outcome === "contraindicated"
           ? "cancelled"
           : "referred";
 
+  const tenant = await getTenant().catch(() => ({ pharmacyId: null }));
+  const pharmacyId = input.pharmacyId || tenant.pharmacyId;
+  if (!pharmacyId) {
+    throw new Error("A valid pharmacy is required to book a vaccination appointment.");
+  }
+
   const appointment = await prisma.immunizationAppointment.create({
     data: {
+      pharmacyId,
       vaccineProductId: vaccine.id,
       customerId: input.customerId || null,
       campaignId,
@@ -533,6 +577,7 @@ export async function listAefiReports(take = 80) {
 }
 
 export type CounsellingInput = {
+  pharmacyId?: string | null;
   customerId?: string | null;
   counsellorId?: string | null;
   topic: string;
@@ -551,8 +596,15 @@ export type CounsellingInput = {
 };
 
 export async function createCounsellingSession(input: CounsellingInput) {
+  const tenant = await getTenant().catch(() => ({ pharmacyId: null }));
+  const pharmacyId = input.pharmacyId || tenant.pharmacyId;
+  if (!pharmacyId) {
+    throw new Error("A valid pharmacy is required for preventive counselling appointments.");
+  }
+
   const session = await prisma.preventiveCounsellingSession.create({
     data: {
+      pharmacyId,
       customerId: input.customerId || null,
       counsellorId: input.counsellorId || null,
       topic: input.topic,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -32,6 +32,8 @@ import {
 import BrandMark from "@/app/components/BrandMark";
 import { platform } from "@/app/lib/data";
 import type { PublicBrand } from "@/app/lib/brand";
+import { tenantHref } from "@/app/lib/public-storefront";
+import { subscribeNewsletterAction, type NewsletterState } from "@/app/actions/newsletter";
 
 interface FooterProps {
   surface?: "platform" | "storefront";
@@ -73,22 +75,6 @@ const STOREFRONT_ACTIONS = [
   { href: "/terms", label: "Terms of Service", icon: FileText },
 ];
 
-function prefix(href: string, slug: string | null, storefront: boolean) {
-  if (
-    !storefront ||
-    !slug ||
-    href.startsWith("http") ||
-    href.startsWith("tel") ||
-    href.startsWith("mailto") ||
-    href.startsWith("#")
-  ) {
-    return href;
-  }
-  const [path, q] = href.split("?");
-  const prefixed = path === "/" ? `/p/${slug}` : `/p/${slug}${path}`;
-  return q ? `${prefixed}?${q}` : prefixed;
-}
-
 export default function Footer({
   surface = "platform",
   brand,
@@ -96,7 +82,7 @@ export default function Footer({
 }: FooterProps) {
   const storefront = surface === "storefront" && Boolean(brand?.slug);
   const slug = brand?.slug ?? null;
-  const withBase = (href: string) => prefix(href, slug, storefront);
+  const withBase = (href: string) => (storefront && slug ? tenantHref(slug, href) : href);
 
   const explore = storefront ? STOREFRONT_EXPLORE : PLATFORM_EXPLORE;
   const actions = storefront ? STOREFRONT_ACTIONS : PLATFORM_ACTIONS;
@@ -113,16 +99,10 @@ export default function Footer({
   const email = storefront && brand?.email ? brand.email : "support@gtss.software";
   const address = storefront && brand?.addressFull ? brand.addressFull : "Licensed pharmacies across Kenya";
 
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newsletterEmail.trim()) {
-      setSubscribed(true);
-      setNewsletterEmail("");
-    }
-  };
+  const [newsState, newsAction, newsPending] = useActionState(
+    subscribeNewsletterAction,
+    {} as NewsletterState,
+  );
 
   return (
     <footer
@@ -180,48 +160,51 @@ export default function Footer({
                 {tagline}
               </p>
 
-              {/* Trusted Badge */}
+              {/* Verified Badge */}
               <div className="mt-4 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3.5 py-1.5 text-xs text-slate-200 backdrop-blur-md">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-[#fde047]" />
                 <span>
-                  Trusted by <strong className="text-[#fde047]">10,000+</strong> Kenyans
+                  Licensed by the <strong className="text-[#fde047]">Pharmacy and Poisons Board</strong>
                 </span>
               </div>
 
-              {/* Social Icons Row */}
+              {/* Social / Contact Icons Row */}
               <div className="mt-5 flex flex-wrap items-center gap-2.5">
-                {/* Facebook */}
-                <a
-                  href="https://facebook.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-slate-300 shadow-sm transition-all hover:border-emerald-400/40 hover:bg-black/70 hover:text-white"
-                >
-                  <Facebook className="h-4 w-4" />
-                </a>
+                {platform.social.facebook && (
+                  <a
+                    href={platform.social.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Facebook"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-slate-300 shadow-sm transition-all hover:border-emerald-400/40 hover:bg-black/70 hover:text-white"
+                  >
+                    <Facebook className="h-4 w-4" />
+                  </a>
+                )}
 
-                {/* Instagram */}
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-slate-300 shadow-sm transition-all hover:border-emerald-400/40 hover:bg-black/70 hover:text-white"
-                >
-                  <Instagram className="h-4 w-4" />
-                </a>
+                {platform.social.instagram && (
+                  <a
+                    href={platform.social.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-slate-300 shadow-sm transition-all hover:border-emerald-400/40 hover:bg-black/70 hover:text-white"
+                  >
+                    <Instagram className="h-4 w-4" />
+                  </a>
+                )}
 
-                {/* LinkedIn */}
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-slate-300 shadow-sm transition-all hover:border-emerald-400/40 hover:bg-black/70 hover:text-white"
-                >
-                  <Linkedin className="h-4 w-4" />
-                </a>
+                {platform.social.linkedin && (
+                  <a
+                    href={platform.social.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-slate-300 shadow-sm transition-all hover:border-emerald-400/40 hover:bg-black/70 hover:text-white"
+                  >
+                    <Linkedin className="h-4 w-4" />
+                  </a>
+                )}
 
                 {/* WhatsApp */}
                 <a
@@ -245,8 +228,8 @@ export default function Footer({
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-bold leading-snug text-white sm:text-xs">200+ licensed pharmacies</p>
-                    <p className="mt-0.5 text-[10px] text-slate-400 sm:text-[11px]">across Kenya</p>
+                    <p className="text-[11px] font-bold leading-snug text-white sm:text-xs">Licensed neighbourhood pharmacies</p>
+                    <p className="mt-0.5 text-[10px] text-slate-400 sm:text-[11px]">Connecting communities across Kenya</p>
                   </div>
                 </div>
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 transition-all group-hover:bg-yellow-500 group-hover:text-black sm:h-9 sm:w-9">
@@ -363,19 +346,24 @@ export default function Footer({
                   Get health tips, updates, and important news from the Aether network.
                 </p>
 
-                {subscribed ? (
+                {newsState?.success ? (
                   <div className="mt-4 rounded-2xl border border-emerald-500/30 bg-emerald-950/60 p-4 text-center">
                     <p className="text-xs font-bold text-emerald-300">Thank you for subscribing!</p>
-                    <p className="mt-1 text-[10px] text-slate-400">We will keep you updated.</p>
+                    <p className="mt-1 text-[10px] text-slate-400">{newsState.message || "We will keep you updated."}</p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubscribe} className="mt-4 space-y-3">
+                  <form action={newsAction} className="mt-4 space-y-3">
+                    {slug ? <input type="hidden" name="pharmacySlug" value={slug} /> : null}
+                    {newsState?.error && (
+                      <p className="text-[11px] font-medium text-rose-400" role="alert">
+                        {newsState.error}
+                      </p>
+                    )}
                     <div className="relative">
                       <input
                         type="email"
+                        name="email"
                         required
-                        value={newsletterEmail}
-                        onChange={(e) => setNewsletterEmail(e.target.value)}
                         placeholder="Enter your email"
                         className="w-full rounded-2xl border border-white/10 bg-black/50 px-4 py-3 pr-10 text-xs text-white placeholder:text-slate-500 shadow-inner outline-none transition-colors focus:border-emerald-400"
                       />
@@ -384,9 +372,10 @@ export default function Footer({
 
                     <button
                       type="submit"
-                      className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d4af37] via-[#c2b036] to-[#22c55e] px-6 py-3.5 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-950/40 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-98"
+                      disabled={newsPending}
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d4af37] via-[#c2b036] to-[#22c55e] px-6 py-3.5 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-950/40 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-98 disabled:opacity-60"
                     >
-                      <span>Subscribe</span>
+                      <span>{newsPending ? "Subscribing…" : "Subscribe"}</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
                   </form>

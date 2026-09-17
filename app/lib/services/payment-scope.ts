@@ -2,7 +2,6 @@ import "server-only";
 import { prismaUnscoped } from "@/app/lib/db";
 import { withPharmacy, withPlatformBypass } from "@/app/lib/tenant-context";
 import { getSessionUser } from "@/app/lib/auth";
-import { phoneLast9 } from "@/app/lib/services/daraja";
 import { verifyOrderAccessToken } from "./payments";
 
 /** Resolve an order across the network, authorize its owner, then enter only its tenant. */
@@ -38,11 +37,7 @@ export async function withAuthorizedPayment<T>(
   const token = await withPlatformBypass(() =>
     verifyOrderAccessToken(order.id, input.accessToken),
   );
-  const phone = input.phone ? phoneLast9(input.phone) : "";
-  const phoneMatch = Boolean(
-    phone && order.guestPhone && phoneLast9(order.guestPhone) === phone,
-  );
-  if (!owner && !staff && !token && !phoneMatch) return null;
+  if (!owner && !staff && !token) return null;
   return withPharmacy(order.pharmacyId, run);
 }
 

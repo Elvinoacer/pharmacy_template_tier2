@@ -28,9 +28,9 @@ export const platform = {
   emergency: "999",
   emergencyAlt: "112",
   social: {
-    facebook: "https://facebook.com",
-    instagram: "https://instagram.com",
-    linkedin: "https://linkedin.com",
+    facebook: null as string | null,
+    instagram: null as string | null,
+    linkedin: null as string | null,
   },
 };
 

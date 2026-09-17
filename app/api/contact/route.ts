@@ -74,12 +74,14 @@ export async function POST(request: Request) {
       typeof raw.pharmacySlug === "string"
         ? await findPharmacyBySlug(raw.pharmacySlug)
         : null;
-    if (raw.pharmacySlug && (!pharmacy || !isActiveListed(pharmacy)))
+    if (!pharmacy || !isActiveListed(pharmacy)) {
       return NextResponse.json(
-        { error: "This pharmacy is unavailable." },
-        { status: 409 },
+        { error: "Please select an active pharmacy branch to contact." },
+        { status: 400 },
       );
-    const submit = async () => {
+    }
+
+    await withPharmacy(pharmacy.id, async () => {
       const session = await getSessionUser();
       await createEnquiry({
         name: parsed.data.name,
@@ -91,9 +93,8 @@ export async function POST(request: Request) {
         customerId: session?.customerId ?? undefined,
         source: "website",
       });
-    };
-    if (pharmacy) await withPharmacy(pharmacy.id, submit, pharmacy.slug);
-    else await submit();
+    }, pharmacy.slug);
+
     revalidatePath("/admin/enquiries");
     return NextResponse.json({ ok: true });
   } catch (err) {

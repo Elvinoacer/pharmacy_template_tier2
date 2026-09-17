@@ -135,12 +135,12 @@ export async function bookServiceAction(
         }
       : result.isPayableAfter
         ? {
-            title: "Booking confirmed (Pay at visit)",
-            body: `Your appointment for ${serviceTitle} is confirmed. Fee: KES ${amount?.toLocaleString() ?? ""} payable at the pharmacy.`,
+            title: "Booking request received (Pay at visit)",
+            body: `Your appointment request for ${serviceTitle} has been received. Fee: KES ${amount?.toLocaleString() ?? ""} payable at the pharmacy.`,
             url: `/services/${booking.service.slug}`,
           }
         : {
-            title: "Booking received",
+            title: "Booking request received",
             body: `We've received your ${serviceTitle} request. Our team will follow up on ${booking.phone}.`,
             url: `/services/${booking.service.slug}`,
           },
@@ -154,8 +154,8 @@ export async function bookServiceAction(
     success: requiresPayment
       ? `Request received. Pay KES ${amount?.toLocaleString() ?? ""} via M-Pesa to confirm your ${serviceTitle} booking.`
       : result.isPayableAfter
-        ? `You're booked for ${serviceTitle}! Fee: KES ${amount?.toLocaleString() ?? ""} payable at the pharmacy during your appointment.`
-        : `You're booked for ${serviceTitle}. We'll reach you on ${phone} to confirm timing.`,
+        ? `Your appointment request for ${serviceTitle} was received! Fee: KES ${amount?.toLocaleString() ?? ""} payable at the pharmacy upon visit confirmation.`
+        : `Your appointment request for ${serviceTitle} was received. We'll reach you on ${phone} to confirm timing.`,
     bookingId: booking.id,
     orderId: orderId ?? null,
     accessToken: orderId ? await issueOrderAccessToken(orderId) : undefined,

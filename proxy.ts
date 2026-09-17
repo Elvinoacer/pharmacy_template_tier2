@@ -105,6 +105,18 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/platform')
 
   if (!needsAuth) {
+    if (!requestHeaders.get('x-pharmacy-slug')) {
+      const cookieSlug = request.cookies.get(PUBLIC_PHARMACY_COOKIE)?.value?.trim().toLowerCase()
+      if (cookieSlug && PUBLIC_SLUG_RE.test(cookieSlug)) {
+        if (
+          pathname.startsWith('/api/feel') ||
+          pathname.startsWith('/api/vaccinations') ||
+          pathname.startsWith('/api/screenings')
+        ) {
+          requestHeaders.set('x-pharmacy-slug', cookieSlug)
+        }
+      }
+    }
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 

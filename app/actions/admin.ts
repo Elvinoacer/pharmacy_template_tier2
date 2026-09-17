@@ -29,7 +29,7 @@ import {
 } from "@/app/lib/time";
 import { emailVerificationBody, sendDelivery } from "@/app/lib/services/delivery";
 import type { RefillStatus } from "@/app/generated/prisma/client";
-import { createHash, randomBytes } from "crypto";
+import { createHash, randomBytes, randomUUID } from "crypto";
 
 export type ActionState = {
   error?: string;
@@ -1932,11 +1932,11 @@ export async function adminCreateOrderAction(
         if (!finalCustomerId) {
           const walkInName = String(formData.get("customerName") || "Walk-in Patient").trim();
           const walkInPhone = guestPhone || String(formData.get("customerPhone") || "").trim() || null;
-          const walkInEmail = customerEmail || `patient-${Date.now()}@pharmacy.internal`;
+          const walkInEmail = `guest-${randomUUID()}@guest.aether.internal`;
 
           const u = await tx.user.create({
             data: {
-              email: walkInEmail.toLowerCase(),
+              email: walkInEmail,
               role: "customer" as const,
               emailVerified: false,
             },
@@ -1946,6 +1946,7 @@ export async function adminCreateOrderAction(
               userId: u.id,
               fullName: walkInName,
               phone: walkInPhone,
+              notes: customerEmail ? `Contact email: ${customerEmail}` : undefined,
             },
           });
           finalCustomerId = p.id;

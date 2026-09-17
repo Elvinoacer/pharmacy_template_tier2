@@ -37,9 +37,15 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const tenant = await getTenant().catch(() => null);
   const service = await prismaUnscoped.pharmacyService
     .findFirst({
-      where: { slug, active: true },
+      where: {
+        slug,
+        active: true,
+        ...(tenant?.pharmacyId && !tenant.bypass ? { pharmacyId: tenant.pharmacyId } : {}),
+        pharmacy: acceptingCareRequests,
+      },
       include: {
         pharmacy: {
           select: { name: true, city: true, county: true, latitude: true, longitude: true },
@@ -92,7 +98,7 @@ export default async function ServiceDetailPage({ params }: Props) {
   return withPharmacy(tenant.pharmacyId, async () => {
   const pharmacy = await loadStorefront();
   if (!pharmacy) notFound();
-  const service = await getPublicServiceBySlug(slug).catch(() => null);
+  const service = await getPublicServiceBySlug(slug, pharmacy.id || undefined).catch(() => null);
   if (!service) notFound();
 
   const all = await listPublicServices().catch(() => []);

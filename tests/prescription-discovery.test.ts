@@ -50,4 +50,30 @@ describe("prescription discovery", () => {
       ["Metformin 500mg", "Metformin 850mg"],
     );
   });
+  it("matches valid brand extensions without false negatives", () => {
+    assert.equal(
+      matchesPrescriptionName("Panadol", ["Panadol Extra"]),
+      true,
+    );
+    assert.equal(
+      matchesPrescriptionName("Brufen", ["Brufen Retard 800mg"]),
+      true,
+    );
+  });
+  it("distinguishes exact clinical match vs likely product match", () => {
+    const { classifyPrescriptionMatch } = require("../app/lib/prescription-discovery");
+    const exact = classifyPrescriptionMatch("Panadol 500mg", ["Panadol 500mg tablets"]);
+    assert.equal(exact.match, true);
+    assert.equal(exact.kind, "exact");
+    assert.equal(exact.score, 100);
+
+    const likely = classifyPrescriptionMatch("Panadol", ["Panadol Extra 500mg tablets"]);
+    assert.equal(likely.match, true);
+    assert.equal(likely.kind, "likely");
+    assert.equal(likely.score, 80);
+
+    const wrongStrength = classifyPrescriptionMatch("Metformin 500mg", ["Metformin 850mg"]);
+    assert.equal(wrongStrength.match, false);
+    assert.equal(wrongStrength.kind, "none");
+  });
 });

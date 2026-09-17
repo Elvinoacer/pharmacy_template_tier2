@@ -50,6 +50,78 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, pharmacySlug: propPharmacySlug } = await params;
+
+  const pharmacy = propPharmacySlug
+    ? await getResolvedPharmacyOrNull({ slug: propPharmacySlug }).catch(() => null)
+    : null;
+
+  if (pharmacy) {
+    const med = await prisma.pharmacyInventory
+      .findFirst({
+        where: buildPublicInventoryWhere({
+          slug,
+          pharmacyId: pharmacy.id,
+          pharmacySlug: pharmacy.slug,
+        }),
+        include: {
+          pharmacy: { select: { name: true, city: true, county: true, latitude: true, longitude: true, slug: true } },
+          medicationMaster: {
+            select: { name: true, genericName: true, brandName: true, description: true, dosage: true, imageUrl: true },
+          },
+        },
+      })
+      .catch(() => null);
+
+    if (med) {
+      const locationStr = [med.pharmacy?.city, med.pharmacy?.county, "Kenya"].filter(Boolean).join(", ");
+      const coordinates =
+        med.pharmacy?.latitude != null && med.pharmacy?.longitude != null
+          ? `${med.pharmacy.latitude};${med.pharmacy.longitude}`
+          : undefined;
+
+      const title = `${med.medicationMaster.name} — Price, Stock & Delivery in ${med.pharmacy?.city || "Kenya"} | ${med.pharmacy?.name}`;
+
+      return {
+        title,
+        description:
+          med.medicationMaster.description ||
+          `Buy ${med.medicationMaster.name} (${med.medicationMaster.genericName}) online in ${locationStr} at ${med.pharmacy?.name || "Aether"}. Check real-time stock, pricing, and fast delivery or pickup.`,
+        alternates: { canonical: `/p/${pharmacy.slug}/medicines/${med.slug}` },
+        openGraph: {
+          title: `${med.medicationMaster.name} — ${med.pharmacy?.name || "Aether"}`,
+          description: med.medicationMaster.description || `In stock at ${med.pharmacy?.name || "verified pharmacies"} in ${locationStr}.`,
+          images: med.medicationMaster.imageUrl ? [med.medicationMaster.imageUrl] : undefined,
+        },
+        other: coordinates
+          ? {
+              "geo.position": coordinates,
+              "geo.region": "KE",
+              "geo.placename": med.pharmacy?.city || "Kenya",
+              "ICBM": `${med.pharmacy?.latitude}, ${med.pharmacy?.longitude}`,
+            }
+          : undefined,
+      };
+    }
+  } else {
+    const listings = await listNetworkListingsForSlug(slug).catch(() => []);
+    const first = listings[0];
+    if (first) {
+      return {
+        title: `${first.medicationMaster.name} — Price, Availability & Guidance | Aether`,
+        description:
+          first.medicationMaster.description ||
+          `Compare ${first.medicationMaster.name} availability across verified Aether pharmacies.`,
+        alternates: { canonical: `/medicines/${slug}` },
+        openGraph: {
+          title: `${first.medicationMaster.name} — Aether`,
+          description: first.medicationMaster.description || "Compare live pharmacy availability.",
+          images: first.medicationMaster.imageUrl ? [first.medicationMaster.imageUrl] : undefined,
+        },
+      };
+    }
+  }
+
+  // Fallback to Category if no medicine listing matched
   const cat = await getPublicCategoryBySlug(slug).catch(() => null);
   if (cat) {
     return {
@@ -61,74 +133,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const pharmacy = propPharmacySlug
-    ? await getResolvedPharmacyOrNull({ slug: propPharmacySlug }).catch(() => null)
-    : null;
-
-  if (!pharmacy) {
-    const listings = await listNetworkListingsForSlug(slug).catch(() => []);
-    const first = listings[0];
-    if (!first) return { title: "Medicine Not Found", robots: { index: false, follow: false } };
-    return {
-      title: `${first.medicationMaster.name} — Price, Availability & Guidance | Aether`,
-      description:
-        first.medicationMaster.description ||
-        `Compare ${first.medicationMaster.name} availability across verified Aether pharmacies.`,
-      alternates: { canonical: `/medicines/${slug}` },
-      openGraph: {
-        title: `${first.medicationMaster.name} — Aether`,
-        description: first.medicationMaster.description || "Compare live pharmacy availability.",
-        images: first.medicationMaster.imageUrl ? [first.medicationMaster.imageUrl] : undefined,
-      },
-    };
-  }
-
-  const med = await prisma.pharmacyInventory
-    .findFirst({
-      where: buildPublicInventoryWhere({
-        slug,
-        pharmacyId: pharmacy.id,
-        pharmacySlug: pharmacy.slug,
-      }),
-      include: {
-        pharmacy: { select: { name: true, city: true, county: true, latitude: true, longitude: true, slug: true } },
-        medicationMaster: {
-          select: { name: true, genericName: true, brandName: true, description: true, dosage: true, imageUrl: true },
-        },
-      },
-    })
-    .catch(() => null);
-
-  if (!med) return { title: "Medicine Not Found", robots: { index: false, follow: false } };
-
-  const locationStr = [med.pharmacy?.city, med.pharmacy?.county, "Kenya"].filter(Boolean).join(", ");
-  const coordinates =
-    med.pharmacy?.latitude != null && med.pharmacy?.longitude != null
-      ? `${med.pharmacy.latitude};${med.pharmacy.longitude}`
-      : undefined;
-
-  const title = `${med.medicationMaster.name} — Price, Stock & Delivery in ${med.pharmacy?.city || "Kenya"} | ${med.pharmacy?.name}`;
-
-  return {
-    title,
-    description:
-      med.medicationMaster.description ||
-      `Buy ${med.medicationMaster.name} (${med.medicationMaster.genericName}) online in ${locationStr} at ${med.pharmacy?.name || "Aether"}. Check real-time stock, pricing, and fast delivery or pickup.`,
-    alternates: { canonical: pharmacy ? `/p/${pharmacy.slug}/medicines/${med.slug}` : `/medicines/${med.slug}` },
-    openGraph: {
-      title: `${med.medicationMaster.name} — ${med.pharmacy?.name || "Aether"}`,
-      description: med.medicationMaster.description || `In stock at ${med.pharmacy?.name || "verified pharmacies"} in ${locationStr}.`,
-      images: med.medicationMaster.imageUrl ? [med.medicationMaster.imageUrl] : undefined,
-    },
-    other: coordinates
-      ? {
-          "geo.position": coordinates,
-          "geo.region": "KE",
-          "geo.placename": med.pharmacy?.city || "Kenya",
-          "ICBM": `${med.pharmacy?.latitude}, ${med.pharmacy?.longitude}`,
-        }
-      : undefined,
-  };
+  return { title: "Medicine Not Found", robots: { index: false, follow: false } };
 }
 
 export default async function CategoryOrMedicinePage({ params }: Props) {
@@ -140,9 +145,49 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
   const pharmacyId = pharmacy?.id;
   const pharmacySlug = pharmacy?.slug;
   const base = pharmacySlug ? `/p/${pharmacySlug}` : "";
-  const cat = await getPublicCategoryBySlug(slug).catch(() => null);
 
-  if (cat) {
+  // 1. Check for network-level medicine listing if no pharmacy is selected
+  if (!pharmacy || !pharmacyId || !pharmacySlug) {
+    const networkListings = await listNetworkListingsForSlug(slug).catch(() => []);
+    if (networkListings.length > 0) {
+      return <NetworkMedicineView slug={slug} />;
+    }
+  }
+
+  // 2. Check for pharmacy inventory medicine listing
+  const med = pharmacyId
+    ? await prisma.pharmacyInventory
+        .findFirst({
+          where: buildPublicInventoryWhere({ pharmacyId, slug }),
+          include: {
+            medicationMaster: {
+              select: {
+                name: true,
+                genericName: true,
+                description: true,
+                dosage: true,
+                indications: true,
+                sideEffects: true,
+                contraindications: true,
+                storage: true,
+                category: true,
+                imageUrl: true,
+                imageUrls: true,
+                alternativeIds: true,
+                dosageForm: { select: { value: true } },
+              },
+            },
+            reservations: { where: { status: "active" }, select: { quantity: true } },
+          },
+        })
+        .catch(() => null)
+    : null;
+
+  // 3. If no medicine matched, check if this slug is a Category
+  if (!med) {
+    const cat = await getPublicCategoryBySlug(slug).catch(() => null);
+    if (!cat) notFound();
+
     const otcGuidance = getOtcCategoryGuidance(cat.slug);
     const network = pharmacy
       ? null
@@ -417,38 +462,9 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
     );
   }
 
-  if (!pharmacy || !pharmacyId || !pharmacySlug) {
-    return <NetworkMedicineView slug={slug} />;
-  }
-
   // ── INDIVIDUAL MEDICINE PRODUCT DETAIL ──
-  const med = await prisma.pharmacyInventory
-    .findFirst({
-      where: buildPublicInventoryWhere({ pharmacyId, slug }),
-      include: {
-        medicationMaster: {
-          select: {
-            name: true,
-            genericName: true,
-            description: true,
-            dosage: true,
-            indications: true,
-            sideEffects: true,
-            contraindications: true,
-            storage: true,
-            category: true,
-            imageUrl: true,
-            imageUrls: true,
-            alternativeIds: true,
-            dosageForm: { select: { value: true } },
-          },
-        },
-        reservations: { where: { status: "active" }, select: { quantity: true } },
-      },
-    })
-    .catch(() => null);
 
-  if (!med) notFound();
+  if (!pharmacy || !pharmacyId) notFound();
 
   const altIds = (med.medicationMaster.alternativeIds || "").split(/[,\s]+/).map((value) => value.trim()).filter(Boolean);
   const related = await getPublicMedicineRelated({

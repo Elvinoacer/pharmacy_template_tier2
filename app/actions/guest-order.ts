@@ -72,10 +72,39 @@ export async function guestCreateOrderAction(
 
   // Resolve trusted pharmacy context: reassert tenant authority so inventory from
   // another pharmacy cannot be ordered under this storefront.
-  const { getTenant } = await import("@/app/lib/tenant");
+  const { getTenant, findPharmacyById, findPharmacyBySlug } = await import("@/app/lib/tenant");
+  const { loadStorefront } = await import("@/app/components/StorefrontGate");
   const tenant = await getTenant().catch(() => ({ pharmacyId: null, slug: null }));
-  const trustedPharmacyId = tenant.pharmacyId || (submittedPharmacyId || null);
-  const trustedPharmacySlug = tenant.slug || (submittedPharmacySlug || null);
+  const storefrontPharmacy = await loadStorefront().catch(() => null);
+
+  let trustedPharmacyId = tenant.pharmacyId || storefrontPharmacy?.id || null;
+  let trustedPharmacySlug = tenant.slug || storefrontPharmacy?.slug || null;
+
+  if (!trustedPharmacyId && submittedPharmacyId) {
+    const verifiedRow = await findPharmacyById(submittedPharmacyId);
+    if (verifiedRow && verifiedRow.status === "active" && verifiedRow.listed) {
+      trustedPharmacyId = verifiedRow.id;
+      trustedPharmacySlug = verifiedRow.slug;
+    }
+  } else if (!trustedPharmacyId && submittedPharmacySlug) {
+    const verifiedRow = await findPharmacyBySlug(submittedPharmacySlug);
+    if (verifiedRow && verifiedRow.status === "active" && verifiedRow.listed) {
+      trustedPharmacyId = verifiedRow.id;
+      trustedPharmacySlug = verifiedRow.slug;
+    }
+  }
+
+  if (!trustedPharmacyId) {
+    return { error: "Please select a pharmacy before placing your order." };
+  }
+
+  // Cross-tenant verification: if client submitted a different pharmacy, fail closed
+  if (submittedPharmacyId && submittedPharmacyId !== trustedPharmacyId) {
+    return { error: "The selected product does not belong to the active pharmacy storefront." };
+  }
+  if (submittedPharmacySlug && trustedPharmacySlug && submittedPharmacySlug.toLowerCase() !== trustedPharmacySlug.toLowerCase()) {
+    return { error: "The selected product does not belong to the active pharmacy storefront." };
+  }
 
   const med = await prisma.pharmacyInventory.findFirst({
     where: {
@@ -83,7 +112,7 @@ export async function guestCreateOrderAction(
       active: true,
       overTheCounter: true,
       publicListing: true,
-      ...(trustedPharmacyId ? { pharmacyId: trustedPharmacyId } : {}),
+      pharmacyId: trustedPharmacyId,
     },
     include: {
       medicationMaster: { select: { name: true } },
@@ -97,9 +126,9 @@ export async function guestCreateOrderAction(
     },
   });
   if (!med) {
-    return { error: "This product is not available for online guest order." };
+    return { error: "This product is not available for online guest order from the selected pharmacy." };
   }
-  if (trustedPharmacyId && med.pharmacyId !== trustedPharmacyId) {
+  if (med.pharmacyId !== trustedPharmacyId) {
     return { error: "This product does not belong to the selected pharmacy." };
   }
   if (trustedPharmacySlug && med.pharmacy?.slug && med.pharmacy.slug !== trustedPharmacySlug) {

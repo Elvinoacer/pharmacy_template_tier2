@@ -80,7 +80,7 @@ export default function AuthForm({
       className={
         artworkBackdrop
           ? "liquid-glass care-glass mx-auto grid w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/25 bg-transparent shadow-[0_24px_80px_rgba(0,0,0,0.24)] lg:grid-cols-[0.95fr_1.05fr]"
-          : "liquid-glass care-glass mx-auto grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 shadow-[0_24px_80px_rgba(8,40,32,0.12)] backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr]"
+          : "liquid-glass care-glass mx-auto grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-[var(--line)] bg-[var(--card)] shadow-[0_24px_80px_rgba(8,40,32,0.12)] backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr]"
       }
       style={artworkBackdrop ? { background: "transparent", backdropFilter: "none" } : undefined}
     >
@@ -185,7 +185,7 @@ export default function AuthForm({
       >
         <Link
           href="/"
-          className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-[#5a6b62] transition hover:text-[#084c3f] lg:hidden"
+          className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)] lg:hidden"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to {platform.name}
@@ -201,17 +201,17 @@ export default function AuthForm({
                 />
               </svg>
             </span>
-            <span className="text-xl font-semibold text-[#0c1a14]" style={{ fontFamily: "var(--font-display), serif" }}>
+            <span className="text-xl font-semibold text-[var(--foreground)]" style={{ fontFamily: "var(--font-display), serif" }}>
               Aether
             </span>
           </Link>
           <h1
-            className="mt-4 text-2xl font-semibold text-[#0c1a14] sm:text-3xl"
+            className="mt-4 text-2xl font-semibold text-[var(--foreground)] sm:text-3xl"
             style={{ fontFamily: "var(--font-display), serif" }}
           >
             {title}
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#5a6b62]">{subtitle}</p>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{subtitle}</p>
         </div>
 
         <form action={formAction} className="space-y-4">
@@ -252,15 +252,15 @@ export default function AuthForm({
             <>
               <div className="relative my-2">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-teal-900/10" />
+                  <div className="w-full border-t border-[var(--line)]" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white/80 px-3 text-[#5a6b62]">Or continue with</span>
+                  <span className="bg-[var(--card)] px-3 text-[var(--muted)]">Or continue with</span>
                 </div>
               </div>
               <a
                 href={hiddenFields?.next ? `/api/auth/google?next=${encodeURIComponent(hiddenFields.next)}` : "/api/auth/google"}
-                className="flex w-full items-center justify-center gap-3 rounded-2xl border border-teal-900/10 bg-white px-4 py-3 text-sm font-semibold text-[#0c1a14] shadow-sm transition hover:bg-teal-50"
+                className="flex w-full items-center justify-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--card)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--surface-sunken)]"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
                   <path
@@ -286,7 +286,7 @@ export default function AuthForm({
           )}
         </form>
 
-        {footer && <div className="mt-6 space-y-2 text-center text-sm text-[#5a6b62]">{footer}</div>}
+        {footer && <div className="mt-6 space-y-2 text-center text-sm text-[var(--muted)]">{footer}</div>}
       </div>
     </div>
   );
@@ -309,14 +309,14 @@ export function AuthField({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-[#0c1a14]">{label}</span>
+      <span className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">{label}</span>
       <input
         name={name}
         type={type}
         required={required}
         autoComplete={autoComplete}
         placeholder={placeholder}
-        className="w-full rounded-2xl border border-teal-900/10 bg-white px-4 py-3 text-sm outline-none ring-teal-700/20 transition focus:ring-2"
+        className="w-full rounded-2xl border border-[var(--line)] bg-[var(--card)] text-[var(--foreground)] px-4 py-3 text-sm outline-none ring-[var(--brand)]/20 transition focus:ring-2"
       />
     </label>
   );

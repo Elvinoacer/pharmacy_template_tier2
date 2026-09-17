@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
+import { useTenantSlug } from "../TenantLink";
 import {
   bookCounsellingAction,
   type VaccinationActionState,
@@ -26,6 +27,8 @@ export function PreventiveHealthHub({
   campaigns,
   defaultName = "",
   defaultPhone = "",
+  pharmacySlug: pharmacySlugProp,
+  pharmacies = [],
 }: {
   campaigns: Array<{
     slug: string;
@@ -39,7 +42,11 @@ export function PreventiveHealthHub({
   }>;
   defaultName?: string;
   defaultPhone?: string;
+  pharmacySlug?: string;
+  pharmacies?: Array<{ slug: string; name: string; city?: string | null }>;
 }) {
+  const tenantSlug = useTenantSlug();
+  const activeSlug = pharmacySlugProp || tenantSlug || "";
   const [tab, setTab] = useState<"counselling" | "campaigns" | "education">("counselling");
   const [topic, setTopic] = useState(COUNSELLING_TOPICS[0]?.slug || "immunization_education");
   const [state, formAction, pending] = useActionState(bookCounsellingAction, {} as VaccinationActionState);
@@ -131,6 +138,28 @@ export function PreventiveHealthHub({
                 <form action={formAction} className="mt-5 space-y-3">
                   <input type="hidden" name="topic" value={topic} />
                   <input type="hidden" name="format" value="in_person" />
+                  {activeSlug ? (
+                    <input type="hidden" name="pharmacySlug" value={activeSlug} />
+                  ) : (
+                    <label className="block text-sm">
+                      <span className="font-medium text-[#0c1a14]">Select pharmacy</span>
+                      <select
+                        name="pharmacySlug"
+                        required
+                        defaultValue=""
+                        className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm"
+                      >
+                        <option value="" disabled>
+                          Choose your local pharmacy
+                        </option>
+                        {pharmacies.map((p) => (
+                          <option key={p.slug} value={p.slug}>
+                            {p.name} {p.city ? `(${p.city})` : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
                   <label className="block text-sm">
                     <span className="font-medium">Your name</span>
                     <input name="patientName" required defaultValue={defaultName} className="mt-1 w-full rounded-xl border border-teal-900/10 bg-[#f7faf8] px-3 py-2.5 text-sm" />

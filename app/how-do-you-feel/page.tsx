@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 import HowDoYouFeelStableClient from "../components/feel/HowDoYouFeelStableClient";
 import { platform } from "../lib/data";
+import { getTenant, listMarketplacePharmacies } from "../lib/tenant";
 import "./feel.css";
 
 export const metadata: Metadata = {
@@ -10,7 +11,20 @@ export const metadata: Metadata = {
   alternates: { canonical: "/how-do-you-feel" },
 };
 
-export default function HowDoYouFeelPage() {
+export default async function HowDoYouFeelPage(props?: {
+  searchParams?: Promise<{ pharmacy?: string }>;
+}) {
+  const searchParams = props?.searchParams ? await props.searchParams : undefined;
+  const tenant = await getTenant();
+  const initialSlug = searchParams?.pharmacy?.trim() || tenant.slug || null;
+  const rawPharmacies = await listMarketplacePharmacies();
+  const pharmacies = rawPharmacies.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    address: p.city ? `${p.city}, ${p.county || ""}` : undefined,
+  }));
+
   return (
     <main className="feel-page min-h-screen overflow-hidden bg-transparent text-slate-950 transition-colors dark:text-slate-100">
       <div
@@ -32,7 +46,11 @@ export default function HowDoYouFeelPage() {
         <section className="px-3 pb-16 sm:px-6 sm:pb-24">
           <div className="mx-auto max-w-6xl">
             <div className="liquid-glass care-glass rounded-[1.75rem] border border-[var(--care-border)] bg-[var(--care-glass)] p-2 shadow-xl backdrop-blur-xl sm:rounded-[2rem] sm:p-3">
-              <HowDoYouFeelStableClient mode="public" />
+              <HowDoYouFeelStableClient
+                mode="public"
+                pharmacySlug={initialSlug}
+                pharmacies={pharmacies}
+              />
             </div>
           </div>
         </section>

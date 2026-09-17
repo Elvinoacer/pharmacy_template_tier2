@@ -16,6 +16,7 @@ export default function CareerForm({
   pharmacySlug?: string;
 }) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const [fileName, setFileName] = useState("");
   const tenantSlug = useTenantSlug();
   const pharmacySlug = pharmacySlugProp || tenantSlug || undefined;
@@ -24,32 +25,29 @@ export default function CareerForm({
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("submitting");
+    setErrorMessage("");
     const form = e.currentTarget;
     const formData = new FormData(form);
-
-    // Demo: CV is not uploaded to storage — we only record metadata.
-    const payload = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      role: formData.get("role"),
-      message: formData.get("message"),
-      cvFileName: fileName || "not-provided",
-      company: formData.get("company"),
-      ...(pharmacySlug ? { pharmacySlug } : {}),
-    };
+    if (pharmacySlug) {
+      formData.set("pharmacySlug", pharmacySlug);
+    }
 
     try {
       const res = await fetch("/api/careers", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formData,
       });
-      if (!res.ok) throw new Error("Failed");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to submit application");
+      }
       setStatus("success");
       form.reset();
       setFileName("");
-    } catch {
+    } catch (err) {
+      setErrorMessage(
+        err instanceof Error ? err.message : "Something went wrong. Please try again or email your CV directly.",
+      );
       setStatus("error");
     }
   }
@@ -110,7 +108,6 @@ export default function CareerForm({
           />
         </label>
         {fileName && <p className="mt-1.5 break-all text-xs text-[var(--muted)]">Selected: {fileName}</p>}
-        <p className="mt-1 text-[11px] leading-5 text-[var(--muted-2)]">Demo environment: the file name is recorded, but the CV file itself is not stored.</p>
       </div>
 
       <TextArea label="Cover note (optional)" id="message" rows={4} placeholder="Tell us why you would like to join." />
@@ -121,7 +118,7 @@ export default function CareerForm({
 
       {status === "error" && (
         <p className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-sm leading-5 text-rose-600" role="alert">
-          Something went wrong. Please try again or email your CV directly.
+          {errorMessage || "Something went wrong. Please try again or email your CV directly."}
         </p>
       )}
 

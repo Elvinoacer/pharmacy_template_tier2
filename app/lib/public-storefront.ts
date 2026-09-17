@@ -24,8 +24,14 @@ export const PUBLIC_STOREFRONT_SECTIONS = [
  * `/p/{slug}/contact`.
  */
 export const PUBLIC_IDENTITY_SECTIONS = ["careers", "contact", "delivery", "faq"] as const;
+export const PUBLIC_CLINICAL_SECTIONS = [
+  "vaccinations",
+  "screenings",
+  "preventive",
+  "how-do-you-feel",
+] as const;
 
-const DETAIL_SECTIONS = new Set(["medicines", "services", "vaccinations"]);
+const DETAIL_SECTIONS = new Set(["medicines", "services", "vaccinations", "screenings"]);
 const STOREFRONT_SECTIONS = new Set<string>(PUBLIC_STOREFRONT_SECTIONS);
 const PREFIXABLE_STOREFRONT_SECTIONS = new Set<string>(
   PUBLIC_STOREFRONT_SECTIONS.filter((section) => section !== "home"),

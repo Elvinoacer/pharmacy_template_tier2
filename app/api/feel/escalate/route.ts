@@ -28,7 +28,13 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { sessionId?: string; guestKey?: string; reason?: string };
+  let body: {
+    sessionId?: string;
+    guestKey?: string;
+    reason?: string;
+    pharmacySlug?: string;
+    pharmacyId?: string;
+  };
   try {
     body = await request.json();
   } catch {
@@ -45,6 +51,8 @@ export async function POST(request: Request) {
       sessionId,
       guestKey: body.guestKey,
       reason: String(body.reason || "user_requested_pharmacist").slice(0, 200),
+      pharmacySlug: body.pharmacySlug?.trim() || undefined,
+      pharmacyId: body.pharmacyId?.trim() || undefined,
     });
 
     if (result.error === "not_found") {

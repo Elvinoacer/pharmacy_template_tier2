@@ -36,6 +36,10 @@ const sections = [
   ["about", "About"],
   ["medicines", "Medicines"],
   ["services", "Services"],
+  ["vaccinations", "Vaccinations"],
+  ["screenings", "Screenings"],
+  ["preventive", "Preventive"],
+  ["how-do-you-feel", "Care Check-in"],
   ["delivery", "Delivery"],
   ["faq", "FAQ"],
   ["careers", "Careers"],
@@ -123,7 +127,7 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
   }
   if (section === "screenings") return HealthScreeningsPage();
   if (section === "preventive") return PreventivePage();
-  if (section === "how-do-you-feel") return HowDoYouFeelPage();
+  if (section === "how-do-you-feel") return HowDoYouFeelPage({});
   const medicines = section === "medicines" ? await publicStorefrontMedicines(slug, detail ? "" : q, page, detail) : null;
   const services = section === "services" ? await publicStorefrontServices(slug, detail) : null;
   if (detail && !(medicines?.length || services?.length)) notFound();

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/app/lib/auth";
+import { findPharmacyById, findPharmacyBySlug, getTenant, withPharmacy } from "@/app/lib/tenant";
 import { requirePermission } from "@/app/lib/platform/policy";
 import type { Permission } from "@/app/lib/platform/permissions";
 import type { SessionUser } from "@/app/lib/types";
@@ -84,7 +85,11 @@ export async function bookVaccinationAction(
   const answers: CatalogAnswers = {};
   for (const q of PRE_VACCINATION_QUESTIONS) {
     const raw = String(formData.get(`q_${q.id}`) || "").trim();
-    if (raw === "yes" || raw === "no" || raw === "unsure") answers[q.id] = raw;
+    if (raw === "yes" || raw === "no" || raw === "unsure") {
+      answers[q.id] = raw;
+    } else {
+      return { error: `Please answer the screening question: "${q.prompt}"` };
+    }
   }
 
   const rateKey = `vaccination-book:${phone.replace(/\D/g, "").slice(-9)}`;
@@ -103,26 +108,44 @@ export async function bookVaccinationAction(
   // clinical appointment to that customer's longitudinal record.
   const customerId = session?.customerId ?? null;
 
+  const pharmacySlug = String(formData.get("pharmacySlug") || "").trim();
+  let targetPharmacy = pharmacySlug ? await findPharmacyBySlug(pharmacySlug) : null;
+  if (!targetPharmacy) {
+    const tenant = await getTenant();
+    if (tenant.pharmacyId) {
+      targetPharmacy = await findPharmacyById(tenant.pharmacyId);
+    }
+  }
+  if (!targetPharmacy) {
+    return { error: "Please select an active pharmacy to book your vaccination." };
+  }
+
   try {
-    const result = await bookVaccination({
-      vaccineSlug,
-      fullName,
-      phone,
-      email: email || null,
-      dateOfBirth: dateOfBirth || null,
-      gender: gender || null,
-      preferredDate: preferredDate || null,
-      preferredTime: preferredTime || null,
-      notes: notes || null,
-      source: session?.customerId ? "portal" : "online",
-      customerId,
-      campaignSlug: campaignSlug || null,
-      answers: answers,
-      consentType,
-      consenterName,
-      consenterRelationship: consenterRelationship || null,
-      signatureName,
-    });
+    const result = await withPharmacy(
+      targetPharmacy.id,
+      () =>
+        bookVaccination({
+          pharmacyId: targetPharmacy.id,
+          vaccineSlug,
+          fullName,
+          phone,
+          email: email || null,
+          dateOfBirth: dateOfBirth || null,
+          gender: gender || null,
+          preferredDate: preferredDate || null,
+          preferredTime: preferredTime || null,
+          notes: notes || null,
+          source: session?.customerId ? "portal" : "online",
+          customerId,
+          campaignSlug: campaignSlug || null,
+          answers: answers,
+          consentType,
+          consenterName,
+          consenterRelationship: consenterRelationship || null,
+          signatureName,
+        }),
+      targetPharmacy.slug,
+    );
 
     try {
       const { recordAdminNotification } = await import("@/app/lib/services/admin-notifications");
@@ -321,20 +344,38 @@ export async function bookCounsellingAction(
   if (!topic) return { error: "Choose a counselling topic." };
   if (!patientName) return { error: "Your name is required." };
 
+  const pharmacySlug = String(formData.get("pharmacySlug") || "").trim();
+  let targetPharmacy = pharmacySlug ? await findPharmacyBySlug(pharmacySlug) : null;
+  if (!targetPharmacy) {
+    const tenant = await getTenant();
+    if (tenant.pharmacyId) {
+      targetPharmacy = await findPharmacyById(tenant.pharmacyId);
+    }
+  }
+  if (!targetPharmacy) {
+    return { error: "Please select a pharmacy for your preventive counselling session." };
+  }
+
   const session = await getSessionUser().catch(() => null);
   try {
-    const row = await createCounsellingSession({
-      customerId: session?.customerId ?? null,
-      topic,
-      format: String(formData.get("format") || "in_person"),
-      patientName,
-      patientPhone: phone || null,
-      preferredDate: String(formData.get("preferredDate") || "").trim() || null,
-      preferredTime: String(formData.get("preferredTime") || "").trim() || null,
-      status: "requested",
-      source: session?.customerId ? "portal" : "online",
-      summary: String(formData.get("notes") || "").trim() || null,
-    });
+    const row = await withPharmacy(
+      targetPharmacy.id,
+      () =>
+        createCounsellingSession({
+          pharmacyId: targetPharmacy.id,
+          customerId: session?.customerId ?? null,
+          topic,
+          format: String(formData.get("format") || "in_person"),
+          patientName,
+          patientPhone: phone || null,
+          preferredDate: String(formData.get("preferredDate") || "").trim() || null,
+          preferredTime: String(formData.get("preferredTime") || "").trim() || null,
+          status: "requested",
+          source: session?.customerId ? "portal" : "online",
+          summary: String(formData.get("notes") || "").trim() || null,
+        }),
+      targetPharmacy.slug,
+    );
 
     try {
       const { recordAdminNotification } = await import("@/app/lib/services/admin-notifications");

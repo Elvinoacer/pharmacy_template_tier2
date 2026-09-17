@@ -8,6 +8,7 @@ import { getSessionUser } from "../lib/auth";
 import { prisma } from "../lib/db";
 import ChoosePharmacy from "@/app/components/ChoosePharmacy";
 import { loadStorefront } from "@/app/components/StorefrontGate";
+import { listMarketplacePharmacies } from "@/app/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Preventive health",
@@ -18,9 +19,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function PreventivePage() {
-  const [campaigns, session] = await Promise.all([
+  const [campaigns, session, pharmacy, pharmacies] = await Promise.all([
     listPublicHealthCampaigns({ activeOnly: true }).catch(() => []),
     getSessionUser().catch(() => null),
+    loadStorefront().catch(() => null),
+    listMarketplacePharmacies().catch(() => []),
   ]);
 
   let defaultName = "";
@@ -59,6 +62,8 @@ export default async function PreventivePage() {
             }))}
             defaultName={defaultName}
             defaultPhone={defaultPhone}
+            pharmacySlug={pharmacy?.slug ?? undefined}
+            pharmacies={pharmacies.map((p) => ({ slug: p.slug, name: p.name, city: p.city }))}
           />
         </div>
       </section>

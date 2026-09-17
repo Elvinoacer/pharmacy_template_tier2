@@ -39,6 +39,7 @@ export type BookingRow = {
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {
+    requested: "bg-blue-500/15 text-blue-700",
     awaiting_payment: "bg-amber-500/15 text-amber-700",
     confirmed: "bg-emerald-500/15 text-emerald-700",
     completed: "bg-sky-500/15 text-sky-700",
@@ -94,7 +95,7 @@ export function ServiceBookingsPanel({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        {["all", "awaiting_payment", "confirmed", "completed", "cancelled"].map((s) => (
+        {["all", "requested", "awaiting_payment", "confirmed", "completed", "cancelled"].map((s) => (
           <Link
             key={s}
             href={s === "all" ? "/admin/services/bookings" : `/admin/services/bookings?status=${s}`}
@@ -220,6 +221,20 @@ export function ServiceBookingsPanel({
                     )}
 
                   <div className="flex flex-wrap gap-1.5">
+                    {b.status === "requested" && (
+                      <form action={stAction}>
+                        <input type="hidden" name="bookingId" value={b.id} />
+                        <input type="hidden" name="status" value="confirmed" />
+                        <button
+                          type="submit"
+                          disabled={pending}
+                          className="btn-admin inline-flex items-center gap-1 text-xs font-semibold !rounded-xl px-2.5 py-1.5"
+                          title="Confirm appointment request"
+                        >
+                          <Check className="h-3 w-3" /> Confirm request
+                        </button>
+                      </form>
+                    )}
                     {b.status === "awaiting_payment" && (
                       <form action={stAction}>
                         <input type="hidden" name="bookingId" value={b.id} />

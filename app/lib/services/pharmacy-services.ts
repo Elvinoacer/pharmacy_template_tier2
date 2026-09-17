@@ -80,9 +80,14 @@ export async function listPublicServices(): Promise<PublicService[]> {
 
 export async function getPublicServiceBySlug(
   slug: string,
+  pharmacyId?: string,
 ): Promise<PublicService | null> {
   const row = await prisma.pharmacyService.findFirst({
-    where: { slug, active: true },
+    where: {
+      slug,
+      active: true,
+      ...(pharmacyId ? { pharmacyId } : {}),
+    },
   });
   return row ? toPublic(row) : null;
 }
@@ -258,11 +263,30 @@ export function isServicePayableAfter(service: {
   );
 }
 
+export type PaymentPolicy = "ONLINE_REQUIRED" | "PAY_AT_VISIT" | "FREE";
+
+export function getServicePaymentPolicy(service: {
+  price?: { toString(): string } | number | null;
+  eligibility?: string | null;
+  description?: string | null;
+}): PaymentPolicy {
+  const price =
+    service.price == null
+      ? null
+      : typeof service.price === "number"
+        ? service.price
+        : Number(service.price.toString());
+  const hasPrice = price != null && Number.isFinite(price) && price > 0;
+  if (!hasPrice) return "FREE";
+  if (isServicePayableAfter(service)) return "PAY_AT_VISIT";
+  return "ONLINE_REQUIRED";
+}
+
 /**
  * Create a service booking.
  * - Priced service with online payment → status=awaiting_payment + linked Order for M-Pesa
- * - Priced service payable after visit → status=confirmed + linked Order for counter settlement
- * - Unpriced → status=confirmed immediately
+ * - Priced service payable after visit → status=requested + linked Order for counter settlement
+ * - Unpriced / free → status=requested (awaiting staff appointment confirmation)
  */
 export async function createServiceBooking(input: BookingInput) {
   const service = await prisma.pharmacyService.findFirst({
@@ -291,10 +315,30 @@ export async function createServiceBooking(input: BookingInput) {
     service.price == null ? null : Number(service.price.toString());
   const hasPrice =
     priceNum != null && Number.isFinite(priceNum) && priceNum > 0;
-  const isPayAfter = isServicePayableAfter(service);
-  const requiresOnlinePayment = hasPrice && !isPayAfter;
+  const policy = getServicePaymentPolicy(service);
+  const isPayAfter = policy === "PAY_AT_VISIT";
+  const requiresOnlinePayment = policy === "ONLINE_REQUIRED";
+  const initialStatus = requiresOnlinePayment ? "awaiting_payment" : "requested";
 
   const result = await prisma.$transaction(async (tx) => {
+    // Slot capacity check: prevent multiple overlapping bookings on the same date and time slot
+    if (input.preferredDate && input.preferredTime) {
+      const slotCollision = await tx.serviceBooking.findFirst({
+        where: {
+          pharmacyId: service.pharmacyId,
+          preferredDate: input.preferredDate.trim(),
+          preferredTime: input.preferredTime.trim(),
+          status: { in: ["awaiting_payment", "confirmed", "requested"] },
+        },
+        select: { id: true },
+      });
+      if (slotCollision) {
+        throw new BookingValidationError(
+          `The appointment slot on ${input.preferredDate} at ${input.preferredTime} is already reserved. Please choose another time.`,
+        );
+      }
+    }
+
     let orderId: string | null = null;
 
     if (hasPrice) {
@@ -342,7 +386,7 @@ export async function createServiceBooking(input: BookingInput) {
         notes: input.notes?.trim() || null,
         preferredDate: input.preferredDate?.trim() || null,
         preferredTime: input.preferredTime?.trim() || null,
-        status: requiresOnlinePayment ? "awaiting_payment" : "confirmed",
+        status: initialStatus,
         paymentStatus: hasPrice ? "unpaid" : "none",
         amount: hasPrice ? priceNum! : null,
         orderId,
@@ -465,7 +509,7 @@ export async function confirmServiceBookingPayment(opts: {
 
 export async function updateBookingStatus(
   id: string,
-  status: "confirmed" | "completed" | "cancelled" | "awaiting_payment",
+  status: "confirmed" | "completed" | "cancelled" | "awaiting_payment" | "requested",
   staffNotes?: string | null,
 ) {
   return prisma.serviceBooking.update({

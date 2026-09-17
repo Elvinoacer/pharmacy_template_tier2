@@ -13,8 +13,9 @@ import {
   ShieldCheck,
   Sparkles,
   Stethoscope,
+  Trash2,
 } from "lucide-react";
-import { useTenantHref } from "../TenantLink";
+import { useTenantHref, useTenantSlug } from "../TenantLink";
 
 const GUEST_KEY_STORAGE = "aether-feel-guest-key";
 
@@ -114,8 +115,24 @@ const STATUS_LABEL: Record<string, string> = {
   closed: "Closed",
 };
 
-export default function HowDoYouFeelStableClient({ mode = "public" }: { mode?: "public" | "portal" }) {
+export default function HowDoYouFeelStableClient({
+  mode = "public",
+  pharmacySlug: initialPharmacySlug,
+  pharmacies = [],
+}: {
+  mode?: "public" | "portal";
+  pharmacySlug?: string | null;
+  pharmacies?: { id: string; name: string; slug: string; address?: string }[];
+}) {
   const contactHref = useTenantHref("/contact");
+  const contextSlug = useTenantSlug();
+  const [selectedPharmacySlug, setSelectedPharmacySlug] = useState<string | null>(
+    initialPharmacySlug || contextSlug || null,
+  );
+  const activeSlug = selectedPharmacySlug || contextSlug || initialPharmacySlug || null;
+  const [showEscalationModal, setShowEscalationModal] = useState(false);
+  const [modalChoice, setModalChoice] = useState<string>(activeSlug || pharmacies[0]?.slug || "");
+
   const [guestKey, setGuestKey] = useState("");
   const [categories, setCategories] = useState<Category[]>([...FALLBACK_CATEGORIES]);
   const [pastSessions, setPastSessions] = useState<SessionListItem[]>([]);
@@ -181,7 +198,11 @@ export default function HowDoYouFeelStableClient({ mode = "public" }: { mode?: "
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ guestKey: key, category: categoryId }),
+          body: JSON.stringify({
+            guestKey: key,
+            category: categoryId,
+            pharmacySlug: activeSlug || undefined,
+          }),
         },
         10000,
       );
@@ -242,10 +263,18 @@ export default function HowDoYouFeelStableClient({ mode = "public" }: { mode?: "
     }
   }
 
-  async function escalate() {
+  async function escalate(explicitPharmacySlug?: string) {
     if (!session || busy) return;
+
+    const targetSlug = explicitPharmacySlug || activeSlug;
+    if (!targetSlug && pharmacies.length > 0) {
+      setShowEscalationModal(true);
+      return;
+    }
+
     setBusy(true);
     setError(null);
+    setShowEscalationModal(false);
     try {
       const key = guestKey || guestKeyFromBrowser();
       const data = await fetchJson<SessionResponse>(
@@ -257,16 +286,34 @@ export default function HowDoYouFeelStableClient({ mode = "public" }: { mode?: "
             sessionId: session.id,
             guestKey: key,
             reason: "user_requested_pharmacist",
+            pharmacySlug: targetSlug || undefined,
           }),
         },
         10000,
       );
-      if (data.session) setSession(data.session);
+      if (data.session) {
+        setSession(data.session);
+        if (targetSlug) setSelectedPharmacySlug(targetSlug);
+      }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not connect to a pharmacist.");
     } finally {
       setBusy(false);
     }
+  }
+
+  function clearDeviceHistory() {
+    try {
+      localStorage.removeItem(GUEST_KEY_STORAGE);
+      const freshKey = `guest_${uid()}`;
+      localStorage.setItem(GUEST_KEY_STORAGE, freshKey);
+      setGuestKey(freshKey);
+    } catch {
+      // ignore storage access errors
+    }
+    setPastSessions([]);
+    setSession(null);
+    setError(null);
   }
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -330,7 +377,19 @@ export default function HowDoYouFeelStableClient({ mode = "public" }: { mode?: "
         <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-slate-800 dark:bg-slate-900/60">
           <div className="flex items-center justify-between gap-3">
             <p className="flex items-center gap-2 text-sm font-semibold"><Clock3 className="h-4 w-4 text-emerald-600" /> Recent check-ins</p>
-            {historyLoading && <span className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading history</span>}
+            <div className="flex items-center gap-2">
+              {historyLoading && <span className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading history</span>}
+              {mode !== "portal" && pastSessions.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearDeviceHistory}
+                  className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400"
+                  title="Remove check-in history from this browser (useful for shared devices)"
+                >
+                  <Trash2 className="h-3 w-3" /> Clear device history
+                </button>
+              )}
+            </div>
           </div>
           {!historyLoading && historyUnavailable && pastSessions.length === 0 && (
             <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">History is temporarily unavailable. You can still start a new check-in above.</p>
@@ -370,7 +429,19 @@ export default function HowDoYouFeelStableClient({ mode = "public" }: { mode?: "
             <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">{selectedCategory?.label || "Symptom check-in"}</p>
             <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{session.provisionalLabel || session.chiefComplaint || "Tell us how you feel"}</p>
           </div>
-          <button type="button" onClick={() => { setSession(null); setError(null); }} className="inline-flex shrink-0 items-center gap-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900"><ArrowLeft className="h-3.5 w-3.5" /> New</button>
+          <div className="flex items-center gap-2">
+            {mode !== "portal" && (
+              <button
+                type="button"
+                onClick={clearDeviceHistory}
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-rose-800 dark:hover:text-rose-400"
+                title="Clear check-in from this device"
+              >
+                <Trash2 className="h-3 w-3" /> Clear
+              </button>
+            )}
+            <button type="button" onClick={() => { setSession(null); setError(null); }} className="inline-flex shrink-0 items-center gap-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900"><ArrowLeft className="h-3.5 w-3.5" /> New</button>
+          </div>
         </header>
 
         {escalated && <div className="flex gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100"><Stethoscope className="mt-0.5 h-4 w-4 shrink-0" /> A pharmacist has been notified. You can keep adding details while you wait.</div>}
@@ -419,6 +490,58 @@ export default function HowDoYouFeelStableClient({ mode = "public" }: { mode?: "
           <p className="mt-2 leading-6">Answer one question at a time. The assistant keeps the conversation focused and can escalate it to the pharmacy team.</p>
         </div>
       </aside>
+
+      {showEscalationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                <Stethoscope className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-slate-900 dark:text-white">Choose pharmacy branch</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Select which pharmacy team will review your case.</p>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label htmlFor="escalate-pharmacy-select" className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                Available branches
+              </label>
+              <select
+                id="escalate-pharmacy-select"
+                value={modalChoice}
+                onChange={(e) => setModalChoice(e.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              >
+                {pharmacies.map((p) => (
+                  <option key={p.slug} value={p.slug}>
+                    {p.name} {p.address ? `(${p.address})` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowEscalationModal(false)}
+                className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={busy || !modalChoice}
+                onClick={() => void escalate(modalChoice)}
+                className="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-50"
+              >
+                Connect with pharmacist
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

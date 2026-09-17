@@ -89,12 +89,20 @@ function PanelHeader({ icon, title, copy }: { icon: ReactNode; title: string; co
 
 export default function OnboardWizard({ signedIn, existing, verificationFeePaid = false }: { signedIn: boolean; existing: Existing; verificationFeePaid?: boolean }) {
   const router = useRouter();
-  const [step, setStep] = useState(existing ? existing.city && existing.phone && existing.latitude != null && existing.longitude != null ? 3 : 2 : 0);
+  const [step, setStep] = useState(
+    existing
+      ? existing.city && existing.phone && existing.latitude != null && existing.longitude != null
+        ? 3
+        : existing.licenseNumber || existing.ppbPremisesNumber
+          ? 2
+          : 1
+      : 0
+  );
   const [name, setName] = useState(existing?.name || "");
   const [slug, setSlug] = useState(existing?.slug || "");
   const [legalName, setLegalName] = useState(existing?.legalName || "");
-  const licenseNumber = existing?.licenseNumber || "";
-  const pharmacyId = existing?.id || "";
+  const [licenseNumber, setLicenseNumber] = useState(existing?.licenseNumber || existing?.ppbPremisesNumber || "");
+  const [ppbPremisesNumber, setPpbPremisesNumber] = useState(existing?.ppbPremisesNumber || existing?.licenseNumber || "");
   const [city, setCity] = useState(existing?.city || "");
   const [county, setCounty] = useState(existing?.county || "");
   const [phone, setPhone] = useState(existing?.phone || "");
@@ -110,6 +118,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
   const [submitState, submitAction, submitPending] = useActionState(submitPharmacyApplicationAction, {} as OnboardState);
   const nextStepAfterUpdate = useRef<number | null>(null);
 
+  const pharmacyId = existing?.id || createState.pharmacyId || "";
   const state = createState.error ? createState : updateState.error ? updateState : submitState.error ? submitState : {};
   const liveSlug = useMemo(() => slug || slugifyPharmacyName(name), [slug, name]);
   const isIdentityError = ["name", "slug"].includes(state.field || "");
@@ -118,7 +127,10 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
   const locationReady = Boolean(city && latitude != null && longitude != null);
 
   useEffect(() => {
-    if (createState.pharmacyId) router.refresh();
+    if (createState.pharmacyId) {
+      setStep(1);
+      router.refresh();
+    }
   }, [createState.pharmacyId, router]);
 
   useEffect(() => {
@@ -186,11 +198,13 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
   const titles =
     step === 0
       ? { title: "Build your pharmacy profile", sub: "Start with the identity patients and reviewers will recognise." }
-      : step === 2
-        ? { title: "Help patients find you", sub: "Capture the premises location once, then add the best contact details." }
-        : { title: "Review before you send", sub: "A quick final check before your pharmacy enters independent verification." };
+      : step === 1
+        ? { title: "Licence & registration", sub: "Provide your Pharmacy and Poisons Board (PPB) registration details." }
+        : step === 2
+          ? { title: "Help patients find you", sub: "Capture the premises location once, then add the best contact details." }
+          : { title: "Review before you send", sub: "A quick final check before your pharmacy enters independent verification." };
 
-  const stepLabel = step === 0 ? "Step 1 of 4" : step === 2 ? "Step 3 of 4" : "Step 4 of 4";
+  const stepLabel = `Step ${step + 1} of 4`;
 
   return (
     <div className={`${styles.form} ${polish.wizardShell}`} aria-busy={createPending || updatePending || submitPending} onInvalidCapture={(event) => {
@@ -198,7 +212,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
       const details = target.closest("details");
       if (details && !details.open) details.open = true;
     }}>
-      <OnboardStepper current={step === 0 ? 0 : step === 2 ? 2 : 3} />
+      <OnboardStepper current={step} />
 
       <div className={polish.topline}>
         <span className={polish.stepPill}>{stepLabel}</span>
@@ -223,7 +237,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
           action={(fd) => {
             if (pharmacyId) {
               fd.set("pharmacyId", pharmacyId);
-              nextStepAfterUpdate.current = 2;
+              nextStepAfterUpdate.current = 1;
               updateAction(fd);
             } else {
               createAction(fd);
@@ -328,6 +342,75 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
         </form>
       ) : null}
 
+      {step === 1 && pharmacyId ? (
+        <form
+          action={(fd) => {
+            fd.set("pharmacyId", pharmacyId);
+            nextStepAfterUpdate.current = 2;
+            updateAction(fd);
+          }}
+        >
+          <input type="hidden" name="pharmacyId" value={pharmacyId} />
+          <input type="hidden" name="name" value={name} />
+          <input type="hidden" name="slug" value={slug || liveSlug} />
+
+          <div className={polish.contentStack}>
+            <section className={polish.panel}>
+              <PanelHeader
+                icon={<ShieldCheck className="h-5 w-5" aria-hidden />}
+                title="PPB Licence & Registration"
+                copy="Enter your Pharmacy and Poisons Board registration details."
+              />
+              <div className={polish.fieldsGrid}>
+                <Field
+                  label="PPB Premises / Licence Number"
+                  hint="Official registration number from your PPB annual premises licence."
+                  error={state.field === "licenseNumber" ? state.error : undefined}
+                >
+                  <input
+                    name="licenseNumber"
+                    value={licenseNumber}
+                    onChange={(e) => {
+                      setLicenseNumber(e.target.value);
+                      setPpbPremisesNumber(e.target.value);
+                    }}
+                    required
+                    className="input-admin"
+                    placeholder="e.g. PPB/PREM/2024/0142"
+                    aria-invalid={state.field === "licenseNumber"}
+                  />
+                </Field>
+                <input type="hidden" name="ppbPremisesNumber" value={ppbPremisesNumber || licenseNumber} />
+
+                <Field
+                  label="Registered business entity name"
+                  hint="Official corporate or trading entity name on record."
+                >
+                  <input
+                    name="legalName"
+                    value={legalName}
+                    onChange={(e) => setLegalName(e.target.value)}
+                    className="input-admin"
+                    autoComplete="organization"
+                    placeholder="e.g. Coast Care Pharmaceuticals Ltd"
+                  />
+                </Field>
+              </div>
+            </section>
+          </div>
+
+          <div className={`${styles.actions} ${polish.actionsBar}`}>
+            <button type="button" className={`btn-ghost justify-center ${polish.secondaryAction}`} onClick={() => setStep(0)}>
+              <ArrowLeft className="h-4 w-4" aria-hidden /> Back
+            </button>
+            <button className={`btn-primary justify-center ${polish.primaryAction}`} type="submit" disabled={updatePending}>
+              {updatePending ? "Saving…" : "Continue to location"}
+              {!updatePending ? <ArrowRight className="h-4 w-4" aria-hidden /> : null}
+            </button>
+          </div>
+        </form>
+      ) : null}
+
       {step === 2 && pharmacyId ? (
         <form
           action={(fd) => {
@@ -341,6 +424,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
           <input type="hidden" name="slug" value={slug || liveSlug} />
           <input type="hidden" name="legalName" value={legalName} />
           <input type="hidden" name="licenseNumber" value={licenseNumber} />
+          <input type="hidden" name="ppbPremisesNumber" value={ppbPremisesNumber || licenseNumber} />
 
           <div className={polish.contentStack}>
             <PharmacyLocationCapture
@@ -439,7 +523,7 @@ export default function OnboardWizard({ signedIn, existing, verificationFeePaid 
           ) : null}
 
           <div className={`${styles.actions} ${polish.actionsBar}`}>
-            <button type="button" className={`btn-ghost justify-center ${polish.secondaryAction}`} onClick={() => setStep(0)}>
+            <button type="button" className={`btn-ghost justify-center ${polish.secondaryAction}`} onClick={() => setStep(1)}>
               <ArrowLeft className="h-4 w-4" aria-hidden /> Back
             </button>
             <button className={`btn-primary justify-center ${polish.primaryAction}`} type="submit" disabled={updatePending || !locationReady}>

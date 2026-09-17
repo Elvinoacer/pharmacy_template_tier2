@@ -20,7 +20,7 @@ type Props = {
 
 function strengthMeta(score: number, hasInput: boolean) {
   if (!hasInput) {
-    return { label: "Enter a password", bar: "bg-teal-900/10", text: "text-[#8a9a92]" };
+    return { label: "Enter a password", bar: "bg-teal-900/10", text: "text-[var(--muted)]" };
   }
   if (score < 0.4) {
     return { label: "Weak", bar: "bg-rose-500", text: "text-rose-700" };
@@ -57,7 +57,7 @@ export default function PasswordField({
 
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-[#0c1a14]">
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
         {label}
         {required ? <span className="sr-only"> (required)</span> : null}
       </label>
@@ -77,12 +77,12 @@ export default function PasswordField({
             setValue(next);
             onValueChange?.(next, evaluatePassword(next));
           }}
-          className="w-full rounded-2xl border border-teal-900/10 bg-white px-4 py-3 pr-12 text-sm outline-none ring-teal-700/20 transition focus:ring-2"
+          className="w-full rounded-2xl border border-[var(--line)] bg-[var(--card)] text-[var(--foreground)] px-4 py-3 pr-12 text-sm outline-none ring-[var(--brand)]/20 transition focus:ring-2"
         />
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl text-[#5a6b62] transition hover:bg-teal-50 hover:text-[#084c3f]"
+          className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl text-[var(--muted)] transition hover:bg-[var(--surface-sunken)] hover:text-[var(--foreground)]"
           aria-label={visible ? "Hide password" : "Show password"}
           aria-pressed={visible}
         >
@@ -114,12 +114,12 @@ export default function PasswordField({
                     ? "bg-emerald-50 text-emerald-800"
                     : value
                       ? "bg-rose-50/70 text-rose-700"
-                      : "bg-teal-50/50 text-[#5a6b62]"
+                      : "bg-[var(--surface-sunken)] text-[var(--muted)]"
                 }`}
               >
                 <span
                   className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
-                    rule.met ? "bg-emerald-500 text-white" : "bg-white/80 text-[#8a9a92] ring-1 ring-teal-900/10"
+                    rule.met ? "bg-emerald-500 text-white" : "bg-[var(--card)] text-[var(--muted)] ring-1 ring-[var(--line)]"
                   }`}
                 >
                   {rule.met ? <Check className="h-2.5 w-2.5" strokeWidth={3} /> : <X className="h-2.5 w-2.5" />}

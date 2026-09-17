@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
-import TenantLink from "../TenantLink";
+import TenantLink, { useTenantSlug } from "../TenantLink";
 import Link from "next/link";
 import {
   bookVaccinationAction,
@@ -46,6 +46,7 @@ export function VaccinationBookingForm({
   defaultName = "",
   defaultPhone = "",
   defaultEmail = "",
+  pharmacySlug: pharmacySlugProp,
 }: {
   vaccines: VaccineOption[];
   defaultVaccine?: string;
@@ -53,7 +54,10 @@ export function VaccinationBookingForm({
   defaultName?: string;
   defaultPhone?: string;
   defaultEmail?: string;
+  pharmacySlug?: string;
 }) {
+  const tenantSlug = useTenantSlug();
+  const pharmacySlug = pharmacySlugProp || tenantSlug || "";
   const bookable = vaccines.filter((v) => v.bookable && v.pharmacyAdministered);
   const [step, setStep] = useState(0);
   const [slug, setSlug] = useState(defaultVaccine && bookable.some((v) => v.slug === defaultVaccine) ? defaultVaccine : bookable[0]?.slug || "");
@@ -105,6 +109,7 @@ export function VaccinationBookingForm({
 
   return (
     <form action={formAction} className="liquid-glass care-glass rounded-3xl border border-[var(--care-border)] bg-[var(--care-glass)] p-5 shadow-[0_16px_50px_rgba(8,40,32,0.08)] backdrop-blur-xl sm:p-8">
+      <input type="hidden" name="pharmacySlug" value={pharmacySlug} />
       <input type="hidden" name="vaccineSlug" value={slug} />
       <input type="hidden" name="campaignSlug" value={defaultCampaign || ""} />
 

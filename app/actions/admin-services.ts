@@ -269,11 +269,12 @@ export async function updateBookingStatusAction(
     | "confirmed"
     | "completed"
     | "cancelled"
-    | "awaiting_payment";
+    | "awaiting_payment"
+    | "requested";
   const staffNotes = String(formData.get("staffNotes") || "").trim();
 
   if (!bookingId) return { error: "Missing booking id." };
-  if (!["confirmed", "completed", "cancelled", "awaiting_payment"].includes(status)) {
+  if (!["confirmed", "completed", "cancelled", "awaiting_payment", "requested"].includes(status)) {
     return { error: "Invalid status." };
   }
 
@@ -293,6 +294,7 @@ export async function updateBookingStatusAction(
       await notifyCareRequest({ id: full.id, pharmacyId: full.pharmacyId, relatedType: "service_booking", staff: true,
         title: "Booking status updated", body: `${full.fullName}: ${full.service.title} — ${status.replaceAll("_", " ")}.` });
       const messages: Record<string, { title: string; body: string }> = {
+        requested: { title: "Booking request received", body: `Your ${full.service.title} request is pending confirmation by our pharmacy team.` },
         awaiting_payment: { title: "Booking awaiting payment", body: "Your booking is awaiting payment. Contact the pharmacy to arrange payment and confirm your visit." },
         confirmed: {
           title: "Booking confirmed",

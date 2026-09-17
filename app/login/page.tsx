@@ -49,24 +49,24 @@ export default async function LoginPage({
           <>
             <p>
               No account?{" "}
-              <Link href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"} className="font-semibold text-[#0d6e5a] hover:underline">
+              <Link href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"} className="font-semibold text-[var(--brand)] hover:underline">
                 Create one
               </Link>
             </p>
             <p className="mt-2">
-              <Link href="/forgot-password" className="text-[#0d6e5a] hover:underline">
+              <Link href="/forgot-password" className="text-[var(--brand)] hover:underline">
                 Forgot password?
               </Link>
             </p>
             {process.env.SHOW_DEMO_CREDENTIALS === "1" && (
-              <p className="mt-4 rounded-2xl border border-teal-900/8 bg-teal-50/70 px-3 py-2.5 text-xs leading-relaxed text-[#5a6b62]">
-                Demo password for all: <code className="rounded bg-white px-1 py-0.5 text-[11px]">Password123!</code>
+              <p className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--surface-sunken)] px-3 py-2.5 text-xs leading-relaxed text-[var(--muted)]">
+                Demo password for all: <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">Password123!</code>
                 <br />
-                Super-admin <code className="rounded bg-white px-1 py-0.5 text-[11px]">platform@aether.health</code> → /platform
+                Super-admin <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">platform@aether.health</code> → /platform
                 <br />
-                Pharmacy manager <code className="rounded bg-white px-1 py-0.5 text-[11px]">manager@aetherpharmacy.com</code> → /admin
+                Pharmacy manager <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">manager@aetherpharmacy.com</code> → /admin
                 <br />
-                Patient <code className="rounded bg-white px-1 py-0.5 text-[11px]">jane@example.com</code> → /portal
+                Patient <code className="rounded bg-[var(--card)] px-1 py-0.5 text-[11px] text-[var(--foreground)] border border-[var(--line)]">jane@example.com</code> → /portal
               </p>
             )}
           </>

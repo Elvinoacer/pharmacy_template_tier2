@@ -7,6 +7,7 @@ import PageHero from "../components/PageHero";
 import { platform } from "../lib/data";
 import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { getStorefrontView } from "@/app/lib/services/storefront-content";
+import { listMarketplacePharmacies } from "@/app/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Delivery Information",
@@ -31,6 +32,14 @@ export default async function DeliveryPage() {
   }
 
   const isTenant = view?.status === "active";
+  const rawPharmacies = !isTenant ? await listMarketplacePharmacies() : [];
+  const pharmacies = rawPharmacies.map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    city: p.city || "Kenya",
+    notes: p.tagline || "Same-day & scheduled delivery",
+  }));
+
   const pharmacy = view?.status === "active"
     ? view.resolved
     : {
@@ -154,19 +163,54 @@ export default async function DeliveryPage() {
 
             <div className={`${panelClass} min-w-0 h-fit p-4 sm:p-6 lg:sticky lg:top-28 lg:p-8`}>
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs sm:tracking-[0.2em]">
-                Check your area
+                {isTenant ? "Check your area" : "Choose branch"}
               </p>
               <h2
                 className="mt-2 text-xl font-semibold text-[var(--foreground)] sm:text-2xl"
                 style={{ fontFamily: "var(--font-display), serif" }}
               >
-                Delivery enquiry
+                {isTenant ? "Delivery enquiry" : "Select a pharmacy for delivery"}
               </h2>
               <p className="mt-2 text-[13px] leading-6 text-[var(--muted)] sm:text-sm">
-                Tell us where you are. The pharmacy will confirm coverage, delivery cost, and timing before anything is dispatched.
+                {isTenant
+                  ? "Tell us where you are. The pharmacy will confirm coverage, delivery cost, and timing before anything is dispatched."
+                  : "Prescription and OTC medication deliveries are dispatched directly by licensed community pharmacies. Select your local branch to check coverage and arrange delivery."}
               </p>
               <div className="relative mt-5 min-w-0 sm:mt-6">
-                <DeliveryForm pharmacySlug={pharmacy.slug ?? undefined} />
+                {isTenant && pharmacy.slug ? (
+                  <DeliveryForm pharmacySlug={pharmacy.slug} />
+                ) : (
+                  <div className="space-y-3">
+                    {pharmacies.slice(0, 6).map((p) => (
+                      <Link
+                        key={p.slug}
+                        href={`/p/${p.slug}/delivery`}
+                        className="group flex items-center justify-between rounded-xl border border-[var(--care-border)] bg-[var(--card)]/70 p-3.5 transition hover:border-[var(--brand)] hover:bg-[var(--brand-tint)]"
+                      >
+                        <div className="min-w-0 pr-2">
+                          <p className="truncate text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--brand)]">
+                            {p.name}
+                          </p>
+                          <p className="truncate text-xs text-[var(--muted)]">
+                            {p.city} · {p.notes}
+                          </p>
+                        </div>
+                        <span className="shrink-0 text-xs font-semibold text-[var(--brand)]">
+                          Enquire →
+                        </span>
+                      </Link>
+                    ))}
+                    <div className="pt-2">
+                      <Link
+                        href="/pharmacies"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--brand)] hover:underline"
+                      >
+                        <Store size={14} />
+                        View all branches in directory →
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

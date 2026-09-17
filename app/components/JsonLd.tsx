@@ -13,7 +13,9 @@ export default function JsonLd({ pharmacy = null }: { pharmacy?: ResolvedPharmac
     telephone: platform.phone,
     email: platform.email,
     areaServed: { "@type": "Country", name: "Kenya" },
-    sameAs: [platform.social.facebook, platform.social.instagram, platform.social.linkedin],
+    ...([platform.social.facebook, platform.social.instagram, platform.social.linkedin].filter(Boolean).length > 0
+      ? { sameAs: [platform.social.facebook, platform.social.instagram, platform.social.linkedin].filter(Boolean) as string[] }
+      : {}),
   };
 
   const website = {
@@ -24,7 +26,7 @@ export default function JsonLd({ pharmacy = null }: { pharmacy?: ResolvedPharmac
     description: platform.description,
     potentialAction: {
       "@type": "SearchAction",
-      target: `${platform.siteUrl}/?q={search_term_string}`,
+      target: `${platform.siteUrl}/medicines?q={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };

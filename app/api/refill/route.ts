@@ -1,6 +1,7 @@
 import { acceptsCareRequests } from "@/app/lib/services/care-request-availability";
 import { medicineDisplayName } from "@/app/lib/prescription-discovery";
 import { NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { getSessionUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/db";
@@ -26,7 +27,19 @@ const RefillSchema = z.object({
   pickupPreference: z.enum(["pickup", "delivery"]),
   preferredTime: z.string().trim().max(40).optional(),
   notes: z.string().trim().max(1500).optional(),
-  prescriptionPhoto: z.string().optional(),
+  prescriptionPhoto: z
+    .string()
+    .max(7_000_000, "Prescription photo must not exceed 5MB.")
+    .refine(
+      (val) =>
+        !val ||
+        val.startsWith("data:image/") ||
+        val.startsWith("data:application/pdf") ||
+        val.startsWith("https://") ||
+        val.startsWith("r2-private://"),
+      { message: "Prescription must be an image, PDF document, or valid attachment URL." },
+    )
+    .optional(),
 });
 
 function clientIp(request: Request): string {
@@ -221,32 +234,27 @@ async function submitRefill(raw: Record<string, unknown>) {
   }
 
   let prescriptionId: string | undefined = undefined;
+  let targetCustomerId = session?.customerId ?? null;
+
   if (parsed.data.prescriptionPhoto) {
-    let targetCustomerId = session?.customerId ?? null;
     if (!targetCustomerId) {
-      const byPhone = await prisma.customerProfile.findFirst({
-        where: { phone: { contains: phone.slice(-9) } },
-        select: { id: true },
+      const guestEmail = `guest-${randomUUID()}@guest.aether.internal`;
+      const u = await prisma.user.create({
+        data: {
+          email: guestEmail,
+          role: "customer",
+          emailVerified: false,
+        },
       });
-      if (byPhone) {
-        targetCustomerId = byPhone.id;
-      } else {
-        const u = await prisma.user.create({
-          data: {
-            email: parsed.data.email && parsed.data.email.length > 3 ? parsed.data.email : `guest-${Date.now()}@pharmacy.internal`,
-            role: "customer",
-            emailVerified: false,
-          },
-        });
-        const prof = await prisma.customerProfile.create({
-          data: {
-            userId: u.id,
-            fullName: parsed.data.fullName,
-            phone,
-          },
-        });
-        targetCustomerId = prof.id;
-      }
+      const prof = await prisma.customerProfile.create({
+        data: {
+          userId: u.id,
+          fullName: parsed.data.fullName,
+          phone,
+          notes: parsed.data.email ? `Contact email: ${parsed.data.email}` : undefined,
+        },
+      });
+      targetCustomerId = prof.id;
     }
 
     const { PrescriptionIntakeChannel, PrescriptionLifecycleStatus } = await import(
@@ -269,7 +277,7 @@ async function submitRefill(raw: Record<string, unknown>) {
   }
 
   const refill = await createRefillRequest({
-    customerId: session?.customerId ?? null,
+    customerId: targetCustomerId,
     prescriptionId,
     medicineName: parsed.data.medicine,
     rxReference: parsed.data.rxReference || undefined,

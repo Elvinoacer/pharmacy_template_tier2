@@ -4,26 +4,46 @@ import { useState, type FormEvent } from "react";
 import TenantLink from "./TenantLink";
 import { FormSuccess, SelectInput, TextArea, TextInput } from "./FormField";
 
-export default function ContactForm({ pharmacySlug }: { pharmacySlug?: string } = {}) {
+export default function ContactForm({
+  pharmacySlug,
+  pharmacies = [],
+}: {
+  pharmacySlug?: string;
+  pharmacies?: { slug: string; name: string; address?: string }[];
+} = {}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [selectedSlug, setSelectedSlug] = useState<string>(pharmacySlug || (pharmacies[0]?.slug ?? ""));
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("submitting");
+    setErrorMessage(null);
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
+    const targetSlug = pharmacySlug || selectedSlug || (data.pharmacySlug as string);
+
+    if (!targetSlug) {
+      setStatus("error");
+      setErrorMessage("Please select a pharmacy branch to contact.");
+      return;
+    }
 
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, ...(pharmacySlug ? { pharmacySlug } : {}) }),
+        body: JSON.stringify({ ...data, pharmacySlug: targetSlug }),
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) {
+        const errPayload = await res.json().catch(() => null);
+        throw new Error(errPayload?.error || "Failed");
+      }
       setStatus("success");
       form.reset();
-    } catch {
+    } catch (err) {
       setStatus("error");
+      setErrorMessage(err instanceof Error && err.message !== "Failed" ? err.message : null);
     }
   }
 
@@ -48,6 +68,25 @@ export default function ContactForm({ pharmacySlug }: { pharmacySlug?: string } 
 
   return (
     <form onSubmit={onSubmit} className="min-w-0 space-y-4" noValidate={false}>
+      {!pharmacySlug && pharmacies.length > 0 && (
+        <SelectInput
+          label="Pharmacy branch *"
+          id="pharmacySlug"
+          name="pharmacySlug"
+          required
+          value={selectedSlug}
+          onChange={(e) => setSelectedSlug(e.target.value)}
+        >
+          <option value="" disabled>
+            Select a pharmacy branch to contact *
+          </option>
+          {pharmacies.map((p) => (
+            <option key={p.slug} value={p.slug}>
+              {p.name} {p.address ? `(${p.address})` : ""}
+            </option>
+          ))}
+        </SelectInput>
+      )}
       <div className="grid min-w-0 gap-4 sm:grid-cols-2">
         <TextInput label="Full name" id="name" required autoComplete="name" placeholder="Jane Doe" />
         <TextInput
@@ -91,7 +130,7 @@ export default function ContactForm({ pharmacySlug }: { pharmacySlug?: string } 
       </div>
       {status === "error" && (
         <p className="rounded-xl border border-[var(--line-2)] bg-[var(--card-elev)] px-3.5 py-3 text-sm leading-5 text-rose-600" role="alert">
-          Something went wrong. Please try again or call us directly.
+          {errorMessage || "Something went wrong. Please try again or call us directly."}
         </p>
       )}
       <button

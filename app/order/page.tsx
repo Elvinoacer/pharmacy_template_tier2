@@ -25,10 +25,15 @@ export default async function GuestOrderPage({
 }: {
   searchParams: Promise<{ medicationId?: string; slug?: string }>;
 }) {
-  const pharmacy = await loadStorefront();
-  if (!pharmacy) return <ChoosePharmacy next="/order" />;
-
   const sp = await searchParams;
+  const pharmacy = await loadStorefront();
+  if (!pharmacy) {
+    const qStr = new URLSearchParams();
+    if (sp.medicationId) qStr.set("medicationId", sp.medicationId);
+    if (sp.slug) qStr.set("slug", sp.slug);
+    const nextWithParams = `/order${qStr.toString() ? `?${qStr.toString()}` : ""}`;
+    return <ChoosePharmacy next={nextWithParams} />;
+  }
   const session = await getSessionUser().catch(() => null);
 
   const supportsDelivery = pharmacySupportsDelivery(pharmacy);

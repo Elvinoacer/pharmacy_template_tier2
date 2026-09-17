@@ -14,6 +14,7 @@ import {
 } from "@/app/lib/services/medication-image-search";
 import {
   MAX_PRESCRIPTION_MEDICINES,
+  classifyPrescriptionMatch,
   matchesPrescriptionName,
 } from "@/app/lib/prescription-discovery";
 import {
@@ -201,25 +202,38 @@ export async function POST(request: Request) {
             name,
             truncated: rows.length >= 200,
             matches: rows
-              .filter((row) => {
+              .map((row) => {
                 const med = row.medicationMaster;
-                return (
-                  sellableFromInventory(row) > 0 &&
-                  matchesPrescriptionName(name, [
-                    med.name,
-                    `${med.genericName} ${med.strengthDisplay || ""}`,
-                    `${med.brandName || ""} ${med.strengthDisplay || ""}`,
-                  ])
-                );
+                const classification = classifyPrescriptionMatch(name, [
+                  med.name,
+                  `${med.genericName} ${med.strengthDisplay || ""}`,
+                  `${med.brandName || ""} ${med.strengthDisplay || ""}`,
+                ]);
+                return {
+                  row,
+                  classification,
+                  distanceKm: origin ? distanceKm(origin, row.pharmacy) : null,
+                };
               })
-              .map((row) => ({
+              .filter(({ row, classification }) => {
+                return sellableFromInventory(row) > 0 && classification.match;
+              })
+              .sort((a, b) => {
+                if (b.classification.score !== a.classification.score) {
+                  return b.classification.score - a.classification.score;
+                }
+                return proximityOrder({ distanceKm: a.distanceKm }, { distanceKm: b.distanceKm });
+              })
+              .map(({ row, classification, distanceKm }) => ({
                 id: row.id,
                 name: medicineDisplayName(row.medicationMaster.name, row.medicationMaster.strengthDisplay),
+                matchKind: classification.kind,
                 price: Number(row.price),
                 updatedAt: row.updatedAt.toISOString(),
                 href: `/p/${row.pharmacy.slug}/medicines/${row.slug}`,
-                pharmacy: { ...row.pharmacy, distanceKm: origin ? distanceKm(origin, row.pharmacy) : null },
-              })).sort((a, b) => proximityOrder(a.pharmacy, b.pharmacy)).slice(0, 200),
+                pharmacy: { ...row.pharmacy, distanceKm },
+              }))
+              .slice(0, 200),
           };
         }),
       ),

@@ -6,6 +6,7 @@ import PageHero from "../components/PageHero";
 import StorefrontUnavailable from "@/app/components/StorefrontUnavailable";
 import { platform } from "../lib/data";
 import { getStorefrontView } from "../lib/services/storefront-content";
+import { listMarketplacePharmacies } from "@/app/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -26,6 +27,13 @@ export default async function ContactPage() {
   }
 
   const isTenant = view?.status === "active";
+  const rawPharmacies = !isTenant ? await listMarketplacePharmacies() : [];
+  const pharmacies = rawPharmacies.map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    address: p.city ? `${p.city}, ${p.county || "Kenya"}` : undefined,
+  }));
+
   const pharmacy = view?.status === "active"
     ? view.resolved
     : {
@@ -218,7 +226,7 @@ export default async function ContactPage() {
                 We typically respond within one business day. Fields marked * are required. For mild
                 everyday symptoms you can also try our{" "}
                 <Link
-                  href={isTenant ? `/p/${pharmacy.slug}/how-do-you-feel` : "/how-do-you-feel"}
+                  href={isTenant && pharmacy.slug ? `/how-do-you-feel?pharmacy=${encodeURIComponent(pharmacy.slug)}` : "/how-do-you-feel"}
                   className="font-semibold text-[var(--brand)] hover:underline"
                 >
                   How do you feel?
@@ -226,7 +234,7 @@ export default async function ContactPage() {
                 guided check-in.
               </p>
               <div className="relative mt-5 min-w-0 sm:mt-6">
-                <ContactForm pharmacySlug={pharmacy.slug ?? undefined} />
+                <ContactForm pharmacySlug={pharmacy.slug ?? undefined} pharmacies={pharmacies} />
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ import type {
   ChatCompletionContentPart,
   ChatCompletionMessageParam,
 } from "groq-sdk/resources/chat/completions";
-import { prisma } from "@/app/lib/db";
+import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { getSessionUser } from "@/app/lib/auth";
 import { dispatchPushToStaff, dispatchPushToUser } from "@/app/lib/services/push";
 import { recordAdminNotification } from "@/app/lib/services/admin-notifications";
@@ -17,11 +17,45 @@ import {
   privateR2Key,
   privateR2ReferenceToDataUrl,
 } from "@/app/lib/r2";
+import {
+  findPharmacyById,
+  findPharmacyBySlug,
+  getTenant,
+  listMarketplacePharmacies,
+  withPharmacy,
+  DEFAULT_PHARMACY_ID,
+  type PublicPharmacy,
+} from "@/app/lib/tenant";
+import { peekTenant } from "@/app/lib/tenant-context";
 import type {
   SymptomFeeling,
   SymptomSessionStatus,
   SymptomSeverity,
 } from "@/app/generated/prisma/client";
+
+async function resolveTriagePharmacy(slugOrId?: string | null): Promise<PublicPharmacy> {
+  if (slugOrId) {
+    const bySlug = await findPharmacyBySlug(slugOrId);
+    if (bySlug && (bySlug.status === "active" || bySlug.status === "approved")) return bySlug;
+    const byId = await findPharmacyById(slugOrId);
+    if (byId && (byId.status === "active" || byId.status === "approved")) return byId;
+  }
+  const ambient = peekTenant();
+  if (ambient?.pharmacyId) {
+    const byId = await findPharmacyById(ambient.pharmacyId);
+    if (byId) return byId;
+  }
+  const fromReq = await getTenant();
+  if (fromReq.pharmacyId) {
+    const byId = await findPharmacyById(fromReq.pharmacyId);
+    if (byId) return byId;
+  }
+  const def = await findPharmacyById(DEFAULT_PHARMACY_ID);
+  if (def) return def;
+  const list = await listMarketplacePharmacies();
+  if (list.length > 0) return list[0];
+  throw new Error("No active pharmacy found for symptom intake");
+}
 
 export const SYMPTOM_CATEGORIES = [
   {
@@ -180,7 +214,7 @@ type SessionAccess = {
 };
 
 export async function assertSessionAccess(access: SessionAccess) {
-  const session = await prisma.symptomSession.findUnique({
+  const session = await prismaUnscoped.symptomSession.findUnique({
     where: { id: access.sessionId },
   });
   if (!session) return { error: "not_found" as const, session: null };
@@ -207,46 +241,52 @@ export async function createSymptomSession(input: {
   guestKey?: string;
   category?: string;
   chiefComplaint?: string;
+  pharmacySlug?: string;
+  pharmacyId?: string;
 }) {
-  const user = await getSessionUser();
-  const category = input.category?.trim() || null;
-  const chief = input.chiefComplaint?.trim() || null;
+  const targetPharmacy = await resolveTriagePharmacy(input.pharmacySlug || input.pharmacyId);
 
-  const catMeta = SYMPTOM_CATEGORIES.find((c) => c.id === category);
-  const welcome = catMeta
-    ? `Thanks for sharing. You selected **${catMeta.label}**. I'll ask a few short questions to understand what you're feeling — this is not a medical diagnosis.\n\nTo start: how long have you been feeling this way, and how bad is it on a scale of 1–10?`
-    : `Hi — I'm here to help you describe how you feel in a structured way, then suggest general next steps for mild issues. I'm not a doctor and I don't diagnose.\n\nWhat's bothering you most right now, and how long has it been going on?`;
+  return withPharmacy(targetPharmacy.id, async () => {
+    const user = await getSessionUser();
+    const category = input.category?.trim() || null;
+    const chief = input.chiefComplaint?.trim() || null;
 
-  const created = await prisma.symptomSession.create({
-    data: {
-      guestKey: user?.customerId ? null : input.guestKey || null,
-      customerId: user?.customerId ?? null,
-      userId: user?.id ?? null,
-      category,
-      chiefComplaint: chief || catMeta?.starter || null,
-      status: "active",
-      messageCount: 1,
-      lastMessageAt: new Date(),
-      nextCheckInAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
-      messages: {
-        create: {
-          role: "assistant",
-          content: welcome,
-          metadata: { kind: "welcome" },
+    const catMeta = SYMPTOM_CATEGORIES.find((c) => c.id === category);
+    const welcome = catMeta
+      ? `Thanks for sharing. You selected **${catMeta.label}**. I'll ask a few short questions to understand what you're feeling — this is not a medical diagnosis.\n\nTo start: how long have you been feeling this way, and how bad is it on a scale of 1–10?`
+      : `Hi — I'm here to help you describe how you feel in a structured way, then suggest general next steps for mild issues. I'm not a doctor and I don't diagnose.\n\nWhat's bothering you most right now, and how long has it been going on?`;
+
+    const created = await prisma.symptomSession.create({
+      data: {
+        guestKey: user?.customerId ? null : input.guestKey || null,
+        customerId: user?.customerId ?? null,
+        userId: user?.id ?? null,
+        category,
+        chiefComplaint: chief || catMeta?.starter || null,
+        status: "active",
+        messageCount: 1,
+        lastMessageAt: new Date(),
+        nextCheckInAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
+        messages: {
+          create: {
+            role: "assistant",
+            content: welcome,
+            metadata: { kind: "welcome" },
+          },
         },
       },
-    },
-    include: {
-      messages: { orderBy: { createdAt: "asc" } },
-      checkIns: { orderBy: { createdAt: "asc" } },
-    },
-  });
+      include: {
+        messages: { orderBy: { createdAt: "asc" } },
+        checkIns: { orderBy: { createdAt: "asc" } },
+      },
+    });
 
-  return created;
+    return created;
+  }, targetPharmacy.slug);
 }
 
 export async function getSymptomSessionDetail(sessionId: string) {
-  return prisma.symptomSession.findUnique({
+  return prismaUnscoped.symptomSession.findUnique({
     where: { id: sessionId },
     include: {
       messages: { orderBy: { createdAt: "asc" } },
@@ -357,20 +397,21 @@ export async function sendSymptomMessage(input: {
   if (access.error === "forbidden") return { error: "forbidden" as const };
 
   const session = access.session!;
-  const text = (input.content || "").trim().slice(0, 4000);
-  const expectedPrefix = `symptom-uploads/${session.id}/`;
-  const imageUrls = (input.imageUrls || [])
-    .filter(Boolean)
-    .filter((reference) => {
-      if (!isPrivateR2Reference(reference)) return false;
-      const key = privateR2Key(reference);
-      return Boolean(key?.startsWith(expectedPrefix));
-    })
-    .slice(0, 4);
+  return withPharmacy(session.pharmacyId, async () => {
+    const text = (input.content || "").trim().slice(0, 4000);
+    const expectedPrefix = `symptom-uploads/${session.id}/`;
+    const imageUrls = (input.imageUrls || [])
+      .filter(Boolean)
+      .filter((reference) => {
+        if (!isPrivateR2Reference(reference)) return false;
+        const key = privateR2Key(reference);
+        return Boolean(key?.startsWith(expectedPrefix));
+      })
+      .slice(0, 4);
 
-  if (!text && imageUrls.length === 0) {
-    return { error: "empty" as const };
-  }
+    if (!text && imageUrls.length === 0) {
+      return { error: "empty" as const };
+    }
 
   if (session.status === "escalated" || session.status === "closed") {
     const userMsg = await prisma.symptomMessage.create({
@@ -581,14 +622,15 @@ export async function sendSymptomMessage(input: {
     };
   }
 
-  return {
-    error: null,
-    escalated: false as const,
-    userMessage: userMsg,
-    assistantMessage: assistantMsg,
-    sessionId: session.id,
-    summary: summaryBits,
-  };
+    return {
+      error: null,
+      escalated: false as const,
+      userMessage: userMsg,
+      assistantMessage: assistantMsg,
+      sessionId: session.id,
+      summary: summaryBits,
+    };
+  });
 }
 
 export async function escalateSymptomSession(input: {
@@ -596,6 +638,8 @@ export async function escalateSymptomSession(input: {
   reason: string;
   guestKey?: string | null;
   skipAccessCheck?: boolean;
+  pharmacyId?: string;
+  pharmacySlug?: string;
 }) {
   if (!input.skipAccessCheck) {
     const access = await assertSessionAccess({
@@ -606,7 +650,7 @@ export async function escalateSymptomSession(input: {
     if (access.error === "forbidden") return { error: "forbidden" as const };
   }
 
-  const session = await prisma.symptomSession.findUnique({
+  const session = await prismaUnscoped.symptomSession.findUnique({
     where: { id: input.sessionId },
     include: {
       messages: { orderBy: { createdAt: "asc" }, take: 40 },
@@ -623,110 +667,119 @@ export async function escalateSymptomSession(input: {
     };
   }
 
-  const transcript = session.messages
-    .map((m) => {
-      const imgs = m.imageUrls?.length ? ` [${m.imageUrls.length} image(s) attached]` : "";
-      return `${m.role.toUpperCase()}: ${m.content}${imgs}`;
-    })
-    .join("\n\n");
+  // Explicitly resolve the pharmacy that will own the escalated ticket and conversation
+  const targetPharmacy = await resolveTriagePharmacy(
+    input.pharmacySlug || input.pharmacyId || session.pharmacyId,
+  );
 
-  const subject = `How do you feel: ${session.provisionalLabel || session.category || "symptom check-in"}`;
-  const bodyIntro = [
-    session.aiSummary ? `AI summary:\n${session.aiSummary}` : null,
-    session.provisionalLabel ? `Provisional label: ${session.provisionalLabel}` : null,
-    `Escalation reason: ${input.reason}`,
-    "",
-    "Full transcript:",
-    transcript.slice(0, 8000),
-  ]
-    .filter(Boolean)
-    .join("\n");
+  return withPharmacy(targetPharmacy.id, async () => {
+    const transcript = session.messages
+      .map((m) => {
+        const imgs = m.imageUrls?.length ? ` [${m.imageUrls.length} image(s) attached]` : "";
+        return `${m.role.toUpperCase()}: ${m.content}${imgs}`;
+      })
+      .join("\n\n");
 
-  const conversation = await prisma.conversation.create({
-    data: {
-      customerId: session.customerId ?? undefined,
-      channel: "ai",
-      subject: subject.slice(0, 200),
-      status: "open",
-      lastMessageAt: new Date(),
-      messages: {
-        create: {
-          direction: "inbound",
-          channel: "ai",
-          senderType: "customer",
-          body: bodyIntro.slice(0, 15000),
-          subject: subject.slice(0, 200),
-          status: "sent",
-          metadata: {
-            source: "symptom_triage",
-            symptomSessionId: session.id,
-            reason: input.reason,
+    const subject = `How do you feel: ${session.provisionalLabel || session.category || "symptom check-in"}`;
+    const bodyIntro = [
+      session.aiSummary ? `AI summary:\n${session.aiSummary}` : null,
+      session.provisionalLabel ? `Provisional label: ${session.provisionalLabel}` : null,
+      `Escalation reason: ${input.reason}`,
+      `Assigned pharmacy: ${targetPharmacy.name} (${targetPharmacy.slug})`,
+      "",
+      "Full transcript:",
+      transcript.slice(0, 8000),
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const conversation = await prisma.conversation.create({
+      data: {
+        customerId: session.customerId ?? undefined,
+        channel: "ai",
+        subject: subject.slice(0, 200),
+        status: "open",
+        lastMessageAt: new Date(),
+        messages: {
+          create: {
+            direction: "inbound",
+            channel: "ai",
+            senderType: "customer",
+            body: bodyIntro.slice(0, 15000),
+            subject: subject.slice(0, 200),
+            status: "sent",
+            metadata: {
+              source: "symptom_triage",
+              symptomSessionId: session.id,
+              reason: input.reason,
+            },
           },
         },
       },
-    },
-  });
+    });
 
-  await prisma.symptomMessage.create({
-    data: {
-      sessionId: session.id,
-      role: "system",
-      content: `Escalated to pharmacy staff (${input.reason}). Pharmacist queue ticket opened — this is not a contact-page enquiry.`,
-      metadata: { kind: "escalation", conversationId: conversation.id },
-    },
-  });
-
-  const updated = await prisma.symptomSession.update({
-    where: { id: session.id },
-    data: {
-      status: "escalated",
-      escalatedAt: new Date(),
-      escalatedReason: input.reason.slice(0, 200),
-      conversationId: conversation.id,
-      lastMessageAt: new Date(),
-      messageCount: { increment: 1 },
-    },
-  });
-
-  if (session.customerId) {
-    await prisma.timelineEvent.create({
+    await prisma.symptomMessage.create({
       data: {
-        customerId: session.customerId,
-        userId: session.userId ?? undefined,
-        eventType: "symptom_escalation",
-        title: "How do you feel — pharmacist requested",
-        description: (session.provisionalLabel || session.chiefComplaint || input.reason).slice(0, 200),
-        metadata: { symptomSessionId: session.id, conversationId: conversation.id },
+        sessionId: session.id,
+        role: "system",
+        content: `Escalated to ${targetPharmacy.name} pharmacy staff (${input.reason}). Pharmacist queue ticket opened.`,
+        metadata: { kind: "escalation", conversationId: conversation.id, pharmacyId: targetPharmacy.id },
+      },
+    });
+
+    const updated = await prisma.symptomSession.update({
+      where: { id: session.id },
+      data: {
+        pharmacyId: targetPharmacy.id,
+        status: "escalated",
+        escalatedAt: new Date(),
+        escalatedReason: input.reason.slice(0, 200),
+        conversationId: conversation.id,
+        lastMessageAt: new Date(),
+        messageCount: { increment: 1 },
+      },
+    });
+
+    if (session.customerId) {
+      await prisma.timelineEvent.create({
+        data: {
+          customerId: session.customerId,
+          userId: session.userId ?? undefined,
+          eventType: "symptom_escalation",
+          title: "How do you feel — pharmacist requested",
+          description: (session.provisionalLabel || session.chiefComplaint || input.reason).slice(0, 200),
+          metadata: { symptomSessionId: session.id, conversationId: conversation.id, pharmacyId: targetPharmacy.id },
+        },
+      }).catch(() => undefined);
+    }
+
+    await recordAdminNotification({
+      type: "symptom_escalation",
+      title: "URGENT: How do you feel — needs pharmacist",
+      body: (session.provisionalLabel || session.chiefComplaint || "Visitor requested help").slice(0, 180),
+      severity: "critical",
+      relatedType: "symptom_session",
+      relatedId: session.id,
+    });
+
+    await dispatchPushToStaff({
+      title: "URGENT: Symptom needs pharmacist",
+      body: (session.provisionalLabel || session.chiefComplaint || "A visitor needs pharmacist review.").slice(0, 140),
+      url: `/admin/feel/${session.id}`,
+      data: {
+        tag: "symptom-escalation",
+        severity: "critical",
+        symptomSessionId: session.id,
       },
     }).catch(() => undefined);
-  }
 
-  await recordAdminNotification({
-    type: "symptom_escalation",
-    title: "URGENT: How do you feel — needs pharmacist",
-    body: (session.provisionalLabel || session.chiefComplaint || "Visitor requested help").slice(0, 180),
-    severity: "critical",
-    relatedType: "symptom_session",
-    relatedId: session.id,
-  });
-
-  await dispatchPushToStaff({
-    title: "URGENT: Symptom needs pharmacist",
-    body: (session.provisionalLabel || session.chiefComplaint || "A visitor needs pharmacist review.").slice(0, 140),
-    url: `/admin/feel/${session.id}`,
-    data: {
-      tag: "symptom-escalation",
-      severity: "critical",
-      symptomSessionId: session.id,
-    },
-  }).catch(() => undefined);
-
-  return {
-    error: null,
-    alreadyEscalated: false as const,
-    session: updated,
-    ticket: { conversationId: conversation.id, enquiryId: null as string | null },
-  };
+    return {
+      error: null,
+      alreadyEscalated: false as const,
+      session: updated,
+      ticket: { conversationId: conversation.id, enquiryId: null as string | null },
+    };
+  }, targetPharmacy.slug);
 }
 
 export async function recordSymptomCheckIn(input: {
@@ -744,150 +797,159 @@ export async function recordSymptomCheckIn(input: {
   if (access.error === "forbidden") return { error: "forbidden" as const };
 
   const session = access.session!;
-  const score =
-    typeof input.score === "number" && input.score >= 1 && input.score <= 10
-      ? Math.round(input.score)
-      : null;
+  return withPharmacy(session.pharmacyId, async () => {
+    const score =
+      typeof input.score === "number" && input.score >= 1 && input.score <= 10
+        ? Math.round(input.score)
+        : null;
 
-  const checkIn = await prisma.symptomCheckIn.create({
-    data: {
-      sessionId: session.id,
-      feeling: input.feeling,
-      notes: input.notes?.trim().slice(0, 1000) || null,
-      score,
-    },
-  });
-
-  const systemNote = await prisma.symptomMessage.create({
-    data: {
-      sessionId: session.id,
-      role: "system",
-      content: `Check-in: feeling **${input.feeling}**${score ? ` (score ${score}/10)` : ""}${
-        input.notes?.trim() ? ` — ${input.notes.trim()}` : ""
-      }`,
-      metadata: { kind: "check_in", feeling: input.feeling, score },
-    },
-  });
-
-  let status: SymptomSessionStatus = session.status;
-  if (input.feeling === "better" && session.status !== "escalated") status = "monitoring";
-  if (input.feeling === "worse" && session.status !== "escalated") status = "monitoring";
-
-  await prisma.symptomSession.update({
-    where: { id: session.id },
-    data: {
-      feelingTrend: input.feeling,
-      lastCheckInAt: new Date(),
-      nextCheckInAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
-      status,
-      lastMessageAt: new Date(),
-      messageCount: { increment: 1 },
-    },
-  });
-
-  if (input.feeling === "worse") {
-    const label = (
-      session.provisionalLabel ||
-      session.chiefComplaint ||
-      session.category ||
-      "Symptom check-in"
-    ).slice(0, 180);
-    const who = session.customerId ? "A customer" : "A visitor";
-
-    await recordAdminNotification({
-      type: "symptom_checkin",
-      title: "URGENT: Feeling worse",
-      body: `${who} reports feeling worse — ${label}`,
-      severity: "critical",
-      relatedType: "symptom_session",
-      relatedId: session.id,
+    const checkIn = await prisma.symptomCheckIn.create({
+      data: {
+        sessionId: session.id,
+        feeling: input.feeling,
+        notes: input.notes?.trim().slice(0, 1000) || null,
+        score,
+      },
     });
 
-    await dispatchPushToStaff({
-      title: "URGENT: Feeling worse",
-      body: `${who} feels worse: ${label}`.slice(0, 140),
-      url: `/admin/feel/${session.id}`,
+    const systemNote = await prisma.symptomMessage.create({
       data: {
-        tag: "symptom-worse",
+        sessionId: session.id,
+        role: "system",
+        content: `Check-in: feeling **${input.feeling}**${score ? ` (score ${score}/10)` : ""}${
+          input.notes?.trim() ? ` — ${input.notes.trim()}` : ""
+        }`,
+        metadata: { kind: "check_in", feeling: input.feeling, score },
+      },
+    });
+
+    let status: SymptomSessionStatus = session.status;
+    if (input.feeling === "better" && session.status !== "escalated") status = "monitoring";
+    if (input.feeling === "worse" && session.status !== "escalated") status = "monitoring";
+
+    await prisma.symptomSession.update({
+      where: { id: session.id },
+      data: {
+        feelingTrend: input.feeling,
+        lastCheckInAt: new Date(),
+        nextCheckInAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
+        status,
+        lastMessageAt: new Date(),
+        messageCount: { increment: 1 },
+      },
+    });
+
+    if (input.feeling === "worse") {
+      const label = (
+        session.provisionalLabel ||
+        session.chiefComplaint ||
+        session.category ||
+        "Symptom check-in"
+      ).slice(0, 180);
+      const who = session.customerId ? "A customer" : "A visitor";
+
+      await recordAdminNotification({
+        type: "symptom_checkin",
+        title: "URGENT: Feeling worse",
+        body: `${who} reports feeling worse — ${label}`,
         severity: "critical",
-        symptomSessionId: session.id,
-        feeling: "worse",
-      },
-    }).catch(() => undefined);
+        relatedType: "symptom_session",
+        relatedId: session.id,
+      });
 
-    const offer = await prisma.symptomMessage.create({
-      data: {
-        sessionId: session.id,
-        role: "assistant",
-        content:
-          "Sorry you're feeling worse — we've alerted the pharmacy team. Would you like me to connect you with a pharmacist for personalised advice right now? Tap **Talk to a pharmacist** anytime — or tell me more about what changed. If this is an emergency, call local emergency services immediately.",
-        metadata: { kind: "worse_offer" },
-      },
-    });
+      await dispatchPushToStaff({
+        title: "URGENT: Feeling worse",
+        body: `${who} feels worse: ${label}`.slice(0, 140),
+        url: `/admin/feel/${session.id}`,
+        data: {
+          tag: "symptom-worse",
+          severity: "critical",
+          symptomSessionId: session.id,
+          feeling: "worse",
+        },
+      }).catch(() => undefined);
 
-    await prisma.symptomSession.update({
-      where: { id: session.id },
-      data: { messageCount: { increment: 1 } },
-    });
+      const offer = await prisma.symptomMessage.create({
+        data: {
+          sessionId: session.id,
+          role: "assistant",
+          content:
+            "Sorry you're feeling worse — we've alerted the pharmacy team. Would you like me to connect you with a pharmacist for personalised advice right now? Tap **Talk to a pharmacist** anytime — or tell me more about what changed. If this is an emergency, call local emergency services immediately.",
+          metadata: { kind: "worse_offer" },
+        },
+      });
 
-    return { error: null, checkIn, systemNote, offer, shouldOfferEscalation: true as const };
-  }
+      await prisma.symptomSession.update({
+        where: { id: session.id },
+        data: { messageCount: { increment: 1 } },
+      });
 
-  if (input.feeling === "better") {
-    const offer = await prisma.symptomMessage.create({
-      data: {
-        sessionId: session.id,
-        role: "assistant",
-        content:
-          "Glad you're feeling better. Keep an eye on symptoms, and come back here or visit the pharmacy if anything returns. You can still ask for pharmacist feedback if you'd like peace of mind.",
-        metadata: { kind: "better_ack" },
-      },
-    });
-    await prisma.symptomSession.update({
-      where: { id: session.id },
-      data: { messageCount: { increment: 1 } },
-    });
-    return { error: null, checkIn, systemNote, offer, shouldOfferEscalation: false as const };
-  }
+      return { error: null, checkIn, systemNote, offer, shouldOfferEscalation: true as const };
+    }
 
-  return { error: null, checkIn, systemNote, shouldOfferEscalation: false as const };
+    if (input.feeling === "better") {
+      const offer = await prisma.symptomMessage.create({
+        data: {
+          sessionId: session.id,
+          role: "assistant",
+          content:
+            "Glad you're feeling better. Keep an eye on symptoms, and come back here or visit the pharmacy if anything returns. You can still ask for pharmacist feedback if you'd like peace of mind.",
+          metadata: { kind: "better_ack" },
+        },
+      });
+      await prisma.symptomSession.update({
+        where: { id: session.id },
+        data: { messageCount: { increment: 1 } },
+      });
+      return { error: null, checkIn, systemNote, offer, shouldOfferEscalation: false as const };
+    }
+
+    return { error: null, checkIn, systemNote, shouldOfferEscalation: false as const };
+  });
 }
-
 export async function acknowledgeSymptomSessionForStaff(input: {
   sessionId: string;
   staffUserId?: string;
 }) {
-  const now = new Date();
-  await prisma.adminNotification
-    .updateMany({
-      where: {
-        isRead: false,
-        relatedId: input.sessionId,
-        type: { in: ["symptom_escalation", "symptom_checkin"] },
-      },
-      data: { isRead: true, readAt: now },
-    })
-    .catch(() => undefined);
+  const session = await prismaUnscoped.symptomSession.findUnique({
+    where: { id: input.sessionId },
+    select: { id: true, pharmacyId: true },
+  });
+  if (!session) return;
 
-  await prisma.adminNotification
-    .updateMany({
-      where: {
-        isRead: false,
-        relatedType: "symptom_session",
-        relatedId: input.sessionId,
-      },
-      data: { isRead: true, readAt: now },
-    })
-    .catch(() => undefined);
-
-  if (input.staffUserId) {
-    await prisma.symptomSession
-      .update({
-        where: { id: input.sessionId },
-        data: { assignedToId: input.staffUserId },
+  return withPharmacy(session.pharmacyId, async () => {
+    const now = new Date();
+    await prisma.adminNotification
+      .updateMany({
+        where: {
+          isRead: false,
+          relatedId: input.sessionId,
+          type: { in: ["symptom_escalation", "symptom_checkin"] },
+        },
+        data: { isRead: true, readAt: now },
       })
       .catch(() => undefined);
-  }
+
+    await prisma.adminNotification
+      .updateMany({
+        where: {
+          isRead: false,
+          relatedType: "symptom_session",
+          relatedId: input.sessionId,
+        },
+        data: { isRead: true, readAt: now },
+      })
+      .catch(() => undefined);
+
+    if (input.staffUserId) {
+      await prisma.symptomSession
+        .update({
+          where: { id: input.sessionId },
+          data: { assignedToId: input.staffUserId },
+        })
+        .catch(() => undefined);
+    }
+  });
 }
 
 export async function resolveSymptomSession(input: {
@@ -897,7 +959,7 @@ export async function resolveSymptomSession(input: {
 }) {
   const text = (input.note || "").trim().slice(0, 5000);
 
-  const session = await prisma.symptomSession.findUnique({
+  const session = await prismaUnscoped.symptomSession.findUnique({
     where: { id: input.sessionId },
     include: {
       customer: {
@@ -912,107 +974,109 @@ export async function resolveSymptomSession(input: {
   if (!session) return { error: "not_found" as const };
   if (session.status === "closed") return { error: "closed" as const };
 
-  const msg = text
-    ? await prisma.symptomMessage.create({
-        data: {
-          sessionId: session.id,
-          role: "staff",
-          content: text,
-          senderId: input.staffUserId,
-          metadata: { kind: "staff_resolve" },
-        },
-      })
-    : await prisma.symptomMessage.create({
-        data: {
-          sessionId: session.id,
-          role: "system",
-          content: "Case marked resolved by pharmacy staff.",
-          senderId: input.staffUserId,
-          metadata: { kind: "staff_resolve" },
-        },
-      });
-
-  await prisma.symptomSession.update({
-    where: { id: session.id },
-    data: {
-      status: "resolved",
-      lastMessageAt: new Date(),
-      messageCount: { increment: 1 },
-      assignedToId: input.staffUserId,
-    },
-  });
-
-  if (session.conversationId) {
-    if (text) {
-      await prisma.message
-        .create({
+  return withPharmacy(session.pharmacyId, async () => {
+    const msg = text
+      ? await prisma.symptomMessage.create({
           data: {
-            conversationId: session.conversationId,
-            direction: "outbound",
-            channel: "ai",
-            senderType: "staff",
+            sessionId: session.id,
+            role: "staff",
+            content: text,
             senderId: input.staffUserId,
-            body: text,
-            status: "sent",
-            metadata: { source: "symptom_triage_resolve", symptomSessionId: session.id },
+            metadata: { kind: "staff_resolve" },
+          },
+        })
+      : await prisma.symptomMessage.create({
+          data: {
+            sessionId: session.id,
+            role: "system",
+            content: "Case marked resolved by pharmacy staff.",
+            senderId: input.staffUserId,
+            metadata: { kind: "staff_resolve" },
+          },
+        });
+
+    await prisma.symptomSession.update({
+      where: { id: session.id },
+      data: {
+        status: "resolved",
+        lastMessageAt: new Date(),
+        messageCount: { increment: 1 },
+        assignedToId: input.staffUserId,
+      },
+    });
+
+    if (session.conversationId) {
+      if (text) {
+        await prisma.message
+          .create({
+            data: {
+              conversationId: session.conversationId,
+              direction: "outbound",
+              channel: "ai",
+              senderType: "staff",
+              senderId: input.staffUserId,
+              body: text,
+              status: "sent",
+              metadata: { source: "symptom_triage_resolve", symptomSessionId: session.id },
+            },
+          })
+          .catch(() => undefined);
+      }
+      await prisma.conversation
+        .update({
+          where: { id: session.conversationId },
+          data: {
+            lastMessageAt: new Date(),
+            status: "resolved",
+            assignedToId: input.staffUserId,
           },
         })
         .catch(() => undefined);
     }
-    await prisma.conversation
-      .update({
-        where: { id: session.conversationId },
-        data: {
-          lastMessageAt: new Date(),
-          status: "resolved",
-          assignedToId: input.staffUserId,
-        },
-      })
-      .catch(() => undefined);
-  }
 
-  await acknowledgeSymptomSessionForStaff({
-    sessionId: session.id,
-    staffUserId: input.staffUserId,
-  });
+    await acknowledgeSymptomSessionForStaff({
+      sessionId: session.id,
+      staffUserId: input.staffUserId,
+    });
 
-  if (session.customerId && text) {
-    const preview = text.length > 140 ? `${text.slice(0, 137)}…` : text;
-    const feelUrl = session.customerId || session.userId ? "/portal/feel" : "/how-do-you-feel";
-    await prisma.notification
-      .create({
-        data: {
-          customerId: session.customerId,
-          userId: session.userId ?? session.customer?.user?.id ?? undefined,
-          channel: "in_app",
-          type: "symptom_staff_reply",
+    if (session.customerId && text) {
+      const preview = text.length > 140 ? `${text.slice(0, 137)}…` : text;
+      const feelUrl = session.customerId || session.userId ? "/portal/feel" : "/how-do-you-feel";
+      await prisma.notification
+        .create({
+          data: {
+            customerId: session.customerId,
+            userId: session.userId ?? session.customer?.user?.id ?? undefined,
+            channel: "in_app",
+            type: "symptom_staff_reply",
+            title: "Pharmacist closed your check-in",
+            body: `Your pharmacist left a final note: ${preview}`,
+            fullBody: text,
+            status: "delivered",
+            sentAt: new Date(),
+            relatedType: "symptom_session",
+            relatedId: session.id,
+          },
+        })
+        .catch(() => undefined);
+
+      const pushUserId = session.userId ?? session.customer?.user?.id;
+      if (pushUserId) {
+        await dispatchPushToUser(pushUserId, {
           title: "Pharmacist closed your check-in",
-          body: `Your pharmacist left a final note: ${preview}`,
-          fullBody: text,
-          status: "delivered",
-          sentAt: new Date(),
-          relatedType: "symptom_session",
-          relatedId: session.id,
-        },
-      })
-      .catch(() => undefined);
-
-    const pushUserId = session.userId ?? session.customer?.user?.id;
-    if (pushUserId) {
-      await dispatchPushToUser(pushUserId, {
-        title: "Pharmacist closed your check-in",
-        body: preview.slice(0, 140),
-        url: feelUrl,
-        data: {
-          tag: "symptom-staff-reply",
-          severity: "info",
-          symptomSessionId: session.id,
-        },
-      }).catch(() => undefined);
+          body: preview.slice(0, 140),
+          url: feelUrl,
+          data: {
+            tag: "symptom-staff-reply",
+            severity: "info",
+            symptomSessionId: session.id,
+          },
+        }).catch(() => undefined);
+      }
     }
-  }
 
-  return { error: null, message: msg };
+    return { error: null, message: msg };
+  });
 }
 
 export async function staffReplyToSymptomSession(input: {
@@ -1031,7 +1095,7 @@ export async function staffReplyToSymptomSession(input: {
   }
   if (!text) return { error: "empty" as const };
 
-  const session = await prisma.symptomSession.findUnique({
+  const session = await prismaUnscoped.symptomSession.findUnique({
     where: { id: input.sessionId },
     include: {
       customer: {
@@ -1045,97 +1109,99 @@ export async function staffReplyToSymptomSession(input: {
   });
   if (!session) return { error: "not_found" as const };
 
-  const msg = await prisma.symptomMessage.create({
-    data: {
-      sessionId: session.id,
-      role: "staff",
-      content: text,
-      senderId: input.staffUserId,
-      metadata: { kind: input.markResolved ? "staff_resolve" : "staff_reply" },
-    },
-  });
-
-  await prisma.symptomSession.update({
-    where: { id: session.id },
-    data: {
-      status: input.markResolved ? "resolved" : session.status === "closed" ? "closed" : "escalated",
-      lastMessageAt: new Date(),
-      messageCount: { increment: 1 },
-      assignedToId: input.staffUserId,
-    },
-  });
-
-  if (session.conversationId) {
-    await prisma.message.create({
+  return withPharmacy(session.pharmacyId, async () => {
+    const msg = await prisma.symptomMessage.create({
       data: {
-        conversationId: session.conversationId,
-        direction: "outbound",
-        channel: "ai",
-        senderType: "staff",
+        sessionId: session.id,
+        role: "staff",
+        content: text,
         senderId: input.staffUserId,
-        body: text,
-        status: "sent",
-        metadata: { source: "symptom_triage_staff_reply", symptomSessionId: session.id },
+        metadata: { kind: input.markResolved ? "staff_resolve" : "staff_reply" },
       },
-    }).catch(() => undefined);
+    });
 
-    await prisma.conversation.update({
-      where: { id: session.conversationId },
+    await prisma.symptomSession.update({
+      where: { id: session.id },
       data: {
+        status: input.markResolved ? "resolved" : session.status === "closed" ? "closed" : "escalated",
         lastMessageAt: new Date(),
-        status: input.markResolved ? "resolved" : "open",
+        messageCount: { increment: 1 },
         assignedToId: input.staffUserId,
       },
-    }).catch(() => undefined);
-  }
+    });
 
-  await acknowledgeSymptomSessionForStaff({
-    sessionId: session.id,
-    staffUserId: input.staffUserId,
-  });
-
-  const preview = text.length > 140 ? `${text.slice(0, 137)}…` : text;
-  const notifTitle = input.markResolved
-    ? "Pharmacist closed your check-in"
-    : "Pharmacist replied to your check-in";
-  const notifBody = input.markResolved ? `Your pharmacist left a final note: ${preview}` : preview;
-  const feelUrl = session.customerId || session.userId ? "/portal/feel" : "/how-do-you-feel";
-
-  if (session.customerId) {
-    await prisma.notification
-      .create({
+    if (session.conversationId) {
+      await prisma.message.create({
         data: {
-          customerId: session.customerId,
-          userId: session.userId ?? session.customer?.user?.id ?? undefined,
-          channel: "in_app",
-          type: "symptom_staff_reply",
-          title: notifTitle,
-          body: notifBody,
-          fullBody: text,
-          status: "delivered",
-          sentAt: new Date(),
-          relatedType: "symptom_session",
-          relatedId: session.id,
+          conversationId: session.conversationId,
+          direction: "outbound",
+          channel: "ai",
+          senderType: "staff",
+          senderId: input.staffUserId,
+          body: text,
+          status: "sent",
+          metadata: { source: "symptom_triage_staff_reply", symptomSessionId: session.id },
         },
-      })
-      .catch(() => undefined);
+      }).catch(() => undefined);
 
-    const pushUserId = session.userId ?? session.customer?.user?.id;
-    if (pushUserId) {
-      await dispatchPushToUser(pushUserId, {
-        title: notifTitle,
-        body: notifBody.slice(0, 140),
-        url: feelUrl,
+      await prisma.conversation.update({
+        where: { id: session.conversationId },
         data: {
-          tag: "symptom-staff-reply",
-          severity: "info",
-          symptomSessionId: session.id,
+          lastMessageAt: new Date(),
+          status: input.markResolved ? "resolved" : "open",
+          assignedToId: input.staffUserId,
         },
       }).catch(() => undefined);
     }
-  }
 
-  return { error: null, message: msg };
+    await acknowledgeSymptomSessionForStaff({
+      sessionId: session.id,
+      staffUserId: input.staffUserId,
+    });
+
+    const preview = text.length > 140 ? `${text.slice(0, 137)}…` : text;
+    const notifTitle = input.markResolved
+      ? "Pharmacist closed your check-in"
+      : "Pharmacist replied to your check-in";
+    const notifBody = input.markResolved ? `Your pharmacist left a final note: ${preview}` : preview;
+    const feelUrl = session.customerId || session.userId ? "/portal/feel" : "/how-do-you-feel";
+
+    if (session.customerId) {
+      await prisma.notification
+        .create({
+          data: {
+            customerId: session.customerId,
+            userId: session.userId ?? session.customer?.user?.id ?? undefined,
+            channel: "in_app",
+            type: "symptom_staff_reply",
+            title: notifTitle,
+            body: notifBody,
+            fullBody: text,
+            status: "delivered",
+            sentAt: new Date(),
+            relatedType: "symptom_session",
+            relatedId: session.id,
+          },
+        })
+        .catch(() => undefined);
+
+      const pushUserId = session.userId ?? session.customer?.user?.id;
+      if (pushUserId) {
+        await dispatchPushToUser(pushUserId, {
+          title: notifTitle,
+          body: notifBody.slice(0, 140),
+          url: feelUrl,
+          data: {
+            tag: "symptom-staff-reply",
+            severity: "info",
+            symptomSessionId: session.id,
+          },
+        }).catch(() => undefined);
+      }
+    }
+
+    return { error: null, message: msg };
+  });
 }
 
 function presentImageReference(reference: string): string {

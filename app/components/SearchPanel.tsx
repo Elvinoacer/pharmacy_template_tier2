@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SearchAssistFallback from "./assist/SearchAssistFallback";
 
 export type SearchCorpus = {
@@ -76,6 +76,16 @@ export default function SearchPanel({
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [touched, setTouched] = useState(false);
+
+  useEffect(() => {
+    if (!touched) return;
+    const t = setTimeout(() => {
+      const path = query.trim() ? `/search?q=${encodeURIComponent(query.trim())}` : "/search";
+      window.history.replaceState(null, "", path);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [query, touched]);
+
   const results = useMemo(
     () => (touched || initialQuery.trim() ? search(corpus, base, query) : initial),
     [corpus, base, query, touched, initial, initialQuery],
@@ -131,7 +141,7 @@ export default function SearchPanel({
               }}
               placeholder="Search medicines, services, vaccines…"
               className="min-h-12 w-full min-w-0 rounded-xl border border-[var(--care-border)] bg-[var(--card)] py-3 pl-10 pr-3 text-base text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted-2)] focus:border-[var(--brand)] focus:bg-[var(--card)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_16%,transparent)] sm:text-sm"
-              aria-label="Search this pharmacy"
+              aria-label={base ? "Search this pharmacy" : "Search medicines, services, and vaccines"}
             />
           </div>
           <button
@@ -195,6 +205,16 @@ export default function SearchPanel({
               {results.medicines.map((m) => (
                 <ResultCard key={m.slug} href={m.href} title={m.title} body={m.body} meta={m.meta} />
               ))}
+              {query.trim() && (
+                <div className="pt-2 text-right">
+                  <Link
+                    href={`/medicines?q=${encodeURIComponent(query.trim())}`}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand)] hover:underline"
+                  >
+                    View all matching medicines in catalogue →
+                  </Link>
+                </div>
+              )}
             </ResultGroup>
           )}
           {results.services.length > 0 && (
