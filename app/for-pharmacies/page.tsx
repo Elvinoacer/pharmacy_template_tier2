@@ -29,10 +29,10 @@ export default function ForPharmaciesPage() {
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-semibold text-[var(--foreground)]">Community Chemist Network:</span>
-            <span>Nairobi, Mombasa, Kisumu &amp; Eldoret licensed premises</span>
+            <span>Nairobi, Mombasa, Kisumu &amp; Eldoret pharmacy network</span>
           </div>
           <div className="flex items-center gap-2.5">
-            <span className="hidden sm:inline">PPB Verification: <strong>24h turnaround</strong></span>
+            <span className="hidden sm:inline">Admin verification: <strong>before launch</strong></span>
             <Link href="/for-pharmacies/walkthrough" className="font-bold text-[var(--brand)] hover:underline flex items-center gap-1">
               Step-by-step walkthrough <ArrowRight size={12} aria-hidden />
             </Link>
@@ -65,7 +65,7 @@ export default function ForPharmaciesPage() {
             <div className="mt-4 flex flex-wrap items-center gap-3.5 text-xs font-semibold text-[var(--muted)]">
               <span className="flex items-center gap-1.5">
                 <ShieldCheck size={15} className="text-[var(--brand)]" aria-hidden />
-                PPB-licensed premises only
+                Manual verification before launch
               </span>
               <span className="flex items-center gap-1.5">
                 <Smartphone size={15} className="text-[var(--brand)]" aria-hidden />
@@ -119,7 +119,7 @@ export default function ForPharmaciesPage() {
           <div className={styles.offerPrice}>
             <span>ONE TIME</span>
             <strong><small>KES</small> 100</strong>
-            <p>PPB verification check &amp; anti-clone lock</p>
+            <p>Admin verification review &amp; anti-clone lock</p>
           </div>
           <div className={styles.offerPrice}>
             <span>ONLY AFTER LAUNCH</span>
@@ -152,13 +152,13 @@ export default function ForPharmaciesPage() {
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-[var(--brand)]" aria-hidden />
                   <span>
-                    <strong>PPB Licence Check:</strong> Quick check of your premises &amp; superintendent licence on the national register.
+                    <strong>Regulatory Evidence Review:</strong> Share PPB and licensing details when available. Missing paperwork does not stop intake; an admin reviews the evidence before approval.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Lock size={15} className="mt-0.5 shrink-0 text-[var(--brand)]" aria-hidden />
                   <span>
-                    <strong>Anti-Clone Lock:</strong> Locks your pharmacy name &amp; GPS pin so quacks can&apos;t pretend to be you.
+                    <strong>Anti-Clone Lock:</strong> Locks your pharmacy name &amp; GPS pin so copycats can&apos;t pretend to be you.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -267,9 +267,9 @@ export default function ForPharmaciesPage() {
                   <td className="py-2.5 px-3 font-bold text-[var(--brand)]">Included out of the box</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 px-3 font-semibold">PPB verified badge</td>
+                  <td className="py-2.5 px-3 font-semibold">Verification badge</td>
                   <td className="py-2.5 px-3 text-[var(--muted)]">None (generic website)</td>
-                  <td className="py-2.5 px-3 font-bold text-[var(--brand)]">Audited PPB trust seal</td>
+                  <td className="py-2.5 px-3 font-bold text-[var(--brand)]">Admin-reviewed trust badge</td>
                 </tr>
               </tbody>
             </table>
@@ -287,9 +287,9 @@ export default function ForPharmaciesPage() {
           <div className={styles.launchPath}>
             {[
               ["Create account", "Name your pharmacy and pick your link. Stays private until you launch."],
-              ["Submit licence", "Enter your PPB premises number and superintendent details."],
+              ["Share verification details", "Add the PPB, licensing, pharmacist and business details you already have. Missing documents can be reviewed by the admin later."],
               ["Confirm with KES 100", "Quick STK test links your M-PESA Till or Paybill."],
-              ["Set up & launch", "Pick your stocked medicines, set your hours, and welcome patients."],
+              ["Set up & launch", "After admin approval, pick your stocked medicines, set your hours, and welcome patients."],
             ].map(([title, desc], i) => (
               <div key={title} className="liquid-glass care-glass flex flex-col p-3.5 sm:p-4 rounded-xl border border-[var(--care-border)] bg-[var(--care-glass)] backdrop-blur-xl shadow-sm">
                 <span className="text-xs font-mono font-bold text-[var(--brand)]">{String(i + 1).padStart(2, "0")}</span>
