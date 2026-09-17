@@ -179,10 +179,6 @@ export default function VerificationDossierForm({
     for (const field of fields ?? []) {
       if (!field.reportValidity()) return;
     }
-    if (section === 0 && !licenseDocumentUrl) {
-      setUploadError("Upload your premises licence to continue.");
-      return;
-    }
     setUploadError(null);
     setSection((value) => Math.min(2, value + 1));
   }
@@ -229,8 +225,10 @@ export default function VerificationDossierForm({
       </div>
 
       <header className={`${styles.formHead} ${polish.heading}`}>
-        <h2>Verify the pharmacy, without the paperwork feel</h2>
-        <p>We’ll guide you through the premises, pharmacist, and business details in three short sections.</p>
+        <h2>Share what you have — we’ll review the rest</h2>
+        <p>
+          Add the pharmacy, pharmacist and business details currently available to you. PPB numbers, licence documents and other compliance evidence are optional at this stage; a platform admin will make the final verification decision before the pharmacy can operate publicly.
+        </p>
       </header>
 
       <section className={polish.ownerCard}>
@@ -297,8 +295,8 @@ export default function VerificationDossierForm({
           <SectionHeader
             icon={<Building2 className="h-5 w-5" aria-hidden />}
             step="Section 1 of 3"
-            title="Premises licence"
-            copy="Details that identify the licensed pharmacy location."
+            title="Premises & licence"
+            copy="Add the regulatory details you already have. Missing items can be reviewed later."
           >
             <a
               href="https://practice.pharmacyboardkenya.org/LicenseStatus?register=facilities"
@@ -311,15 +309,15 @@ export default function VerificationDossierForm({
           </SectionHeader>
 
           <div className={polish.fieldsGrid}>
-            <Field label="PPB / premises licence number" hint="Enter it exactly as shown on the current premises licence.">
-              <input name="licenseNumber" required defaultValue={pharmacy.licenseNumber || ""} className="input-admin" autoComplete="off" placeholder="Premises licence number" />
+            <Field label="PPB / premises licence number · Optional" hint="If available, enter it exactly as shown on the current premises licence.">
+              <input name="licenseNumber" defaultValue={pharmacy.licenseNumber || ""} className="input-admin" autoComplete="off" placeholder="Premises licence number" />
             </Field>
-            <Field label="Facility / premises number" hint="The facility identifier associated with this outlet.">
-              <input name="ppbPremisesNumber" required defaultValue={pharmacy.ppbPremisesNumber || ""} className="input-admin" autoComplete="off" placeholder="Facility number" />
+            <Field label="Facility / premises number · Optional" hint="Add the facility identifier if you have it.">
+              <input name="ppbPremisesNumber" defaultValue={pharmacy.ppbPremisesNumber || ""} className="input-admin" autoComplete="off" placeholder="Facility number" />
             </Field>
-            <Field label="Facility type">
-              <select name="facilityType" required defaultValue={profile?.facilityType || ""} className="input-admin">
-                <option value="">Select facility type</option>
+            <Field label="Facility type · Optional">
+              <select name="facilityType" defaultValue={profile?.facilityType || ""} className="input-admin">
+                <option value="">Not provided yet</option>
                 <option value="retail">Retail pharmacy</option>
                 <option value="wholesale">Wholesale pharmacy</option>
                 <option value="hospital">Hospital pharmacy</option>
@@ -327,20 +325,19 @@ export default function VerificationDossierForm({
                 <option value="other">Other licensed outlet</option>
               </select>
             </Field>
-            <Field label="Licence expiry">
-              <input name="licenseExpiryDate" type="date" required defaultValue={profile?.licenseExpiryDate || ""} className="input-admin" />
+            <Field label="Licence expiry · Optional" hint="Leave blank if you do not have the current licence with you.">
+              <input name="licenseExpiryDate" type="date" defaultValue={profile?.licenseExpiryDate || ""} className="input-admin" />
             </Field>
-            <Field label="Licensed physical address" hint="Use the address written on the licence so the reviewer can match it to the captured premises location." className={styles.spanAll}>
+            <Field label="Physical address · Optional" hint="If available, use the premises address shown on official records." className={styles.spanAll}>
               <textarea
                 name="physicalAddress"
-                required
                 rows={3}
                 defaultValue={profile?.physicalAddress || ""}
                 className="input-admin"
-                placeholder="Address exactly as shown on the licence"
+                placeholder="Premises address or leave blank for now"
               />
             </Field>
-            <Field label="Licence QR text" hint="Optional — only if you already have the decoded text." className={styles.spanAll}>
+            <Field label="Licence QR text · Optional" hint="Only if you already have the decoded text." className={styles.spanAll}>
               <input name="licenseQrPayload" defaultValue={profile?.licenseQrPayload || ""} className="input-admin" placeholder="Optional QR payload" />
             </Field>
           </div>
@@ -348,8 +345,8 @@ export default function VerificationDossierForm({
           <div className={`${styles.upload} ${polish.uploadZone}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold tracking-[-0.01em]">Premises licence image</p>
-                <p className={`${styles.fieldHint} ${polish.fieldHint}`}>Upload a clear full image. Include the QR code if one appears on the licence.</p>
+                <p className="text-sm font-semibold tracking-[-0.01em]">Premises licence image · Optional</p>
+                <p className={`${styles.fieldHint} ${polish.fieldHint}`}>Upload it if available. You can continue without it and the reviewer can request or validate evidence later.</p>
               </div>
               <label className={`btn-ghost inline-flex cursor-pointer ${polish.secondaryAction}`}>
                 {uploading === "license" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <UploadCloud className="h-3.5 w-3.5" aria-hidden />}
@@ -383,7 +380,7 @@ export default function VerificationDossierForm({
             icon={<UserRound className="h-5 w-5" aria-hidden />}
             step="Section 2 of 3"
             title="Pharmacist in charge"
-            copy="The registered professional responsible for this premises."
+            copy="Add the professional details you currently know. They are supporting evidence for admin review."
           >
             <a
               href="https://practice.pharmacyboardkenya.org/LicenseStatus?registers=search"
@@ -396,23 +393,21 @@ export default function VerificationDossierForm({
           </SectionHeader>
 
           <div className={polish.fieldsGrid}>
-            <Field label="Full name" className={styles.spanAll}>
-              <input name="superintendentName" required defaultValue={profile?.superintendentName || ""} className="input-admin" autoComplete="name" placeholder="Pharmacist’s full name" />
+            <Field label="Full name · Optional" className={styles.spanAll}>
+              <input name="superintendentName" defaultValue={profile?.superintendentName || ""} className="input-admin" autoComplete="name" placeholder="Pharmacist’s full name" />
             </Field>
-            <Field label="PPB registration number">
+            <Field label="PPB registration number · Optional">
               <input
                 name="superintendentRegistrationNumber"
-                required
                 defaultValue={profile?.superintendentRegistrationNumber || ""}
                 className="input-admin"
                 autoComplete="off"
                 placeholder="Registration number"
               />
             </Field>
-            <Field label="Practice licence number">
+            <Field label="Practice licence number · Optional">
               <input
                 name="superintendentPracticeLicenseNumber"
-                required
                 defaultValue={profile?.superintendentPracticeLicenseNumber || ""}
                 className="input-admin"
                 autoComplete="off"
@@ -427,13 +422,13 @@ export default function VerificationDossierForm({
             icon={<BriefcaseBusiness className="h-5 w-5" aria-hidden />}
             step="Section 3 of 3"
             title="The business"
-            copy="Connect the licensed premises to the legal business behind it."
+            copy="Share business-registration evidence if available; incomplete paperwork does not block intake."
           />
 
           <div className={polish.fieldsGrid}>
-            <Field label="Ownership">
-              <select name="ownershipType" required defaultValue={profile?.ownershipType || ""} className="input-admin">
-                <option value="">Select ownership</option>
+            <Field label="Ownership · Optional">
+              <select name="ownershipType" defaultValue={profile?.ownershipType || ""} className="input-admin">
+                <option value="">Not provided yet</option>
                 <option value="sole_proprietorship">Sole proprietorship</option>
                 <option value="partnership">Partnership</option>
                 <option value="limited_company">Limited company</option>
@@ -442,17 +437,16 @@ export default function VerificationDossierForm({
                 <option value="other">Other</option>
               </select>
             </Field>
-            <Field label="Business registration number">
+            <Field label="Business registration number · Optional">
               <input
                 name="businessRegistrationNumber"
-                required
                 defaultValue={profile?.businessRegistrationNumber || ""}
                 className="input-admin"
                 autoComplete="off"
                 placeholder="Registration number"
               />
             </Field>
-            <Field label="KRA PIN" hint="Recommended for stronger business matching." className={styles.spanAll}>
+            <Field label="KRA PIN · Optional" hint="Useful for stronger business matching, but not required for intake." className={styles.spanAll}>
               <input name="kraPin" defaultValue={pharmacy.kraPin || ""} className="input-admin" autoComplete="off" placeholder="KRA PIN" />
             </Field>
           </div>
@@ -460,8 +454,8 @@ export default function VerificationDossierForm({
           <div className={`${styles.upload} ${polish.uploadZone}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold tracking-[-0.01em]">Business registration evidence</p>
-                <p className={`${styles.fieldHint} ${polish.fieldHint}`}>Certificate or official document linking this business to the pharmacy.</p>
+                <p className="text-sm font-semibold tracking-[-0.01em]">Business registration evidence · Optional</p>
+                <p className={`${styles.fieldHint} ${polish.fieldHint}`}>Upload a certificate or other official evidence if you have it now.</p>
               </div>
               <label className={`btn-ghost inline-flex cursor-pointer ${polish.secondaryAction}`}>
                 {uploading === "business" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <UploadCloud className="h-3.5 w-3.5" aria-hidden />}
@@ -499,7 +493,7 @@ export default function VerificationDossierForm({
               defaultChecked={profile?.applicantAuthorityConfirmed || false}
               className="mt-1 h-4 w-4 rounded border-[var(--line-2)] text-[var(--brand)] focus:ring-[var(--brand)]"
             />
-            <span>I’m authorised to represent this pharmacy, and the information above is accurate.</span>
+            <span>I’m authorised to represent this pharmacy, and the information I provided is accurate to the best of my knowledge.</span>
           </label>
         </section>
 
