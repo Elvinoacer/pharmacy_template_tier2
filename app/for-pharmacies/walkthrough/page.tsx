@@ -30,13 +30,13 @@ const steps = [
   },
   {
     num: "02",
-    title: "PPB Licence Check",
-    desc: "Enter your PPB premises number and superintendent pharmacist credentials. A quick check against the official register unlocks your verified trust badge.",
+    title: "Verification Details",
+    desc: "Share the PPB, premises, pharmacist and business details you already have. Missing licensing documents do not stop intake; a platform admin reviews the application and available evidence before approval.",
     duration: "2 minutes",
     href: "/onboard/verification",
-    cta: "Review licence requirements",
+    cta: "Review verification details",
     icon: ShieldCheck,
-    detail: "Stops quacks and copycats from claiming your chemist name.",
+    detail: "PPB and licensing evidence strengthens the review when available. Final approval is always manual.",
   },
   {
     num: "03",
@@ -80,7 +80,7 @@ export default function Walkthrough() {
           </Link>
           <span className="text-xs font-semibold text-[var(--muted)] flex items-center gap-1.5">
             <ShieldCheck size={14} className="text-[var(--brand)]" />
-            Official PPB Onboarding Flow
+            Admin-reviewed onboarding flow
           </span>
         </div>
 
