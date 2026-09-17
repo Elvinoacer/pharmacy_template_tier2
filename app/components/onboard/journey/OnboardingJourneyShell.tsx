@@ -8,16 +8,72 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import type {
-  OnboardingChapter,
-  PharmacyOnboardingSnapshot,
-  PharmacyOnboardingStage,
-} from "@/app/lib/services/pharmacy-onboarding-journey";
-import { JOURNEY_CHAPTERS, getChapterForStage } from "@/app/lib/services/pharmacy-onboarding-journey";
 import styles from "@/app/components/onboard/OnboardSurface.module.css";
 
+type PharmacyOnboardingStage =
+  | "ACCOUNT"
+  | "EMAIL_VERIFICATION"
+  | "PHARMACY_DETAILS"
+  | "VERIFICATION_INFORMATION"
+  | "VERIFICATION_PAYMENT"
+  | "FINAL_REVIEW"
+  | "AWAITING_ADMIN_REVIEW"
+  | "NEEDS_INFORMATION"
+  | "REJECTED"
+  | "POST_APPROVAL_SETUP"
+  | "SERVICE_ACTIVATION"
+  | "READY_TO_LAUNCH"
+  | "COMPLETE";
+
+type OnboardingChapter =
+  | "account"
+  | "pharmacy"
+  | "verification"
+  | "review"
+  | "launch";
+
+type JourneyChapterMeta = {
+  id: OnboardingChapter;
+  label: string;
+  stages: PharmacyOnboardingStage[];
+};
+
+type OnboardingShellSnapshot = {
+  pharmacy: {
+    name: string;
+    slug: string | null;
+  } | null;
+};
+
+const JOURNEY_CHAPTERS: JourneyChapterMeta[] = [
+  { id: "account", label: "Account", stages: ["ACCOUNT", "EMAIL_VERIFICATION"] },
+  { id: "pharmacy", label: "Premises", stages: ["PHARMACY_DETAILS"] },
+  {
+    id: "verification",
+    label: "Verification",
+    stages: ["VERIFICATION_INFORMATION", "VERIFICATION_PAYMENT", "FINAL_REVIEW"],
+  },
+  {
+    id: "review",
+    label: "Review",
+    stages: ["AWAITING_ADMIN_REVIEW", "NEEDS_INFORMATION", "REJECTED"],
+  },
+  {
+    id: "launch",
+    label: "Launch",
+    stages: ["POST_APPROVAL_SETUP", "SERVICE_ACTIVATION", "READY_TO_LAUNCH", "COMPLETE"],
+  },
+];
+
+function getChapterForStage(stage: PharmacyOnboardingStage): OnboardingChapter {
+  for (const chapter of JOURNEY_CHAPTERS) {
+    if (chapter.stages.includes(stage)) return chapter.id;
+  }
+  return "account";
+}
+
 type Props = {
-  snapshot: PharmacyOnboardingSnapshot;
+  snapshot: OnboardingShellSnapshot;
   activeStage: PharmacyOnboardingStage;
   isReviewEdit?: boolean;
   children: ReactNode;
