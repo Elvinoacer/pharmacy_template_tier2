@@ -42,7 +42,11 @@ export function WorkspaceRail({
   bottomContent?: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { startNavigation, stage, targetHref: activeNavHref } = useNavigationProgress();
+  const {
+    startNavigation,
+    stage,
+    targetHref: activeNavHref,
+  } = useNavigationProgress();
 
   const groups = getWorkspaceGroups(role);
   const currentDest = getDestinationForPath(pathname, role);
@@ -91,7 +95,9 @@ export function WorkspaceRail({
       event.preventDefault();
       event.stopPropagation();
       setPinnedItems((prev) => {
-        const next = prev.includes(href) ? prev.filter((h) => h !== href) : [...prev, href];
+        const next = prev.includes(href)
+          ? prev.filter((h) => h !== href)
+          : [...prev, href];
         try {
           localStorage.setItem(pinnedStorageKey, JSON.stringify(next));
         } catch {
@@ -161,27 +167,35 @@ export function WorkspaceRail({
     role === "admin"
       ? "/admin"
       : role === "platform"
-      ? "/platform"
-      : role === "portal"
-      ? "/portal"
-      : "/caregiver";
+        ? "/platform"
+        : role === "portal"
+          ? "/portal"
+          : "/caregiver";
 
   const brandMarkText =
     role === "admin"
       ? "Rx"
       : role === "platform"
-      ? "P"
-      : role === "portal"
-      ? "A"
-      : "C";
+        ? "P"
+        : role === "portal"
+          ? "A"
+          : "C";
 
   return (
-    <div className="relative flex min-h-screen">
+    <div
+      className="relative flex min-h-screen"
+      onMouseLeave={() => {
+        if (!pinnedPanel) setActiveFlyout(null);
+      }}
+    >
       {/* 1. Narrow Adaptive Navigation Rail (never scrolls vertically) */}
       <aside
         id="aether-adaptive-rail"
         aria-label="Workspace Rail"
         className="aether-rail"
+        onMouseEnter={() => {
+          if (!pinnedPanel) setActiveFlyout(activeGroupId);
+        }}
       >
         {/* Brand Mark */}
         <div className="aether-rail-brand">
@@ -214,6 +228,9 @@ export function WorkspaceRail({
                 key={group.id}
                 type="button"
                 onClick={() => handleGroupClick(group.id)}
+                onMouseEnter={() => {
+                  if (!pinnedPanel) setActiveFlyout(group.id);
+                }}
                 aria-expanded={isSelected}
                 aria-haspopup="true"
                 aria-label={`${group.label} workspace`}
@@ -265,7 +282,9 @@ export function WorkspaceRail({
           <div className="aether-flyout-header">
             <div className="min-w-0 flex-1">
               <p className="aether-flyout-eyebrow">Workspace</p>
-              <h2 className="aether-flyout-title truncate">{activeGroup.label}</h2>
+              <h2 className="aether-flyout-title truncate">
+                {activeGroup.label}
+              </h2>
               <p className="aether-flyout-desc">{activeGroup.description}</p>
             </div>
             <div className="flex items-center gap-1 shrink-0">
@@ -273,10 +292,18 @@ export function WorkspaceRail({
                 type="button"
                 onClick={togglePanelPin}
                 className={`aether-flyout-pin-btn ${pinnedPanel ? "active" : ""}`}
-                aria-label={pinnedPanel ? "Unpin panel (auto-close)" : "Pin panel open"}
-                title={pinnedPanel ? "Unpin panel (auto-close)" : "Keep panel pinned"}
+                aria-label={
+                  pinnedPanel ? "Unpin panel (auto-close)" : "Pin panel open"
+                }
+                title={
+                  pinnedPanel ? "Unpin panel (auto-close)" : "Keep panel pinned"
+                }
               >
-                {pinnedPanel ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
+                {pinnedPanel ? (
+                  <PanelLeftClose size={16} />
+                ) : (
+                  <PanelLeftOpen size={16} />
+                )}
               </button>
               <button
                 type="button"
@@ -293,9 +320,12 @@ export function WorkspaceRail({
           <div className="aether-flyout-body">
             <ul className="space-y-1">
               {flyoutDestinations.map((dest) => {
-                const isItemActive = pathname === dest.href || pathname.startsWith(`${dest.href}/`);
+                const isItemActive =
+                  pathname === dest.href ||
+                  pathname.startsWith(`${dest.href}/`);
                 const isPinned = pinnedItems.includes(dest.href);
-                const isPending = activeNavHref === dest.href && stage !== "idle";
+                const isPending =
+                  activeNavHref === dest.href && stage !== "idle";
 
                 return (
                   <li key={dest.id} className="relative group">
@@ -332,7 +362,9 @@ export function WorkspaceRail({
                       type="button"
                       onClick={(e) => togglePinItem(dest.href, e)}
                       className={`aether-flyout-pin-item-btn ${isPinned ? "is-pinned" : ""}`}
-                      aria-label={isPinned ? "Unpin from favorites" : "Pin to favorites"}
+                      aria-label={
+                        isPinned ? "Unpin from favorites" : "Pin to favorites"
+                      }
                       title={isPinned ? "Unpin" : "Pin"}
                     >
                       <Pin size={13} />
