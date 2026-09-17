@@ -4,16 +4,24 @@ type AdaptiveLoadingProps = {
   label?: string;
   variant?: "public" | "workspace" | "admin";
   cards?: number;
+  title?: string;
+  subtitle?: string;
+  eyebrow?: string;
 };
 
 export default function AdaptiveLoading({
   label = "Loading page",
   variant = "public",
   cards = 6,
+  title,
+  subtitle,
+  eyebrow,
 }: AdaptiveLoadingProps) {
   const cardCount = Math.max(3, Math.min(cards, 8));
   const variantClass =
     variant === "admin" ? styles.admin : variant === "workspace" ? styles.workspace : styles.public;
+
+  const accessibleLabel = title ? `${title} · ${subtitle || label}` : label;
 
   return (
     <div
@@ -21,13 +29,31 @@ export default function AdaptiveLoading({
       role="status"
       aria-live="polite"
       aria-busy="true"
-      aria-label={label}
+      aria-label={accessibleLabel}
     >
       <div className={styles.wrap}>
-        <div className={styles.heading} aria-hidden="true">
-          <div className={`${styles.skeleton} ${styles.eyebrow}`} />
-          <div className={`${styles.skeleton} ${styles.title}`} />
-          <div className={`${styles.skeleton} ${styles.copy}`} />
+        <div className={styles.heading}>
+          {title ? (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--admin-accent-text,#0d6e5a)]">
+                {eyebrow || "Aether Workspace"}
+              </p>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--admin-text,#0c1a14)]">
+                {title}
+              </h2>
+              {subtitle && (
+                <p className="mt-1 text-sm text-[var(--admin-text-muted,#465e53)]">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+          ) : (
+            <div aria-hidden="true">
+              <div className={`${styles.skeleton} ${styles.eyebrow}`} />
+              <div className={`${styles.skeleton} ${styles.title}`} />
+              <div className={`${styles.skeleton} ${styles.copy}`} />
+            </div>
+          )}
         </div>
 
         <div className={styles.stats} aria-hidden="true">
@@ -52,7 +78,7 @@ export default function AdaptiveLoading({
           ))}
         </div>
       </div>
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{accessibleLabel}</span>
     </div>
   );
 }

@@ -1,0 +1,970 @@
+/* ============================================================
+   AETHER COMMAND WORKSPACE
+   Unified styles for Rail, Command Center, Contextual Surfaces,
+   Progress Bar, and Mobile Dock.
+   ============================================================ */
+
+:root {
+  --aether-rail-width: 72px;
+  --aether-flyout-width: 290px;
+  --aether-header-height: 64px;
+  --aether-dock-height: 62px;
+}
+
+/* Base Workspace Layout Container */
+.aether-workspace-root {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  background: var(--admin-bg, #f4f7f4);
+  color: var(--admin-text, #0c1a14);
+  overflow-x: hidden;
+}
+
+html[data-theme="dark"] .aether-workspace-root,
+html[data-admin-theme="dark"] .aether-workspace-root {
+  background: var(--admin-bg, #0b1118);
+  color: var(--admin-text, #f1f5f9);
+}
+
+/* ============================================================
+   1. ADAPTIVE WORKSPACE RAIL (Desktop only, never scrolls)
+   ============================================================ */
+.aether-rail {
+  display: none;
+  width: var(--aether-rail-width);
+  min-width: var(--aether-rail-width);
+  max-width: var(--aether-rail-width);
+  height: 100vh;
+  height: 100dvh;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 30;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid var(--admin-border, rgba(29, 64, 49, 0.14));
+  background: color-mix(in srgb, var(--admin-panel, #ffffff) 92%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  user-select: none;
+}
+
+@media (min-width: 1024px) {
+  .aether-rail {
+    display: flex;
+  }
+}
+
+.aether-rail-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--aether-header-height);
+  width: 100%;
+  border-bottom: 1px solid var(--admin-border, rgba(29, 64, 49, 0.08));
+}
+
+.aether-rail-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0d6e5a, #084c3f);
+  font-weight: 750;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  box-shadow: 0 4px 12px rgba(13, 110, 90, 0.25);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.aether-rail-mark:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 16px rgba(13, 110, 90, 0.35);
+}
+
+.aether-rail-groups {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 6px;
+  flex: 1;
+  width: 100%;
+  overflow: hidden; /* Guaranteed no vertical scroll for top-level rail */
+}
+
+.aether-rail-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  color: var(--admin-text-soft, #566b62);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 150ms ease;
+  position: relative;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.aether-rail-btn:hover {
+  background: var(--admin-hover, rgba(13, 110, 90, 0.08));
+  color: var(--admin-text, #0c1a14);
+}
+
+.aether-rail-btn.active {
+  background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
+  color: var(--admin-accent-text, #0d6e5a);
+  font-weight: 650;
+}
+
+.aether-rail-btn.active::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 14px;
+  bottom: 14px;
+  width: 3.5px;
+  border-radius: 0 4px 4px 0;
+  background: var(--admin-accent, #0d6e5a);
+}
+
+.aether-rail-btn.selected {
+  border-color: var(--admin-border-2, rgba(29, 64, 49, 0.25));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.aether-rail-icon-wrap {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+}
+
+.aether-rail-label {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.15;
+  margin-top: 2px;
+  letter-spacing: -0.01em;
+  text-align: center;
+  max-width: 54px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aether-rail-badge {
+  position: absolute;
+  top: -2px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #e11d48;
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--admin-panel, #ffffff);
+}
+
+.aether-rail-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 6px 14px;
+  width: 100%;
+  border-top: 1px solid var(--admin-border, rgba(29, 64, 49, 0.08));
+}
+
+.aether-rail-footer-btn {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: var(--admin-text-soft, #566b62);
+  transition: all 150ms ease;
+}
+
+.aether-rail-footer-btn:hover {
+  background: var(--admin-hover, rgba(13, 110, 90, 0.08));
+  color: var(--admin-text, #0c1a14);
+}
+
+/* Contextual Flyout Panel */
+.aether-context-flyout {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: var(--aether-rail-width);
+  width: var(--aether-flyout-width);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  background: var(--admin-panel, #ffffff);
+  border-right: 1px solid var(--admin-border-2, rgba(29, 64, 49, 0.2));
+  box-shadow: 12px 0 32px rgba(0, 0, 0, 0.08);
+  animation: flyoutIn 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes flyoutIn {
+  from {
+    transform: translateX(-12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.aether-context-flyout.is-pinned {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  left: 0;
+  box-shadow: none;
+  animation: none;
+  z-index: 20;
+}
+
+@media (max-width: 1023px) {
+  .aether-rail,
+  .aether-context-flyout {
+    display: none !important;
+  }
+}
+
+.aether-flyout-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+  min-height: var(--aether-header-height);
+  border-bottom: 1px solid var(--admin-border, rgba(29, 64, 49, 0.1));
+}
+
+.aether-flyout-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--admin-accent-text, #0d6e5a);
+}
+
+.aether-flyout-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--admin-text, #0c1a14);
+  line-height: 1.3;
+}
+
+.aether-flyout-desc {
+  font-size: 11.5px;
+  color: var(--admin-text-muted, #465e53);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.aether-flyout-pin-btn,
+.aether-flyout-close-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--admin-text-soft, #566b62);
+  transition: background-color 150ms ease;
+}
+
+.aether-flyout-pin-btn:hover,
+.aether-flyout-close-btn:hover {
+  background: var(--admin-hover, rgba(13, 110, 90, 0.08));
+  color: var(--admin-text, #0c1a14);
+}
+
+.aether-flyout-pin-btn.active {
+  color: var(--admin-accent, #0d6e5a);
+  background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
+}
+
+.aether-flyout-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 10px;
+  scrollbar-width: thin;
+}
+
+.aether-flyout-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: var(--admin-text-muted, #465e53);
+  text-decoration: none;
+  transition: all 120ms ease;
+  min-height: 44px;
+}
+
+.aether-flyout-link:hover {
+  background: var(--admin-hover, rgba(13, 110, 90, 0.08));
+  color: var(--admin-text, #0c1a14);
+}
+
+.aether-flyout-link.active {
+  background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
+  color: var(--admin-accent-text, #0d6e5a);
+  font-weight: 650;
+}
+
+.aether-flyout-item-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  background: var(--admin-inset, rgba(13, 110, 90, 0.05));
+  color: var(--admin-accent, #0d6e5a);
+}
+
+.aether-flyout-item-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.aether-flyout-item-sub {
+  font-size: 11px;
+  color: var(--admin-text-soft, #566b62);
+  line-height: 1.35;
+}
+
+.aether-flyout-chevron {
+  opacity: 0;
+  transition: opacity 120ms ease;
+  color: var(--admin-text-soft, #566b62);
+}
+
+.aether-flyout-link:hover .aether-flyout-chevron {
+  opacity: 1;
+}
+
+.aether-flyout-pin-item-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--admin-text-soft, #566b62);
+  opacity: 0;
+  transition: opacity 120ms ease, color 120ms ease;
+}
+
+.group:hover .aether-flyout-pin-item-btn,
+.aether-flyout-pin-item-btn.is-pinned {
+  opacity: 1;
+}
+
+.aether-flyout-pin-item-btn.is-pinned {
+  color: var(--admin-accent, #0d6e5a);
+}
+
+/* ============================================================
+   2. UNIVERSAL AETHER COMMAND BAR & COMMAND CENTER
+   ============================================================ */
+
+.aether-command-bar-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  height: 42px;
+  width: 100%;
+  max-width: 440px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--admin-border-2, rgba(29, 64, 49, 0.18));
+  background: var(--admin-panel, #ffffff);
+  color: var(--admin-text-muted, #465e53);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.aether-command-bar-trigger:hover {
+  border-color: var(--admin-accent, #0d6e5a);
+  background: var(--admin-card, #ffffff);
+  color: var(--admin-text, #0c1a14);
+  box-shadow: 0 2px 8px rgba(13, 110, 90, 0.08);
+}
+
+.aether-command-bar-text {
+  flex: 1;
+  text-align: left;
+  font-size: 13px;
+}
+
+.aether-command-bar-kbd {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.aether-command-bar-kbd kbd,
+.aether-command-footer kbd,
+.aether-command-close-btn kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 5px;
+  border: 1px solid var(--admin-border-2, rgba(29, 64, 49, 0.18));
+  background: var(--admin-inset, rgba(0, 0, 0, 0.04));
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--admin-text-soft, #566b62);
+}
+
+/* Command Center Dialog Modal */
+.aether-command-dialog {
+  position: fixed;
+  inset: 10vh 0 auto;
+  margin-inline: auto;
+  padding: 0;
+  width: min(640px, calc(100vw - 24px));
+  max-height: 80vh;
+  border: 1px solid var(--admin-border-2, rgba(29, 64, 49, 0.24));
+  border-radius: 20px;
+  background: var(--admin-panel, #ffffff);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  z-index: 60;
+}
+
+.aether-command-dialog::backdrop {
+  background: rgba(8, 20, 16, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.aether-command-card {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+
+.aether-command-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--admin-border, rgba(29, 64, 49, 0.12));
+}
+
+.aether-command-input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--admin-text, #0c1a14);
+  outline: none;
+}
+
+.aether-command-input::placeholder {
+  color: var(--admin-text-soft, #566b62);
+  font-weight: 400;
+}
+
+.aether-command-clear-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--admin-text-soft, #566b62);
+}
+
+.aether-command-results-body {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 52vh;
+  padding: 10px 12px;
+  scrollbar-width: thin;
+}
+
+.aether-command-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aether-command-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--admin-text, #0c1a14);
+  transition: background-color 100ms ease;
+}
+
+.aether-command-item:hover,
+.aether-command-item.selected {
+  background: var(--admin-hover, rgba(13, 110, 90, 0.08));
+}
+
+.aether-command-item-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--admin-inset, rgba(13, 110, 90, 0.06));
+  color: var(--admin-accent, #0d6e5a);
+  flex-shrink: 0;
+}
+
+.aether-command-item.selected .aether-command-item-icon {
+  background: var(--admin-accent, #0d6e5a);
+  color: #ffffff;
+}
+
+.aether-command-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.aether-command-item-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.aether-command-item-desc {
+  font-size: 12px;
+  color: var(--admin-text-muted, #465e53);
+  line-height: 1.4;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aether-command-item-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
+  color: var(--admin-accent-text, #0d6e5a);
+}
+
+.aether-command-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aether-command-pin-btn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  color: var(--admin-text-soft, #566b62);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.aether-command-item:hover .aether-command-pin-btn,
+.aether-command-pin-btn.pinned {
+  opacity: 1;
+}
+
+.aether-command-pin-btn.pinned {
+  color: var(--admin-accent, #0d6e5a);
+}
+
+.aether-command-enter-hint {
+  display: none;
+  place-items: center;
+  color: var(--admin-text-soft, #566b62);
+}
+
+.aether-command-item.selected .aether-command-enter-hint {
+  display: grid;
+}
+
+.aether-ai-panel {
+  margin: 12px 16px 4px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(13, 110, 90, 0.08), rgba(13, 110, 90, 0.02));
+  border: 1px solid rgba(13, 110, 90, 0.2);
+}
+
+.aether-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--admin-accent, #0d6e5a);
+  animation: pulseDot 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulseDot {
+  from { opacity: 0.3; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+.aether-command-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--admin-text, #0c1a14);
+}
+
+.aether-command-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--admin-border, rgba(29, 64, 49, 0.1));
+  background: var(--admin-inset, rgba(0, 0, 0, 0.02));
+}
+
+/* ============================================================
+   3. LAYERED NAVIGATION PROGRESS BAR
+   ============================================================ */
+
+.aether-nav-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  overflow: hidden;
+  background: transparent;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Subtle link pending feedback for >100ms transitions */
+.is-navigating-pending {
+  opacity: 0.72 !important;
+  position: relative;
+  pointer-events: none;
+}
+
+.is-navigating-pending::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--admin-accent, #0d6e5a);
+  border-top-color: transparent;
+  animation: aetherNavSpin 600ms linear infinite;
+}
+
+@keyframes aetherNavSpin {
+  to { transform: rotate(360deg); }
+}
+
+.aether-nav-progress-indicator {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #0d6e5a, #2dd4bf, #0d6e5a);
+  animation: navProgressIndeterminate 1.2s infinite ease-in-out;
+  transform-origin: 0% 50%;
+}
+
+@keyframes navProgressIndeterminate {
+  0% { transform: translateX(-100%) scaleX(0.2); }
+  50% { transform: translateX(0%) scaleX(0.7); }
+  100% { transform: translateX(100%) scaleX(0.2); }
+}
+
+/* ============================================================
+   4. CONTEXTUAL TASK SURFACE (Nearby Actions)
+   ============================================================ */
+
+.aether-contextual-surface {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--admin-border, rgba(29, 64, 49, 0.12));
+  background: var(--admin-panel, #ffffff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.aether-context-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--admin-border, rgba(29, 64, 49, 0.14));
+  background: var(--admin-card, #ffffff);
+  color: var(--admin-text, #0c1a14);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 120ms ease;
+  cursor: pointer;
+}
+
+.aether-context-chip:hover {
+  background: var(--admin-hover, rgba(13, 110, 90, 0.08));
+  border-color: var(--admin-accent, #0d6e5a);
+  color: var(--admin-accent-text, #0d6e5a);
+}
+
+.aether-context-chip.primary {
+  background: var(--admin-accent-soft, rgba(13, 110, 90, 0.12));
+  border-color: var(--admin-accent, #0d6e5a);
+  color: var(--admin-accent-text, #0d6e5a);
+}
+
+.aether-context-chip.subtle {
+  background: transparent;
+}
+
+.aether-context-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 240px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--admin-panel, #ffffff);
+  border: 1px solid var(--admin-border-2, rgba(29, 64, 49, 0.2));
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+  z-index: 40;
+}
+
+.aether-context-dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--admin-text, #0c1a14);
+  text-decoration: none;
+  transition: background-color 100ms ease;
+}
+
+.aether-context-dropdown-item:hover {
+  background: var(--admin-hover, rgba(13, 110, 90, 0.08));
+}
+
+/* ============================================================
+   5. MOBILE WORKSPACE DOCK & SHEET
+   ============================================================ */
+
+.aether-mobile-dock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 45;
+  background: color-mix(in srgb, var(--admin-panel, #ffffff) 94%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid var(--admin-border, rgba(29, 64, 49, 0.14));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.aether-mobile-dock-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: var(--aether-dock-height);
+  padding: 0 8px;
+}
+
+.aether-dock-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  color: var(--admin-text-soft, #566b62);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 120ms ease;
+  min-width: 48px;
+}
+
+.aether-dock-item:hover,
+.aether-dock-item.active {
+  color: var(--admin-accent-text, #0d6e5a);
+}
+
+.aether-dock-label {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.aether-dock-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: #e11d48;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aether-dock-item.command-trigger {
+  margin-top: -12px;
+}
+
+.aether-dock-command-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0d6e5a, #084c3f);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(13, 110, 90, 0.35);
+}
+
+/* Mobile Slide-Up Sheet */
+.aether-mobile-sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  max-width: none;
+  max-height: 82vh;
+  border: 0;
+  border-radius: 24px 24px 0 0;
+  background: var(--admin-panel, #ffffff);
+  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.28);
+  z-index: 55;
+  overflow: hidden;
+}
+
+.aether-mobile-sheet::backdrop {
+  background: rgba(8, 20, 16, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.aether-mobile-sheet-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 82vh;
+}
+
+.aether-mobile-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--admin-border, rgba(29, 64, 49, 0.12));
+}
+
+.aether-mobile-sheet-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: var(--admin-text-soft, #566b62);
+  background: var(--admin-inset, rgba(0, 0, 0, 0.04));
+}
+
+.aether-mobile-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  scrollbar-width: thin;
+}
+
+.aether-sheet-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  color: var(--admin-text, #0c1a14);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 550;
+  transition: background-color 100ms ease;
+}
+
+.aether-sheet-link:hover,
+.aether-sheet-link.active {
+  background: var(--admin-hover, rgba(13, 110, 90, 0.08));
+  color: var(--admin-accent-text, #0d6e5a);
+}
+
+.aether-mobile-sheet-footer {
+  padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--admin-border, rgba(29, 64, 49, 0.12));
+  background: var(--admin-card, #ffffff);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .aether-context-flyout,
+  .aether-nav-progress-indicator,
+  .aether-pulse-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+}
