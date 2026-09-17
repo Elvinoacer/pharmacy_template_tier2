@@ -34,11 +34,6 @@ function validVerificationReference(value: string, pharmacyId: string, kind: "li
   return value.startsWith(`r2-private://pharmacy-verification/${pharmacyId}/${kind}/`);
 }
 
-function isExpired(dateInput: string) {
-  const parsed = new Date(`${dateInput}T23:59:59+03:00`);
-  return Number.isNaN(parsed.getTime()) || parsed.getTime() < Date.now();
-}
-
 function isOfficialPpbSource(value: string | null) {
   if (!value) return false;
   try {
@@ -85,29 +80,14 @@ export async function savePharmacyVerificationProfileAction(
     const businessDocumentUrl = text(formData, "businessDocumentUrl");
     const applicantAuthorityConfirmed = checked(formData, "applicantAuthorityConfirmed");
 
-    const required: Array<[string, string]> = [
-      [licenseNumber, "PPB / premises licence number"],
-      [ppbPremisesNumber, "PPB premises/facility number"],
-      [facilityType, "facility type"],
-      [physicalAddress, "physical premises address"],
-      [licenseExpiryDate, "licence expiry date"],
-      [licenseDocumentUrl, "current PPB licence image"],
-      [superintendentName, "responsible professional name"],
-      [superintendentRegistrationNumber, "professional PPB registration/enrolment number"],
-      [superintendentPracticeLicenseNumber, "professional practice licence number"],
-      [ownershipType, "business ownership type"],
-      [businessRegistrationNumber, "business registration number"],
-      [businessDocumentUrl, "business registration evidence"],
-    ];
-    const missing = required.filter(([value]) => !value).map(([, label]) => label);
-    if (!applicantAuthorityConfirmed) missing.push("applicant authority declaration");
-    if (!draft && missing.length) {
-      return { error: `Complete the verification dossier first: ${missing.join(", ")}.` };
+    // Regulatory evidence is intentionally optional at intake. The owner can
+    // submit what they currently have and the platform reviewer decides whether
+    // the available evidence is sufficient for approval. The authority
+    // declaration remains mandatory when leaving this step.
+    if (!draft && !applicantAuthorityConfirmed) {
+      return { error: "Confirm that you are authorised to represent this pharmacy before continuing." };
     }
 
-    if (licenseExpiryDate && isExpired(licenseExpiryDate)) {
-      return { error: "The submitted PPB premises licence expiry date must be valid and in the future." };
-    }
     if (licenseDocumentUrl && !validVerificationReference(licenseDocumentUrl, pharmacyId, "license")) {
       return { error: "Upload the PPB licence through the secure document uploader." };
     }
@@ -123,20 +103,26 @@ export async function savePharmacyVerificationProfileAction(
       if (!uploaded) return { error: "Document not found in your secure uploads. Please upload it again." };
     }
 
-    const duplicate = await prismaUnscoped.pharmacy.findFirst({
-      where: {
-        id: { not: pharmacyId },
-        OR: [
-          { licenseNumber: { equals: licenseNumber, mode: "insensitive" } },
-          { ppbPremisesNumber: { equals: ppbPremisesNumber, mode: "insensitive" } },
-        ],
-      },
-      select: { id: true, name: true, licenseNumber: true, ppbPremisesNumber: true, status: true },
-    });
-    if (duplicate && (licenseNumber || ppbPremisesNumber)) {
-      return {
-        error: "That PPB licence or premises number is already attached to another pharmacy application. Contact platform support if this is a legitimate transfer or duplicate record.",
-      };
+    if (licenseNumber || ppbPremisesNumber) {
+      const orConditions = [] as Array<
+        | { licenseNumber: { equals: string; mode: "insensitive" } }
+        | { ppbPremisesNumber: { equals: string; mode: "insensitive" } }
+      >;
+      if (licenseNumber) orConditions.push({ licenseNumber: { equals: licenseNumber, mode: "insensitive" } });
+      if (ppbPremisesNumber) orConditions.push({ ppbPremisesNumber: { equals: ppbPremisesNumber, mode: "insensitive" } });
+
+      const duplicate = await prismaUnscoped.pharmacy.findFirst({
+        where: {
+          id: { not: pharmacyId },
+          OR: orConditions,
+        },
+        select: { id: true, name: true, licenseNumber: true, ppbPremisesNumber: true, status: true },
+      });
+      if (duplicate) {
+        return {
+          error: "That PPB licence or premises number is already attached to another pharmacy application. Contact platform support if this is a legitimate transfer or duplicate record.",
+        };
+      }
     }
 
     const declaredAt = new Date().toISOString();
@@ -160,9 +146,9 @@ export async function savePharmacyVerificationProfileAction(
           pharmacyId,
           actorId: user.id,
           type: VERIFICATION_PROFILE_EVENT,
-          message: "Regulatory verification dossier updated",
+          message: "Verification intake details updated",
           meta: {
-            schemaVersion: 1,
+            schemaVersion: 2,
             facilityType,
             physicalAddress,
             licenseExpiryDate,
@@ -187,7 +173,7 @@ export async function savePharmacyVerificationProfileAction(
     return {
       success: draft
         ? "Progress saved securely. Return any time to continue."
-        : "Verification dossier saved. Continue to premises details, billing and submission.",
+        : "Verification details saved. Missing PPB or licensing evidence can be reviewed by the platform admin later.",
     };
   } catch (err) {
     console.error("[verification] save owner dossier", err);
@@ -254,20 +240,21 @@ export async function savePharmacyVerificationChecklistAction(
       applicantAuthorityVerified: checked(formData, "applicantAuthorityVerified"),
       contactVerified: checked(formData, "contactVerified"),
       noCriticalMismatch: checked(formData, "noCriticalMismatch"),
-      ppbRegistrySource: text(formData, "ppbRegistrySource") || "https://practice.pharmacyboardkenya.org/LicenseStatus?register=facilities",
-      practitionerRegistrySource: text(formData, "practitionerRegistrySource") || "https://practice.pharmacyboardkenya.org/LicenseStatus?registers=search",
+      ppbRegistrySource: text(formData, "ppbRegistrySource") || null,
+      practitionerRegistrySource: text(formData, "practitionerRegistrySource") || null,
       checkedAt: new Date().toISOString(),
       notes: text(formData, "notes") || null,
     };
     const riskScore = verificationRiskScore(checklist);
 
-    if (riskScore === 0) {
-      if (!isOfficialPpbSource(checklist.ppbRegistrySource) || !isOfficialPpbSource(checklist.practitionerRegistrySource)) {
-        return { error: "Completed verification must cite official Pharmacy and Poisons Board HTTPS sources." };
-      }
-      if (!checklist.notes || checklist.notes.length < 20) {
-        return { error: "Add meaningful reviewer evidence notes (at least 20 characters) before marking all checks passed." };
-      }
+    if (checklist.ppbRegistryMatched && !isOfficialPpbSource(checklist.ppbRegistrySource)) {
+      return { error: "A confirmed PPB facility-register match must cite an official Pharmacy and Poisons Board HTTPS source." };
+    }
+    if (checklist.practitionerMatched && !isOfficialPpbSource(checklist.practitionerRegistrySource)) {
+      return { error: "A confirmed PPB practitioner match must cite an official Pharmacy and Poisons Board HTTPS source." };
+    }
+    if (riskScore === 0 && (!checklist.notes || checklist.notes.length < 20)) {
+      return { error: "Add meaningful reviewer evidence notes (at least 20 characters) before unlocking approval." };
     }
 
     await prismaUnscoped.$transaction([
@@ -279,8 +266,8 @@ export async function savePharmacyVerificationChecklistAction(
           pharmacyId,
           actorId: reviewer.id,
           type: VERIFICATION_CHECKLIST_EVENT,
-          message: riskScore === 0 ? "Verification checklist passed" : `Verification checklist saved with risk score ${riskScore}`,
-          meta: { ...checklist, riskScore, schemaVersion: 1 },
+          message: riskScore === 0 ? "Mandatory admin verification checks passed" : `Verification checklist saved with risk score ${riskScore}`,
+          meta: { ...checklist, riskScore, schemaVersion: 2 },
         },
       }),
     ]);
@@ -301,8 +288,8 @@ export async function savePharmacyVerificationChecklistAction(
     return {
       success:
         riskScore === 0
-          ? "All mandatory verification checks are recorded with evidence. Approval is now unlocked unless the pharmacy data changes."
-          : `Checklist saved. Risk score ${riskScore}/100; approval remains blocked until every mandatory check passes.`,
+          ? "Mandatory admin verification checks are complete. PPB/licensing checks remain supporting evidence when documentation is available, and approval is now unlocked."
+          : `Checklist saved. Risk score ${riskScore}/100; approval remains blocked until the mandatory identity, authority, location, ownership and mismatch checks pass.`,
     };
   } catch (err) {
     console.error("[verification] save reviewer checklist", err);
