@@ -28,6 +28,24 @@
   overflow-y: visible;
 }
 
+@media (min-width: 1024px) {
+  .aether-workspace-root {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .aether-workspace-root > .flex {
+    min-height: 0;
+  }
+
+  .workspace-main-scroll {
+    scrollbar-gutter: stable;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+  }
+}
+
 /* Light theme definition for workspace root */
 html[data-theme="light"] .aether-workspace-root,
 html[data-admin-theme="light"] .aether-workspace-root,
@@ -50,10 +68,15 @@ html[data-admin-theme="light"] .aether-workspace-root,
   --admin-inset: rgba(12, 26, 20, 0.035);
   --admin-inset-2: rgba(12, 26, 20, 0.06);
   --admin-hover: rgba(13, 110, 90, 0.08);
-  --admin-shadow: 0 1px 2px rgba(8, 40, 32, 0.04), 0 4px 16px rgba(8, 40, 32, 0.06);
+  --admin-shadow:
+    0 1px 2px rgba(8, 40, 32, 0.04), 0 4px 16px rgba(8, 40, 32, 0.06);
   --admin-shadow-md: 0 8px 28px rgba(8, 40, 32, 0.1);
   --admin-input-bg: #ffffff;
-  --admin-nav-active-bg: linear-gradient(135deg, rgba(13, 110, 90, 0.1), rgba(45, 212, 191, 0.08));
+  --admin-nav-active-bg: linear-gradient(
+    135deg,
+    rgba(13, 110, 90, 0.1),
+    rgba(45, 212, 191, 0.08)
+  );
   --admin-nav-active-bar: linear-gradient(180deg, #0d6e5a, #2dd4bf);
   --admin-stat-bar: linear-gradient(90deg, #0d6e5a, #c9a227);
   --admin-btn-fg: #ffffff;
@@ -93,7 +116,11 @@ html.dark .aether-workspace-root,
   --admin-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
   --admin-shadow-md: 0 12px 40px rgba(0, 0, 0, 0.45);
   --admin-input-bg: rgba(255, 255, 255, 0.05);
-  --admin-nav-active-bg: linear-gradient(135deg, rgba(45, 212, 191, 0.14), rgba(201, 162, 39, 0.08));
+  --admin-nav-active-bg: linear-gradient(
+    135deg,
+    rgba(45, 212, 191, 0.14),
+    rgba(201, 162, 39, 0.08)
+  );
   --admin-nav-active-bar: linear-gradient(180deg, #2dd4bf, #e4c65a);
   --admin-stat-bar: linear-gradient(90deg, #2dd4bf, #e4c65a);
   --admin-btn-fg: #042f2e;
@@ -108,7 +135,8 @@ html.dark .aether-workspace-root,
 }
 
 @media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-workspace-root:not([data-theme="light"]) {
+  html:not([data-theme="light"]):not([data-admin-theme="light"])
+    .aether-workspace-root:not([data-theme="light"]) {
     --admin-bg: #0b0f14;
     --admin-panel: #11161e;
     --admin-card: #161d27;
@@ -130,7 +158,11 @@ html.dark .aether-workspace-root,
     --admin-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
     --admin-shadow-md: 0 12px 40px rgba(0, 0, 0, 0.45);
     --admin-input-bg: rgba(255, 255, 255, 0.05);
-    --admin-nav-active-bg: linear-gradient(135deg, rgba(45, 212, 191, 0.14), rgba(201, 162, 39, 0.08));
+    --admin-nav-active-bg: linear-gradient(
+      135deg,
+      rgba(45, 212, 191, 0.14),
+      rgba(201, 162, 39, 0.08)
+    );
     --admin-nav-active-bar: linear-gradient(180deg, #2dd4bf, #e4c65a);
     --admin-stat-bar: linear-gradient(90deg, #2dd4bf, #e4c65a);
     --admin-btn-fg: #042f2e;
@@ -221,7 +253,9 @@ html.dark .aether-workspace-root,
   font-size: 16px;
   letter-spacing: -0.02em;
   box-shadow: 0 4px 12px rgba(13, 110, 90, 0.25);
-  transition: transform 150ms ease, box-shadow 150ms ease;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .aether-rail-mark:hover {
@@ -521,7 +555,9 @@ html.dark .aether-workspace-root,
   border-radius: 6px;
   color: var(--admin-text-soft, #566b62);
   opacity: 0;
-  transition: opacity 120ms ease, color 120ms ease;
+  transition:
+    opacity 120ms ease,
+    color 120ms ease;
 }
 
 .group:hover .aether-flyout-pin-item-btn,
@@ -773,7 +809,11 @@ html.dark .aether-workspace-root,
   margin: 12px 16px 4px;
   padding: 14px 16px;
   border-radius: 14px;
-  background: linear-gradient(145deg, rgba(13, 110, 90, 0.08), rgba(13, 110, 90, 0.02));
+  background: linear-gradient(
+    145deg,
+    rgba(13, 110, 90, 0.08),
+    rgba(13, 110, 90, 0.02)
+  );
   border: 1px solid rgba(13, 110, 90, 0.2);
 }
 
@@ -786,8 +826,14 @@ html.dark .aether-workspace-root,
 }
 
 @keyframes pulseDot {
-  from { opacity: 0.3; transform: scale(0.85); }
-  to { opacity: 1; transform: scale(1.15); }
+  from {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.15);
+  }
 }
 
 .aether-command-empty {
@@ -843,7 +889,9 @@ html.dark .aether-workspace-root,
 }
 
 @keyframes aetherNavSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .aether-nav-progress-indicator {
@@ -855,9 +903,15 @@ html.dark .aether-workspace-root,
 }
 
 @keyframes navProgressIndeterminate {
-  0% { transform: translateX(-100%) scaleX(0.2); }
-  50% { transform: translateX(0%) scaleX(0.7); }
-  100% { transform: translateX(100%) scaleX(0.2); }
+  0% {
+    transform: translateX(-100%) scaleX(0.2);
+  }
+  50% {
+    transform: translateX(0%) scaleX(0.7);
+  }
+  100% {
+    transform: translateX(100%) scaleX(0.2);
+  }
 }
 
 /* ============================================================
@@ -1138,25 +1192,29 @@ html.dark .aether-command-footer,
 }
 
 @media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-command-dialog {
+  html:not([data-theme="light"]):not([data-admin-theme="light"])
+    .aether-command-dialog {
     background: var(--admin-panel, #11161e);
     color: var(--admin-text, #f1f5f9);
     border-color: var(--admin-border-2, rgba(148, 163, 184, 0.2));
     color-scheme: dark;
   }
 
-  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-mobile-sheet {
+  html:not([data-theme="light"]):not([data-admin-theme="light"])
+    .aether-mobile-sheet {
     background: var(--admin-panel, #11161e);
     color: var(--admin-text, #f1f5f9);
     color-scheme: dark;
   }
 
-  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-mobile-sheet-footer {
+  html:not([data-theme="light"]):not([data-admin-theme="light"])
+    .aether-mobile-sheet-footer {
     background: var(--admin-card, #161d27);
     border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
   }
 
-  html:not([data-theme="light"]):not([data-admin-theme="light"]) .aether-command-footer {
+  html:not([data-theme="light"]):not([data-admin-theme="light"])
+    .aether-command-footer {
     background: var(--admin-inset, rgba(255, 255, 255, 0.03));
     border-color: var(--admin-border, rgba(148, 163, 184, 0.12));
   }

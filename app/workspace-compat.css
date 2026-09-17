@@ -37,6 +37,15 @@
   overflow-y: visible !important;
 }
 
+@media (min-width: 1024px) {
+  .aether-workspace-root,
+  .aether-workspace-root.shell-grid-admin {
+    height: 100dvh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+}
+
 html[data-admin-theme="dark"] .shell-grid-admin,
 html[data-theme="dark"] .shell-grid-admin,
 html.dark .shell-grid-admin,

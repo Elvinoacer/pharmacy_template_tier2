@@ -27,7 +27,10 @@ import {
   NavigationProgressBar,
 } from "./NavigationProgress";
 import { useAppTheme, type ThemeMode } from "../ThemeProvider";
-import { useAttentionCounts, formatBadgeCount } from "@/app/components/shell/useShell";
+import {
+  useAttentionCounts,
+  formatBadgeCount,
+} from "@/app/components/shell/useShell";
 import { TenantBrandProvider } from "@/app/components/TenantBrand";
 import { PushNotificationCenter } from "@/app/components/PushNotificationCenter";
 import { LiveAlertCenter } from "@/app/components/LiveAlertCenter";
@@ -65,7 +68,10 @@ export function WorkspaceShell({
 
   const defaultBrand = {
     name: brand?.name || user.memberships?.[0]?.name || "Aether Health",
-    slug: brand?.slug !== undefined ? brand.slug : user.memberships?.[0]?.slug || null,
+    slug:
+      brand?.slug !== undefined
+        ? brand.slug
+        : user.memberships?.[0]?.slug || null,
     network: brand?.network || "Aether Pharmacy Network",
   };
 
@@ -73,10 +79,10 @@ export function WorkspaceShell({
     role === "admin"
       ? "What do you want to do? (⌘K)"
       : role === "platform"
-      ? "Search network, verify pharmacy, billing… (⌘K)"
-      : role === "portal"
-      ? "Find medicines, refills, orders… (⌘K)"
-      : "Search patients, doses, refills… (⌘K)";
+        ? "Search network, verify pharmacy, billing… (⌘K)"
+        : role === "portal"
+          ? "Find medicines, refills, orders… (⌘K)"
+          : "Search patients, doses, refills… (⌘K)";
 
   return (
     <TenantBrandProvider value={defaultBrand}>
@@ -115,52 +121,65 @@ export function WorkspaceShell({
           />
 
           {/* 2. Workspace Content Layout */}
-          <div className="flex min-w-0 flex-1 flex-col pb-20 lg:pb-8">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col pb-20 lg:pb-8">
             {/* Universal Workspace Header */}
             <header className="sticky top-0 z-20 flex min-h-[64px] items-center justify-between gap-3 border-b border-[var(--admin-border)] bg-[var(--admin-panel)]/95 px-4 backdrop-blur sm:px-6">
               {/* Left: Breadcrumbs / Workspace Identity */}
-              <nav aria-label="Breadcrumbs" className="flex items-center gap-2 min-w-0">
+              <nav
+                aria-label="Breadcrumbs"
+                className="flex items-center gap-2 min-w-0"
+              >
                 <Link
                   href={
                     role === "admin"
                       ? "/admin"
                       : role === "platform"
-                      ? "/platform"
-                      : role === "portal"
-                      ? "/portal"
-                      : "/caregiver"
+                        ? "/platform"
+                        : role === "portal"
+                          ? "/portal"
+                          : "/caregiver"
                   }
                   className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-accent-text)] hover:underline shrink-0"
                 >
                   {role === "admin"
                     ? "Pharmacy"
                     : role === "platform"
-                    ? "Platform"
-                    : role === "portal"
-                    ? "Portal"
-                    : "Caregiver"}
+                      ? "Platform"
+                      : role === "portal"
+                        ? "Portal"
+                        : "Caregiver"}
                 </Link>
 
                 {currentGroup && (
                   <>
-                    <ChevronRight size={13} className="text-[var(--admin-text-soft)] shrink-0" />
+                    <ChevronRight
+                      size={13}
+                      className="text-[var(--admin-text-soft)] shrink-0"
+                    />
                     <span className="text-xs font-medium text-[var(--admin-text-soft)] truncate hidden sm:inline">
                       {currentGroup.shortLabel}
                     </span>
                   </>
                 )}
 
-                {currentDest && pathname !== "/admin" && pathname !== "/platform" && pathname !== "/portal" && pathname !== "/caregiver" && (
-                  <>
-                    <ChevronRight size={13} className="text-[var(--admin-text-soft)] shrink-0" />
-                    <span
-                      aria-current="page"
-                      className="text-xs font-semibold text-[var(--admin-text)] truncate"
-                    >
-                      {currentDest.label}
-                    </span>
-                  </>
-                )}
+                {currentDest &&
+                  pathname !== "/admin" &&
+                  pathname !== "/platform" &&
+                  pathname !== "/portal" &&
+                  pathname !== "/caregiver" && (
+                    <>
+                      <ChevronRight
+                        size={13}
+                        className="text-[var(--admin-text-soft)] shrink-0"
+                      />
+                      <span
+                        aria-current="page"
+                        className="text-xs font-semibold text-[var(--admin-text)] truncate"
+                      >
+                        {currentDest.label}
+                      </span>
+                    </>
+                  )}
               </nav>
 
               {/* Center: Universal Command Bar */}
@@ -188,7 +207,11 @@ export function WorkspaceShell({
                 <WorkspaceBellButton role={role} unread={attention.count} />
 
                 {/* User Menu */}
-                <WorkspaceHeaderUserMenu user={user} role={role} brand={defaultBrand} />
+                <WorkspaceHeaderUserMenu
+                  user={user}
+                  role={role}
+                  brand={defaultBrand}
+                />
               </div>
             </header>
 
@@ -196,7 +219,7 @@ export function WorkspaceShell({
             <main
               id="workspace-main-content"
               tabIndex={-1}
-              className="flex-1 px-4 py-6 sm:px-6 lg:px-8 max-w-[1600px] w-full mx-auto"
+              className="workspace-main-scroll min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 max-w-[1600px] w-full mx-auto"
             >
               {/* Contextual Task Surface (Surfacing nearby actions for medicines, patients, applications) */}
               <ContextualTaskSurface role={role} user={user} />
@@ -217,7 +240,11 @@ export function WorkspaceShell({
                       </p>
                     )}
                   </div>
-                  {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
+                  {actions && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      {actions}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -235,7 +262,11 @@ export function WorkspaceShell({
             onOpenCommandCenter={() => {
               // Trigger ⌘K programmatically
               window.dispatchEvent(
-                new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
+                new KeyboardEvent("keydown", {
+                  key: "k",
+                  metaKey: true,
+                  bubbles: true,
+                }),
               );
             }}
             themeControl={
@@ -249,7 +280,9 @@ export function WorkspaceShell({
           />
 
           {/* Push Notifications & Realtime Alerts */}
-          <PushNotificationCenter audience={role === "admin" ? "admin" : "portal"} />
+          <PushNotificationCenter
+            audience={role === "admin" ? "admin" : "portal"}
+          />
           <LiveAlertCenter audience={role === "admin" ? "admin" : "portal"} />
         </div>
       </NavigationProgressProvider>
@@ -272,7 +305,8 @@ export function WorkspaceThemeToggle({
   onCycle: () => void;
   className?: string;
 }) {
-  const next = mode === "system" ? "light" : mode === "light" ? "dark" : "system";
+  const next =
+    mode === "system" ? "light" : mode === "light" ? "dark" : "system";
   const label =
     mode === "system"
       ? `Theme: system (${resolved}). Switch to ${next} theme`
@@ -303,10 +337,10 @@ function WorkspaceBellButton({
     role === "admin"
       ? "/admin/inbox"
       : role === "platform"
-      ? "/platform/notifications"
-      : role === "portal"
-      ? "/portal/messages"
-      : "/caregiver/notifications";
+        ? "/platform/notifications"
+        : role === "portal"
+          ? "/portal/messages"
+          : "/caregiver/notifications";
 
   return (
     <Link
