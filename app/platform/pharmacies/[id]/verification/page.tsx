@@ -145,14 +145,14 @@ export default async function PharmacyVerificationReviewPage({
                   <FileSearch className="h-4 w-4" /> Open PPB licence evidence
                 </a>
               ) : (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">No secure PPB licence image available.</div>
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">No secure PPB licence image available. This is supporting evidence, not an automatic intake failure.</div>
               )}
               {hasPrivateBusiness ? (
                 <a href={`/api/platform/verification-documents?pharmacyId=${pharmacy.id}&kind=business`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-3 text-xs font-semibold text-teal-800 hover:bg-teal-100 dark:border-teal-300/25 dark:bg-teal-300/10 dark:text-teal-100">
                   <FileSearch className="h-4 w-4" /> Open business evidence
                 </a>
               ) : (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">No secure business-registration image available.</div>
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">No secure business-registration image available. Review the other evidence supplied.</div>
               )}
             </div>
           </section>
@@ -198,7 +198,7 @@ export default async function PharmacyVerificationReviewPage({
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-teal-700 dark:text-teal-200" />
               <div>
                 <h2 className="text-base font-semibold text-[#17231d] dark:text-white">Independent reviewer checks</h2>
-                <p className="mt-1 text-xs leading-5 text-[#627168] dark:text-teal-100/60">Check official registers and evidence yourself. The owner&apos;s declarations do not count as verification until these controls are explicitly passed.</p>
+                <p className="mt-1 text-xs leading-5 text-[#627168] dark:text-teal-100/60">Verify identity, applicant authority, premises/location and ownership independently. Use PPB registers and licensing evidence whenever those details are available; missing regulatory paperwork alone does not automatically reject intake.</p>
               </div>
             </div>
             <div className="mt-4">
@@ -209,8 +209,8 @@ export default async function PharmacyVerificationReviewPage({
 
         <aside className="min-w-0 space-y-5">
           <section className="rounded-2xl border border-teal-500/20 bg-[var(--surface)] p-4">
-            <h2 className="font-semibold">Evidence viewer</h2><p className="mt-2 text-xs leading-5 text-[var(--muted)]">Compare documents with the submitted identity and official registers. Every document access is recorded.</p>
-            {([{ kind: "license", label: "PPB premises licence", available: hasPrivateLicense }, { kind: "business", label: "Business registration", available: hasPrivateBusiness }]).map(doc => <details key={doc.kind} className="mt-3 rounded-xl border border-[var(--border)] p-3"><summary className="cursor-pointer text-sm font-semibold">{doc.label}</summary>{doc.available ? <div className="mt-3"><Image unoptimized src={`/api/platform/verification-documents?pharmacyId=${pharmacy.id}&kind=${doc.kind}`} width={800} height={600} alt={doc.label} className="h-auto max-h-[36rem] w-full rounded-lg object-contain"/><a target="_blank" rel="noopener noreferrer" href={`/api/platform/verification-documents?pharmacyId=${pharmacy.id}&kind=${doc.kind}`} className="mt-3 inline-block min-h-10 text-xs font-semibold underline">Open full document</a></div> : <p className="mt-2 text-sm">Awaiting secure upload</p>}</details>)}
+            <h2 className="font-semibold">Evidence viewer</h2><p className="mt-2 text-xs leading-5 text-[var(--muted)]">Compare any supplied documents with the submitted identity and official registers where applicable. Every document access is recorded.</p>
+            {([{ kind: "license", label: "PPB premises licence", available: hasPrivateLicense }, { kind: "business", label: "Business registration", available: hasPrivateBusiness }]).map(doc => <details key={doc.kind} className="mt-3 rounded-xl border border-[var(--border)] p-3"><summary className="cursor-pointer text-sm font-semibold">{doc.label}</summary>{doc.available ? <div className="mt-3"><Image unoptimized src={`/api/platform/verification-documents?pharmacyId=${pharmacy.id}&kind=${doc.kind}`} width={800} height={600} alt={doc.label} className="h-auto max-h-[36rem] w-full rounded-lg object-contain"/><a target="_blank" rel="noopener noreferrer" href={`/api/platform/verification-documents?pharmacyId=${pharmacy.id}&kind=${doc.kind}`} className="mt-3 inline-block min-h-10 text-xs font-semibold underline">Open full document</a></div> : <p className="mt-2 text-sm">Not supplied</p>}</details>)}
           </section>
           <section className="rounded-2xl border border-[#dce7e1] bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] dark:shadow-none sm:p-5">
             <h2 className="text-sm font-semibold text-[#17231d] dark:text-white">Current check status</h2>
@@ -240,7 +240,7 @@ export default async function PharmacyVerificationReviewPage({
 
           <section className="rounded-2xl border border-[#dce7e1] bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] dark:shadow-none sm:p-5">
             <h2 className="text-sm font-semibold text-[#17231d] dark:text-white">Evidence policy</h2>
-            <p className="mt-2 text-xs leading-5 text-[#718078] dark:text-teal-100/55">Do not approve based only on a typed licence number, uploaded image or map pin. Approval requires independent PPB registry checks plus identity, location and ownership consistency.</p>
+            <p className="mt-2 text-xs leading-5 text-[#718078] dark:text-teal-100/55">Do not approve from owner declarations alone. Approval requires the mandatory reviewer checks for identity/contact, applicant authority, premises/location, ownership and no unresolved critical mismatch. PPB and licensing checks are supporting evidence and should be completed whenever sufficient regulatory information is available.</p>
           </section>
         </aside>
       </div>
