@@ -165,7 +165,6 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
     if (!name) return { error: "Enter the pharmacy trading name.", field: "name" };
     const slugError = validateSlug(slug);
     if (slugError) return { error: slugError, field: "slug" };
-    if (!licenseNumber) return { error: "Complete the Know Your Pharmacy regulatory dossier before premises setup.", field: "licenseNumber" };
 
     if (slug !== pharmacy.slug) {
       const taken = await prismaUnscoped.pharmacy.findUnique({ where: { slug } });
@@ -178,7 +177,7 @@ export async function updatePharmacyDraftAction(_prev: OnboardState, formData: F
       legalName,
       tagline: String(formData.get("tagline") || "").trim() || null,
       description: String(formData.get("description") || "").trim() || null,
-      licenseNumber,
+      licenseNumber: licenseNumber || null,
       phone: String(formData.get("phone") || "").trim() || null,
       whatsapp: String(formData.get("whatsapp") || "").trim() || null,
       email: String(formData.get("publicEmail") || "").trim() || pharmacy.email,
@@ -251,6 +250,7 @@ export async function submitPharmacyApplicationAction(_prev: OnboardState, formD
           longitude: pharmacy.longitude,
           locationSource: "browser_geolocation",
           verificationDossierComplete: true,
+          regulatoryEvidenceMayBeIncomplete: true,
         },
       },
     });
