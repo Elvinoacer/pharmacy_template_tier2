@@ -201,11 +201,11 @@ export default async function PharmacyBillingPage() {
             <ShieldCheck className="h-4 w-4" />
             <span>KES 100 Verification Fee</span>
           </div>
-          <h2 className="mt-1 text-sm font-semibold">One-time PPB check &amp; anti-clone lock</h2>
+          <h2 className="mt-1 text-sm font-semibold">One-time admin review &amp; anti-clone lock</h2>
           <ul className="mt-2 space-y-1.5 text-xs text-[var(--muted)]">
             <li className="flex items-start gap-1.5">
               <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
-              <span><strong>PPB Check:</strong> Premises &amp; superintendent licence verified on the national register.</span>
+              <span><strong>Regulatory Evidence Review:</strong> PPB, premises and pharmacist details are checked when available; missing paperwork does not automatically block intake.</span>
             </li>
             <li className="flex items-start gap-1.5">
               <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--brand)]" />
