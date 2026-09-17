@@ -6,6 +6,8 @@ import { prisma } from "@/app/lib/db";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { getSessionUser } from "@/app/lib/auth";
 import { formatMpesaPhone } from "@/app/lib/services/daraja";
+import { pharmacySupportsDelivery, sellableAvailable } from "@/app/lib/inventory-availability";
+import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-visibility";
 
 export type GuestOrderState = {
   error?: string;
@@ -32,6 +34,8 @@ export async function guestCreateOrderAction(
   formData: FormData,
 ): Promise<GuestOrderState> {
   const medicationId = String(formData.get("medicationId") || "").trim();
+  const submittedPharmacyId = String(formData.get("pharmacyId") || "").trim();
+  const submittedPharmacySlug = String(formData.get("pharmacySlug") || "").trim().toLowerCase();
   const quantity = Math.max(1, Math.min(20, Number(formData.get("quantity") || 1)));
   const fullName = String(formData.get("fullName") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
@@ -66,40 +70,72 @@ export async function guestCreateOrderAction(
     };
   }
 
+  // Resolve trusted pharmacy context: reassert tenant authority so inventory from
+  // another pharmacy cannot be ordered under this storefront.
+  const { getTenant } = await import("@/app/lib/tenant");
+  const tenant = await getTenant().catch(() => ({ pharmacyId: null, slug: null }));
+  const trustedPharmacyId = tenant.pharmacyId || (submittedPharmacyId || null);
+  const trustedPharmacySlug = tenant.slug || (submittedPharmacySlug || null);
+
   const med = await prisma.pharmacyInventory.findFirst({
     where: {
       id: medicationId,
       active: true,
       overTheCounter: true,
       publicListing: true,
+      ...(trustedPharmacyId ? { pharmacyId: trustedPharmacyId } : {}),
     },
-    include: { medicationMaster: { select: { name: true } } },
+    include: {
+      medicationMaster: { select: { name: true } },
+      pharmacy: {
+        select: {
+          id: true,
+          slug: true,
+          settings: { select: { deliveryNotes: true, deliveryRadiusKm: true } },
+        },
+      },
+    },
   });
   if (!med) {
     return { error: "This product is not available for online guest order." };
   }
-  if (med.currentStock < quantity) {
-    return { error: `Only ${med.currentStock} unit(s) in stock right now.` };
+  if (trustedPharmacyId && med.pharmacyId !== trustedPharmacyId) {
+    return { error: "This product does not belong to the selected pharmacy." };
+  }
+  if (trustedPharmacySlug && med.pharmacy?.slug && med.pharmacy.slug !== trustedPharmacySlug) {
+    return { error: "This product does not belong to the selected pharmacy." };
   }
 
-  // Link to existing customer if session/email/phone matches (optional — never block).
+  const reservedAgg = await prisma.inventoryReservation.aggregate({
+    where: { inventoryId: medicationId, status: "active" },
+    _sum: { quantity: true },
+  });
+  const reservedCount = reservedAgg._sum.quantity ?? 0;
+  const availableStock = sellableAvailable(med.currentStock, reservedCount);
+
+  if (availableStock < quantity) {
+    return {
+      error:
+        availableStock > 0
+          ? `Only ${availableStock} unit(s) available right now.`
+          : "This product is currently out of stock.",
+    };
+  }
+
+  if (pickupPreference === "delivery") {
+    const supportsDelivery = pharmacySupportsDelivery(med.pharmacy?.settings);
+    if (!supportsDelivery) {
+      return {
+        error: "Home delivery is not currently offered by this pharmacy. Please choose in-store pickup.",
+      };
+    }
+  }
+
+  // Never infer account ownership from public contact details. Email and phone
+  // are identifiers, not authentication factors. Only an authenticated customer
+  // session may attach an order to that account.
   const session = await getSessionUser().catch(() => null);
-  let customerId: string | null = session?.customerId ?? null;
-  if (!customerId && email) {
-    const byEmail = await prisma.customerProfile.findFirst({
-      where: { user: { email } },
-      select: { id: true },
-    });
-    customerId = byEmail?.id ?? null;
-  }
-  if (!customerId && phone) {
-    const digits = phone.replace(/\D/g, "");
-    const byPhone = await prisma.customerProfile.findFirst({
-      where: { phone: { contains: digits.slice(-9) } },
-      select: { id: true },
-    });
-    customerId = byPhone?.id ?? null;
-  }
+  const customerId: string | null = session?.customerId ?? null;
 
   const unitPrice = Number(med.price);
   const total = Math.max(0, unitPrice * quantity);
@@ -119,7 +155,6 @@ export async function guestCreateOrderAction(
     .join("\n");
 
   const {
-    applyStockChange,
     notifyStockThreshold,
     InsufficientStockError,
   } = await import("@/app/lib/services/stock");
@@ -217,8 +252,14 @@ export async function guestCreateOrderAction(
     orderId = order.id;
     await notifyStockThreshold(stockResult);
   } catch (e) {
-    if (e instanceof InsufficientStockError) {
-      return { error: `Only ${e.available} unit(s) in stock right now.` };
+    if (e instanceof InsufficientStockError || (e instanceof Error && e.name === "InsufficientStockError")) {
+      const avail = (e as any).available ?? 0;
+      return {
+        error:
+          avail > 0
+            ? `Only ${avail} unit(s) available right now.`
+            : "This product was just reserved by another customer and is now out of stock.",
+      };
     }
     console.error("[guestCreateOrderAction]", e);
     return { error: "Could not place order. Please try again or call the pharmacy." };
@@ -270,4 +311,50 @@ export async function guestCreateOrderAction(
     total,
     suggestAccount: !session?.customerId,
   };
+}
+
+export type GuestOtcOption = {
+  id: string;
+  name: string;
+  price: number;
+  stockQty: number;
+  slug: string;
+};
+
+export async function searchGuestOtcAction(
+  pharmacyId: string,
+  query: string,
+): Promise<GuestOtcOption[]> {
+  const q = query.trim().slice(0, 80);
+  if (!pharmacyId) return [];
+
+  const rows = await prisma.pharmacyInventory.findMany({
+    where: {
+      ...buildPublicInventoryWhere({
+        pharmacyId,
+        inStock: true,
+        searchQuery: q || null,
+      }),
+      overTheCounter: true,
+    },
+    include: {
+      medicationMaster: { select: { name: true } },
+      reservations: { where: { status: "active" }, select: { quantity: true } },
+    },
+    orderBy: { medicationMaster: { name: "asc" } },
+    take: 40,
+  });
+
+  return rows
+    .map((row) => ({
+      id: row.id,
+      name: row.medicationMaster.name,
+      price: Number(row.price),
+      stockQty: sellableAvailable(
+        row.currentStock,
+        row.reservations.reduce((sum, reservation) => sum + reservation.quantity, 0),
+      ),
+      slug: row.slug,
+    }))
+    .filter((row) => row.stockQty > 0);
 }

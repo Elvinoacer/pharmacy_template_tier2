@@ -52,6 +52,8 @@ export function buildPublicInventoryWhere(opts?: PublicInventoryFilterOptions) {
     publicListing: true,
     ...(opts?.id ? { id: opts.id } : {}),
     ...(opts?.medicationMasterId ? { medicationMasterId: opts.medicationMasterId } : {}),
+    // Physical stock must be positive. Callers subtract active reservations
+    // (`sellableAvailable`) before presenting "in stock" to a guest.
     ...(opts?.inStock ? { currentStock: { gt: 0 } } : {}),
     ...(opts?.slug ? { slug: opts.slug } : {}),
     ...(opts?.pharmacyId ? { pharmacyId: opts.pharmacyId } : {}),

@@ -1,9 +1,12 @@
 import { getBrowseLocation } from "@/app/lib/browse-location";
+import { distanceKm, proximityOrder } from "@/app/lib/proximity";
 import { medicineDisplayName } from "@/app/lib/prescription-discovery";
 import { z } from "zod";
 import PrescriptionFinder from "../prescription/PrescriptionFinder";
 import { findAvailableInventory } from "../lib/services/available-inventory";
 import type { CareResult } from "../lib/care-availability";
+import { prismaUnscoped } from "@/app/lib/db";
+import { withPlatformBypass } from "@/app/lib/tenant-context";
 export const metadata = {
   title: "Find your refill",
   description:
@@ -49,11 +52,38 @@ export default async function RefillPage({
           : "We couldn’t check this listing. Please try again below.";
     }
   }
+  const origin = await getBrowseLocation();
+  const pharmacies = await withPlatformBypass(() =>
+    prismaUnscoped.pharmacy.findMany({
+      where: { status: "active", listed: true, verifiedAt: { not: null } },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        city: true,
+        county: true,
+        latitude: true,
+        longitude: true,
+      },
+      orderBy: { name: "asc" },
+    }),
+  )
+    .then((rows) =>
+      rows
+        .map((pharmacy) => ({
+          ...pharmacy,
+          distanceKm: origin ? distanceKm(origin, pharmacy) : null,
+        }))
+        .sort((a, b) => proximityOrder(a, b) || a.name.localeCompare(b.name)),
+    )
+    .catch(() => []);
+
   return (
-    <PrescriptionFinder nearby={Boolean(await getBrowseLocation())}
+    <PrescriptionFinder nearby={Boolean(origin)}
       mode="refill"
       initialResults={initialResults}
       initialError={initialError}
+      pharmacies={pharmacies}
     />
   );
 }

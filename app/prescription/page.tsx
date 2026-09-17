@@ -1,4 +1,5 @@
 import { getBrowseLocation } from "@/app/lib/browse-location";
+import { distanceKm, proximityOrder } from "@/app/lib/proximity";
 import { prismaUnscoped } from "@/app/lib/db";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
 import PrescriptionFinder from "./PrescriptionFinder";
@@ -14,11 +15,27 @@ export default async function PrescriptionPage() {
   const pharmacies = await withPlatformBypass(() =>
     prismaUnscoped.pharmacy.findMany({
       where: { status: "active", listed: true, verifiedAt: { not: null } },
-      select: { id: true, name: true, slug: true, city: true, county: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        city: true,
+        county: true,
+        latitude: true,
+        longitude: true,
+      },
       orderBy: { name: "asc" },
-      take: 20,
     }),
-  ).catch(() => []);
+  )
+    .then((rows) =>
+      rows
+        .map((pharmacy) => ({
+          ...pharmacy,
+          distanceKm: origin ? distanceKm(origin, pharmacy) : null,
+        }))
+        .sort((a, b) => proximityOrder(a, b) || a.name.localeCompare(b.name)),
+    )
+    .catch(() => []);
 
   return (
     <PrescriptionFinder

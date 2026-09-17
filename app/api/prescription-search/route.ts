@@ -6,6 +6,7 @@ import { z } from "zod";
 import { checkRateLimitAsync } from "@/app/lib/rate-limit";
 import { prismaUnscoped } from "@/app/lib/db";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { sellableFromInventory } from "@/app/lib/inventory-availability";
 import {
   fileToDataUrl,
   identifyMedicationFromImage,
@@ -171,6 +172,8 @@ export async function POST(request: Request) {
               slug: true,
               price: true,
               updatedAt: true,
+              currentStock: true,
+              reservations: { where: { status: "active" }, select: { quantity: true } },
               medicationMaster: {
                 select: {
                   name: true,
@@ -200,11 +203,14 @@ export async function POST(request: Request) {
             matches: rows
               .filter((row) => {
                 const med = row.medicationMaster;
-                return matchesPrescriptionName(name, [
-                  med.name,
-                  `${med.genericName} ${med.strengthDisplay || ""}`,
-                  `${med.brandName || ""} ${med.strengthDisplay || ""}`,
-                ]);
+                return (
+                  sellableFromInventory(row) > 0 &&
+                  matchesPrescriptionName(name, [
+                    med.name,
+                    `${med.genericName} ${med.strengthDisplay || ""}`,
+                    `${med.brandName || ""} ${med.strengthDisplay || ""}`,
+                  ])
+                );
               })
               .map((row) => ({
                 id: row.id,

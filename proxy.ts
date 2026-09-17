@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { verifySessionClaim, claimIsStaff, isSafeInternalPath } from '@/app/lib/session-claim'
-import { isPublicIdentityPath } from '@/app/lib/public-storefront'
 
 const PUBLIC_PHARMACY_COOKIE = 'aether_pharmacy'
 const PUBLIC_SLUG_RE = /^[a-z0-9][a-z0-9-]{1,60}$/i
@@ -106,12 +105,6 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/platform')
 
   if (!needsAuth) {
-    if (isPublicIdentityPath(pathname)) {
-      const cookieSlug = request.cookies.get(PUBLIC_PHARMACY_COOKIE)?.value?.trim().toLowerCase()
-      if (cookieSlug && PUBLIC_SLUG_RE.test(cookieSlug)) {
-        requestHeaders.set('x-pharmacy-slug', cookieSlug)
-      }
-    }
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 

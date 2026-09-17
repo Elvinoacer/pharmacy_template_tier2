@@ -1,10 +1,10 @@
 import "server-only";
 
 import { prisma } from "@/app/lib/db";
-import type { Prisma } from "@/app/generated/prisma/client";
 import type { TxClient } from "@/app/lib/services/stock";
-import { applyStockChange } from "@/app/lib/services/stock";
+import { applyStockChange, InsufficientStockError } from "@/app/lib/services/stock";
 import { recordCommerceEvent } from "@/app/lib/services/commerce/events";
+import { sellableAvailable } from "@/app/lib/inventory-availability";
 
 /**
  * Inventory reservation lifecycle (audit §8, §9, §10).
@@ -60,6 +60,51 @@ export async function createReservation(
   if (existing) {
     // Already reserved — don't double-hold. Caller should treat as no-op.
     throw new Error("reservation_already_exists");
+  }
+
+  // Serialize concurrent holds against the same row. Table name is the
+  // mapped Postgres identifier (`pharmacy_inventory`), not the Prisma model.
+  if (typeof tx.$queryRaw === "function") {
+    try {
+      const locked = await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM pharmacy_inventory WHERE id = ${input.inventoryId}::uuid FOR UPDATE
+      `;
+      if (!locked.length) {
+        throw new Error("inventory_not_available");
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === "inventory_not_available") throw error;
+      // Test doubles and adapters without FOR UPDATE still run the check below.
+    }
+  }
+
+  const inv = await tx.pharmacyInventory.findUnique({
+    where: { id: input.inventoryId },
+    select: {
+      id: true,
+      currentStock: true,
+      active: true,
+      medicationMaster: { select: { name: true } },
+    },
+  });
+  const reservedAgg = await tx.inventoryReservation.aggregate({
+    where: { inventoryId: input.inventoryId, status: "active" },
+    _sum: { quantity: true },
+  });
+
+  if (!inv || !inv.active) {
+    throw new Error("inventory_not_available");
+  }
+
+  const currentReserved = reservedAgg._sum.quantity ?? 0;
+  const available = sellableAvailable(inv.currentStock, currentReserved);
+
+  if (available < input.quantity) {
+    throw new InsufficientStockError(
+      inv.medicationMaster?.name || "Medication",
+      available,
+      input.quantity,
+    );
   }
 
   // Create the reservation row (no stock movement — reserved is tracked separately).
@@ -239,5 +284,5 @@ export async function availableQuantity(inventoryId: string): Promise<{
     reservedQuantityFor(inventoryId),
   ]);
   const currentStock = inv?.currentStock ?? 0;
-  return { currentStock, reserved, available: Math.max(0, currentStock - reserved) };
+  return { currentStock, reserved, available: sellableAvailable(currentStock, reserved) };
 }

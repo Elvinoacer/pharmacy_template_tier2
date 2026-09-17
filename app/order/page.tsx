@@ -10,6 +10,7 @@ import { ShoppingBag, ShieldCheck, Clock } from "lucide-react";
 import ChoosePharmacy from "@/app/components/ChoosePharmacy";
 import { loadStorefront } from "@/app/components/StorefrontGate";
 import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-visibility";
+import { pharmacySupportsDelivery, sellableFromInventory } from "@/app/lib/inventory-availability";
 
 export const metadata: Metadata = {
   title: "Order OTC medication",
@@ -30,6 +31,8 @@ export default async function GuestOrderPage({
   const sp = await searchParams;
   const session = await getSessionUser().catch(() => null);
 
+  const supportsDelivery = pharmacySupportsDelivery(pharmacy);
+
   const preselected = sp.medicationId
     ? await prisma.pharmacyInventory.findFirst({
         where: {
@@ -39,7 +42,13 @@ export default async function GuestOrderPage({
           }),
           overTheCounter: true,
         },
-        include: { medicationMaster: { select: { name: true } } },
+        include: {
+          medicationMaster: { select: { name: true } },
+          reservations: {
+            where: { status: "active" },
+            select: { quantity: true },
+          },
+        },
       })
     : sp.slug
       ? await prisma.pharmacyInventory.findFirst({
@@ -50,7 +59,13 @@ export default async function GuestOrderPage({
             }),
             overTheCounter: true,
           },
-          include: { medicationMaster: { select: { name: true } } },
+          include: {
+            medicationMaster: { select: { name: true } },
+            reservations: {
+              where: { status: "active" },
+              select: { quantity: true },
+            },
+          },
         })
       : null;
 
@@ -62,13 +77,18 @@ export default async function GuestOrderPage({
       }),
       overTheCounter: true,
     },
-    include: { medicationMaster: { select: { name: true } } },
+    include: {
+      medicationMaster: { select: { name: true } },
+      reservations: {
+        where: { status: "active" },
+        select: { quantity: true },
+      },
+    },
     orderBy: { medicationMaster: { name: "asc" } },
-    take: 100,
+    take: 40,
   });
 
-  // Ensure preselected (even if 0 stock) appears in the list for messaging.
-  const list = [...otcMeds];
+  const list = otcMeds.filter((m) => sellableFromInventory(m) > 0);
   if (preselected && !list.some((m) => m.id === preselected.id)) {
     list.unshift(preselected);
   }
@@ -134,11 +154,16 @@ export default async function GuestOrderPage({
                 id: m.id,
                 name: m.medicationMaster.name,
                 price: Number(m.price),
-                stockQty: m.currentStock,
+                stockQty: sellableFromInventory(m),
                 slug: m.slug,
               }))}
               defaultMedicationId={preselected?.id || sp.medicationId || ""}
               isLoggedIn={Boolean(session?.customerId)}
+              supportsDelivery={supportsDelivery}
+              deliveryNotes={pharmacy.deliveryNotes}
+              deliveryRadiusKm={pharmacy.deliveryRadiusKm}
+              pharmacyId={pharmacy.id || undefined}
+              pharmacySlug={pharmacy.slug || undefined}
             />
           </div>
 

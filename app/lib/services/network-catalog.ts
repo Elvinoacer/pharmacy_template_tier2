@@ -4,6 +4,8 @@ import { distanceKm, proximityOrder, type Coordinates } from "@/app/lib/proximit
 import { prismaUnscoped } from "@/app/lib/db";
 import { titleFromSlug } from "@/app/lib/medication-categories";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { sellableFromInventory } from "@/app/lib/inventory-availability";
+import { QUALIFYING_MEDICATION_MASTER_WHERE, QUALIFYING_PHARMACY_WHERE } from "@/app/lib/services/public-medication-visibility";
 
 export type NetworkPharmacySummary = {
   id: string;
@@ -22,6 +24,7 @@ export type NetworkMedicineListing = {
   href: string;
   price: number;
   currentStock: number;
+  availableStock: number;
   distanceKm?: number | null;
   overTheCounter: boolean;
   prescriptionRequired: boolean;
@@ -146,6 +149,10 @@ export async function listNetworkMedicineListings(opts?: {
           slug: true,
           price: true,
           currentStock: true,
+          reservations: {
+            where: { status: "active" },
+            select: { quantity: true },
+          },
           overTheCounter: true,
           prescriptionRequired: true,
           pharmacy: {
@@ -206,18 +213,26 @@ export async function listNetworkMedicineListings(opts?: {
     ]);
 
     if (nearbyIds) { const rank = new Map(nearbyIds.map((id, index) => [id, index])); rows.sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0)); }
-    const items: NetworkMedicineListing[] = rows.map((row) => ({
-      id: row.id,
-      slug: row.slug,
-      href: `/p/${row.pharmacy.slug}/medicines/${row.slug}`,
-      price: priceNumber(row.price) ?? 0,
-      currentStock: row.currentStock,
-      distanceKm: origin ? distanceKm(origin, row.pharmacy) : null,
-      overTheCounter: row.overTheCounter,
-      prescriptionRequired: row.prescriptionRequired,
-      pharmacy: row.pharmacy,
-      medicationMaster: row.medicationMaster,
-    }));
+    const mappedItems: NetworkMedicineListing[] = rows.map((row) => {
+      const availableStock = sellableFromInventory(row);
+      return {
+        id: row.id,
+        slug: row.slug,
+        href: `/p/${row.pharmacy.slug}/medicines/${row.slug}`,
+        price: priceNumber(row.price) ?? 0,
+        currentStock: row.currentStock,
+        availableStock,
+        distanceKm: origin ? distanceKm(origin, row.pharmacy) : null,
+        overTheCounter: row.overTheCounter,
+        prescriptionRequired: row.prescriptionRequired,
+        pharmacy: row.pharmacy,
+        medicationMaster: row.medicationMaster,
+      };
+    });
+
+    const items = opts?.inStock
+      ? mappedItems.filter((item) => item.availableStock > 0)
+      : mappedItems;
 
     const categories: NetworkCategoryOption[] = categoryRows
       .map((row) => (row.category || "general").trim().toLowerCase() || "general")
@@ -225,6 +240,78 @@ export async function listNetworkMedicineListings(opts?: {
       .map((slug) => ({ slug, name: titleFromSlug(slug) }));
 
     return { total, items, categories, selectedPharmacy };
+  });
+}
+
+/** Network-wide listings for one inventory or master slug. */
+export async function listNetworkListingsForSlug(
+  slug: string,
+  origin?: Coordinates | null,
+): Promise<NetworkMedicineListing[]> {
+  return withPlatformBypass(async () => {
+    const normalized = slug.trim().toLowerCase();
+    if (!normalized) return [];
+
+    const rows = await prismaUnscoped.pharmacyInventory.findMany({
+      where: {
+        active: true,
+        publicListing: true,
+        pharmacy: QUALIFYING_PHARMACY_WHERE,
+        medicationMaster: QUALIFYING_MEDICATION_MASTER_WHERE,
+        OR: [{ slug: normalized }, { medicationMaster: { slug: normalized } }],
+      },
+      select: {
+        id: true,
+        slug: true,
+        price: true,
+        currentStock: true,
+        reservations: {
+          where: { status: "active" },
+          select: { quantity: true },
+        },
+        overTheCounter: true,
+        prescriptionRequired: true,
+        pharmacy: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            city: true,
+            county: true,
+            logoUrl: true,
+            latitude: true,
+            longitude: true,
+          },
+        },
+        medicationMaster: {
+          select: {
+            name: true,
+            description: true,
+            category: true,
+            imageUrl: true,
+          },
+        },
+      },
+      orderBy: [{ currentStock: "desc" }, { updatedAt: "desc" }],
+      take: 50,
+    });
+
+    const items: NetworkMedicineListing[] = rows.map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      href: `/p/${row.pharmacy.slug}/medicines/${row.slug}`,
+      price: priceNumber(row.price) ?? 0,
+      currentStock: row.currentStock,
+      availableStock: sellableFromInventory(row),
+      distanceKm: origin ? distanceKm(origin, row.pharmacy) : null,
+      overTheCounter: row.overTheCounter,
+      prescriptionRequired: row.prescriptionRequired,
+      pharmacy: row.pharmacy,
+      medicationMaster: row.medicationMaster,
+    }));
+
+    if (origin) items.sort((a, b) => proximityOrder(a, b) || b.availableStock - a.availableStock);
+    return items;
   });
 }
 

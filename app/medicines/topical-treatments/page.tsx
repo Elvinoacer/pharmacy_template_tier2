@@ -3,15 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import CtaBanner from "../../components/CtaBanner";
 import PageHero from "../../components/PageHero";
-import ChoosePharmacy from "../../components/ChoosePharmacy";
-import {
-  MedicineCatalogGrid,
-  type MedicineCatalogItem,
-} from "../../components/MedicineCatalogCard";
-import { prisma, prismaUnscoped } from "../../lib/db";
+import { MedicineCatalogGrid, type MedicineCatalogItem } from "../../components/MedicineCatalogCard";
 import { getPublicCategoryBySlug, type PublicCategory } from "../../lib/medication-categories";
 import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
-import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
+import { listNetworkMedicineListings } from "../../lib/services/network-catalog";
 import {
   AlertOctagon,
   ArrowRight,
@@ -37,8 +32,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TopicalTreatmentsPage() {
-  const pharmacy = await getResolvedPharmacyOrNull().catch(() => null);
-  const base = pharmacy ? `/p/${pharmacy.slug}` : "/medicines";
+  const base = "";
   const cat: PublicCategory = (await getPublicCategoryBySlug(CATEGORY_SLUG).catch(() => null)) || {
     id: "topical-treatments",
     slug: CATEGORY_SLUG,
@@ -52,52 +46,12 @@ export default async function TopicalTreatmentsPage() {
   };
   const otcGuidance = getOtcCategoryGuidance(CATEGORY_SLUG);
 
-  const db = pharmacy ? prisma : prismaUnscoped;
-  const products = await db.pharmacyInventory
-    .findMany({
-      where: {
-        publicListing: true,
-        active: true,
-        medicationMaster: { category: CATEGORY_SLUG },
-      },
-      include: {
-        medicationMaster: {
-          select: {
-            name: true,
-            description: true,
-            category: true,
-            imageUrl: true,
-          },
-        },
-      },
-      orderBy: [{ currentStock: "desc" }],
-      take: 24,
-    })
-    .catch(() => []);
-
-  const catalogItems: MedicineCatalogItem[] = products
-    .map((item) => {
-      const master = item.medicationMaster;
-      if (!master) return null;
-      const price = Number(item.price.toString());
-      return {
-        id: item.id,
-        slug: item.slug,
-        price: Number.isFinite(price) ? price : 0,
-        currentStock: item.currentStock,
-        overTheCounter: item.overTheCounter,
-        prescriptionRequired: item.prescriptionRequired,
-        medicationMaster: {
-          name: master.name,
-          description: master.description,
-          category: master.category,
-          imageUrl: master.imageUrl,
-        },
-      } satisfies MedicineCatalogItem;
-    })
-    .filter((item): item is MedicineCatalogItem => item !== null);
-
-  const inStockCount = catalogItems.filter((item) => item.currentStock > 0).length;
+  const network = await listNetworkMedicineListings({
+    category: CATEGORY_SLUG,
+    take: 24,
+  }).catch(() => null);
+  const catalogItems: MedicineCatalogItem[] = network?.items ?? [];
+  const inStockCount = catalogItems.filter((item) => (item.availableStock ?? item.currentStock) > 0).length;
 
   return (
     <div className="min-w-0">
@@ -201,9 +155,9 @@ export default async function TopicalTreatmentsPage() {
                     <p className="text-[10px] text-[var(--muted)]">in stock</p>
                   </div>
                   <div className="col-span-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] p-3 sm:col-span-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Pharmacy</span>
-                    <p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)]">{pharmacy?.name || "Across network"}</p>
-                    <p className="text-[10px] text-[var(--muted)]">live catalogue</p>
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">Scope</span>
+                    <p className="mt-1 line-clamp-1 text-sm font-bold text-[var(--foreground)]">Aether network</p>
+                    <p className="text-[10px] text-[var(--muted)]">verified pharmacies</p>
                   </div>
                 </div>
 
@@ -245,14 +199,14 @@ export default async function TopicalTreatmentsPage() {
 
                 <div className="mt-6 grid gap-2 sm:grid-cols-2">
                   <Link
-                    href={`${base}/health/self-care-guide`}
+                    href="/health/self-care-guide"
                     className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:brightness-95"
                   >
                     <HelpCircle className="h-4 w-4" />
                     Self-care guide
                   </Link>
                   <Link
-                    href={`${base}/how-do-you-feel?category=${CATEGORY_SLUG}`}
+                    href="/how-do-you-feel"
                     className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)] px-4 py-2.5 text-xs font-semibold text-[var(--brand-deep)] transition hover:bg-[var(--brand-soft)]"
                   >
                     <Sparkles className="h-4 w-4" />
@@ -270,7 +224,7 @@ export default async function TopicalTreatmentsPage() {
           <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)] sm:text-xs">
-                Live stock · {pharmacy?.name || "Across network"}
+                Live stock · Aether network
               </p>
               <h2
                 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl"
@@ -279,7 +233,7 @@ export default async function TopicalTreatmentsPage() {
                 Topical treatments available now
               </h2>
               <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
-                Compare the products this pharmacy currently lists. Prescription requirements and stock status remain visible on every card.
+                Compare topical products listed by verified pharmacies. Prescription requirements and sellable stock remain visible on every card.
               </p>
             </div>
             <Link

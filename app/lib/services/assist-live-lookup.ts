@@ -2,6 +2,7 @@ import "server-only";
 
 import { prismaUnscoped } from "@/app/lib/db/prisma";
 import { formatPrice } from "@/app/lib/format";
+import { sellableFromInventory } from "@/app/lib/inventory-availability";
 import { listPharmacyDirectory } from "@/app/lib/services/pharmacy-directory";
 import { buildPublicInventoryWhere } from "@/app/lib/services/public-medication-visibility";
 
@@ -83,6 +84,7 @@ export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatc
           price: true,
           currentStock: true,
           lowStockThreshold: true,
+          reservations: { where: { status: "active" }, select: { quantity: true } },
           medicationMaster: {
             select: {
               id: true,
@@ -115,7 +117,7 @@ export async function searchAssistLive(rawQuery: string): Promise<AssistLiveMatc
       if (!pharmacy) continue;
 
       const key = `${row.medicationMaster.id}:${row.medicationMaster.name}:${row.medicationMaster.strengthDisplay ?? ""}`;
-      const rowAvailability = availabilityOf(row.currentStock, row.lowStockThreshold);
+      const rowAvailability = availabilityOf(sellableFromInventory(row), row.lowStockThreshold);
       const existing = grouped.get(key);
       const price = Number(row.price?.toString?.() ?? row.price);
       const pharmacyMatch = {

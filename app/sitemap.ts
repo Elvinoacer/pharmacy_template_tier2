@@ -118,20 +118,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       take: 1000,
     });
 
-    medicineRoutes = medicines.flatMap((m) => [
-      {
-        url: `${base}/medicines/${m.slug}`,
-        lastModified: m.updatedAt || now,
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
-      },
-      {
+    const seenNetworkSlugs = new Set<string>();
+    medicineRoutes = medicines.flatMap((m) => {
+      const tenant = {
         url: `${base}/p/${m.pharmacy.slug}/medicines/${m.slug}`,
         lastModified: m.updatedAt || now,
         changeFrequency: "weekly" as const,
         priority: 0.8,
-      },
-    ]);
+      };
+      if (seenNetworkSlugs.has(m.slug)) return [tenant];
+      seenNetworkSlugs.add(m.slug);
+      return [
+        {
+          url: `${base}/medicines/${m.slug}`,
+          lastModified: m.updatedAt || now,
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        },
+        tenant,
+      ];
+    });
 
     const tenantServices = await prismaUnscoped.pharmacyService.findMany({
       where: {

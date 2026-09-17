@@ -1,6 +1,6 @@
 "use client";
 import NearbyLocation from "@/app/components/location/NearbyLocation";
-import { useRef, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -56,6 +56,7 @@ export default function PrescriptionFinder({
     slug: string;
     city: string | null;
     county: string | null;
+    distanceKm?: number | null;
   }>;
 }) {
   const [names, setNames] = useState(
@@ -85,6 +86,7 @@ export default function PrescriptionFinder({
   const [referralName, setReferralName] = useState("");
   const [referralPhone, setReferralPhone] = useState("");
   const [referralPharmacySlug, setReferralPharmacySlug] = useState(pharmacies[0]?.slug || "");
+  const [pharmacyQuery, setPharmacyQuery] = useState("");
   const [referralBusy, setReferralBusy] = useState(false);
   const [referralSuccess, setReferralSuccess] = useState<string | null>(null);
   const [referralFeedback, setReferralFeedback] = useState<UploadFeedbackModel | null>(null);
@@ -93,6 +95,15 @@ export default function PrescriptionFinder({
   const fileInput = useRef<HTMLInputElement>(null);
   const cameraInput = useRef<HTMLInputElement>(null);
   const referralSection = useRef<HTMLElement>(null);
+  const filteredPharmacies = useMemo(() => {
+    const needle = pharmacyQuery.trim().toLowerCase();
+    if (!needle) return pharmacies;
+    return pharmacies.filter((pharmacy) =>
+      [pharmacy.name, pharmacy.city, pharmacy.county]
+        .filter(Boolean)
+        .some((value) => value!.toLowerCase().includes(needle)),
+    );
+  }, [pharmacies, pharmacyQuery]);
 
   function openReferral() {
     setShowReferral(true);
@@ -729,20 +740,31 @@ export default function PrescriptionFinder({
                     </div>
                     <div>
                       <label className="mb-1 block font-semibold text-[var(--foreground)]">Target Pharmacy *</label>
+                      <input
+                        type="search"
+                        value={pharmacyQuery}
+                        onChange={(e) => setPharmacyQuery(e.target.value)}
+                        placeholder="Search by name or town"
+                        className="input-admin mb-1.5 w-full text-xs"
+                        aria-label="Search pharmacies"
+                      />
                       <select
                         value={referralPharmacySlug}
                         onChange={(e) => setReferralPharmacySlug(e.target.value)}
                         className="input-admin w-full text-xs"
                         required
                       >
-                        {pharmacies.length > 0 ? (
-                          pharmacies.map((p) => (
+                        {filteredPharmacies.length > 0 ? (
+                          filteredPharmacies.map((p) => (
                             <option key={p.id} value={p.slug}>
-                              {p.name} ({p.city || "Kenya"})
+                              {p.name} ({p.city || "Kenya"}
+                              {p.distanceKm != null ? ` · ${p.distanceKm.toFixed(1)} km` : ""})
                             </option>
                           ))
                         ) : (
-                          <option value="">Nearby verified pharmacy</option>
+                          <option value="">
+                            {pharmacies.length ? "No pharmacies match that search" : "Nearby verified pharmacy"}
+                          </option>
                         )}
                       </select>
                     </div>
@@ -751,7 +773,7 @@ export default function PrescriptionFinder({
                     <button
                       type="submit"
                       disabled={referralBusy}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#0d6e5a] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#084c3f] disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--brand)] px-4 py-2 text-xs font-bold text-white transition hover:brightness-95 disabled:opacity-60"
                     >
                       {referralBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                       {referralBusy ? "Submitting referral…" : "Submit prescription to pharmacy"}

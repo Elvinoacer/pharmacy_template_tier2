@@ -6,6 +6,13 @@ import CareersPage from "@/app/careers/page";
 import ContactPage from "@/app/contact/page";
 import DeliveryPage from "@/app/delivery/page";
 import FaqPage from "@/app/faq/page";
+import VaccinationHubPage from "@/app/vaccinations/page";
+import VaccineDetailPage from "@/app/vaccinations/[slug]/page";
+import VaccinationBookingPage from "@/app/vaccinations/book/page";
+import VaccinationSchedulePage from "@/app/vaccinations/schedule/page";
+import HealthScreeningsPage from "@/app/screenings/page";
+import PreventivePage from "@/app/preventive/page";
+import HowDoYouFeelPage from "@/app/how-do-you-feel/page";
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Image from "next/image";
@@ -22,7 +29,7 @@ import styles from "../Storefront.module.css";
 export const dynamic = "force-dynamic";
 type Props = {
   params: Promise<{ slug: string; path?: string[] }>;
-  searchParams: Promise<{ q?: string; page?: string; medicationId?: string; slug?: string }>;
+  searchParams: Promise<{ q?: string; page?: string; medicationId?: string; slug?: string; vaccine?: string; campaign?: string }>;
 };
 const sections = [
   ["", "Overview"],
@@ -69,7 +76,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `${route.section === "home" ? "Overview" : route.section[0].toUpperCase() + route.section.slice(1)} · ${p.name}`;
+  const sectionNames: Record<string, string> = {
+    home: "Overview",
+    "how-do-you-feel": "How Do You Feel?",
+    screenings: "Health Screenings",
+    preventive: "Preventive Health",
+    vaccinations: "Vaccinations",
+  };
+  const sectionTitle = sectionNames[route.section] || (route.section[0].toUpperCase() + route.section.slice(1));
+  const title = `${sectionTitle} · ${p.name}`;
   const description = p.description || `Explore medicines, services and visiting information published by ${p.name}.`;
   const images = p.coverImageUrl ? [p.coverImageUrl] : [];
   return { title: { absolute: title }, description, alternates: { canonical: `/p/${p.slug}${path?.length ? `/${path.map(encodeURIComponent).join("/")}` : ""}` }, openGraph: { title, description, images }, twitter: { title, description, images } };
@@ -96,6 +111,19 @@ export default async function PublicStorefrontPage({ params, searchParams }: Pro
   if (section === "contact") return ContactPage();
   if (section === "delivery") return DeliveryPage();
   if (section === "faq") return FaqPage();
+  if (section === "vaccinations") {
+    if (detail === "book") {
+      return VaccinationBookingPage({
+        searchParams: Promise.resolve({ vaccine: search.vaccine, campaign: search.campaign }),
+      });
+    }
+    if (detail === "schedule") return VaccinationSchedulePage();
+    if (detail) return VaccineDetailPage({ params: Promise.resolve({ slug: detail }) });
+    return VaccinationHubPage();
+  }
+  if (section === "screenings") return HealthScreeningsPage();
+  if (section === "preventive") return PreventivePage();
+  if (section === "how-do-you-feel") return HowDoYouFeelPage();
   const medicines = section === "medicines" ? await publicStorefrontMedicines(slug, detail ? "" : q, page, detail) : null;
   const services = section === "services" ? await publicStorefrontServices(slug, detail) : null;
   if (detail && !(medicines?.length || services?.length)) notFound();

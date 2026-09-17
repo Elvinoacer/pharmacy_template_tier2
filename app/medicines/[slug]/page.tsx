@@ -17,11 +17,8 @@ import {
   Phone,
   MessageCircle,
   Truck,
-  ArrowRight,
-  ChevronRight,
 } from "lucide-react";
 import CtaBanner from "../../components/CtaBanner";
-import ChoosePharmacy from "../../components/ChoosePharmacy";
 import DigitalCounsellingCard from "../../components/health/DigitalCounsellingCard";
 import { Markdown } from "../../components/Markdown";
 import {
@@ -29,13 +26,19 @@ import {
   type MedicineCatalogItem,
 } from "../../components/MedicineCatalogCard";
 import PageHero from "../../components/PageHero";
+import NetworkMedicineView from "../NetworkMedicineView";
 import { prisma } from "../../lib/db";
 import { formatPrice } from "../../lib/format";
+import { sellableFromInventory } from "../../lib/inventory-availability";
 import { generateDynamicCounsellingProfile } from "../../lib/medication-counselling";
 import { getPublicCategoryBySlug } from "../../lib/medication-categories";
 import { getOtcCategoryGuidance } from "../../lib/otc-guidance";
 import { getMedicationCounsellingBySlug } from "../../lib/services/medication-counselling-db";
 import { getResolvedPharmacyOrNull } from "../../lib/services/pharmacy-settings";
+import {
+  listNetworkListingsForSlug,
+  listNetworkMedicineListings,
+} from "../../lib/services/network-catalog";
 import {
   buildPublicInventoryWhere,
   getPublicMedicineRelated,
@@ -58,19 +61,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const pharmacy = await getResolvedPharmacyOrNull(
-    propPharmacySlug ? { slug: propPharmacySlug } : undefined,
-  ).catch(() => null);
+  const pharmacy = propPharmacySlug
+    ? await getResolvedPharmacyOrNull({ slug: propPharmacySlug }).catch(() => null)
+    : null;
+
+  if (!pharmacy) {
+    const listings = await listNetworkListingsForSlug(slug).catch(() => []);
+    const first = listings[0];
+    if (!first) return { title: "Medicine Not Found", robots: { index: false, follow: false } };
+    return {
+      title: `${first.medicationMaster.name} — Price, Availability & Guidance | Aether`,
+      description:
+        first.medicationMaster.description ||
+        `Compare ${first.medicationMaster.name} availability across verified Aether pharmacies.`,
+      alternates: { canonical: `/medicines/${slug}` },
+      openGraph: {
+        title: `${first.medicationMaster.name} — Aether`,
+        description: first.medicationMaster.description || "Compare live pharmacy availability.",
+        images: first.medicationMaster.imageUrl ? [first.medicationMaster.imageUrl] : undefined,
+      },
+    };
+  }
 
   const med = await prisma.pharmacyInventory
     .findFirst({
       where: buildPublicInventoryWhere({
         slug,
-        pharmacyId: pharmacy?.id,
-        pharmacySlug: propPharmacySlug,
+        pharmacyId: pharmacy.id,
+        pharmacySlug: pharmacy.slug,
       }),
       include: {
-        pharmacy: { select: { name: true, city: true, county: true, latitude: true, longitude: true } },
+        pharmacy: { select: { name: true, city: true, county: true, latitude: true, longitude: true, slug: true } },
         medicationMaster: {
           select: { name: true, genericName: true, brandName: true, description: true, dosage: true, imageUrl: true },
         },
@@ -86,15 +107,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ? `${med.pharmacy.latitude};${med.pharmacy.longitude}`
       : undefined;
 
+  const title = `${med.medicationMaster.name} — Price, Stock & Delivery in ${med.pharmacy?.city || "Kenya"} | ${med.pharmacy?.name}`;
+
   return {
-    title: `${med.medicationMaster.name} — Price, Stock & Delivery in ${med.pharmacy?.city || "Kenya"} | ${med.pharmacy?.name || "Aether"}`,
+    title,
     description:
       med.medicationMaster.description ||
-      `Buy ${med.medicationMaster.name} (${med.medicationMaster.genericName}) online in ${locationStr} at ${med.pharmacy?.name}. Check real-time stock, pricing, and fast delivery or pickup.`,
-    alternates: { canonical: `/medicines/${med.slug}` },
+      `Buy ${med.medicationMaster.name} (${med.medicationMaster.genericName}) online in ${locationStr} at ${med.pharmacy?.name || "Aether"}. Check real-time stock, pricing, and fast delivery or pickup.`,
+    alternates: { canonical: pharmacy ? `/p/${pharmacy.slug}/medicines/${med.slug}` : `/medicines/${med.slug}` },
     openGraph: {
-      title: `${med.medicationMaster.name} — ${med.pharmacy?.name || "Pharmacy"}`,
-      description: med.medicationMaster.description || `In stock at ${med.pharmacy?.name} in ${locationStr}.`,
+      title: `${med.medicationMaster.name} — ${med.pharmacy?.name || "Aether"}`,
+      description: med.medicationMaster.description || `In stock at ${med.pharmacy?.name || "verified pharmacies"} in ${locationStr}.`,
       images: med.medicationMaster.imageUrl ? [med.medicationMaster.imageUrl] : undefined,
     },
     other: coordinates
@@ -110,65 +133,70 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryOrMedicinePage({ params }: Props) {
   const { slug, pharmacySlug: propPharmacySlug } = await params;
-  const pharmacy = await getResolvedPharmacyOrNull(
-    propPharmacySlug ? { slug: propPharmacySlug } : undefined,
-  ).catch(() => null);
+  const pharmacy = propPharmacySlug
+    ? await getResolvedPharmacyOrNull({ slug: propPharmacySlug }).catch(() => null)
+    : null;
+  if (propPharmacySlug && !pharmacy) notFound();
   const pharmacyId = pharmacy?.id;
   const pharmacySlug = pharmacy?.slug;
-
-  if (!pharmacy || !pharmacyId || !pharmacySlug) {
-    return <ChoosePharmacy next={`/medicines/${slug}`} />;
-  }
-
-  const base = `/p/${pharmacySlug}`;
+  const base = pharmacySlug ? `/p/${pharmacySlug}` : "";
   const cat = await getPublicCategoryBySlug(slug).catch(() => null);
 
   if (cat) {
     const otcGuidance = getOtcCategoryGuidance(cat.slug);
-    const rows = await prisma.pharmacyInventory
-      .findMany({
-        where: buildPublicInventoryWhere({
-          pharmacyId,
-          category: cat.slug,
-        }),
-        include: {
-          medicationMaster: {
-            select: {
-              name: true,
-              description: true,
-              category: true,
-              imageUrl: true,
+    const network = pharmacy
+      ? null
+      : await listNetworkMedicineListings({ category: cat.slug, take: 24 }).catch(() => null);
+    const rows = pharmacy
+      ? await prisma.pharmacyInventory
+          .findMany({
+            where: buildPublicInventoryWhere({
+              pharmacyId,
+              category: cat.slug,
+            }),
+            include: {
+              medicationMaster: {
+                select: {
+                  name: true,
+                  description: true,
+                  category: true,
+                  imageUrl: true,
+                },
+              },
+              reservations: { where: { status: "active" }, select: { quantity: true } },
             },
-          },
-        },
-        orderBy: [{ currentStock: "desc" }],
-        take: 24,
-      })
-      .catch(() => []);
+            orderBy: [{ currentStock: "desc" }],
+            take: 24,
+          })
+          .catch(() => [])
+      : [];
 
-    const items: MedicineCatalogItem[] = rows
-      .map((row) => {
-        const master = row.medicationMaster;
-        if (!master) return null;
-        const price = Number(row.price.toString());
-        return {
-          id: row.id,
-          slug: row.slug,
-          price: Number.isFinite(price) ? price : 0,
-          currentStock: row.currentStock,
-          overTheCounter: row.overTheCounter,
-          prescriptionRequired: row.prescriptionRequired,
-          medicationMaster: {
-            name: master.name,
-            description: master.description,
-            category: master.category,
-            imageUrl: master.imageUrl,
-          },
-        } satisfies MedicineCatalogItem;
-      })
-      .filter((item): item is MedicineCatalogItem => item !== null);
+    const items: MedicineCatalogItem[] = pharmacy
+      ? rows.flatMap((row) => {
+          const master = row.medicationMaster;
+          if (!master) return [];
+          const price = Number(row.price.toString());
+          const availableStock = sellableFromInventory(row);
+          return [{
+            id: row.id,
+            slug: row.slug,
+            href: `/p/${pharmacy.slug}/medicines/${row.slug}`,
+            price: Number.isFinite(price) ? price : 0,
+            currentStock: row.currentStock,
+            availableStock,
+            overTheCounter: row.overTheCounter,
+            prescriptionRequired: row.prescriptionRequired,
+            medicationMaster: {
+              name: master.name,
+              description: master.description,
+              category: master.category,
+              imageUrl: master.imageUrl,
+            },
+          } satisfies MedicineCatalogItem];
+        })
+      : (network?.items ?? []);
 
-    const available = items.filter((item) => item.currentStock > 0).length;
+    const available = items.filter((item) => (item.availableStock ?? item.currentStock) > 0).length;
 
     return (
       <div className="min-w-0">
@@ -235,14 +263,14 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                     Compare genuine products with clear pharmacist guidance
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)] sm:text-base sm:leading-7">
-                    {cat.description || "Review available medicines from this pharmacy and check safety guidance before starting home treatment."}
+                    {cat.description || (pharmacy ? "Review available medicines from this pharmacy and check safety guidance before starting home treatment." : "Review available medicines across verified Aether pharmacies and check safety guidance before starting home treatment.")}
                   </p>
 
                   <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {[
                       ["Listed", String(items.length), "products"],
                       ["Available", String(available), "in stock now"],
-                      ["Pharmacy", pharmacy.name, "live catalogue"],
+                      ["Pharmacy", pharmacy?.name ?? "Aether network", pharmacy ? "live catalogue" : "verified pharmacies"],
                     ].map(([label, value, note], index) => (
                       <div key={label} className={`rounded-2xl border border-[var(--line-2)] bg-[var(--card-elev)]/80 backdrop-blur-md p-3 ${index === 2 ? "col-span-2 sm:col-span-1" : ""}`}>
                         <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted-2)]">{label}</span>
@@ -287,13 +315,13 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--brand)] sm:text-xs">Current verified inventory</p>
                   <h2 className="mt-1 text-xl font-semibold text-[var(--foreground)] sm:text-2xl" style={{ fontFamily: "var(--font-display), serif" }}>
-                    {cat.name} available at {pharmacy.name}
+                    {pharmacy ? `${cat.name} available at ${pharmacy.name}` : `${cat.name} across Aether`}
                   </h2>
                   <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
-                    Live stock and direct pricing verified by the pharmacy.
+                    {pharmacy ? "Live stock and direct pricing verified by the pharmacy." : "Live stock and pricing reported by verified pharmacies. Confirm when you reserve."}
                   </p>
                 </div>
-                <Link href={`${base}/medicines?category=${encodeURIComponent(cat.slug)}`} className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition">
+                <Link href={`${base || ""}/medicines?category=${encodeURIComponent(cat.slug)}`} className="inline-flex min-h-10 w-fit items-center rounded-full border border-[var(--line-2)] bg-[var(--card)] px-4 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--card-elev)] transition">
                   Full catalogue filter →
                 </Link>
               </div>
@@ -389,6 +417,10 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
     );
   }
 
+  if (!pharmacy || !pharmacyId || !pharmacySlug) {
+    return <NetworkMedicineView slug={slug} />;
+  }
+
   // ── INDIVIDUAL MEDICINE PRODUCT DETAIL ──
   const med = await prisma.pharmacyInventory
     .findFirst({
@@ -411,6 +443,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
             dosageForm: { select: { value: true } },
           },
         },
+        reservations: { where: { status: "active" }, select: { quantity: true } },
       },
     })
     .catch(() => null);
@@ -428,7 +461,8 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
 
   const categoryLabel = med.medicationMaster.category.replace(/-/g, " ");
   const categoryHref = `${base}/medicines?category=${encodeURIComponent(med.medicationMaster.category)}`;
-  const inStock = med.currentStock > 0;
+  const availableStock = sellableFromInventory(med);
+  const inStock = availableStock > 0;
   const gallery = (med.medicationMaster.imageUrls || "").split(/[\n,]+/).map((value) => value.trim()).filter(Boolean).filter((url) => url !== med.medicationMaster.imageUrl).slice(0, 8);
   const counselling = (await getMedicationCounsellingBySlug(med.slug)) || generateDynamicCounsellingProfile(
     med.medicationMaster.name,
@@ -498,7 +532,7 @@ export default async function CategoryOrMedicinePage({ params }: Props) {
               <div className="absolute right-3 top-3 z-10 sm:right-4 sm:top-4">
                 <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold backdrop-blur-md ${inStock ? "border-emerald-500/40 bg-emerald-950/70 text-emerald-300" : "border-rose-500/40 bg-rose-950/70 text-rose-300"}`}>
                   <span className={`h-2 w-2 rounded-full ${inStock ? "bg-emerald-400 animate-pulse" : "bg-rose-400"}`} />
-                  {inStock ? `${med.currentStock} in stock` : "Out of stock"}
+                  {inStock ? `${availableStock} available` : "Out of stock"}
                 </div>
               </div>
 

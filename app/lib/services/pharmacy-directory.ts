@@ -1,7 +1,12 @@
 import "server-only";
 import { withPlatformBypass } from "@/app/lib/tenant-context";
+import { Prisma } from "@/app/generated/prisma/client";
 
 import { prismaUnscoped } from "@/app/lib/db/prisma";
+import {
+  buildDirectoryPharmacyWhere,
+  pharmacySupportsDelivery,
+} from "@/app/lib/pharmacy-directory-query";
 
 export type DirectoryPharmacy = {
   id: string;
@@ -45,162 +50,200 @@ function titleCaseCategory(value: string): string {
     .join(" ");
 }
 
-export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promise<DirectoryPharmacy[]> {
-  const q = opts.q?.trim();
-  const city = opts.city?.trim();
-  const county = opts.county?.trim();
-  const category = opts.category?.trim();
+type StockAggRow = { pharmacyId: string; stockCount: number; otcCount: number };
+type CategoryAggRow = { pharmacyId: string; category: string; n: number };
+type SearchAggRow = { pharmacyId: string; n: number };
+
+async function directoryAggregates(ids: string[], q?: string) {
+  if (ids.length === 0) {
+    return {
+      stockById: new Map<string, StockAggRow>(),
+      categoriesById: new Map<string, string[]>(),
+      searchById: new Map<string, number>(),
+    };
+  }
+
+  const idList = Prisma.join(ids);
 
   try {
-    const pharmacies = await withPlatformBypass(() => prismaUnscoped.pharmacy.findMany({
+    const [stockRows, categoryRows, searchRows] = await Promise.all([
+      prismaUnscoped.$queryRaw<StockAggRow[]>`
+        SELECT
+          i.pharmacy_id AS "pharmacyId",
+          COUNT(*) FILTER (WHERE (i.current_stock - COALESCE(r.reserved, 0)) > 0)::int AS "stockCount",
+          COUNT(*) FILTER (WHERE i.over_the_counter AND (i.current_stock - COALESCE(r.reserved, 0)) > 0)::int AS "otcCount"
+        FROM pharmacy_inventory i
+        LEFT JOIN (
+          SELECT inventory_id, SUM(quantity) AS reserved
+          FROM inventory_reservations
+          WHERE status = 'active'
+          GROUP BY inventory_id
+        ) r ON r.inventory_id = i.id
+        WHERE i.pharmacy_id IN (${idList})
+          AND i.active = true
+          AND i.public_listing = true
+        GROUP BY i.pharmacy_id
+      `,
+      prismaUnscoped.$queryRaw<CategoryAggRow[]>`
+        SELECT i.pharmacy_id AS "pharmacyId", COALESCE(m.category, 'general') AS category, COUNT(*)::int AS n
+        FROM pharmacy_inventory i
+        INNER JOIN medication_masters m ON m.id = i.medication_master_id
+        LEFT JOIN (
+          SELECT inventory_id, SUM(quantity) AS reserved
+          FROM inventory_reservations
+          WHERE status = 'active'
+          GROUP BY inventory_id
+        ) r ON r.inventory_id = i.id
+        WHERE i.pharmacy_id IN (${idList})
+          AND i.active = true
+          AND i.public_listing = true
+          AND (i.current_stock - COALESCE(r.reserved, 0)) > 0
+        GROUP BY i.pharmacy_id, m.category
+      `,
+      q
+        ? prismaUnscoped.$queryRaw<SearchAggRow[]>`
+            SELECT i.pharmacy_id AS "pharmacyId", COUNT(*)::int AS n
+            FROM pharmacy_inventory i
+            INNER JOIN medication_masters m ON m.id = i.medication_master_id
+            LEFT JOIN (
+              SELECT inventory_id, SUM(quantity) AS reserved
+              FROM inventory_reservations
+              WHERE status = 'active'
+              GROUP BY inventory_id
+            ) r ON r.inventory_id = i.id
+            WHERE i.pharmacy_id IN (${idList})
+              AND i.active = true
+              AND i.public_listing = true
+              AND (i.current_stock - COALESCE(r.reserved, 0)) > 0
+              AND (
+                m.name ILIKE ${"%" + q + "%"}
+                OR COALESCE(m.generic_name, '') ILIKE ${"%" + q + "%"}
+                OR COALESCE(m.category, '') ILIKE ${"%" + q + "%"}
+              )
+            GROUP BY i.pharmacy_id
+          `
+        : Promise.resolve([] as SearchAggRow[]),
+    ]);
+
+    const stockById = new Map(stockRows.map((row) => [row.pharmacyId, row]));
+    const categoriesById = new Map<string, string[]>();
+    const grouped = new Map<string, Array<{ category: string; n: number }>>();
+    for (const row of categoryRows) {
+      const list = grouped.get(row.pharmacyId) ?? [];
+      list.push({ category: row.category, n: row.n });
+      grouped.set(row.pharmacyId, list);
+    }
+    for (const [pharmacyId, list] of grouped) {
+      categoriesById.set(
+        pharmacyId,
+        list
+          .sort((a, b) => b.n - a.n || a.category.localeCompare(b.category))
+          .slice(0, 4)
+          .map((item) => titleCaseCategory(item.category))
+          .filter(Boolean),
+      );
+    }
+    const searchById = new Map(searchRows.map((row) => [row.pharmacyId, row.n]));
+    return { stockById, categoriesById, searchById };
+  } catch (error) {
+    console.error("[pharmacy-directory] aggregate query failed", error);
+    const stockGroups = await prismaUnscoped.pharmacyInventory.groupBy({
+      by: ["pharmacyId"],
       where: {
-        status: "active",
-        listed: true,
-        verifiedAt: { not: null },
-        ...(opts.featured ? { featured: true } : {}),
-        ...(city ? { city: { equals: city, mode: "insensitive" as const } } : {}),
-        ...(county ? { county: { equals: county, mode: "insensitive" as const } } : {}),
-        ...(opts.delivery
-          ? { settings: { is: { deliveryNotes: { not: null } } } }
-          : {}),
-        ...(category || q
-          ? {
-              OR: [
-                ...(q
-                  ? [
-                      { name: { contains: q, mode: "insensitive" as const } },
-                      { tagline: { contains: q, mode: "insensitive" as const } },
-                      { city: { contains: q, mode: "insensitive" as const } },
-                      { county: { contains: q, mode: "insensitive" as const } },
-                      {
-                        services: {
-                          some: {
-                            active: true,
-                            title: { contains: q, mode: "insensitive" as const },
-                          },
-                        },
-                      },
-                    ]
-                  : []),
-                {
-                  inventory: {
-                    some: {
-                      active: true,
-                      publicListing: true,
-                      currentStock: { gt: 0 },
-                      ...(category || q
-                        ? {
-                            medicationMaster: {
-                              AND: [
-                                ...(category
-                                  ? [
-                                      {
-                                        category: {
-                                          equals: category,
-                                          mode: "insensitive" as const,
-                                        },
-                                      },
-                                    ]
-                                  : []),
-                                ...(q
-                                  ? [
-                                      {
-                                        OR: [
-                                          {
-                                            name: {
-                                              contains: q,
-                                              mode: "insensitive" as const,
-                                            },
-                                          },
-                                          {
-                                            genericName: {
-                                              contains: q,
-                                              mode: "insensitive" as const,
-                                            },
-                                          },
-                                          {
-                                            category: {
-                                              contains: q,
-                                              mode: "insensitive" as const,
-                                            },
-                                          },
-                                        ],
-                                      },
-                                    ]
-                                  : []),
-                              ],
-                            },
-                          }
-                        : {}),
-                    },
-                  },
-                },
-              ],
-            }
-          : {}),
+        pharmacyId: { in: ids },
+        active: true,
+        publicListing: true,
+        currentStock: { gt: 0 },
       },
-      orderBy: [{ featured: "desc" }, { name: "asc" }],
-      select: {
-        id: true,
-        slug: true,
-        name: true,
-        tagline: true,
-        description: true,
-        featured: true,
-        city: true,
-        county: true,
-        country: true,
-        latitude: true,
-        longitude: true,
-        logoUrl: true,
-        coverImageUrl: true,
-        whatsapp: true,
-        phone: true,
-        settings: { select: { deliveryNotes: true, deliveryRadiusKm: true } },
-        inventory: {
+      _count: { _all: true },
+    });
+    const otcGroups = await prismaUnscoped.pharmacyInventory.groupBy({
+      by: ["pharmacyId"],
+      where: {
+        pharmacyId: { in: ids },
+        active: true,
+        publicListing: true,
+        currentStock: { gt: 0 },
+        overTheCounter: true,
+      },
+      _count: { _all: true },
+    });
+    const searchGroups = q
+      ? await prismaUnscoped.pharmacyInventory.groupBy({
+          by: ["pharmacyId"],
           where: {
+            pharmacyId: { in: ids },
             active: true,
             publicListing: true,
             currentStock: { gt: 0 },
-          },
-          select: {
-            currentStock: true,
-            overTheCounter: true,
             medicationMaster: {
-              select: { name: true, genericName: true, category: true },
+              OR: [
+                { name: { contains: q, mode: "insensitive" } },
+                { genericName: { contains: q, mode: "insensitive" } },
+                { category: { contains: q, mode: "insensitive" } },
+              ],
             },
           },
-          take: 250,
+          _count: { _all: true },
+        })
+      : [];
+    const otcById = new Map(otcGroups.map((row) => [row.pharmacyId, row._count._all]));
+    return {
+      stockById: new Map(
+        stockGroups.map((row) => [
+          row.pharmacyId,
+          { pharmacyId: row.pharmacyId, stockCount: row._count._all, otcCount: otcById.get(row.pharmacyId) ?? 0 },
+        ]),
+      ),
+      categoriesById: new Map<string, string[]>(),
+      searchById: new Map(searchGroups.map((row) => [row.pharmacyId, row._count._all])),
+    };
+  }
+}
+
+export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promise<DirectoryPharmacy[]> {
+  const q = opts.q?.trim();
+
+  try {
+    const pharmacies = await withPlatformBypass(() =>
+      prismaUnscoped.pharmacy.findMany({
+        where: buildDirectoryPharmacyWhere(opts),
+        orderBy: [{ featured: "desc" }, { name: "asc" }],
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          tagline: true,
+          description: true,
+          featured: true,
+          city: true,
+          county: true,
+          country: true,
+          latitude: true,
+          longitude: true,
+          logoUrl: true,
+          coverImageUrl: true,
+          whatsapp: true,
+          phone: true,
+          settings: { select: { deliveryNotes: true, deliveryRadiusKm: true } },
+          services: {
+            where: { active: true },
+            orderBy: { sortOrder: "asc" },
+            select: { title: true },
+            take: 4,
+          },
         },
-        services: {
-          where: { active: true },
-          orderBy: { sortOrder: "asc" },
-          select: { title: true },
-          take: 4,
-        },
-      },
-    }));
+      }),
+    );
+
+    const ids = pharmacies.map((pharmacy) => pharmacy.id);
+    const { stockById, categoriesById, searchById } = await withPlatformBypass(() =>
+      directoryAggregates(ids, q),
+    );
 
     return pharmacies.map((pharmacy) => {
-      const inventory = pharmacy.inventory;
-      const categories = Array.from(
-        new Set(
-          inventory
-            .map((item) => item.medicationMaster.category)
-            .filter(Boolean)
-            .map(titleCaseCategory),
-        ),
-      ).slice(0, 4);
-      const searchedItems = q
-        ? inventory.filter((item) =>
-            [
-              item.medicationMaster.name,
-              item.medicationMaster.genericName,
-              item.medicationMaster.category,
-            ].some((value) => value?.toLowerCase().includes(q.toLowerCase())),
-          )
-        : [];
-
+      const stock = stockById.get(pharmacy.id);
+      const searchedMedicineCount = q ? searchById.get(pharmacy.id) ?? 0 : 0;
       return {
         id: pharmacy.id,
         slug: pharmacy.slug,
@@ -217,15 +260,13 @@ export async function listPharmacyDirectory(opts: DirectoryOptions = {}): Promis
         coverImageUrl: pharmacy.coverImageUrl,
         whatsapp: pharmacy.whatsapp,
         phone: pharmacy.phone,
-        stockCount: inventory.length,
-        otcCount: inventory.filter((item) => item.overTheCounter).length,
-        topCategories: categories,
+        stockCount: stock?.stockCount ?? 0,
+        otcCount: stock?.otcCount ?? 0,
+        topCategories: categoriesById.get(pharmacy.id) ?? [],
         services: pharmacy.services.map((service) => service.title),
-        hasDelivery: Boolean(
-          pharmacy.settings?.deliveryNotes || pharmacy.settings?.deliveryRadiusKm,
-        ),
-        hasSearchedMedicine: searchedItems.length > 0,
-        searchedMedicineCount: searchedItems.length,
+        hasDelivery: pharmacySupportsDelivery(pharmacy.settings),
+        hasSearchedMedicine: searchedMedicineCount > 0,
+        searchedMedicineCount,
       };
     });
   } catch (error) {

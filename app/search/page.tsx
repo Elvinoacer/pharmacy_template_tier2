@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 import SearchPanel, { type SearchCorpus, type SearchResults } from "../components/SearchPanel";
-import ChoosePharmacy from "@/app/components/ChoosePharmacy";
 import { loadStorefront } from "@/app/components/StorefrontGate";
 import { prisma, prismaUnscoped } from "@/app/lib/db";
 import { listPublicServices } from "@/app/lib/services/pharmacy-services";

@@ -115,38 +115,17 @@ export default function PharmacyDirectory({
     [router, query, city, county, category, delivery],
   );
 
-  const selectedCategoryName = categories.find((item) => item.slug === category)?.name?.toLowerCase();
-
-  const filtered = useMemo(
-    () =>
-      pharmacies.filter((pharmacy) => {
-        if (city && pharmacy.city?.toLowerCase() !== city.toLowerCase()) return false;
-        if (county && pharmacy.county?.toLowerCase() !== county.toLowerCase()) return false;
-        if (
-          selectedCategoryName &&
-          !pharmacy.topCategories.some((value) => value.toLowerCase() === selectedCategoryName)
-        )
-          return false;
-        if (delivery && !pharmacy.hasDelivery) return false;
-
-        const needle = query.trim().toLowerCase();
-        if (!needle) return true;
-
-        return (
-          pharmacy.name.toLowerCase().includes(needle) ||
-          pharmacy.city?.toLowerCase().includes(needle) ||
-          pharmacy.county?.toLowerCase().includes(needle) ||
-          pharmacy.topCategories.some((item) => item.toLowerCase().includes(needle)) ||
-          pharmacy.services.some((item) => item.toLowerCase().includes(needle)) ||
-          pharmacy.hasSearchedMedicine
-        );
-      }),
-    [pharmacies, query, city, county, selectedCategoryName, delivery],
-  );
+  useEffect(() => {
+    const current = (searchParams.get("q") || "").trim();
+    const next = query.trim();
+    if (current === next) return;
+    const timer = window.setTimeout(() => syncUrl({ q: query }), 350);
+    return () => window.clearTimeout(timer);
+  }, [query, searchParams, syncUrl]);
 
   const sorted = useMemo(
     () =>
-      filtered
+      pharmacies
         .map((pharmacy) => ({
           ...pharmacy,
           distance:
@@ -160,7 +139,7 @@ export default function PharmacyDirectory({
           if (a.featured !== b.featured) return a.featured ? -1 : 1;
           return a.name.localeCompare(b.name);
         }),
-    [filtered, position, sort],
+    [pharmacies, position, sort],
   );
 
   const radarItems: RadarItem[] = useMemo(

@@ -38,6 +38,7 @@ test("storefront routes exclude private rooms and accept checkout and published 
   assert.deepEqual(publicStorefrontRoute(["delivery"]), { section: "delivery", detail: undefined });
   assert.deepEqual(publicStorefrontRoute(["faq"]), { section: "faq", detail: undefined });
   assert.deepEqual(publicStorefrontRoute(["contact"]), { section: "contact", detail: undefined });
+  assert.deepEqual(publicStorefrontRoute(["vaccinations"]), { section: "vaccinations", detail: undefined });
   assert.equal(publicStorefrontRoute(["careers", "extra"]), null);
   assert.equal(isPublicIdentityPath("/careers"), true);
   assert.equal(isPublicIdentityPath("/api/delivery"), true);
