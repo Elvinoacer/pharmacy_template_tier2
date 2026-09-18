@@ -85,7 +85,15 @@ function renderMarkdownToEmailHtml(src: string): string {
 
   const flushParagraph = () => {
     if (paragraph.length > 0) {
-      out.push(`<p style="margin:0 0 14px 0;font-size:15px;line-height:24px;color:#334155;">${renderInline(paragraph.join(" "))}</p>`);
+      const text = paragraph.join(" ");
+      const standaloneLink = text.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/);
+      if (standaloneLink) {
+        out.push(
+          `<p style="margin:22px 0;text-align:center;"><a href="${escapeHtml(standaloneLink[2])}" style="display:inline-block;background:#0d6e5a;color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;line-height:20px;padding:13px 22px;border-radius:12px;box-shadow:0 8px 18px rgba(13,110,90,0.18);">${escapeHtml(standaloneLink[1])}</a></p>`,
+        );
+      } else {
+        out.push(`<p style="margin:0 0 14px 0;font-size:15px;line-height:24px;color:#334155;">${renderInline(text)}</p>`);
+      }
       paragraph = [];
     }
   };
@@ -396,5 +404,6 @@ export function passwordResetBody(token: string) {
 }
 
 export function emailVerificationBody(token: string) {
-  return `Verify your email address: ${appUrl()}/api/verify-email?token=${token}\n\nIf you did not create an Aether Network account, ignore this message.\n\n— Aether Network (${supportEmail()})`;
+  const verificationUrl = `${appUrl()}/api/verify-email?token=${token}`;
+  return `Confirm this email address to continue your Aether Network setup.\n\n[Verify email address](${verificationUrl})\n\nThe link can be opened in a new tab, another browser, or another device. If you started onboarding somewhere else, return to that onboarding page after verifying and it will detect the change automatically.\n\nIf you did not create an Aether Network account, ignore this message.\n\n— Aether Network (${supportEmail()})`;
 }

@@ -83,6 +83,7 @@ export default function PharmacyLocationCapture({
   const [handoffSeconds, setHandoffSeconds] = useState(0);
   const [copied, setCopied] = useState(false);
   const [phoneSuccess, setPhoneSuccess] = useState<string | null>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(null);
   const watchIdRef = useRef<number | null>(null);
   const settleTimerRef = useRef<number | null>(null);
   const onLocationChangeRef = useRef(onLocationChange);
@@ -97,6 +98,16 @@ export default function PharmacyLocationCapture({
   useEffect(() => {
     onLocationChangeRef.current = onLocationChange;
   }, [onLocationChange]);
+
+  useEffect(() => {
+    const nav = navigator as Navigator & { userAgentData?: { mobile?: boolean } };
+    const mobileUa =
+      nav.userAgentData?.mobile === true ||
+      /Android|iPhone|iPod|Windows Phone|Mobile/i.test(navigator.userAgent);
+    const ipadLike = navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+    const compactCoarsePointer = window.matchMedia("(max-width: 900px) and (pointer: coarse)").matches;
+    setIsMobileDevice(Boolean(mobileUa || ipadLike || compactCoarsePointer));
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -306,7 +317,11 @@ export default function PharmacyLocationCapture({
     setPhoneSuccess(null);
 
     if (!navigator.geolocation) {
-      setGeoError("Location is not available in this browser. Use the phone QR option instead.");
+      setGeoError(
+        isMobileDevice
+          ? "Location is not available in this browser. Enable Location Services for your browser, then try again."
+          : "Location is not available in this browser. Use the phone QR option instead.",
+      );
       return;
     }
 
@@ -340,7 +355,9 @@ export default function PharmacyLocationCapture({
       const { latitude: lat, longitude: lng, accuracy: accuracyMeters } = position.coords;
       if (!Number.isFinite(accuracyMeters) || accuracyMeters > MAX_ACCEPTABLE_ACCURACY_METERS) {
         failCapture(
-          `This device only found a broad location (about ±${Math.round(accuracyMeters || 0)} m). Use the phone QR option for a more reliable premises location.`,
+          isMobileDevice
+            ? `This phone only found a broad location (about ±${Math.round(accuracyMeters || 0)} m). Turn on Precise Location, move closer to the pharmacy premises, then try again.`
+            : `This device only found a broad location (about ±${Math.round(accuracyMeters || 0)} m). Use the phone QR option for a more reliable premises location.`,
         );
         return;
       }
@@ -371,7 +388,11 @@ export default function PharmacyLocationCapture({
     const finishWithBestAvailable = () => {
       if (finished) return;
       if (!bestPosition) {
-        failCapture("This device could not get a fresh precise position. Use the phone QR option instead.");
+        failCapture(
+          isMobileDevice
+            ? "This phone could not get a fresh precise position. Turn on Precise Location and try again."
+            : "This device could not get a fresh precise position. Use the phone QR option instead.",
+        );
         return;
       }
       saveBestPosition(bestPosition);
@@ -392,11 +413,19 @@ export default function PharmacyLocationCapture({
       (error) => {
         if (finished) return;
         if (error.code === error.PERMISSION_DENIED) {
-          failCapture("Location permission was denied. Allow precise location or use the phone QR option.");
+          failCapture(
+            isMobileDevice
+              ? "Location permission was denied. Allow Precise Location for this browser, then try again."
+              : "Location permission was denied. Allow precise location or use the phone QR option.",
+          );
           return;
         }
         if (error.code === error.POSITION_UNAVAILABLE && !bestPosition) {
-          failCapture("This device cannot determine a precise location. Use the phone QR option instead.");
+          failCapture(
+            isMobileDevice
+              ? "This phone cannot determine a precise location right now. Check Location Services and try again."
+              : "This device cannot determine a precise location. Use the phone QR option instead.",
+          );
           return;
         }
         if (error.code === error.TIMEOUT) finishWithBestAvailable();
@@ -419,7 +448,9 @@ export default function PharmacyLocationCapture({
         <div className="min-w-0 flex-1">
           <h2 id="pharmacy-location-title" className={polish.locationTitle}>Pharmacy premises</h2>
           <p className={polish.locationCopy}>
-            Capture the premises from a phone for the best accuracy. The location returns to this form automatically.
+            {isMobileDevice
+              ? "You’re already on a phone. Use this phone’s precise location directly—no QR code is needed."
+              : "Capture the premises from a phone for the best accuracy. The location returns to this form automatically."}
           </p>
         </div>
       </div>
@@ -476,6 +507,26 @@ export default function PharmacyLocationCapture({
             </div>
           </div>
         </div>
+      ) : isMobileDevice !== false ? (
+        <div className={handoffStyles.captureChoices}>
+          <button
+            type="button"
+            onClick={useCurrentLocation}
+            disabled={busy || pending || handoffBusy}
+            className={`${handoffStyles.captureChoice} ${handoffStyles.captureChoiceRecommended}`}
+          >
+            <span className={handoffStyles.captureChoiceIcon}>
+              {busy || pending ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : <Smartphone className="h-5 w-5" aria-hidden />}
+            </span>
+            <span className={handoffStyles.captureChoiceCopy}>
+              <strong>
+                {hasCoordinates ? "Refresh this phone’s location" : "Use this phone’s precise location"}
+                <em className={handoffStyles.recommendedBadge}>Recommended</em>
+              </strong>
+              <span>No QR code needed. Allow Precise Location and we’ll save the pharmacy premises directly from this phone.</span>
+            </span>
+          </button>
+        </div>
       ) : (
         <div className={handoffStyles.captureChoices}>
           <button
@@ -504,7 +555,7 @@ export default function PharmacyLocationCapture({
             </span>
             <span className={handoffStyles.captureChoiceCopy}>
               <strong>{hasCoordinates ? "Refresh on this device" : "Use this device"}</strong>
-              <span>Useful on phones and GPS-capable devices. Laptops may return a broad network location.</span>
+              <span>Useful on GPS-capable devices. Laptops may return a broad network location.</span>
             </span>
           </button>
         </div>
@@ -547,7 +598,11 @@ export default function PharmacyLocationCapture({
           </p>
         </div>
       ) : !busy && !handoff ? (
-        <p className={polish.locationNote}>For laptops, the phone QR option is the recommended way to confirm the pharmacy premises.</p>
+        <p className={polish.locationNote}>
+          {isMobileDevice
+            ? "This phone can capture the premises directly. A QR handoff is only needed when onboarding from a computer."
+            : "For laptops, the phone QR option is the recommended way to confirm the pharmacy premises."}
+        </p>
       ) : null}
     </section>
   );

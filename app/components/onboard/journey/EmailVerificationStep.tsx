@@ -138,7 +138,7 @@ export function EmailVerificationStep({
       <header className={`${styles.formHead} ${polish.heading}`}>
         <h2>Check your inbox</h2>
         <p>
-          We sent a verification link to <strong>{ownerEmail}</strong>. Clicking the link confirms your ownership and unlocks the next steps.
+          We sent a verification button to <strong>{ownerEmail}</strong>. It can open in this tab, a new tab, another browser, or another device.
         </p>
       </header>
 
@@ -180,7 +180,7 @@ export function EmailVerificationStep({
                   Waiting for verification
                 </h3>
                 <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">
-                  Open the verification link sent to <strong>{ownerEmail}</strong>. If you already clicked it in another tab, this page will advance automatically.
+                  Open the verification email sent to <strong>{ownerEmail}</strong> and tap “Verify email address”. Verification is tied to your account, not this tab. This page checks automatically and will advance when you return—even if you verified in another browser or on another device.
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <button

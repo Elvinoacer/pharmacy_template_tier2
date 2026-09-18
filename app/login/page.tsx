@@ -5,17 +5,19 @@ import AuthForm, { AuthField } from "@/app/components/AuthForm";
 import PasswordField from "@/app/components/PasswordField";
 import { getSessionUser } from "@/app/lib/auth";
 import { resolvePostLoginPath } from "@/app/lib/session-claim";
+import { CheckCircle2 } from "lucide-react";
 
 export const metadata = { title: "Sign in" };
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; error?: string; verified?: string }>;
 }) {
   const sp = await searchParams;
   const next = sp.next || "";
   const error = sp.error || "";
+  const verified = sp.verified === "1";
 
   // Already signed in → send them to the portal their role owns.
   const session = await getSessionUser().catch(() => null);
@@ -30,6 +32,19 @@ export default async function LoginPage({
 
   return (
     <div className="aether-login-page aether-artwork-surface aether-route-surface">
+      {verified ? (
+        <div className="mx-auto mb-4 flex w-full max-w-xl items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-950 dark:text-emerald-100" role="status">
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+          <div>
+            <p className="font-bold">Email verified successfully.</p>
+            <p className="mt-1 text-xs leading-relaxed text-emerald-800 dark:text-emerald-200">
+              {next.startsWith("/onboard")
+                ? "This browser is not signed in to your pharmacy onboarding session. Sign in to continue here, or return to the original onboarding tab—it will detect the verification automatically."
+                : "Sign in to continue. If you verified from another device, you can safely return to your original session as well."}
+            </p>
+          </div>
+        </div>
+      ) : null}
       <AuthForm
         action={loginAction}
         title="Welcome back"
